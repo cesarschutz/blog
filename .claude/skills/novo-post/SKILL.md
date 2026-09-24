@@ -13,10 +13,12 @@ Vale tanto para post do zero quanto para texto pronto que o Cesar traz. Antes de
 post existente em `src/content/posts/` (ou o modelo, quando existir). Isso carrega a regra
 `.claude/rules/posts.md`, que só entra no contexto quando um arquivo do caminho é lido.
 
-1. **Classificar.** Escolha uma categoria existente em `src/data/taxonomia.ts` ou uma série em
-   `src/data/series.ts`.
-   - Se nenhuma categoria servir de verdade, pode criar uma nova, dentro do escopo do blog
-     (engenharia e arquitetura de software) e com cor distinta das demais. **Avise o Cesar.**
+1. **Classificar.** Escolha um dos livros da coleção (as categorias, em `docs/capas/livros.json`:
+   Arquitetura de Software, Desenvolvimento de Software, Dados, IA, Segurança, DevOps, SRE, Carreira)
+   ou uma série em `src/data/series.ts`. O subtítulo de cada livro diz o que cabe nele.
+   - Se nenhum livro servir de verdade, pode propor um novo, dentro do escopo do blog (engenharia e
+     arquitetura de software), pela seção "Livros novos" de `docs/capas/CAPAS.md` (cor, desenho,
+     ícone e volume). **Avise o Cesar antes.**
    - Tags: de 2 a 4, do vocabulário existente, sem repetir nome de categoria. Crie tag nova só se
      ela for servir a mais de um post.
 2. **Escrever ou melhorar.** Cuide da estrutura, do tom profissional e direto em pt-BR e dos exemplos corretos.

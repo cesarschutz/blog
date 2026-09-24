@@ -26,7 +26,7 @@ export interface Resumo {
   /** Nome que aparece como rótulo: a categoria ou a série. */
   rotulo: string;
   urlRotulo: string;
-  /** Cor que faz o papel da categoria (tecido ou destaque da série, D23). */
+  /** Cor que faz o papel da categoria (a cor do livro ou o destaque da série, D23). */
   cor: string;
   minutos: number;
 }
@@ -47,7 +47,8 @@ export function minutosDeLeitura(corpo: string): number {
 export const urlPost = (slug: string) => url(`/posts/${slug}/`);
 export const urlCategoria = (nome: string) => url(`/categories/${encodeURIComponent(nome)}/`);
 export const urlTag = (nome: string) => url(`/tags/${encodeURIComponent(nome)}/`);
-export const urlSerie = (s: Serie) => url(s.url ?? `/series/${s.chave}/`);
+/** Toda série mora em /series/<chave>/, como as categorias em /categories/<Nome>/ (D32). */
+export const urlSerie = (s: Serie) => url(`/series/${s.chave}/`);
 
 let cache: Post[] | undefined;
 
@@ -83,7 +84,7 @@ export function resumir(post: Post): Resumo {
     serie: ser,
     rotulo: ser?.nome ?? cat?.nome ?? "",
     urlRotulo: ser ? urlSerie(ser) : cat ? urlCategoria(cat.nome) : url("/archive/"),
-    cor: ser?.destaque ?? cat?.tecido ?? "#56605E",
+    cor: ser?.destaque ?? cat?.cor ?? "#56605E",
     minutos: minutosDeLeitura(post.body ?? ""),
   };
 }
@@ -106,14 +107,19 @@ export async function getTags(): Promise<Grupo[]> {
     .sort((a, b) => b.posts.length - a.posts.length || a.nome.localeCompare(b.nome, "pt-BR"));
 }
 
-/** Categorias na ordem do cadastro, só as que têm posts (posts de série ficam de fora). */
+/**
+ * Categorias na ordem dos volumes da coleção (D30), inclusive as que ainda não têm artigos: todo
+ * livro tem página. Posts de série ficam de fora.
+ */
 export async function getCategorias(): Promise<(Grupo & { categoria: Categoria })[]> {
   const resumos = await getResumos();
-  return CATEGORIAS.map((c) => ({
-    nome: c.nome,
-    categoria: c,
-    posts: resumos.filter((r) => r.categoria?.nome === c.nome),
-  })).filter((g) => g.posts.length > 0);
+  return [...CATEGORIAS]
+    .sort((a, b) => a.volume - b.volume)
+    .map((c) => ({
+      nome: c.nome,
+      categoria: c,
+      posts: resumos.filter((r) => r.categoria?.nome === c.nome),
+    }));
 }
 
 /** Posts de uma série em ordem de leitura. Na série Java: o guia e depois as LTS em ordem crescente. */

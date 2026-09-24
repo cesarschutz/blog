@@ -1,0 +1,32 @@
+---
+/**
+ * O livro 3D (D30): a lombada em pé, na altura da capa, e a capa colada a ela, formando um bloco que
+ * gira. Na gaveta ele começa com a lombada de frente e gira até os três quartos (classe `virado`); na
+ * página do livro já aparece virado. As medidas vêm de src/lib/livro-3d.ts; as cores, do elemento pai
+ * (coresDoLivroCss).
+ */
+import MioloLombada from "./MioloLombada.astro";
+import Capa from "./Capa.astro";
+import type { Livro } from "../lib/estante";
+
+interface Props {
+  livro: Livro;
+  desenho: "inline" | "adiado";
+  virado?: boolean;
+}
+
+const { livro, desenho, virado = false } = Astro.props;
+---
+
+<div class="livro-3d-caixa" aria-hidden="true">
+  <div class:list={["livro-3d", { virado }]}>
+    <div class:list={["face-lombada", "lombada-visual", { "de-serie": livro.serie }]}>
+      <MioloLombada livro={livro} iconeDaEstante={desenho === "adiado"} />
+      <span class="luz"></span>
+    </div>
+    <div class="face-capa">
+      <Capa livro={livro} desenho={desenho} />
+      <span class="luz"></span>
+    </div>
+  </div>
+</div>

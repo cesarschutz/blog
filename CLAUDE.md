@@ -41,13 +41,29 @@ Cesar acompanhar. Ele revisa tudo no fim.
 - O caminho do projeto tem espaço (`novo site`): use aspas em todo comando e script.
 - Se o Cesar corrigir a mesma coisa duas vezes, isso vira regra no lugar certo (skill, `.claude/rules/` ou aqui).
 
+## Livros e séries: capas, lombadas e categorias
+
+**A regra de capas, lombadas, estante, livros e séries novos é `docs/capas/CAPAS.md`** (D30, D32),
+com as imagens de referência em `docs/capas/referencia/`. Cada categoria é um livro de uma coleção
+numerada, no estilo "edição de estudo"; cada série é uma revista técnica (cada post, uma edição). Os
+dados vêm de `docs/capas/livros.json` e todas as cores, de `docs/capas/cores.js` (nada de cor fixa).
+Desenhos, ícones e emblemas ficam em `docs/capas/desenhos/`, `icones/` e `serie/` e entram inline pelo
+`src/lib/livros-svg.ts`; o desenho grande da capa e o emblema da revista só carregam quando o livro
+abre na gaveta (`/livros/<slug>.svg`). O número das lombadas, da capa da revista e da página do livro
+é o total de artigos, contado pelos posts (some quando é zero); o "VOLUME 01" da capa é a posição na
+coleção. Categoria ou série nova = pela seção "Livros novos" do `CAPAS.md`, com o OK do Cesar. Os
+componentes são `Capa`, `MioloLombada` (em pé), `PainelHome` (deitada), `Estante`, `Gaveta`,
+`Livro3D`, `LivroEmPe`, `TopoLivro` e `GradeLivros`: altere esses, sem criar outros em paralelo.
+Para conferir, `/amostra/livros/` (só no dev).
+
 ## URLs que não podem quebrar
 
 - `/posts/<slug>/`, com as mesmas âncoras de título de hoje (ids no estilo github-slugger, com acento)
-- `/archive/`, `/categories/`, `/tags/`, `/series/`, `/java/`, `/rss.xml`, `/og/<slug>.png` e
+- `/archive/`, `/categories/`, `/tags/`, `/series/`, `/series/java/` (e `/java/`, que redireciona), `/rss.xml`, `/og/<slug>.png` e
   `/sitemap-index.xml`
 - `/categories/<Nome>/` e `/tags/<Nome>/` com o **nome cru** na URL (maiúsculas, acentos e espaços)
-- Redirecionamentos: `/posts/java-NN/` → `/posts/java-<LTS>/#java-NN` (vindo de `ABSORBED`),
+- Redirecionamentos: `/categories/Arquitetura/`, `/Java/` e `/Observabilidade/` → o livro novo
+  (`NOMES_ANTIGOS`, D30); `/posts/java-NN/` → `/posts/java-<LTS>/#java-NN` (vindo de `ABSORBED`),
   `/about/` → `/sobre/`, `/projects/` → `/` e `/exercicios` → `/`
 - `/2/` e `/3/`: páginas da home paginada, 12 por página, como no blog atual (D27)
 
@@ -62,7 +78,8 @@ Aprovada em 23/09/2026. Detalhes em `docs/decisoes.md`.
 - Expressive Code para código (título, linhas destacadas, diff, Copiar). KaTeX só em post com fórmula
 - CSS próprio com tokens, sem Tailwind e sem framework de UI. Visual "Folhas claras" (D26): folhas
   (`.folha`), painéis dos desenhos (`.painel`) e azul-tinta (`--acento`) no que é clicável
-- Fontes: Besley (títulos), Literata com `opsz` (texto), IBM Plex Sans (interface), JetBrains Mono (código)
+- Fontes: Besley (títulos), Literata com `opsz` (texto), IBM Plex Sans (interface), JetBrains Mono
+  (código); nos livros, Bitter e Newsreader itálico (D30)
 - Busca com Pagefind e interface própria (D2, por medição): índice gerado no `postbuild`
 - Node 24 (`.node-version`, instalado pelo fnm) e npm
 - Por enquanto tudo roda só na máquina, sem pré-visualização publicada (D13). O deploy final será por
@@ -89,7 +106,8 @@ node scripts/desenho/java.mjs             # as ilustrações da série Java (pad
 
 A porta 4321 desta máquina está ocupada por outra ferramenta do Cesar, que não deve ser tocada. O
 Astro usa a próxima livre (4322). Só no dev: `/amostra/` (tokens, fontes, avisos),
-`/amostra/markdown/` (recursos de Markdown, de `src/amostra/recursos.md`) e `/amostra/desenhos/`.
+`/amostra/markdown/` (recursos de Markdown, de `src/amostra/recursos.md`), `/amostra/desenhos/` e
+`/amostra/livros/` (as capas planas, para comparar com `docs/capas/referencia/`).
 
 Medição da busca (D2): `scripts/bench-busca/` (construir, conferir, medir), com o dev parado.
 
@@ -102,19 +120,22 @@ docs/briefing.md         decisões de produto e design (fonte da verdade)
 docs/estado.md           painel: fase, pronto, próximos passos, perguntas
 docs/decisoes.md         registro de decisões (data, decisão, motivo, alternativas)
 docs/estilo-desenho.md   estilo das ilustrações e das lousas
+docs/capas/              os livros: CAPAS.md (regra), livros.json, cores.js, desenhos, ícones, referência
 docs/virada.md           plano para o domínio passar ao blog novo (só com OK do Cesar)
 docs/referencias/        protótipos aprovados
 src/content/posts/       posts; nome do arquivo = slug da URL
-src/data/                taxonomia (categorias e cores), series, java, decks (apresentações), site
+src/data/                taxonomia e series (leem docs/capas), java, decks (apresentações), site
 src/styles/tokens.ts     cores dos dois temas: fonte única, gera as variáveis CSS (D4)
 src/styles/              base (folha, painel, transição de página), fontes, avisos, prosa, artigo (grade,
                          notas, visor), estante e livro (lombada, livro 3D e capa)
 src/layouts/Base.astro   head, anti-piscada, cabeçalho, rodapé e busca
 src/components/          peças das páginas (estante, gaveta, sumário, avisos, busca…)
-src/pages/               rotas; a home é [...page].astro (paginada, D27);
+src/pages/               rotas; a home é [...page].astro (paginada, D27); livros/[slug].svg (desenho
+                         da capa, que a gaveta busca ao abrir o livro, D30);
                          posts/[slug]/apresentacao.pdf.ts (PDF) e og/[slug] (imagem, D10)
 src/plugins/             Markdown: avisos, notas laterais, apresentação, tabelas, matemática
-src/lib/                 posts, formatos, busca (Pagefind), código (Expressive Code), PDF
+src/lib/                 posts, formatos, busca (Pagefind), código (Expressive Code), PDF, estante
+                         (livros), livros-svg (desenhos e ícones), livro-3d (medidas do livro aberto)
 src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, apresentação)
 src/scripts/tema.ts      tema claro/escuro/sistema (botão do cabeçalho e seletor do rodapé)
 scripts/                 contraste, links, apresentacao, og, copiar-katex, desenho/, bench-busca/
@@ -151,5 +172,7 @@ src/lousas/<slug>/       desenhos das lousas de cada post .mdx
   O dev tem o mesmo problema: reinicie-o (`astro dev stop` e suba de novo).
 - Suba o dev com `npm run dev -- --host 127.0.0.1`. Sem isso ele escuta só em `localhost` (IPv6), e o
   endereço <http://127.0.0.1:4322> que o Cesar usa não abre.
+- O cabeçalho é fixo (D31): peça nova com `position: sticky` ou âncora que role até o topo precisa
+  descontar `--altura-topo` (base.css), senão fica escondida atrás dele.
 - Instalar dependência com o dev no ar faz o Vite reiniciar, e componentes editados nesse meio-tempo
   podem ficar com o CSS velho: salve-os de novo (um `touch` basta).

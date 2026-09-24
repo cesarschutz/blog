@@ -16,6 +16,7 @@ import { rehypeNotasLaterais } from "./src/plugins/rehype-notas-laterais.mjs";
 import { rehypeApresentacao } from "./src/plugins/rehype-apresentacao.mjs";
 import { marcacoes, pluginCopiarSemRemovidas, pluginLinguagem, temasDeCodigo } from "./src/lib/codigo.ts";
 import { ABSORBED } from "./src/data/java.ts";
+import { NOMES_ANTIGOS } from "./src/data/taxonomia.ts";
 
 // A pré-visualização (D13) rodaria com BASE_PATH=/novo-blog e PREVIEW=true; em produção, base "/".
 const base = process.env.BASE_PATH ?? "/";
@@ -36,10 +37,20 @@ const modificadoEm = Object.fromEntries(
 );
 
 // URLs antigas que continuam valendo (D7). /about/ tem página própria, para levar a âncora #site.
-// /2/ e /3/ voltaram a ser as páginas da home (D27).
+// /2/ e /3/ voltaram a ser as páginas da home (D27). As categorias que viraram livros com outro nome
+// (D30) levam ao livro novo.
 const redirecionamentos = {
   "/projects": comBase("/"),
   "/exercicios": comBase("/"),
+  // A página da série Java passou para /series/java/, como as categorias (D32).
+  "/java": comBase("/series/java/"),
+  ...Object.fromEntries(
+    Object.entries(NOMES_ANTIGOS).map(([antigo, novo]) => [
+      `/categories/${antigo}`,
+      // Sem codificar: o Astro codifica o destino do redirecionamento (com %20 aqui, sairia %2520).
+      comBase(`/categories/${novo}/`),
+    ]),
+  ),
   ...Object.fromEntries(
     Object.entries(ABSORBED)
       .filter(([v]) => !existsSync(`${PASTA_POSTS}/java-${v}.md`))

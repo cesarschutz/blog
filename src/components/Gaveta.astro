@@ -1,13 +1,14 @@
 ---
 /**
  * Gaveta da estante (briefing §5.1): ao abrir um livro, a lombada sai da prateleira e, abaixo, o livro
- * gira da lombada para a capa (3D), com o sumário ao lado (filtro sem acento; por ano nas categorias,
+ * gira da lombada até os três quartos, com a lombada e a capa à vista (3D, D30), com o sumário ao lado (filtro sem acento; por ano nas categorias,
  * "Parte N" nas séries). Trocar de livro fecha o atual antes de abrir o próximo; cliques rápidos
  * terminam a animação e abrem o último escolhido. Botão "Fechar livro" e Esc. Cada livro vem pronto
- * num <template>; o script só monta. O tombo do livro inclinado começa no script do <head>.
+ * num <template>; o script só monta. O desenho da capa só é buscado quando o livro abre
+ * (/livros/<slug>.svg) e entra inline. O tombo do livro inclinado começa no script do <head>.
  */
-import MioloLombada from "./MioloLombada.astro";
-import { tamanhoDoTituloDaCapa, textoDoFiltro, type Livro } from "../lib/estante";
+import Livro3D from "./Livro3D.astro";
+import { coresDoLivroCss, textoDoFiltro, type Livro } from "../lib/estante";
 import { diaEMes } from "../lib/formato";
 import type { Resumo } from "../lib/posts";
 import "../styles/estante.css";
@@ -37,35 +38,18 @@ function linhas(l: Livro): Linha[] {
 {
   livros.map((l) => (
     <template data-modelo={l.id}>
-      <div class="livro-aberto" data-largura={l.largura} style={`--tecido:${l.tecido};--texto:${l.texto}${l.fita ? `;--fita:${l.fita}` : ""}`}>
-        <div class="livro-3d-caixa" aria-hidden="true">
-          <div class="livro-3d">
-            <div class:list={["face-lombada", "lombada-visual", { "de-serie": l.serie }]}>
-              <MioloLombada livro={l} semFita />
-            </div>
-            <div class="face-capa">
-              <div class:list={["capa", { "de-serie": l.serie }]} style={`--cvf:${tamanhoDoTituloDaCapa(l.nome)}cqw`}>
-                {l.serie ? <p class="tipo-capa">Série</p> : <div class="filete" />}
-                <div class="titulo-capa">{l.nome}</div>
-                <p class="descricao-capa">{l.descricao}</p>
-                <div class="pe-capa">
-                  {l.contagem}
-                  <br />
-                  <span class="autor-capa">Cesar Schutz</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div class="livro-aberto" data-largura={l.emPe.largura} style={coresDoLivroCss(l)}>
+        <Livro3D livro={l} desenho="adiado" />
         <div class="sumario-livro">
           <div class="topo-sumario">
             <h2 id={`sumario-${l.id}`} tabindex="-1">{l.serie ? "Ordem de leitura" : "Sumário"}</h2>
-            <span class="meta-sumario">{`${l.nome}, ${l.contagem}`}</span>
+            <span class="meta-sumario">{l.posts.length > 0 ? `${l.nome}, ${l.contagem}` : l.nome}</span>
             <button type="button" class="botao fechar-livro" data-fechar-livro>Fechar livro</button>
           </div>
-          <label class="sr" for={`filtro-${l.id}`}>Filtrar neste livro</label>
-          <input id={`filtro-${l.id}`} class="filtro-livro" type="search" placeholder="Filtrar neste livro" autocomplete="off" data-filtro-livro />
-          <ul class="indice-livro" aria-labelledby={`sumario-${l.id}`}>
+          {l.posts.length === 0 && <p class="sem-artigos">Este livro ainda não tem artigos.</p>}
+          {l.posts.length > 0 && <label class="sr" for={`filtro-${l.id}`}>Filtrar neste livro</label>}
+          {l.posts.length > 0 && <input id={`filtro-${l.id}`} class="filtro-livro" type="search" placeholder="Filtrar neste livro" autocomplete="off" data-filtro-livro />}
+          <ul class="indice-livro" aria-labelledby={`sumario-${l.id}`} hidden={l.posts.length === 0}>
             {linhas(l).map((linha) =>
               linha.tipo === "ano" ? (
                 <li class="ano" aria-hidden="true">{linha.ano}</li>
@@ -89,6 +73,7 @@ function linhas(l: Livro): Linha[] {
 
 <script>
   import { normalizar } from "../lib/busca/tipos";
+  import { medidasDoLivro3D } from "../lib/livro-3d";
 
   const gaveta = document.querySelector<HTMLElement>("[data-gaveta]");
   const estante = document.querySelector<HTMLElement>("[data-estante]");
@@ -104,17 +89,33 @@ function linhas(l: Livro): Linha[] {
     let ocupado = false;
     let pendente: { id: string; daLista: boolean; foco: boolean } | null = null;
 
-    function medidas(largura: number) {
-      const p = pequeno.matches;
-      const bh = p ? 270 : 360;
-      const cw = p ? 180 : 240;
-      const k = p ? 0.95 : 1.3;
-      const sw = Math.round(largura * k);
-      return { bh, cw, k, sw, x0: (cw - sw) / 2, x1: -sw };
+    const medidas = (largura: number) => medidasDoLivro3D(largura, pequeno.matches ? 270 : 360);
+
+    // O desenho da capa (ou o emblema da revista) só vem quando o livro abre (D30, D32): uma busca
+    // por arquivo, guardada.
+    const desenhos = new Map<string, Promise<string>>();
+    function trazerDesenho(no: HTMLElement) {
+      for (const alvo of no.querySelectorAll<HTMLElement>("[data-desenho]")) {
+        const endereco = alvo.dataset.desenho!;
+        if (!desenhos.has(endereco)) {
+          desenhos.set(
+            endereco,
+            fetch(endereco).then((r) => (r.ok ? r.text() : Promise.reject(new Error(String(r.status))))),
+          );
+        }
+        desenhos
+          .get(endereco)!
+          .then((svg) => {
+            alvo.innerHTML = svg;
+            if (!reduzir.matches) alvo.classList.add("chegou");
+          })
+          .catch(() => desenhos.delete(endereco));
+      }
     }
 
     function ligarFiltro(no: HTMLElement) {
-      const campo = no.querySelector<HTMLInputElement>("[data-filtro-livro]")!;
+      const campo = no.querySelector<HTMLInputElement>("[data-filtro-livro]");
+      if (!campo) return;
       const lista = no.querySelector<HTMLUListElement>(".indice-livro")!;
       const vazio = no.querySelector<HTMLElement>(".vazio-livro")!;
       campo.addEventListener("input", () => {
@@ -143,16 +144,18 @@ function linhas(l: Livro): Linha[] {
       const modelo = document.querySelector<HTMLTemplateElement>(`template[data-modelo="${id}"]`)!;
       const no = modelo.content.firstElementChild!.cloneNode(true) as HTMLElement;
       const m = medidas(Number(no.dataset.largura));
-      for (const [nome, valor] of Object.entries({ bh: m.bh, cw: m.cw, sw: m.sw, x0: m.x0, x1: m.x1 })) {
+      for (const [nome, valor] of Object.entries({ bh: m.bh, cw: m.cw, sw: m.sw, x0: m.x0, x1: m.x1, u: m.u })) {
         no.style.setProperty(`--${nome}`, `${valor}px`);
       }
-      no.querySelector<HTMLElement>(".face-lombada")!.style.setProperty("--u", `${m.k}px`);
       if (assentado) {
         no.classList.add("aparecendo");
         no.querySelector(".livro-3d")!.classList.add("virado");
       }
+      const icone = no.querySelector<HTMLElement>("[data-icone-de]");
+      if (icone) icone.innerHTML = estante!.querySelector(`[data-livro="${id}"] :is(.icone-lombada, .emblema-lombada)`)?.innerHTML ?? "";
       miolo.replaceChildren(no);
       ligarFiltro(no);
+      trazerDesenho(no);
       return no;
     }
 

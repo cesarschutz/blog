@@ -1,22 +1,26 @@
 ---
 /**
- * Painel ao lado dos artigos recentes (pedido do Cesar em 24/09/2026, D28), inspirado na barra
- * lateral do blog atual: séries, categorias, tags e RSS. Séries e categorias são os mesmos livros da
- * estante, agora deitados e empilhados: o comprimento é a altura da lombada na estante, a espessura
- * acompanha o número de posts e o mais comprido fica embaixo. Todos ficam retos (o de cima torto
- * parecia voando); ao passar o mouse, o livro sai um pouco da pilha. Cada livro de categoria leva à
- * página da categoria (D29); o de série, por enquanto, à página que já existia. Na tela larga, o painel
- * fica parado enquanto a lista rola, como no blog atual (o `sticky` está em ComPainel.astro).
+ * Painel ao lado dos artigos (D28), inspirado na barra lateral do blog atual: séries, categorias,
+ * tags e RSS. Séries e categorias são os livros deitados e empilhados, pela regra de
+ * docs/capas/CAPAS.md (D30, D32): na categoria, a ponta curta na cor do livro com o ícone e o corpo em
+ * papel, com o título e o número no destaque; na série (revista), papel com uma barra no destaque na
+ * ponta, o emblema, o título com o complemento em itálico e o número. Comprimento,
+ * espessura e deslocamento de cada livro vêm de docs/capas/livros.json, no tamanho real da lateral;
+ * a pilha escala com a largura (container query). O volume 1 fica embaixo. O número é o total de
+ * artigos e some quando não há nenhum. Ao passar o mouse, o livro sai um pouco da pilha. Na tela
+ * larga, o painel fica parado enquanto a lista rola (o `sticky` está em ComPainel.astro).
  *
- * Transição (D29): o livro em pé do topo da categoria tem `view-transition-name` igual ao id do
- * livro; o script do <head> (Base.astro) dá o mesmo nome, em `data-vt`, só ao livro da pilha que leva
- * à página nova ou que veio da anterior, e o navegador leva um ao outro. Na página da própria
- * categoria (`atual`), o livro saiu da pilha: fica só o contorno do lugar, sem nome.
+ * Transição (D29): o livro em pé do topo da página do livro tem `view-transition-name` igual ao id
+ * do livro; o script do <head> (Base.astro) dá o mesmo nome, em `data-vt`, só ao livro da pilha que
+ * leva à página nova ou que veio da anterior, e o navegador leva um ao outro. Na página do próprio
+ * livro (`atual`), ele saiu da pilha: fica só o contorno do lugar, sem nome.
  */
 import { ICONES } from "../lib/icones";
-import type { Livro } from "../lib/estante";
+import { coresDoLivroCss, type Livro } from "../lib/estante";
+import { iconeDoLivro } from "../lib/livros-svg";
 import { urlTag, type Grupo } from "../lib/posts";
 import { url } from "../lib/url";
+import "../styles/livro.css";
 
 interface Props {
   livros: Livro[];
@@ -26,30 +30,25 @@ interface Props {
 }
 
 const { livros, tags, atual } = Astro.props;
-/** De cima para baixo: o mais curto em cima, o mais comprido embaixo, como numa pilha de verdade. */
-const empilhar = (lista: Livro[]) => [...lista].sort((a, b) => a.altura - b.altura);
+// De cima para baixo: o último volume em cima e o volume 1 embaixo.
 const pilhas = [
-  { titulo: "Séries", livros: empilhar(livros.filter((l) => l.serie)) },
-  { titulo: "Categorias", livros: empilhar(livros.filter((l) => !l.serie)) },
+  { titulo: "Séries", livros: livros.filter((l) => l.serie) },
+  { titulo: "Categorias", livros: livros.filter((l) => !l.serie).sort((a, b) => (b.volume ?? 0) - (a.volume ?? 0)) },
 ].filter((p) => p.livros.length > 0);
-const MAIOR = Math.max(...livros.map((l) => l.altura));
-// Recuo de cada livro, para a pilha não ficar alinhada demais (em px, de cima para baixo).
-const RECUOS = [7, 1, 11, 4, 9, 2, 6, 0];
-const estilo = (l: Livro, i: number) =>
+// Onde a pilha começa, no tamanho real (as categorias um pouco mais para dentro, como na referência).
+const INICIO = { categoria: 24, serie: 20 };
+const estilo = (l: Livro) =>
   [
-    `--tecido:${l.tecido}`,
-    `--texto:${l.texto}`,
-    `--comprimento:${((l.altura / MAIOR) * 88).toFixed(1)}%`,
-    `--espessura:${Math.round(l.largura * 0.55)}px`,
-    `--recuo:${RECUOS[i % RECUOS.length]}px`,
-    l.fita ? `--fita:${l.fita}` : "",
-  ]
-    .filter(Boolean)
-    .join(";");
-const rotulo = (l: Livro) =>
-  l.serie
-    ? `Série ${l.nome}, ${l.posts.length} partes`
-    : `${l.nome}, ${l.posts.length} ${l.posts.length === 1 ? "artigo" : "artigos"}`;
+    coresDoLivroCss(l),
+    `--comprimento:${l.deitada.comprimento}`,
+    `--espessura:${l.deitada.espessura}`,
+    `--recuo:${(l.serie ? INICIO.serie : INICIO.categoria) + l.deitada.deslocamento}`,
+  ].join(";");
+const rotulo = (l: Livro) => {
+  const n = l.posts.length;
+  if (l.serie) return `Série ${l.nome}, ${n} ${n === 1 ? "parte" : "partes"}`;
+  return n === 0 ? `${l.nome}, ainda sem artigos` : `${l.nome}, ${n} ${n === 1 ? "artigo" : "artigos"}`;
+};
 const TAGS_NO_PAINEL = 10;
 ---
 
@@ -58,29 +57,40 @@ const TAGS_NO_PAINEL = 10;
     pilhas.map((p) => (
       <section class="bloco">
         <h2 class="titulo-bloco">{p.titulo}</h2>
-        <ol class="pilha">
-          {p.livros.map((l, i) => (
-            <li>
-              <a
-                class:list={["deitado", { "de-serie": l.serie, retirado: l.id === atual }]}
-                href={l.href}
-                aria-label={rotulo(l)}
-                aria-current={l.id === atual ? "page" : undefined}
-                data-vt={l.id === atual ? undefined : l.id}
-                style={estilo(l, i)}
-              >
-                <span class="nome" aria-hidden="true">
-                  {l.nome}
-                </span>
-                <span class="conta" aria-hidden="true">
-                  {l.posts.length}
-                </span>
-                {l.fita && <span class="fita" aria-hidden="true" />}
-              </a>
-            </li>
-          ))}
-        </ol>
-        <div class="tampo" aria-hidden="true" />
+        <div class="pilha">
+          <ol>
+            {p.livros.map((l) => (
+              <li>
+                <a
+                  class:list={["deitado", { "de-serie": l.serie, "duas-linhas": l.linhas.length > 1, retirado: l.id === atual }]}
+                  href={l.href}
+                  aria-label={rotulo(l)}
+                  aria-current={l.id === atual ? "page" : undefined}
+                  data-vt={l.id === atual ? undefined : l.id}
+                  style={estilo(l)}
+                >
+                  {l.slug && <span class="ponta" aria-hidden="true" set:html={iconeDoLivro(l.slug)} />}
+                  {l.revista && <span class="emblema" aria-hidden="true" set:html={iconeDoLivro(l.revista.emblema)} />}
+                  {l.revista ? (
+                    <span class="nome" aria-hidden="true">
+                      {l.revista.tituloPrincipal} <em>{l.revista.complemento}</em>
+                    </span>
+                  ) : (
+                    <span class="nome" aria-hidden="true">
+                      {l.linhas.map((linha, i) => (i === 0 ? linha : [<br />, linha]))}
+                    </span>
+                  )}
+                  {l.posts.length > 0 && (
+                    <span class="conta" aria-hidden="true">
+                      {l.posts.length}
+                    </span>
+                  )}
+                </a>
+              </li>
+            ))}
+          </ol>
+          <div class="tampo" aria-hidden="true" />
+        </div>
       </section>
     ))
   }
@@ -119,150 +129,179 @@ const TAGS_NO_PAINEL = 10;
 
   .titulo-bloco {
     margin: 0 0 14px;
-    font-family: var(--font-titulo);
+    font-family: var(--font-livro);
     font-weight: 700;
-    font-size: 15px;
+    font-size: 18px;
+    letter-spacing: -0.005em;
   }
 
-  /* ---------- pilha de livros ---------- */
+  /* ---------- pilha de livros deitados ---------- */
 
+  /*
+   * As medidas de livros.json são do tamanho real numa pilha de 238px de largura (a lateral do site);
+   * --p é quanto vale 1px da referência na largura que a pilha tem de fato.
+   */
   .pilha {
     container-type: inline-size;
+  }
+
+  .pilha ol {
+    --p: calc(100cqw / 238);
     display: flex;
     flex-direction: column;
-    gap: 1px;
     margin: 0;
-    padding: 0 0 0 4px;
+    padding: 0;
     list-style: none;
   }
 
-  /* A lombada, deitada: faixas nas duas pontas, o nome na horizontal e a contagem à direita. */
+  /* Categoria: a ponta curta na cor do livro, com o ícone; o corpo em papel. */
   .deitado {
+    --e: calc(var(--espessura) * var(--p));
+    font-variant-numeric: lining-nums;
+    --ponta: calc(1.32 * var(--e));
     position: relative;
     display: flex;
     align-items: center;
-    gap: 10px;
-    width: var(--comprimento);
-    height: var(--espessura);
-    margin-left: var(--recuo);
-    padding: 0 14px 0 18px;
+    width: calc(var(--comprimento) * var(--p));
+    height: var(--e);
+    margin-left: calc(var(--recuo) * var(--p));
     border-radius: 2px 3px 3px 2px;
-    background-color: var(--tecido);
-    background-image:
-      linear-gradient(180deg, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0) 40%, rgb(0 0 0 / 0.16)),
-      var(--tecido-trama);
-    box-shadow: 0 1px 1px rgb(0 0 0 / 0.22);
-    color: var(--texto);
+    background:
+      var(--grao) 0 0 / 180px 180px,
+      linear-gradient(
+        rgb(0 0 0 / 0.14) 0%,
+        rgb(255 255 255 / 0.08) 38%,
+        rgb(255 255 255 / 0.02) 62%,
+        rgb(0 0 0 / 0.16) 100%
+      ),
+      linear-gradient(90deg, var(--livro-cor) var(--ponta), var(--livro-papel) var(--ponta));
+    box-shadow: 0 1px 0 rgb(0 0 0 / 0.18);
+    color: var(--livro-destaque);
+    font-family: var(--font-livro);
     text-decoration: none;
     transition: transform 0.25s cubic-bezier(0.2, 0.75, 0.2, 1);
     view-transition-class: livro;
   }
 
-  .deitado::before,
-  .deitado::after {
-    content: "";
-    position: absolute;
-    top: 18%;
-    bottom: 18%;
-    width: 3px;
-    border-left: 1px solid currentColor;
-    border-right: 1px solid currentColor;
-    opacity: 0.55;
+  /* O ícone em pé, sem giro, com 5 de margem nas laterais e 4 em cima e embaixo; traço de 0,9 e 0,6. */
+  .ponta {
+    --lombada-cor: var(--livro-cor);
+    --traco-lombada: 0.9px;
+    flex: none;
+    width: var(--ponta);
+    height: 100%;
+    padding: calc(4 * var(--p)) calc(5 * var(--p));
+    color: var(--livro-tinta);
   }
 
-  .deitado::before {
-    left: 7px;
-  }
-
-  .deitado::after {
-    right: 5px;
+  /* Nesse tamanho, só os dois traços principais: a hachura (cz-w3) vira ruído. */
+  .ponta :global(.cz-w3) {
+    display: none;
   }
 
   .nome {
-    flex: 1;
+    flex: 0 1 auto;
     min-width: 0;
-    overflow: hidden;
-    font-family: var(--font-titulo);
-    font-weight: 700;
-    font-size: min(14px, 5.6cqw);
-    letter-spacing: 0.02em;
-    line-height: 1.35; /* com 1, o overflow cortava o "ç" e o "q" */
+    margin-left: calc(9 * var(--p));
+    font-weight: 800;
+    font-size: calc(0.43 * var(--e));
+    line-height: 1;
+    letter-spacing: -0.005em;
     white-space: nowrap;
-    text-overflow: ellipsis;
+  }
+
+  .duas-linhas .nome {
+    font-size: calc(0.33 * var(--e));
+    line-height: 1.05;
   }
 
   .conta {
     flex: none;
-    font-family: var(--font-ui);
-    font-size: 12px;
+    margin: 0 calc(10 * var(--p)) 0 auto;
+    padding-left: calc(8 * var(--p));
+    font-weight: 700;
+    font-size: calc(0.4 * var(--e));
+    line-height: 1;
     font-variant-numeric: lining-nums;
-    opacity: 0.85;
   }
 
-  /* Série: couro, nervuras mais grossas nas pontas, nome em itálico e a fita saindo pela ponta. */
+  /* Série (revista): papel com uma barra no destaque na ponta, o emblema e o título com o complemento. */
   .de-serie {
-    background-image: linear-gradient(180deg, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0) 45%, rgb(0 0 0 / 0.3));
+    background:
+      var(--grao) 0 0 / 180px 180px,
+      linear-gradient(
+        rgb(0 0 0 / 0.14) 0%,
+        rgb(255 255 255 / 0.08) 38%,
+        rgb(255 255 255 / 0.02) 62%,
+        rgb(0 0 0 / 0.16) 100%
+      ),
+      linear-gradient(90deg, var(--livro-destaque) calc(0.28 * var(--e)), var(--livro-papel) calc(0.28 * var(--e)));
+    color: var(--livro-tinta-papel);
   }
 
-  .de-serie::before,
-  .de-serie::after {
-    top: 0;
-    bottom: 0;
-    width: 5px;
-    border: 0;
-    opacity: 1;
-    background: rgb(0 0 0 / 0.28);
-    box-shadow:
-      1px 0 0 rgb(255 255 255 / 0.12),
-      -1px 0 0 rgb(255 255 255 / 0.08);
+  .emblema {
+    --serie-papel: var(--livro-papel);
+    --traco-lombada: 0.9px;
+    flex: none;
+    width: calc(1.05 * var(--e));
+    height: 100%;
+    margin-left: calc(0.28 * var(--e) + 6 * var(--p));
+    padding: calc(3 * var(--p)) 0;
+  }
+
+  .emblema :global(.cz-w3) {
+    display: none;
   }
 
   .de-serie .nome {
-    font-weight: 600;
-    font-style: italic;
-    letter-spacing: 0.01em;
+    margin-left: calc(7 * var(--p));
+    font-size: calc(0.42 * var(--e));
   }
 
-  .fita {
-    position: absolute;
-    top: 58%;
-    right: -15px;
-    width: 18px;
-    height: 7px;
-    background: var(--fita);
-    clip-path: polygon(0 0, 100% 0, 78% 50%, 100% 100%, 0 100%);
+  /* Separados pelo espaço (0,24em na Bitter, como na regra). */
+  .de-serie .nome em {
+    font-family: var(--font-livro-italico);
+    font-variation-settings: "opsz" 13;
+    font-weight: 500;
+    color: var(--livro-destaque);
+  }
+
+  .de-serie .conta {
+    font-weight: 800;
+    color: var(--livro-destaque);
   }
 
   /* Livro retirado da pilha (está aberto no topo da página): fica só o contorno do lugar vazio. */
-  .retirado {
+  .retirado,
+  .de-serie.retirado {
     background: transparent;
     box-shadow: inset 0 0 0 1px var(--rule);
     color: var(--ink-3);
   }
 
-  .retirado::before,
-  .retirado::after,
-  .retirado .fita {
+  .retirado :is(.ponta, .emblema) {
     opacity: 0;
   }
 
-  .retirado .nome,
-  .retirado .conta {
-    opacity: 0.8;
+  .retirado :is(.nome em, .conta) {
+    color: inherit;
   }
 
-  /* O tampo onde a pilha está apoiada: a mesma madeira da estante. */
+  /* A prateleira sob a pilha: 5 na cor da estante e 2 de borda. */
   .tampo {
-    height: 5px;
-    margin-top: 1px;
+    height: max(4px, calc(5 * var(--p, 1px)));
     border-bottom: 2px solid var(--tabua-borda);
-    border-radius: 1px 1px 2px 2px;
     background: var(--tabua);
+    --p: calc(100cqw / 238);
   }
 
   @media (hover: hover) {
     .deitado:hover {
       transform: translateX(8px);
+    }
+
+    .retirado:hover {
+      transform: none;
     }
   }
 
@@ -322,7 +361,8 @@ const TAGS_NO_PAINEL = 10;
     color: var(--ink-2);
   }
 
-  svg {
+  .mais svg,
+  .rss svg {
     width: 15px;
     height: 15px;
     fill: none;

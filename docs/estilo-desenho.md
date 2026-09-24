@@ -45,6 +45,8 @@ Onde protótipo e briefing divergirem, vale o briefing.
 | Anotações | Literata itálica: 25 na linha principal (`--ink`) e 20 no complemento (`--ink-2`). Linha de chamada curva em `--ink-2`, com traço 1,8 |
 | Carimbo | Contorno na cor de destaque e texto em Besley 800 |
 
+Na D30, Observabilidade virou o livro SRE (`#c4a050`); a observação abaixo vale para ele.
+
 A conferir na Fase 5: o destaque de Observabilidade (`#C39A3E`) dá 2,24:1 sobre o papel claro. Isso
 basta para uma mancha de cor, mas não para traço fino nem texto. O protótipo de desenho testou
 `#9C7A26`, mas a tabela do briefing manda `#C39A3E`, e ela vale até decisão contrária. No escuro, os

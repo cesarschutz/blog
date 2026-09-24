@@ -4,7 +4,7 @@ published: 2026-09-12
 updated: 2026-09-20
 description: "Por que um serviço Java 21 com virtual threads congela sem erro no log: pinning por `synchronized` (resolvido no Java 24, JEP 491) e CLOSE_WAIT como rastro. Thread dump, JFR, bulkhead e circuit breaker."
 tags: [Virtual Threads, Concorrência, JVM]
-category: Java
+category: Desenvolvimento de Software
 draft: false
 ---
 

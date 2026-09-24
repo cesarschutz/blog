@@ -4,7 +4,7 @@ published: 2026-05-20
 updated: 2026-09-16
 description: "O padrão W3C que leva o mesmo ID de rastreamento por todos os serviços de uma operação: o `traceparent` e o `tracestate`, valores inválidos, a granularidade certa e o ID atravessando o outbox."
 tags: [Logs, Microsserviços, Mensageria]
-category: Observabilidade
+category: SRE
 draft: false
 ---
 

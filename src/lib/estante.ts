@@ -1,92 +1,130 @@
 /**
- * Livros da estante da home (briefing §5.1): um por categoria e um por série, com a espessura da
- * lombada acompanhando o número de posts: min(104, 34 + 14·log2(1+n)) px, como no protótipo.
+ * Os livros (D30, D32): um por categoria, na ordem dos volumes da coleção ("edição de estudo"), e um
+ * por série (revista técnica). Os dados e as medidas vêm de `docs/capas/livros.json` (pela taxonomia
+ * e pelo cadastro das séries) e as cores, de `docs/capas/cores.js`. A regra visual está em
+ * `docs/capas/CAPAS.md`. O número das lombadas, da capa da revista e da página do livro é o total de
+ * artigos, contado pelos posts; sem artigos, ele não aparece.
  */
+import { PAPEL, TINTA_PAPEL } from "../../docs/capas/cores.js";
+import { CATEGORIAS, type CoresDoLivro } from "../data/taxonomia";
 import { SERIES } from "../data/series";
 import { normalizar } from "./busca/tipos";
-import { getCategorias, getPostsDaSerie, urlCategoria, urlSerie, type Resumo } from "./posts";
+import { getPostsDaSerie, getResumos, urlCategoria, urlSerie, type Resumo } from "./posts";
 
 export interface Livro {
+  /** Único na página: também é o view-transition-name (D29). */
   id: string;
   nome: string;
   href: string;
-  tecido: string;
-  texto: string;
-  fita?: string;
-  altura: number;
-  largura: number;
-  descricao: string;
   serie: boolean;
+  /** Arquivos de desenho e ícone em docs/capas (só categorias). */
+  slug?: string;
+  /** Volume da coleção (só categorias). */
+  volume?: number;
+  /** O título como quebra na capa e nas lombadas. */
+  linhas: string[];
+  /** Corpo e entrelinha do título na capa, na referência de 480px (só categorias). */
+  corpoNaCapa?: number;
+  entrelinhaNaCapa?: number;
+  /** A frase da capa (só categorias). */
+  frase?: string;
+  /** Subtítulo completo, usado nas páginas. */
+  descricao: string;
+  cores: CoresDoLivro;
+  /** A revista (só séries): título dividido, número de capa, edições, tarja e emblema. */
+  revista?: {
+    numero: number;
+    tituloPrincipal: string;
+    complemento: string;
+    numeroDeCapa: string;
+    rotuloDoNumero: string;
+    edicoes: string[];
+    guia?: { titulo: string; linha: string };
+    emblema: string;
+  };
+  emPe: { altura: number; largura: number };
+  deitada: { comprimento: number; espessura: number; deslocamento: number };
   posts: Resumo[];
-  /** "7 artigos, 2026", "5 artigos, de 2025 a 2026" ou "7 partes". */
+  /** "7 artigos, 2026", "5 artigos, de 2025 a 2026", "7 edições" (série) ou "Ainda sem artigos". */
   contagem: string;
-  /** Tamanho do nome na lombada (em unidades de --u, que valem 1px na estante inteira), para caber na altura. */
-  tamanhoNome: number;
 }
-
-/**
- * O nome vai na vertical: cabe se letras × largura média ≤ altura livre. Largura média medida na
- * Besley: 0,62 a 0,73 em em pé (negrito) e 0,56 em no itálico da série. Espaço fixo: faixas,
- * contagem e margens.
- */
-function tamanhoDoNome(nome: string, altura: number, serie: boolean): number {
-  const livre = altura - (serie ? 107 : 92);
-  const porLetra = serie ? 0.58 : 0.66;
-  return Math.min(16, Math.floor((livre / (nome.length * porLetra)) * 10) / 10);
-}
-
-const LARGURA_DA_SERIE = 62;
-export const larguraDaLombada = (n: number) => Math.min(104, Math.round(34 + 14 * Math.log2(1 + n)));
 
 function contagem(posts: Resumo[], serie: boolean): string {
-  if (serie) return `${posts.length} ${posts.length === 1 ? "parte" : "partes"}`;
+  if (posts.length === 0) return "Ainda sem artigos";
+  if (serie) return `${posts.length} ${posts.length === 1 ? "edição" : "edições"}`;
   const anos = posts.map((p) => p.publicado.getUTCFullYear());
   const [min, max] = [Math.min(...anos), Math.max(...anos)];
   const quantos = `${posts.length} ${posts.length === 1 ? "artigo" : "artigos"}`;
   return min === max ? `${quantos}, ${max}` : `${quantos}, de ${min} a ${max}`;
 }
 
-export async function montarLivros(): Promise<Livro[]> {
-  const categorias = await getCategorias();
-  const series = await Promise.all(SERIES.map(async (s) => ({ s, posts: await getPostsDaSerie(s.chave) })));
-  return [
-    ...categorias.map(({ categoria, posts }, i) => ({
-      id: `livro-${i}`,
-      nome: categoria.nome,
-      href: urlCategoria(categoria.nome),
-      tecido: categoria.tecido,
-      texto: categoria.texto,
-      altura: categoria.alturaLombada,
-      largura: larguraDaLombada(posts.length),
-      descricao: categoria.descricao,
-      serie: false,
-      posts,
-      contagem: contagem(posts, false),
-      tamanhoNome: tamanhoDoNome(categoria.nome, categoria.alturaLombada, false),
-    })),
-    ...series
-      .filter(({ posts }) => posts.length > 0)
-      .map(({ s, posts }) => ({
-        id: `serie-${s.chave}`,
-        nome: s.nome,
-        href: urlSerie(s),
-        tecido: s.encadernacao,
-        texto: s.letras,
-        fita: s.fita,
-        altura: s.alturaLombada,
-        largura: LARGURA_DA_SERIE,
-        descricao: s.descricao,
-        serie: true,
-        posts,
-        contagem: contagem(posts, true),
-        tamanhoNome: tamanhoDoNome(s.nome, s.alturaLombada, true),
-      })),
-  ];
+let cache: Promise<Livro[]> | undefined;
+
+/** Todos os livros: as categorias (inclusive as ainda sem artigos) e, depois, as séries com posts. */
+export function montarLivros(): Promise<Livro[]> {
+  cache ??= (async () => {
+    const resumos = await getResumos();
+    const categorias = [...CATEGORIAS].sort((a, b) => a.volume - b.volume);
+    const series = await Promise.all(SERIES.map(async (s) => ({ s, posts: await getPostsDaSerie(s.chave) })));
+    return [
+      ...categorias.map((c): Livro => {
+        const posts = resumos.filter((r) => r.categoria?.nome === c.nome);
+        return {
+          id: `livro-${c.slug}`,
+          nome: c.nome,
+          href: urlCategoria(c.nome),
+          serie: false,
+          slug: c.slug,
+          volume: c.volume,
+          linhas: c.linhas,
+          corpoNaCapa: c.corpoNaCapa,
+          entrelinhaNaCapa: c.entrelinhaNaCapa,
+          frase: c.frase,
+          descricao: c.descricao,
+          cores: c.cores,
+          emPe: c.emPe,
+          deitada: c.deitada,
+          posts,
+          contagem: contagem(posts, false),
+        };
+      }),
+      ...series
+        .filter(({ posts }) => posts.length > 0)
+        .map(
+          ({ s, posts }): Livro => ({
+            id: `serie-${s.chave}`,
+            nome: s.nome,
+            href: urlSerie(s),
+            serie: true,
+            linhas: [s.nome],
+            descricao: s.descricao,
+            // A revista é papel com o destaque: a faixa do topo, o complemento, o número e a barra.
+            cores: { cor: s.destaque, tinta: PAPEL, destaque: s.destaque, papel: PAPEL, tintaPapel: TINTA_PAPEL },
+            revista: {
+              numero: s.numero,
+              tituloPrincipal: s.tituloPrincipal,
+              complemento: s.complemento,
+              numeroDeCapa: s.numeroDeCapa,
+              rotuloDoNumero: s.rotuloDoNumero,
+              edicoes: s.edicoes,
+              guia: s.guia,
+              emblema: s.emblema,
+            },
+            emPe: s.emPe,
+            deitada: s.deitada,
+            posts,
+            contagem: contagem(posts, true),
+          }),
+        ),
+    ];
+  })();
+  return cache;
 }
+
+/** Variáveis de cor do livro, para o style de lombadas e capas. */
+export const coresDoLivroCss = (l: Livro) =>
+  `--livro-cor:${l.cores.cor};--livro-tinta:${l.cores.tinta};--livro-destaque:${l.cores.destaque};` +
+  `--livro-papel:${l.cores.papel};--livro-tinta-papel:${l.cores.tintaPapel}`;
 
 /** Texto que o filtro do sumário procura: título, subtítulo e tags, sem acento. */
 export const textoDoFiltro = (p: Resumo) => normalizar(`${p.titulo} ${p.subtitulo} ${p.tags.join(" ")}`);
-
-/** Tamanho do título na capa: pela palavra mais longa (mínimo de 8 letras), até 13cqw. */
-export const tamanhoDoTituloDaCapa = (nome: string) =>
-  Math.min(13, 74 / (0.64 * Math.max(...nome.split(" ").map((p) => p.length), 8))).toFixed(2);

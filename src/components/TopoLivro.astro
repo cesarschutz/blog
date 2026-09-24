@@ -1,8 +1,10 @@
 ---
 /**
- * Topo da página de categoria (D29): uma folha com o livro em pé num painel tingido pela cor da
- * categoria e, ao lado, a trilha, o nome, a descrição, a contagem e as tags mais usadas nela. O livro
- * chega da pilha do painel por transição de página (LivroEmPe).
+ * Topo da página do livro, de categoria ou de série (D29, D30, D31): uma folha com o livro aberto em
+ * três quartos num painel tingido pela cor dele e, ao lado, a trilha, o nome, o subtítulo, a
+ * contagem e as tags mais usadas. O livro chega da pilha do painel ou da grade de livros por
+ * transição de página (LivroEmPe). O slot recebe o que for próprio da página (na série Java, os
+ * números das LTS).
  */
 import LivroEmPe from "./LivroEmPe.astro";
 import type { Livro } from "../lib/estante";
@@ -11,9 +13,13 @@ import { url } from "../lib/url";
 
 interface Props {
   livro: Livro;
+  /** Para onde a trilha volta; por padrão, as categorias. */
+  trilha?: { nome: string; href: string };
+  /** Texto abaixo do nome; por padrão, o subtítulo do livro. */
+  descricao?: string;
 }
 
-const { livro } = Astro.props;
+const { livro, trilha = { nome: "Categorias", href: url("/categories/") }, descricao = livro.descricao } = Astro.props;
 // As tags mais usadas nos artigos desta categoria.
 const contagem = new Map<string, number>();
 for (const p of livro.posts) for (const t of p.tags) contagem.set(t, (contagem.get(t) ?? 0) + 1);
@@ -23,18 +29,19 @@ const tags = [...contagem]
   .map(([nome]) => nome);
 ---
 
-<header class="topo-categoria folha" style={`--cor:${livro.tecido}`}>
+<header class="topo-livro folha" style={`--cor:${livro.cores.cor}`}>
   <div class="palco painel">
     <LivroEmPe livro={livro} />
   </div>
   <div class="texto">
-    <a class="trilha" href={url("/categories/")}>Categorias</a>
+    <a class="trilha" href={trilha.href}>{trilha.nome}</a>
     <h1>{livro.nome}</h1>
-    <p class="descricao">{livro.descricao}</p>
+    <p class="descricao">{descricao}</p>
     <p class="conta">{livro.contagem}</p>
+    <slot />
     {
       tags.length > 0 && (
-        <ul class="tags" aria-label="Tags mais usadas nesta categoria">
+        <ul class="tags" aria-label="Tags mais usadas neste livro">
           {tags.map((t) => (
             <li>
               <a class="pilula" href={urlTag(t)} data-busca-tag={t}>
@@ -49,7 +56,7 @@ const tags = [...contagem]
 </header>
 
 <style>
-  .topo-categoria {
+  .topo-livro {
     display: grid;
     grid-template-columns: minmax(250px, 34%) minmax(0, 1fr);
     gap: clamp(22px, 3vw, 40px);
@@ -61,8 +68,8 @@ const tags = [...contagem]
   .palco {
     display: grid;
     place-items: center;
-    min-height: 300px;
-    padding: 24px;
+    min-height: 360px;
+    padding: 30px 24px;
   }
 
   /* O título acompanha a largura da coluna: "Observabilidade" cabe inteiro no celular. */
@@ -136,13 +143,13 @@ const tags = [...contagem]
   }
 
   @media (max-width: 760px) {
-    .topo-categoria {
+    .topo-livro {
       grid-template-columns: minmax(0, 1fr);
       padding: 12px 12px 24px;
     }
 
     .palco {
-      min-height: 280px;
+      min-height: 340px;
     }
 
     .texto {

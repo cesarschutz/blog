@@ -4,7 +4,7 @@ published: 2026-09-13
 updated: 2026-09-20
 description: "Como impedir que gravações simultâneas se atropelem: coluna de versão ou trava da linha. SQL testado no PostgreSQL, Spring Data JPA, NOWAIT e SKIP LOCKED, deadlock, isolamento e o UPDATE condicional."
 tags: [Banco de Dados, Concorrência, Spring, Trade-offs]
-category: Arquitetura
+category: Dados
 draft: false
 ---
 

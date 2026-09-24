@@ -1,5 +1,5 @@
 ---
-/** Página de série sem página própria (/series/<chave>/), em ordem de leitura. Hoje nenhuma. */
+/** Página de série sem página própria (/series/<chave>/), em ordem de leitura. Hoje nenhuma: a do Java é series/java.astro. */
 import Base from "../../layouts/Base.astro";
 import CabecalhoPagina from "../../components/CabecalhoPagina.astro";
 import ItemLista from "../../components/ItemLista.astro";
@@ -8,7 +8,7 @@ import { getPostsDaSerie } from "../../lib/posts";
 import { url } from "../../lib/url";
 
 export function getStaticPaths() {
-  return SERIES.filter((s) => !s.url).map((serie) => ({ params: { chave: serie.chave }, props: { serie } }));
+  return SERIES.filter((s) => !s.paginaPropria).map((serie) => ({ params: { chave: serie.chave }, props: { serie } }));
 }
 
 interface Props {
@@ -19,7 +19,7 @@ const { serie } = Astro.props;
 const posts = await getPostsDaSerie(serie.chave);
 ---
 
-<Base titulo={serie.nome} descricao={serie.descricao}>
+<Base titulo={serie.nome} descricao={serie.descricao} atual="series">
   <div class="wrap">
     <CabecalhoPagina titulo={serie.nome} descricao={serie.descricao} trilha={{ nome: "Séries", href: url("/series/") }} />
     <ol class="lista-artigos folha">

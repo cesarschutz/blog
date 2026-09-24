@@ -1,27 +1,31 @@
 ---
 /**
- * Cabeçalho (briefing §5.1, D26): nome à esquerda; à direita Artigos, Tags e RSS, a busca como campo
- * (ícone, "Buscar" e ⌘K) e o botão de tema. No celular, nome e tema na primeira linha; menu e busca
- * na segunda.
+ * Cabeçalho (briefing §5.1, D26, D31): nome à esquerda; à direita Artigos, Categorias, Séries e
+ * Tags, a busca como campo (ícone, "Buscar" e ⌘K) e o botão de tema. Fica fixo no alto enquanto a
+ * página rola (sticky), com fundo translúcido e um fio embaixo que aparece depois de rolar. No
+ * celular, nome, busca (só o ícone) e tema na primeira linha; o menu na segunda. A altura dele fica
+ * em --altura-topo (base.css), que as outras peças fixas e as âncoras descontam.
  */
 import { ICONES } from "../lib/icones";
 import { url } from "../lib/url";
 
 interface Props {
-  atual?: "artigos" | "tags";
+  atual?: "artigos" | "categorias" | "series" | "tags";
 }
 
 const { atual } = Astro.props;
 ---
 
+<div class="topo-fixo">
 <header class="cabecalho wrap">
   <a class="marca" href={url("/")}>Cesar Schutz</a>
   <nav class="menu" aria-label="Principal">
     <a href={url("/archive/")} aria-current={atual === "artigos" ? "page" : undefined}>Artigos</a>
+    <a href={url("/categories/")} aria-current={atual === "categorias" ? "page" : undefined}>Categorias</a>
+    <a href={url("/series/")} aria-current={atual === "series" ? "page" : undefined}>Séries</a>
     <a href={url("/tags/")} aria-current={atual === "tags" ? "page" : undefined}>Tags</a>
-    <a href={url("/rss.xml")}>RSS</a>
   </nav>
-  <button type="button" class="campo-busca" data-busca-abrir aria-keyshortcuts="Meta+K Control+K">
+  <button type="button" class="campo-busca" data-busca-abrir aria-label="Buscar" aria-keyshortcuts="Meta+K Control+K">
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.busca} />
     <span>Buscar</span>
     <kbd data-atalho>⌘K</kbd>
@@ -32,6 +36,7 @@ const { atual } = Astro.props;
     <svg class="sol" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.sol} />
   </button>
 </header>
+</div>
 
 <script>
   import { aoMudarTema, aplicarTema, temaNaTela } from "../scripts/tema";
@@ -51,13 +56,44 @@ const { atual } = Astro.props;
 </script>
 
 <style>
+  /*
+   * Fixo no alto: fundo da página translúcido, com desfoque. O fio embaixo aparece depois dos
+   * primeiros pixels de rolagem (animação ligada à rolagem, onde houver; sem ela, fica sem fio).
+   */
+  .topo-fixo {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: color-mix(in oklab, var(--paper) 94%, transparent);
+    -webkit-backdrop-filter: saturate(1.4) blur(12px);
+    backdrop-filter: saturate(1.4) blur(12px);
+    box-shadow: 0 1px 0 transparent;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .topo-fixo {
+      animation: fio-do-topo linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 24px;
+    }
+  }
+
+  @keyframes fio-do-topo {
+    to {
+      box-shadow:
+        0 1px 0 var(--rule),
+        0 8px 20px -16px rgb(0 0 0 / 0.35);
+    }
+  }
+
   .cabecalho {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 12px 22px;
-    padding-top: 20px;
-    padding-bottom: 6px;
+    gap: 10px 22px;
+    min-height: var(--altura-topo);
+    padding-top: 10px;
+    padding-bottom: 10px;
   }
 
   .marca {
@@ -192,11 +228,12 @@ const { atual } = Astro.props;
     }
   }
 
-  /* Celular: nome e tema na primeira linha; o pseudo-elemento força a quebra antes do menu. */
+  /* Celular: nome, busca e tema na primeira linha; o pseudo-elemento força a quebra antes do menu. */
   @media (max-width: 640px) {
     .cabecalho {
-      gap: 10px 20px;
-      padding-top: 16px;
+      gap: 6px 12px;
+      padding-top: 8px;
+      padding-bottom: 6px;
     }
 
     .cabecalho::after {
@@ -216,13 +253,24 @@ const { atual } = Astro.props;
 
     .menu {
       order: 3;
-      gap: 6px 20px;
+      gap: 4px 18px;
     }
 
+    /* A busca vira só o ícone, redondo como o botão de tema. */
     .campo-busca {
-      order: 4;
-      flex: 1 1 auto;
+      order: 1;
+      display: grid;
+      place-items: center;
+      width: 40px;
       min-width: 0;
+      height: 40px;
+      padding: 0;
+      border-radius: 50%;
+    }
+
+    .campo-busca span,
+    .campo-busca kbd {
+      display: none;
     }
   }
 </style>

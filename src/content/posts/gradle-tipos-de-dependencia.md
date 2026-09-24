@@ -4,7 +4,7 @@ published: 2026-05-19
 updated: 2026-09-16
 description: "Cada configuração de dependência do Gradle alimenta um classpath: compilação, execução, processadores de anotação ou testes. Guia para bibliotecas e starters Spring Boot, com o papel do `platform` (BOM)."
 tags: [Gradle, Spring]
-category: Java
+category: Desenvolvimento de Software
 draft: false
 ---
 

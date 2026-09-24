@@ -18,7 +18,10 @@ Para criar, reescrever ou revisar um post, siga a skill `novo-post`. O essencial
   - `category` **ou** `series`;
   - `tags`: de 2 a 4, do vocabulário existente, sem repetir nome de categoria;
   - `draft`.
-- **Categoria nova** só se nenhuma servir. Cadastre com cor distinta em `src/data/taxonomia.ts` e avise o Cesar.
+- **Categoria** = um dos livros da coleção (`docs/capas/livros.json`): Arquitetura de Software,
+  Desenvolvimento de Software, Dados, IA, Segurança, DevOps, SRE ou Carreira. **Categoria nova** só se
+  nenhuma servir: é um livro novo, pela seção "Livros novos" de `docs/capas/CAPAS.md` (cor, desenho,
+  ícone, volume). Avise o Cesar antes.
 - `$` em texto precisa de escape (`US\$ 10`).
 - Post da série Java: siga a skill `serie-java`.
 - Nunca commite nem publique sem pedido do Cesar.

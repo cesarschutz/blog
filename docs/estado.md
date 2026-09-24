@@ -7,8 +7,10 @@ abertas. O que for aprovado sai daqui e fica no histórico do git e em `docs/dec
 
 **Fases 1 a 7 prontas em 24/09/2026, só local.** No mesmo dia entrou o ajuste visual "Folhas claras"
 (D26, briefing §4) e, depois, a lista e os cards no formato antigo com a home paginada (D27) e o
-painel lateral com as pilhas de livros (D28) e a página de categoria (D29). Tudo isso **aguarda a
-aprovação do Cesar** (antes e depois mostrados a ele). A virada do
+painel lateral com as pilhas de livros (D28), a página de categoria (D29) e os livros no padrão da
+coleção de `docs/capas` (D30), o cabeçalho fixo com Categorias e Séries e as páginas de livros
+(D31), e as categorias em "edição de estudo" com a série como revista em `/series/java/` (D32).
+Tudo isso **aguarda a aprovação do Cesar** (antes e depois mostrados a ele). A virada do
 domínio (`docs/virada.md`) só acontece com o OK dele; nada foi commitado nem publicado.
 
 ## Como ver
@@ -45,13 +47,24 @@ domínio (`docs/virada.md`) só acontece com o OK dele; nada foi commitado nem p
   estante), as 10 tags mais usadas e o RSS, à esquerda da lista, parado enquanto a lista rola.
 - **Página de categoria (D29):** o livro em pé no topo, que chega da pilha do painel por transição
   de página; embaixo, os artigos com Lista / Cards.
+- **Livros da coleção (D30):** capas, estante, lateral e página do livro pela regra de
+  `docs/capas/CAPAS.md`; oito categorias novas (IA e Carreira ainda vazias), posts reclassificados,
+  URLs antigas redirecionando; o livro aberto na gaveta fica em três quartos; fontes Bitter e
+  Newsreader.
+- **Cabeçalho e páginas de livros (D31):** cabeçalho fixo com Artigos, Categorias, Séries e Tags;
+  `/categories/` e `/series/` com os livros lado a lado; `/java/` com o livro da série no topo.
+- **Edição de estudo e revista (D32):** capas, lombadas em pé e deitadas no visual novo de
+  `docs/capas`; a série como revista técnica, com a tarja do guia; a página da série em
+  `/series/java/` (`/java/` redireciona).
 
 ## Próximos passos
 
-1. Aprovação do ajuste visual (D26 a D29) e retoques; depois, medir o Lighthouse de novo (a
+1. Aprovação do ajuste visual (D26 a D32) e retoques; depois, medir o Lighthouse de novo (a
    fonte da interface soma 45,7 KB, e ele não foi medido depois do ajuste).
-2. Pensar com o Cesar as telas de série e de tag (a de categoria está pronta, D29).
-3. Revisão geral do Cesar; com o OK dele, primeiro commit e a virada (`docs/virada.md`).
+2. Pensar com o Cesar a tela de tag (categoria, D29, e séries, D31, estão prontas).
+3. Decidir com o Cesar o contraste de dois livros (D32): o texto claro na cor da Carreira (3,39:1) e
+   o laranja da série sobre o papel (4,11:1) ficam abaixo de 4,5:1, exatamente como nas referências.
+4. Revisão geral do Cesar; com o OK dele, primeiro commit e a virada (`docs/virada.md`).
 
 ## Perguntas abertas para o Cesar
 

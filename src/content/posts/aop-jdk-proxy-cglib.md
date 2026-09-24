@@ -4,7 +4,7 @@ published: 2026-05-19
 updated: 2026-09-16
 description: "Como o Spring aplica log, transação e métricas fora da regra de negócio: conceitos de AOP, JDK Dynamic Proxy ou CGLIB (e por que o Boot prefere CGLIB), a self-invocation e aspects próprios."
 tags: [Spring, AOP]
-category: Java
+category: Desenvolvimento de Software
 draft: false
 ---
 

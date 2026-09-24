@@ -13,6 +13,7 @@
 import { claro, escuro, misturar, BRANCO_NO_ESCURO, CHIP, LOUSA, PAINEL } from "../src/styles/tokens.ts";
 import { CATEGORIAS } from "../src/data/taxonomia.ts";
 import { SERIES } from "../src/data/series.ts";
+import { PAPEL, TINTA_PAPEL } from "../docs/capas/cores.js";
 
 // ---------- cor: sRGB e luminância (WCAG); a mistura em oklab vem dos tokens ----------
 const rgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
@@ -41,7 +42,7 @@ function conferir(grupo, nome, frente, fundo, minimo, obrigatorio) {
 }
 
 const AVISOS = ["aviso-nota", "aviso-dica", "aviso-importante", "aviso-atencao", "aviso-cuidado"];
-const CORES = [...CATEGORIAS.map((c) => [c.nome, c.tecido]), ...SERIES.map((s) => [s.nome, s.destaque])];
+const CORES = [...CATEGORIAS.map((c) => [c.nome, c.cor]), ...SERIES.map((s) => [s.nome, s.destaque])];
 
 for (const [tema, p] of Object.entries({ claro, escuro })) {
   const texto = `Texto, tema ${tema} (4,5:1)`;
@@ -88,9 +89,19 @@ for (const [tema, p] of Object.entries({ claro, escuro })) {
   }
 }
 
-const tecido = "Texto sobre o tecido e a encadernação (4,5:1)";
-for (const c of CATEGORIAS) conferir(tecido, c.nome, c.texto, c.tecido, 4.5, true);
-for (const s of SERIES) conferir(tecido, s.nome, s.letras, s.encadernacao, 4.5, true);
+// Livros (D30, D32): o título grande e o ícone sobre a cor do livro; o título da lombada, o número e o
+// desenho no destaque sobre o papel; o texto da revista. As cores são as do padrão dos livros
+// (docs/capas/cores.js, iguais às referências) e o livro é arte, com o texto de verdade no rótulo do
+// link e na página. Por isso só avisa.
+const livro = "Texto dos livros, arte com rótulo acessível (4,5:1 desejável)";
+for (const c of CATEGORIAS) {
+  conferir(livro, `${c.nome}: tinta / cor`, c.cores.tinta, c.cores.cor, 4.5, false);
+  conferir(livro, `${c.nome}: destaque / papel`, c.cores.destaque, c.cores.papel, 4.5, false);
+}
+for (const s of SERIES) {
+  conferir(livro, `${s.nome}: destaque / papel`, s.destaque, PAPEL, 4.5, false);
+  conferir(livro, `${s.nome}: tinta do papel / papel`, TINTA_PAPEL, PAPEL, 4.5, false);
+}
 
 // ---------- relatório ----------
 let grupoAtual = "";

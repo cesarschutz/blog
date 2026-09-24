@@ -1,13 +1,14 @@
 ---
 /**
- * Uma categoria (/categories/<Nome>/, com o nome cru na URL, como no blog atual: D7). Pedido do
- * Cesar em 24/09/2026 (D29): o painel lateral da home à esquerda, com o livro desta categoria fora da
+ * Uma categoria (/categories/<Nome>/, com o nome cru na URL, como no blog atual: D7). Cada categoria
+ * é um livro da coleção (D30), e todo livro tem página, mesmo sem artigos. Pedido do Cesar em
+ * 24/09/2026 (D29): o painel lateral da home à esquerda, com o livro desta categoria fora da
  * pilha; no topo, o livro em pé numa folha, que chega da pilha por transição de página; embaixo, os
  * artigos da categoria com a alternância Lista / Cards.
  */
 import Base from "../../layouts/Base.astro";
 import ComPainel from "../../components/ComPainel.astro";
-import TopoCategoria from "../../components/TopoCategoria.astro";
+import TopoLivro from "../../components/TopoLivro.astro";
 import Recentes from "../../components/Recentes.astro";
 import { montarLivros } from "../../lib/estante";
 import { getCategorias, type Grupo } from "../../lib/posts";
@@ -27,11 +28,17 @@ const { categoria, posts } = grupo;
 const livro = (await montarLivros()).find((l) => !l.serie && l.nome === categoria.nome)!;
 ---
 
-<Base titulo={categoria.nome} descricao={`Artigos de ${categoria.nome}: ${categoria.descricao}`} atual="artigos">
+<Base titulo={categoria.nome} descricao={`Artigos de ${categoria.nome}: ${categoria.descricao}`} atual="categorias">
   <ComPainel atual={livro.id}>
-    <TopoCategoria livro={livro} />
+    <TopoLivro livro={livro} />
     <div class="artigos">
-      <Recentes posts={posts} titulo="Artigos" subtitulo={`${posts.length} ${posts.length === 1 ? "artigo" : "artigos"}`} />
+      {
+        posts.length > 0 ? (
+          <Recentes posts={posts} titulo="Artigos" subtitulo={`${posts.length} ${posts.length === 1 ? "artigo" : "artigos"}`} />
+        ) : (
+          <p class="vazio">Este livro ainda não tem artigos.</p>
+        )
+      }
     </div>
   </ComPainel>
 </Base>
@@ -43,5 +50,12 @@ const livro = (await montarLivros()).find((l) => !l.serie && l.nome === categori
 
   .artigos {
     margin-top: 40px;
+  }
+
+  .vazio {
+    margin: 0;
+    font-family: var(--font-ui);
+    font-size: 16px;
+    color: var(--ink-2);
   }
 </style>

@@ -1,11 +1,17 @@
 ---
-/** Página da série "Atualizações do Java" (/java/), portada do blog atual (skill serie-java). */
-import Base from "../layouts/Base.astro";
-import CabecalhoPagina from "../components/CabecalhoPagina.astro";
-import { GUIA_JAVA, JAVA_LTS, RELEASED_LTS } from "../data/java";
-import { serie } from "../data/series";
-import { getResumos } from "../lib/posts";
-import { url } from "../lib/url";
+/**
+ * Página da série "Atualizações do Java" (/series/java/, D32; /java/ redireciona para cá), portada do
+ * blog atual (skill serie-java). Como as páginas de categoria (D31): o painel lateral à esquerda, com o livro da série fora da pilha, e o
+ * livro aberto no topo, que chega da pilha ou da página de séries por transição de página.
+ */
+import Base from "../../layouts/Base.astro";
+import ComPainel from "../../components/ComPainel.astro";
+import TopoLivro from "../../components/TopoLivro.astro";
+import { montarLivros } from "../../lib/estante";
+import { GUIA_JAVA, JAVA_LTS, RELEASED_LTS } from "../../data/java";
+import { serie } from "../../data/series";
+import { getResumos } from "../../lib/posts";
+import { url } from "../../lib/url";
 
 const resumos = await getResumos();
 const java = serie("java")!;
@@ -14,16 +20,19 @@ const versoes = JAVA_LTS.map((lts) => ({ lts, post: resumos.find((r) => r.slug =
 );
 const guia = resumos.find((r) => r.slug === GUIA_JAVA);
 const proxima = JAVA_LTS.find((v) => v.upcoming);
+const livro = (await montarLivros()).find((l) => l.id === "serie-java")!;
 ---
 
 <Base
   titulo="Atualizações do Java"
   descricao="Cada versão LTS do Java explicada: o que mudou desde a LTS anterior, em qual versão cada recurso chegou, com exemplos de código e fontes oficiais."
+  atual="series"
 >
-  <div class="wrap java" style={`--cor:${java.destaque}`}>
-    <CabecalhoPagina
-      titulo="Atualizações do Java"
-      descricao="Uma leitura por versão LTS. Cada artigo reúne o que as versões intermediárias trouxeram desde a LTS anterior, mostra em qual versão cada recurso chegou e traz exemplos de código, diagramas e fontes oficiais."
+  <ComPainel atual={livro.id}>
+  <div class="java" style={`--cor:${java.destaque}`}>
+    <TopoLivro
+      livro={livro}
+      descricao="Uma leitura por versão LTS: o que as versões intermediárias trouxeram desde a LTS anterior, em qual versão cada recurso chegou, com exemplos de código, diagramas e fontes oficiais."
       trilha={{ nome: "Séries", href: url("/series/") }}
     >
       <p class="numeros">
@@ -31,7 +40,7 @@ const proxima = JAVA_LTS.find((v) => v.upcoming);
         <span>mais recente: <strong>Java {RELEASED_LTS[0].version}</strong></span>
         {proxima && <span>próxima: <strong>Java {proxima.version}</strong>, prevista para {proxima.release}</span>}
       </p>
-    </CabecalhoPagina>
+    </TopoLivro>
 
     {
       guia && (
@@ -66,9 +75,14 @@ const proxima = JAVA_LTS.find((v) => v.upcoming);
       }
     </ul>
   </div>
+  </ComPainel>
 </Base>
 
 <style>
+  :global(.com-painel) {
+    padding-top: 32px;
+  }
+
   .java {
     --destaque: color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro));
   }
@@ -93,6 +107,7 @@ const proxima = JAVA_LTS.find((v) => v.upcoming);
   .guia {
     display: grid;
     gap: 4px;
+    margin-top: 32px;
     padding: 20px 22px;
     border-color: color-mix(in oklab, var(--destaque) 40%, var(--rule));
     background: color-mix(in oklab, var(--destaque) 6%, var(--paper-hi));

@@ -1,67 +1,81 @@
 /**
- * Cadastro único das categorias (briefing §4.2). Categoria nova entra aqui, com um tecido
- * distinto dos demais, e passa pelo `npm run contraste`.
+ * Cadastro das categorias (briefing §4.2). Cada categoria é um livro da coleção, no estilo "edição de
+ * estudo" (D30, D32): os dados vêm de `docs/capas/livros.json` e as cores, de `docs/capas/cores.js`
+ * (a partir da cor principal). A regra completa de capas, lombadas e livros novos está em
+ * `docs/capas/CAPAS.md`. Categoria nova = livro novo lá, e depois o `npm run contraste`.
  *
- * Sem imports: o Node 24 roda este arquivo direto nos scripts.
+ * Os scripts do Node também leem este arquivo (contraste.mjs), por isso os imports usam o caminho
+ * com extensão e o atributo de JSON.
  */
+import dados from "../../docs/capas/livros.json" with { type: "json" };
+import { coresDoLivro, PAPEL, TINTA_PAPEL } from "../../docs/capas/cores.js";
+
+export interface CoresDoLivro {
+  /** Bloco de cima da capa e da lombada (na série, o destaque). */
+  cor: string;
+  /** Texto e ícone sobre a cor. */
+  tinta: string;
+  /** A cor escurecida até ter contraste sobre o papel: título da lombada, número e desenho. */
+  destaque: string;
+  /** Parte clara da capa e da lombada. */
+  papel: string;
+  /** Texto comum sobre o papel. */
+  tintaPapel: string;
+}
 
 export interface Categoria {
   /** Igual ao frontmatter e à URL, que usa o nome cru: `/categories/<nome>/`. */
   nome: string;
-  /** Cor do tecido: lombada, capa, chip, barra de leitura e destaque dos desenhos. */
-  tecido: string;
-  /** Cor do texto sobre o tecido. */
-  texto: string;
-  /** Frase da capa do livro. */
+  /** Nome dos arquivos em `docs/capas/desenhos/` e `docs/capas/icones/`. */
+  slug: string;
+  /** Volume da coleção: o "VOLUME 01" da capa. */
+  volume: number;
+  /** O título como quebra na capa e nas lombadas ("Arquitetura" / "de Software"). */
+  linhas: string[];
+  /** Corpo e entrelinha do título na capa, na referência de 480px de largura. */
+  corpoNaCapa: number;
+  entrelinhaNaCapa: number;
+  /** A frase da capa (o que vem depois dos dois-pontos do subtítulo). */
+  frase: string;
+  /** O subtítulo completo ("quatro temas: uma frase curta"), usado nas páginas. */
   descricao: string;
-  /** Altura da lombada na estante, em px (protótipo). */
-  alturaLombada: number;
+  temas: string[];
+  /** Cor principal: chip, barra de leitura, palco dos desenhos e o livro. */
+  cor: string;
+  cores: CoresDoLivro;
+  instrumento: string;
+  /** Lombada na estante, em unidades da referência (CAPAS.md). */
+  emPe: { altura: number; largura: number };
+  /** Lombada deitada na lateral, em px no tamanho real. */
+  deitada: { comprimento: number; espessura: number; deslocamento: number };
 }
 
-export const CATEGORIAS: Categoria[] = [
-  {
-    nome: "Arquitetura",
-    tecido: "#1F4D4A",
-    texto: "#EFEADF",
-    descricao: "Consistência, concorrência, mensageria e pagamentos: decisões que custam caro para mudar.",
-    alturaLombada: 256,
-  },
-  {
-    nome: "Java",
-    tecido: "#7A3E25",
-    texto: "#F2E7DA",
-    descricao: "A linguagem, a JVM e o Spring por dentro.",
-    alturaLombada: 240,
-  },
-  {
-    nome: "Observabilidade",
-    tecido: "#C39A3E",
-    texto: "#1C2427",
-    descricao: "Logs, traces e o que eles contam sobre o sistema.",
-    alturaLombada: 248,
-  },
-  {
-    nome: "DevOps",
-    tecido: "#3F5878",
-    texto: "#E8ECF2",
-    descricao: "Kubernetes, rotinas agendadas e o ciclo de vida dos pods.",
-    alturaLombada: 228,
-  },
-  {
-    nome: "Dados",
-    tecido: "#654262",
-    texto: "#F1E7EF",
-    descricao: "Onde os dados moram e como eles se movem.",
-    alturaLombada: 236,
-  },
-  {
-    nome: "Segurança",
-    tecido: "#55612E",
-    texto: "#EEF0E2",
-    descricao: "Tokens, assinaturas e criptografia.",
-    alturaLombada: 244,
-  },
-];
+export const CATEGORIAS: Categoria[] = dados.livros.map((l) => ({
+  nome: l.titulo,
+  slug: l.slug,
+  volume: l.volume,
+  linhas: l.linhasDoTitulo,
+  corpoNaCapa: l.corpoDoTitulo,
+  entrelinhaNaCapa: l.entrelinhaDoTitulo,
+  frase: l.frase,
+  descricao: l.subtituloCompleto,
+  temas: l.temas,
+  cor: l.cor,
+  cores: { ...coresDoLivro(l.cor), papel: PAPEL, tintaPapel: TINTA_PAPEL },
+  instrumento: l.instrumento,
+  emPe: l.lombadaEmPe,
+  deitada: l.lombadaDeitada,
+}));
+
+/**
+ * Nomes antigos das categorias (até 24/09/2026), que viraram livros com outro nome (D30). As URLs
+ * antigas redirecionam para as novas (astro.config.mjs).
+ */
+export const NOMES_ANTIGOS: Record<string, string> = {
+  Arquitetura: "Arquitetura de Software",
+  Java: "Desenvolvimento de Software",
+  Observabilidade: "SRE",
+};
 
 export function categoria(nome: string): Categoria | undefined {
   return CATEGORIAS.find((c) => c.nome === nome);

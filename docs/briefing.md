@@ -48,7 +48,7 @@ protótipo divergirem, vale o briefing.
   deixa `node_modules` lento. Se perceber que está dentro de uma pasta sincronizada, avise
   antes de instalar dependências.
 - **URLs existentes não podem quebrar**: `/posts/<slug>/`, `/archive/`, `/categories/<nome>/`,
-  `/tags/<nome>/`, `/series/`, `/java/`, `/rss.xml`, e os redirecionamentos da série Java
+  `/tags/<nome>/`, `/series/`, `/java/` (hoje redireciona para `/series/java/`, D32), `/rss.xml`, e os redirecionamentos da série Java
   (`/posts/java-NN/` → `/posts/java-<LTS>/#java-NN`). Páginas que deixam de existir
   redirecionam: `/about/` → `/sobre/`, `/projects/` → `/`.
 
@@ -87,6 +87,8 @@ camada visual: estrutura, conteúdo, rotas e comportamento seguem as seções 5 
   Texto: **Literata** (com eixo `opsz`). Código: **JetBrains Mono**.
 - Interface: **IBM Plex Sans** (400, 500 e 600), servida pelo próprio site: menu, busca, datas,
   tempo de leitura, categoria, tags, botões, trilha, sumário, legendas e o aviso curto de IA da home.
+- Livros (capas, lombadas e os títulos Séries e Categorias da lateral, D30): **Bitter** e
+  **Newsreader** itálico (com o eixo de tamanho óptico, D32), servidas pelo próprio site, pela regra de `docs/capas/CAPAS.md`.
 - Artigo: corpo 18,5px, entrelinha 1,72, coluna de texto com no máximo 680px.
   Números em estilo antigo (`oldstyle-nums`) no texto corrido.
 - Sem fonte de "letra de mão" em lugar nenhum, inclusive nos desenhos e nas lousas.
@@ -114,24 +116,35 @@ camada visual: estrutura, conteúdo, rotas e comportamento seguem as seções 5 
 - Tema: segue o sistema. A escolha fica guardada no navegador, com script anti-piscada no
   `<head>`: o botão com ícone no cabeçalho alterna claro e escuro, e o rodapé mantém a alternância
   discreta (claro, escuro, sistema).
-- **Cor de cada categoria** (tecido do livro, usada na lombada, na capa, no chip, na barra de
-  leitura e no destaque dos desenhos). No tema escuro, o destaque dos desenhos usa a cor
-  misturada com 42% de branco.
+- **Categorias = livros de uma coleção numerada, no estilo "edição de estudo"; séries = revistas
+  técnicas** (D30, D32). A regra visual de capas, lombadas, estante, livros e séries novos está em
+  **`docs/capas/CAPAS.md`**, com as imagens de referência em `docs/capas/referencia/`. Os dados de
+  cada livro e de cada série (volume, título, frase, subtítulo, cor, medidas; na série, as edições e
+  a tarja) ficam em `docs/capas/livros.json` e todas as cores saem de `docs/capas/cores.js` (a cor
+  do livro, a tinta sobre ela, o destaque sobre o papel, o papel e a tinta do papel). A cor principal também é a da categoria no site: chip, barra de leitura e palco dos
+  desenhos. No tema escuro, o destaque dos desenhos usa a cor misturada com 42% de branco.
 
-| Categoria | Tecido | Texto sobre o tecido |
-|---|---|---|
-| Arquitetura | `#1F4D4A` | `#EFEADF` |
-| Java | `#7A3E25` | `#F2E7DA` |
-| Observabilidade | `#C39A3E` | `#1C2427` |
-| DevOps | `#3F5878` | `#E8ECF2` |
-| Dados | `#654262` | `#F1E7EF` |
-| Segurança | `#55612E` | `#EEF0E2` |
+| Vol. | Categoria | Cor | Instrumento na capa |
+|---|---|---|---|
+| 01 | Arquitetura de Software | `#2d4b46` | arco e pedra angular |
+| 02 | Desenvolvimento de Software | `#7a4430` | paquímetro |
+| 03 | Dados | `#5f4662` | gaveta de fichas |
+| 04 | IA | `#6e2f45` | autômato escritor |
+| 05 | Segurança | `#606a37` | carta lacrada e sinete |
+| 06 | DevOps | `#465976` | guindaste de porto |
+| 07 | SRE | `#c4a050` | farol |
+| 08 | Carreira | `#9a7650` | compasso |
 
-Categoria nova ganha cor distinta das demais, cadastrada num único arquivo de taxonomia.
+Categoria nova = livro novo, pela seção "Livros novos" do `CAPAS.md` (desenho, ícone, volume). Todo
+livro aparece na estante e na lateral, mesmo sem artigos; o número de artigos, não.
 
-- **Série "Atualizações do Java"**: encadernação de couro `#3A2A22`, letras douradas
-  `#D8B66C`, fita marcadora `#9E3B26`. Cada série nova define a própria particularidade
-  (encadernação, cor, ornamento) no cadastro de séries.
+- **Capa de categoria** (D32): em cima, o bloco na cor do livro com "VOLUME 0N", "CESAR SCHUTZ" e o
+  título grande; embaixo, o papel claro só com a frase do livro e o desenho grande, no destaque.
+- **Série "Atualizações do Java"** (D32): revista técnica, cada post uma edição. Papel com faixa no
+  destaque `#c24d1c`, "Atualizações" e *do Java* em itálico, linha de dados (série, autor e o total
+  de edições contado pelos posts), o "25" da última edição com a lista das edições ao lado, a tarja
+  escura do **guia de atualização** e, no pé, a xícara e o subtítulo. Série nova segue o mesmo
+  formato, com a própria cor de destaque, emblema, número de capa, edições e tarja.
 
 ### 4.3 Folhas, painéis e interação
 - **Folhas**: o conteúdo principal fica em superfícies (`--paper-hi`) com borda fina (`--rule`),
@@ -154,8 +167,8 @@ Categoria nova ganha cor distinta das demais, cadastrada num único arquivo de t
 - **Acabamento**: busca como campo (ícone, "Buscar" e ⌘K) e botão de tema com ícone no cabeçalho;
   destaque com a descrição do post, tags em pílulas e "Ler artigo"; cards que sobem 4px ao passar o
   mouse (parados com `prefers-reduced-motion`); linhas da lista com fundo leve ao passar o mouse;
-  chip de categoria com quadradinho da cor e nome tingido (no claro, a cor com 30% de tinta; no
-  escuro, com 50% de branco).
+  chip de categoria com quadradinho da cor e nome tingido (no claro, a cor com 34% de tinta, para o
+  dourado do SRE passar de 4,5:1; no escuro, com 50% de branco).
 - **Artigo**: o corpo é lido sobre a folha; em telas ≥ 1300px, o sumário fica à esquerda, numa
   folha própria e fixa, com a barra de quanto já foi lido embaixo ("19% lido").
 - **Largura**: a mesma do blog atual, conteúdo de até 1320px e margem lateral de 16 a 32px.
@@ -164,21 +177,27 @@ Categoria nova ganha cor distinta das demais, cadastrada num único arquivo de t
 
 ### 5.1 Home
 Referência: aba "Home" do protótipo.
-- **Cabeçalho**: "Cesar Schutz" à esquerda; à direita Artigos, Tags e RSS, a busca como campo
-  (com ⌘K) e o botão de tema (§4.3). No celular, nome e tema numa linha; menu e busca na outra.
+- **Cabeçalho** (D31): **fixo no alto** enquanto a página rola, com o fundo da página levemente
+  translúcido e um fio embaixo que aparece depois de rolar. "Cesar Schutz" à esquerda; à direita
+  **Artigos, Categorias, Séries e Tags**, a busca como campo (com ⌘K) e o botão de tema (§4.3). O RSS
+  saiu do menu (fica no painel lateral e no rodapé). No celular, nome, busca (só o ícone) e tema numa
+  linha; o menu na outra. A altura dele (`--altura-topo`) é descontada pelas âncoras, pelo sumário do
+  artigo, pelo painel lateral e pelas lousas fixas.
 - **Abertura**: nome, uma frase em primeira pessoa e a linha curta sobre IA; ao lado, a
   **estante**. Em telas menores que ~860px a estante desce para baixo do texto.
-- **Estante**:
-  - Um livro por categoria. A **espessura da lombada acompanha o número de posts**
-    (fórmula do protótipo: `min(104, 34 + 14·log2(1+n))` px). Título na vertical, faixas
-    decorativas, número de posts no pé.
-  - Depois das categorias, um **aparador de livros** e os livros de **série**
-    (encadernação própria, fita marcadora saindo do topo).
-  - O último livro de categoria fica inclinado. Na **primeira visita da sessão**, ele começa
-    em pé e tomba devagar até apoiar no vizinho (uma vez só; `sessionStorage`).
+- **Estante** (D30, pela regra de `docs/capas/CAPAS.md`):
+  - Um livro por categoria, na ordem dos volumes, com as alturas e larguras de `livros.json`. A
+    lombada tem o ícone do livro (girado) no bloco de cor de cima e, no papel de baixo, o título na
+    vertical e o número de artigos, no destaque (D32); a divisão forma uma linha contínua
+    atravessando a estante. Sem artigos, o número não aparece.
+  - Depois das categorias, um **aparador de livros** e as **séries**, finas como revistas: papel com
+    a faixa no destaque no topo, o emblema, o título com o complemento em itálico e o número.
+  - O último livro da coleção fica inclinado 6°, apoiado no alto do aparador. Na **primeira visita
+    da sessão**, ele começa em pé e tomba até o aparador (uma vez só; `sessionStorage`).
   - Ao passar o mouse, a lombada sobe alguns pixels.
   - **Abrir um livro**: a lombada sai e deixa o espaço vazio na prateleira; abaixo da estante
-    abre uma gaveta com o livro girando da lombada para a capa (3D) e, ao lado, o **sumário
+    abre uma gaveta com o livro girando da lombada até ficar em **três quartos**, com a lombada e a
+    capa à vista (como na página do livro), e, ao lado, o **sumário
     em lista com filtro** (ignora acentos; agrupado por ano; nas séries, em ordem de leitura
     com "Parte N"). **Trocar de livro** fecha o atual (gira de volta e volta para a
     prateleira) antes de abrir o próximo; cliques rápidos terminam a animação e abrem o
@@ -201,32 +220,42 @@ Referência: aba "Home" do protótipo.
   as páginas da home, no lugar da antiga nuvem de tags no pé. Inspirado na barra lateral do blog
   atual, numa folha que **fica parada enquanto a lista rola** (como no antigo; em tela baixa, rola por
   dentro):
-  - **Séries** e **Categorias** como **pilhas de livros deitados**: os mesmos livros da estante (tecido,
-    trama, letras, fita da série), com a lombada virada para o leitor, o nome na horizontal e a
-    contagem na ponta. Comprimento = altura da lombada na estante; espessura = a largura da lombada
-    (cresce com o número de posts) × 0,55; o mais comprido embaixo; recuos pequenos e diferentes
-    para a pilha não ficar alinhada demais; todos retos (o de cima torto parecia voando); a pilha
-    apoiada num tampo da madeira da estante. Ao passar o mouse, o livro sai 8px da pilha (sem movimento com
-    `prefers-reduced-motion`).
+  - **Séries** e **Categorias** como **pilhas de livros deitados** (D30, D32, `CAPAS.md`): a lombada
+    em pé rotacionada, com a ponta curta na cor do livro (com o ícone) e o corpo em papel, com o título
+    e o número no destaque; a série é papel com uma barra no destaque na ponta, a xícara e
+    "Atualizações *do Java*". Comprimento, espessura e deslocamento de `livros.json`; o volume 1 embaixo; todos
+    retos; a pilha sobre uma prateleira da cor da estante. A pilha escala com a largura da lateral.
+    Ao passar o mouse, o livro sai 8px da pilha (sem movimento com `prefers-reduced-motion`).
   - **Tags**: as 10 mais usadas em pílulas (o clique abre a busca filtrada por `#tag`) e "Todas as
     tags →".
   - "Assinar via RSS" no pé.
-  - Cada livro de categoria leva à página nova da categoria (§5.2, D29), com a transição do livro.
+  - Cada livro de categoria leva à página do livro (§5.2, D29), com a transição do livro.
     O de série ainda leva à página que já existia; as telas de série e de tag serão pensadas depois.
 - Sem animação de entrada nas seções.
 
 ### 5.2 Páginas de apoio
-Todos os artigos (`/archive/`), categoria, tag, série (ordem de leitura) e `/java/`
-(página especial da série; porte do blog atual). Mesma linguagem visual, sem inventar
+Todos os artigos (`/archive/`), categoria, tag, série (ordem de leitura) e `/series/java/`
+(página especial da série; porte do blog atual; `/java/` redireciona, D32). Mesma linguagem visual, sem inventar
 componentes novos.
+
+**Categorias** (`/categories/`, D31) e **Séries** (`/series/`, D31): os livros lado a lado, grandes,
+abertos em três quartos como o livro do topo da página de cada um, cada um num cartão (folha) com o
+livro num painel tingido pela cor dele, "Volume 0N" (ou "Série"), o nome, o subtítulo e a contagem.
+Ao passar o mouse, o cartão sobe e o livro gira um pouco para o leitor; ao clicar, o livro voa até o
+topo da página dele. Em Categorias, os oito volumes; em Séries, só o livro da série do Java.
+
+**Série "Atualizações do Java"** (`/series/java/`, D31, D32): como a página de categoria, com o painel lateral à
+esquerda (o livro da série fora da pilha) e o livro da série aberto no topo, com os números das LTS;
+depois, o guia e as versões, como antes.
 
 **Categoria** (`/categories/<Nome>/`, D29):
 - O painel lateral da home à esquerda (parado enquanto a página rola; depois do conteúdo no celular).
   O livro desta categoria saiu da pilha: no lugar fica só o contorno, como o lugar vazio da estante.
-- No topo, uma folha com o **livro em pé** num painel tingido pela cor da categoria: o mesmo livro
-  3D da gaveta, parado em três quartos (lombada e capa com nome, descrição, contagem e autor). Ao
-  lado: "Categorias" (trilha), o nome grande (Besley 800, do tamanho que couber numa linha), a
-  descrição, a contagem com o quadradinho da cor e as 6 tags mais usadas na categoria.
+- Todo livro tem página, mesmo sem artigos ("Este livro ainda não tem artigos.").
+- No topo, uma folha com o **livro aberto** num painel tingido pela cor da categoria: o mesmo livro
+  3D da gaveta, em três quartos, com a capa da coleção (D30). Ao lado: "Categorias" (trilha), o
+  nome grande (Besley 800, do tamanho que couber numa linha), o subtítulo do livro, a contagem com o
+  quadradinho da cor e as 6 tags mais usadas na categoria.
 - Embaixo, "Artigos" com a contagem e a alternância Lista / Cards, no mesmo formato da home (D27),
   sem paginação.
 - **Transição**: ao clicar num livro do painel, ele sai da pilha e vira o livro em pé do topo da

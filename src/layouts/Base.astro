@@ -3,6 +3,7 @@
  * Layout de todas as páginas: head (SEO mínimo, fontes, tokens, anti-piscada), cabeçalho,
  * conteúdo e rodapé. Open Graph, JSON-LD e RSS entram na Fase 2.
  */
+import { GRAO_CSS } from "../lib/livros-svg";
 import "@fontsource-variable/besley/wght.css";
 import "@fontsource-variable/literata/opsz.css";
 import "@fontsource-variable/literata/opsz-italic.css";
@@ -31,7 +32,7 @@ interface Props {
   titulo?: string;
   descricao?: string;
   /** Item do menu que fica marcado como atual. */
-  atual?: "artigos" | "tags";
+  atual?: "artigos" | "categorias" | "series" | "tags";
   /** Open Graph: "article" nos posts. */
   tipo?: "website" | "article";
   /** Imagem de compartilhamento (caminho interno, 1200×630, D10); por padrão, a do blog. */
@@ -79,14 +80,18 @@ const preVisualizacao = process.env.PREVIEW === "true";
       } catch (e) {}
     </script>
     <script is:inline>
-      // Transição do livro entre o painel da home e a página de categoria (D29): só o livro da pilha
-      // que leva à página nova (ou que veio da anterior) ganha o nome de transição, para os outros
-      // não voarem junto. O livro em pé do topo da categoria já tem o nome no HTML.
+      // Transição do livro (D29, D31): um livro da pilha do painel ou da grade de categorias e séries
+      // voa até o livro aberto no topo da página dele. Só o livro que leva à página nova (ou que veio
+      // da anterior) ganha o nome de transição (data-vt), para os outros não voarem junto; o livro
+      // do topo já tem o nome no HTML. O link é o próprio elemento ou o <a> em volta dele.
       (function () {
         function livro(endereco) {
           var caminho = new URL(endereco).pathname;
-          var livros = document.querySelectorAll(".painel-home a.deitado[data-vt]");
-          for (var i = 0; i < livros.length; i++) if (new URL(livros[i].href).pathname === caminho) return livros[i];
+          var livros = document.querySelectorAll("[data-vt]");
+          for (var i = 0; i < livros.length; i++) {
+            var link = livros[i].closest("a[href]");
+            if (link && new URL(link.href).pathname === caminho) return livros[i];
+          }
         }
         function nomear(endereco) {
           var l = endereco && livro(endereco);
@@ -102,7 +107,7 @@ const preVisualizacao = process.env.PREVIEW === "true";
         });
       })();
     </script>
-    <style is:inline set:html={cssDosTokens()}></style>
+    <style is:inline set:html={`${cssDosTokens()}:root{--grao:${GRAO_CSS}}`}></style>
     <title>{tituloDaAba}</title>
     <meta name="description" content={descricao} />
     <link rel="canonical" href={canonico} />

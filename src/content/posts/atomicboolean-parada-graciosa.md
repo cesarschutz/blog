@@ -4,7 +4,7 @@ published: 2026-05-19
 updated: 2026-09-16
 description: "Por que um `boolean` comum pode não ser visto por outra thread, quando `volatile` basta, por que preferir `AtomicBoolean` e como ligar o `SIGTERM` a um job sem encerrar a JVM no meio de um lote."
 tags: [Concorrência, Kubernetes, JVM]
-category: Java
+category: Desenvolvimento de Software
 draft: false
 ---
 

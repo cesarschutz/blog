@@ -8,7 +8,7 @@ series: java
 draft: false
 ---
 
-Este guia é para quem precisa **planejar e executar a troca de versão do Java** num sistema real: o desenvolvedor que vai conduzir a migração e o arquiteto que precisa justificar prazo, custo e risco. Ele não repete o que mudou em cada versão. Isso fica nos posts da série [Atualizações do Java](/java/), um por LTS. Aqui fica o **como migrar**: ciclo de releases e prazos de suporte, escolha da distribuição e da licença, versões mínimas de frameworks e ferramentas de build, um processo em cinco fases, critérios de avanço e rollback, ferramentas de análise e os cuidados com segurança, desempenho, containers e CI.
+Este guia é para quem precisa **planejar e executar a troca de versão do Java** num sistema real: o desenvolvedor que vai conduzir a migração e o arquiteto que precisa justificar prazo, custo e risco. Ele não repete o que mudou em cada versão. Isso fica nos posts da série [Atualizações do Java](/series/java/), um por LTS. Aqui fica o **como migrar**: ciclo de releases e prazos de suporte, escolha da distribuição e da licença, versões mínimas de frameworks e ferramentas de build, um processo em cinco fases, critérios de avanço e rollback, ferramentas de análise e os cuidados com segurança, desempenho, containers e CI.
 
 Para usar o guia junto com a série:
 

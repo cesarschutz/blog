@@ -4,7 +4,7 @@ published: 2026-05-28
 updated: 2026-09-16
 description: "O que 12 artigos ensinam sobre ledgers de grau financeiro: registro append-only, double-entry garantido pelo banco, saldos materializados, idempotência e conciliação como entregável de engenharia — com exemplos em Java."
 tags: [Pagamentos, Banco de Dados, Idempotência]
-category: Arquitetura
+category: Arquitetura de Software
 draft: false
 ---
 

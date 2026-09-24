@@ -1,5 +1,7 @@
 {
   "observacao": "artigos é só exemplo: no site o número vem da contagem real de posts de cada categoria ou série.",
+  "papel": "#f2ede2",
+  "tintaPapel": "#1f1c18",
   "livros": [
     {
       "volume": 1,
@@ -9,14 +11,20 @@
         "Arquitetura",
         "de Software"
       ],
-      "corpoDoTituloNaCapa": 72,
-      "subtitulo": "Microsserviços, domínios, eventos e consistência: as decisões caras de desfazer.",
+      "corpoDoTitulo": 73,
+      "entrelinhaDoTitulo": 70,
+      "frase": "As decisões caras de desfazer.",
+      "subtituloCompleto": "Microsserviços, domínios, eventos e consistência: as decisões caras de desfazer.",
+      "temas": [
+        "Microsserviços",
+        "Domínios",
+        "Eventos",
+        "Consistência"
+      ],
       "cor": "#2d4b46",
       "cores": {
-        "faixa": "#14322d",
         "tinta": "#efe8d8",
-        "tintaFaixa": "#efe8d8",
-        "numeral": "#41605a"
+        "destaque": "#2d4b46"
       },
       "instrumento": "arco e pedra angular",
       "artigos": 7,
@@ -38,14 +46,20 @@
         "Desenvolvimento",
         "de Software"
       ],
-      "corpoDoTituloNaCapa": 49,
-      "subtitulo": "Java, Spring, testes e refatoração: o ofício dentro de cada serviço.",
+      "corpoDoTitulo": 50,
+      "entrelinhaDoTitulo": 48,
+      "frase": "O ofício dentro de cada serviço.",
+      "subtituloCompleto": "Java, Spring, testes e refatoração: o ofício dentro de cada serviço.",
+      "temas": [
+        "Java",
+        "Spring",
+        "Testes",
+        "Refatoração"
+      ],
       "cor": "#7a4430",
       "cores": {
-        "faixa": "#5d2a17",
         "tinta": "#efe8d8",
-        "tintaFaixa": "#efe8d8",
-        "numeral": "#915944"
+        "destaque": "#7a4430"
       },
       "instrumento": "paquímetro medindo uma peça",
       "artigos": 5,
@@ -66,14 +80,20 @@
       "linhasDoTitulo": [
         "Dados"
       ],
-      "corpoDoTituloNaCapa": 136,
-      "subtitulo": "Bancos, modelagem, CDC e pipelines: onde o dado mora e por onde ele anda.",
+      "corpoDoTitulo": 108,
+      "entrelinhaDoTitulo": 108,
+      "frase": "Onde o dado mora e por onde ele anda.",
+      "subtituloCompleto": "Bancos, modelagem, CDC e pipelines: onde o dado mora e por onde ele anda.",
+      "temas": [
+        "Bancos",
+        "Modelagem",
+        "CDC",
+        "Pipelines"
+      ],
       "cor": "#5f4662",
       "cores": {
-        "faixa": "#452d48",
         "tinta": "#efe8d8",
-        "tintaFaixa": "#efe8d8",
-        "numeral": "#755b78"
+        "destaque": "#5f4662"
       },
       "instrumento": "gaveta de fichas",
       "artigos": 1,
@@ -94,14 +114,20 @@
       "linhasDoTitulo": [
         "IA"
       ],
-      "corpoDoTituloNaCapa": 136,
-      "subtitulo": "LLMs, agentes, RAG e prompts: software feito com IA e software que usa IA.",
+      "corpoDoTitulo": 108,
+      "entrelinhaDoTitulo": 108,
+      "frase": "Software feito com IA e software que usa IA.",
+      "subtituloCompleto": "LLMs, agentes, RAG e prompts: software feito com IA e software que usa IA.",
+      "temas": [
+        "LLMs",
+        "Agentes",
+        "RAG",
+        "Prompts"
+      ],
       "cor": "#6e2f45",
       "cores": {
-        "faixa": "#51152d",
         "tinta": "#efe8d8",
-        "tintaFaixa": "#efe8d8",
-        "numeral": "#854459"
+        "destaque": "#6e2f45"
       },
       "instrumento": "autômato escritor",
       "artigos": null,
@@ -122,14 +148,20 @@
       "linhasDoTitulo": [
         "Segurança"
       ],
-      "corpoDoTituloNaCapa": 81,
-      "subtitulo": "Identidade, segredos, criptografia e compliance: quem pode o quê e como provar.",
+      "corpoDoTitulo": 82,
+      "entrelinhaDoTitulo": 82,
+      "frase": "Quem pode o quê e como provar.",
+      "subtituloCompleto": "Identidade, segredos, criptografia e compliance: quem pode o quê e como provar.",
+      "temas": [
+        "Identidade",
+        "Segredos",
+        "Criptografia",
+        "Compliance"
+      ],
       "cor": "#606a37",
       "cores": {
-        "faixa": "#464f1c",
         "tinta": "#efe8d8",
-        "tintaFaixa": "#efe8d8",
-        "numeral": "#75804c"
+        "destaque": "#606a37"
       },
       "instrumento": "carta lacrada e sinete",
       "artigos": 1,
@@ -150,14 +182,20 @@
       "linhasDoTitulo": [
         "DevOps"
       ],
-      "corpoDoTituloNaCapa": 113,
-      "subtitulo": "Containers, Kubernetes, CI/CD e nuvem: o caminho do commit até a produção.",
+      "corpoDoTitulo": 108,
+      "entrelinhaDoTitulo": 108,
+      "frase": "O caminho do commit até a produção.",
+      "subtituloCompleto": "Containers, Kubernetes, CI/CD e nuvem: o caminho do commit até a produção.",
+      "temas": [
+        "Containers",
+        "Kubernetes",
+        "CI/CD",
+        "Nuvem"
+      ],
       "cor": "#465976",
       "cores": {
-        "faixa": "#2d3f5a",
         "tinta": "#efe8d8",
-        "tintaFaixa": "#efe8d8",
-        "numeral": "#5b6e8c"
+        "destaque": "#465976"
       },
       "instrumento": "guindaste de porto",
       "artigos": 2,
@@ -178,14 +216,20 @@
       "linhasDoTitulo": [
         "SRE"
       ],
-      "corpoDoTituloNaCapa": 136,
-      "subtitulo": "Observabilidade, SLOs, alertas e incidentes: o que mantém a produção de pé.",
+      "corpoDoTitulo": 108,
+      "entrelinhaDoTitulo": 108,
+      "frase": "O que mantém a produção de pé.",
+      "subtituloCompleto": "Observabilidade, SLOs, alertas e incidentes: o que mantém a produção de pé.",
+      "temas": [
+        "Observabilidade",
+        "SLOs",
+        "Alertas",
+        "Incidentes"
+      ],
       "cor": "#c4a050",
       "cores": {
-        "faixa": "#a68331",
         "tinta": "#29251b",
-        "tintaFaixa": "#efe8d8",
-        "numeral": "#ac8937"
+        "destaque": "#836100"
       },
       "instrumento": "farol",
       "artigos": 3,
@@ -206,14 +250,19 @@
       "linhasDoTitulo": [
         "Carreira"
       ],
-      "corpoDoTituloNaCapa": 102,
-      "subtitulo": "O papel do arquiteto, o estudo e o time: o lado humano de construir software.",
+      "corpoDoTitulo": 104,
+      "entrelinhaDoTitulo": 104,
+      "frase": "O lado humano de construir software.",
+      "subtituloCompleto": "O papel do arquiteto, o estudo e o time: o lado humano de construir software.",
+      "temas": [
+        "O papel do arquiteto",
+        "O estudo",
+        "O time"
+      ],
       "cor": "#9a7650",
       "cores": {
-        "faixa": "#7d5b35",
         "tinta": "#efe8d8",
-        "tintaFaixa": "#efe8d8",
-        "numeral": "#b28c66"
+        "destaque": "#7f5b36"
       },
       "instrumento": "compasso",
       "artigos": null,
@@ -231,16 +280,32 @@
   "series": [
     {
       "titulo": "Atualizações do Java",
-      "cor": "#2b2320",
-      "tinta": "#d8b25e",
-      "fita": "#a3372b",
+      "tituloPrincipal": "Atualizações",
+      "complemento": "do Java",
+      "numero": 1,
+      "destaque": "#c24d1c",
+      "numeroDeCapa": "25",
+      "rotuloDoNumero": "Última edição",
+      "edicoes": [
+        "Java 8",
+        "Java 11",
+        "Java 17",
+        "Java 21",
+        "Java 25"
+      ],
+      "guia": {
+        "titulo": "Guia de atualização",
+        "linha": "do Java 8 ao 25, passo a passo"
+      },
+      "subtitulo": "O que muda a cada versão, contado post a post.",
+      "emblema": "serie/xicara.svg",
       "artigos": 7,
       "lombadaEmPe": {
-        "altura": 672,
-        "largura": 150
+        "altura": 700,
+        "largura": 80
       },
       "lombadaDeitada": {
-        "comprimento": 196,
+        "comprimento": 206,
         "espessura": 30
       }
     }

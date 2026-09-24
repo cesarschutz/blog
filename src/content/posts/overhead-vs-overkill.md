@@ -4,7 +4,7 @@ published: 2026-05-16
 updated: 2026-09-16
 description: "Overhead é o custo extra que toda decisão técnica cobra; overkill é a solução desproporcional ao problema. As seis dimensões do overhead e um critério prático para reconhecer overengineering."
 tags: [Trade-offs, Microsserviços]
-category: Arquitetura
+category: Arquitetura de Software
 draft: false
 ---
 

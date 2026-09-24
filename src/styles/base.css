@@ -13,6 +13,8 @@
   /* Largura e margem lateral iguais às do blog atual (conteúdo de até 1320px, D26). */
   --pad: clamp(16px, 2.4vw, 32px);
   --largura: 1320px;
+  /* Altura do cabeçalho fixo (D31): as âncoras, o sumário, o painel e as lousas fixas descontam. */
+  --altura-topo: 60px;
   --coluna: 680px;
   /* Folhas (D26): o conteúdo fica em superfícies com borda fina e sombra leve; painéis dentro delas. */
   --raio-folha: 14px;
@@ -49,8 +51,14 @@
   display: none !important;
 }
 
+@media (max-width: 640px) {
+  :root {
+    --altura-topo: 104px;
+  }
+}
+
 html {
-  scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 16px);
+  scroll-padding-top: calc(env(safe-area-inset-top, 0px) + var(--altura-topo) + 16px);
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
@@ -134,13 +142,6 @@ kbd {
 }
 
 /* Folha (D26): superfície clara com borda fina e sombra leve sobre o fundo. */
-/* Trama do tecido dos livros: lombadas da estante e os livros deitados do painel da home (D28). */
-:root {
-  --tecido-trama:
-    repeating-linear-gradient(0deg, rgb(255 255 255 / 0.045) 0 1px, transparent 1px 3px),
-    repeating-linear-gradient(90deg, rgb(0 0 0 / 0.05) 0 1px, transparent 1px 3px);
-}
-
 .folha {
   border: 1px solid var(--rule);
   border-radius: var(--raio-folha);

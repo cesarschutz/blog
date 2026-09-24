@@ -1,0 +1,92 @@
+---
+/**
+ * Folha de conferência dos livros (D30): as capas planas, no tamanho da referência (480 × 720) ou
+ * menores, para comparar com docs/capas/referencia/capas.png, e a lombada colada à capa. Só no
+ * `npm run dev` (/amostra/livros/). ?largura=240 muda o tamanho das capas; ?tema=escuro troca o tema.
+ */
+import Base from "../../layouts/Base.astro";
+import Capa from "../../components/Capa.astro";
+import MioloLombada from "../../components/MioloLombada.astro";
+import { coresDoLivroCss, montarLivros } from "../../lib/estante";
+import "../../styles/livro.css";
+
+export function getStaticPaths() {
+  return import.meta.env.DEV ? [{ params: { amostra: "amostra" } }] : [];
+}
+
+const livros = await montarLivros();
+const primeiro = livros[0];
+---
+
+<Base titulo="Folha dos livros">
+  <script is:inline slot="head">
+    (() => {
+      const q = new URLSearchParams(location.search);
+      const tema = q.get("tema");
+      if (tema) document.documentElement.dataset.theme = tema === "escuro" ? "dark" : "light";
+      const largura = q.get("largura");
+      if (largura) document.documentElement.style.setProperty("--largura-capa", `${Number(largura)}px`);
+    })();
+  </script>
+  <div class="conferencia-livros">
+    <h1>Folha dos livros</h1>
+    <p class="nota">Só no dev. As capas no tamanho da referência (480 × 720); ?largura=240 muda o tamanho.</p>
+    <ul class="capas">
+      {
+        livros.map((l) => (
+          <li style={coresDoLivroCss(l)}>
+            <Capa livro={l} desenho="inline" />
+          </li>
+        ))
+      }
+    </ul>
+    <h2>Lombada colada à capa</h2>
+    <div class="colada" style={`${coresDoLivroCss(primeiro)};--u:1px;--w:${primeiro.emPe.largura}`}>
+      <div class="lombada-visual face-lombada-plana">
+        <MioloLombada livro={primeiro} />
+      </div>
+      <div class="capa-plana"><Capa livro={primeiro} desenho="inline" /></div>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .conferencia-livros {
+    padding: 32px;
+    /* Fundo escuro, como o das imagens de referência. */
+    background: var(--lousa);
+    color: var(--lousa-caneta);
+  }
+
+  .nota {
+    opacity: 0.7;
+  }
+
+  .capas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    margin: 24px 0 48px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .capas li {
+    width: var(--largura-capa, 480px);
+  }
+
+  .colada {
+    display: flex;
+    height: 720px;
+  }
+
+  .face-lombada-plana {
+    --papel-h: 420px;
+    width: calc(var(--w) * 1px);
+    height: 720px;
+  }
+
+  .capa-plana {
+    width: 480px;
+  }
+</style>

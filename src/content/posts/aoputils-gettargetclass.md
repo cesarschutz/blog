@@ -4,7 +4,7 @@ published: 2026-05-19
 updated: 2026-09-16
 description: "Com o bean envolto em proxy, `bean.getClass()` devolve a classe do proxy e a leitura de anotações falha. Como `AopUtils.getTargetClass()` recupera a classe real e quando usar `ultimateTargetClass()`."
 tags: [Spring, AOP]
-category: Java
+category: Desenvolvimento de Software
 draft: false
 ---
 

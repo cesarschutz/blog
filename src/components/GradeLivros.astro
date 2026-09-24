@@ -1,0 +1,162 @@
+---
+/**
+ * Grade de livros (D31): as páginas de categorias e de séries mostram os livros lado a lado, grandes,
+ * abertos em três quartos, como o livro do topo da página de cada um. Cada cartão é uma folha com o
+ * livro num painel tingido pela cor dele, o nome, o subtítulo e a contagem. Ao passar o mouse, o
+ * cartão sobe e o livro gira um pouco para o leitor. Ao clicar, o livro voa até o topo da página
+ * dele (transição de página, D29).
+ */
+import LivroEmPe from "./LivroEmPe.astro";
+import type { Livro } from "../lib/estante";
+
+interface Props {
+  livros: Livro[];
+  /** Nível do nome, para a página manter a hierarquia de títulos. */
+  nivel?: "h2" | "h3";
+}
+
+const { livros, nivel = "h2" } = Astro.props;
+const Nome = nivel;
+const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.volume).padStart(2, "0")}`);
+---
+
+<ul class:list={["grade-livros", { "um-livro": livros.length === 1 }]}>
+  {
+    livros.map((l) => (
+      <li>
+        <a class="cartao-livro folha" href={l.href}>
+          <span class="palco painel" style={`--cor:${l.cores.cor}`}>
+            <LivroEmPe livro={l} altura={270} transicao="ao-clicar" />
+          </span>
+          <span class="texto">
+            <span class="volume">{rotuloDoVolume(l)}</span>
+            <Nome class="nome">{l.nome}</Nome>
+            <span class="descricao">{l.descricao}</span>
+            <span class="conta" style={`--cor:${l.cores.cor}`}>
+              {l.contagem}
+            </span>
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .grade-livros {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+    gap: 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Uma série só: o cartão não se estica pela linha inteira. */
+  .grade-livros.um-livro {
+    grid-template-columns: minmax(0, 340px);
+  }
+
+  .cartao-livro {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    color: var(--ink);
+    text-decoration: none;
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
+  }
+
+  .palco {
+    display: grid;
+    place-items: center;
+    margin: 12px 12px 0;
+    padding: 30px 12px 34px;
+  }
+
+  /* O livro gira um pouco para o leitor quando o cartão sobe. */
+  .palco :global(.livro-3d) {
+    transition: transform 0.45s cubic-bezier(0.2, 0.75, 0.2, 1) !important;
+  }
+
+  .texto {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 16px 20px 20px;
+  }
+
+  .volume {
+    font-family: var(--font-ui);
+    font-size: 13.5px;
+    color: var(--ink-2);
+    font-variant-numeric: lining-nums;
+  }
+
+  .nome {
+    margin: 4px 0 0;
+    font-size: 22px;
+    line-height: 1.2;
+    transition: color 0.15s;
+  }
+
+  .descricao {
+    margin: 8px 0 0;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--ink-2);
+  }
+
+  /* A contagem desce até o pé do cartão, com o quadradinho da cor (como no chip, D26). */
+  .conta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 14px;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    color: var(--ink-2);
+    font-variant-numeric: lining-nums;
+  }
+
+  .conta::before {
+    content: "";
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    background: color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro));
+  }
+
+  @media (hover: hover) {
+    .cartao-livro:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--sombra-folha-alta);
+    }
+
+    .cartao-livro:hover .nome {
+      color: var(--acento);
+    }
+
+    .cartao-livro:hover :global(.livro-3d.virado) {
+      --giro: -50deg;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cartao-livro,
+    .palco :global(.livro-3d) {
+      transition: none !important;
+    }
+
+    .cartao-livro:hover {
+      transform: none;
+    }
+
+    .cartao-livro:hover :global(.livro-3d.virado) {
+      --giro: -62deg;
+    }
+  }
+</style>

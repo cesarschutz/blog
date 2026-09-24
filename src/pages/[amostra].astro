@@ -8,6 +8,7 @@ import Aviso from "../components/Aviso.astro";
 import { claro, escuro, TOKENS } from "../styles/tokens";
 import { CATEGORIAS } from "../data/taxonomia";
 import { SERIES } from "../data/series";
+import { PAPEL, TINTA_PAPEL } from "../../docs/capas/cores.js";
 import { url } from "../lib/url";
 
 export function getStaticPaths() {
@@ -39,17 +40,17 @@ export function getStaticPaths() {
     <ul class="tecidos">
       {
         CATEGORIAS.map((c) => (
-          <li style={`background:${c.tecido};color:${c.texto}`}>
+          <li style={`background:linear-gradient(${c.cores.cor} 55%, ${c.cores.papel} 55%);color:${c.cores.tinta}`}>
             <strong>{c.nome}</strong>
-            <span>{c.tecido}</span>
+            <span>{c.cor}</span>
           </li>
         ))
       }
       {
         SERIES.map((s) => (
-          <li style={`background:${s.encadernacao};color:${s.letras};box-shadow:inset 0 6px 0 ${s.fita}`}>
+          <li style={`background:${PAPEL};color:${TINTA_PAPEL};box-shadow:inset 0 6px 0 ${s.destaque}`}>
             <strong>{s.nome}</strong>
-            <span>fita {s.fita}</span>
+            <span>destaque {s.destaque}</span>
           </li>
         ))
       }

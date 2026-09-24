@@ -1,11 +1,12 @@
 ---
 /**
- * Estante da home (briefing §5.1): um livro por categoria, o aparador e os livros de série. Cada
- * lombada é um link para a página da categoria (funciona sem JS); com JS, abre o livro na gaveta
- * (Gaveta.astro). O último livro de categoria fica inclinado.
+ * Estante da home (briefing §5.1, D30): um livro por categoria, na ordem dos volumes da coleção, o
+ * aparador e os livros de série, sobre a prateleira (docs/capas/CAPAS.md). Cada lombada é um link
+ * para a página da categoria (funciona sem JS); com JS, abre o livro na gaveta (Gaveta.astro). O
+ * último livro da coleção fica inclinado, apoiado no alto do aparador.
  */
 import MioloLombada from "./MioloLombada.astro";
-import type { Livro } from "../lib/estante";
+import { coresDoLivroCss, type Livro } from "../lib/estante";
 import "../styles/estante.css";
 
 interface Props {
@@ -15,18 +16,17 @@ interface Props {
 const { livros } = Astro.props;
 const categorias = livros.filter((l) => !l.serie);
 const series = livros.filter((l) => l.serie);
-const estilo = (l: Livro) =>
-  `--tecido:${l.tecido};--texto:${l.texto};--w:${l.largura};--h:${l.altura}${l.fita ? `;--fita:${l.fita}` : ""}`;
-// Largura da estante com --u = 1px, pelas medidas de estante.css: 16 de respiro de cada lado, 4 entre
-// os livros, o aparador (9 mais margens de 10 e 12) e o recuo do livro inclinado (0,105 da altura).
-const inclinado = categorias.at(-1);
-const natural = Math.ceil(
-  2 * 16 + livros.reduce((soma, l) => soma + l.largura, 0) + 4 * livros.length + 31 + (inclinado ? inclinado.altura * 0.105 : 0),
-);
-const rotulo = (l: Livro) =>
-  l.serie
-    ? `Série ${l.nome}, ${l.posts.length} partes`
-    : `Livro ${l.nome}, ${l.posts.length} ${l.posts.length === 1 ? "artigo" : "artigos"}`;
+const estilo = (l: Livro) => `${coresDoLivroCss(l)};--w:${l.emPe.largura};--h:${l.emPe.altura}`;
+// Largura da estante em unidades da referência, pelas medidas de estante.css: 16 de respiro de cada
+// lado, 6 entre os livros e o aparador (12 de largura, 43 de margem à esquerda para o livro
+// inclinado encostar no alto dele e 25 à direita).
+const itens = livros.length + 1;
+const natural = Math.ceil(2 * 16 + livros.reduce((soma, l) => soma + l.emPe.largura, 0) + 6 * (itens - 1) + 43 + 12 + 25);
+const rotulo = (l: Livro) => {
+  const n = l.posts.length;
+  if (l.serie) return `Série ${l.nome}, ${n} ${n === 1 ? "parte" : "partes"}`;
+  return n === 0 ? `Livro ${l.nome}, ainda sem artigos` : `Livro ${l.nome}, ${n} ${n === 1 ? "artigo" : "artigos"}`;
+};
 ---
 
 <div class="estante" data-estante style={`--natural:${natural}`}>

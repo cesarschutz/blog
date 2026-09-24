@@ -1,0 +1,96 @@
+---
+/**
+ * A capa do livro (D30, D32, docs/capas/CAPAS.md), em HTML e CSS com os desenhos em SVG inline.
+ * Referência de 480 × 720, escalando pela largura (container query, livro.css).
+ *
+ * Categoria ("edição de estudo"): o bloco na cor do livro, com "VOLUME 01", "CESAR SCHUTZ" e o
+ * título grande; embaixo, no papel, só a frase e o desenho grande, e a assinatura.
+ *
+ * Série (revista técnica): a faixa no destaque, o título dividido, a linha de dados (com o total de
+ * edições contado pelos posts), o número de capa, a lista de edições, a tarja do guia e, no pé, o
+ * emblema, o subtítulo e a assinatura.
+ *
+ * `desenho`: "inline" põe o desenho (ou o emblema da revista) no HTML (a página do livro, que já abre
+ * com ele); "adiado" deixa só o endereço, e a gaveta busca quando o livro abre (Gaveta.astro).
+ */
+import { desenhoDaCapa, iconeDoLivro } from "../lib/livros-svg";
+import { ICONES } from "../lib/icones";
+import type { Livro } from "../lib/estante";
+import { url } from "../lib/url";
+
+interface Props {
+  livro: Livro;
+  desenho: "inline" | "adiado";
+}
+
+const { livro: l, desenho } = Astro.props;
+const volume = l.volume ? String(l.volume).padStart(2, "0") : "";
+const r = l.revista;
+const edicoes = l.posts.length;
+---
+
+{
+  r ? (
+    <div class="capa de-serie" aria-hidden="true">
+      <div class="capa-face">
+        <p class="revista-titulo">{r.tituloPrincipal}</p>
+        <p class="revista-complemento">{r.complemento}</p>
+        <p class="revista-dados">
+          <span>SÉRIE {String(r.numero).padStart(2, "0")}</span>
+          <span>CESAR SCHUTZ</span>
+          {edicoes > 0 && <span>{`${edicoes} ${edicoes === 1 ? "EDIÇÃO" : "EDIÇÕES"}`}</span>}
+        </p>
+        <p class="revista-rotulo">{r.rotuloDoNumero}</p>
+        <p class="revista-numero">{r.numeroDeCapa}</p>
+        <ul class="revista-edicoes">
+          {r.edicoes.map((e, i) =>
+            i === r.edicoes.length - 1 ? (
+              <li class="atual">
+                {e} <em>edição atual</em>
+              </li>
+            ) : (
+              <li>
+                {e} <em>arquivo</em>
+              </li>
+            ),
+          )}
+        </ul>
+        {r.guia && (
+          <div class="revista-tarja">
+            <p>
+              <strong>{r.guia.titulo}</strong>
+              <span>{r.guia.linha}</span>
+            </p>
+            <span class="revista-seta">
+              <svg viewBox="0 0 24 24" set:html={ICONES.seta} />
+            </span>
+          </div>
+        )}
+        {desenho === "inline" ? (
+          <span class="revista-emblema" set:html={iconeDoLivro(r.emblema)} />
+        ) : (
+          <span class="revista-emblema" data-desenho={url(`/livros/${l.id}.svg`)} />
+        )}
+        <p class="revista-subtitulo">{l.descricao}</p>
+        <p class="capa-assinatura">BLOG.CESARSCHUTZ.COM.BR</p>
+      </div>
+    </div>
+  ) : (
+    <div class="capa" style={`--corpo:${l.corpoNaCapa};--entrelinha:${l.entrelinhaNaCapa}`} aria-hidden="true">
+      <div class="capa-face">
+        <p class="capa-topo">
+          <span>VOLUME {volume}</span>
+          <span>CESAR SCHUTZ</span>
+        </p>
+        <p class="capa-titulo">{l.linhas.map((linha, i) => (i === 0 ? linha : [<br />, linha]))}</p>
+        <p class="capa-frase">{l.frase}</p>
+        {desenho === "inline" ? (
+          <div class="capa-desenho" set:html={desenhoDaCapa(l.slug!)} />
+        ) : (
+          <div class="capa-desenho" data-desenho={url(`/livros/${l.slug}.svg`)} />
+        )}
+        <p class="capa-assinatura">BLOG.CESARSCHUTZ.COM.BR</p>
+      </div>
+    </div>
+  )
+}

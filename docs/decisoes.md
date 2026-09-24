@@ -151,6 +151,9 @@ por Dn**. As decisões de produto e design já fechadas estão em `docs/briefing
   - Um subconjunto próprio de glifos, na Fase 7, se o Lighthouse pedir.
 - **Atualização em 24/09/2026 (D26):** entra a IBM Plex Sans na interface, pela
   `@fontsource-variable/ibm-plex-sans`, sem pré-carregamento e com reserva ajustada.
+- **Atualização em 24/09/2026 (D30):** entram a Bitter (`@fontsource-variable/bitter`, 34 KB no
+  latim) e a Newsreader itálica (`@fontsource-variable/newsreader`, `wght-italic`, 64 KB), só nos
+  livros. Pedido do Cesar ("hospede as fontes Bitter e Newsreader no próprio site").
 
 ## D6 · KaTeX servido pelo site
 - **Data:** 23/09/2026 · **Status:** proposta
@@ -180,6 +183,10 @@ por Dn**. As decisões de produto e design já fechadas estão em `docs/briefing
   - `/2/` e `/3/` (paginação antiga da home) → `/archive/`, aprovado pelo Cesar em 23/09/2026.
     **Revisto em 24/09/2026 (D27):** a home voltou a ser paginada, e `/2/` e `/3/` voltaram a ser
     páginas, com o mesmo conteúdo de antes. Os dois redirecionamentos saíram.
+  - **Acrescentado em 24/09/2026 (D30):** as categorias que mudaram de nome redirecionam para o
+    livro novo: `/categories/Arquitetura/` → `/categories/Arquitetura de Software/`,
+    `/categories/Java/` → `/categories/Desenvolvimento de Software/` e
+    `/categories/Observabilidade/` → `/categories/SRE/` (`NOMES_ANTIGOS` em `src/data/taxonomia.ts`).
 
 ## D8 · Validar e renderizar desenhos com `playwright-core`
 - **Data:** 23/09/2026 · **Status:** proposta. Instalar na Fase 5.
@@ -355,7 +362,8 @@ nada muda.
     "IBM Plex Sans fallback" (Arial com as métricas do Capsize) evita o deslocamento na troca.
   - **Cabeçalho:** a busca vira campo e entra o botão de tema, em sincronia com o seletor do rodapé
     (D24). Ordem: Artigos, Tags, RSS, busca, tema. O protótipo põe "Séries" no menu; o briefing não,
-    e o menu ficou como estava.
+    e o menu ficou como estava. **Revisto em 24/09/2026 (D31):** o menu passou a Artigos,
+    Categorias, Séries e Tags, e o cabeçalho ficou fixo.
   - **Artigo:** o topo e o corpo em folhas e, em telas ≥ 1300px, o sumário à esquerda, numa folha
     fixa (o protótipo o põe à direita; o Cesar pediu à esquerda na primeira revisão). A grade saiu do
     `[slug].astro` para `artigo.css`, que as amostras do dev também usam.
@@ -469,4 +477,133 @@ nada muda.
 - **Conferido:** `astro check` 0/0, build, links (0 quebrados), contraste (0 falhas), sem rolagem
   lateral, sem nome cortado na pilha e título numa linha nas seis categorias em 320, 390, 800, 1100
   e 1440px.
+
+## D30 · Livros no padrão da coleção (docs/capas): capas, estante, lateral e categorias novas
+- **Revisto em 24/09/2026 (D32):** o visual dos livros mudou de novo (categorias em "edição de
+  estudo", séries em revista técnica). O que vale hoje está na D32; o resto desta decisão
+  (categorias, posts, fonte única, SVGs, gaveta, redirecionamentos) continua.
+- **Data:** 24/09/2026 · **Status:** feito, aguardando a conferência do Cesar.
+- **Pedido do Cesar:** o padrão visual dos livros foi atualizado em `docs/capas/` (regra em
+  `CAPAS.md`, dados em `livros.json`, cores em `cores.js`, desenhos, ícones, grão e quatro imagens de
+  referência). Capas, estante e lateral deviam ficar exatamente nesse padrão, sem mudar o
+  comportamento (estante, gaveta girando a lombada, sumário, troca de livro); o livro aberto na home
+  devia ficar em três quartos, como na página da categoria; e cada post devia ir para uma das
+  categorias novas (as vazias podem ficar).
+- **Categorias novas e posts:** as oito da coleção. Quase tudo mudou só de nome: Arquitetura →
+  Arquitetura de Software (6), Java → Desenvolvimento de Software (5), Observabilidade → SRE (3);
+  Dados, DevOps e Segurança continuam. Exceção: "Bloqueio otimista e pessimista" foi para **Dados**
+  (é sobre trava de linha, coluna de versão e níveis de isolamento no banco). IA e Carreira ficam
+  vazias: aparecem na estante e na lateral sem número e têm página ("Este livro ainda não tem
+  artigos."). As URLs antigas redirecionam (D7).
+- **Fonte única:** `src/data/taxonomia.ts` e `src/data/series.ts` leem `docs/capas/livros.json` e
+  calculam as cores com `docs/capas/cores.js` (o `cores` já calculado do JSON não é usado). A cor
+  principal do livro é também a cor da categoria no site. Prateleira e aparador viraram tokens
+  (`--tabua`, `--tabua-borda`, `--aparador*`), com os valores do `CAPAS.md` no tema claro.
+- **SVGs:** `src/lib/livros-svg.ts` lê desenhos e ícones de `docs/capas`, tira o `<style>` e o
+  comentário (as classes `cz-*` têm espessuras diferentes no desenho e no ícone e brigariam na mesma
+  página; as regras ficam em `livro.css`, presas a `.desenho-capa` e `.icone-livro`), simplifica os
+  traços em 0,1 unidade (Ramer–Douglas–Peucker; os arquivos caem para cerca de um terço sem mudança
+  visível) e dá ao ícone o viewBox justo do desenho (os arquivos têm 120 × 160 com muita sobra, e o
+  ícone não caberia bem na ponta da lombada deitada). O traço não escala (`non-scaling-stroke`): na
+  capa, as espessuras da regra na escala da capa, com piso; nos ícones, 0,8px na estante e 1px na
+  lateral, para o desenho pequeno não virar borrão nem fio de cabelo. Na lateral (30px de altura),
+  só os traços principais (`cz-w1`), como na referência: os finos viravam ruído. O grão vem de `grao.svg` como
+  `--grao` (Base.astro).
+- **Capa** (`Capa.astro`, `livro.css`): 480 × 720 em container query (`--k = 100cqw / 480`), com as
+  medidas do `CAPAS.md`; conferida lado a lado com `referencia/capas.png` em `/amostra/livros/`
+  (só no dev). A série ganhou uma capa própria: couro com grão, moldura de fios dourados, "Série",
+  título em Newsreader itálico, descrição, "7 partes" e a fita saindo do alto.
+- **Lombada em pé** (`MioloLombada.astro`): ícone girado, título na vertical e número, faixa de 362
+  a partir da base (na estante, a divisão forma uma linha contínua). No livro 3D, a lombada tem a
+  altura da capa e a faixa passa a 388 de 720.
+- **Estante:** ordem dos volumes, 6 entre os livros, prateleira de 14 com borda de 6, aparador de
+  12 × 470 com base; escala por container query com teto de 0,42px por unidade (o livro mais alto
+  fica com uns 280px). O último livro (Carreira) inclina 6° para a direita, pelo canto de baixo, e
+  encosta no alto do aparador; o tombo da primeira visita continua, agora sem o quique (ele
+  atravessaria o aparador).
+- **Gaveta:** mesmo comportamento; o livro gira da lombada até **62°** (três quartos), como na
+  página do livro (`src/lib/livro-3d.ts` calcula as medidas e o centro para as duas). O desenho da
+  capa só é buscado quando o livro abre (`/livros/<slug>.svg`, gerado no build) e entra inline; o
+  ícone da lombada do livro 3D é copiado da lombada da estante, para a home não levar uma terceira
+  cópia de cada ícone. A home ficou com 275 KB (60 KB com gzip).
+- **Lateral:** lombadas deitadas pelo `CAPAS.md` (ponta do ícone com 1,32 da espessura, título a 9 da
+  ponta, número a 10 do fim, vincos a 3,5 e 4,5), volume 1 embaixo, medidas no tamanho real de uma
+  pilha de 238px, escalando por container query.
+- **Página do livro:** o mesmo livro 3D, em três quartos, com o desenho inline (a página já abre com
+  o livro aberto).
+- **Contraste:** o chip passou a 34% de tinta no claro (o dourado do SRE dava 4,33:1 com 30%). As
+  cores dos livros são as do `cores.js` e das referências; dois pares ficam abaixo de 4,5:1 — o
+  título claro sobre a faixa do SRE (2,91:1) e o texto claro sobre a cor da Carreira (3,39:1) — e o
+  `npm run contraste` os marca como alerta, porque o livro é arte com o texto de verdade no rótulo
+  acessível e na página. Se o Cesar quiser, basta mudar o limiar de luminância no `cores.js`.
+- **Conferido:** `astro check` 0/0, build, links (85 páginas, 0 quebrados, 21 redirecionamentos),
+  contraste (0 falhas), validador (29 de 29), estante, gaveta, lateral e página do livro nos dois
+  temas, no celular, com movimento reduzido, o tombo e a transição da pilha para a página.
+
+## D31 · Cabeçalho fixo, menu com Categorias e Séries, e as páginas de livros
+- **Revisto em 24/09/2026 (D32):** a página da série passou de `/java/` para `/series/java/`.
+- **Data:** 24/09/2026 · **Status:** feito, aguardando a conferência do Cesar.
+- **Pedido do Cesar:** o cabeçalho (com a busca) fixo; no menu, Artigos, Tags, Séries e Categorias;
+  a página de categorias com os livros lado a lado, grandes; a de séries só com o livro da série do
+  Java; e a página "Atualizações do Java" com o livro no topo, como as categorias.
+- **Cabeçalho:** `position: sticky` num contêiner de largura total (`.topo-fixo`), fundo da página a
+  94% com desfoque (a 86%, o botão azul da lista aparecia como mancha atrás do nome no celular) e o
+  fio embaixo por animação ligada à rolagem (sem JS; onde não houver suporte, fica sem fio). Menu:
+  Artigos, Categorias, Séries e Tags, com o item atual marcado. O **RSS saiu do menu**, para caber no
+  celular: continua no painel lateral e no rodapé. No celular, a busca vira só o ícone (com
+  `aria-label`) na linha do nome. `--altura-topo` (60px; 104px no celular, medidos) é descontada por
+  `scroll-padding-top` (âncoras), pelo sumário do artigo, pelo painel lateral e pelas lousas fixas.
+- **Categorias e Séries:** `GradeLivros.astro`, cartões com o livro 3D em três quartos
+  (`LivroEmPe` a 270px, desenho da capa inline, porque o livro já aparece aberto), "Volume 0N" ou
+  "Série", nome, subtítulo e contagem. Em Séries, um cartão só (340px), sem esticar pela linha.
+- **Página do Java:** `ComPainel` com o livro da série fora da pilha e `TopoLivro` (o antigo
+  `TopoCategoria`, agora com trilha, descrição e um espaço para os números das LTS).
+- **Transição:** o livro da grade também voa até o topo da página dele. O script do `<head>` passou a
+  procurar qualquer `[data-vt]` cujo link leve à página nova (antes, só os livros da pilha).
+- **Conferido:** `astro check` 0/0, build, links, larguras de 320 a 1440px, a âncora do artigo abaixo
+  do cabeçalho, o sumário e o painel parados abaixo dele, e a transição da grade para a página e de
+  volta.
+
+## D32 · Categorias em "edição de estudo", séries em revista técnica, e /series/java/
+- **Data:** 24/09/2026 · **Status:** feito, aguardando a conferência do Cesar.
+- **Pedido do Cesar:** a série em `/series/java/`, como as categorias; e o visual novo dos livros em
+  `docs/capas` (regra, dados, cores, desenhos, emblema e cinco referências): categorias no estilo
+  "edição de estudo" e séries como revista técnica, com a tarja do guia de atualização na capa do
+  Java. Alterar os componentes que já existem, sem criar outros; o mesmo comportamento da estante,
+  do giro, do sumário e da troca de livro.
+- **Endereço da série:** `src/pages/java.astro` virou `src/pages/series/java.astro`; `urlSerie` dá
+  sempre `/series/<chave>/` (o campo `url` do cadastro virou `paginaPropria`); `/java/` redireciona
+  para `/series/java/`; o único link interno para `/java/` (no guia de atualizações) foi corrigido.
+- **Dados:** `taxonomia.ts` lê os campos novos (`corpoDoTitulo`, `entrelinhaDoTitulo`, `frase`,
+  `subtituloCompleto`, `temas`) e as cores do `cores.js` novo (`cor`, `tinta`, `destaque`, mais
+  `PAPEL` e `TINTA_PAPEL`). `series.ts` lê a revista (título dividido, número, destaque, número de
+  capa, edições, guia, emblema). A cor da série no site (chip, barra de leitura) passou a ser o
+  destaque laranja `#c24d1c`. A lista de edições da capa vem do `livros.json`, como pede a regra
+  (confirmado com o Cesar); o total de edições ("7 EDIÇÕES") e os números das lombadas saem dos posts.
+- **Capa** (`Capa.astro`, `livro.css`): categoria com o bloco de cor até y 300 ("VOLUME 0N",
+  "CESAR SCHUTZ" e o título pela base em y 278) e o papel com a frase (y 324) e o desenho no destaque
+  (viewBox `0 300 480 420`). Revista com faixa, título e complemento, linha de dados, "Última
+  edição" e o número de capa, a lista de edições (a atual no destaque), a tarja escura do guia com a
+  seta, a xícara, o subtítulo e a assinatura. Conferidas lado a lado com `referencia/capas.png` e
+  `serie.png` em `/amostra/livros/`.
+- **Dois acertos de fonte para bater com as referências:** a Newsreader passou a ser a versão com o
+  eixo de tamanho óptico (`opsz-italic`), com o `opsz` fixo no corpo da referência (sem ele, a frase
+  de IA quebrava em duas linhas); e o número de capa usa algarismos proporcionais (na Bitter, os
+  alinhados são de largura fixa, e o "25" invadia a lista de edições).
+- **Lombada em pé** (`MioloLombada.astro`): categoria com o ícone no bloco de cor e o papel de 400 da
+  base com o título e o número no destaque (no livro 3D, o bloco de cor vai a 300 de 720); série fina
+  (80), papel com a faixa no topo, a xícara girada, o título com o complemento em itálico e o número.
+  A fita e os fios dourados saíram. O traço dos ícones acompanha a escala da lombada (mínimo 0,75px).
+- **Lombada deitada** (`PainelHome.astro`): ponta de cor com o ícone (traço de 0,9 e 0,6px, sem a
+  hachura), corpo em papel, título e número no destaque; a série com a barra no destaque, a xícara,
+  o título e o número.
+- **Carregamento:** o desenho grande da capa e o emblema da revista só vêm quando o livro abre na
+  gaveta (`/livros/<slug>.svg` e `/livros/serie-java.svg`); na página do livro, que já abre com o livro
+  aberto, entram inline. Home: 295 KB (68 KB com gzip).
+- **Contraste:** dois alertas de arte, como nas referências: o texto claro sobre a cor da Carreira
+  (3,39:1) e o laranja da série sobre o papel (4,11:1). O "SRE" claro na faixa, que era alerta na D30,
+  deixou de existir (o texto da lombada agora é o destaque sobre o papel, 4,89:1).
+- **Conferido:** `astro check` 0/0, build, links (86 páginas, 0 quebrados, 22 redirecionamentos),
+  contraste (0 falhas), validador (29 de 29), estante, gaveta (categoria e série), lateral, página de
+  categoria e da série nos dois temas e no celular, sem rolagem lateral de 320 a 1440px.
 

@@ -184,7 +184,7 @@
 
 .lousa-passos .fixa {
   position: sticky;
-  top: calc(12vh + 20px);
+  top: calc(var(--altura-topo) + 8vh);
   display: flex;
   align-items: center;
   height: 72vh;
@@ -210,7 +210,7 @@
   .lousa-passos .figura {
     order: -1;
     position: sticky;
-    top: 0;
+    top: var(--altura-topo);
     z-index: 2;
     padding: 8px 0;
     background: var(--paper-hi);

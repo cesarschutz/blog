@@ -3,7 +3,7 @@ title: "CronJob ou endpoint + fila — onde rodar o batch de uma API Spring Boot
 published: 2026-09-23
 description: "Uma API Spring Boot no Kubernetes precisa de uma rotina agendada: CronJob com a mesma imagem e o perfil `batch`, ou endpoint que enfileira no SQS para a própria API consumir? Onze critérios comparados."
 tags: [Kubernetes, Spring, Mensageria, Trade-offs]
-category: Arquitetura
+category: Arquitetura de Software
 draft: false
 ---
 

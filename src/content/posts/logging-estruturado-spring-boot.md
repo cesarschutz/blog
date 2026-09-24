@@ -4,7 +4,7 @@ published: 2026-05-19
 updated: 2026-09-16
 description: "Cada log como uma linha JSON pesquisável: o caminho clássico com `LogstashEncoder` e o suporte nativo do Spring Boot 3.4+ (ECS, Logstash e GELF), com saídas reais, comparativo e critério de escolha."
 tags: [Spring, Logs, Trade-offs]
-category: Observabilidade
+category: SRE
 draft: false
 ---
 

@@ -1,91 +1,19 @@
 ---
-/** Índice das categorias (/categories/): um bloco por categoria, com os artigos mais recentes. */
+/**
+ * Índice das categorias (/categories/, D31): os livros da coleção lado a lado, grandes, abertos em
+ * três quartos, na ordem dos volumes. Cada um leva à página do livro, com a transição do livro.
+ */
 import Base from "../../layouts/Base.astro";
 import CabecalhoPagina from "../../components/CabecalhoPagina.astro";
-import Chip from "../../components/Chip.astro";
-import { getCategorias, urlCategoria } from "../../lib/posts";
+import GradeLivros from "../../components/GradeLivros.astro";
+import { montarLivros } from "../../lib/estante";
 
-const categorias = await getCategorias();
+const livros = (await montarLivros()).filter((l) => !l.serie);
 ---
 
-<Base titulo="Categorias" descricao="As categorias do blog de Cesar Schutz e os artigos de cada uma." atual="artigos">
+<Base titulo="Categorias" descricao="As categorias do blog de Cesar Schutz: cada uma é um livro da coleção." atual="categorias">
   <div class="wrap">
-    <CabecalhoPagina titulo="Categorias" descricao="Cada categoria é um livro na estante da página inicial." />
-    <ul class="categorias">
-      {
-        categorias.map(({ categoria, posts }) => (
-          <li class="folha">
-            <h2>
-              <Chip cor={categoria.tecido} nome={categoria.nome} href={urlCategoria(categoria.nome)} />
-            </h2>
-            <p class="descricao">{categoria.descricao}</p>
-            <p class="conta">
-              {posts.length} {posts.length === 1 ? "artigo" : "artigos"}
-            </p>
-            <ul class="recentes">
-              {posts.slice(0, 3).map((p) => (
-                <li>
-                  <a href={p.url}>{p.titulo}</a>
-                </li>
-              ))}
-            </ul>
-          </li>
-        ))
-      }
-    </ul>
+    <CabecalhoPagina titulo="Categorias" descricao="Cada categoria é um livro da coleção. Abra um para ver os artigos dele." />
+    <GradeLivros livros={livros} />
   </div>
 </Base>
-
-<style>
-  /* Um card (folha) por categoria (D26). */
-  .categorias {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
-    gap: 22px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .categorias > li {
-    padding: 20px 22px 22px;
-  }
-
-  h2 {
-    margin: 0;
-    font-size: 22px;
-  }
-
-  /* No título, o chip fica no peso do título, com o quadradinho maior. */
-  h2 :global(.chip) {
-    gap: 10px;
-    font-weight: 700;
-  }
-
-  h2 :global(.quadradinho) {
-    width: 12px;
-    height: 12px;
-  }
-
-  .descricao {
-    margin: 8px 0 0;
-    color: var(--ink-2);
-  }
-
-  .conta {
-    margin: 6px 0 0;
-    font-family: var(--font-ui);
-    font-size: 14px;
-    color: var(--ink-2);
-    font-variant-numeric: lining-nums;
-  }
-
-  .recentes {
-    margin: 10px 0 0;
-    padding-left: 1.1em;
-  }
-
-  .recentes li {
-    margin: 4px 0;
-  }
-</style>

@@ -1,20 +1,46 @@
 ---
-/** Conteúdo de uma lombada (faixas, título na vertical e contagem), na estante e no livro 3D. */
+/**
+ * Conteúdo da lombada em pé (D30, D32, docs/capas/CAPAS.md), na estante e na face do livro 3D.
+ * Categoria ("edição de estudo"): o ícone girado no bloco de cor, o título na vertical logo abaixo da
+ * divisão e o número no pé, no destaque. Série (revista): o emblema girado, o título na vertical com o
+ * complemento em itálico no destaque e o número no pé. O número é o total de artigos e some quando
+ * não há nenhum. O elemento pai tem a classe `lombada-visual` e as cores do livro.
+ */
 import type { Livro } from "../lib/estante";
+import { iconeDoLivro } from "../lib/livros-svg";
 
 interface Props {
   livro: Livro;
-  /** No livro 3D da gaveta a fita não aparece (como no protótipo). */
-  semFita?: boolean;
+  /**
+   * Na gaveta, o ícone (ou o emblema) não vem no molde: o script copia o da lombada da estante ao
+   * abrir o livro, para a home não levar mais uma cópia de cada um.
+   */
+  iconeDaEstante?: boolean;
 }
 
-const { livro, semFita = false } = Astro.props;
+const { livro, iconeDaEstante = false } = Astro.props;
+const total = livro.posts.length;
+const figura = livro.revista?.emblema ?? livro.slug;
+const classe = livro.revista ? "emblema-lombada" : "icone-lombada";
 ---
 
-{livro.serie && <span class="faixa" aria-hidden="true" />}
-<span class="faixa" aria-hidden="true"></span>
-<span class="nome-lombada" style={`--nome:${livro.tamanhoNome}`}>{livro.nome}</span>
-<span class="conta-lombada">{livro.posts.length}</span>
-<span class="faixa faixa-pe" aria-hidden="true"></span>
-{livro.serie && <span class="faixa" aria-hidden="true" />}
-{livro.fita && !semFita && <span class="fita-marcadora" aria-hidden="true" />}
+{
+  figura &&
+    (iconeDaEstante ? (
+      <span class={classe} aria-hidden="true" data-icone-de={livro.id} />
+    ) : (
+      <span class={classe} aria-hidden="true" set:html={iconeDoLivro(figura, true)} />
+    ))
+}
+{
+  livro.revista ? (
+    <span class="titulo-lombada" aria-hidden="true">
+      {livro.revista.tituloPrincipal} <em>{livro.revista.complemento}</em>
+    </span>
+  ) : (
+    <span class="titulo-lombada" aria-hidden="true">
+      {livro.linhas.map((linha, i) => (i === 0 ? linha : [<br />, linha]))}
+    </span>
+  )
+}
+{total > 0 && <span class="numero-lombada" aria-hidden="true">{total}</span>}

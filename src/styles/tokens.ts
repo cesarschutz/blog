@@ -24,6 +24,9 @@ export const TOKENS = [
   "quadro",
   "tabua",
   "tabua-borda",
+  "aparador",
+  "aparador-luz",
+  "aparador-fundo",
   "lousa",
   "lousa-borda",
   "lousa-caneta",
@@ -49,8 +52,11 @@ export const claro: Paleta = {
   "aviso-atencao": "#9A6B12",
   "aviso-cuidado": "#A3432A", // também a linha removida no diff
   quadro: "#FFFFFF", // moldura dos diagramas antigos, que têm fundo branco embutido (briefing §8.1)
-  tabua: "#B5BBB1", // prateleira da estante (protótipo)
-  "tabua-borda": "#959C92",
+  tabua: "#B5BAB4", // prateleira da estante e da pilha (docs/capas/CAPAS.md)
+  "tabua-borda": "#9BA19B",
+  aparador: "#7A8280", // o aparador que separa categorias e séries: gradiente de três tons (CAPAS.md)
+  "aparador-luz": "#9AA19F",
+  "aparador-fundo": "#6F7775",
   // Lousa (briefing §7): o contrário da página. No tema claro, vidro escuro com caneta clara.
   lousa: "#15191C",
   "lousa-borda": "#2C3438",
@@ -76,6 +82,9 @@ export const escuro: Paleta = {
   quadro: "#FFFFFF",
   tabua: "#3B4547",
   "tabua-borda": "#2A3234",
+  aparador: "#4E5759",
+  "aparador-luz": "#687173",
+  "aparador-fundo": "#434B4D",
   // No tema escuro, quadro branco suavizado (nunca branco puro) com caneta escura.
   lousa: "#CFD5D1",
   "lousa-borda": "#8F989D",
@@ -96,10 +105,11 @@ export const BRANCO_NO_ESCURO = 42;
 export const PAINEL = { claro: 11, escuro: 20 };
 
 /**
- * Nome da categoria no chip, tingido (D26): no claro, a cor com 30% de tinta; no escuro, a cor com
- * 50% de branco. `npm run contraste` confere os dois sobre a folha.
+ * Nome da categoria no chip, tingido (D26): no claro, a cor com 34% de tinta (30% até a D30, quando
+ * o dourado do SRE pediu um pouco mais para passar de 4,5:1); no escuro, a cor com 50% de branco.
+ * `npm run contraste` confere os dois sobre a folha.
  */
-export const CHIP = { claro: { tinta: 30, branco: 0 }, escuro: { tinta: 0, branco: 50 } };
+export const CHIP = { claro: { tinta: 34, branco: 0 }, escuro: { tinta: 0, branco: 50 } };
 
 /**
  * O que a lousa tem de diferente em cada tema, além das cores: quanto da mistura entra no destaque,

@@ -1,105 +1,546 @@
 /*
- * O livro em si (D28): a lombada (estante, face do livro 3D e página de categoria) e a capa, com o
- * livro 3D que gira da lombada para a capa. Separado de estante.css para a página de categoria
- * usar o livro sem carregar a estante e a gaveta.
+ * A Newsreader entra com o eixo de tamanho óptico (opsz), como nas referências; cada texto fixa o
+ * tamanho óptico no corpo da referência, para a proporção não mudar quando a capa encolhe.
+ *
+ * Os livros (D30, D32), pela regra de docs/capas/CAPAS.md: as categorias são livros de uma coleção no
+ * estilo "edição de estudo" e as séries, revistas técnicas. Aqui ficam a capa, a lombada em pé
+ * (estante, face do livro 3D e página do livro), o livro 3D e o traço dos ícones e desenhos. A
+ * lombada deitada fica no painel lateral (PainelHome.astro). Separado de estante.css para a página
+ * do livro não carregar a estante e a gaveta.
+ *
+ * As medidas estão em unidades da referência:
+ * - lombada: calc(N * var(--u)), com --u em px por unidade (a estante e a gaveta definem);
+ * - capa: calc(N * var(--k)), com --k = 100cqw / 480 (a capa é um contêiner de 480 de largura).
+ *
+ * As cores vêm do livro (docs/capas/cores.js), em --livro-cor, --livro-tinta, --livro-destaque,
+ * --livro-papel e --livro-tinta-papel (coresDoLivroCss, em src/lib/estante.ts). As sombras e os
+ * brilhos são pretos e brancos translúcidos, como na regra. O grão (--grao) vem de
+ * docs/capas/grao.svg (Base.astro).
  */
 
-/* ---------- lombada (na estante e na face do livro 3D) ---------- */
+@import "@fontsource-variable/bitter/wght.css";
+@import "@fontsource-variable/newsreader/opsz-italic.css";
 
-.lombada-visual {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: calc(16 * var(--u)) 0 calc(12 * var(--u));
-  border-radius: 3px 3px 1px 1px;
-  background-color: var(--tecido);
-  background-image:
-    linear-gradient(90deg, rgb(0 0 0 / 0.18), rgb(255 255 255 / 0.08) 18%, rgb(255 255 255 / 0) 42%, rgb(0 0 0 / 0.14)),
-    var(--tecido-trama);
-  color: var(--texto);
+:root {
+  --font-livro: "Bitter Variable", "Rockwell", Georgia, serif;
+  --font-livro-italico: "Newsreader Variable", Georgia, serif;
 }
 
-.lombada-visual .faixa {
-  flex: none;
-  width: 68%;
-  height: 0;
-  padding-top: 3px;
-  border-top: 1px solid currentColor;
-  border-bottom: 1px solid currentColor;
-  opacity: 0.55;
-  transition: opacity 0.3s;
+/* ---------- traço dos desenhos e dos ícones ---------- */
+
+/*
+ * Os SVGs chegam sem o <style> próprio (src/lib/livros-svg.ts). O traço não escala com o desenho
+ * (non-scaling-stroke): as espessuras são as da regra na capa de 480 e têm um piso, para a capa
+ * pequena e o ícone da lombada não ficarem com fio de cabelo.
+ */
+.desenho-capa,
+.icone-livro {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
 }
 
-.lombada-visual .nome-lombada {
-  margin: calc(14 * var(--u)) 0 auto;
-  font-family: var(--font-titulo);
-  font-weight: 700;
-  font-size: calc(var(--nome, 16) * var(--u));
-  letter-spacing: 0.03em;
-  line-height: 1;
-  white-space: nowrap;
-  writing-mode: vertical-rl;
+.desenho-capa :is(path, circle),
+.icone-livro :is(path, circle) {
+  vector-effect: non-scaling-stroke;
 }
 
-.lombada-visual .conta-lombada {
-  margin-top: calc(10 * var(--u));
-  font-family: var(--font-ui);
-  font-size: calc(12 * var(--u));
+.desenho-capa :is(.cz-ln, .cz-gh, .cz-ghs),
+.icone-livro :is(.cz-ln, .cz-gh, .cz-ghs) {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.desenho-capa .cz-fi,
+.icone-livro .cz-fi {
+  fill: currentColor;
+  stroke: none;
+}
+
+.desenho-capa .cz-w1 {
+  stroke-width: max(0.85px, calc(1.8 * var(--k)));
+}
+
+.desenho-capa .cz-w2 {
+  stroke-width: max(0.6px, calc(1.2 * var(--k)));
+}
+
+.desenho-capa .cz-w3 {
+  stroke-width: max(0.4px, calc(0.7 * var(--k)));
+}
+
+.desenho-capa .cz-gh,
+.icone-livro .cz-gh {
+  stroke-width: max(0.7px, calc(1.3 * var(--k, 0.5px)));
+  stroke-dasharray: calc(2.5 * var(--k, 0.5px)) calc(5.5 * var(--k, 0.5px));
   opacity: 0.8;
+}
+
+.desenho-capa .cz-ghs,
+.icone-livro .cz-ghs {
+  stroke-width: max(0.6px, calc(1.1 * var(--k, 0.5px)));
+  opacity: 0.8;
+}
+
+/*
+ * Ícones e emblema: três espessuras fixas, na proporção das do arquivo (1,3; 0,85; 0,7). Cada lugar
+ * escolhe o traço principal em --traco-lombada.
+ */
+.icone-livro {
+  --traco: var(--traco-lombada, 1px);
+}
+
+.icone-livro .cz-w1 {
+  stroke-width: var(--traco);
+}
+
+.icone-livro .cz-w2 {
+  stroke-width: calc(var(--traco) * 0.67);
+}
+
+.icone-livro .cz-w3 {
+  stroke-width: calc(var(--traco) * 0.5);
+}
+
+/* ---------- capa (480 × 720) ---------- */
+
+.capa {
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 480 / 720;
+}
+
+/* Papel com grão; na categoria, o bloco de cor de 0 a 300, na largura inteira. */
+.capa-face {
+  --k: calc(100cqw / 480);
+  font-variant-numeric: lining-nums;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: max(1px, var(--k)) max(2px, calc(3 * var(--k))) max(2px, calc(3 * var(--k))) max(1px, var(--k));
+  background: linear-gradient(var(--livro-cor) 0 calc(300 * var(--k)), var(--livro-papel) calc(300 * var(--k)));
+  box-shadow:
+    0 1px 1px rgb(0 0 0 / 0.22),
+    0 calc(18 * var(--k)) calc(40 * var(--k)) rgb(0 0 0 / 0.24);
+  color: var(--livro-tinta-papel);
+  font-family: var(--font-livro);
+}
+
+/* O grão, por cima de tudo. */
+.capa-face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: var(--grao) 0 0 / 180px 180px;
+  pointer-events: none;
+}
+
+.capa-face > * {
+  position: absolute;
+  z-index: 2;
+  margin: 0;
+}
+
+/* Linha do topo: "VOLUME 01" à esquerda e "CESAR SCHUTZ" à direita, em y = 34. */
+.capa-topo {
+  top: calc(34 * var(--k));
+  right: calc(38 * var(--k));
+  left: calc(38 * var(--k));
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: calc(12 * var(--k));
+  line-height: 1;
+  letter-spacing: 0.2em;
+  color: var(--livro-tinta);
+  opacity: 0.9;
+}
+
+/* Título: bloco a partir de x = 36, com 420 de largura, alinhado pela base em y = 278. */
+.capa-titulo {
+  bottom: calc((720 - 278) * var(--k));
+  left: calc(36 * var(--k));
+  width: calc(420 * var(--k));
+  font-weight: 800;
+  font-size: calc(var(--corpo) * var(--k));
+  line-height: calc(var(--entrelinha) * var(--k));
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  color: var(--livro-tinta);
+}
+
+/* A frase, no papel, em x = 38 e y = 324. */
+.capa-frase {
+  top: calc(324 * var(--k));
+  left: calc(38 * var(--k));
+  width: calc(404 * var(--k));
+  font-family: var(--font-livro-italico);
+  font-style: italic;
+  font-weight: 400;
+  font-size: calc(24 * var(--k));
+  line-height: calc(31 * var(--k));
+  text-wrap: balance;
+  font-variation-settings: "opsz" 24;
+}
+
+/* O desenho ocupa a parte clara (y 300 a 720). Chega inline ou, na gaveta, quando o livro abre. */
+.capa-desenho {
+  --capa-papel: var(--livro-papel);
+  top: calc(300 * var(--k));
+  left: 0;
+  width: 100%;
+  height: calc(420 * var(--k));
+  color: var(--livro-destaque);
+}
+
+.capa-desenho:empty,
+.revista-emblema:empty {
+  opacity: 0;
+}
+
+.capa-desenho.chegou,
+.revista-emblema.chegou {
+  animation: desenho-chega 0.35s ease-out;
+}
+
+@keyframes desenho-chega {
+  from {
+    opacity: 0;
+  }
+}
+
+.capa-assinatura {
+  top: calc(689 * var(--k));
+  right: 0;
+  left: 0;
+  font-weight: 600;
+  font-size: calc(10 * var(--k));
+  line-height: calc(10 * var(--k));
+  letter-spacing: 0.14em;
+  text-align: center;
+  opacity: 0.55;
+}
+
+/* ---------- capa da série: revista técnica ---------- */
+
+.capa.de-serie .capa-face {
+  border-radius: max(1px, var(--k));
+  background: var(--livro-papel);
+}
+
+/* A faixa de 14 no destaque, atravessando o topo. */
+.capa.de-serie .capa-face::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 2;
+  height: calc(14 * var(--k));
+  background: var(--livro-destaque);
+}
+
+.revista-titulo {
+  top: calc(40 * var(--k));
+  left: calc(36 * var(--k));
+  font-weight: 800;
+  font-size: calc(64 * var(--k));
+  line-height: calc(64 * var(--k));
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+
+.revista-complemento {
+  top: calc(104 * var(--k));
+  left: calc(38 * var(--k));
+  font-family: var(--font-livro-italico);
+  font-style: italic;
+  font-weight: 500;
+  font-size: calc(44 * var(--k));
+  line-height: calc(48 * var(--k));
+  white-space: nowrap;
+  color: var(--livro-destaque);
+  font-variation-settings: "opsz" 44;
+}
+
+/* Linha de dados: fio de 2 em cima e de 1 embaixo, com 8 de respiro. */
+.revista-dados {
+  top: calc(168 * var(--k));
+  left: calc(36 * var(--k));
+  display: flex;
+  justify-content: space-between;
+  width: calc(408 * var(--k));
+  padding: calc(8 * var(--k)) 0;
+  border-top: max(1px, calc(2 * var(--k))) solid currentColor;
+  border-bottom: max(1px, var(--k)) solid currentColor;
+  font-weight: 700;
+  font-size: calc(12 * var(--k));
+  line-height: 1;
+  letter-spacing: 0.16em;
+}
+
+.revista-rotulo {
+  top: calc(232 * var(--k));
+  left: calc(38 * var(--k));
+  font-family: var(--font-livro-italico);
+  font-style: italic;
+  font-size: calc(18 * var(--k));
+  line-height: 1;
+  font-variation-settings: "opsz" 18;
+}
+
+.revista-numero {
+  top: calc(238 * var(--k));
+  left: calc(26 * var(--k));
+  font-weight: 800;
+  font-size: calc(250 * var(--k));
+  line-height: calc(250 * var(--k));
+  letter-spacing: -0.06em;
+  color: var(--livro-destaque);
+  /* Proporcionais, como na referência: na Bitter, os alinhados são de largura fixa por padrão. */
+  font-variant-numeric: lining-nums proportional-nums;
+}
+
+/* Lista de edições, à direita do número: a atual em Bitter 800, no destaque. */
+.revista-edicoes {
+  top: calc(262 * var(--k));
+  left: calc(300 * var(--k));
+  width: calc(144 * var(--k));
+  padding: 0;
+  list-style: none;
+}
+
+.revista-edicoes li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: calc(6 * var(--k));
+  padding: calc(9 * var(--k)) 0 calc(8 * var(--k));
+  border-top: max(1px, var(--k)) solid color-mix(in oklab, currentColor 28%, transparent);
+  font-weight: 600;
+  font-size: calc(17 * var(--k));
+  line-height: 1;
+}
+
+.revista-edicoes em {
+  font-family: var(--font-livro-italico);
+  font-weight: 400;
+  font-size: calc(15 * var(--k));
+  opacity: 0.8;
+  font-variation-settings: "opsz" 15;
+}
+
+.revista-edicoes .atual {
+  font-weight: 800;
+  color: var(--livro-destaque);
+}
+
+.revista-edicoes .atual em {
+  opacity: 1;
+}
+
+/* A tarja do material especial: faixa escura, barra no destaque, título, linha e a seta. */
+.revista-tarja {
+  top: calc(498 * var(--k));
+  right: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  height: calc(78 * var(--k));
+  padding: 0 calc(36 * var(--k)) 0 calc(28 * var(--k));
+  border-left: calc(10 * var(--k)) solid var(--livro-destaque);
+  background: var(--livro-tinta-papel);
+  color: var(--livro-papel);
+}
+
+.revista-tarja p strong {
+  display: block;
+  font-weight: 800;
+  font-size: calc(25 * var(--k));
+  line-height: calc(28 * var(--k));
+}
+
+.revista-tarja p span {
+  display: block;
+  font-family: var(--font-livro-italico);
+  font-style: italic;
+  font-size: calc(19 * var(--k));
+  line-height: calc(24 * var(--k));
+  color: color-mix(in oklab, var(--livro-destaque), var(--livro-papel) 42%);
+  font-variation-settings: "opsz" 19;
+}
+
+.revista-seta {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: calc(36 * var(--k));
+  height: calc(36 * var(--k));
+  margin-left: auto;
+  border: max(1px, calc(2 * var(--k))) solid var(--livro-destaque);
+  border-radius: 50%;
+  color: var(--livro-destaque);
+}
+
+.revista-seta svg {
+  width: 52%;
+  height: 52%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: max(1px, calc(2.2 * var(--k)));
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* O rodapé: o emblema à esquerda, o subtítulo e a assinatura ao lado. */
+.revista-emblema {
+  --serie-papel: var(--livro-papel);
+  --traco-lombada: max(0.7px, calc(1.2 * var(--k)));
+  top: calc(588 * var(--k));
+  left: calc(36 * var(--k));
+  width: calc(114 * var(--k));
+  height: calc(106 * var(--k));
+}
+
+.revista-subtitulo {
+  top: calc(598 * var(--k));
+  left: calc(172 * var(--k));
+  width: calc(272 * var(--k));
+  font-family: var(--font-livro-italico);
+  font-style: italic;
+  font-size: calc(20 * var(--k));
+  line-height: calc(27 * var(--k));
+  font-variation-settings: "opsz" 20;
+}
+
+.capa.de-serie .capa-assinatura {
+  top: calc(664 * var(--k));
+  right: auto;
+  left: calc(172 * var(--k));
+  text-align: left;
+}
+
+/* ---------- lombada em pé (estante, face do livro 3D e página do livro) ---------- */
+
+/*
+ * Categoria, de cima para baixo: ícone no bloco de cor, título e número no papel. O papel tem 400 de
+ * altura, medidos da base (na estante, a divisão forma uma linha contínua); no livro 3D, a lombada
+ * tem a altura da capa e o bloco de cor passa a 300 de 720, alinhado com a capa.
+ */
+.lombada-visual {
+  --papel-h: calc(400 * var(--u));
+  font-variant-numeric: lining-nums;
+  position: relative;
+  border-radius: max(1.5px, calc(3 * var(--u))) max(1.5px, calc(3 * var(--u))) max(1px, var(--u)) max(1px, var(--u));
+  background:
+    var(--grao) 0 0 / 180px 180px,
+    linear-gradient(
+      90deg,
+      rgb(0 0 0 / 0.22) 0%,
+      rgb(0 0 0 / 0.03) 12%,
+      rgb(255 255 255 / 0.08) 42%,
+      rgb(0 0 0 / 0.06) 86%,
+      rgb(0 0 0 / 0.26) 100%
+    ),
+    linear-gradient(0deg, var(--livro-papel) var(--papel-h), var(--livro-cor) var(--papel-h));
+  box-shadow:
+    0 1px 0 rgb(0 0 0 / 0.18),
+    calc(5 * var(--u)) 0 calc(12 * var(--u)) rgb(0 0 0 / 0.1);
+  color: var(--livro-destaque);
+  font-family: var(--font-livro);
+}
+
+/* O ícone, girado 90°, centrado no bloco de cor. */
+.icone-lombada {
+  --lombada-cor: var(--livro-cor);
+  /* Acompanha a escala da lombada, com piso: 0,75px na estante e mais grosso no livro aberto. */
+  --traco-lombada: max(0.75px, calc(1.3 * var(--u)));
+  position: absolute;
+  top: calc(32 * var(--u));
+  right: calc(22 * var(--u));
+  bottom: calc(var(--papel-h) + 32 * var(--u));
+  left: calc(22 * var(--u));
+  color: var(--livro-tinta);
+}
+
+.titulo-lombada,
+.numero-lombada {
+  position: absolute;
+  left: 50%;
+  margin: 0;
+  translate: -50% 0;
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+  color: var(--livro-destaque);
+}
+
+.titulo-lombada {
+  top: calc(100% - var(--papel-h) + 26 * var(--u));
+  font-weight: 800;
+  font-size: calc(30 * var(--u));
+  line-height: calc(33 * var(--u));
+  letter-spacing: -0.01em;
+}
+
+.numero-lombada {
+  bottom: calc(26 * var(--u));
+  font-weight: 700;
+  font-size: calc(28 * var(--u));
+  line-height: 1;
   font-variant-numeric: lining-nums;
 }
 
-.lombada-visual .faixa-pe {
-  margin-top: calc(8 * var(--u));
-}
-
-/* Série: couro com nervuras e fita marcadora saindo do topo. */
+/*
+ * Série (revista): papel, fina, com a faixa de 14 no destaque no topo; o emblema girado, o título
+ * na vertical (a palavra principal e o complemento em itálico no destaque) e o número no pé.
+ */
 .lombada-visual.de-serie {
-  background-image: linear-gradient(90deg, rgb(0 0 0 / 0.3), rgb(255 255 255 / 0.1) 20%, rgb(255 255 255 / 0) 45%, rgb(0 0 0 / 0.25));
+  --papel-h: calc(100% - 14 * var(--u));
 }
 
-.lombada-visual.de-serie .faixa {
-  width: 100%;
-  height: calc(6 * var(--u));
-  padding: 0;
-  border: 0;
-  opacity: 1;
-  background: rgb(0 0 0 / 0.28);
-  box-shadow:
-    0 1px 0 rgb(255 255 255 / 0.14),
-    0 -1px 0 rgb(255 255 255 / 0.08);
-}
-
-.lombada-visual.de-serie .faixa + .faixa {
-  margin-top: calc(4 * var(--u));
-}
-
-.lombada-visual.de-serie .nome-lombada {
-  margin-top: calc(10 * var(--u));
-}
-
-.lombada-visual.de-serie .conta-lombada {
-  margin-top: calc(7 * var(--u));
-}
-
-.lombada-visual.de-serie .nome-lombada {
-  font-weight: 600;
-  font-style: italic;
-  letter-spacing: 0.02em;
-}
-
-.fita-marcadora {
+.emblema-lombada {
+  --serie-papel: var(--livro-papel);
+  --traco-lombada: max(0.75px, calc(1.3 * var(--u)));
   position: absolute;
-  top: calc(-18 * var(--u));
-  left: 58%;
-  width: calc(7 * var(--u));
-  height: calc(24 * var(--u));
-  background: var(--fita);
-  clip-path: polygon(0 0, 50% 22%, 100% 0, 100% 100%, 0 100%);
+  top: calc(40 * var(--u));
+  right: calc(12 * var(--u));
+  left: calc(12 * var(--u));
+  height: calc(60 * var(--u));
+  color: var(--livro-tinta-papel);
 }
 
-/* ---------- livro 3D e capa ---------- */
+.de-serie .titulo-lombada {
+  top: calc(130 * var(--u));
+  font-size: calc(26 * var(--u));
+  line-height: 1;
+  color: var(--livro-tinta-papel);
+}
 
+.de-serie .titulo-lombada em {
+  font-family: var(--font-livro-italico);
+  font-variation-settings: "opsz" 26;
+  font-weight: 500;
+  color: var(--livro-destaque);
+}
+
+.de-serie .numero-lombada {
+  bottom: calc(28 * var(--u));
+  font-weight: 800;
+  font-size: calc(26 * var(--u));
+}
+
+/* ---------- livro 3D: a lombada gira e mostra a capa (gaveta e página do livro) ---------- */
+
+/*
+ * --sw (lombada), --cw (capa) e --bh (altura) em px; --x0 e --x1 deslocam o livro para ficar no
+ * centro com a lombada de frente e depois de girar. O livro aberto fica em três quartos, com a
+ * lombada e a capa à vista (--giro), como na página do livro (D29).
+ */
 .livro-3d-caixa {
   position: relative;
   justify-self: center;
@@ -109,6 +550,7 @@
 }
 
 .livro-3d {
+  --giro: -62deg;
   position: absolute;
   top: 0;
   left: 0;
@@ -121,7 +563,7 @@
 }
 
 .livro-3d.virado {
-  transform: translateX(var(--x1)) rotateY(-90deg);
+  transform: translateX(var(--x1)) rotateY(var(--giro));
 }
 
 .livro-3d.fechando {
@@ -129,9 +571,14 @@
   transition-timing-function: cubic-bezier(0.5, 0, 0.6, 1);
 }
 
+/* A lombada assume a altura da capa; o bloco de cor vai a 300 de 720 (o papel, a 420). */
 .face-lombada {
   position: absolute;
   inset: 0;
+}
+
+.face-lombada.lombada-visual:not(.de-serie) {
+  --papel-h: calc(100% * 420 / 720);
 }
 
 .face-capa {
@@ -145,114 +592,33 @@
 }
 
 /* Luz: a lombada escurece e a capa clareia enquanto o livro gira. */
-.face-lombada::after,
-.face-capa::after {
-  content: "";
+.face-lombada > .luz,
+.face-capa > .luz {
   position: absolute;
   inset: 0;
+  z-index: 4;
   border-radius: inherit;
-  background: #000;
+  background: rgb(0 0 0);
   pointer-events: none;
   transition: opacity 0.95s;
 }
 
-.livro-3d.fechando .face-lombada::after,
-.livro-3d.fechando .face-capa::after {
+.livro-3d.fechando .luz {
   transition-duration: 0.6s;
 }
 
-.face-lombada::after {
+.face-lombada > .luz {
   opacity: 0;
 }
 
-.face-capa::after {
+.face-capa > .luz {
   opacity: 0.4;
 }
 
-.livro-3d.virado .face-lombada::after {
-  opacity: 0.45;
+.livro-3d.virado .face-lombada > .luz {
+  opacity: 0.22;
 }
 
-.livro-3d.virado .face-capa::after {
+.livro-3d.virado .face-capa > .luz {
   opacity: 0;
-}
-
-.capa {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  padding: 9% 9% 8% 13%;
-  border-radius: 2px 5px 5px 2px;
-  background-color: var(--tecido);
-  background-image:
-    linear-gradient(90deg, rgb(0 0 0 / 0.24) 0, rgb(0 0 0 / 0.05) 4%, rgb(255 255 255 / 0.07) 5.5%, rgb(255 255 255 / 0) 9%),
-    var(--tecido-trama);
-  box-shadow: var(--ergue);
-  color: var(--texto);
-  container-type: inline-size;
-}
-
-.capa .filete {
-  height: 0;
-  padding-top: 3px;
-  border-top: 1px solid currentColor;
-  border-bottom: 1px solid currentColor;
-  opacity: 0.5;
-}
-
-.capa .titulo-capa {
-  margin: 16% 0 0;
-  font-family: var(--font-titulo);
-  font-weight: 800;
-  font-size: var(--cvf, 12cqw);
-  line-height: 1.05;
-}
-
-.capa .descricao-capa {
-  margin: 6% 0 0;
-  font-size: max(11px, 5.8cqw);
-  font-style: italic;
-  line-height: 1.4;
-  opacity: 0.88;
-}
-
-.capa .pe-capa {
-  margin-top: auto;
-  font-size: max(11px, 5.6cqw);
-  line-height: 1.4;
-  opacity: 0.88;
-}
-
-.capa .autor-capa {
-  font-family: var(--font-titulo);
-  font-weight: 600;
-}
-
-.capa.de-serie {
-  background-image: linear-gradient(90deg, rgb(0 0 0 / 0.3) 0, rgb(0 0 0 / 0.06) 4%, rgb(255 255 255 / 0.08) 5.5%, rgb(255 255 255 / 0) 9%);
-}
-
-.capa.de-serie::before {
-  content: "";
-  position: absolute;
-  inset: 6% 6% 6% 10%;
-  border: 1px solid currentColor;
-  outline: 1px solid currentColor;
-  outline-offset: -5px;
-  opacity: 0.55;
-  pointer-events: none;
-}
-
-.capa.de-serie .tipo-capa {
-  margin: 14% 0 0;
-  font-size: max(11px, 5.4cqw);
-  opacity: 0.85;
-}
-
-.capa.de-serie .titulo-capa {
-  margin-top: 4%;
-  font-style: italic;
-  font-weight: 700;
 }

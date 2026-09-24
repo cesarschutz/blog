@@ -4,7 +4,7 @@ published: 2026-05-19
 updated: 2026-09-16
 description: "Um evento rico em contexto por requisição, no lugar de dezenas de logs parciais: as canonical log lines da Stripe, cardinalidade e Observability 2.0, um filtro em Spring Boot e tail sampling."
 tags: [Logs, Spring]
-category: Observabilidade
+category: SRE
 draft: false
 ---
 

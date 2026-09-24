@@ -13,6 +13,7 @@ import "../styles/fontes.css";
 import "../styles/base.css";
 import "../styles/desenho.css";
 import { cssDosTokens } from "../styles/tokens";
+import { GRAO_CSS } from "../lib/livros-svg";
 import DefinicoesDesenho from "../components/DefinicoesDesenho.astro";
 
 interface Props {
@@ -29,7 +30,7 @@ const { titulo } = Astro.props;
     <meta name="robots" content="noindex" />
     <meta name="viewport" content="width=1200" />
     <title>{titulo}</title>
-    <style is:inline set:html={cssDosTokens()}></style>
+    <style is:inline set:html={`${cssDosTokens()}:root{--grao:${GRAO_CSS}}`}></style>
   </head>
   <body class="imagem">
     <DefinicoesDesenho />
