@@ -36,11 +36,10 @@ const modificadoEm = Object.fromEntries(
 );
 
 // URLs antigas que continuam valendo (D7). /about/ tem página própria, para levar a âncora #site.
+// /2/ e /3/ voltaram a ser as páginas da home (D27).
 const redirecionamentos = {
   "/projects": comBase("/"),
   "/exercicios": comBase("/"),
-  "/2": comBase("/archive/"),
-  "/3": comBase("/archive/"),
   ...Object.fromEntries(
     Object.entries(ABSORBED)
       .filter(([v]) => !existsSync(`${PASTA_POSTS}/java-${v}.md`))
@@ -73,12 +72,12 @@ export default defineConfig({
       defaultProps: { showLineNumbers: false },
       minSyntaxHighlightingColorContrast: 5.5,
       styleOverrides: {
-        borderRadius: "6px",
+        borderRadius: "8px",
         borderColor: "var(--rule)",
         codeFontFamily: "var(--font-codigo)",
         codeFontSize: "14px",
         codeLineHeight: "1.65",
-        uiFontFamily: "var(--font-texto)",
+        uiFontFamily: "var(--font-ui)",
         uiFontSize: "14px",
         frames: {
           shadowColor: "transparent",

@@ -1,0 +1,152 @@
+---
+/**
+ * Topo da página de categoria (D29): uma folha com o livro em pé num painel tingido pela cor da
+ * categoria e, ao lado, a trilha, o nome, a descrição, a contagem e as tags mais usadas nela. O livro
+ * chega da pilha do painel por transição de página (LivroEmPe).
+ */
+import LivroEmPe from "./LivroEmPe.astro";
+import type { Livro } from "../lib/estante";
+import { urlTag } from "../lib/posts";
+import { url } from "../lib/url";
+
+interface Props {
+  livro: Livro;
+}
+
+const { livro } = Astro.props;
+// As tags mais usadas nos artigos desta categoria.
+const contagem = new Map<string, number>();
+for (const p of livro.posts) for (const t of p.tags) contagem.set(t, (contagem.get(t) ?? 0) + 1);
+const tags = [...contagem]
+  .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "pt-BR"))
+  .slice(0, 6)
+  .map(([nome]) => nome);
+---
+
+<header class="topo-categoria folha" style={`--cor:${livro.tecido}`}>
+  <div class="palco painel">
+    <LivroEmPe livro={livro} />
+  </div>
+  <div class="texto">
+    <a class="trilha" href={url("/categories/")}>Categorias</a>
+    <h1>{livro.nome}</h1>
+    <p class="descricao">{livro.descricao}</p>
+    <p class="conta">{livro.contagem}</p>
+    {
+      tags.length > 0 && (
+        <ul class="tags" aria-label="Tags mais usadas nesta categoria">
+          {tags.map((t) => (
+            <li>
+              <a class="pilula" href={urlTag(t)} data-busca-tag={t}>
+                #{t}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</header>
+
+<style>
+  .topo-categoria {
+    display: grid;
+    grid-template-columns: minmax(250px, 34%) minmax(0, 1fr);
+    gap: clamp(22px, 3vw, 40px);
+    align-items: center;
+    padding: 14px clamp(22px, 3vw, 40px) 14px 14px;
+  }
+
+  /* O palco do livro: o painel tingido, como o dos desenhos (D26). */
+  .palco {
+    display: grid;
+    place-items: center;
+    min-height: 300px;
+    padding: 24px;
+  }
+
+  /* O título acompanha a largura da coluna: "Observabilidade" cabe inteiro no celular. */
+  .texto {
+    container-type: inline-size;
+    min-width: 0;
+  }
+
+  .trilha {
+    font-family: var(--font-ui);
+    font-size: 14.5px;
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+
+  .trilha:hover {
+    color: var(--acento);
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+
+  h1 {
+    margin: 6px 0 0;
+    font-weight: 800;
+    font-size: clamp(24px, 10cqi, 56px);
+    line-height: 1.02;
+    letter-spacing: -0.012em;
+  }
+
+  .descricao {
+    max-width: 48ch;
+    margin: 12px 0 0;
+    font-size: 19px;
+    line-height: 1.5;
+    color: var(--ink-2);
+  }
+
+  /* O quadradinho na cor da categoria, como no chip (D26). */
+  .conta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 16px 0 0;
+    font-family: var(--font-ui);
+    font-size: 14.5px;
+    color: var(--ink-2);
+    font-variant-numeric: lining-nums;
+  }
+
+  .conta::before {
+    content: "";
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    background: color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro));
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 18px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tags .pilula {
+    min-height: 30px;
+    padding: 3px 11px;
+    font-size: 13.5px;
+  }
+
+  @media (max-width: 760px) {
+    .topo-categoria {
+      grid-template-columns: minmax(0, 1fr);
+      padding: 12px 12px 24px;
+    }
+
+    .palco {
+      min-height: 280px;
+    }
+
+    .texto {
+      padding: 0 10px;
+    }
+  }
+</style>

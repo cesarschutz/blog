@@ -18,11 +18,15 @@ Onde protótipo e briefing divergirem, vale o briefing.
 - **Uma cor só**, a da categoria do post, aplicada como preenchimento levemente fora do registro
   (deslocado alguns pixels do contorno). O resto é tinta (`--ink`). No tema escuro, o destaque usa a
   cor da categoria misturada com 42% de branco.
-- **Sem fundo próprio.** O desenho fica direto sobre a página, e as áreas preenchidas usam a cor da
-  superfície onde ele aparece (`var(--fig-bg, var(--paper))`). Assim funciona igual nos dois temas e
-  dentro dos slides.
+- **Sem fundo próprio.** O SVG não pinta fundo, e as áreas preenchidas usam a cor da superfície
+  onde ele aparece (`var(--fig-bg, var(--paper))`). Assim funciona igual nos dois temas e dentro
+  dos slides.
+- **Palco (D26).** No site, todo desenho fica num painel tingido pela cor da categoria (classe
+  `.painel`): a cor misturada à superfície, com 11% no tema claro e 20% no escuro. O painel define
+  `--fig-bg`, então as áreas preenchidas ficam na mesma cor dele. Dentro de uma folha, o painel tem
+  raio de 10px; encostado na borda da folha (topo do artigo, card), o canto vem da folha.
 - **Espessura do traço definida pelo CSS** conforme o tamanho em que o desenho aparece: mais grossa
-  na miniatura, mais fina no topo do artigo.
+  na miniatura, mais fina no topo do artigo. No painel, 20% mais grossa, para não sumir no fundo de cor.
 - **Anotações** em Literata itálica, com linha de chamada, só nos recortes grandes. Somem no celular
   e nas miniaturas.
 - **Proibido:** cores fixas no SVG, degradês, sombras, `<image>`, fontes de letra de mão, emojis e
@@ -35,8 +39,9 @@ Onde protótipo e briefing divergirem, vale o briefing.
 | Tremor | `feTurbulence` `fractalNoise` com `baseFrequency` 0.018, `numOctaves` 2 e `seed` 7, seguido de `feDisplacementMap` com `scale` 4 (canais R e G). Aplicado só no grupo dos traços, para os textos ficarem nítidos |
 | Hachura | Linhas a 45°, a cada 7 unidades, traço 1 na cor da tinta, opacidade .75. Funciona como sombra: uma cópia da forma deslocada para baixo e para a direita (+14 em objetos grandes, +7 em caixas) |
 | Linha fantasma | `stroke-dasharray: 24 8 4 8 4 8` (um traço longo e dois pontos), traço 2,4 |
-| Cor fora do registro | Cópia da forma deslocada `translate(7 6)`, por baixo do contorno. A cor é 62% do destaque misturado com a superfície |
-| Espessura (unidades do desenho) | 3 no topo do artigo, 3,6 em cards e destaque, 7 na miniatura quadrada |
+| Cor fora do registro | Cópia da forma deslocada `translate(7 6)`, por baixo do contorno. A cor é 78% do destaque misturado com a superfície (era 62% até a D26) |
+| Espessura (unidades do desenho) | 3 no topo do artigo, 3,6 em cards e destaque, 7 na miniatura quadrada; no painel, ×1,2 (`--traco-no-painel`): 3,6, 4,3 e 8,4 |
+| Painel (palco) | `color-mix(in oklab, cor da categoria 11%, superfície)` no claro e 20% no escuro; raio de 10px |
 | Anotações | Literata itálica: 25 na linha principal (`--ink`) e 20 no complemento (`--ink-2`). Linha de chamada curva em `--ink-2`, com traço 1,8 |
 | Carimbo | Contorno na cor de destaque e texto em Besley 800 |
 

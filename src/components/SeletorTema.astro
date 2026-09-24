@@ -1,8 +1,9 @@
 ---
 /**
- * Alternância de tema: claro, escuro ou sistema, guardada no navegador (`cs-theme`, a mesma chave
- * do blog atual, para quem já escolheu não perder a escolha). Sem JS, o seletor fica escondido e o
- * tema segue o sistema. O script anti-piscada fica no layout.
+ * Alternância de tema no rodapé: claro, escuro ou sistema, guardada no navegador (`cs-theme`, a
+ * mesma chave do blog atual, para quem já escolheu não perder a escolha). Fica em sincronia com o
+ * botão do cabeçalho (src/scripts/tema.ts). Sem JS, o seletor fica escondido e o tema segue o
+ * sistema. O script anti-piscada fica no layout.
  */
 ---
 
@@ -16,50 +17,16 @@
 </div>
 
 <script>
-  const CHAVE = "cs-theme";
-  const raiz = document.documentElement;
-  const caixa = document.querySelector<HTMLElement>("[data-tema]");
+  import { aoMudarTema, aplicarTema, lerEscolha, type Escolha } from "../scripts/tema";
 
+  const caixa = document.querySelector<HTMLElement>("[data-tema]");
   if (caixa) {
     const botoes = [...caixa.querySelectorAll<HTMLButtonElement>("button")];
-    const metas = [...document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')];
-    const originais = metas.map((meta) => meta.content);
-
-    const lerEscolha = () => {
-      try {
-        return localStorage.getItem(CHAVE) ?? "";
-      } catch {
-        return "";
-      }
-    };
-
-    // A barra do navegador acompanha a escolha; em "sistema", volta às cores por media query.
-    const pintarBarra = (valor: string) => {
-      const papel = getComputedStyle(raiz).getPropertyValue("--paper").trim();
-      metas.forEach((meta, i) => (meta.content = valor ? papel : originais[i]));
-    };
-
-    const marcar = (valor: string) => {
-      botoes.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.valor === valor)));
-    };
-
-    const aplicar = (valor: string) => {
-      if (valor) raiz.dataset.theme = valor;
-      else delete raiz.dataset.theme;
-      try {
-        if (valor) localStorage.setItem(CHAVE, valor);
-        else localStorage.removeItem(CHAVE);
-      } catch {
-        // Navegação privada ou armazenamento bloqueado: a escolha vale só nesta página.
-      }
-      marcar(valor);
-      pintarBarra(valor);
-    };
-
-    botoes.forEach((b) => b.addEventListener("click", () => aplicar(b.dataset.valor ?? "")));
-    const escolha = lerEscolha();
-    marcar(escolha);
-    pintarBarra(escolha);
+    botoes.forEach((b) => b.addEventListener("click", () => aplicarTema((b.dataset.valor ?? "") as Escolha)));
+    aoMudarTema(() => {
+      const escolha = lerEscolha();
+      botoes.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.valor === escolha)));
+    });
     caixa.hidden = false;
   }
 </script>
@@ -86,11 +53,11 @@
   }
 
   .tema button:hover {
-    color: var(--ink);
+    color: var(--acento);
   }
 
   .tema button[aria-pressed="true"] {
-    color: var(--ink);
+    color: var(--acento);
     text-decoration: underline;
     text-decoration-thickness: 2px;
     text-underline-offset: 0.4em;

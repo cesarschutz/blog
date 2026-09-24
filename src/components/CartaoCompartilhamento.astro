@@ -1,8 +1,9 @@
 ---
 /**
- * Imagem de compartilhamento, 1200×630 (briefing §5.4, protótipo "A + C"): título e subtítulo à
- * esquerda, o recorte "og" da ilustração do post à direita, nome do blog e categoria. Sem
- * ilustração, o texto ocupa a largura toda. A versão padrão (páginas que não são post) mostra a estante.
+ * Imagem de compartilhamento, 1200×630 (briefing §5.4, protótipo "A + C", D26): sobre a folha, título
+ * e subtítulo à esquerda, o recorte "og" da ilustração do post à direita, no painel tingido pela cor
+ * da categoria, nome do blog e categoria. Sem ilustração, o texto ocupa a largura toda. A versão
+ * padrão (páginas que não são post) mostra a estante.
  */
 import Chip from "./Chip.astro";
 import Estante from "./Estante.astro";
@@ -43,7 +44,7 @@ const corpoDoTitulo = titulo.length > 60 ? 54 : titulo.length > 42 ? 62 : titulo
   </div>
   {
     comDesenho && (
-      <div class="arte">
+      <div class="arte painel" style={`--cor:${cor}`}>
         <Ilustracao slug={slug!} recorte="og" cor={cor} tamanho="cartao" decorativa />
       </div>
     )
@@ -59,7 +60,6 @@ const corpoDoTitulo = titulo.length > 60 ? 54 : titulo.length > 42 ? 62 : titulo
 
 <style>
   .cartao-og {
-    --fig-bg: var(--paper-hi);
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     width: 1200px;
@@ -88,7 +88,7 @@ const corpoDoTitulo = titulo.length > 60 ? 54 : titulo.length > 42 ? 62 : titulo
   .titulo {
     margin-top: auto;
     font-family: var(--font-titulo);
-    font-weight: 800;
+    font-weight: 700;
     line-height: 1.02;
     letter-spacing: -0.01em;
     text-wrap: balance;
@@ -104,8 +104,8 @@ const corpoDoTitulo = titulo.length > 60 ? 54 : titulo.length > 42 ? 62 : titulo
 
   .rotulo {
     margin-top: 36px;
+    font-family: var(--font-ui);
     font-size: 26px;
-    color: var(--ink-2);
   }
 
   /* O chip da categoria, maior, para a escala da imagem. */
@@ -113,14 +113,21 @@ const corpoDoTitulo = titulo.length > 60 ? 54 : titulo.length > 42 ? 62 : titulo
     gap: 14px;
   }
 
-  .rotulo :global(.lombadinha) {
-    width: 11px;
-    height: 29px;
+  .rotulo :global(.quadradinho) {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
   }
 
   .arte {
     position: relative;
     min-width: 0;
+  }
+
+  /* O painel com o desenho, afastado das bordas da imagem e com o canto na escala dela. */
+  .arte.painel {
+    margin: 36px 36px 36px 0;
+    border-radius: 22px;
   }
 
   .arte :global(.ilustracao) {

@@ -1,9 +1,10 @@
 ---
 /**
- * Página do artigo (briefing §5.3), na grade do protótipo: sumário lateral à esquerda (≥ 1300px),
- * texto em até 680px no centro e a margem direita para as notas laterais (≥ 1180px). Avisos, notas
- * e a apresentação saem do Markdown (src/plugins); as interações ficam em src/scripts/artigo.ts. A
- * ilustração do topo entra na Fase 5.
+ * Página do artigo (briefing §5.3), em folhas (D26): o topo (desenho e título) numa folha e o corpo
+ * em outra, com o texto em até 680px; em telas ≥ 1300px, o sumário vai para a direita, numa folha
+ * própria e fixa. As notas laterais vão para a margem direita da folha do corpo (≥ 1180px) quando o
+ * sumário não está ao lado; com ele, abrem no lugar. Avisos, notas e a apresentação saem do Markdown
+ * (src/plugins); as interações ficam em src/scripts/artigo.ts.
  */
 import { render } from "astro:content";
 import Base from "../../layouts/Base.astro";
@@ -67,32 +68,32 @@ const jsonLd = {
 >
   {remarkPluginFrontmatter?.temMatematica && <link slot="head" rel="stylesheet" href={url("/katex/katex.min.css")} />}
   <BarraLeitura cor={resumo.cor} />
-  <article class="artigo" data-artigo data-pagefind-body style={`--cor:${resumo.cor}`}>
-    <div class="wrap">
-      <TopoArtigo post={resumo} />
-    </div>
-    <div class="grade">
+  <article class="artigo wrap" data-artigo data-pagefind-body style={`--cor:${resumo.cor}`}>
+    <TopoArtigo post={resumo} />
+    <div class:list={["artigo-grade", { "com-sumario": temSumario }]}>
       {temSumario && <Sumario secoes={secoes} variante="lateral" />}
-      <div class="corpo">
-        <div class="prose" data-corpo>
-          {temSumario && <Sumario secoes={secoes} variante="recolhivel" />}
-          <Content />
+      <div class="folha artigo-folha">
+        <div class="artigo-corpo">
+          <div class="prose" data-corpo>
+            {temSumario && <Sumario secoes={secoes} variante="recolhivel" />}
+            <Content />
+          </div>
+          <!-- Para o Pagefind (motor B da D2): a palavra de cada tag entra no índice; metadados, filtro e
+               ordem por data, não. -->
+          <p hidden>{post.data.tags.map(palavraDaTag).join(" ")}</p>
+          <div hidden data-pagefind-ignore>
+            <span data-pagefind-sort="data">{dataIso(post.data.published)}</span>
+            <span data-pagefind-meta="rotulo">{resumo.rotulo}</span>
+            <span data-pagefind-meta="data">{dataPorExtenso(post.data.published)}</span>
+            <span data-pagefind-meta="descricao">{semMd(post.data.description)}</span>
+            <span data-pagefind-meta="tags">{post.data.tags.join(", ")}</span>
+            {post.data.tags.map((t) => <span data-pagefind-filter="tag">{t}</span>)}
+          </div>
+          <div data-pagefind-ignore>
+            <RodapeArtigo post={resumo} endereco={endereco} anterior={anterior} proximo={proximo} naSerie={naSerie} />
+          </div>
+          {COMENTARIOS_LIGADOS && <Comentarios />}
         </div>
-        <!-- Para o Pagefind (motor B da D2): a palavra de cada tag entra no índice; metadados, filtro e
-             ordem por data, não. -->
-        <p hidden>{post.data.tags.map(palavraDaTag).join(" ")}</p>
-        <div hidden data-pagefind-ignore>
-          <span data-pagefind-sort="data">{dataIso(post.data.published)}</span>
-          <span data-pagefind-meta="rotulo">{resumo.rotulo}</span>
-          <span data-pagefind-meta="data">{dataPorExtenso(post.data.published)}</span>
-          <span data-pagefind-meta="descricao">{semMd(post.data.description)}</span>
-          <span data-pagefind-meta="tags">{post.data.tags.join(", ")}</span>
-          {post.data.tags.map((t) => <span data-pagefind-filter="tag">{t}</span>)}
-        </div>
-        <div data-pagefind-ignore>
-          <RodapeArtigo post={resumo} endereco={endereco} anterior={anterior} proximo={proximo} naSerie={naSerie} />
-        </div>
-        {COMENTARIOS_LIGADOS && <Comentarios />}
       </div>
     </div>
   </article>
@@ -104,17 +105,14 @@ const jsonLd = {
 </script>
 
 <style>
-  /* Contêiner: as lousas largas (LousaPassos) se medem pela largura da grade, sem depender de vw. */
-  .grade {
-    container-type: inline-size;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) min(var(--coluna), 100%) minmax(0, 1fr);
-    margin-top: 40px;
-    padding-inline: var(--pad);
+  /* A grade (folha do corpo e sumário à direita) fica em artigo.css, que as amostras do dev também usam. */
+  .artigo {
+    padding-top: 30px;
   }
 
-  .corpo {
-    grid-column: 2;
-    min-width: 0;
+  @media (max-width: 760px) {
+    .artigo {
+      padding-top: 20px;
+    }
   }
 </style>

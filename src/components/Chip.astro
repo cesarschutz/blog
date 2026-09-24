@@ -1,7 +1,8 @@
 ---
 /**
- * Lombada em miniatura na cor da categoria (ou da série), seguida do nome. No tema escuro, a cor
- * leva 42% de branco (D22). Com `href`, vira link.
+ * Chip da categoria (ou da série), D26: um quadradinho na cor, seguido do nome tingido pela mesma
+ * cor (no claro, com 30% de tinta; no escuro, com 50% de branco: --chip-tinta e --chip-branco, dos
+ * tokens). No tema escuro, o quadradinho leva 42% de branco (D22). Com `href`, vira link.
  */
 interface Props {
   cor: string;
@@ -13,14 +14,15 @@ const { cor, nome, href } = Astro.props;
 const Tag = href ? "a" : "span";
 ---
 
-<Tag class="chip" href={href} style={`--cor:${cor}`}><span class="lombadinha" aria-hidden="true"></span>{nome}</Tag>
+<Tag class="chip" href={href} style={`--cor:${cor}`}><span class="quadradinho" aria-hidden="true"></span>{nome}</Tag>
 
 <style>
   .chip {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
-    color: inherit;
+    gap: 8px;
+    font-weight: 500;
+    color: color-mix(in oklab, color-mix(in oklab, var(--cor), #fff var(--chip-branco)), var(--ink) var(--chip-tinta));
     text-decoration: none;
   }
 
@@ -30,14 +32,11 @@ const Tag = href ? "a" : "span";
     text-underline-offset: 0.18em;
   }
 
-  .lombadinha {
+  .quadradinho {
     flex: none;
-    width: 8px;
-    height: 20px;
-    border-radius: 1.5px;
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
     background: color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro));
-    box-shadow:
-      inset 0 2px 0 rgb(255 255 255 / 0.18),
-      inset 0 -2px 0 rgb(0 0 0 / 0.18);
   }
 </style>

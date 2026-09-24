@@ -1,8 +1,9 @@
 ---
 /**
- * Sumário do artigo (briefing §5.3), só com 3 seções ou mais. "lateral": fixo na coluna da
- * esquerda em telas ≥ 1300px, marcando a seção atual (src/scripts/artigo.ts). "recolhivel": no
- * início do texto, nas telas menores.
+ * Sumário do artigo (briefing §5.3), só com 3 seções ou mais. "lateral": em telas ≥ 1300px, à
+ * esquerda do texto, numa folha própria e fixa (D26), marcando a seção atual em azul-tinta
+ * (src/scripts/artigo.ts), com a barra de quanto já foi lido embaixo (a de cima continua; a daqui
+ * só aparece com JS). "recolhivel": no início do texto, nas telas menores.
  */
 interface Props {
   secoes: { slug: string; text: string }[];
@@ -14,7 +15,7 @@ const { secoes, variante } = Astro.props;
 
 {
   variante === "lateral" ? (
-    <aside class="lateral" data-pagefind-ignore>
+    <aside class="lateral folha" data-pagefind-ignore>
       <nav aria-label="Neste artigo">
         <p class="titulo">Neste artigo</p>
         <ol>
@@ -25,6 +26,10 @@ const { secoes, variante } = Astro.props;
           ))}
         </ol>
       </nav>
+      <div class="progresso" aria-hidden="true" hidden data-progresso-sumario>
+        <span class="trilho"><span class="feito"></span></span>
+        <span class="lido">0% lido</span>
+      </div>
     </aside>
   ) : (
     <details class="recolhivel" data-pagefind-ignore>
@@ -45,22 +50,10 @@ const { secoes, variante } = Astro.props;
 <style>
   .lateral {
     display: none;
-    grid-column: 1;
-    justify-self: end;
-    width: 200px;
-    margin-right: 48px;
-  }
-
-  .lateral nav {
-    position: sticky;
-    top: 28px;
-    max-height: calc(100vh - 56px);
-    overflow-y: auto;
-    scrollbar-width: thin;
   }
 
   .titulo {
-    margin: 0 0 8px;
+    margin: 0 0 10px;
     font-family: var(--font-titulo);
     font-weight: 700;
     font-size: 15px;
@@ -70,13 +63,49 @@ const { secoes, variante } = Astro.props;
     margin: 0;
     padding: 0;
     list-style: none;
-    font-size: 14.5px;
+    font-family: var(--font-ui);
+    font-size: 14px;
     line-height: 1.4;
+  }
+
+  .progresso {
+    flex: none;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .progresso[hidden] {
+    display: none;
+  }
+
+  .trilho {
+    display: block;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--rule);
+    overflow: hidden;
+  }
+
+  .feito {
+    display: block;
+    height: 100%;
+    background: var(--acento);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  .lido {
+    display: block;
+    margin-top: 8px;
+    font-family: var(--font-codigo);
+    font-size: 12px;
+    color: var(--ink-3);
   }
 
   .lateral a {
     display: block;
-    padding: 5px 0 5px 12px;
+    padding: 6px 0 6px 12px;
     border-left: 1px solid var(--rule);
     color: var(--ink-2);
     text-decoration: none;
@@ -88,23 +117,45 @@ const { secoes, variante } = Astro.props;
 
   .lateral a[aria-current="true"] {
     padding-left: 11px;
-    border-left: 2px solid var(--ink);
-    color: var(--ink);
+    border-left: 2px solid var(--acento);
+    color: var(--acento);
+    font-weight: 500;
   }
 
   .recolhivel ol {
     margin: 0;
     padding: 0 16px 12px 36px;
-    font-size: 16px;
+    font-family: var(--font-ui);
+    font-size: 15px;
+    line-height: 1.5;
   }
 
   .recolhivel a {
     color: var(--ink);
   }
 
+  .recolhivel a:hover {
+    color: var(--acento);
+  }
+
   @media (min-width: 1300px) {
+    /* Na coluna da esquerda da grade do artigo (artigo.css), fixa enquanto o texto rola. */
+    /* Só a lista rola, se for longa; a barra de progresso fica sempre à vista, embaixo. */
     .lateral {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      grid-column: 1;
+      grid-row: 1;
+      position: sticky;
+      top: 24px;
+      max-height: calc(100vh - 48px);
+      padding: 20px 20px 16px;
+    }
+
+    .lateral nav {
+      min-height: 0;
+      overflow-y: auto;
+      scrollbar-width: thin;
     }
 
     .recolhivel {

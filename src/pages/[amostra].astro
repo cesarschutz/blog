@@ -61,6 +61,11 @@ export function getStaticPaths() {
       <span style="font-weight:800">Besley 800</span>
       <span style="font-weight:900">Besley 900</span>
     </p>
+    <p class="interface">
+      <span style="font-weight:400">IBM Plex Sans 400: menu, datas, tags</span>
+      <span style="font-weight:500">500: categoria, botões</span>
+      <span style="font-weight:600">600: números em destaque</span>
+    </p>
     <div class="prose">
       <p>
         Texto corrido em Literata, 18,5px com entrelinha 1,72 e números em estilo antigo: em 2026 foram 26 artigos e
@@ -89,8 +94,16 @@ record Cobranca(String chave, long valorEmCentavos) {"{}"}</code></pre>
 
   h1 {
     margin: 0 0 6px;
-    font-weight: 800;
     font-size: clamp(34px, 5vw, 52px);
+  }
+
+  .interface {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 28px;
+    margin: 0 0 16px;
+    font-family: var(--font-ui);
+    font-size: 17px;
   }
 
   h2 {

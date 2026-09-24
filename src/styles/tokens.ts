@@ -1,7 +1,7 @@
 /**
- * Tokens de cor do blog (briefing §4.2). É a fonte única: daqui saem as variáveis CSS
- * (injetadas pelo layout), o teste de contraste (`npm run contraste`) e, nas próximas fases,
- * o tema do Expressive Code e a imagem de compartilhamento.
+ * Tokens de cor do blog (briefing §4.2, variação "Folhas claras" da D26). É a fonte única: daqui
+ * saem as variáveis CSS (injetadas pelo layout), o teste de contraste (`npm run contraste`), o tema
+ * do Expressive Code e a imagem de compartilhamento.
  *
  * Sem imports: o Node 24 roda este arquivo direto nos scripts.
  */
@@ -14,7 +14,8 @@ export const TOKENS = [
   "ink-2",
   "ink-3",
   "rule",
-  "link",
+  "acento",
+  "sobre-acento",
   "aviso-nota",
   "aviso-dica",
   "aviso-importante",
@@ -33,14 +34,15 @@ export type Token = (typeof TOKENS)[number];
 export type Paleta = Record<Token, string>;
 
 export const claro: Paleta = {
-  paper: "#ECEEE9",
-  "paper-hi": "#F7F8F4",
-  well: "#E0E3DC",
-  ink: "#1C2427",
-  "ink-2": "#56605E",
-  "ink-3": "#7A8381", // só texto grande ou decorativo (D22)
-  rule: "#C4CAC3",
-  link: "#244A8A",
+  paper: "#F1F0EB", // fundo da página
+  "paper-hi": "#FFFFFE", // superfície das folhas
+  well: "#F5F5F4", // código e cabeçalho de tabela: a superfície com 4% de tinta
+  ink: "#1A2124",
+  "ink-2": "#57605E",
+  "ink-3": "#868D8A", // só texto grande ou decorativo, e só sobre a folha (D22, D26)
+  rule: "#E2E0D8",
+  acento: "#2549B8", // azul-tinta: tudo que é clicável
+  "sobre-acento": "#FFFFFF",
   "aviso-nota": "#3F5878",
   "aviso-dica": "#2F6B4F", // também a linha adicionada no diff
   "aviso-importante": "#654262",
@@ -57,14 +59,15 @@ export const claro: Paleta = {
 };
 
 export const escuro: Paleta = {
-  paper: "#182022",
-  "paper-hi": "#1F282A",
-  well: "#12181A",
-  ink: "#E3E6DF",
-  "ink-2": "#A7AFAB",
-  "ink-3": "#848D89",
-  rule: "#343E40",
-  link: "#9FB8E8",
+  paper: "#111618",
+  "paper-hi": "#1A2124",
+  well: "#21282A",
+  ink: "#E7E9E4",
+  "ink-2": "#A9B0AC",
+  "ink-3": "#7F8884",
+  rule: "#2A3336",
+  acento: "#93AEFF",
+  "sobre-acento": "#0D1530",
   "aviso-nota": "#9DB3D4",
   "aviso-dica": "#86C3A2",
   "aviso-importante": "#C7A3C2",
@@ -81,10 +84,22 @@ export const escuro: Paleta = {
 };
 
 /**
- * No tema escuro, o que usa a cor da categoria (destaque dos desenhos, barra de leitura, chip)
- * leva essa porcentagem de branco na mistura (briefing §4.2 e D22).
+ * No tema escuro, o que usa a cor da categoria (destaque dos desenhos, barra de leitura, quadradinho
+ * do chip) leva essa porcentagem de branco na mistura (briefing §4.2 e D22).
  */
 export const BRANCO_NO_ESCURO = 42;
+
+/**
+ * Palco dos desenhos (D26): o painel é a cor da categoria misturada à superfície, com esta
+ * porcentagem da cor. As áreas preenchidas do desenho usam a mesma cor do painel.
+ */
+export const PAINEL = { claro: 11, escuro: 20 };
+
+/**
+ * Nome da categoria no chip, tingido (D26): no claro, a cor com 30% de tinta; no escuro, a cor com
+ * 50% de branco. `npm run contraste` confere os dois sobre a folha.
+ */
+export const CHIP = { claro: { tinta: 30, branco: 0 }, escuro: { tinta: 0, branco: 50 } };
 
 /**
  * O que a lousa tem de diferente em cada tema, além das cores: quanto da mistura entra no destaque,
@@ -111,6 +126,43 @@ export const LOUSA = {
   },
 };
 
+// ---------- mistura em oklab, igual ao color-mix(in oklab, …) do CSS ----------
+
+const canais = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
+const linear = (v: number) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+const gama = (v: number) => (v <= 0.0031308 ? 12.92 * v : 1.055 * v ** (1 / 2.4) - 0.055);
+
+function paraOklab(hex: string): number[] {
+  const [r, g, b] = canais(hex).map(linear);
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return [
+    0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
+    1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
+    0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
+  ];
+}
+
+function deOklab([L, A, B]: number[]): string {
+  const l = (L + 0.3963377774 * A + 0.2158037573 * B) ** 3;
+  const m = (L - 0.1055613458 * A - 0.0638541728 * B) ** 3;
+  const s = (L - 0.0894841775 * A - 1.291485548 * B) ** 3;
+  const rgb = [
+    4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+    -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+    -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
+  ].map(gama);
+  return "#" + rgb.map((v) => Math.round(Math.min(1, Math.max(0, v)) * 255).toString(16).padStart(2, "0")).join("").toUpperCase();
+}
+
+/** Igual a `color-mix(in oklab, a, b p%)`: `a` entra com (100 − p)% e `b` com p%. */
+export function misturar(a: string, b: string, p: number): string {
+  const x = paraOklab(a);
+  const y = paraOklab(b);
+  return deOklab(x.map((v, i) => v * (1 - p / 100) + y[i] * (p / 100)));
+}
+
 /**
  * Variáveis CSS dos dois temas. Sem `data-theme` no `<html>`, o tema segue o sistema.
  * `--branco-no-escuro` permite escrever uma vez só: color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro)).
@@ -120,9 +172,11 @@ export function cssDosTokens(): string {
   const lousa = (l: (typeof LOUSA)["claro"]) =>
     `--lousa-mistura-pct:${l.mistura}%;--lousa-caneta-traco:${l.canetaNoTraco}%;--lousa-caneta-texto:${l.canetaNoTexto}%;` +
     `--lousa-hachura:${l.hachura};--lousa-borda-largura:${l.borda};--lousa-reflexo:${l.reflexo};`;
-  const temaEscuro = `${variaveis(escuro)}${lousa(LOUSA.escuro)}--branco-no-escuro:${BRANCO_NO_ESCURO}%;color-scheme:dark;`;
+  const proporcoes = (t: "claro" | "escuro") =>
+    `--painel-mistura:${PAINEL[t]}%;--chip-tinta:${CHIP[t].tinta}%;--chip-branco:${CHIP[t].branco}%;`;
+  const temaEscuro = `${variaveis(escuro)}${lousa(LOUSA.escuro)}${proporcoes("escuro")}--branco-no-escuro:${BRANCO_NO_ESCURO}%;color-scheme:dark;`;
   return (
-    `:root{${variaveis(claro)}${lousa(LOUSA.claro)}--branco-no-escuro:0%;color-scheme:light;}` +
+    `:root{${variaveis(claro)}${lousa(LOUSA.claro)}${proporcoes("claro")}--branco-no-escuro:0%;color-scheme:light;}` +
     `@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){${temaEscuro}}}` +
     `:root[data-theme="dark"]{${temaEscuro}}`
   );

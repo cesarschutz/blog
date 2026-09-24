@@ -22,16 +22,8 @@ const quantos = grupo.posts.length === 1 ? "1 artigo marcado" : `${grupo.posts.l
 <Base titulo={`#${grupo.nome}`} descricao={`Artigos marcados com ${grupo.nome}.`} atual="tags">
   <div class="wrap">
     <CabecalhoPagina titulo={`#${grupo.nome}`} descricao={`${quantos} com ${grupo.nome}.`} trilha={{ nome: "Tags", href: url("/tags/") }} />
-    <ol class="lista">
+    <ol class="lista-artigos folha">
       {grupo.posts.map((p) => <ItemLista post={p} nivel="h2" />)}
     </ol>
   </div>
 </Base>
-
-<style>
-  .lista {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-</style>

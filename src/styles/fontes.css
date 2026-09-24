@@ -4,7 +4,8 @@
  *
  * Conta (a mesma do Capsize): size-adjust = largura média da fonte ÷ largura média da reserva;
  * ascent/descent/line-gap = métrica da fonte ÷ size-adjust. Métricas do @capsizecss/metrics 4.3.0:
- * Literata Regular contra Georgia e Besley ExtraBold contra Georgia Bold.
+ * Literata Regular contra Georgia, Besley ExtraBold contra Georgia Bold e IBM Plex Sans (Regular,
+ * Medium e SemiBold, os três pesos da interface) contra Arial e Arial Bold.
  */
 
 @font-face {
@@ -44,5 +45,36 @@
   size-adjust: 109.73%;
   ascent-override: 113.92%;
   descent-override: 38.73%;
+  line-gap-override: 0%;
+}
+
+/* IBM Plex Sans (interface, D26): um ajuste por peso, porque o Medium e o SemiBold são mais largos. */
+@font-face {
+  font-family: "IBM Plex Sans fallback";
+  font-weight: 400;
+  src: local("Arial"), local("ArialMT");
+  size-adjust: 101.17%;
+  ascent-override: 101.32%;
+  descent-override: 27.18%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans fallback";
+  font-weight: 500;
+  src: local("Arial"), local("ArialMT");
+  size-adjust: 103.41%;
+  ascent-override: 99.12%;
+  descent-override: 26.59%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "IBM Plex Sans fallback";
+  font-weight: 600 700;
+  src: local("Arial Bold"), local("Arial-BoldMT");
+  size-adjust: 97.3%;
+  ascent-override: 105.35%;
+  descent-override: 28.26%;
   line-gap-override: 0%;
 }

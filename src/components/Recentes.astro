@@ -1,37 +1,50 @@
 ---
 /**
- * Artigos recentes da home (briefing §5.1), sem repetir o destaque. Alternância Lista / Cards
- * guardada no navegador (`cs-post-view`, a mesma chave do blog atual); o modo é aplicado pelo
- * script do <head>, sem piscar. Sem JS, fica a lista e o seletor some.
+ * Lista de artigos com a alternância Lista / Cards. Na home (briefing §5.1): os recentes, sem repetir
+ * o destaque, 12 por página com a paginação embaixo, como no blog atual (D27); nas páginas 2 em
+ * diante, o título vira "Artigos — página N". Na categoria (D29): todos os artigos dela, sem
+ * paginação, com a contagem abaixo do título. O modo fica guardado no navegador (`cs-post-view`, a
+ * mesma chave do blog atual) e é aplicado pelo script do <head>, sem piscar. Sem JS, fica a lista e
+ * o seletor some. A lista fica numa folha só; nos cards, cada card é uma folha (D26).
  */
 import ItemLista from "./ItemLista.astro";
 import Cartao from "./Cartao.astro";
+import Paginacao from "./Paginacao.astro";
 import type { Resumo } from "../lib/posts";
-import { url } from "../lib/url";
 
 interface Props {
   posts: Resumo[];
-  total: number;
+  titulo: string;
+  /** h1 nas páginas 2 em diante, que não têm a abertura da home. */
+  nivel?: "h1" | "h2";
+  /** Linha abaixo do título (na categoria, "7 artigos"). */
+  subtitulo?: string;
+  /** Paginação (na home); a categoria mostra tudo numa página só. */
+  pagina?: { atual: number; ultima: number; anterior?: string; proxima?: string };
 }
 
-const { posts, total } = Astro.props;
+const { posts, titulo, nivel = "h2", subtitulo, pagina } = Astro.props;
+const Titulo = nivel;
 ---
 
-<section class="recentes wrap" aria-labelledby="recentes-titulo">
+<section class="recentes" aria-labelledby="recentes-titulo">
   <div class="topo-recentes">
-    <h2 id="recentes-titulo" class="titulo-secao">Artigos recentes</h2>
+    <div>
+      <Titulo id="recentes-titulo" class="titulo-secao">{titulo}</Titulo>
+      {subtitulo && <p class="subtitulo-secao">{subtitulo}</p>}
+    </div>
     <div class="modo" role="group" aria-label="Modo de exibição" data-modo hidden>
       <button type="button" data-valor="list">Lista</button>
       <button type="button" data-valor="cards">Cards</button>
     </div>
   </div>
-  <ol class="lista-recentes">
+  <ol class="lista-recentes lista-artigos folha">
     {posts.map((p) => <ItemLista post={p} />)}
   </ol>
   <ul class="cartoes-recentes">
     {posts.map((p) => <Cartao post={p} />)}
   </ul>
-  <p class="todos"><a href={url("/archive/")}>Todos os {total} artigos</a></p>
+  {pagina && <Paginacao {...pagina} />}
 </section>
 
 <script>
@@ -62,7 +75,7 @@ const { posts, total } = Astro.props;
 
 <style>
   .recentes {
-    padding-top: 64px;
+    min-width: 0;
   }
 
   .topo-recentes {
@@ -71,11 +84,18 @@ const { posts, total } = Astro.props;
     justify-content: space-between;
     align-items: flex-end;
     gap: 16px;
-    margin-bottom: 6px;
+    margin-bottom: 16px;
   }
 
   .topo-recentes .titulo-secao {
     margin: 0;
+  }
+
+  .subtitulo-secao {
+    margin: 4px 0 0;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    color: var(--ink-2);
   }
 
   .modo {
@@ -83,6 +103,8 @@ const { posts, total } = Astro.props;
     padding: 3px;
     border: 1px solid var(--rule);
     border-radius: 999px;
+    background: var(--paper-hi);
+    font-family: var(--font-ui);
   }
 
   .modo button {
@@ -92,30 +114,24 @@ const { posts, total } = Astro.props;
     border-radius: 999px;
     background: none;
     color: var(--ink-2);
-    font-size: 14.5px;
+    font-size: 14px;
     cursor: pointer;
   }
 
+  .modo button:hover {
+    color: var(--ink);
+  }
+
   .modo button[aria-pressed="true"] {
-    background: var(--ink);
-    color: var(--paper);
-  }
-
-  .lista-recentes {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .lista-recentes :global(.item:first-child) {
-    border-top: 0;
+    background: var(--acento);
+    color: var(--sobre-acento);
   }
 
   .cartoes-recentes {
     display: none;
     grid-template-columns: repeat(auto-fill, minmax(min(290px, 100%), 1fr));
-    gap: 28px;
-    margin: 18px 0 0;
+    gap: 26px;
+    margin: 0;
     padding: 0;
     list-style: none;
   }
@@ -126,9 +142,5 @@ const { posts, total } = Astro.props;
 
   :global(:root[data-post-view="cards"]) .cartoes-recentes {
     display: grid;
-  }
-
-  .todos {
-    margin: 18px 0 0;
   }
 </style>

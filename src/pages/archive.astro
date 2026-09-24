@@ -16,11 +16,11 @@ const anos = [...new Set(resumos.map((r) => r.publicado.getUTCFullYear()))];
       anos.map((ano) => (
         <section aria-labelledby={`y${ano}`}>
           <h2 id={`y${ano}`} class="ano">{ano}</h2>
-          <ol class="lista">
+          <ol class="lista-artigos folha">
             {resumos
               .filter((r) => r.publicado.getUTCFullYear() === ano)
               .map((r) => (
-                <ItemLista post={r} miniatura={false} />
+                <ItemLista post={r} compacto />
               ))}
           </ol>
         </section>
@@ -31,14 +31,12 @@ const anos = [...new Set(resumos.map((r) => r.publicado.getUTCFullYear()))];
 
 <style>
   .ano {
-    margin: 36px 0 4px;
-    font-size: 26px;
+    margin: 36px 0 14px;
+    font-size: clamp(24px, 2.6vw, 28px);
     font-variant-numeric: lining-nums;
   }
 
-  .lista {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+  section:first-of-type .ano {
+    margin-top: 8px;
   }
 </style>

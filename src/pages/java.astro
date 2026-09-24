@@ -35,7 +35,7 @@ const proxima = JAVA_LTS.find((v) => v.upcoming);
 
     {
       guia && (
-        <a class="guia" href={guia.url}>
+        <a class="guia folha" href={guia.url}>
           <span class="guia-rotulo">Comece por aqui</span>
           <span class="guia-titulo">{guia.titulo}</span>
           <span class="guia-texto">
@@ -50,7 +50,7 @@ const proxima = JAVA_LTS.find((v) => v.upcoming);
       {
         versoes.map(({ lts, post }) => (
           <li>
-            <a class:list={["versao", { proxima: lts.upcoming }]} href={post!.url}>
+            <a class:list={["versao", "folha", { proxima: lts.upcoming }]} href={post!.url}>
               <span class="topo-versao">
                 <span class="numero">{lts.version}</span>
                 <span class="selo">{lts.upcoming ? "Próxima LTS" : "LTS"}</span>
@@ -78,32 +78,41 @@ const proxima = JAVA_LTS.find((v) => v.upcoming);
     flex-wrap: wrap;
     gap: 6px 22px;
     margin: 16px 0 0;
-    font-size: 15px;
+    font-family: var(--font-ui);
+    font-size: 14.5px;
     color: var(--ink-2);
   }
 
   .numeros strong {
+    font-weight: 600;
     color: var(--ink);
     font-variant-numeric: lining-nums;
   }
 
+  /* Guia e versões são folhas (D26); o guia leva um leve tom da série. */
   .guia {
     display: grid;
     gap: 4px;
     padding: 20px 22px;
-    border: 1px solid color-mix(in oklab, var(--destaque) 40%, var(--rule));
-    border-radius: 6px;
+    border-color: color-mix(in oklab, var(--destaque) 40%, var(--rule));
     background: color-mix(in oklab, var(--destaque) 6%, var(--paper-hi));
     color: var(--ink);
     text-decoration: none;
+    transition: border-color 0.15s;
   }
 
   .guia:hover {
     border-color: var(--destaque);
   }
 
+  .guia:hover .guia-titulo {
+    color: var(--acento);
+  }
+
   .guia-rotulo {
-    font-size: 14.5px;
+    font-family: var(--font-ui);
+    font-weight: 500;
+    font-size: 14px;
     color: var(--destaque);
   }
 
@@ -120,8 +129,8 @@ const proxima = JAVA_LTS.find((v) => v.upcoming);
   .versoes {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 16px;
-    margin: 24px 0 0;
+    gap: 22px;
+    margin: 26px 0 0;
     padding: 0;
     list-style: none;
   }
@@ -132,18 +141,30 @@ const proxima = JAVA_LTS.find((v) => v.upcoming);
     gap: 10px;
     height: 100%;
     padding: 18px 18px 16px;
-    border: 1px solid var(--rule);
-    border-radius: 6px;
     color: var(--ink);
     text-decoration: none;
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
   }
 
   .versao:hover {
-    border-color: var(--ink-3);
+    transform: translateY(-4px);
+    box-shadow: var(--sombra-folha-alta);
+  }
+
+  .versao:hover .subtitulo {
+    color: var(--acento);
   }
 
   .versao.proxima {
     border-style: dashed;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .versao:hover {
+      transform: none;
+    }
   }
 
   .topo-versao {
@@ -163,6 +184,7 @@ const proxima = JAVA_LTS.find((v) => v.upcoming);
   }
 
   .selo {
+    font-family: var(--font-ui);
     font-size: 13.5px;
     color: var(--ink-2);
   }
@@ -179,7 +201,8 @@ const proxima = JAVA_LTS.find((v) => v.upcoming);
     flex-wrap: wrap;
     justify-content: space-between;
     gap: 4px 12px;
-    font-size: 14px;
+    font-family: var(--font-ui);
+    font-size: 13.5px;
     color: var(--ink-2);
   }
 </style>

@@ -14,7 +14,8 @@ import Aviso from "../components/Aviso.astro";
 >
   <article class="wrap pagina">
     <h1>Sobre</h1>
-    <section class="prose" aria-labelledby="como-os-artigos-sao-produzidos">
+    <!-- O texto é lido numa folha, como o corpo dos artigos (D26). -->
+    <section class="prose folha" aria-labelledby="como-os-artigos-sao-produzidos">
       <h2 id="como-os-artigos-sao-produzidos">Como os artigos são produzidos</h2>
       <!-- Elemento embutido fica na mesma linha do texto: o Astro descarta a quebra de linha entre os dois. -->
       <p>
@@ -39,18 +40,29 @@ import Aviso from "../components/Aviso.astro";
 
 <style>
   .pagina {
-    padding-top: 48px;
+    padding-top: 44px;
   }
 
   h1 {
-    margin: 0 0 8px;
-    font-weight: 800;
-    font-size: clamp(38px, 5.6vw, 62px);
-    line-height: 1.02;
+    margin: 0 0 22px;
+    font-size: clamp(36px, 5.2vw, 58px);
+    line-height: 1.03;
     letter-spacing: -0.014em;
   }
 
+  /* A folha tem a largura da coluna de texto mais o respiro. */
+  .prose {
+    max-width: calc(var(--coluna) + 96px);
+    padding: 36px 48px 40px;
+  }
+
   .prose h2 {
-    margin-top: 1.2em;
+    margin-top: 0;
+  }
+
+  @media (max-width: 760px) {
+    .prose {
+      padding: 24px 22px 28px;
+    }
   }
 </style>

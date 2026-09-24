@@ -181,15 +181,18 @@
 </script>
 
 <style>
+  /* Uma folha sobre a página (D26), com a interface em IBM Plex Sans e os títulos em Besley. */
   .busca {
     width: min(640px, calc(100vw - 32px));
     max-height: min(620px, calc(100vh - 64px));
     margin: 64px auto auto;
     padding: 0;
     border: 1px solid var(--rule);
-    border-radius: 6px;
+    border-radius: var(--raio-folha);
     background: var(--paper-hi);
+    box-shadow: var(--sombra-folha-alta);
     color: var(--ink);
+    font-family: var(--font-ui);
   }
 
   .busca::backdrop {
@@ -224,19 +227,24 @@
   }
 
   .fechar {
-    padding: 4px 10px;
+    padding: 5px 12px;
     border: 1px solid var(--rule);
-    border-radius: 4px;
+    border-radius: 999px;
     background: transparent;
     color: var(--ink-2);
     font-size: 14px;
     cursor: pointer;
   }
 
+  .fechar:hover {
+    border-color: var(--acento);
+    color: var(--acento);
+  }
+
   .estado {
     margin: 0;
     padding: 12px 18px 6px;
-    font-size: 14.5px;
+    font-size: 14px;
     color: var(--ink-2);
   }
 
@@ -252,15 +260,20 @@
     display: grid;
     gap: 2px;
     padding: 10px 10px;
-    border-radius: 4px;
+    border-radius: 8px;
     color: var(--ink);
     text-decoration: none;
   }
 
   .resultados :global(.resultado:hover),
   .resultados :global(.resultado:focus-visible) {
-    background: var(--well);
+    background: color-mix(in oklab, var(--acento) 6%, transparent);
     outline-offset: 0;
+  }
+
+  .resultados :global(.resultado:hover .r-titulo),
+  .resultados :global(.resultado:focus-visible .r-titulo) {
+    color: var(--acento);
   }
 
   .resultados :global(.r-titulo) {
@@ -270,12 +283,12 @@
   }
 
   .resultados :global(.r-meta) {
-    font-size: 14px;
+    font-size: 13.5px;
     color: var(--ink-2);
   }
 
   .resultados :global(.r-trecho) {
-    font-size: 14.5px;
+    font-size: 14px;
     line-height: 1.5;
     color: var(--ink-2);
   }

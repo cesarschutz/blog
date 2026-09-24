@@ -41,7 +41,7 @@ for (const slug of slugs) {
         await pagina.goto(`${endereco}/amostra/desenhos/?slug=${encodeURIComponent(slug)}&tema=${tema}`, { waitUntil: "load" });
         await pagina.evaluate(() => document.fonts.ready);
         await pagina.waitForTimeout(300);
-        const folha = pagina.locator(`.folha[data-slug="${slug}"]`);
+        const folha = pagina.locator(`.conferencia[data-slug="${slug}"]`);
         if (!(await folha.count())) {
           console.error(`✗ ${slug}: não aparece na folha (falta o post ou a ilustração).`);
           break;

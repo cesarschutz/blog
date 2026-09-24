@@ -144,21 +144,17 @@
 
 /* ---------- passo a passo com a rolagem (LousaPassos) ---------- */
 
-/* Mais larga que a coluna do texto, centrada na página; com o sumário lateral, cresce só para a direita. */
+/*
+ * Mais larga que a coluna do texto, centrada nela: ocupa a largura útil da folha do corpo (o
+ * contêiner, .artigo-folha em artigo.css) e avança 32px sobre o respiro de cada lado (D26).
+ */
 .lousa-passos {
-  --largura: min(1060px, 100cqw);
+  --largura: min(1060px, 100cqw + 64px);
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
   gap: 44px;
   width: var(--largura);
   margin: 0 0 1.2em calc((100% - var(--largura)) / 2);
-}
-
-@media (min-width: 1300px) {
-  .lousa-passos {
-    width: min(calc(100% + 172px), 100cqw);
-    margin-left: 0;
-  }
 }
 
 .lousa-passos .passos {
@@ -210,13 +206,14 @@
     margin-left: 0;
   }
 
+  /* A lousa fixa no topo cobre o texto que passa por baixo: mesma cor da folha. */
   .lousa-passos .figura {
     order: -1;
     position: sticky;
     top: 0;
     z-index: 2;
     padding: 8px 0;
-    background: var(--paper);
+    background: var(--paper-hi);
   }
 
   .lousa-passos .fixa {
@@ -243,9 +240,10 @@
 
   .lousa-passos .passo p {
     padding: 16px 18px;
-    border-radius: 4px;
+    border: 1px solid var(--rule);
+    border-radius: var(--raio-painel);
     background: var(--paper-hi);
-    box-shadow: 0 14px 30px -18px rgb(0 0 0 / 0.4);
+    box-shadow: var(--sombra-folha);
     font-size: 17.5px;
   }
 }
@@ -259,7 +257,8 @@
 
 .lousa-tempo figcaption,
 .lousa-loop figcaption {
-  font-size: 14.5px;
+  font-family: var(--font-ui);
+  font-size: 14px;
   color: var(--ink-2);
 }
 
@@ -290,12 +289,13 @@
   flex: 1;
   min-width: 180px;
   height: 32px;
-  accent-color: var(--ink);
+  accent-color: var(--acento);
 }
 
 .lousa-tempo .estado {
   min-width: 14ch;
-  font-size: 15px;
+  font-family: var(--font-ui);
+  font-size: 14.5px;
   color: var(--ink-2);
 }
 
@@ -313,7 +313,8 @@
 }
 
 .lousa-tempo .tocar:hover {
-  border-color: var(--ink-3);
+  border-color: var(--acento);
+  color: var(--acento);
 }
 
 .lousa-tempo .tocar svg {
@@ -361,6 +362,7 @@
 .lousa-loop .rotulo-marca {
   position: absolute;
   top: 12px;
+  font-family: var(--font-ui);
   font-size: 12.5px;
   white-space: nowrap;
   color: var(--ink-2);

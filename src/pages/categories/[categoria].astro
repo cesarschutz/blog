@@ -1,11 +1,17 @@
 ---
-/** Uma categoria (/categories/<Nome>/, com o nome cru na URL, como no blog atual: D7). */
+/**
+ * Uma categoria (/categories/<Nome>/, com o nome cru na URL, como no blog atual: D7). Pedido do
+ * Cesar em 24/09/2026 (D29): o painel lateral da home à esquerda, com o livro desta categoria fora da
+ * pilha; no topo, o livro em pé numa folha, que chega da pilha por transição de página; embaixo, os
+ * artigos da categoria com a alternância Lista / Cards.
+ */
 import Base from "../../layouts/Base.astro";
-import CabecalhoPagina from "../../components/CabecalhoPagina.astro";
-import ItemLista from "../../components/ItemLista.astro";
+import ComPainel from "../../components/ComPainel.astro";
+import TopoCategoria from "../../components/TopoCategoria.astro";
+import Recentes from "../../components/Recentes.astro";
+import { montarLivros } from "../../lib/estante";
 import { getCategorias, type Grupo } from "../../lib/posts";
 import type { Categoria } from "../../data/taxonomia";
-import { url } from "../../lib/url";
 
 export async function getStaticPaths() {
   const categorias = await getCategorias();
@@ -18,32 +24,24 @@ interface Props {
 
 const { grupo } = Astro.props;
 const { categoria, posts } = grupo;
+const livro = (await montarLivros()).find((l) => !l.serie && l.nome === categoria.nome)!;
 ---
 
 <Base titulo={categoria.nome} descricao={`Artigos de ${categoria.nome}: ${categoria.descricao}`} atual="artigos">
-  <div class="wrap" style={`--cor:${categoria.tecido}`}>
-    <CabecalhoPagina titulo={categoria.nome} descricao={categoria.descricao} trilha={{ nome: "Categorias", href: url("/categories/") }}>
-      <p class="conta">{posts.length} {posts.length === 1 ? "artigo" : "artigos"}</p>
-    </CabecalhoPagina>
-    <ol class="lista">
-      {posts.map((p) => <ItemLista post={p} nivel="h2" />)}
-    </ol>
-  </div>
+  <ComPainel atual={livro.id}>
+    <TopoCategoria livro={livro} />
+    <div class="artigos">
+      <Recentes posts={posts} titulo="Artigos" subtitulo={`${posts.length} ${posts.length === 1 ? "artigo" : "artigos"}`} />
+    </div>
+  </ComPainel>
 </Base>
 
 <style>
-  .conta {
-    margin: 10px 0 0;
-    padding-left: 12px;
-    border-left: 8px solid color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro));
-    font-size: 14.5px;
-    color: var(--ink-2);
-    font-variant-numeric: lining-nums;
+  :global(.com-painel) {
+    padding-top: 32px;
   }
 
-  .lista {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+  .artigos {
+    margin-top: 40px;
   }
 </style>

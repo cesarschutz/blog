@@ -30,34 +30,34 @@ const posts = (await getResumos()).filter((p) => temIlustracao(p.slug));
     <p class="nota">Só no dev. Cada desenho em todos os recortes, no tamanho real. ?slug= filtra; ?tema=escuro troca o tema.</p>
     {
       posts.map((p) => (
-        <section class="folha" data-slug={p.slug}>
+        <section class="conferencia" data-slug={p.slug} style={`--cor:${p.cor}`}>
           <h2>
             {p.titulo} <code>{p.slug}</code>
           </h2>
-          <div class="largo">
+          <div class="largo painel">
             <Ilustracao slug={p.slug} recorte="largo" cor={p.cor} anotacoes />
           </div>
           <div class="linha">
             <figure>
-              <div class="medio celular">
+              <div class="medio celular painel">
                 <Ilustracao slug={p.slug} recorte="medio" cor={p.cor} />
               </div>
               <figcaption>topo no celular (390)</figcaption>
             </figure>
             <figure>
-              <div class="medio cartao">
+              <div class="medio cartao painel">
                 <Ilustracao slug={p.slug} recorte="medio" cor={p.cor} tamanho="cartao" />
               </div>
               <figcaption>destaque e cards (290)</figcaption>
             </figure>
             <figure>
-              <div class="quadrado grande">
+              <div class="quadrado grande painel">
                 <Ilustracao slug={p.slug} recorte="quadrado" cor={p.cor} tamanho="miniatura" />
               </div>
-              <figcaption>lista (108)</figcaption>
+              <figcaption>lista (100)</figcaption>
             </figure>
             <figure>
-              <div class="quadrado pequeno">
+              <div class="quadrado pequeno painel">
                 <Ilustracao slug={p.slug} recorte="quadrado" cor={p.cor} tamanho="miniatura" />
               </div>
               <figcaption>lista no celular (76)</figcaption>
@@ -76,7 +76,7 @@ const posts = (await getResumos()).filter((p) => temIlustracao(p.slug));
   <script is:inline>
     (() => {
       const slug = new URLSearchParams(location.search).get("slug");
-      if (slug) for (const f of document.querySelectorAll(".folha")) f.hidden = f.dataset.slug !== slug;
+      if (slug) for (const f of document.querySelectorAll(".conferencia")) f.hidden = f.dataset.slug !== slug;
     })();
   </script>
 </Base>
@@ -91,7 +91,8 @@ const posts = (await getResumos()).filter((p) => temIlustracao(p.slug));
     font-size: 14.5px;
   }
 
-  .folha {
+  /* Cada desenho aparece no painel tingido, como no site (D26). */
+  .conferencia {
     margin: 40px 0 64px;
   }
 
@@ -104,7 +105,6 @@ const posts = (await getResumos()).filter((p) => temIlustracao(p.slug));
   .largo {
     max-width: 1100px;
     aspect-ratio: 1100 / 468;
-    outline: 1px dashed var(--rule);
   }
 
   .linha {
@@ -121,13 +121,9 @@ const posts = (await getResumos()).filter((p) => temIlustracao(p.slug));
 
   figcaption {
     margin-top: 6px;
+    font-family: var(--font-ui);
     font-size: 13px;
     color: var(--ink-2);
-  }
-
-  .medio,
-  .quadrado {
-    outline: 1px dashed var(--rule);
   }
 
   .medio {
@@ -147,7 +143,7 @@ const posts = (await getResumos()).filter((p) => temIlustracao(p.slug));
   }
 
   .grande {
-    width: 108px;
+    width: 100px;
   }
 
   .pequeno {

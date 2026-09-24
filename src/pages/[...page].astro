@@ -1,0 +1,152 @@
+---
+/**
+ * Home (briefing §5.1): abertura com a estante, a gaveta do livro aberto, o destaque (post mais
+ * recente, que não se repete na lista), os artigos recentes (Lista / Cards) e, ao lado deles, o
+ * painel com séries e categorias em pilhas de livros, tags e RSS (D28).
+ * O nome do arquivo, `[...page]`, é exigência do paginate do Astro.
+ * Paginada como no blog atual (D27): 12 artigos por página em /, /2/, /3/…; da página 2 em diante,
+ * só a lista e a paginação.
+ */
+import type { GetStaticPaths, Page } from "astro";
+import Base from "../layouts/Base.astro";
+import Estante from "../components/Estante.astro";
+import Gaveta from "../components/Gaveta.astro";
+import Destaque from "../components/Destaque.astro";
+import Recentes from "../components/Recentes.astro";
+import ComPainel from "../components/ComPainel.astro";
+import { montarLivros } from "../lib/estante";
+import { getResumos, type Resumo } from "../lib/posts";
+import { url } from "../lib/url";
+
+export const getStaticPaths = (async ({ paginate }) => {
+  // O destaque (o mais recente) fica fora da lista, em todas as páginas. 12 por página, como no blog
+  // atual (`SITE.pageSize`). O número fica aqui dentro porque o Astro isola o getStaticPaths.
+  const [, ...demais] = await getResumos();
+  return paginate(demais, { pageSize: 12 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props as { page: Page<Resumo> };
+const primeira = page.currentPage === 1;
+const livros = primeira ? await montarLivros() : [];
+const [destaque] = await getResumos();
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Cesar Schutz",
+  url: new URL(url("/"), Astro.site).href,
+  inLanguage: "pt-BR",
+  author: { "@type": "Person", name: "Cesar Schutz", jobTitle: "Arquiteto de soluções" },
+};
+---
+
+<Base
+  titulo={primeira ? undefined : `Artigos — página ${page.currentPage}`}
+  jsonLd={primeira ? jsonLd : undefined}
+>
+  {
+    primeira && (
+      <>
+        {/* A abertura (texto e estante) é uma folha; a gaveta do livro aberto abre dentro dela (D26). */}
+        <div class="wrap topo-home">
+          <div class="folha folha-abertura">
+            <div class="abertura">
+              <section class="intro" aria-labelledby="home-titulo">
+                <h1 id="home-titulo">Cesar Schutz</h1>
+                <p class="frase">
+                  Arquiteto de soluções. Aqui publico o que estudo sobre arquitetura de software, Java e sistemas de
+                  pagamento.
+                </p>
+                <p class="nota-ia">
+                  Os textos são escritos com ajuda de IA e revisados por mim. Leia como anotações de estudo e confira
+                  antes de levar para produção.
+                </p>
+              </section>
+              <Estante livros={livros} />
+            </div>
+            <Gaveta livros={livros} />
+          </div>
+        </div>
+        {destaque && <Destaque post={destaque} />}
+      </>
+    )
+  }
+  {/* Os artigos e, à esquerda, o painel com séries, categorias e tags (D28). */}
+  <ComPainel recuo={58}>
+    <Recentes
+      posts={page.data}
+      titulo={primeira ? "Artigos recentes" : `Artigos — página ${page.currentPage}`}
+      nivel={primeira ? "h2" : "h1"}
+      pagina={{ atual: page.currentPage, ultima: page.lastPage, anterior: page.url.prev, proxima: page.url.next }}
+    />
+  </ComPainel>
+</Base>
+
+<style>
+  .topo-home {
+    padding-top: 40px;
+  }
+
+  /* Espaço entre o destaque (ou o cabeçalho) e os artigos com o painel. */
+  :global(.com-painel) {
+    padding-top: 56px;
+  }
+
+  .folha-abertura {
+    padding: 40px 44px 28px;
+  }
+
+  .abertura {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 32px 56px;
+    align-items: end;
+  }
+
+  h1 {
+    margin: 0 0 16px;
+    font-weight: 800;
+    font-size: clamp(40px, 6vw, 64px);
+    line-height: 1;
+    letter-spacing: -0.015em;
+  }
+
+  .frase {
+    max-width: 34ch;
+    margin: 0;
+    font-size: clamp(18px, 2vw, 20px);
+    line-height: 1.5;
+  }
+
+  .nota-ia {
+    max-width: 46ch;
+    margin: 12px 0 0;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ink-2);
+  }
+
+  @media (max-width: 860px) {
+    .topo-home {
+      padding-top: 28px;
+    }
+
+    .folha-abertura {
+      padding: 28px 22px 20px;
+    }
+
+    .abertura {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 28px;
+    }
+
+    /* Em coluna única, a tábua ocupa a largura toda, como no protótipo. */
+    .abertura > :global(.estante) {
+      width: auto;
+    }
+
+    .frase {
+      max-width: 40ch;
+    }
+  }
+</style>

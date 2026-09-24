@@ -3,7 +3,7 @@
  * linguagem na barra do bloco e o botão Copiar levando a versão final, sem as linhas removidas (`del`).
  */
 import { ExpressiveCodeTheme, pluginFramesTexts, setAlpha, type ExpressiveCodePlugin } from "astro-expressive-code";
-import { claro, escuro, type Paleta } from "../styles/tokens";
+import { claro, escuro, misturar, type Paleta } from "../styles/tokens";
 
 pluginFramesTexts.addLocale("pt-BR", {
   terminalWindowFallbackTitle: "Janela do terminal",
@@ -12,9 +12,9 @@ pluginFramesTexts.addLocale("pt-BR", {
 });
 
 function tema(nome: string, tipo: "light" | "dark", p: Paleta): ExpressiveCodeTheme {
-  // Claro: bloco um pouco acima do papel; escuro: um pouco abaixo (como no protótipo).
-  const fundo = tipo === "light" ? p["paper-hi"] : p.well;
-  const barra = tipo === "light" ? p.well : p["paper-hi"];
+  // O bloco fica sobre a folha (D26): a superfície com um pouco de tinta, e a barra com um pouco mais.
+  const fundo = p.well;
+  const barra = misturar(p["paper-hi"], p.ink, 8);
   return new ExpressiveCodeTheme({
     name: nome,
     type: tipo,
@@ -22,7 +22,7 @@ function tema(nome: string, tipo: "light" | "dark", p: Paleta): ExpressiveCodeTh
       "editor.background": fundo,
       "editor.foreground": p.ink,
       "editorLineNumber.foreground": p["ink-3"],
-      "editor.selectionBackground": setAlpha(p.link, 0.25),
+      "editor.selectionBackground": setAlpha(p.acento, 0.25),
       "editorGroupHeader.tabsBackground": barra,
       "editorGroupHeader.tabsBorder": p.rule,
       "tab.activeBackground": fundo,
@@ -38,7 +38,7 @@ function tema(nome: string, tipo: "light" | "dark", p: Paleta): ExpressiveCodeTh
       { scope: ["comment", "punctuation.definition.comment"], settings: { foreground: p["ink-3"], fontStyle: "italic" } },
       {
         scope: ["keyword", "storage", "storage.type", "storage.modifier", "keyword.control", "keyword.operator.new", "constant.language"],
-        settings: { foreground: p.link },
+        settings: { foreground: p.acento },
       },
       { scope: ["string", "string.quoted", "markup.inline.raw"], settings: { foreground: p["aviso-dica"] } },
       { scope: ["constant.numeric", "constant.character", "constant.other"], settings: { foreground: p["aviso-importante"] } },
@@ -50,7 +50,7 @@ function tema(nome: string, tipo: "light" | "dark", p: Paleta): ExpressiveCodeTh
         scope: ["storage.type.annotation", "meta.declaration.annotation", "punctuation.definition.annotation", "meta.decorator"],
         settings: { foreground: p["aviso-atencao"] },
       },
-      { scope: ["entity.name.tag", "entity.name.tag.yaml", "support.type.property-name"], settings: { foreground: p.link } },
+      { scope: ["entity.name.tag", "entity.name.tag.yaml", "support.type.property-name"], settings: { foreground: p.acento } },
       { scope: ["entity.other.attribute-name"], settings: { foreground: p["aviso-nota"] } },
       { scope: ["punctuation", "meta.brace"], settings: { foreground: p["ink-2"] } },
       { scope: ["markup.inserted"], settings: { foreground: p["aviso-dica"] } },

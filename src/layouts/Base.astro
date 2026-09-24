@@ -8,11 +8,14 @@ import "@fontsource-variable/literata/opsz.css";
 import "@fontsource-variable/literata/opsz-italic.css";
 import "@fontsource-variable/jetbrains-mono/wght.css";
 import "@fontsource-variable/jetbrains-mono/wght-italic.css";
+import "@fontsource-variable/ibm-plex-sans/wght.css";
 import "../styles/fontes.css";
 import "../styles/base.css";
 import "../styles/avisos.css";
 import "../styles/desenho.css";
 // Só as duas fontes do primeiro quadro são pré-carregadas (D5); itálico e código baixam quando usados.
+// A da interface (IBM Plex Sans, D26) não: o CSS vem embutido no HTML, então ela é pedida logo, e a
+// reserva ajustada (fontes.css) evita o deslocamento na troca.
 import besley from "@fontsource-variable/besley/files/besley-latin-wght-normal.woff2?url";
 import literata from "@fontsource-variable/literata/files/literata-latin-opsz-normal.woff2?url";
 import { claro, cssDosTokens, escuro } from "../styles/tokens";
@@ -74,6 +77,30 @@ const preVisualizacao = process.env.PREVIEW === "true";
           raiz.dataset.tombar = "";
         }
       } catch (e) {}
+    </script>
+    <script is:inline>
+      // Transição do livro entre o painel da home e a página de categoria (D29): só o livro da pilha
+      // que leva à página nova (ou que veio da anterior) ganha o nome de transição, para os outros
+      // não voarem junto. O livro em pé do topo da categoria já tem o nome no HTML.
+      (function () {
+        function livro(endereco) {
+          var caminho = new URL(endereco).pathname;
+          var livros = document.querySelectorAll(".painel-home a.deitado[data-vt]");
+          for (var i = 0; i < livros.length; i++) if (new URL(livros[i].href).pathname === caminho) return livros[i];
+        }
+        function nomear(endereco) {
+          var l = endereco && livro(endereco);
+          if (l) l.style.viewTransitionName = l.dataset.vt;
+        }
+        addEventListener("pageswap", function (e) {
+          if (e.viewTransition && e.activation && e.activation.entry) nomear(e.activation.entry.url);
+        });
+        addEventListener("pagereveal", function (e) {
+          if (e.viewTransition && window.navigation && navigation.activation && navigation.activation.from) {
+            nomear(navigation.activation.from.url);
+          }
+        });
+      })();
     </script>
     <style is:inline set:html={cssDosTokens()}></style>
     <title>{tituloDaAba}</title>

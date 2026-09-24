@@ -1,7 +1,7 @@
 ---
 /**
- * Confere que os plugins do Markdown (avisos, notas laterais, código) valem no MDX (D21). Só no
- * `npm run dev` (/amostra/mdx/).
+ * Confere que os plugins do Markdown (avisos, notas laterais, código) valem no MDX (D21), na folha
+ * do corpo do artigo (artigo.css). Só no `npm run dev` (/amostra/mdx/).
  */
 import Base from "../../layouts/Base.astro";
 import { Content } from "../../amostra/recursos.mdx";
@@ -15,6 +15,12 @@ export function getStaticPaths() {
 
 <Base titulo="Amostra em MDX">
   <div class="wrap">
-    <div class="prose" style="margin: 40px auto"><Content /></div>
+    <div class="artigo-grade">
+      <div class="folha artigo-folha">
+        <div class="artigo-corpo">
+          <div class="prose"><Content /></div>
+        </div>
+      </div>
+    </div>
   </div>
 </Base>

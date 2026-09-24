@@ -249,11 +249,12 @@ function linhas(l: Livro): Linha[] {
       });
     }
 
-    // Na home, os links de categoria (chips) também abrem o livro, rolando até a estante.
+    // Na home, os links de categoria (chips) também abrem o livro, rolando até a estante. Os livros
+    // do painel lateral, não: eles levam à página da categoria, com a transição do livro (D29).
     const porEndereco = new Map(lombadas.map((l) => [new URL(l.href).pathname, l.dataset.livro!]));
     document.addEventListener("click", (e) => {
       const link = (e.target as HTMLElement).closest<HTMLAnchorElement>("a[href]");
-      if (!link || link.closest("[data-estante], [data-gaveta]") || !clique(e)) return;
+      if (!link || link.closest("[data-estante], [data-gaveta], .painel-home") || !clique(e)) return;
       const id = porEndereco.get(new URL(link.href, location.href).pathname);
       if (!id) return;
       e.preventDefault();

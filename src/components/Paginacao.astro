@@ -1,0 +1,125 @@
+---
+/**
+ * Paginação da home, como no blog atual (D27): "Anteriores", os números das páginas e "Mais
+ * artigos". A página atual fica em azul-tinta. No celular, só os dois botões.
+ */
+import { ICONES } from "../lib/icones";
+import { url } from "../lib/url";
+
+interface Props {
+  atual: number;
+  ultima: number;
+  anterior?: string;
+  proxima?: string;
+}
+
+const { atual, ultima, anterior, proxima } = Astro.props;
+const endereco = (n: number) => url(n === 1 ? "/" : `/${n}/`);
+---
+
+{
+  ultima > 1 && (
+    <nav class="paginacao" aria-label="Paginação">
+      {anterior ? (
+        <a class="botao anterior" href={anterior} rel="prev">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
+          Anteriores
+        </a>
+      ) : (
+        <span />
+      )}
+      <ol class="numeros">
+        {Array.from({ length: ultima }, (_, i) => i + 1).map((n) => (
+          <li>
+            <a href={endereco(n)} aria-current={n === atual ? "page" : undefined}>
+              <span class="sr">Página </span>
+              {n}
+            </a>
+          </li>
+        ))}
+      </ol>
+      {proxima ? (
+        <a class="botao proxima" href={proxima} rel="next">
+          Mais artigos
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
+        </a>
+      ) : (
+        <span />
+      )}
+    </nav>
+  )
+}
+
+<style>
+  .paginacao {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 12px;
+    margin-top: 28px;
+    font-family: var(--font-ui);
+  }
+
+  .botao {
+    justify-self: start;
+  }
+
+  .proxima {
+    justify-self: end;
+  }
+
+  .botao svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .anterior svg {
+    rotate: 180deg;
+  }
+
+  .numeros {
+    display: flex;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .numeros a {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+
+  .numeros a:hover {
+    background: var(--paper-hi);
+    color: var(--acento);
+  }
+
+  .numeros a[aria-current="page"] {
+    background: var(--acento);
+    color: var(--sobre-acento);
+    font-weight: 600;
+  }
+
+  @media (max-width: 480px) {
+    .paginacao {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .numeros {
+      display: none;
+    }
+  }
+</style>

@@ -1,11 +1,17 @@
 ---
 /**
- * Um artigo numa lista (protótipo, "Artigos recentes" em modo lista): data, título, subtítulo,
- * categoria e tempo de leitura, com a miniatura quadrada da ilustração à direita quando o post tem.
+ * Um artigo numa lista, no formato do blog atual (pedido do Cesar em 24/09/2026, D27): em cima a
+ * categoria, a data e o tempo de leitura; o título inteiro, grande; a descrição completa; as tags; e,
+ * à direita, a miniatura quadrada da ilustração num painel tingido. A linha inteira é clicável e
+ * ganha um fundo leve ao passar o mouse, com o título em azul-tinta. A lista fica numa folha
+ * (.lista-artigos.folha, D26).
+ *
+ * `compacto` (o arquivo por ano): data à esquerda, título, subtítulo e categoria, sem miniatura.
  */
 import Chip from "./Chip.astro";
 import Ilustracao from "./Ilustracao.astro";
-import { dataIso, dataPorExtenso } from "../lib/formato";
+import MetaItem from "./MetaItem.astro";
+import { dataIso, dataPorExtenso, mdEmLinha } from "../lib/formato";
 import { temIlustracao } from "../lib/ilustracoes";
 import type { Resumo } from "../lib/posts";
 
@@ -13,70 +19,164 @@ interface Props {
   post: Resumo;
   /** Nível do título, para a lista respeitar a hierarquia da página. */
   nivel?: "h2" | "h3";
-  /** Miniatura da ilustração (o arquivo por ano fica sem, mais compacto). */
-  miniatura?: boolean;
+  compacto?: boolean;
 }
 
-const { post, nivel = "h3", miniatura = true } = Astro.props;
+const { post, nivel = "h3", compacto = false } = Astro.props;
 const Titulo = nivel;
-const comMiniatura = miniatura && temIlustracao(post.slug);
+const comMiniatura = !compacto && temIlustracao(post.slug);
 ---
 
-<li class:list={["item", { "com-miniatura": comMiniatura }]}>
-  <time class="quando" datetime={dataIso(post.publicado)}>{dataPorExtenso(post.publicado)}</time>
-  <div class="texto">
-    <Titulo class="titulo"><a href={post.url}>{post.titulo}</a></Titulo>
-    {post.subtitulo && <p class="subtitulo">{post.subtitulo}</p>}
-    <p class="meta">
-      <Chip cor={post.cor} nome={post.rotulo} href={post.urlRotulo} />
-      <span>{post.minutos} min de leitura</span>
-    </p>
-  </div>
-  {
-    comMiniatura && (
-      <a class="miniatura" href={post.url} tabindex="-1" aria-hidden="true">
-        <Ilustracao slug={post.slug} recorte="quadrado" cor={post.cor} tamanho="miniatura" decorativa />
-      </a>
-    )
-  }
-</li>
+{
+  compacto ? (
+    <li class="item compacto">
+      <time class="quando" datetime={dataIso(post.publicado)}>{dataPorExtenso(post.publicado)}</time>
+      <div class="texto">
+        <Titulo class="titulo">
+          <a href={post.url}>{post.titulo}</a>
+        </Titulo>
+        {post.subtitulo && <p class="subtitulo">{post.subtitulo}</p>}
+        <p class="meta">
+          <Chip cor={post.cor} nome={post.rotulo} href={post.urlRotulo} />
+          <span>{post.minutos} min de leitura</span>
+        </p>
+      </div>
+    </li>
+  ) : (
+    <li class:list={["item", "completo", { "com-miniatura": comMiniatura }]}>
+      <div class="texto">
+        <MetaItem post={post} />
+        <Titulo class="titulo">
+          <a href={post.url}>{post.tituloCompleto}</a>
+        </Titulo>
+        <p class="descricao" set:html={mdEmLinha(post.descricao)} />
+        {post.tags.length > 0 && (
+          <p class="tags">
+            {post.tags.slice(0, 4).map((t) => (
+              <span>#{t}</span>
+            ))}
+          </p>
+        )}
+      </div>
+      {comMiniatura && (
+        <div class="miniatura painel" aria-hidden="true" style={`--cor:${post.cor}`}>
+          <Ilustracao slug={post.slug} recorte="quadrado" cor={post.cor} tamanho="miniatura" decorativa />
+        </div>
+      )}
+    </li>
+  )
+}
 
 <style>
   .item {
-    display: grid;
-    grid-template-columns: 118px minmax(0, 1fr);
-    gap: 0 24px;
-    padding: 22px 0;
+    position: relative;
     border-top: 1px solid var(--rule);
+    transition: background-color 0.15s;
   }
 
-  .quando {
-    padding-top: 6px;
-    font-size: 14.5px;
-    color: var(--ink-2);
+  .item:first-child {
+    border-top: 0;
+  }
+
+  .item:hover {
+    background: color-mix(in oklab, var(--acento) 5%, transparent);
   }
 
   .titulo {
     margin: 0;
-    font-size: clamp(20px, 2.3vw, 24px);
-    line-height: 1.25;
+    line-height: 1.2;
+    text-wrap: pretty;
   }
 
   .titulo a {
     color: var(--ink);
     text-decoration: none;
+    transition: color 0.15s;
   }
 
-  .titulo a:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.18em;
+  .item:hover .titulo a {
+    color: var(--acento);
+  }
+
+  /* ---------- completo (home, categorias, tags, séries) ---------- */
+
+  .completo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(16px, 2vw, 28px);
+    align-items: start;
+    padding: 22px clamp(18px, 2vw, 26px);
+  }
+
+  .completo.com-miniatura {
+    grid-template-columns: minmax(0, 1fr) clamp(104px, 11vw, 148px);
+  }
+
+  /* O link do título cobre a linha inteira; o chip da categoria fica por cima (MetaItem). */
+  .completo .titulo a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .completo .titulo {
+    margin-top: 8px;
+    font-size: clamp(21px, 1.8vw, 25px);
+  }
+
+  .descricao {
+    max-width: 92ch;
+    margin: 8px 0 0;
+    font-family: var(--font-ui);
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
+  .descricao :global(code) {
+    font-size: 0.88em;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    margin: 10px 0 0;
+    font-family: var(--font-codigo);
+    font-size: 12.5px;
+    color: var(--ink-2);
+  }
+
+  .miniatura {
+    aspect-ratio: 1;
+  }
+
+  /* ---------- compacto (arquivo por ano) ---------- */
+
+  .compacto {
+    display: grid;
+    grid-template-columns: 110px minmax(0, 1fr);
+    gap: 0 26px;
+    padding: 18px 22px;
+  }
+
+  .quando {
+    padding-top: 5px;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+
+  .compacto .titulo {
+    font-size: clamp(20px, 2.2vw, 23px);
   }
 
   .subtitulo {
     max-width: 62ch;
     margin: 4px 0 0;
     font-size: 17px;
+    line-height: 1.45;
     color: var(--ink-2);
   }
 
@@ -84,39 +184,48 @@ const comMiniatura = miniatura && temIlustracao(post.slug);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 6px 18px;
-    margin: 10px 0 0;
-    font-size: 14.5px;
+    gap: 4px 14px;
+    margin: 8px 0 0;
+    font-family: var(--font-ui);
+    font-size: 14px;
     color: var(--ink-2);
   }
 
-  .item.com-miniatura {
-    grid-template-columns: 118px minmax(0, 1fr) 108px;
-  }
-
-  .miniatura {
-    display: block;
-    width: 108px;
-    aspect-ratio: 1;
-  }
-
   @media (max-width: 640px) {
-    .item {
-      grid-template-columns: minmax(0, 1fr);
+    .completo,
+    .completo.com-miniatura {
+      gap: 14px;
+      padding: 18px 16px;
     }
 
-    .item.com-miniatura {
-      grid-template-columns: minmax(0, 1fr) 76px;
-      column-gap: 16px;
+    .completo.com-miniatura {
+      grid-template-columns: minmax(0, 1fr) 84px;
+    }
+
+    .completo .titulo {
+      font-size: 20px;
+    }
+
+    .descricao {
+      font-size: 15px;
+    }
+
+    .tags {
+      display: none;
+    }
+
+    .miniatura {
+      margin-top: 4px;
+    }
+
+    .compacto {
+      grid-template-columns: minmax(0, 1fr);
+      padding: 16px;
     }
 
     .quando {
       grid-column: 1 / -1;
       padding: 0 0 4px;
-    }
-
-    .miniatura {
-      width: 76px;
     }
   }
 </style>

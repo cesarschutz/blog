@@ -1,5 +1,10 @@
 ---
-/** Cabeçalho (briefing §5.1): nome à esquerda; Artigos, Tags, Buscar e RSS à direita. */
+/**
+ * Cabeçalho (briefing §5.1, D26): nome à esquerda; à direita Artigos, Tags e RSS, a busca como campo
+ * (ícone, "Buscar" e ⌘K) e o botão de tema. No celular, nome e tema na primeira linha; menu e busca
+ * na segunda.
+ */
+import { ICONES } from "../lib/icones";
 import { url } from "../lib/url";
 
 interface Props {
@@ -14,17 +19,34 @@ const { atual } = Astro.props;
   <nav class="menu" aria-label="Principal">
     <a href={url("/archive/")} aria-current={atual === "artigos" ? "page" : undefined}>Artigos</a>
     <a href={url("/tags/")} aria-current={atual === "tags" ? "page" : undefined}>Tags</a>
-    <!-- A busca é ligada na Fase 2 (data-busca-abrir). -->
-    <button type="button" data-busca-abrir>Buscar <kbd data-atalho>⌘K</kbd></button>
     <a href={url("/rss.xml")}>RSS</a>
   </nav>
+  <button type="button" class="campo-busca" data-busca-abrir aria-keyshortcuts="Meta+K Control+K">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.busca} />
+    <span>Buscar</span>
+    <kbd data-atalho>⌘K</kbd>
+  </button>
+  <!-- Alterna claro e escuro (o rodapé também oferece "Sistema"). Sem JS, fica escondido. -->
+  <button type="button" class="botao-tema" data-tema-alternar aria-label="Tema escuro" title="Tema escuro" aria-pressed="false" hidden>
+    <svg class="lua" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.lua} />
+    <svg class="sol" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.sol} />
+  </button>
 </header>
 
 <script>
+  import { aoMudarTema, aplicarTema, temaNaTela } from "../scripts/tema";
+
   // Fora do macOS e do iOS, o atalho é Ctrl+K.
   const apple = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent);
   if (!apple) {
     document.querySelectorAll("[data-atalho]").forEach((tecla) => (tecla.textContent = "Ctrl K"));
+  }
+
+  const botao = document.querySelector<HTMLButtonElement>("[data-tema-alternar]");
+  if (botao) {
+    botao.addEventListener("click", () => aplicarTema(temaNaTela() === "dark" ? "light" : "dark"));
+    aoMudarTema(() => botao.setAttribute("aria-pressed", String(temaNaTela() === "dark")));
+    botao.hidden = false;
   }
 </script>
 
@@ -32,13 +54,14 @@ const { atual } = Astro.props;
   .cabecalho {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
     align-items: center;
-    gap: 16px;
-    padding-top: 22px;
+    gap: 12px 22px;
+    padding-top: 20px;
+    padding-bottom: 6px;
   }
 
   .marca {
+    margin-right: auto;
     font-family: var(--font-titulo);
     font-weight: 800;
     font-size: 21px;
@@ -50,32 +73,156 @@ const { atual } = Astro.props;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 6px 20px;
-    font-size: 16px;
+    gap: 6px 22px;
+    font-family: var(--font-ui);
+    font-size: 15.5px;
   }
 
-  .menu a,
-  .menu button {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+  .menu a {
     padding: 6px 0;
-    border: 0;
-    background: none;
     color: var(--ink-2);
     text-decoration: none;
-    cursor: pointer;
   }
 
-  .menu a:hover,
-  .menu button:hover {
+  .menu a:hover {
     color: var(--ink);
   }
 
   .menu [aria-current="page"] {
-    color: var(--ink);
+    color: var(--acento);
     text-decoration: underline;
+    text-decoration-color: var(--acento);
     text-decoration-thickness: 2px;
     text-underline-offset: 0.4em;
+  }
+
+  /* A busca parece um campo, mas é um botão: abre o diálogo (Busca.astro). */
+  .campo-busca {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 210px;
+    min-height: 40px;
+    padding: 7px 10px 7px 13px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: var(--paper-hi);
+    color: var(--ink-2);
+    font-family: var(--font-ui);
+    font-size: 15px;
+    line-height: 1.2;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .campo-busca:hover {
+    border-color: var(--ink-3);
+    color: var(--ink);
+  }
+
+  .campo-busca svg,
+  .botao-tema svg {
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .campo-busca svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .campo-busca kbd {
+    margin-left: auto;
+  }
+
+  .botao-tema {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid var(--rule);
+    border-radius: 50%;
+    background: var(--paper-hi);
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+
+  .botao-tema:hover {
+    border-color: var(--ink-3);
+    color: var(--ink);
+  }
+
+  .botao-tema svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  /* Lua no claro (vai para o escuro), sol no escuro. Pelo CSS, para não piscar ao carregar. */
+  .botao-tema .sol {
+    display: none;
+  }
+
+  :global(:root[data-theme="dark"]) .botao-tema .sol {
+    display: block;
+  }
+
+  :global(:root[data-theme="dark"]) .botao-tema .lua {
+    display: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme="light"])) .botao-tema .sol {
+      display: block;
+    }
+
+    :global(:root:not([data-theme="light"])) .botao-tema .lua {
+      display: none;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .campo-busca {
+      min-width: 150px;
+    }
+  }
+
+  /* Celular: nome e tema na primeira linha; o pseudo-elemento força a quebra antes do menu. */
+  @media (max-width: 640px) {
+    .cabecalho {
+      gap: 10px 20px;
+      padding-top: 16px;
+    }
+
+    .cabecalho::after {
+      content: "";
+      order: 2;
+      flex-basis: 100%;
+      height: 0;
+    }
+
+    .marca {
+      order: 1;
+    }
+
+    .botao-tema {
+      order: 2;
+    }
+
+    .menu {
+      order: 3;
+      gap: 6px 20px;
+    }
+
+    .campo-busca {
+      order: 4;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
   }
 </style>

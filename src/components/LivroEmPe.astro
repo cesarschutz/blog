@@ -1,0 +1,89 @@
+---
+/**
+ * O livro em pé, visto de três quartos (D29): a lombada à esquerda e a capa de frente, o mesmo livro
+ * 3D da gaveta (livro.css) parado num ângulo. Fica no topo da página da categoria, com o mesmo
+ * `view-transition-name` do livro deitado do painel (PainelHome): ao abrir a categoria, o navegador
+ * leva o livro da pilha até aqui.
+ */
+import MioloLombada from "./MioloLombada.astro";
+import { tamanhoDoTituloDaCapa, type Livro } from "../lib/estante";
+import "../styles/livro.css";
+
+interface Props {
+  livro: Livro;
+  /** Altura do livro em px. */
+  altura?: number;
+}
+
+const { livro: l, altura = 250 } = Astro.props;
+// As medidas da lombada na estante valem para --u = 1px; aqui, na escala da altura pedida.
+const k = altura / l.altura;
+const lombada = Math.round(l.largura * k);
+const capa = Math.round(altura * 0.7);
+const angulo = 62;
+const rad = (angulo * Math.PI) / 180;
+// Girando em torno da borda direita da lombada, ela ocupa sw·cos e a capa cw·sen; o deslocamento
+// põe a borda esquerda do que se vê no início da caixa.
+const largura = Math.ceil(lombada * Math.cos(rad) + capa * Math.sin(rad));
+const deslocamento = -(lombada - lombada * Math.cos(rad)).toFixed(1);
+const estilo = [
+  `--tecido:${l.tecido}`,
+  `--texto:${l.texto}`,
+  `--u:${k.toFixed(3)}px`,
+  `--sw:${lombada}px`,
+  `--cw:${capa}px`,
+  `--bh:${altura}px`,
+  `--caixa:${largura}px`,
+  `--desloca:${deslocamento}px`,
+  `--angulo:-${angulo}deg`,
+  `view-transition-name:${l.id}`,
+  "view-transition-class:livro",
+].join(";");
+---
+
+<div class="livro-em-pe" style={estilo} aria-hidden="true">
+  <div class="livro-3d-caixa">
+    <div class="livro-3d">
+      <div class:list={["face-lombada", "lombada-visual", { "de-serie": l.serie }]}>
+        <MioloLombada livro={l} semFita />
+      </div>
+      <div class="face-capa">
+        <div class:list={["capa", { "de-serie": l.serie }]} style={`--cvf:${tamanhoDoTituloDaCapa(l.nome)}cqw`}>
+          {l.serie ? <p class="tipo-capa">Série</p> : <div class="filete" />}
+          <div class="titulo-capa">{l.nome}</div>
+          <p class="descricao-capa">{l.descricao}</p>
+          <div class="pe-capa">
+            {l.contagem}
+            <br />
+            <span class="autor-capa">Cesar Schutz</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .livro-em-pe {
+    width: var(--caixa);
+    height: var(--bh);
+  }
+
+  .livro-em-pe .livro-3d-caixa {
+    width: var(--caixa);
+  }
+
+  .livro-em-pe .livro-3d {
+    transform: translateX(var(--desloca)) rotateY(var(--angulo));
+    transition: none;
+  }
+
+  /* Luz: a lombada, de lado, fica mais escura que a capa. */
+  .livro-em-pe .face-lombada::after {
+    opacity: 0.32;
+  }
+
+  .livro-em-pe .face-capa::after {
+    opacity: 0;
+  }
+</style>

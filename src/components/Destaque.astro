@@ -1,11 +1,13 @@
 ---
 /**
- * Destaque da home (briefing §5.1): o post mais recente, com a ilustração em 3:2, categoria, data,
- * tempo de leitura, título, subtítulo e tags. Sem ilustração, ocupa uma coluna só.
+ * Destaque da home (briefing §5.1, D26): o post mais recente numa folha, com a ilustração em 3:2 no
+ * painel tingido, categoria, data, tempo de leitura, título, subtítulo, descrição, tags em pílulas e
+ * o botão "Ler artigo". Sem ilustração, ocupa uma coluna só.
  */
 import Chip from "./Chip.astro";
 import Ilustracao from "./Ilustracao.astro";
-import { dataIso, dataPorExtenso } from "../lib/formato";
+import { ICONES } from "../lib/icones";
+import { dataIso, dataPorExtenso, mdEmLinha } from "../lib/formato";
 import { temIlustracao } from "../lib/ilustracoes";
 import { urlTag, type Resumo } from "../lib/posts";
 
@@ -18,116 +20,146 @@ const { post } = Astro.props;
 
 <section class="destaque wrap" aria-labelledby="destaque-titulo">
   <h2 id="destaque-titulo" class="titulo-secao">Em destaque</h2>
-  <article class:list={["cartao-destaque", { "com-ilustracao": temIlustracao(post.slug) }]}>
+  <article class:list={["cartao-destaque", "folha", { "com-ilustracao": temIlustracao(post.slug) }]}>
     {
       temIlustracao(post.slug) && (
-        <a class="ilustracao-destaque" href={post.url} tabindex="-1" aria-hidden="true">
+        <a class="ilustracao-destaque painel" href={post.url} tabindex="-1" aria-hidden="true" style={`--cor:${post.cor}`}>
           <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} tamanho="cartao" decorativa />
         </a>
       )
     }
-    <div>
+    <div class="corpo-destaque">
       <p class="meta">
         <Chip cor={post.cor} nome={post.rotulo} href={post.urlRotulo} />
-        <span><time datetime={dataIso(post.publicado)}>{dataPorExtenso(post.publicado)}</time>, {post.minutos} min de leitura</span>
+        <time datetime={dataIso(post.publicado)}>{dataPorExtenso(post.publicado)}</time>
+        <span>{post.minutos} min de leitura</span>
       </p>
       <h3><a href={post.url}>{post.titulo}</a></h3>
       {post.subtitulo && <p class="subtitulo">{post.subtitulo}</p>}
+      <p class="descricao" set:html={mdEmLinha(post.descricao)} />
       <ul class="tags" aria-label="Tags">
         {
           post.tags.map((t) => (
             <li>
-              <a href={urlTag(t)} data-busca-tag={t}>
+              <a class="pilula" href={urlTag(t)} data-busca-tag={t}>
                 #{t}
               </a>
             </li>
           ))
         }
       </ul>
+      <a class="botao-primario" href={post.url}
+        >Ler artigo<span class="sr">: {post.titulo}</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} /></a
+      >
     </div>
   </article>
 </section>
 
 <style>
   .destaque {
-    padding-top: 64px;
+    padding-top: 56px;
   }
 
-  .ilustracao-destaque {
-    display: block;
-    aspect-ratio: 3 / 2;
+  .cartao-destaque {
+    padding: 14px;
   }
 
   .cartao-destaque.com-ilustracao {
     display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-    gap: 40px;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: 36px;
     align-items: center;
+  }
+
+  .ilustracao-destaque {
+    aspect-ratio: 3 / 2;
+  }
+
+  .corpo-destaque {
+    padding: 18px 22px;
+  }
+
+  .com-ilustracao .corpo-destaque {
+    padding-left: 0;
   }
 
   .meta {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 6px 14px;
+    gap: 4px 14px;
     margin: 0;
-    font-size: 14.5px;
+    font-family: var(--font-ui);
+    font-size: 14px;
     color: var(--ink-2);
   }
 
   h3 {
     margin: 10px 0 8px;
-    font-weight: 800;
-    font-size: clamp(28px, 3.6vw, 40px);
-    line-height: 1.08;
+    font-size: clamp(28px, 3.4vw, 40px);
+    line-height: 1.07;
+    letter-spacing: -0.01em;
   }
 
   h3 a {
     color: var(--ink);
     text-decoration: none;
+    transition: color 0.15s;
   }
 
   h3 a:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.12em;
+    color: var(--acento);
   }
 
   .subtitulo {
     max-width: 52ch;
     margin: 0;
-    font-size: 18px;
+    font-size: 18.5px;
     line-height: 1.45;
     color: var(--ink-2);
+  }
+
+  .descricao {
+    max-width: 52ch;
+    margin: 12px 0 0;
+    font-family: var(--font-ui);
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
+  .descricao :global(code) {
+    font-size: 0.88em;
   }
 
   .tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 2px 14px;
-    margin: 12px 0 0;
+    gap: 6px;
+    margin: 14px 0 0;
     padding: 0;
-    font-size: 14.5px;
     list-style: none;
   }
 
-  .tags a {
-    display: inline-block;
-    padding: 4px 0;
-    color: var(--ink-2);
-    text-decoration: none;
+  .tags .pilula {
+    min-height: 30px;
+    padding: 3px 11px;
   }
 
-  .tags a:hover {
-    color: var(--ink);
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
+  .botao-primario {
+    margin-top: 22px;
   }
 
   @media (max-width: 760px) {
     .cartao-destaque.com-ilustracao {
       grid-template-columns: minmax(0, 1fr);
       gap: 18px;
+    }
+
+    .corpo-destaque,
+    .com-ilustracao .corpo-destaque {
+      padding: 4px 8px 12px;
     }
   }
 </style>

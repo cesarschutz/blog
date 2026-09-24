@@ -1,0 +1,72 @@
+---
+/**
+ * Linha de cima de um artigo na lista e no card, como no blog atual: categoria (chip), data e tempo
+ * de leitura com o relógio. O chip fica acima do link que cobre o item inteiro (ver ItemLista).
+ */
+import Chip from "./Chip.astro";
+import { ICONES } from "../lib/icones";
+import { dataIso, dataPorExtenso } from "../lib/formato";
+import type { Resumo } from "../lib/posts";
+
+interface Props {
+  post: Resumo;
+}
+
+const { post } = Astro.props;
+---
+
+<p class="meta-item">
+  <Chip cor={post.cor} nome={post.rotulo} href={post.urlRotulo} />
+  <time datetime={dataIso(post.publicado)}>{dataPorExtenso(post.publicado)}</time>
+  <span class="separador" aria-hidden="true">·</span>
+  <span class="minutos"
+    ><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.relogio} />{post.minutos} min<span
+      class="sr"> de leitura</span
+    ></span
+  >
+</p>
+
+<style>
+  .meta-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 9px;
+    margin: 0;
+    font-family: var(--font-ui);
+    font-size: 13.5px;
+    color: var(--ink-2);
+  }
+
+  .meta-item :global(.chip) {
+    position: relative;
+    z-index: 2;
+  }
+
+  .minutos {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .minutos svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  @media (max-width: 640px) {
+    .meta-item {
+      gap: 2px 7px;
+      font-size: 12.5px;
+    }
+
+    .minutos svg {
+      display: none;
+    }
+  }
+</style>

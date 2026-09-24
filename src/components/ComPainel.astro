@@ -1,0 +1,64 @@
+---
+/**
+ * Conteúdo com o painel lateral (D28): o painel à esquerda em telas ≥ 1100px, parado enquanto o
+ * conteúdo rola (como no blog atual), e depois do conteúdo nas menores. No HTML o painel vem depois,
+ * porque o conteúdo é o principal. Usado na home e na página de categoria.
+ */
+import PainelHome from "./PainelHome.astro";
+import { montarLivros } from "../lib/estante";
+import { getTags } from "../lib/posts";
+
+interface Props {
+  /** Id do livro aberto na página (a categoria atual), que sai da pilha. */
+  atual?: string;
+  /** Distância do topo até a primeira folha do conteúdo, para o painel começar alinhado com ela. */
+  recuo?: number;
+}
+
+const { atual, recuo = 0 } = Astro.props;
+const livros = await montarLivros();
+const tags = await getTags();
+---
+
+<div class="wrap com-painel" style={`--recuo-painel:${recuo}px`}>
+  <div class="conteudo">
+    <slot />
+  </div>
+  <PainelHome livros={livros} tags={tags} atual={atual} />
+</div>
+
+<style>
+  .com-painel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+    align-items: start;
+  }
+
+  .conteudo {
+    min-width: 0;
+  }
+
+  @media (min-width: 1100px) {
+    .com-painel {
+      grid-template-columns: 272px minmax(0, 1fr);
+      gap: 28px;
+    }
+
+    .conteudo {
+      grid-column: 2;
+    }
+
+    /* Em tela baixa, o painel rola por dentro. */
+    .com-painel > :global(.painel-home) {
+      grid-row: 1;
+      grid-column: 1;
+      position: sticky;
+      top: 24px;
+      max-height: calc(100vh - 48px);
+      margin-top: var(--recuo-painel);
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+  }
+</style>

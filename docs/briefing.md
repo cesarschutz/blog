@@ -13,6 +13,8 @@ Referências visuais e de comportamento, abertas no navegador (arquivos locais, 
   "Invertida, canetinha"** (ver seção 7)
 - `docs/referencias/prototipo-estilo-desenho.html`: estilo das ilustrações. **O escolhido é
   a aba "A + C"** (ver seção 6)
+- `docs/referencias/prototipo-mais-vida.html`: ajuste visual sobre o site pronto. **A escolhida
+  é a variação "A. Folhas claras"** (ver seção 4, aprovada em 24/09/2026)
 
 Os protótipos mostram aparência e comportamento aprovados. São referência, não código para
 copiar: reescreva com a arquitetura certa, acessível e performática. Onde este briefing e um
@@ -75,8 +77,16 @@ protótipo divergirem, vale o briefing.
 
 ## 4. Sistema visual (decidido)
 
+Desde 24/09/2026 vale a variação **"A. Folhas claras"** de `docs/referencias/prototipo-mais-vida.html`
+(D26): o conteúdo em folhas claras sobre um fundo quente, azul-tinta em tudo que é clicável, uma
+fonte sem serifa na interface e os desenhos em painéis tingidos pela categoria. É uma mudança só da
+camada visual: estrutura, conteúdo, rotas e comportamento seguem as seções 5 a 7.
+
 ### 4.1 Tipografia
-- Títulos: **Besley** (700–900). Texto: **Literata** (com eixo `opsz`). Código: **JetBrains Mono**.
+- Títulos: **Besley** 700. O nome na abertura da home e a marca do cabeçalho continuam em 800.
+  Texto: **Literata** (com eixo `opsz`). Código: **JetBrains Mono**.
+- Interface: **IBM Plex Sans** (400, 500 e 600), servida pelo próprio site: menu, busca, datas,
+  tempo de leitura, categoria, tags, botões, trilha, sumário, legendas e o aviso curto de IA da home.
 - Artigo: corpo 18,5px, entrelinha 1,72, coluna de texto com no máximo 680px.
   Números em estilo antigo (`oldstyle-nums`) no texto corrido.
 - Sem fonte de "letra de mão" em lugar nenhum, inclusive nos desenhos e nas lousas.
@@ -84,22 +94,26 @@ protótipo divergirem, vale o briefing.
 ### 4.2 Cores (tokens em variáveis CSS)
 | Token | Claro | Escuro |
 |---|---|---|
-| `--paper` (fundo) | `#ECEEE9` | `#182022` |
-| `--paper-hi` (superfícies) | `#F7F8F4` | `#1F282A` |
-| `--well` | `#E0E3DC` | `#12181A` |
-| `--ink` | `#1C2427` | `#E3E6DF` |
-| `--ink-2` | `#56605E` | `#A7AFAB` |
-| `--ink-3` | `#7A8381` | `#848D89` |
-| `--rule` | `#C4CAC3` | `#343E40` |
-| `--link` | `#244A8A` | `#9FB8E8` |
+| `--paper` (fundo) | `#F1F0EB` | `#111618` |
+| `--paper-hi` (superfície das folhas) | `#FFFFFE` | `#1A2124` |
+| `--well` (código, cabeçalho de tabela) | `#F5F5F4` | `#21282A` |
+| `--ink` | `#1A2124` | `#E7E9E4` |
+| `--ink-2` | `#57605E` | `#A9B0AC` |
+| `--ink-3` | `#868D8A` | `#7F8884` |
+| `--rule` (borda) | `#E2E0D8` | `#2A3336` |
+| `--acento` (azul-tinta, o que é clicável) | `#2549B8` | `#93AEFF` |
+| `--sobre-acento` (texto sobre o azul) | `#FFFFFF` | `#0D1530` |
 | aviso Nota | `#3F5878` | `#9DB3D4` |
 | aviso Dica / linha adicionada | `#2F6B4F` | `#86C3A2` |
 | aviso Importante | `#654262` | `#C7A3C2` |
 | aviso Atenção | `#9A6B12` | `#E0B560` |
 | aviso Cuidado / linha removida | `#A3432A` | `#E7957C` |
 
-- Tema: segue o sistema, com alternância discreta (claro, escuro, sistema) guardada no
-  navegador e script anti-piscada no `<head>`.
+- `--well` não veio do protótipo: é a superfície com 4% de tinta, para código em linha, cabeçalho
+  de tabela e o fundo dos blocos de código, que ficam sobre a folha.
+- Tema: segue o sistema. A escolha fica guardada no navegador, com script anti-piscada no
+  `<head>`: o botão com ícone no cabeçalho alterna claro e escuro, e o rodapé mantém a alternância
+  discreta (claro, escuro, sistema).
 - **Cor de cada categoria** (tecido do livro, usada na lombada, na capa, no chip, na barra de
   leitura e no destaque dos desenhos). No tema escuro, o destaque dos desenhos usa a cor
   misturada com 42% de branco.
@@ -119,11 +133,39 @@ Categoria nova ganha cor distinta das demais, cadastrada num único arquivo de t
   `#D8B66C`, fita marcadora `#9E3B26`. Cada série nova define a própria particularidade
   (encadernação, cor, ornamento) no cadastro de séries.
 
+### 4.3 Folhas, painéis e interação
+- **Folhas**: o conteúdo principal fica em superfícies (`--paper-hi`) com borda fina (`--rule`),
+  raio de 14px e sombra leve sobre o fundo: a abertura da home (texto e estante, com a gaveta do
+  livro aberto), o destaque, a lista de artigos (uma folha só), cada card, o topo do artigo
+  (desenho e título), o corpo do artigo e o sumário. Painéis e caixas dentro delas: raio de 10px.
+  As páginas de apoio seguem a mesma linguagem (listas e cards em folhas).
+- **Sombra das folhas**: no claro, `0 1px 2px rgba(40,38,30,.04), 0 10px 28px -18px
+  rgba(40,38,30,.28)`; ao passar o mouse, `0 2px 4px rgba(40,38,30,.05), 0 18px 36px -18px
+  rgba(40,38,30,.35)`. No escuro, `0 12px 30px -18px rgba(0,0,0,.8)`; ao passar o mouse,
+  `0 18px 36px -16px rgba(0,0,0,.9)`.
+- **Azul-tinta** (`--acento`) em tudo que é clicável: item ativo do menu, links no texto, botão
+  "Ler artigo" (pílula com seta, texto em `--sobre-acento`), seletor Lista/Cards, item atual do
+  sumário (texto e barra), título do card ou da linha ao passar o mouse, foco. As cores das
+  categorias continuam nos livros, nos chips e nos desenhos.
+- **Desenhos com palco**: cada ilustração fica num painel tingido pela cor da categoria
+  (`color-mix` da cor com 11% sobre a superfície no claro, 20% no escuro). As áreas preenchidas do
+  desenho usam a mesma cor do painel, o traço fica um pouco mais grosso (×1,2) e o preenchimento de
+  destaque, mais forte (78% da cor). Valores em `docs/estilo-desenho.md`.
+- **Acabamento**: busca como campo (ícone, "Buscar" e ⌘K) e botão de tema com ícone no cabeçalho;
+  destaque com a descrição do post, tags em pílulas e "Ler artigo"; cards que sobem 4px ao passar o
+  mouse (parados com `prefers-reduced-motion`); linhas da lista com fundo leve ao passar o mouse;
+  chip de categoria com quadradinho da cor e nome tingido (no claro, a cor com 30% de tinta; no
+  escuro, com 50% de branco).
+- **Artigo**: o corpo é lido sobre a folha; em telas ≥ 1300px, o sumário fica à esquerda, numa
+  folha própria e fixa, com a barra de quanto já foi lido embaixo ("19% lido").
+- **Largura**: a mesma do blog atual, conteúdo de até 1320px e margem lateral de 16 a 32px.
+
 ## 5. Páginas
 
 ### 5.1 Home
 Referência: aba "Home" do protótipo.
-- **Cabeçalho**: "Cesar Schutz" à esquerda; à direita Artigos, Tags, Buscar (com ⌘K) e RSS.
+- **Cabeçalho**: "Cesar Schutz" à esquerda; à direita Artigos, Tags e RSS, a busca como campo
+  (com ⌘K) e o botão de tema (§4.3). No celular, nome e tema numa linha; menu e busca na outra.
 - **Abertura**: nome, uma frase em primeira pessoa e a linha curta sobre IA; ao lado, a
   **estante**. Em telas menores que ~860px a estante desce para baixo do texto.
 - **Estante**:
@@ -142,18 +184,55 @@ Referência: aba "Home" do protótipo.
     prateleira) antes de abrir o próximo; cliques rápidos terminam a animação e abrem o
     último escolhido. Botão "Fechar livro" e tecla Esc.
   - No celular, as lombadas diminuem para caber todas na largura.
-- **Destaque**: o post mais recente, com a ilustração em 3:2, categoria, data, tempo de
+- **Destaque** (só na primeira página): o post mais recente, com a ilustração em 3:2, categoria, data, tempo de
   leitura, título, subtítulo e tags. O post em destaque **não se repete** na lista abaixo.
-- **Artigos recentes**: alternância **Lista / Cards** (guardada no navegador).
-  Lista: data, título, subtítulo, categoria, tempo de leitura e miniatura quadrada à direita.
-  Cards: grade com a ilustração em 3:2 no topo. Link para todos os artigos.
-- **Tags**: nuvem com contagem; clicar abre a busca filtrada por `#tag`.
+- **Artigos recentes**: alternância **Lista / Cards** (guardada no navegador), no formato do blog
+  atual (D27). Em cima, categoria, data e tempo de leitura com relógio; o **título inteiro**, grande;
+  a **descrição completa** (fonte da interface); até 4 tags em `#tag` (fonte de código). O item
+  inteiro é clicável.
+  Lista: miniatura quadrada da ilustração à direita (104 a 148px; 84px no celular, sem as tags).
+  Cards: grade de até 3 colunas, com a ilustração em 3:2 no topo e as tags no pé do card.
+  Mesmo formato de lista nas páginas de categoria, tag e série; o arquivo por ano continua compacto.
+- **Paginação**: 12 artigos por página, como no blog atual: `/`, `/2/`, `/3/`… Embaixo da lista,
+  "Anteriores", os números (a atual em azul-tinta) e "Mais artigos"; no celular, só os dois botões.
+  Da página 2 em diante, só a lista ("Artigos — página N", em h1) e a paginação. O destaque nunca
+  entra na lista.
+- **Painel lateral** (D28), à esquerda da lista em telas ≥ 1100px e depois dela nas menores, em todas
+  as páginas da home, no lugar da antiga nuvem de tags no pé. Inspirado na barra lateral do blog
+  atual, numa folha que **fica parada enquanto a lista rola** (como no antigo; em tela baixa, rola por
+  dentro):
+  - **Séries** e **Categorias** como **pilhas de livros deitados**: os mesmos livros da estante (tecido,
+    trama, letras, fita da série), com a lombada virada para o leitor, o nome na horizontal e a
+    contagem na ponta. Comprimento = altura da lombada na estante; espessura = a largura da lombada
+    (cresce com o número de posts) × 0,55; o mais comprido embaixo; recuos pequenos e diferentes
+    para a pilha não ficar alinhada demais; todos retos (o de cima torto parecia voando); a pilha
+    apoiada num tampo da madeira da estante. Ao passar o mouse, o livro sai 8px da pilha (sem movimento com
+    `prefers-reduced-motion`).
+  - **Tags**: as 10 mais usadas em pílulas (o clique abre a busca filtrada por `#tag`) e "Todas as
+    tags →".
+  - "Assinar via RSS" no pé.
+  - Cada livro de categoria leva à página nova da categoria (§5.2, D29), com a transição do livro.
+    O de série ainda leva à página que já existia; as telas de série e de tag serão pensadas depois.
 - Sem animação de entrada nas seções.
 
 ### 5.2 Páginas de apoio
 Todos os artigos (`/archive/`), categoria, tag, série (ordem de leitura) e `/java/`
 (página especial da série; porte do blog atual). Mesma linguagem visual, sem inventar
 componentes novos.
+
+**Categoria** (`/categories/<Nome>/`, D29):
+- O painel lateral da home à esquerda (parado enquanto a página rola; depois do conteúdo no celular).
+  O livro desta categoria saiu da pilha: no lugar fica só o contorno, como o lugar vazio da estante.
+- No topo, uma folha com o **livro em pé** num painel tingido pela cor da categoria: o mesmo livro
+  3D da gaveta, parado em três quartos (lombada e capa com nome, descrição, contagem e autor). Ao
+  lado: "Categorias" (trilha), o nome grande (Besley 800, do tamanho que couber numa linha), a
+  descrição, a contagem com o quadradinho da cor e as 6 tags mais usadas na categoria.
+- Embaixo, "Artigos" com a contagem e a alternância Lista / Cards, no mesmo formato da home (D27),
+  sem paginação.
+- **Transição**: ao clicar num livro do painel, ele sai da pilha e vira o livro em pé do topo da
+  página nova (View Transitions entre documentos). Entre duas categorias, o livro antigo volta para
+  a pilha enquanto o novo sobe. Só o livro se move; o resto da página troca na hora. Sem suporte do
+  navegador, ou com `prefers-reduced-motion`, a página só abre.
 
 ### 5.3 Artigo
 Referência: aba "Artigo" do protótipo.
@@ -163,10 +242,13 @@ Referência: aba "Artigo" do protótipo.
 - **Título e subtítulo**: o `title` do frontmatter usa " — " para separar; o que vem depois
   vira subtítulo.
 - **Barra de progresso de leitura**: faixa de 3px no topo, na cor da categoria.
-- **Sumário**: lateral fixo em telas ≥ 1300px (marca a seção atual); recolhível no início do
-  texto nas menores. Só aparece com 3 ou mais seções.
-- **Notas laterais**: notas de rodapé do Markdown viram notas na margem em telas ≥ 1180px e
-  abrem no lugar, ao tocar no número, nas menores.
+- **Sumário**: em telas ≥ 1300px, à esquerda do texto, numa folha própria e fixa (marca a seção
+  atual em azul-tinta); recolhível no início do texto nas menores. Só aparece com 3 ou mais seções.
+  Embaixo da lista, no sumário lateral, uma barra fina em azul-tinta com a porcentagem lida
+  ("19% lido", em fonte de código), que soma à barra do topo sem substituí-la. Só aparece com JS; se
+  a lista for longa, só ela rola, e a barra fica sempre à vista.
+- **Notas laterais**: notas de rodapé do Markdown viram notas na margem direita da folha do corpo
+  em telas ≥ 1180px e abrem no lugar, ao tocar no número, nas menores.
 - **Avisos** (inspirados nos admonitions da documentação do Spring), cinco tipos com ícone
   de traço e cor própria, fundo levemente tingido, borda fina (nada de borda grossa à
   esquerda): **Nota, Dica, Importante, Atenção, Cuidado**. Sintaxe no Markdown estilo
@@ -197,8 +279,8 @@ Referência: aba "Artigo" do protótipo.
 ### 5.4 SEO e distribuição
 JSON-LD (`BlogPosting` nos posts, `WebSite` na home), sitemap com `lastmod`, RSS com texto
 completo dos posts recentes, canonical, Open Graph e Twitter. **Imagem de compartilhamento**
-PNG 1200×630 gerada no build: título e subtítulo à esquerda, ilustração do post à direita,
-nome do blog e categoria.
+PNG 1200×630 gerada no build: título e subtítulo à esquerda, ilustração do post à direita (no
+painel tingido da §4.3), nome do blog e categoria.
 
 ## 6. Ilustrações dos posts (decidido: estilo "A + C")
 
@@ -216,9 +298,9 @@ trocar o estilo sem mexer na regra do que desenhar. Conteúdo inicial desse arqu
   acontece, alternativas e estados anteriores.
 - **Uma cor só**, a da categoria do post, aplicada como preenchimento levemente fora do
   registro (deslocado alguns pixels do contorno). O resto em tinta.
-- **Sem fundo próprio**: o desenho fica direto sobre a página; as áreas preenchidas usam a cor
-  da superfície onde ele aparece (`var(--fig-bg, var(--paper))`), então funciona igual nos
-  dois temas e dentro dos slides.
+- **Sem fundo próprio**: o SVG não pinta fundo; as áreas preenchidas usam a cor da superfície
+  onde ele aparece (`var(--fig-bg, var(--paper))`), então funciona igual nos dois temas e dentro
+  dos slides. No site, essa superfície é o painel tingido pela categoria (§4.3).
 - **Espessura do traço definida pelo CSS conforme o tamanho em que o desenho aparece**
   (mais grossa na miniatura, mais fina no topo do artigo).
 - Anotações em Literata itálica com linha de chamada, só nos recortes grandes; somem no

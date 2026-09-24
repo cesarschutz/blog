@@ -11,7 +11,7 @@ const series = await Promise.all(SERIES.map(async (s) => ({ serie: s, posts: awa
 <Base titulo="Séries" descricao="As séries do blog de Cesar Schutz: assuntos que rendem mais de um artigo, em ordem de leitura.">
   <div class="wrap">
     <CabecalhoPagina titulo="Séries" descricao="Assuntos que rendem mais de um artigo, para ler em ordem." />
-    <ul class="series">
+    <ul class="series folha">
       {
         series
           .filter(({ posts }) => posts.length > 0)
@@ -35,10 +35,16 @@ const series = await Promise.all(SERIES.map(async (s) => ({ serie: s, posts: awa
 </Base>
 
 <style>
+  /* Uma folha com uma linha por série, como a lista de artigos (D26). */
   .series {
     margin: 0;
-    padding: 0;
+    padding: 4px 0;
+    overflow: hidden;
     list-style: none;
+  }
+
+  .series li + li a {
+    border-top: 1px solid var(--rule);
   }
 
   .series a {
@@ -46,10 +52,14 @@ const series = await Promise.all(SERIES.map(async (s) => ({ serie: s, posts: awa
     grid-template-columns: 56px minmax(0, 1fr);
     gap: 22px;
     align-items: center;
-    padding: 22px 0;
-    border-top: 1px solid var(--rule);
+    padding: 22px;
     color: var(--ink);
     text-decoration: none;
+    transition: background-color 0.15s;
+  }
+
+  .series a:hover {
+    background: color-mix(in oklab, var(--acento) 5%, transparent);
   }
 
   .capa {
@@ -82,9 +92,7 @@ const series = await Promise.all(SERIES.map(async (s) => ({ serie: s, posts: awa
   }
 
   a:hover .nome {
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.18em;
+    color: var(--acento);
   }
 
   .descricao {
@@ -92,7 +100,8 @@ const series = await Promise.all(SERIES.map(async (s) => ({ serie: s, posts: awa
   }
 
   .conta {
-    font-size: 14.5px;
+    font-family: var(--font-ui);
+    font-size: 14px;
     color: var(--ink-2);
     font-variant-numeric: lining-nums;
   }

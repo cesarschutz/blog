@@ -1,0 +1,248 @@
+{
+  "observacao": "artigos é só exemplo: no site o número vem da contagem real de posts de cada categoria ou série.",
+  "livros": [
+    {
+      "volume": 1,
+      "slug": "arquitetura-de-software",
+      "titulo": "Arquitetura de Software",
+      "linhasDoTitulo": [
+        "Arquitetura",
+        "de Software"
+      ],
+      "corpoDoTituloNaCapa": 72,
+      "subtitulo": "Microsserviços, domínios, eventos e consistência: as decisões caras de desfazer.",
+      "cor": "#2d4b46",
+      "cores": {
+        "faixa": "#14322d",
+        "tinta": "#efe8d8",
+        "tintaFaixa": "#efe8d8",
+        "numeral": "#41605a"
+      },
+      "instrumento": "arco e pedra angular",
+      "artigos": 7,
+      "lombadaEmPe": {
+        "altura": 660,
+        "largura": 150
+      },
+      "lombadaDeitada": {
+        "comprimento": 200,
+        "espessura": 38,
+        "deslocamento": 0
+      }
+    },
+    {
+      "volume": 2,
+      "slug": "desenvolvimento-de-software",
+      "titulo": "Desenvolvimento de Software",
+      "linhasDoTitulo": [
+        "Desenvolvimento",
+        "de Software"
+      ],
+      "corpoDoTituloNaCapa": 49,
+      "subtitulo": "Java, Spring, testes e refatoração: o ofício dentro de cada serviço.",
+      "cor": "#7a4430",
+      "cores": {
+        "faixa": "#5d2a17",
+        "tinta": "#efe8d8",
+        "tintaFaixa": "#efe8d8",
+        "numeral": "#915944"
+      },
+      "instrumento": "paquímetro medindo uma peça",
+      "artigos": 5,
+      "lombadaEmPe": {
+        "altura": 628,
+        "largura": 146
+      },
+      "lombadaDeitada": {
+        "comprimento": 206,
+        "espessura": 38,
+        "deslocamento": 10
+      }
+    },
+    {
+      "volume": 3,
+      "slug": "dados",
+      "titulo": "Dados",
+      "linhasDoTitulo": [
+        "Dados"
+      ],
+      "corpoDoTituloNaCapa": 136,
+      "subtitulo": "Bancos, modelagem, CDC e pipelines: onde o dado mora e por onde ele anda.",
+      "cor": "#5f4662",
+      "cores": {
+        "faixa": "#452d48",
+        "tinta": "#efe8d8",
+        "tintaFaixa": "#efe8d8",
+        "numeral": "#755b78"
+      },
+      "instrumento": "gaveta de fichas",
+      "artigos": 1,
+      "lombadaEmPe": {
+        "altura": 604,
+        "largura": 128
+      },
+      "lombadaDeitada": {
+        "comprimento": 188,
+        "espessura": 30,
+        "deslocamento": -6
+      }
+    },
+    {
+      "volume": 4,
+      "slug": "ia",
+      "titulo": "IA",
+      "linhasDoTitulo": [
+        "IA"
+      ],
+      "corpoDoTituloNaCapa": 136,
+      "subtitulo": "LLMs, agentes, RAG e prompts: software feito com IA e software que usa IA.",
+      "cor": "#6e2f45",
+      "cores": {
+        "faixa": "#51152d",
+        "tinta": "#efe8d8",
+        "tintaFaixa": "#efe8d8",
+        "numeral": "#854459"
+      },
+      "instrumento": "autômato escritor",
+      "artigos": null,
+      "lombadaEmPe": {
+        "altura": 584,
+        "largura": 120
+      },
+      "lombadaDeitada": {
+        "comprimento": 176,
+        "espessura": 27,
+        "deslocamento": 14
+      }
+    },
+    {
+      "volume": 5,
+      "slug": "seguranca",
+      "titulo": "Segurança",
+      "linhasDoTitulo": [
+        "Segurança"
+      ],
+      "corpoDoTituloNaCapa": 81,
+      "subtitulo": "Identidade, segredos, criptografia e compliance: quem pode o quê e como provar.",
+      "cor": "#606a37",
+      "cores": {
+        "faixa": "#464f1c",
+        "tinta": "#efe8d8",
+        "tintaFaixa": "#efe8d8",
+        "numeral": "#75804c"
+      },
+      "instrumento": "carta lacrada e sinete",
+      "artigos": 1,
+      "lombadaEmPe": {
+        "altura": 642,
+        "largura": 138
+      },
+      "lombadaDeitada": {
+        "comprimento": 192,
+        "espessura": 31,
+        "deslocamento": 2
+      }
+    },
+    {
+      "volume": 6,
+      "slug": "devops",
+      "titulo": "DevOps",
+      "linhasDoTitulo": [
+        "DevOps"
+      ],
+      "corpoDoTituloNaCapa": 113,
+      "subtitulo": "Containers, Kubernetes, CI/CD e nuvem: o caminho do commit até a produção.",
+      "cor": "#465976",
+      "cores": {
+        "faixa": "#2d3f5a",
+        "tinta": "#efe8d8",
+        "tintaFaixa": "#efe8d8",
+        "numeral": "#5b6e8c"
+      },
+      "instrumento": "guindaste de porto",
+      "artigos": 2,
+      "lombadaEmPe": {
+        "altura": 598,
+        "largura": 130
+      },
+      "lombadaDeitada": {
+        "comprimento": 184,
+        "espessura": 28,
+        "deslocamento": 18
+      }
+    },
+    {
+      "volume": 7,
+      "slug": "sre",
+      "titulo": "SRE",
+      "linhasDoTitulo": [
+        "SRE"
+      ],
+      "corpoDoTituloNaCapa": 136,
+      "subtitulo": "Observabilidade, SLOs, alertas e incidentes: o que mantém a produção de pé.",
+      "cor": "#c4a050",
+      "cores": {
+        "faixa": "#a68331",
+        "tinta": "#29251b",
+        "tintaFaixa": "#efe8d8",
+        "numeral": "#ac8937"
+      },
+      "instrumento": "farol",
+      "artigos": 3,
+      "lombadaEmPe": {
+        "altura": 616,
+        "largura": 126
+      },
+      "lombadaDeitada": {
+        "comprimento": 180,
+        "espessura": 29,
+        "deslocamento": -2
+      }
+    },
+    {
+      "volume": 8,
+      "slug": "carreira",
+      "titulo": "Carreira",
+      "linhasDoTitulo": [
+        "Carreira"
+      ],
+      "corpoDoTituloNaCapa": 102,
+      "subtitulo": "O papel do arquiteto, o estudo e o time: o lado humano de construir software.",
+      "cor": "#9a7650",
+      "cores": {
+        "faixa": "#7d5b35",
+        "tinta": "#efe8d8",
+        "tintaFaixa": "#efe8d8",
+        "numeral": "#b28c66"
+      },
+      "instrumento": "compasso",
+      "artigos": null,
+      "lombadaEmPe": {
+        "altura": 632,
+        "largura": 134
+      },
+      "lombadaDeitada": {
+        "comprimento": 190,
+        "espessura": 30,
+        "deslocamento": 8
+      }
+    }
+  ],
+  "series": [
+    {
+      "titulo": "Atualizações do Java",
+      "cor": "#2b2320",
+      "tinta": "#d8b25e",
+      "fita": "#a3372b",
+      "artigos": 7,
+      "lombadaEmPe": {
+        "altura": 672,
+        "largura": 150
+      },
+      "lombadaDeitada": {
+        "comprimento": 196,
+        "espessura": 30
+      }
+    }
+  ]
+}

@@ -9,6 +9,11 @@ que está marcado como **decidido** sem perguntar. O que for decidido aqui vai p
 
 **Ao começar uma sessão, leia `docs/estado.md`. Ao terminar um bloco de trabalho, atualize-o.**
 
+**Toda decisão do Cesar vira registro na mesma hora**, sem ele precisar pedir, para a próxima sessão
+continuar de onde parou: design ou produto no `docs/briefing.md` (e no `docs/estilo-desenho.md`, se for
+de desenho); a decisão, o motivo e o que mudou no `docs/decisoes.md`; o andamento no `docs/estado.md`;
+e, se mudar o jeito de trabalhar, aqui, na skill ou na regra (`.claude/`) certa.
+
 Modo de trabalho combinado em 23/09/2026: seguir as fases do briefing **sem parar** para aprovação
 (atualizando o `docs/estado.md` ao fechar cada uma) e deixar o site rodando **só na máquina**, para o
 Cesar acompanhar. Ele revisa tudo no fim.
@@ -25,7 +30,8 @@ Cesar acompanhar. Ele revisa tudo no fim.
 - Cores só por tokens CSS (`var(--ink)`, `var(--cat)`…). Nada de hex solto em componente ou SVG.
 - Toda animação respeita `prefers-reduced-motion`: com ele ligado, tudo aparece no estado final,
   sem prender a tela.
-- JavaScript só onde há interação (estante, busca, lousas, apresentação, lista/cards, tema).
+- JavaScript só onde há interação (estante, busca, lousas, apresentação, lista/cards, tema e o nome
+  de transição do livro do painel, D29).
   Artigo sem esses componentes funciona sem JS.
 - Fontes servidas pelo próprio site (`@fontsource`). Nunca Google Fonts nem CDN em produção.
 - Não pode parecer feito por IA: nada de fonte genérica, gradiente decorativo, sombra genérica em
@@ -42,7 +48,8 @@ Cesar acompanhar. Ele revisa tudo no fim.
   `/sitemap-index.xml`
 - `/categories/<Nome>/` e `/tags/<Nome>/` com o **nome cru** na URL (maiúsculas, acentos e espaços)
 - Redirecionamentos: `/posts/java-NN/` → `/posts/java-<LTS>/#java-NN` (vindo de `ABSORBED`),
-  `/about/` → `/sobre/`, `/projects/` → `/`, `/exercicios` → `/` e `/2/` e `/3/` → `/archive/`
+  `/about/` → `/sobre/`, `/projects/` → `/` e `/exercicios` → `/`
+- `/2/` e `/3/`: páginas da home paginada, 12 por página, como no blog atual (D27)
 
 Detalhes e casos especiais estão em `docs/decisoes.md` (D7).
 
@@ -53,8 +60,9 @@ Aprovada em 23/09/2026. Detalhes em `docs/decisoes.md`.
 - Astro 7, site estático, com TypeScript 6 estrito (o `astro check` ainda não aceita o TS 7)
 - Posts em Markdown (`.md`). `.mdx` só quando o post usa componente (lousa)
 - Expressive Code para código (título, linhas destacadas, diff, Copiar). KaTeX só em post com fórmula
-- CSS próprio com tokens, sem Tailwind e sem framework de UI
-- Fontes: Besley (títulos), Literata com `opsz` (texto), JetBrains Mono (código)
+- CSS próprio com tokens, sem Tailwind e sem framework de UI. Visual "Folhas claras" (D26): folhas
+  (`.folha`), painéis dos desenhos (`.painel`) e azul-tinta (`--acento`) no que é clicável
+- Fontes: Besley (títulos), Literata com `opsz` (texto), IBM Plex Sans (interface), JetBrains Mono (código)
 - Busca com Pagefind e interface própria (D2, por medição): índice gerado no `postbuild`
 - Node 24 (`.node-version`, instalado pelo fnm) e npm
 - Por enquanto tudo roda só na máquina, sem pré-visualização publicada (D13). O deploy final será por
@@ -65,7 +73,7 @@ Aprovada em 23/09/2026. Detalhes em `docs/decisoes.md`.
 Sempre com o Node 24: `fnm exec --using=24 <comando>`.
 
 ```bash
-npm run dev          # o Astro 7 sobe o servidor em segundo plano e mostra o endereço
+npm run dev -- --host 127.0.0.1   # o Astro 7 sobe o servidor em segundo plano e mostra o endereço
 npx astro dev stop   # para o servidor (também: astro dev status, astro dev logs)
 npm run build        # dist/; no postbuild, as imagens /og/*.png (Chrome, D10) e o índice do Pagefind
 npm run check        # astro check: 0 erros antes de mostrar qualquer coisa ao Cesar
@@ -99,13 +107,16 @@ docs/referencias/        protótipos aprovados
 src/content/posts/       posts; nome do arquivo = slug da URL
 src/data/                taxonomia (categorias e cores), series, java, decks (apresentações), site
 src/styles/tokens.ts     cores dos dois temas: fonte única, gera as variáveis CSS (D4)
-src/styles/              base, fontes, avisos, prosa, artigo (notas, apresentação, visor), estante
+src/styles/              base (folha, painel, transição de página), fontes, avisos, prosa, artigo (grade,
+                         notas, visor), estante e livro (lombada, livro 3D e capa)
 src/layouts/Base.astro   head, anti-piscada, cabeçalho, rodapé e busca
 src/components/          peças das páginas (estante, gaveta, sumário, avisos, busca…)
-src/pages/               rotas; posts/[slug]/apresentacao.pdf.ts (PDF) e og/[slug] (imagem, D10)
+src/pages/               rotas; a home é [...page].astro (paginada, D27);
+                         posts/[slug]/apresentacao.pdf.ts (PDF) e og/[slug] (imagem, D10)
 src/plugins/             Markdown: avisos, notas laterais, apresentação, tabelas, matemática
 src/lib/                 posts, formatos, busca (Pagefind), código (Expressive Code), PDF
 src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, apresentação)
+src/scripts/tema.ts      tema claro/escuro/sistema (botão do cabeçalho e seletor do rodapé)
 scripts/                 contraste, links, apresentacao, og, copiar-katex, desenho/, bench-busca/
 public/posts/<slug>/     diagramas antigos e slides das apresentações (deck/)
 src/ilustracoes/         uma ilustração SVG por post (<slug>.svg), com os recortes na raiz (D11)
@@ -135,3 +146,10 @@ src/lousas/<slug>/       desenhos das lousas de cada post .mdx
 - Deploy preso na fila: cancelar e reexecutar o workflow (o `gh` está instalado nesta máquina).
 - O shell do Claude é bash, e o fnm só está configurado no zsh: aqui, `node` é o 25 do Homebrew.
   Rode tudo do projeto com o Node 24: `fnm exec --using=24 npm run dev` (vale para npm, npx e node).
+- Mudou a configuração ou o tema do Expressive Code? `npm run build -- --force`: o cache de conteúdo
+  guarda o HTML dos posts apontando para o CSS antigo do EC, e os blocos de código perdem o estilo (D26).
+  O dev tem o mesmo problema: reinicie-o (`astro dev stop` e suba de novo).
+- Suba o dev com `npm run dev -- --host 127.0.0.1`. Sem isso ele escuta só em `localhost` (IPv6), e o
+  endereço <http://127.0.0.1:4322> que o Cesar usa não abre.
+- Instalar dependência com o dev no ar faz o Vite reiniciar, e componentes editados nesse meio-tempo
+  podem ficar com o CSS velho: salve-os de novo (um `touch` basta).

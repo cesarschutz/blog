@@ -22,16 +22,8 @@ const posts = await getPostsDaSerie(serie.chave);
 <Base titulo={serie.nome} descricao={serie.descricao}>
   <div class="wrap">
     <CabecalhoPagina titulo={serie.nome} descricao={serie.descricao} trilha={{ nome: "Séries", href: url("/series/") }} />
-    <ol class="lista">
+    <ol class="lista-artigos folha">
       {posts.map((p) => <ItemLista post={p} nivel="h2" />)}
     </ol>
   </div>
 </Base>
-
-<style>
-  .lista {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-</style>

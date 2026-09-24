@@ -1,7 +1,55 @@
 /*
  * Partes do artigo que saem do Markdown (notas laterais e apresentação) ou do script (visor de
- * imagens), por isso globais. Briefing §5.3; medidas do protótipo aprovado.
+ * imagens), por isso globais, e a grade da página, que as amostras do dev também usam. Briefing
+ * §5.3; medidas dos protótipos aprovados.
  */
+
+/* ---------- grade: folha do corpo e, em telas ≥ 1300px, o sumário à esquerda (D26) ---------- */
+
+.artigo-grade {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+  margin-top: 28px;
+}
+
+/* Contêiner: as lousas largas (LousaPassos) se medem pela largura da folha, sem depender de vw. */
+.artigo-folha {
+  container-type: inline-size;
+  min-width: 0;
+  padding: 44px 48px 48px;
+}
+
+.artigo-corpo {
+  max-width: var(--coluna);
+  min-width: 0;
+  margin-inline: auto;
+}
+
+/* O sumário lateral (Sumario.astro), numa folha fixa, fica na coluna da esquerda. */
+@media (min-width: 1300px) {
+  .artigo-grade.com-sumario {
+    grid-template-columns: 240px minmax(0, 1fr);
+  }
+}
+
+/* Com notas na margem, o texto encosta à esquerda e as notas ocupam a direita da folha. */
+@media (min-width: 1180px) {
+  .artigo-corpo:has(.nota-lateral) {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .artigo-grade {
+    margin-top: 18px;
+  }
+
+  .artigo-folha {
+    padding: 26px 22px 30px;
+  }
+}
 
 /* ---------- notas laterais ---------- */
 
@@ -36,11 +84,15 @@
   margin: 10px 0 4px;
   padding: 10px 14px;
   border: 1px solid var(--rule);
-  border-radius: 4px;
-  background: var(--paper-hi);
+  border-radius: 8px;
+  background: var(--well);
 }
 
-/* Telas largas: a nota vai para a margem direita, na altura da chamada (cabe a partir de 1180px). */
+/*
+ * Telas largas: a nota vai para a margem direita da folha, na altura da chamada (cabe a partir de
+ * 1180px, também com o sumário à esquerda; o texto encosta à esquerda da folha e a nota pode avançar
+ * um pouco sobre o respiro). O script abre e fecha a nota só quando ela não está na margem (pelo `float`).
+ */
 @media (min-width: 1180px) {
   .nota-lateral,
   .nota-lateral:target,
@@ -48,8 +100,8 @@
     display: block;
     float: right;
     clear: right;
-    width: 200px;
-    margin: 4px -232px 12px 0;
+    width: 180px;
+    margin: 4px -208px 12px 0;
     padding: 0;
     border: 0;
     background: none;
@@ -58,113 +110,4 @@
   .ref-nota a {
     cursor: default;
   }
-}
-
-/* ---------- apresentação (rehype-apresentacao) ---------- */
-
-.apresentacao .slides {
-  position: relative;
-  display: flex;
-  margin: 0;
-  padding: 0;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  scrollbar-width: none;
-  list-style: none;
-  border: 1px solid var(--rule);
-  border-radius: 5px;
-  background: var(--paper-hi);
-}
-
-.apresentacao .slides::-webkit-scrollbar {
-  display: none;
-}
-
-.apresentacao .slide {
-  flex: 0 0 100%;
-  margin: 0;
-  scroll-snap-align: center;
-}
-
-.apresentacao .slide img {
-  display: block;
-  width: 100%;
-  height: auto;
-  margin: 0;
-}
-
-.barra-slides {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  margin: 10px 0 1.4em;
-}
-
-.barra-slides .posicao {
-  margin-right: auto;
-  font-size: 15px;
-  color: var(--ink-2);
-  font-variant-numeric: lining-nums tabular-nums;
-}
-
-/* ---------- visor de imagens e tela cheia da apresentação ---------- */
-
-.visor {
-  width: 100vw;
-  max-width: none;
-  height: 100vh;
-  height: 100dvh;
-  max-height: none;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: var(--paper);
-  color: var(--ink);
-}
-
-.visor[open] {
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
-}
-
-.visor::backdrop {
-  background: var(--paper);
-}
-
-.visor-quadro {
-  display: grid;
-  place-items: center;
-  min-height: 0;
-  margin: 0;
-  padding: 16px var(--pad);
-}
-
-.visor-quadro img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-}
-
-.visor-quadro img[src$=".svg"] {
-  padding: 12px;
-  border-radius: 6px;
-  background: var(--quadro);
-}
-
-.visor-barra {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px;
-  padding: 12px var(--pad) calc(12px + env(safe-area-inset-bottom, 0px));
-  border-top: 1px solid var(--rule);
-}
-
-.visor-barra .posicao {
-  margin-right: auto;
-  font-size: 15px;
-  color: var(--ink-2);
-  font-variant-numeric: lining-nums tabular-nums;
 }

@@ -1,8 +1,8 @@
 /**
- * Interações do artigo (briefing §5.3): barra de leitura, voltar ao topo, seção atual no sumário
- * lateral, notas laterais que abrem no lugar nas telas menores, visor de imagens e a apresentação
- * (setas, contador e tela cheia). Sem JS o artigo continua inteiro: as notas abrem por âncora, a
- * apresentação rola de lado e o PDF baixa.
+ * Interações do artigo (briefing §5.3): barra de leitura (no topo e embaixo do sumário), voltar ao
+ * topo, seção atual no sumário lateral, notas laterais que abrem no lugar nas telas menores, visor
+ * de imagens e a apresentação (setas, contador e tela cheia). Sem JS o artigo continua inteiro: as
+ * notas abrem por âncora, a apresentação rola de lado e o PDF baixa.
  */
 const reduzir = matchMedia("(prefers-reduced-motion: reduce)");
 const rolagem = (): ScrollBehavior => (reduzir.matches ? "auto" : "smooth");
@@ -11,6 +11,10 @@ const rolagem = (): ScrollBehavior => (reduzir.matches ? "auto" : "smooth");
 
 const artigo = document.querySelector<HTMLElement>("[data-artigo]");
 const barra = document.querySelector<HTMLElement>("[data-barra-leitura]");
+const progresso = document.querySelector<HTMLElement>("[data-progresso-sumario]");
+const progressoFeito = progresso?.querySelector<HTMLElement>(".feito");
+const progressoTexto = progresso?.querySelector<HTMLElement>(".lido");
+if (progresso) progresso.hidden = false;
 const voltar = document.querySelector<HTMLButtonElement>("[data-voltar-topo]");
 const secoes = [...document.querySelectorAll<HTMLAnchorElement>("[data-secao]")].flatMap((link) => {
   const titulo = document.getElementById(link.dataset.secao!);
@@ -24,6 +28,10 @@ function aoRolar() {
     const caixa = artigo.getBoundingClientRect();
     const lido = Math.min(1, Math.max(0, -caixa.top / Math.max(caixa.height - innerHeight, 1)));
     barra.style.transform = `scaleX(${lido.toFixed(4)})`;
+    if (progressoFeito && progressoTexto) {
+      progressoFeito.style.transform = `scaleX(${lido.toFixed(4)})`;
+      progressoTexto.textContent = `${Math.round(lido * 100)}% lido`;
+    }
   }
   voltar?.classList.toggle("visivel", scrollY > innerHeight);
   let atual: HTMLAnchorElement | undefined;
@@ -55,7 +63,6 @@ if (voltar) {
 
 // ---------- notas laterais ----------
 
-const estreita = matchMedia("(max-width: 1179px)");
 for (const chamada of document.querySelectorAll<HTMLAnchorElement>("[data-ref-nota]")) {
   const nota = document.getElementById(decodeURIComponent(chamada.hash.slice(1)));
   if (!nota) continue;
@@ -63,8 +70,9 @@ for (const chamada of document.querySelectorAll<HTMLAnchorElement>("[data-ref-no
   chamada.setAttribute("aria-expanded", "false");
   chamada.addEventListener("click", (e) => {
     e.preventDefault();
-    // Na margem a nota já está à vista; nas telas menores, abre e fecha no lugar.
-    if (!estreita.matches) return;
+    // Na margem (o CSS a põe em float) a nota já está à vista; fora dela, abre e fecha no lugar.
+    // A margem depende da largura da tela e de o sumário estar ao lado (artigo.css).
+    if (getComputedStyle(nota).float === "right") return;
     chamada.setAttribute("aria-expanded", String(nota.classList.toggle("aberta")));
   });
 }

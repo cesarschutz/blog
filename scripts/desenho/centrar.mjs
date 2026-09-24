@@ -29,7 +29,7 @@ for (const slug of slugs) {
   await pagina.goto(`${endereco}/amostra/desenhos/?slug=${encodeURIComponent(slug)}`, { waitUntil: "load" });
   await pagina.evaluate(() => document.fonts.ready);
   medidas.push([slug, await pagina.evaluate((s) => {
-    const svg = document.querySelector(`.folha[data-slug="${s}"] .largo svg`);
+    const svg = document.querySelector(`.conferencia[data-slug="${s}"] .largo svg`);
     if (!svg) return null;
     const paraDesenho = svg.getScreenCTM().inverse();
     const medir = (elementos) => {

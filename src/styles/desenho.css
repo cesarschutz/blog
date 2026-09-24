@@ -1,7 +1,8 @@
 /*
  * Traço "A + C" das ilustrações (briefing §6; valores em docs/estilo-desenho.md). O desenho só usa
  * estas classes e variáveis: tinta e superfície vêm dos tokens, a cor é a da categoria (--cor, posta
- * pelo componente Ilustracao) e a espessura (--traco) muda com o tamanho em que ele aparece.
+ * pelo componente Ilustracao) e a espessura (--traco) muda com o tamanho em que ele aparece. No site,
+ * todo desenho fica num painel tingido (.painel, base.css): a superfície passa a ser a cor do painel.
  */
 
 .definicoes-desenho {
@@ -41,6 +42,11 @@
   --traco: 7;
 }
 
+/* No painel tingido, o traço fica um pouco mais grosso (D26), para não sumir no fundo de cor. */
+.painel .ilustracao {
+  --traco-no-painel: 1.2;
+}
+
 /* Só os traços tremem; os textos ficam nítidos. */
 .ilustracao .tinta {
   filter: url(#tremor);
@@ -48,7 +54,7 @@
 
 .ilustracao .tinta :is(path, rect, circle, ellipse, line, polyline, polygon) {
   stroke: var(--ink);
-  stroke-width: var(--traco);
+  stroke-width: calc(var(--traco) * var(--traco-no-painel, 1));
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -63,7 +69,7 @@
 
 /* A cor da categoria, fora do registro: uma cópia da forma deslocada, por baixo do contorno. */
 .ilustracao .tinta .cor {
-  fill: color-mix(in oklab, var(--cor-desenho) 62%, var(--superficie));
+  fill: color-mix(in oklab, var(--cor-desenho) 78%, var(--superficie));
   stroke: none;
 }
 
@@ -76,7 +82,7 @@
 /* O que não acontece, alternativas e estados anteriores. */
 .ilustracao .tinta .fantasma {
   fill: none;
-  stroke-width: calc(var(--traco) * 0.8);
+  stroke-width: calc(var(--traco) * var(--traco-no-painel, 1) * 0.8);
   stroke-dasharray: 24 8 4 8 4 8;
 }
 

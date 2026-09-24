@@ -1,8 +1,9 @@
 ---
 /**
- * Topo do artigo (briefing §5.3): a ilustração antes do título (recorte largo, com anotações, no
- * computador; 3:2 no celular), depois a trilha "Artigos › Categoria" (ou "Séries › Nome"), título,
- * subtítulo, data, "Atualizado em" quando houver e tempo de leitura.
+ * Topo do artigo (briefing §5.3), numa folha (D26): a ilustração antes do título, no painel tingido
+ * que encosta nas bordas da folha (recorte largo, com anotações, no computador; 3:2 no celular),
+ * depois a trilha "Artigos › Categoria" (ou "Séries › Nome"), título, subtítulo, data, "Atualizado
+ * em" quando houver e tempo de leitura.
  */
 import Chip from "./Chip.astro";
 import Ilustracao from "./Ilustracao.astro";
@@ -23,40 +24,50 @@ const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "
 const partesDoTitulo = post.titulo.split(/(?<=\.)(?=[A-Za-z])/);
 ---
 
-{
-  temIlustracao(post.slug) && (
-    <figure class="ilustracao-topo" data-pagefind-ignore>
-      <div class="largo">
-        <Ilustracao slug={post.slug} recorte="largo" cor={post.cor} anotacoes />
-      </div>
-      <div class="medio">
-        <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} />
-      </div>
-    </figure>
-  )
-}
-<header class="topo">
-  <nav class="trilha" aria-label="Trilha" data-pagefind-ignore>
-    <a href={raiz.href}>{raiz.nome}</a>
-    <span aria-hidden="true">›</span>
-    <Chip cor={post.cor} nome={post.rotulo} href={post.urlRotulo} />
-  </nav>
-  <h1 data-pagefind-meta="title" tabindex="-1">{partesDoTitulo.map((parte, i) => (i ? [<wbr />, parte] : parte))}</h1>
-  {post.subtitulo && <p class="subtitulo">{post.subtitulo}</p>}
-  <p class="meta" data-pagefind-ignore>
-    <time datetime={dataIso(post.publicado)}>{dataPorExtenso(post.publicado)}</time>
-    {atualizado && <span>Atualizado em <time datetime={dataIso(atualizado)}>{dataPorExtenso(atualizado)}</time></span>}
-    <span>{post.minutos} min de leitura</span>
-  </p>
-</header>
+<div class="folha topo-folha">
+  {
+    temIlustracao(post.slug) && (
+      <figure class="ilustracao-topo painel" data-pagefind-ignore style={`--cor:${post.cor}`}>
+        <div class="largo">
+          <Ilustracao slug={post.slug} recorte="largo" cor={post.cor} anotacoes />
+        </div>
+        <div class="medio">
+          <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} />
+        </div>
+      </figure>
+    )
+  }
+  <header class="topo">
+    <nav class="trilha" aria-label="Trilha" data-pagefind-ignore>
+      <a href={raiz.href}>{raiz.nome}</a>
+      <span aria-hidden="true">›</span>
+      <Chip cor={post.cor} nome={post.rotulo} href={post.urlRotulo} />
+    </nav>
+    <h1 data-pagefind-meta="title" tabindex="-1">{partesDoTitulo.map((parte, i) => (i ? [<wbr />, parte] : parte))}</h1>
+    {post.subtitulo && <p class="subtitulo">{post.subtitulo}</p>}
+    <p class="meta" data-pagefind-ignore>
+      <time datetime={dataIso(post.publicado)}>{dataPorExtenso(post.publicado)}</time>
+      {atualizado && <span>Atualizado em <time datetime={dataIso(atualizado)}>{dataPorExtenso(atualizado)}</time></span>}
+      <span>{post.minutos} min de leitura</span>
+    </p>
+  </header>
+</div>
 
 <style>
-  .ilustracao-topo {
-    max-width: 1100px;
-    margin: 32px auto 0;
+  .topo-folha {
+    overflow: hidden;
   }
 
+  /* O painel ocupa o alto da folha; o canto arredondado vem dela. */
+  .ilustracao-topo {
+    margin: 0;
+    border-radius: 0;
+  }
+
+  /* Com o site em até 1320px, o painel ocupa a folha toda e o desenho fica em até 1100px, no centro. */
   .largo {
+    max-width: 1100px;
+    margin-inline: auto;
     aspect-ratio: 1100 / 468;
   }
 
@@ -78,7 +89,7 @@ const partesDoTitulo = post.titulo.split(/(?<=\.)(?=[A-Za-z])/);
   .topo {
     max-width: 760px;
     margin-inline: auto;
-    padding-top: 28px;
+    padding: 30px 32px 34px;
   }
 
   .trilha {
@@ -86,25 +97,30 @@ const partesDoTitulo = post.titulo.split(/(?<=\.)(?=[A-Za-z])/);
     flex-wrap: wrap;
     align-items: center;
     gap: 6px 10px;
-    font-size: 15px;
+    font-family: var(--font-ui);
+    font-size: 14.5px;
     color: var(--ink-2);
   }
 
+  /* Só o link da raiz: o chip é de outro componente e tem a própria cor. */
   .trilha a {
     color: var(--ink-2);
   }
 
+  .trilha a:hover {
+    color: var(--acento);
+  }
+
   h1 {
-    margin: 14px 0 0;
-    font-weight: 800;
-    font-size: clamp(38px, 5.6vw, 62px);
-    line-height: 1.02;
+    margin: 12px 0 0;
+    font-size: clamp(36px, 5.2vw, 58px);
+    line-height: 1.03;
     letter-spacing: -0.014em;
   }
 
   .subtitulo {
     margin: 12px 0 0;
-    font-size: clamp(19px, 2.2vw, 22px);
+    font-size: clamp(19px, 2.1vw, 22px);
     line-height: 1.4;
     color: var(--ink-2);
   }
@@ -112,9 +128,16 @@ const partesDoTitulo = post.titulo.split(/(?<=\.)(?=[A-Za-z])/);
   .meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 4px 18px;
-    margin: 16px 0 0;
-    font-size: 14.5px;
+    gap: 4px 14px;
+    margin: 14px 0 0;
+    font-family: var(--font-ui);
+    font-size: 14px;
     color: var(--ink-2);
+  }
+
+  @media (max-width: 760px) {
+    .topo {
+      padding: 22px 20px 26px;
+    }
   }
 </style>

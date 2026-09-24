@@ -103,5 +103,7 @@ A série Java não se desenha: `node scripts/desenho/java.mjs` gera as oito a pa
 
 O render gera `.render/desenhos/<slug>.png` com todos os recortes nos tamanhos reais e a imagem de
 compartilhamento, no claro e no escuro. A mesma folha abre no dev em `/amostra/desenhos/?slug=<slug>`.
+Como no site, cada recorte aparece no painel tingido pela cor da categoria (D26): as áreas `papel`
+ficam na cor do painel, e o traço, 20% mais grosso.
 O desenho só é aceito depois de passar no validador **e** de ser conferido a olho no PNG: miniatura
 legível, protagonista centrado, nada cortado no recorte largo, anotações longe das bordas.

@@ -15,6 +15,8 @@ export interface Resumo {
   url: string;
   titulo: string;
   subtitulo: string;
+  /** Título inteiro do frontmatter, como as listas e os cards mostram (igual ao blog atual). */
+  tituloCompleto: string;
   descricao: string;
   publicado: Date;
   atualizado?: Date;
@@ -72,6 +74,7 @@ export function resumir(post: Post): Resumo {
     url: urlPost(post.id),
     titulo,
     subtitulo,
+    tituloCompleto: post.data.title,
     descricao: post.data.description,
     publicado: post.data.published,
     atualizado: post.data.updated,

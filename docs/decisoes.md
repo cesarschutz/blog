@@ -149,6 +149,8 @@ por Dn**. As decisões de produto e design já fechadas estão em `docs/briefing
   - A API de fontes do Astro 7 gera reservas sozinha, mas o filtro de pré-carregamento do provedor
     local não separa `latin` de `latin-ext`, e acabaria pré-carregando os dois.
   - Um subconjunto próprio de glifos, na Fase 7, se o Lighthouse pedir.
+- **Atualização em 24/09/2026 (D26):** entra a IBM Plex Sans na interface, pela
+  `@fontsource-variable/ibm-plex-sans`, sem pré-carregamento e com reserva ajustada.
 
 ## D6 · KaTeX servido pelo site
 - **Data:** 23/09/2026 · **Status:** proposta
@@ -176,6 +178,8 @@ por Dn**. As decisões de produto e design já fechadas estão em `docs/briefing
   - `/projects/` → `/`;
   - `/exercicios` → `/`;
   - `/2/` e `/3/` (paginação antiga da home) → `/archive/`, aprovado pelo Cesar em 23/09/2026.
+    **Revisto em 24/09/2026 (D27):** a home voltou a ser paginada, e `/2/` e `/3/` voltaram a ser
+    páginas, com o mesmo conteúdo de antes. Os dois redirecionamentos saíram.
 
 ## D8 · Validar e renderizar desenhos com `playwright-core`
 - **Data:** 23/09/2026 · **Status:** proposta. Instalar na Fase 5.
@@ -304,6 +308,9 @@ nada muda.
   decorativos (chip, barra, ícone de aviso) só geram alerta.
 - **Situação:** 0 falhas. Um alerta: o chip e a barra de Observabilidade no tema claro dão 2,24:1. São
   decorativos, porque o nome da categoria sempre acompanha.
+- **Atualização em 24/09/2026 (D26):** com os tokens novos, `--ink-3` como texto só dentro das folhas
+  (3,39:1; sobre o fundo dá 2,97:1, e o script só avisa). O script passou a conferir também o
+  azul-tinta, o texto sobre ele, o nome tingido das categorias e o texto dos desenhos sobre os painéis.
 
 ## D23 · Cor de destaque da série Java: a fita
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar)
@@ -319,6 +326,8 @@ nada muda.
   - A alternância fica discreta no rodapé (Claro, Escuro, Sistema). O cabeçalho do briefing não tem
     esse item, e sem JS o seletor some.
   - O script anti-piscada é a primeira coisa do `<head>`.
+- **Atualização em 24/09/2026 (D26):** o cabeçalho ganhou um botão com ícone que alterna claro e
+  escuro; o rodapé continua com as três opções. Os dois usam `src/scripts/tema.ts` e ficam em sincronia.
 
 ## D25 · Favicon novo
 - **Data:** 23/09/2026 · **Status:** proposta (aplicada na Fase 1, pode ser trocada)
@@ -326,3 +335,138 @@ nada muda.
   180px para o iPhone e o ICO de 32px, gerados com `rsvg-convert`. As cores ficam fixas porque o favicon
   é uma imagem externa e não enxerga as variáveis do CSS.
 - **Motivo:** o favicon atual é da identidade antiga, com degradê azul e "CS" em Inter.
+
+## D26 · Variação "A. Folhas claras": folhas, azul-tinta, IBM Plex Sans e desenhos com palco
+- **Data:** 24/09/2026 · **Status:** aprovada (pedido do Cesar, a partir de
+  `docs/referencias/prototipo-mais-vida.html`); aplicada, aguardando a revisão visual dele.
+- **Decisão:** muda só a camada visual (briefing §4, reescrito; §5.1, §5.3 e §6 ajustados onde a
+  contradiziam). Estrutura, conteúdo, rotas e comportamento ficam como estavam, com as exceções abaixo.
+  - **Tokens:** fundo, superfície, borda, texto e azul-tinta novos; `--acento` e `--sobre-acento`
+    substituem o `--link`. Categorias, séries, avisos e diff continuam. `--well` passa a ser a
+    superfície com 4% de tinta (código em linha, cabeçalho de tabela, fundo dos blocos de código); a
+    barra dos blocos usa 8%, calculada em `src/lib/codigo.ts` com a mistura oklab que `tokens.ts`
+    agora exporta (`misturar`).
+  - **Folhas e painéis:** classes globais `.folha` e `.painel` em `base.css`; sombras e raios em
+    variáveis (`--sombra-folha`, `--sombra-folha-alta`, `--raio-folha`, `--raio-painel`). As
+    proporções do painel (11% e 20%) e do nome no chip ficam em `tokens.ts` (`PAINEL`, `CHIP`).
+  - **Fonte da interface:** `@fontsource-variable/ibm-plex-sans`, pedida pelo Cesar. A versão
+    variável tem um arquivo latino de 45,7 KB para 400, 500 e 600 (os três estáticos somariam
+    71 KB). Sem pré-carregamento: o CSS vem embutido no HTML, então o pedido sai cedo, e a reserva
+    "IBM Plex Sans fallback" (Arial com as métricas do Capsize) evita o deslocamento na troca.
+  - **Cabeçalho:** a busca vira campo e entra o botão de tema, em sincronia com o seletor do rodapé
+    (D24). Ordem: Artigos, Tags, RSS, busca, tema. O protótipo põe "Séries" no menu; o briefing não,
+    e o menu ficou como estava.
+  - **Artigo:** o topo e o corpo em folhas e, em telas ≥ 1300px, o sumário à esquerda, numa folha
+    fixa (o protótipo o põe à direita; o Cesar pediu à esquerda na primeira revisão). A grade saiu do
+    `[slug].astro` para `artigo.css`, que as amostras do dev também usam.
+  - **Progresso no sumário:** pedido do Cesar na segunda revisão, a partir de um recorte de outro
+    blog: embaixo da lista do sumário lateral, uma barra fina em azul-tinta e "NN% lido" em fonte de
+    código. A barra de 3px do topo, na cor da categoria, continua. As duas usam a mesma conta
+    (`artigo.ts`). Sem JS a barra fica escondida, porque não teria como andar. A folha virou coluna
+    flexível: se a lista for longa, só ela rola, e o progresso não sai de vista.
+  - **Largura:** a mesma do blog atual, conteúdo de até 1320px com margem lateral de 16 a 32px
+    (`--largura` e `--pad` em `base.css`), pedido do Cesar. O protótipo usava 1024px. No topo do
+    artigo, o painel ocupa a folha toda e o desenho fica em até 1100px, no centro.
+  - **Notas laterais:** continuam na margem direita da folha do corpo a partir de 1180px, também com
+    o sumário ao lado; o texto encosta à esquerda da folha e a nota passou de 200 para 180px, podendo
+    avançar um pouco sobre o respiro. Nenhum post usa notas hoje.
+  - **`LousaPassos`:** mede-se pela folha do corpo e avança 32px sobre o respiro de cada lado. Com a
+    largura nova, fica maior que antes em todas as telas largas.
+  - **Imagem de compartilhamento:** fundo da folha, título em Besley 700, chip novo e o desenho no
+    painel tingido. As 27 imagens foram regeradas no build.
+  - **Folha de conferência dos desenhos:** a classe `.folha` dela virou `.conferencia` (colidia com a
+    nova; `render.mjs` e `centrar.mjs` acompanham) e os recortes aparecem nos painéis, como no site.
+- **Contraste (D22):** 0 falha no `npm run contraste`. O `--ink-3` claro (#868D8A) passa sobre a folha
+  (3,39:1) e não sobre o fundo (2,97:1); o nome tingido de Observabilidade passa sobre a folha (4,53:1)
+  e não sobre o fundo (3,97:1). Os dois só aparecem como texto dentro das folhas.
+- **Armadilha do build:** o cache de conteúdo do Astro (`.astro/data-store.json`) guarda o HTML dos
+  posts com o link do CSS do Expressive Code. Depois de mudar a configuração ou o tema do EC, rode
+  `npm run build -- --force`; sem isso, os posts apontam para um CSS que não existe mais e os blocos de
+  código perdem o estilo. No CI não há cache.
+- **Alternativa:** a variação "B. Página aberta" do mesmo protótipo, sem caixas em volta do conteúdo.
+
+## D27 · Lista e cards no formato do blog atual, e a home paginada
+- **Data:** 24/09/2026 · **Status:** feito, aguardando aprovação junto com a D26.
+- **Pedido do Cesar:** deixar a lista e os cards "igual ao antigo, com aquele texto grande e o título
+  maior" e paginar a home em vez do link para todos os artigos.
+- **O que mudou:**
+  - `ItemLista.astro` e `Cartao.astro`: em cima, a linha nova `MetaItem.astro` (chip, data, relógio e
+    minutos); o título inteiro do frontmatter (`tituloCompleto` no `Resumo`; antes só a parte antes
+    do "—"); a descrição completa, em IBM Plex Sans; até 4 tags em `#tag`, em JetBrains Mono, só
+    texto. O link do título cobre o item todo (`::after`), com o chip por cima. Título da lista entre
+    21 e 25px (o antigo ia até 23px); miniatura de 104 a 148px, como no antigo.
+  - Cards em até 3 colunas (mínimo de 340px), como no antigo; antes cabiam 4 e os títulos quebravam
+    demais. As tags descem até o pé do card.
+  - O `ItemLista` completo vale também para categoria, tag e série (no antigo, as quatro páginas usam
+    o mesmo feed). O arquivo por ano ficou como estava: `<ItemLista compacto />`.
+  - Home paginada: `src/pages/index.astro` virou `src/pages/[...page].astro` (o `paginate` do Astro
+    exige o parâmetro `page`), 12 por página, `Paginacao.astro` no lugar do link "Todos os N
+    artigos". Página 2 em diante: sem abertura, destaque e tags; título "Artigos — página N" em h1.
+  - `/2/` e `/3/` deixaram de redirecionar para `/archive/` (D7) e voltaram a ser as páginas da home.
+    Com 26 posts: 12, 12 e 1, igual ao blog atual.
+- **Conferido:** `astro check` 0/0, build, links (80 páginas, 0 quebrados, 18 redirecionamentos),
+  contraste (0 falhas), sem rolagem lateral em 320 e 390px (home, página 2 e categoria, lista e cards).
+- **Mantido do visual novo (D26):** fontes, cores, folhas, painéis tingidos e as ilustrações em 3:2
+  nos cards (o antigo usava 2:1).
+
+## D28 · Painel lateral da home com séries e categorias em pilhas de livros
+- **Data:** 24/09/2026 · **Status:** feito, aguardando aprovação (com a D26 e a D27).
+- **Pedido do Cesar:** ter no blog novo o painel lateral do blog atual (séries, categorias, tags,
+  RSS), mas com séries e categorias "semelhante à estante de livros, só que os livros deitados, um em
+  cima do outro". O clique ainda não precisa fazer nada de novo: as telas de categoria, tag e série
+  serão pensadas depois.
+- **A ideia:** são os mesmos livros da estante, agora deitados. Tecido, trama, cor das letras e fita
+  da série vêm de `montarLivros()`; o comprimento é a altura da lombada na estante (o livro é o mesmo)
+  e a espessura acompanha o número de posts, como a largura da lombada. O mais comprido fica embaixo,
+  como numa pilha de verdade; cada livro tem um recuo pequeno e diferente; todos ficam retos (o de
+  cima chegou a ficar torto, como o livro inclinado da estante, mas o Cesar achou que parecia
+  voando); a pilha fica num tampo da madeira da estante. A série
+  mantém o couro, as nervuras, o itálico e a fita, que sai pela ponta do livro.
+- **Onde:** `src/components/PainelHome.astro`, na home e nas páginas 2 e 3: à esquerda da lista em
+  telas ≥ 1100px (272px, alinhado com a folha da lista) e depois dela nas menores (no HTML, vem depois
+  da lista, que é o principal). Na tela larga, fica parado enquanto a lista rola (`sticky`, pedido do
+  Cesar, como no blog atual) e, se a janela for mais baixa que ele, rola por dentro. Os cards voltaram ao mínimo de 290px, o mesmo do blog atual, para
+  caberem 3 colunas ao lado do painel.
+- **Tags:** as 10 mais usadas (o antigo mostrava 8) e "Todas as tags →" (`/tags/`). A nuvem de tags
+  do pé da home saiu (`NuvemTags.astro` apagado), porque o painel já cumpre esse papel.
+- **Clique:** cada livro é um link para a página que já existe (`/categories/<Nome>/`, `/java/`),
+  com rótulo acessível ("Arquitetura, 7 artigos"). Um link morto seria pior para teclado e leitor
+  de tela.
+- **Outros:** `--tecido-trama` passou de `estante.css` para `base.css`, porque as páginas 2 e 3 não
+  têm estante; ícone `rss` em `icones.ts`.
+- **Conferido:** `astro check` 0/0, build, links (0 quebrados), contraste (0 falhas; as cores de
+  letra e tecido são as da estante), sem rolagem lateral e sem nome cortado em 320, 390, 1100 e
+  1280px.
+
+## D29 · Página de categoria com o livro em pé e a transição do livro
+- **Data:** 24/09/2026 · **Status:** feito, aguardando aprovação (com D26 a D28).
+- **Pedido do Cesar:** fazer a tela de categoria (a de série fica para depois): ao clicar no livro,
+  uma animação o leva até um painel elegante no topo da página da categoria, "tipo na home quando
+  clicamos nele lá em cima", e embaixo os artigos daquela categoria, com o painel lateral como no
+  blog atual.
+- **Página:** `src/pages/categories/[categoria].astro` com `ComPainel.astro` (o painel lateral e o
+  `sticky`, agora compartilhados com a home), `TopoCategoria.astro` (folha com o livro e o texto) e a
+  lista `Recentes.astro` (paginação e subtítulo ficaram opcionais). No painel, o livro da categoria
+  aberta fica só como contorno (`retirado`, `aria-current="page"`), como o lugar vazio da estante.
+- **O livro em pé:** `LivroEmPe.astro` usa o livro 3D da gaveta parado a 62° (lombada à esquerda,
+  capa de frente), na escala de 250px de altura, com a lombada mais escura. O CSS da lombada, do
+  livro 3D e da capa saiu de `estante.css` para `livro.css` (a estante o importa), para a página de
+  categoria não carregar a estante e a gaveta.
+- **Transição:** View Transitions entre documentos (`@view-transition { navigation: auto }` em
+  `base.css`), sem biblioteca. O livro em pé tem `view-transition-name` igual ao id do livro. Na
+  pilha, o nome vai só no livro que leva à página nova (`pageswap`) ou que veio da anterior
+  (`pagereveal`), por um script pequeno no `<head>` (Base.astro); com o nome em todos, a pilha
+  inteira voava junto, porque ela fica em alturas diferentes nas duas páginas. A raiz não anima: o
+  resto da página troca na hora, como antes. Duração de 0,7s; as duas imagens com `object-fit:
+  contain`, para o livro deitado não esticar ao virar o livro em pé. Chrome 126+ e Safari 18.2+;
+  nos outros, e com `prefers-reduced-motion`, a página só abre. Conferido em câmera lenta
+  (home → categoria e categoria → categoria).
+- **Gaveta:** na home, os links de categoria abriam o livro na gaveta (inclusive os do painel). Agora
+  os livros do painel ficam de fora e vão para a página da categoria; os chips continuam abrindo a
+  gaveta.
+- **Título:** o nome usa `clamp(24px, 10cqi, 56px)` na largura da coluna, para "Observabilidade"
+  caber numa linha até em 320px.
+- **Conferido:** `astro check` 0/0, build, links (0 quebrados), contraste (0 falhas), sem rolagem
+  lateral, sem nome cortado na pilha e título numa linha nas seis categorias em 320, 390, 800, 1100
+  e 1440px.
+
