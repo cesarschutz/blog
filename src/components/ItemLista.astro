@@ -1,0 +1,122 @@
+---
+/**
+ * Um artigo numa lista (protótipo, "Artigos recentes" em modo lista): data, título, subtítulo,
+ * categoria e tempo de leitura, com a miniatura quadrada da ilustração à direita quando o post tem.
+ */
+import Chip from "./Chip.astro";
+import Ilustracao from "./Ilustracao.astro";
+import { dataIso, dataPorExtenso } from "../lib/formato";
+import { temIlustracao } from "../lib/ilustracoes";
+import type { Resumo } from "../lib/posts";
+
+interface Props {
+  post: Resumo;
+  /** Nível do título, para a lista respeitar a hierarquia da página. */
+  nivel?: "h2" | "h3";
+  /** Miniatura da ilustração (o arquivo por ano fica sem, mais compacto). */
+  miniatura?: boolean;
+}
+
+const { post, nivel = "h3", miniatura = true } = Astro.props;
+const Titulo = nivel;
+const comMiniatura = miniatura && temIlustracao(post.slug);
+---
+
+<li class:list={["item", { "com-miniatura": comMiniatura }]}>
+  <time class="quando" datetime={dataIso(post.publicado)}>{dataPorExtenso(post.publicado)}</time>
+  <div class="texto">
+    <Titulo class="titulo"><a href={post.url}>{post.titulo}</a></Titulo>
+    {post.subtitulo && <p class="subtitulo">{post.subtitulo}</p>}
+    <p class="meta">
+      <Chip cor={post.cor} nome={post.rotulo} href={post.urlRotulo} />
+      <span>{post.minutos} min de leitura</span>
+    </p>
+  </div>
+  {
+    comMiniatura && (
+      <a class="miniatura" href={post.url} tabindex="-1" aria-hidden="true">
+        <Ilustracao slug={post.slug} recorte="quadrado" cor={post.cor} tamanho="miniatura" decorativa />
+      </a>
+    )
+  }
+</li>
+
+<style>
+  .item {
+    display: grid;
+    grid-template-columns: 118px minmax(0, 1fr);
+    gap: 0 24px;
+    padding: 22px 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  .quando {
+    padding-top: 6px;
+    font-size: 14.5px;
+    color: var(--ink-2);
+  }
+
+  .titulo {
+    margin: 0;
+    font-size: clamp(20px, 2.3vw, 24px);
+    line-height: 1.25;
+  }
+
+  .titulo a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .titulo a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+  }
+
+  .subtitulo {
+    max-width: 62ch;
+    margin: 4px 0 0;
+    font-size: 17px;
+    color: var(--ink-2);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 18px;
+    margin: 10px 0 0;
+    font-size: 14.5px;
+    color: var(--ink-2);
+  }
+
+  .item.com-miniatura {
+    grid-template-columns: 118px minmax(0, 1fr) 108px;
+  }
+
+  .miniatura {
+    display: block;
+    width: 108px;
+    aspect-ratio: 1;
+  }
+
+  @media (max-width: 640px) {
+    .item {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .item.com-miniatura {
+      grid-template-columns: minmax(0, 1fr) 76px;
+      column-gap: 16px;
+    }
+
+    .quando {
+      grid-column: 1 / -1;
+      padding: 0 0 4px;
+    }
+
+    .miniatura {
+      width: 76px;
+    }
+  }
+</style>

@@ -1,0 +1,196 @@
+---
+/**
+ * Rodapé do post (briefing §5.3), nesta ordem: tags; compartilhar (copiar link, LinkedIn, WhatsApp
+ * e o compartilhar nativo quando existir); aviso sobre IA; anterior e próximo (ou dentro da série).
+ */
+import { ICONES } from "../lib/icones";
+import { urlTag, type Resumo } from "../lib/posts";
+import type { Serie } from "../data/series";
+import { url } from "../lib/url";
+
+interface Props {
+  post: Resumo;
+  endereco: string;
+  anterior?: Resumo;
+  proximo?: Resumo;
+  naSerie?: Serie;
+}
+
+const { post, endereco, anterior, proximo, naSerie } = Astro.props;
+const tituloCompleto = post.subtitulo ? `${post.titulo} — ${post.subtitulo}` : post.titulo;
+const linkedin = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(endereco)}`;
+const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${tituloCompleto} ${endereco}`)}`;
+const rotulos = naSerie
+  ? { anterior: "Anterior na série", proximo: "Próxima na série" }
+  : { anterior: "Artigo anterior", proximo: "Próximo artigo" };
+---
+
+<footer class="rodape-artigo">
+  <ul class="tags" aria-label="Tags">
+    {
+      post.tags.map((t) => (
+        <li>
+          <a class="pilula" href={urlTag(t)} data-busca-tag={t}>
+            #{t}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="compartilhar" data-compartilhar data-titulo={tituloCompleto} data-endereco={endereco}>
+    <span class="rotulo">Compartilhar</span>
+    <button type="button" class="pilula" data-copiar hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ICONES.link} /><span>Copiar link</span>
+    </button>
+    <a class="pilula" href={linkedin} target="_blank" rel="noopener">LinkedIn</a>
+    <a class="pilula" href={whatsapp} target="_blank" rel="noopener">WhatsApp</a>
+    <button type="button" class="pilula" data-nativo hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ICONES.compartilhar} /><span>Mais opções</span>
+    </button>
+  </div>
+
+  <aside class="aviso aviso-ia" data-aviso="atencao" aria-label="Aviso sobre IA">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.atencao} />
+    <p>
+      Artigo escrito com apoio de IA, revisado pelo autor, com o código testado. Ainda assim pode conter imprecisões:
+      confirme nas fontes citadas e na documentação oficial antes de aplicar. <a
+        href={url("/sobre/#como-os-artigos-sao-produzidos")}>Saiba mais</a
+      >.
+    </p>
+  </aside>
+</footer>
+
+{
+  (anterior || proximo) && (
+    <nav class="vizinhos" aria-label={naSerie ? `Na série ${naSerie.nome}` : "Outros artigos"}>
+      {anterior ? (
+        <a href={anterior.url} rel="prev">
+          <span class="dir">{rotulos.anterior}</span>
+          <span class="nome">{anterior.titulo}</span>
+        </a>
+      ) : (
+        <span />
+      )}
+      {proximo && (
+        <a href={proximo.url} rel="next" class="proximo">
+          <span class="dir">{rotulos.proximo}</span>
+          <span class="nome">{proximo.titulo}</span>
+        </a>
+      )}
+    </nav>
+  )
+}
+
+<script>
+  const caixa = document.querySelector<HTMLElement>("[data-compartilhar]");
+  if (caixa) {
+    const { titulo = "", endereco = location.href } = caixa.dataset;
+    const copiar = caixa.querySelector<HTMLButtonElement>("[data-copiar]");
+    const nativo = caixa.querySelector<HTMLButtonElement>("[data-nativo]");
+
+    if (copiar && navigator.clipboard) {
+      const texto = copiar.querySelector("span")!;
+      copiar.hidden = false;
+      copiar.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(endereco);
+          texto.textContent = "Link copiado";
+        } catch {
+          texto.textContent = "Não deu para copiar";
+        }
+        setTimeout(() => (texto.textContent = "Copiar link"), 1600);
+      });
+    }
+
+    if (nativo && typeof navigator.share === "function") {
+      nativo.hidden = false;
+      nativo.addEventListener("click", () => navigator.share({ title: titulo, url: endereco }).catch(() => {}));
+    }
+  }
+</script>
+
+<style>
+  .rodape-artigo {
+    max-width: var(--coluna);
+    margin-top: 2.6em;
+    padding-top: 1.6em;
+    border-top: 1px solid var(--rule);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 18px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .compartilhar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 22px;
+  }
+
+  .rotulo {
+    margin-right: 4px;
+    font-size: 14.5px;
+    color: var(--ink-2);
+  }
+
+  .aviso-ia {
+    font-size: 15px;
+    color: var(--ink-2);
+  }
+
+  .vizinhos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    max-width: var(--coluna);
+    margin-top: 28px;
+  }
+
+  .vizinhos a {
+    display: grid;
+    gap: 4px;
+    padding: 14px 16px;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .vizinhos a:hover {
+    border-color: var(--ink-3);
+  }
+
+  .proximo {
+    text-align: right;
+  }
+
+  .dir {
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+
+  .nome {
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 1.3;
+  }
+
+  @media (max-width: 600px) {
+    .vizinhos {
+      grid-template-columns: 1fr;
+    }
+
+    .proximo {
+      text-align: left;
+    }
+  }
+</style>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -59 1201 919" data-largo="80 166 1100 468" data-medio="301 82 900 600" data-quadrado="415 46 672 672" data-og="381 -59 740 883" data-segura="440 264 622 236"
+  aria-label="Uma linha do tempo com uma execução ainda rodando quando chega a hora da próxima; a segunda fica tracejada, com o carimbo Forbid, e há um prazo marcado adiante.">
+  <g class="tinta">
+    <path d="M440 480 H1062" class="linha"/>
+    <path d="M1050 472 L1062 480 L1050 488" class="linha"/>
+    <path d="M470 470 V490 M620 470 V490 M770 470 V490 M920 470 V490" class="linha"/>
+    <path d="M478 400 H822 A8 8 0 0 1 830 408 V442 A8 8 0 0 1 822 450 H478 A8 8 0 0 1 470 442 V408 A8 8 0 0 1 478 400 Z" transform="translate(10 10)" class="hachura"/>
+    <path d="M478 400 H822 A8 8 0 0 1 830 408 V442 A8 8 0 0 1 822 450 H478 A8 8 0 0 1 470 442 V408 A8 8 0 0 1 478 400 Z" transform="translate(7 6)" class="cor"/>
+    <path d="M478 400 H822 A8 8 0 0 1 830 408 V442 A8 8 0 0 1 822 450 H478 A8 8 0 0 1 470 442 V408 A8 8 0 0 1 478 400 Z" class="linha"/>
+    <path d="M628 320 H792 A8 8 0 0 1 800 328 V358 A8 8 0 0 1 792 366 H628 A8 8 0 0 1 620 358 V328 A8 8 0 0 1 628 320 Z" class="fantasma"/>
+    <path d="M620 366 V398" class="fantasma"/>
+    <path d="M1000 300 V500" class="fantasma"/>
+    <g transform="rotate(-8 712 343)"><rect x="637" y="316" width="150" height="54" rx="6" class="carimbo"/></g>
+  </g>
+  <text x="1000" y="290" text-anchor="middle" class="codigo">deadline</text>
+  <g transform="rotate(-8 712 343)"><text x="712" y="354" text-anchor="middle" class="carimbo-texto">Forbid</text></g>
+  <g class="anotacao">
+    <text x="100" y="330" class="nota">a próxima não começa</text>
+    <text x="100" y="358" class="nota-pequena">enquanto a anterior roda</text>
+    <text x="100" y="470" class="nota">e o job tem prazo</text>
+    <text x="100" y="498" class="nota-pequena">activeDeadlineSeconds</text>
+    <text x="620" y="530" text-anchor="middle" class="nota-pequena">hora da próxima</text>
+  </g>
+</svg>

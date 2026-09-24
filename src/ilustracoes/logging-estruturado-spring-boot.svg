@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -40 1202 900" data-largo="80 185 1100 468" data-medio="302 119 900 600" data-quadrado="415 82 674 674" data-og="382 -23 740 883" data-segura="440 262 624 314"
+  aria-label="Uma linha de log em texto livre vira um documento JSON, com campos como level e traceId.">
+  <g class="tinta">
+    <path d="M446 360 H624 A6 6 0 0 1 630 366 V418 A6 6 0 0 1 624 424 H446 A6 6 0 0 1 440 418 V366 A6 6 0 0 1 446 360 Z" transform="translate(8 8)" class="hachura"/>
+    <path d="M446 360 H624 A6 6 0 0 1 630 366 V418 A6 6 0 0 1 624 424 H446 A6 6 0 0 1 440 418 V366 A6 6 0 0 1 446 360 Z" class="papel"/>
+    <path d="M456 384 C470 378 484 390 498 384 C512 378 526 390 540 384 C556 378 572 390 590 384 M456 404 C476 398 496 410 516 404 C534 398 552 410 570 404" class="linha"/>
+    <path d="M640 392 L712 392 M701.5 397.8 L712 392 L701.5 386.2" class="linha"/>
+    <path d="M732 262 H1038 A12 12 0 0 1 1050 274 V550 A12 12 0 0 1 1038 562 H732 A12 12 0 0 1 720 550 V274 A12 12 0 0 1 732 262 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M732 262 H1038 A12 12 0 0 1 1050 274 V550 A12 12 0 0 1 1038 562 H732 A12 12 0 0 1 720 550 V274 A12 12 0 0 1 732 262 Z" transform="translate(7 6)" class="cor"/>
+    <path d="M732 262 H1038 A12 12 0 0 1 1050 274 V550 A12 12 0 0 1 1038 562 H732 A12 12 0 0 1 720 550 V274 A12 12 0 0 1 732 262 Z" class="papel"/>
+  </g>
+  <text x="742" y="312" class="valor">{</text>
+  <text x="760" y="364" class="codigo">"level": "INFO",</text>
+  <text x="760" y="412" class="codigo">"traceId": "4bf9…",</text>
+  <text x="760" y="460" class="codigo">"pedidoId": 123</text>
+  <text x="742" y="536" class="valor">}</text>
+  <g class="anotacao">
+    <text x="100" y="470" class="nota">texto livre pede regex</text>
+    <text x="100" y="498" class="nota-pequena">JSON vira campo pesquisável</text>
+  </g>
+</svg>

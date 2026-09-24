@@ -1,0 +1,20 @@
+---
+/** Conteúdo de uma lombada (faixas, título na vertical e contagem), na estante e no livro 3D. */
+import type { Livro } from "../lib/estante";
+
+interface Props {
+  livro: Livro;
+  /** No livro 3D da gaveta a fita não aparece (como no protótipo). */
+  semFita?: boolean;
+}
+
+const { livro, semFita = false } = Astro.props;
+---
+
+{livro.serie && <span class="faixa" aria-hidden="true" />}
+<span class="faixa" aria-hidden="true"></span>
+<span class="nome-lombada" style={`--nome:${livro.tamanhoNome}`}>{livro.nome}</span>
+<span class="conta-lombada">{livro.posts.length}</span>
+<span class="faixa faixa-pe" aria-hidden="true"></span>
+{livro.serie && <span class="faixa" aria-hidden="true" />}
+{livro.fita && !semFita && <span class="fita-marcadora" aria-hidden="true" />}

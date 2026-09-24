@@ -1,0 +1,59 @@
+/*
+ * Avisos (briefing §5.3): fundo levemente tingido e borda fina na cor do tipo; nada de borda
+ * grossa à esquerda. O rótulo mistura a cor com a tinta para passar de 4,5:1 (D22).
+ */
+
+.aviso {
+  --cor: var(--aviso-nota);
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 12px;
+  margin: 0 0 1.4em;
+  padding: 14px 18px 14px 14px;
+  border: 1px solid color-mix(in oklab, var(--cor) 34%, var(--rule));
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--cor) 7%, var(--paper-hi));
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.aviso[data-aviso="dica"] {
+  --cor: var(--aviso-dica);
+}
+
+.aviso[data-aviso="importante"] {
+  --cor: var(--aviso-importante);
+}
+
+.aviso[data-aviso="atencao"] {
+  --cor: var(--aviso-atencao);
+}
+
+.aviso[data-aviso="cuidado"] {
+  --cor: var(--aviso-cuidado);
+}
+
+.aviso svg {
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+  fill: none;
+  stroke: var(--cor);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Dois seletores de classe: vence o `.prose p` do corpo do artigo. */
+.aviso .aviso-corpo > * {
+  margin: 0;
+}
+
+.aviso .aviso-corpo > * + * {
+  margin-top: 0.7em;
+}
+
+.aviso-rotulo {
+  font-family: var(--font-titulo);
+  color: color-mix(in oklab, var(--cor) 78%, var(--ink));
+}

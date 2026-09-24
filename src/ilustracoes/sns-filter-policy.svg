@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -61 1252 921" data-largo="80 146 1100 468" data-medio="352 80 900 600" data-quadrado="467 45 670 670" data-og="432 -61 740 883" data-segura="600 176 405 408"
+  aria-label="Três envelopes caem num funil com a filter policy; só o de tipo pedido chega à fila SQS, o outro é recusado.">
+  <g class="tinta">
+    <path d="M618 182 H682 A3 3 0 0 1 685 185 V225 A3 3 0 0 1 682 228 H618 A3 3 0 0 1 615 225 V185 A3 3 0 0 1 618 182 Z" transform="translate(6 6)" class="hachura"/>
+    <path d="M618 182 H682 A3 3 0 0 1 685 185 V225 A3 3 0 0 1 682 228 H618 A3 3 0 0 1 615 225 V185 A3 3 0 0 1 618 182 Z" class="papel"/>
+    <path d="M615 184 L650 207.3 L685 184" class="linha"/>
+    <path d="M718 176 H782 A3 3 0 0 1 785 179 V219 A3 3 0 0 1 782 222 H718 A3 3 0 0 1 715 219 V179 A3 3 0 0 1 718 176 Z" transform="translate(6 6)" class="hachura"/>
+    <path d="M718 176 H782 A3 3 0 0 1 785 179 V219 A3 3 0 0 1 782 222 H718 A3 3 0 0 1 715 219 V179 A3 3 0 0 1 718 176 Z" transform="translate(7 6)" class="cor"/>
+    <path d="M718 176 H782 A3 3 0 0 1 785 179 V219 A3 3 0 0 1 782 222 H718 A3 3 0 0 1 715 219 V179 A3 3 0 0 1 718 176 Z" class="linha"/>
+    <path d="M715 178 L750 201.3 L785 178" class="linha"/>
+    <path d="M818 182 H882 A3 3 0 0 1 885 185 V225 A3 3 0 0 1 882 228 H818 A3 3 0 0 1 815 225 V185 A3 3 0 0 1 818 182 Z" transform="translate(6 6)" class="hachura"/>
+    <path d="M818 182 H882 A3 3 0 0 1 885 185 V225 A3 3 0 0 1 882 228 H818 A3 3 0 0 1 815 225 V185 A3 3 0 0 1 818 182 Z" class="papel"/>
+    <path d="M815 184 L850 207.3 L885 184" class="linha"/>
+    <path d="M600 262 H900 L790 410 V470 H710 V410 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M600 262 H900 L790 410 V470 H710 V410 Z" class="papel"/>
+    <path d="M890 256 C930 226 952 248 962 286" class="fantasma"/>
+    <path d="M938 292 H1002 A3 3 0 0 1 1005 295 V335 A3 3 0 0 1 1002 338 H938 A3 3 0 0 1 935 335 V295 A3 3 0 0 1 938 292 Z" class="fantasma"/>
+    <path d="M935 294 L970 317.3 L1005 294" class="fantasma"/>
+    <path d="M750 472 L750 498 M745.2 489.2 L750 498 L754.8 489.2" class="linha"/>
+    <path d="M675 500 H825 A35 35 0 0 1 860 535 V535 A35 35 0 0 1 825 570 H675 A35 35 0 0 1 640 535 V535 A35 35 0 0 1 675 500 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M675 500 H825 A35 35 0 0 1 860 535 V535 A35 35 0 0 1 825 570 H675 A35 35 0 0 1 640 535 V535 A35 35 0 0 1 675 500 Z" class="papel"/>
+    <path d="M721 512 H779 A3 3 0 0 1 782 515 V551 A3 3 0 0 1 779 554 H721 A3 3 0 0 1 718 551 V515 A3 3 0 0 1 721 512 Z" transform="translate(5 4)" class="cor"/>
+    <path d="M721 512 H779 A3 3 0 0 1 782 515 V551 A3 3 0 0 1 779 554 H721 A3 3 0 0 1 718 551 V515 A3 3 0 0 1 721 512 Z" class="linha"/>
+    <path d="M718 514 L750 535.1 L782 514" class="linha"/>
+  </g>
+  <text x="750" y="304" text-anchor="middle" class="codigo">{"tipo":</text>
+  <text x="750" y="338" text-anchor="middle" class="codigo">["pedido"]}</text>
+  <text x="668" y="544" class="codigo">SQS</text>
+  <g class="anotacao">
+    <text x="100" y="330" class="nota">a assinatura filtra</text>
+    <text x="100" y="358" class="nota-pequena">antes de entregar à fila</text>
+    <path d="M330 340 C420 340 540 320 598 292" class="chamada"/>
+  </g>
+</svg>

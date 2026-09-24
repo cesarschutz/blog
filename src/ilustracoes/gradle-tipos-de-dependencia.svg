@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -40 1200 909" data-largo="80 206 1100 468" data-medio="262 128 900 600" data-quadrado="377 93 670 670" data-og="342 -14 740 883" data-segura="420 280 584 296"
+  aria-label="Um gaveteiro com as gavetas compilação, execução e testes; o pacote da dependência entra nas duas primeiras, como faz o implementation.">
+  <g class="tinta">
+    <path d="M730 280 H980 A10 10 0 0 1 990 290 V552 A10 10 0 0 1 980 562 H730 A10 10 0 0 1 720 552 V290 A10 10 0 0 1 730 280 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M730 280 H980 A10 10 0 0 1 990 290 V552 A10 10 0 0 1 980 562 H730 A10 10 0 0 1 720 552 V290 A10 10 0 0 1 730 280 Z" class="papel"/>
+    <path d="M720 374 H990 M720 468 H990" class="linha"/>
+    <path d="M947 319 H963 A7 7 0 0 1 970 326 V328 A7 7 0 0 1 963 335 H947 A7 7 0 0 1 940 328 V326 A7 7 0 0 1 947 319 Z M947 413 H963 A7 7 0 0 1 970 420 V422 A7 7 0 0 1 963 429 H947 A7 7 0 0 1 940 422 V420 A7 7 0 0 1 947 413 Z M947 507 H963 A7 7 0 0 1 970 514 V516 A7 7 0 0 1 963 523 H947 A7 7 0 0 1 940 516 V514 A7 7 0 0 1 947 507 Z" class="linha"/>
+    <path d="M460 350 H590 A10 10 0 0 1 600 360 V460 A10 10 0 0 1 590 470 H460 A10 10 0 0 1 450 460 V360 A10 10 0 0 1 460 350 Z" transform="translate(12 12)" class="hachura"/>
+    <path d="M460 350 H590 A10 10 0 0 1 600 360 V460 A10 10 0 0 1 590 470 H460 A10 10 0 0 1 450 460 V360 A10 10 0 0 1 460 350 Z" transform="translate(7 6)" class="cor"/>
+    <path d="M460 350 H590 A10 10 0 0 1 600 360 V460 A10 10 0 0 1 590 470 H460 A10 10 0 0 1 450 460 V360 A10 10 0 0 1 460 350 Z" class="linha"/>
+    <path d="M450 382 H600" class="linha"/>
+    <path d="M604 392 L714 330 M707.7 340.2 L714 330 L702 330.2" class="linha"/>
+    <path d="M604 420 L714 420 M703.5 425.8 L714 420 L703.5 414.2" class="linha"/>
+    <path d="M604 448 L714 510" class="fantasma"/>
+  </g>
+  <text x="525" y="438" text-anchor="middle" class="codigo">jar</text>
+  <text x="745" y="336" class="rotulo">compilação</text>
+  <text x="745" y="430" class="rotulo">execução</text>
+  <text x="745" y="524" class="rotulo">testes</text>
+  <text x="525" y="322" text-anchor="middle" class="codigo">implementation</text>
+  <g class="anotacao">
+    <text x="100" y="330" class="nota">cada configuração escolhe</text>
+    <text x="100" y="358" class="nota-pequena">em quais classpaths a lib entra</text>
+    <text x="100" y="566" class="nota">implementation: compila e roda</text>
+    <text x="100" y="594" class="nota-pequena">testImplementation: só nos testes</text>
+  </g>
+</svg>

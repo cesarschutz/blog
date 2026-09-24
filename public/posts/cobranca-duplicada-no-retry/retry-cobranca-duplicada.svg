@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 790" font-family="Inter, system-ui, sans-serif">
+  <defs>
+    <marker id="seta" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#4b5563"/></marker>
+  </defs>
+  <rect width="940" height="790" fill="#ffffff"/>
+  <text x="40" y="44" font-size="21" font-weight="700" fill="#111827">Por que o reenvio cobra duas vezes</text>
+
+  <rect x="40" y="76" width="300" height="70" rx="12" fill="#eaf3fb" stroke="#2b7fc4" stroke-width="2"/>
+  <text x="190" y="104" font-size="15" font-weight="700" fill="#111827" text-anchor="middle">App do cliente</text>
+  <text x="190" y="127" font-size="13" fill="#4b5563" text-anchor="middle">pedido 123 · R$ 250</text>
+
+  <rect x="600" y="76" width="300" height="70" rx="12" fill="#f3f4f6" stroke="#6b7280" stroke-width="2"/>
+  <text x="750" y="104" font-size="15" font-weight="700" fill="#111827" text-anchor="middle">Load balancer</text>
+  <text x="750" y="127" font-size="13" fill="#4b5563" text-anchor="middle">distribui entre as instâncias</text>
+
+  <line x1="342" y1="98" x2="592" y2="98" stroke="#4b5563" stroke-width="2" marker-end="url(#seta)"/>
+  <text x="470" y="89" font-size="13" font-weight="700" fill="#2b7fc4" text-anchor="middle">1. POST, resposta perdida</text>
+  <line x1="342" y1="126" x2="592" y2="126" stroke="#4b5563" stroke-width="2" marker-end="url(#seta)"/>
+  <text x="470" y="143" font-size="13" font-weight="700" fill="#e07a1f" text-anchor="middle">2. reenvio, mesmo pedido</text>
+
+  <rect x="40" y="206" width="860" height="272" rx="12" fill="none" stroke="#d9534f" stroke-width="2" stroke-dasharray="8 6"/>
+  <text x="48" y="196" font-size="13" font-weight="700" fill="#d9534f">janela de corrida</text>
+
+  <line x1="690" y1="148" x2="258" y2="222" stroke="#4b5563" stroke-width="2" marker-end="url(#seta)"/>
+  <text x="500" y="174" font-size="13" font-weight="700" fill="#2b7fc4" text-anchor="end">3a. cai na instância A</text>
+  <line x1="790" y1="148" x2="700" y2="222" stroke="#4b5563" stroke-width="2" marker-end="url(#seta)"/>
+  <text x="760" y="196" font-size="13" font-weight="700" fill="#e07a1f">3b. cai na B</text>
+
+  <rect x="60" y="226" width="380" height="60" rx="12" fill="#eaf3fb" stroke="#2b7fc4" stroke-width="2"/>
+  <text x="250" y="251" font-size="15" font-weight="700" fill="#111827" text-anchor="middle">Instância A</text>
+  <text x="250" y="273" font-size="13" fill="#4b5563" text-anchor="middle">verifica antes de gravar</text>
+  <rect x="500" y="226" width="380" height="60" rx="12" fill="#fdf1e3" stroke="#e07a1f" stroke-width="2"/>
+  <text x="690" y="251" font-size="15" font-weight="700" fill="#111827" text-anchor="middle">Instância B</text>
+  <text x="690" y="273" font-size="13" fill="#4b5563" text-anchor="middle">verifica antes de gravar</text>
+
+  <rect x="60" y="302" width="380" height="54" rx="12" fill="#ffffff" stroke="#2b7fc4" stroke-width="1.5"/>
+  <text x="250" y="325" font-size="14" font-weight="700" fill="#2b7fc4" text-anchor="middle">4a. SELECT pedido 123</text>
+  <text x="250" y="345" font-size="13" fill="#4b5563" text-anchor="middle">nenhuma linha encontrada</text>
+  <rect x="500" y="302" width="380" height="54" rx="12" fill="#ffffff" stroke="#e07a1f" stroke-width="1.5"/>
+  <text x="690" y="325" font-size="14" font-weight="700" fill="#e07a1f" text-anchor="middle">4b. SELECT pedido 123</text>
+  <text x="690" y="345" font-size="13" fill="#4b5563" text-anchor="middle">nenhuma linha encontrada</text>
+
+  <rect x="60" y="372" width="380" height="54" rx="12" fill="#eaf3fb" stroke="#2b7fc4" stroke-width="1.5"/>
+  <text x="250" y="395" font-size="14" font-weight="700" fill="#2b7fc4" text-anchor="middle">5a. INSERT</text>
+  <text x="250" y="415" font-size="13" fill="#4b5563" text-anchor="middle">captura R$ 250</text>
+  <rect x="500" y="372" width="380" height="54" rx="12" fill="#fdf1e3" stroke="#e07a1f" stroke-width="1.5"/>
+  <text x="690" y="395" font-size="14" font-weight="700" fill="#e07a1f" text-anchor="middle">5b. INSERT</text>
+  <text x="690" y="415" font-size="13" fill="#4b5563" text-anchor="middle">captura R$ 250</text>
+
+  <text x="470" y="457" font-size="14" font-weight="700" fill="#d9534f" text-anchor="middle">as duas leituras terminaram antes da primeira escrita</text>
+
+  <line x1="470" y1="480" x2="470" y2="512" stroke="#4b5563" stroke-width="2" marker-end="url(#seta)"/>
+
+  <rect x="150" y="518" width="640" height="146" rx="12" fill="#fdecea" stroke="#d9534f" stroke-width="2"/>
+  <text x="470" y="546" font-size="15" font-weight="700" fill="#111827" text-anchor="middle">PostgreSQL · tabela cobranca</text>
+  <rect x="180" y="560" width="580" height="30" rx="8" fill="#ffffff" stroke="#d9534f" stroke-width="1.5"/>
+  <text x="198" y="580" font-size="13" fill="#111827">id 1 · pedido 123 · R$ 250 · CAPTURADA</text>
+  <rect x="180" y="598" width="580" height="30" rx="8" fill="#ffffff" stroke="#d9534f" stroke-width="1.5"/>
+  <text x="198" y="618" font-size="13" fill="#111827">id 2 · pedido 123 · R$ 250 · CAPTURADA</text>
+  <text x="470" y="651" font-size="13" font-weight="700" fill="#d9534f" text-anchor="middle">sem restrição única em pedido: o banco aceita as duas</text>
+
+  <line x1="470" y1="666" x2="470" y2="698" stroke="#4b5563" stroke-width="2" marker-end="url(#seta)"/>
+
+  <rect x="230" y="704" width="480" height="64" rx="12" fill="#fdecea" stroke="#d9534f" stroke-width="2"/>
+  <text x="470" y="731" font-size="17" font-weight="700" fill="#d9534f" text-anchor="middle">Cliente cobrado 2× · R$ 500</text>
+  <text x="470" y="754" font-size="13" fill="#4b5563" text-anchor="middle">estorno manual e risco de chargeback</text>
+</svg>

@@ -1,0 +1,61 @@
+---
+/**
+ * Amostra dos recursos de Markdown (src/amostra/recursos.md) na grade do artigo: avisos, notas
+ * laterais, código, tabela, fórmula, detalhes e imagem. Existe só no `npm run dev`
+ * (/amostra/markdown/), como a /amostra/.
+ */
+import Base from "../../layouts/Base.astro";
+import Sumario from "../../components/Sumario.astro";
+import { Content, getHeadings } from "../../amostra/recursos.md";
+import { url } from "../../lib/url";
+import "../../styles/prosa.css";
+import "../../styles/artigo.css";
+
+export function getStaticPaths() {
+  return import.meta.env.DEV ? [{ params: { amostra: "amostra" } }] : [];
+}
+
+const secoes = getHeadings().filter((h) => h.depth === 2);
+---
+
+<Base titulo="Amostra dos recursos de Markdown">
+  <link slot="head" rel="stylesheet" href={url("/katex/katex.min.css")} />
+  <article data-artigo>
+    <div class="wrap">
+      <h1 class="titulo">Amostra dos recursos de Markdown</h1>
+    </div>
+    <div class="grade">
+      <Sumario secoes={secoes} variante="lateral" />
+      <div class="corpo">
+        <div class="prose" data-corpo>
+          <Sumario secoes={secoes} variante="recolhivel" />
+          <Content />
+        </div>
+      </div>
+    </div>
+  </article>
+</Base>
+
+<script>
+  import "../../scripts/artigo.ts";
+</script>
+
+<style>
+  .titulo {
+    max-width: 760px;
+    margin: 28px auto 0;
+    font-size: clamp(34px, 5vw, 52px);
+  }
+
+  .grade {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) min(var(--coluna), 100%) minmax(0, 1fr);
+    margin-top: 40px;
+    padding-inline: var(--pad);
+  }
+
+  .corpo {
+    grid-column: 2;
+    min-width: 0;
+  }
+</style>

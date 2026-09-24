@@ -1,0 +1,81 @@
+---
+/** Cabeçalho (briefing §5.1): nome à esquerda; Artigos, Tags, Buscar e RSS à direita. */
+import { url } from "../lib/url";
+
+interface Props {
+  atual?: "artigos" | "tags";
+}
+
+const { atual } = Astro.props;
+---
+
+<header class="cabecalho wrap">
+  <a class="marca" href={url("/")}>Cesar Schutz</a>
+  <nav class="menu" aria-label="Principal">
+    <a href={url("/archive/")} aria-current={atual === "artigos" ? "page" : undefined}>Artigos</a>
+    <a href={url("/tags/")} aria-current={atual === "tags" ? "page" : undefined}>Tags</a>
+    <!-- A busca é ligada na Fase 2 (data-busca-abrir). -->
+    <button type="button" data-busca-abrir>Buscar <kbd data-atalho>⌘K</kbd></button>
+    <a href={url("/rss.xml")}>RSS</a>
+  </nav>
+</header>
+
+<script>
+  // Fora do macOS e do iOS, o atalho é Ctrl+K.
+  const apple = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent);
+  if (!apple) {
+    document.querySelectorAll("[data-atalho]").forEach((tecla) => (tecla.textContent = "Ctrl K"));
+  }
+</script>
+
+<style>
+  .cabecalho {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding-top: 22px;
+  }
+
+  .marca {
+    font-family: var(--font-titulo);
+    font-weight: 800;
+    font-size: 21px;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .menu {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 20px;
+    font-size: 16px;
+  }
+
+  .menu a,
+  .menu button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border: 0;
+    background: none;
+    color: var(--ink-2);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .menu a:hover,
+  .menu button:hover {
+    color: var(--ink);
+  }
+
+  .menu [aria-current="page"] {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.4em;
+  }
+</style>

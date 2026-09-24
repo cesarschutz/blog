@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 610" font-family="Inter, system-ui, sans-serif">
+  <defs>
+    <marker id="seta" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#4b5563"/></marker>
+    <marker id="setaVermelha" markerWidth="10" markerHeight="10" refX="8" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#d9534f"/></marker>
+  </defs>
+  <rect width="940" height="610" fill="#ffffff"/>
+
+  <text x="40" y="44" font-size="21" font-weight="700" fill="#111827">Efeito externo sem registro local</text>
+  <text x="40" y="70" font-size="14" fill="#6b7280">Desenho original: primeiro captura no adquirente, depois grava no banco</text>
+
+  <!-- Serviço -->
+  <rect x="40" y="120" width="290" height="120" rx="12" fill="#eaf3fb" stroke="#2b7fc4" stroke-width="2"/>
+  <text x="185" y="172" font-size="16" font-weight="700" fill="#111827" text-anchor="middle">Serviço de autorização</text>
+  <text x="185" y="196" font-size="14" fill="#374151" text-anchor="middle">recebe o pedido de R$ 250</text>
+
+  <!-- Adquirente -->
+  <rect x="600" y="100" width="300" height="70" rx="12" fill="#fdf1e3" stroke="#e07a1f" stroke-width="2"/>
+  <text x="750" y="128" font-size="16" font-weight="700" fill="#111827" text-anchor="middle">Adquirente</text>
+  <text x="750" y="152" font-size="14" fill="#374151" text-anchor="middle">R$ 250 capturado · sucesso</text>
+
+  <!-- Postgres -->
+  <rect x="600" y="196" width="300" height="70" rx="12" fill="#fdecea" stroke="#d9534f" stroke-width="2"/>
+  <text x="750" y="224" font-size="16" font-weight="700" fill="#111827" text-anchor="middle">Postgres · tabela cobrancas</text>
+  <text x="750" y="248" font-size="14" fill="#374151" text-anchor="middle">o INSERT nunca aconteceu</text>
+
+  <!-- Setas -->
+  <line x1="332" y1="150" x2="594" y2="135" stroke="#4b5563" stroke-width="2.5" marker-end="url(#seta)"/>
+  <text x="465" y="130" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">1. captura</text>
+  <line x1="332" y1="210" x2="594" y2="231" stroke="#d9534f" stroke-width="2.5" stroke-dasharray="8 6" marker-end="url(#setaVermelha)"/>
+  <text x="465" y="248" font-size="14" font-weight="700" fill="#d9534f" text-anchor="middle">2. INSERT</text>
+  <text x="465" y="267" font-size="13" fill="#d9534f" text-anchor="middle">o processo morre antes</text>
+
+  <line x1="470" y1="290" x2="470" y2="336" stroke="#4b5563" stroke-width="2.5" marker-end="url(#seta)"/>
+
+  <!-- Estado depois da falha -->
+  <rect x="40" y="344" width="860" height="126" rx="12" fill="#fdecea" stroke="#d9534f" stroke-width="2"/>
+  <text x="470" y="372" font-size="16" font-weight="700" fill="#111827" text-anchor="middle">Estado depois da falha</text>
+  <rect x="64" y="388" width="396" height="64" rx="8" fill="#ffffff" stroke="#e07a1f" stroke-width="1.5"/>
+  <text x="262" y="413" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Adquirente</text>
+  <text x="262" y="436" font-size="14" fill="#374151" text-anchor="middle">R$ 250 capturado, na fatura do cliente</text>
+  <rect x="480" y="388" width="396" height="64" rx="8" fill="#ffffff" stroke="#d9534f" stroke-width="1.5"/>
+  <text x="678" y="413" font-size="14" font-weight="700" fill="#111827" text-anchor="middle">Seu banco</text>
+  <text x="678" y="436" font-size="14" fill="#374151" text-anchor="middle">nenhuma linha, nenhuma chave</text>
+
+  <line x1="470" y1="470" x2="470" y2="498" stroke="#4b5563" stroke-width="2.5" marker-end="url(#seta)"/>
+
+  <!-- Consequência -->
+  <rect x="40" y="506" width="860" height="80" rx="12" fill="#fdecea" stroke="#d9534f" stroke-width="2"/>
+  <text x="470" y="537" font-size="16" font-weight="700" fill="#d9534f" text-anchor="middle">No retry, não há registro para comparar: captura de novo (R$ 500 no total)</text>
+  <text x="470" y="563" font-size="14" fill="#374151" text-anchor="middle">a chave de idempotência só protege o que chegou a ser gravado</text>
+</svg>

@@ -1,0 +1,172 @@
+---
+/**
+ * Folha de conferência das ilustrações (skill desenho): cada desenho em todos os recortes, nos
+ * tamanhos em que aparece no site, e a imagem de compartilhamento. Só no `npm run dev`
+ * (/amostra/desenhos/). ?slug=<slug> mostra um só; ?tema=escuro troca o tema.
+ * scripts/desenho/render.mjs fotografa a folha nos dois temas e junta num PNG.
+ */
+import Base from "../../layouts/Base.astro";
+import Ilustracao from "../../components/Ilustracao.astro";
+import CartaoCompartilhamento from "../../components/CartaoCompartilhamento.astro";
+import { getResumos } from "../../lib/posts";
+import { temIlustracao } from "../../lib/ilustracoes";
+
+export function getStaticPaths() {
+  return import.meta.env.DEV ? [{ params: { amostra: "amostra" } }] : [];
+}
+
+const posts = (await getResumos()).filter((p) => temIlustracao(p.slug));
+---
+
+<Base titulo="Folha das ilustrações">
+  <script is:inline slot="head">
+    (() => {
+      const tema = new URLSearchParams(location.search).get("tema");
+      if (tema) document.documentElement.dataset.theme = tema === "escuro" ? "dark" : "light";
+    })();
+  </script>
+  <div class="wrap folhas">
+    <h1>Folha das ilustrações</h1>
+    <p class="nota">Só no dev. Cada desenho em todos os recortes, no tamanho real. ?slug= filtra; ?tema=escuro troca o tema.</p>
+    {
+      posts.map((p) => (
+        <section class="folha" data-slug={p.slug}>
+          <h2>
+            {p.titulo} <code>{p.slug}</code>
+          </h2>
+          <div class="largo">
+            <Ilustracao slug={p.slug} recorte="largo" cor={p.cor} anotacoes />
+          </div>
+          <div class="linha">
+            <figure>
+              <div class="medio celular">
+                <Ilustracao slug={p.slug} recorte="medio" cor={p.cor} />
+              </div>
+              <figcaption>topo no celular (390)</figcaption>
+            </figure>
+            <figure>
+              <div class="medio cartao">
+                <Ilustracao slug={p.slug} recorte="medio" cor={p.cor} tamanho="cartao" />
+              </div>
+              <figcaption>destaque e cards (290)</figcaption>
+            </figure>
+            <figure>
+              <div class="quadrado grande">
+                <Ilustracao slug={p.slug} recorte="quadrado" cor={p.cor} tamanho="miniatura" />
+              </div>
+              <figcaption>lista (108)</figcaption>
+            </figure>
+            <figure>
+              <div class="quadrado pequeno">
+                <Ilustracao slug={p.slug} recorte="quadrado" cor={p.cor} tamanho="miniatura" />
+              </div>
+              <figcaption>lista no celular (76)</figcaption>
+            </figure>
+          </div>
+          <figure class="og">
+            <div class="og-escala">
+              <CartaoCompartilhamento titulo={p.titulo} subtitulo={p.subtitulo} rotulo={p.rotulo} cor={p.cor} slug={p.slug} />
+            </div>
+            <figcaption>compartilhamento (1200×630, na metade)</figcaption>
+          </figure>
+        </section>
+      ))
+    }
+  </div>
+  <script is:inline>
+    (() => {
+      const slug = new URLSearchParams(location.search).get("slug");
+      if (slug) for (const f of document.querySelectorAll(".folha")) f.hidden = f.dataset.slug !== slug;
+    })();
+  </script>
+</Base>
+
+<style>
+  .folhas {
+    padding-top: 32px;
+  }
+
+  .nota {
+    color: var(--ink-2);
+    font-size: 14.5px;
+  }
+
+  .folha {
+    margin: 40px 0 64px;
+  }
+
+  h2 code {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--ink-2);
+  }
+
+  .largo {
+    max-width: 1100px;
+    aspect-ratio: 1100 / 468;
+    outline: 1px dashed var(--rule);
+  }
+
+  .linha {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 24px;
+    margin-top: 24px;
+  }
+
+  figure {
+    margin: 0;
+  }
+
+  figcaption {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+
+  .medio,
+  .quadrado {
+    outline: 1px dashed var(--rule);
+  }
+
+  .medio {
+    aspect-ratio: 3 / 2;
+  }
+
+  .celular {
+    width: 390px;
+  }
+
+  .cartao {
+    width: 290px;
+  }
+
+  .quadrado {
+    aspect-ratio: 1;
+  }
+
+  .grande {
+    width: 108px;
+  }
+
+  .pequeno {
+    width: 76px;
+  }
+
+  .og {
+    margin-top: 24px;
+  }
+
+  .og-escala {
+    width: 600px;
+    height: 315px;
+    overflow: hidden;
+    outline: 1px dashed var(--rule);
+  }
+
+  .og-escala > :global(*) {
+    transform: scale(0.5);
+    transform-origin: 0 0;
+  }
+</style>

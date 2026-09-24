@@ -1,0 +1,43 @@
+---
+/**
+ * Lombada em miniatura na cor da categoria (ou da série), seguida do nome. No tema escuro, a cor
+ * leva 42% de branco (D22). Com `href`, vira link.
+ */
+interface Props {
+  cor: string;
+  nome: string;
+  href?: string;
+}
+
+const { cor, nome, href } = Astro.props;
+const Tag = href ? "a" : "span";
+---
+
+<Tag class="chip" href={href} style={`--cor:${cor}`}><span class="lombadinha" aria-hidden="true"></span>{nome}</Tag>
+
+<style>
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  a.chip:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+  }
+
+  .lombadinha {
+    flex: none;
+    width: 8px;
+    height: 20px;
+    border-radius: 1.5px;
+    background: color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro));
+    box-shadow:
+      inset 0 2px 0 rgb(255 255 255 / 0.18),
+      inset 0 -2px 0 rgb(0 0 0 / 0.18);
+  }
+</style>

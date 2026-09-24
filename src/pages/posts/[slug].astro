@@ -1,0 +1,120 @@
+---
+/**
+ * Página do artigo (briefing §5.3), na grade do protótipo: sumário lateral à esquerda (≥ 1300px),
+ * texto em até 680px no centro e a margem direita para as notas laterais (≥ 1180px). Avisos, notas
+ * e a apresentação saem do Markdown (src/plugins); as interações ficam em src/scripts/artigo.ts. A
+ * ilustração do topo entra na Fase 5.
+ */
+import { render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import BarraLeitura from "../../components/BarraLeitura.astro";
+import TopoArtigo from "../../components/TopoArtigo.astro";
+import Sumario from "../../components/Sumario.astro";
+import RodapeArtigo from "../../components/RodapeArtigo.astro";
+import VoltarTopo from "../../components/VoltarTopo.astro";
+import Comentarios from "../../components/Comentarios.astro";
+import { COMENTARIOS_LIGADOS } from "../../data/site";
+import { getPosts, getVizinhos, resumir, type Post } from "../../lib/posts";
+import { dataIso, dataPorExtenso, descricaoCurta, semMd } from "../../lib/formato";
+import { url } from "../../lib/url";
+import { palavraDaTag } from "../../lib/busca/tipos";
+import "../../styles/prosa.css";
+import "../../styles/artigo.css";
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const resumo = resumir(post);
+const { Content, headings, remarkPluginFrontmatter } = await render(post);
+const secoes = headings.filter((h) => h.depth === 2);
+const temSumario = secoes.length >= 3;
+const { anterior, proximo, naSerie } = await getVizinhos(post.id);
+const endereco = new URL(Astro.url.pathname, Astro.site).href;
+const modificado = post.data.updated ?? post.data.published;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: post.data.title,
+  description: semMd(post.data.description),
+  datePublished: dataIso(post.data.published),
+  dateModified: dataIso(modificado),
+  inLanguage: "pt-BR",
+  url: endereco,
+  mainEntityOfPage: endereco,
+  keywords: post.data.tags.join(", "),
+  image: new URL(url(`/og/${post.id}.png`), Astro.site).href,
+  author: { "@type": "Person", name: "Cesar Schutz", url: new URL(Astro.site ?? endereco).origin },
+  publisher: { "@type": "Person", name: "Cesar Schutz" },
+};
+---
+
+<Base
+  titulo={post.data.title}
+  descricao={descricaoCurta(post.data.description)}
+  tipo="article"
+  imagem={`/og/${post.id}.png`}
+  publicado={post.data.published}
+  modificado={post.data.updated}
+  jsonLd={jsonLd}
+>
+  {remarkPluginFrontmatter?.temMatematica && <link slot="head" rel="stylesheet" href={url("/katex/katex.min.css")} />}
+  <BarraLeitura cor={resumo.cor} />
+  <article class="artigo" data-artigo data-pagefind-body style={`--cor:${resumo.cor}`}>
+    <div class="wrap">
+      <TopoArtigo post={resumo} />
+    </div>
+    <div class="grade">
+      {temSumario && <Sumario secoes={secoes} variante="lateral" />}
+      <div class="corpo">
+        <div class="prose" data-corpo>
+          {temSumario && <Sumario secoes={secoes} variante="recolhivel" />}
+          <Content />
+        </div>
+        <!-- Para o Pagefind (motor B da D2): a palavra de cada tag entra no índice; metadados, filtro e
+             ordem por data, não. -->
+        <p hidden>{post.data.tags.map(palavraDaTag).join(" ")}</p>
+        <div hidden data-pagefind-ignore>
+          <span data-pagefind-sort="data">{dataIso(post.data.published)}</span>
+          <span data-pagefind-meta="rotulo">{resumo.rotulo}</span>
+          <span data-pagefind-meta="data">{dataPorExtenso(post.data.published)}</span>
+          <span data-pagefind-meta="descricao">{semMd(post.data.description)}</span>
+          <span data-pagefind-meta="tags">{post.data.tags.join(", ")}</span>
+          {post.data.tags.map((t) => <span data-pagefind-filter="tag">{t}</span>)}
+        </div>
+        <div data-pagefind-ignore>
+          <RodapeArtigo post={resumo} endereco={endereco} anterior={anterior} proximo={proximo} naSerie={naSerie} />
+        </div>
+        {COMENTARIOS_LIGADOS && <Comentarios />}
+      </div>
+    </div>
+  </article>
+  <VoltarTopo />
+</Base>
+
+<script>
+  import "../../scripts/artigo.ts";
+</script>
+
+<style>
+  /* Contêiner: as lousas largas (LousaPassos) se medem pela largura da grade, sem depender de vw. */
+  .grade {
+    container-type: inline-size;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) min(var(--coluna), 100%) minmax(0, 1fr);
+    margin-top: 40px;
+    padding-inline: var(--pad);
+  }
+
+  .corpo {
+    grid-column: 2;
+    min-width: 0;
+  }
+</style>

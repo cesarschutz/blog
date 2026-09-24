@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 430" font-family="Inter, system-ui, sans-serif">
+<rect width="940" height="430" fill="#ffffff"/>
+<defs>
+<marker id="mt" markerWidth="10" markerHeight="10" refX="8" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7 Z" fill="#9ca3af"/></marker>
+</defs>
+
+<text x="470" y="42" font-size="21" font-weight="700" fill="#111827" text-anchor="middle">Quando o SNS fica uma hora fora do ar</text>
+<text x="470" y="68" font-size="14" fill="#6b7280" text-anchor="middle">o mesmo lote em três cenários (na B, maxReceiveCount 3): o desfecho depende do tempo entre as tentativas</text>
+
+<!-- eixo do tempo -->
+<path d="M205 114 H920" stroke="#9ca3af" stroke-width="2" marker-end="url(#mt)"/>
+<g stroke="#9ca3af" stroke-width="2"><path d="M205 108 V120"/><path d="M291 108 V120"/><path d="M548 108 V120"/><path d="M719 108 V120"/><path d="M890 108 V120"/></g>
+<text x="190" y="119" font-size="13" fill="#6b7280" text-anchor="end">tempo</text>
+<g font-size="12" fill="#4b5563" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">
+<text x="205" y="96">03:00</text>
+<text x="719" y="96">05:00</text>
+<text x="890" y="96">05:40</text>
+</g>
+<g font-size="12" font-weight="700" fill="#d9534f" text-anchor="middle" font-family="ui-monospace, Menlo, monospace">
+<text x="291" y="96">03:20</text>
+<text x="548" y="96">04:20</text>
+</g>
+
+<!-- SNS fora do ar -->
+<rect x="291" y="126" width="257" height="230" fill="#fdecea"/>
+<text x="419" y="144" font-size="12" font-weight="700" fill="#d9534f" text-anchor="middle">SNS fora do ar</text>
+
+<!-- raia A -->
+<text x="190" y="172" font-size="13" font-weight="700" fill="#111827" text-anchor="end">A: CronJob</text>
+<text x="190" y="187" font-size="11" fill="#6b7280" text-anchor="end">backoffLimit: 2</text>
+<text x="190" y="201" font-size="11" fill="#d9534f" text-anchor="end">3 tentativas em ~1 min</text>
+<rect x="205" y="162" width="86" height="40" rx="8" fill="#eaf3fb" stroke="#2b7fc4" stroke-width="2"/>
+<text x="248" y="186" font-size="12" font-weight="700" fill="#111827" text-anchor="middle">processa</text>
+<g stroke="#d9534f" stroke-width="3">
+<path d="M296 176 L308 188 M308 176 L296 188"/><path d="M314 176 L326 188 M326 176 L314 188"/><path d="M332 176 L344 188 M344 176 L332 188"/>
+</g>
+<rect x="352" y="162" width="538" height="40" rx="8" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="621" y="186" font-size="12" fill="#4b5563" text-anchor="middle">o Job falha; os pendentes esperam o próximo dia ou um disparo manual</text>
+
+<!-- raia B, visibility timeout longo -->
+<text x="190" y="242" font-size="12" font-weight="700" fill="#111827" text-anchor="end">B: visibility timeout</text>
+<text x="190" y="258" font-size="11" fill="#6b7280" text-anchor="end">de 2 h, cobre o lote</text>
+<rect x="205" y="226" width="86" height="40" rx="8" fill="#eaf3fb" stroke="#2b7fc4" stroke-width="2"/>
+<text x="248" y="250" font-size="12" font-weight="700" fill="#111827" text-anchor="middle">processa</text>
+<path d="M296 240 L308 252 M308 240 L296 252" stroke="#d9534f" stroke-width="3"/>
+<rect x="316" y="226" width="403" height="40" rx="8" fill="#fdf1e3" stroke="#e07a1f" stroke-width="2"/>
+<text x="517" y="250" font-size="12" fill="#111827" text-anchor="middle">mensagem invisível até 05:00, 2 h depois do recebimento</text>
+<rect x="719" y="226" width="171" height="40" rx="8" fill="#eaf7ef" stroke="#2e9e5b" stroke-width="2"/>
+<text x="804" y="250" font-size="12" font-weight="700" fill="#111827" text-anchor="middle">retoma e termina</text>
+
+<!-- raia B, visibility timeout curto -->
+<text x="190" y="300" font-size="12" font-weight="700" fill="#111827" text-anchor="end">B: visibility timeout</text>
+<text x="190" y="315" font-size="11" fill="#6b7280" text-anchor="end">de 1 min, estendido</text>
+<text x="190" y="329" font-size="11" fill="#d9534f" text-anchor="end">3 tentativas em ~3 min</text>
+<rect x="205" y="290" width="86" height="40" rx="8" fill="#eaf3fb" stroke="#2b7fc4" stroke-width="2"/>
+<text x="248" y="314" font-size="12" font-weight="700" fill="#111827" text-anchor="middle">processa</text>
+<g stroke="#d9534f" stroke-width="3">
+<path d="M296 304 L308 316 M308 304 L296 316"/><path d="M314 304 L326 316 M326 304 L314 316"/><path d="M332 304 L344 316 M344 304 L332 316"/>
+</g>
+<rect x="352" y="296" width="52" height="28" rx="6" fill="#fdecea" stroke="#d9534f" stroke-width="2"/>
+<text x="378" y="315" font-size="12" font-weight="700" fill="#d9534f" text-anchor="middle">DLQ</text>
+<rect x="412" y="290" width="478" height="40" rx="8" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="651" y="314" font-size="12" fill="#4b5563" text-anchor="middle">os pendentes esperam o redrive da DLQ ou o próximo disparo</text>
+
+<!-- conclusão -->
+<rect x="45" y="370" width="850" height="40" rx="12" fill="#f3f4f6" stroke="#6b7280" stroke-width="2"/>
+<text x="470" y="395" font-size="13" fill="#111827" text-anchor="middle">nos três casos o estado fica no banco e nenhum pendente se perde; o que muda é quem retoma, e quando</text>
+</svg>

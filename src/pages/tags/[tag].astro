@@ -1,0 +1,37 @@
+---
+/** Uma tag (/tags/<Nome>/, com o nome cru na URL, como no blog atual: D7). */
+import Base from "../../layouts/Base.astro";
+import CabecalhoPagina from "../../components/CabecalhoPagina.astro";
+import ItemLista from "../../components/ItemLista.astro";
+import { getTags, type Grupo } from "../../lib/posts";
+import { url } from "../../lib/url";
+
+export async function getStaticPaths() {
+  const tags = await getTags();
+  return tags.map((grupo) => ({ params: { tag: grupo.nome }, props: { grupo } }));
+}
+
+interface Props {
+  grupo: Grupo;
+}
+
+const { grupo } = Astro.props;
+const quantos = grupo.posts.length === 1 ? "1 artigo marcado" : `${grupo.posts.length} artigos marcados`;
+---
+
+<Base titulo={`#${grupo.nome}`} descricao={`Artigos marcados com ${grupo.nome}.`} atual="tags">
+  <div class="wrap">
+    <CabecalhoPagina titulo={`#${grupo.nome}`} descricao={`${quantos} com ${grupo.nome}.`} trilha={{ nome: "Tags", href: url("/tags/") }} />
+    <ol class="lista">
+      {grupo.posts.map((p) => <ItemLista post={p} nivel="h2" />)}
+    </ol>
+  </div>
+</Base>
+
+<style>
+  .lista {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

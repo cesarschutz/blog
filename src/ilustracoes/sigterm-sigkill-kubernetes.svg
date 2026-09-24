@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -49 1257 909" data-largo="80 173 1100 468" data-medio="357 93 900 600" data-quadrado="472 58 670 670" data-og="437 -49 740 883" data-segura="550 196 514 393"
+  aria-label="Um cronômetro com os 30 segundos do grace period: começa no SIGTERM e, se o pod não sair, termina no carimbo do SIGKILL.">
+  <g class="tinta">
+    <path d="M686 228 H714 A4 4 0 0 1 718 232 V248 A4 4 0 0 1 714 252 H686 A4 4 0 0 1 682 248 V232 A4 4 0 0 1 686 228 Z" transform="translate(6 6)" class="hachura"/>
+    <path d="M686 228 H714 A4 4 0 0 1 718 232 V248 A4 4 0 0 1 714 252 H686 A4 4 0 0 1 682 248 V232 A4 4 0 0 1 686 228 Z" class="papel"/>
+    <path d="M700 252 V260" class="linha"/>
+    <path d="M850 410 A150 150 0 1 1 550 410 A150 150 0 1 1 850 410 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M850 410 A150 150 0 1 1 550 410 A150 150 0 1 1 850 410 Z" class="papel"/>
+    <path d="M700 410 L700 270 A140 140 0 1 1 630 288.8 Z" transform="translate(7 6)" class="cor"/>
+    <path d="M700 282 L700 268 M764 299.1 L771 287 M810.9 346 L823 339 M828 410 L842 410 M810.9 474 L823 481 M764 520.9 L771 533 M700 538 L700 552 M636 520.9 L629 533 M589.1 474 L577 481 M572 410 L558 410 M589.1 346 L577 339 M636 299.1 L629 287" class="linha"/>
+    <path d="M700 410 L645 314.7" class="linha"/>
+    <path d="M709 410 A9 9 0 1 1 691 410 A9 9 0 1 1 709 410 Z" class="papel"/>
+    <path d="M910 290 H1040 A10 10 0 0 1 1050 300 V380 A10 10 0 0 1 1040 390 H910 A10 10 0 0 1 900 380 V300 A10 10 0 0 1 910 290 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M910 290 H1040 A10 10 0 0 1 1050 300 V380 A10 10 0 0 1 1040 390 H910 A10 10 0 0 1 900 380 V300 A10 10 0 0 1 910 290 Z" class="papel"/>
+    <path d="M925 352 H1025 M925 372 H1000" class="linha"/>
+    <path d="M850 222 L945 282 M934 281.3 L945 282 L939.7 272.4" class="linha"/>
+    <g transform="rotate(-12 935 545)"><rect x="847" y="518" width="176" height="54" rx="6" class="carimbo"/></g>
+  </g>
+  <text x="700" y="506" text-anchor="middle" class="valor">30s</text>
+  <text x="735" y="222" class="codigo">SIGTERM</text>
+  <text x="975" y="334" text-anchor="middle" class="rotulo">pod</text>
+  <g transform="rotate(-12 935 545)"><text x="935" y="556" text-anchor="middle" class="carimbo-texto">SIGKILL</text></g>
+  <g class="anotacao">
+    <text x="100" y="390" class="nota">SIGTERM pede, SIGKILL obriga</text>
+    <text x="100" y="418" class="nota-pequena">30 s de grace period entre os dois</text>
+    <text x="935" y="612" text-anchor="middle" class="nota-pequena">depois do grace period</text>
+  </g>
+</svg>

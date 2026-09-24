@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -40 1207 901" data-largo="80 212 1100 468" data-medio="307 120 900 600" data-quadrado="422 85 670 670" data-og="387 -22 740 883" data-segura="460 296 593 248"
+  aria-label="Um armazém com prateleiras organizadas ao lado de um lago com arquivos boiando, e uma casinha na margem entre os dois: o lakehouse.">
+  <g class="tinta">
+    <path d="M460 520 V330 L510 296 V330 L560 296 V330 L610 296 V330 L660 296 V520 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M460 520 V330 L510 296 V330 L560 296 V330 L610 296 V330 L660 296 V520 Z" class="papel"/>
+    <path d="M470 380 H650 M470 440 H650 M470 500 H650" class="linha"/>
+    <path d="M483 346 H517 A3 3 0 0 1 520 349 V377 A3 3 0 0 1 517 380 H483 A3 3 0 0 1 480 377 V349 A3 3 0 0 1 483 346 Z M543 346 H577 A3 3 0 0 1 580 349 V377 A3 3 0 0 1 577 380 H543 A3 3 0 0 1 540 377 V349 A3 3 0 0 1 543 346 Z M603 346 H637 A3 3 0 0 1 640 349 V377 A3 3 0 0 1 637 380 H603 A3 3 0 0 1 600 377 V349 A3 3 0 0 1 603 346 Z M483 406 H517 A3 3 0 0 1 520 409 V437 A3 3 0 0 1 517 440 H483 A3 3 0 0 1 480 437 V409 A3 3 0 0 1 483 406 Z M543 406 H577 A3 3 0 0 1 580 409 V437 A3 3 0 0 1 577 440 H543 A3 3 0 0 1 540 437 V409 A3 3 0 0 1 543 406 Z M603 406 H637 A3 3 0 0 1 640 409 V437 A3 3 0 0 1 637 440 H603 A3 3 0 0 1 600 437 V409 A3 3 0 0 1 603 406 Z M483 466 H517 A3 3 0 0 1 520 469 V497 A3 3 0 0 1 517 500 H483 A3 3 0 0 1 480 497 V469 A3 3 0 0 1 483 466 Z M543 466 H577 A3 3 0 0 1 580 469 V497 A3 3 0 0 1 577 500 H543 A3 3 0 0 1 540 497 V469 A3 3 0 0 1 543 466 Z M603 466 H637 A3 3 0 0 1 640 469 V497 A3 3 0 0 1 637 500 H603 A3 3 0 0 1 600 497 V469 A3 3 0 0 1 603 466 Z" class="linha"/>
+    <path d="M720 470 C760 440 840 452 880 442 C940 428 1000 450 1042 472 C1062 502 1012 532 940 536 C860 541 760 536 730 516 C712 502 710 486 720 470 Z" transform="translate(7 6)" class="cor"/>
+    <path d="M720 470 C760 440 840 452 880 442 C940 428 1000 450 1042 472 C1062 502 1012 532 940 536 C860 541 760 536 730 516 C712 502 710 486 720 470 Z" class="linha"/>
+    <path d="M760 492 C780 486 800 498 820 492 M900 482 C920 476 940 488 960 482" class="linha"/>
+    <path d="M804 430 H840 A4 4 0 0 1 844 434 V482 A4 4 0 0 1 840 486 H804 A4 4 0 0 1 800 482 V434 A4 4 0 0 1 804 430 Z" transform="translate(6 6)" class="hachura"/>
+    <path d="M804 430 H840 A4 4 0 0 1 844 434 V482 A4 4 0 0 1 840 486 H804 A4 4 0 0 1 800 482 V434 A4 4 0 0 1 804 430 Z" class="papel"/>
+    <path d="M810 446 H834 M810 458 H830" class="linha"/>
+    <path d="M934 438 H986 A4 4 0 0 1 990 442 V478 A4 4 0 0 1 986 482 H934 A4 4 0 0 1 930 478 V442 A4 4 0 0 1 934 438 Z" transform="translate(6 6)" class="hachura"/>
+    <path d="M934 438 H986 A4 4 0 0 1 990 442 V478 A4 4 0 0 1 986 482 H934 A4 4 0 0 1 930 478 V442 A4 4 0 0 1 934 438 Z" class="papel"/>
+    <path d="M936 476 L952 458 L964 468 L974 456 L984 476" class="linha"/>
+    <path d="M690 424 L725 396 L760 424 V470 H690 Z" transform="translate(8 8)" class="hachura"/>
+    <path d="M690 424 L725 396 L760 424 V470 H690 Z" class="papel"/>
+    <path d="M700 470 V500 M750 470 V500" class="linha"/>
+    <path d="M718 440 H732 A2 2 0 0 1 734 442 V468 A2 2 0 0 1 732 470 H718 A2 2 0 0 1 716 468 V442 A2 2 0 0 1 718 440 Z" class="linha"/>
+  </g>
+  <text x="822" y="424" text-anchor="middle" class="codigo">json</text>
+  <text x="960" y="432" text-anchor="middle" class="codigo">csv</text>
+  <g class="anotacao">
+    <text x="100" y="330" class="nota">warehouse: organiza antes</text>
+    <text x="100" y="358" class="nota-pequena">schema-on-write</text>
+    <text x="100" y="440" class="nota">lake: guarda como chega</text>
+    <text x="100" y="468" class="nota-pequena">schema-on-read</text>
+    <text x="725" y="590" text-anchor="middle" class="nota-pequena">o lakehouse fica na margem</text>
+  </g>
+</svg>

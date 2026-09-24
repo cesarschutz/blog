@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -40 1205 909" data-largo="80 186 1100 468" data-medio="305 127 900 600" data-quadrado="415 87 680 680" data-og="385 -14 740 883" data-segura="440 314 630 226"
+  aria-label="Um carro esportivo com uma baguete saindo pela janela: uma Ferrari para comprar pão na esquina.">
+  <g class="tinta">
+    <path d="M478 482 L480 440 C482 428 492 420 520 416 L610 410 C650 380 700 362 770 362 C810 362 840 378 870 402 L960 412 C990 416 1004 430 1006 452 L1006 482 H954 A54 54 0 0 0 846 482 H636 A54 54 0 0 0 528 482 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M478 482 L480 440 C482 428 492 420 520 416 L610 410 C650 380 700 362 770 362 C810 362 840 378 870 402 L960 412 C990 416 1004 430 1006 452 L1006 482 H954 A54 54 0 0 0 846 482 H636 A54 54 0 0 0 528 482 Z" transform="translate(7 6)" class="cor"/>
+    <path d="M478 482 L480 440 C482 428 492 420 520 416 L610 410 C650 380 700 362 770 362 C810 362 840 378 870 402 L960 412 C990 416 1004 430 1006 452 L1006 482 H954 A54 54 0 0 0 846 482 H636 A54 54 0 0 0 528 482 Z" class="linha"/>
+    <path d="M660 408 C700 384 735 376 772 376 C800 376 824 388 842 406 Z" class="linha"/>
+    <path d="M772 410 V470 M990 432 L1004 436" class="linha"/>
+    <path d="M626 488 A44 44 0 1 1 538 488 A44 44 0 1 1 626 488 Z" transform="translate(8 8)" class="hachura"/>
+    <path d="M626 488 A44 44 0 1 1 538 488 A44 44 0 1 1 626 488 Z" class="papel"/>
+    <path d="M596 488 A14 14 0 1 1 568 488 A14 14 0 1 1 596 488 Z" class="linha"/>
+    <path d="M944 488 A44 44 0 1 1 856 488 A44 44 0 1 1 944 488 Z" transform="translate(8 8)" class="hachura"/>
+    <path d="M944 488 A44 44 0 1 1 856 488 A44 44 0 1 1 944 488 Z" class="papel"/>
+    <path d="M914 488 A14 14 0 1 1 886 488 A14 14 0 1 1 914 488 Z" class="linha"/>
+    <g transform="rotate(-35 835 360)"><path d="M793 347 H877 A13 13 0 0 1 890 360 V360 A13 13 0 0 1 877 373 H793 A13 13 0 0 1 780 360 V360 A13 13 0 0 1 793 347 Z" transform="translate(6 6)" class="hachura"/>
+    <path d="M793 347 H877 A13 13 0 0 1 890 360 V360 A13 13 0 0 1 877 373 H793 A13 13 0 0 1 780 360 V360 A13 13 0 0 1 793 347 Z" class="papel"/>
+    <path d="M807 352 L815 368 M832 352 L840 368 M857 352 L865 368" class="linha"/></g>
+    <path d="M440 532 H1070" class="linha"/>
+  </g>
+  
+  <g class="anotacao">
+    <text x="100" y="330" class="nota">overhead: todo carro tem custo</text>
+    <text x="100" y="358" class="nota-pequena">combustível, manutenção, vaga</text>
+    <text x="100" y="440" class="nota">overkill: Ferrari para o pão</text>
+    <text x="100" y="468" class="nota-pequena">o custo e o exagero juntos</text>
+  </g>
+</svg>

@@ -1,0 +1,100 @@
+---
+/**
+ * Lousa de passo a passo com a rolagem (briefing §7.1): o texto rola à esquerda, um <Passo> por
+ * parágrafo, e a lousa fica fixa à direita, avançando um passo a cada parágrafo (o atual fica em
+ * destaque; rolando para cima, o desenho se apaga). No celular, a lousa fica fixa no topo (até ~40%
+ * da altura) e os parágrafos passam por baixo, em cartões. Sem JS ou com movimento reduzido: o
+ * desenho completo e todos os passos acesos.
+ *
+ *   <LousaPassos desenho="<slug>/<nome>" rotulo="Diagrama: …"><Passo>…</Passo>…</LousaPassos>
+ */
+import { quadroDaLousa } from "../lib/lousas";
+import "../styles/lousa.css";
+
+interface Props {
+  /** Arquivo em src/lousas, sem a extensão: "<slug>/<nome>". */
+  desenho: string;
+  /** O que o desenho mostra, para leitores de tela. */
+  rotulo: string;
+}
+
+const { desenho, rotulo } = Astro.props;
+const { svg } = quadroDaLousa(desenho, rotulo);
+const rss = Astro.locals.rss;
+---
+
+{
+  rss ? (
+    <Fragment>
+      <p>
+        <em>{rotulo}</em> <a href={rss.endereco}>O diagrama, passo a passo, está no site.</a>
+      </p>
+      <slot />
+    </Fragment>
+  ) : (
+    <div class="lousa-passos" data-lousa-passos>
+      <div class="passos">
+        <slot />
+      </div>
+      <div class="figura" data-pagefind-ignore>
+        <div class="fixa">
+          <div class="lousa" set:html={svg} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+<script>
+  import { prepararLousa, quandoVisivel } from "../scripts/lousa";
+
+  const reduzir = matchMedia("(prefers-reduced-motion: reduce)");
+  const pequeno = matchMedia("(max-width: 760px)");
+
+  for (const bloco of document.querySelectorAll<HTMLElement>("[data-lousa-passos]")) {
+    const lousa = prepararLousa(bloco.querySelector("svg")!);
+    const passos = [...bloco.querySelectorAll<HTMLElement>(".passo")];
+    bloco.classList.add("animada");
+
+    const atualizar = () => {
+      let t = 0;
+      let chegou = false;
+      if (reduzir.matches) {
+        t = lousa.fim;
+        chegou = true;
+      } else {
+        // O passo avança quando o parágrafo passa por uma linha na tela; no celular, o meio da área
+        // abaixo da lousa fixa.
+        const ancora = innerHeight * (pequeno.matches ? 0.66 : 0.58);
+        passos.forEach((p, i) => {
+          const caixa = p.getBoundingClientRect();
+          if (ancora < caixa.top) return;
+          chegou = true;
+          t = i + Math.min(1, (ancora - caixa.top) / caixa.height);
+        });
+      }
+      lousa.desenhar(t, !reduzir.matches);
+      const atual = chegou ? Math.min(passos.length - 1, Math.floor(t)) : -1;
+      passos.forEach((p, i) => p.classList.toggle("atual", reduzir.matches || i === atual));
+    };
+
+    let visivel = false;
+    let agendado = false;
+    const aoRolar = () => {
+      if (!visivel || agendado) return;
+      agendado = true;
+      requestAnimationFrame(() => {
+        agendado = false;
+        atualizar();
+      });
+    };
+    quandoVisivel(bloco, (v) => {
+      visivel = v;
+      if (v) atualizar();
+    });
+    addEventListener("scroll", aoRolar, { passive: true });
+    addEventListener("resize", aoRolar);
+    reduzir.addEventListener("change", atualizar);
+    atualizar();
+  }
+</script>

@@ -1,0 +1,49 @@
+---
+/** Uma categoria (/categories/<Nome>/, com o nome cru na URL, como no blog atual: D7). */
+import Base from "../../layouts/Base.astro";
+import CabecalhoPagina from "../../components/CabecalhoPagina.astro";
+import ItemLista from "../../components/ItemLista.astro";
+import { getCategorias, type Grupo } from "../../lib/posts";
+import type { Categoria } from "../../data/taxonomia";
+import { url } from "../../lib/url";
+
+export async function getStaticPaths() {
+  const categorias = await getCategorias();
+  return categorias.map((grupo) => ({ params: { categoria: grupo.nome }, props: { grupo } }));
+}
+
+interface Props {
+  grupo: Grupo & { categoria: Categoria };
+}
+
+const { grupo } = Astro.props;
+const { categoria, posts } = grupo;
+---
+
+<Base titulo={categoria.nome} descricao={`Artigos de ${categoria.nome}: ${categoria.descricao}`} atual="artigos">
+  <div class="wrap" style={`--cor:${categoria.tecido}`}>
+    <CabecalhoPagina titulo={categoria.nome} descricao={categoria.descricao} trilha={{ nome: "Categorias", href: url("/categories/") }}>
+      <p class="conta">{posts.length} {posts.length === 1 ? "artigo" : "artigos"}</p>
+    </CabecalhoPagina>
+    <ol class="lista">
+      {posts.map((p) => <ItemLista post={p} nivel="h2" />)}
+    </ol>
+  </div>
+</Base>
+
+<style>
+  .conta {
+    margin: 10px 0 0;
+    padding-left: 12px;
+    border-left: 8px solid color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro));
+    font-size: 14.5px;
+    color: var(--ink-2);
+    font-variant-numeric: lining-nums;
+  }
+
+  .lista {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

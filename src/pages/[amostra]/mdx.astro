@@ -1,0 +1,20 @@
+---
+/**
+ * Confere que os plugins do Markdown (avisos, notas laterais, código) valem no MDX (D21). Só no
+ * `npm run dev` (/amostra/mdx/).
+ */
+import Base from "../../layouts/Base.astro";
+import { Content } from "../../amostra/recursos.mdx";
+import "../../styles/prosa.css";
+import "../../styles/artigo.css";
+
+export function getStaticPaths() {
+  return import.meta.env.DEV ? [{ params: { amostra: "amostra" } }] : [];
+}
+---
+
+<Base titulo="Amostra em MDX">
+  <div class="wrap">
+    <div class="prose" style="margin: 40px auto"><Content /></div>
+  </div>
+</Base>

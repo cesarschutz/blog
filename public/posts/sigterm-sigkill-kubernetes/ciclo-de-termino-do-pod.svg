@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 560" font-family="Inter, system-ui, sans-serif">
+<rect width="940" height="560" fill="#ffffff"/>
+<defs>
+<marker id="m" markerWidth="10" markerHeight="10" refX="8" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7 Z" fill="#4b5563"/></marker>
+<marker id="mg" markerWidth="10" markerHeight="10" refX="8" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7 Z" fill="#2e9e5b"/></marker>
+<marker id="mr" markerWidth="10" markerHeight="10" refX="8" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7 Z" fill="#d9534f"/></marker>
+</defs>
+<text x="30" y="42" font-size="21" font-weight="700" fill="#111827">O ciclo de término de um pod</text>
+
+<!-- terminating -->
+<rect x="290" y="68" width="360" height="72" rx="12" fill="#f3f4f6" stroke="#6b7280" stroke-width="2.5"/>
+<text x="470" y="98" font-size="16" font-weight="700" fill="#1f2937" text-anchor="middle">Pod entra em Terminating</text>
+<text x="470" y="123" font-size="13" fill="#4b5563" text-anchor="middle">a contagem do grace period começa aqui</text>
+
+<!-- duas trilhas -->
+<path d="M380 142 C320 165 280 178 250 190" fill="none" stroke="#4b5563" stroke-width="2" marker-end="url(#m)"/>
+<path d="M560 142 C620 165 660 178 690 190" fill="none" stroke="#4b5563" stroke-width="2" marker-end="url(#m)"/>
+<text x="470" y="176" font-size="13" font-weight="700" fill="#4b5563" text-anchor="middle">em paralelo</text>
+
+<rect x="40" y="196" width="380" height="104" rx="12" fill="#eaf3fb" stroke="#2b7fc4" stroke-width="2.5"/>
+<text x="230" y="226" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Trilha de rede</text>
+<text x="230" y="252" font-size="13" fill="#4b5563" text-anchor="middle">endpoint marcado como terminating</text>
+<text x="230" y="275" font-size="13" fill="#4b5563" text-anchor="middle">kube-proxy e ingress param de enviar tráfego</text>
+
+<rect x="520" y="196" width="380" height="104" rx="12" fill="#fdf1e3" stroke="#e07a1f" stroke-width="2.5"/>
+<text x="710" y="226" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Trilha de container</text>
+<text x="710" y="252" font-size="13" fill="#4b5563" text-anchor="middle">1. preStop hook (se houver)</text>
+<text x="710" y="275" font-size="13" fill="#4b5563" text-anchor="middle">2. SIGTERM ao PID 1 → app faz o shutdown</text>
+
+<!-- decisão -->
+<path d="M710 302 V336" fill="none" stroke="#4b5563" stroke-width="2" marker-end="url(#m)"/>
+<rect x="520" y="342" width="380" height="96" rx="12" fill="#f3f4f6" stroke="#6b7280" stroke-width="2.5"/>
+<text x="710" y="372" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">O processo saiu antes do fim do prazo?</text>
+<text x="710" y="397" font-size="13" fill="#4b5563" text-anchor="middle">terminationGracePeriodSeconds (padrão 30s)</text>
+<text x="710" y="420" font-size="13" fill="#4b5563" text-anchor="middle">um só prazo para preStop + shutdown</text>
+
+<!-- desfechos -->
+<path d="M560 440 C530 480 500 495 432 500" fill="none" stroke="#2e9e5b" stroke-width="2.5" marker-end="url(#mg)"/>
+<text x="470" y="470" font-size="13" font-weight="700" fill="#2e9e5b" text-anchor="end">sim</text>
+<rect x="100" y="468" width="325" height="66" rx="12" fill="#eaf7ef" stroke="#2e9e5b" stroke-width="2.5"/>
+<text x="262" y="495" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Encerrado com limpeza ✓</text>
+<text x="262" y="519" font-size="13" fill="#4b5563" text-anchor="middle">exit 0, ou 143 na JVM</text>
+
+<path d="M800 440 V464" fill="none" stroke="#d9534f" stroke-width="2.5" marker-end="url(#mr)"/>
+<text x="814" y="458" font-size="13" font-weight="700" fill="#d9534f">não</text>
+<rect x="600" y="468" width="300" height="66" rx="12" fill="#fdecea" stroke="#d9534f" stroke-width="2.5"/>
+<text x="750" y="495" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">SIGKILL ✗</text>
+<text x="750" y="519" font-size="13" fill="#4b5563" text-anchor="middle">exit 137 · nenhuma limpeza roda</text>
+</svg>

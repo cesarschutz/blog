@@ -1,0 +1,159 @@
+---
+/**
+ * Lousa com linha do tempo de arrastar (briefing §7.2): uma comparação que avança no tempo. Botão
+ * de reproduzir e pausar (percorre em ~7 s, para 1,5 s no resultado e recomeça), controle
+ * deslizante, arrasto sobre o desenho e roda do mouse (com ou sem Shift; nas pontas, a roda volta a
+ * rolar a página). Qualquer gesto manual pausa. O estado atual é lido por leitores de tela.
+ * Sem JS: o desenho no fim, sem controles.
+ *
+ *   <LousaTempo desenho="<slug>/<nome>" rotulo="…" estados={[{ de: 0, texto: "Antes do pedido" }, …]} />
+ */
+import { quadroDaLousa } from "../lib/lousas";
+import "../styles/lousa.css";
+
+interface Props {
+  desenho: string;
+  rotulo: string;
+  /** Texto do estado a partir de cada instante (de 0 a 1), em ordem. */
+  estados: { de: number; texto: string }[];
+  legenda?: string;
+}
+
+const {
+  desenho,
+  rotulo,
+  estados,
+  legenda = "Aperte o play, arraste sobre o desenho, gire a roda do mouse em cima dele (ou com Shift) ou use o controle.",
+} = Astro.props;
+const { svg } = quadroDaLousa(desenho, rotulo);
+const id = `tempo-${desenho.replace(/[^a-z0-9]+/gi, "-")}`;
+const rss = Astro.locals.rss;
+---
+
+{
+  rss ? (
+    <p>
+      <em>{rotulo}</em> <a href={rss.endereco}>A linha do tempo interativa está no site.</a>
+    </p>
+  ) : (
+    <figure class="lousa-tempo" data-lousa-tempo data-estados={JSON.stringify(estados)} data-pagefind-ignore>
+      <div class="lousa area" set:html={svg} />
+      <div class="controles" hidden>
+        <button type="button" class="tocar" aria-pressed="false" aria-label="Reproduzir">
+          <svg class="icone-tocar" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5z"></path></svg>
+          <svg class="icone-pausar" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 2.5h3v11h-3zM9.5 2.5h3v11h-3z"></path></svg>
+        </button>
+        <label class="sr" for={id}>Tempo</label>
+        <input id={id} type="range" min="0" max="1000" step="1" value="0" />
+        <span class="estado" aria-live="polite">{estados[0]?.texto}</span>
+      </div>
+      <figcaption>{legenda}</figcaption>
+    </figure>
+  )
+}
+
+<script>
+  import { prepararLousa } from "../scripts/lousa";
+
+  const DURACAO = 7000;
+  const PAUSA_NO_FIM = 1500;
+
+  for (const figura of document.querySelectorAll<HTMLElement>("[data-lousa-tempo]")) {
+    const area = figura.querySelector<HTMLElement>(".area")!;
+    const svg = area.querySelector("svg")!;
+    const lousa = prepararLousa(svg);
+    const controles = figura.querySelector<HTMLElement>(".controles")!;
+    const botao = figura.querySelector<HTMLButtonElement>(".tocar")!;
+    const faixa = figura.querySelector<HTMLInputElement>("input[type=range]")!;
+    const rotuloDoEstado = figura.querySelector<HTMLElement>(".estado")!;
+    const estados: { de: number; texto: string }[] = JSON.parse(figura.dataset.estados ?? "[]");
+    controles.hidden = false;
+
+    let t = 0;
+    const mostrar = (novo: number) => {
+      t = Math.min(1, Math.max(0, novo));
+      faixa.value = String(Math.round(t * 1000));
+      lousa.desenhar(t * lousa.fim, tocando);
+      const texto = [...estados].reverse().find((e) => t >= e.de)?.texto ?? "";
+      if (rotuloDoEstado.textContent !== texto) {
+        rotuloDoEstado.textContent = texto;
+        faixa.setAttribute("aria-valuetext", texto);
+      }
+    };
+
+    let tocando = false;
+    let quadro = 0;
+    let anterior = 0;
+    let segurarAte = 0;
+    const passo = (agora: number) => {
+      if (!tocando) return;
+      const dt = anterior ? Math.min(agora - anterior, 64) : 0;
+      anterior = agora;
+      if (segurarAte) {
+        if (agora >= segurarAte) {
+          segurarAte = 0;
+          mostrar(0);
+        }
+      } else {
+        mostrar(t + dt / DURACAO);
+        if (t >= 1) segurarAte = agora + PAUSA_NO_FIM;
+      }
+      quadro = requestAnimationFrame(passo);
+    };
+    const tocar = () => {
+      if (t >= 1) mostrar(0);
+      tocando = true;
+      anterior = 0;
+      segurarAte = 0;
+      botao.setAttribute("aria-pressed", "true");
+      botao.setAttribute("aria-label", "Pausar");
+      cancelAnimationFrame(quadro);
+      quadro = requestAnimationFrame(passo);
+    };
+    const parar = () => {
+      tocando = false;
+      cancelAnimationFrame(quadro);
+      botao.setAttribute("aria-pressed", "false");
+      botao.setAttribute("aria-label", "Reproduzir");
+      lousa.desenhar(t * lousa.fim, false);
+    };
+    botao.addEventListener("click", () => (tocando ? parar() : tocar()));
+
+    // O gesto da pessoa tem prioridade e pausa a reprodução.
+    faixa.addEventListener("input", () => {
+      parar();
+      mostrar(Number(faixa.value) / 1000);
+    });
+    area.addEventListener(
+      "wheel",
+      (e) => {
+        const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+        if (!d || (t <= 0 && d < 0) || (t >= 1 && d > 0)) return; // nas pontas, a página volta a rolar
+        e.preventDefault();
+        parar();
+        mostrar(t + d * (e.deltaMode === 1 ? 0.03 : 0.0012));
+      },
+      { passive: false },
+    );
+    const noDesenho = (e: PointerEvent) => {
+      const caixa = svg.getBoundingClientRect();
+      return (e.clientX - caixa.left) / caixa.width;
+    };
+    let arrastando = false;
+    area.addEventListener("pointerdown", (e) => {
+      parar();
+      arrastando = true;
+      area.classList.add("arrastando");
+      area.setPointerCapture(e.pointerId);
+      mostrar(noDesenho(e));
+    });
+    area.addEventListener("pointermove", (e) => arrastando && mostrar(noDesenho(e)));
+    for (const tipo of ["pointerup", "pointercancel", "lostpointercapture"]) {
+      area.addEventListener(tipo, () => {
+        arrastando = false;
+        area.classList.remove("arrastando");
+      });
+    }
+    mostrar(0);
+  }
+</script>

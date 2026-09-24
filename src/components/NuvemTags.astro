@@ -1,0 +1,40 @@
+---
+/** Nuvem de tags da home (briefing §5.1): com contagem; o clique abre a busca filtrada por #tag. */
+import { urlTag, type Grupo } from "../lib/posts";
+
+interface Props {
+  tags: Grupo[];
+}
+
+const { tags } = Astro.props;
+---
+
+<section class="nuvem-tags wrap" aria-labelledby="tags-titulo">
+  <h2 id="tags-titulo" class="titulo-secao">Tags</h2>
+  <ul>
+    {
+      tags.map((t) => (
+        <li>
+          <a class="pilula" href={urlTag(t.nome)} data-busca-tag={t.nome}>
+            #{t.nome} <small>{t.posts.length}</small>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .nuvem-tags {
+    padding-top: 64px;
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

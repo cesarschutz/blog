@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 430">
+  <g class="traco">
+    <path d="M130 37 H137 V123 H17 V116 H130 Z" class="hachura"/>
+    <path d="M340 37 H347 V123 H227 V116 H340 Z" class="hachura"/>
+    <path d="M550 37 H557 V123 H437 V116 H550 Z" class="hachura" data-esmaece="4.8 4.9 0.45"/>
+    <path d="M390 257 H397 V325 H177 V318 H390 Z" class="hachura"/>
+    <rect x="10" y="30" width="120" height="86" rx="4"/>
+    <rect x="220" y="30" width="120" height="86" rx="4"/>
+    <rect x="430" y="30" width="120" height="86" rx="4" data-esmaece="4.8 4.9 0.45"/>
+    <rect x="170" y="250" width="220" height="68"/>
+    <path d="M170 282 H390 M260 250 V318" class="fino"/>
+    <path d="M130 48 H214" data-traco="0.1 0.6"/>
+    <path d="M206 42 L214 48 L206 54" data-aparece="0.58 0.6"/>
+    <path d="M262 116 V244" data-traco="1.1 1.45"/>
+    <path d="M256 236 L262 244 L268 236" data-aparece="1.43 1.45"/>
+    <path d="M340 58 H424" data-traco="2.05 2.3"/>
+    <path d="M416 52 L424 58 L416 64" data-aparece="2.28 2.3"/>
+    <path d="M430 92 H346" data-traco="2.3 2.55"/>
+    <path d="M354 86 L346 92 L354 98" data-aparece="2.53 2.55"/>
+    <g data-esmaece="4.0 4.1 0.3">
+      <path d="M220 68 H186" class="fantasma" data-revela="3.05 3.3" data-de="direita"/>
+      <path d="M166 60 L180 74 M180 60 L166 74" data-aparece="3.3 3.4"/>
+    </g>
+    <path d="M130 88 H214 M206 82 L214 88 L206 94" class="tracejado" data-revela="3.5 3.8"/>
+    <path d="M300 116 V244" data-traco="4.05 4.3"/>
+    <path d="M294 236 L300 244 L306 236" data-aparece="4.28 4.3"/>
+    <rect x="170" y="334" width="220" height="34" rx="4" class="destaque" data-traco="4.4 4.52"/>
+    <path d="M220 108 H136" class="destaque" data-traco="4.65 4.8"/>
+    <path d="M144 102 L136 108 L144 114" class="destaque" data-aparece="4.78 4.8"/>
+  </g>
+  <g>
+    <text x="70" y="79" text-anchor="middle">App</text>
+    <text x="280" y="79" text-anchor="middle">Serviço</text>
+    <text x="490" y="79" text-anchor="middle" data-esmaece="4.8 4.9 0.45">Adquirente</text>
+    <text x="160" y="271" text-anchor="end" class="secundario">tabela</text>
+    <text x="160" y="289" text-anchor="end" class="secundario">cobranca</text>
+    <text x="184" y="272">chave</text>
+    <text x="272" y="272">status</text>
+    <text x="10" y="146" class="codigo" data-escrita="0.6 0.85">Idempotency-Key: 5b0e7a52…</text>
+    <text x="254" y="190" text-anchor="end" class="codigo" data-escrita="1.45 1.55">INSERT</text>
+    <text x="184" y="306" class="codigo" data-escrita="1.55 1.7">5b0e7a52…</text>
+    <text x="272" y="306" class="codigo" data-escrita="1.7 1.9" data-some="2.65 2.75">PROCESSANDO</text>
+    <text x="272" y="306" class="codigo" data-escrita="2.75 2.97">CAPTURADA, 201</text>
+    <text x="10" y="168" class="secundario" data-escrita="3.8 3.97">tenta de novo, mesma chave</text>
+    <text x="308" y="190" class="codigo" data-escrita="4.3 4.4">INSERT</text>
+    <text x="280" y="357" text-anchor="middle" class="destaque" data-escrita="4.52 4.65">UNIQUE: a chave já existe</text>
+    <text x="490" y="146" text-anchor="middle" class="secundario" data-escrita="4.8 4.9">não é chamado de novo</text>
+    <text x="10" y="192" class="destaque" data-escrita="4.9 4.99">201, resposta guardada</text>
+  </g>
+</svg>

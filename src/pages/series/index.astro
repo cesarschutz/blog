@@ -1,0 +1,99 @@
+---
+/** Índice das séries (/series/). Cada série tem a própria encadernação (briefing §4.2). */
+import Base from "../../layouts/Base.astro";
+import CabecalhoPagina from "../../components/CabecalhoPagina.astro";
+import { SERIES } from "../../data/series";
+import { getPostsDaSerie, urlSerie } from "../../lib/posts";
+
+const series = await Promise.all(SERIES.map(async (s) => ({ serie: s, posts: await getPostsDaSerie(s.chave) })));
+---
+
+<Base titulo="Séries" descricao="As séries do blog de Cesar Schutz: assuntos que rendem mais de um artigo, em ordem de leitura.">
+  <div class="wrap">
+    <CabecalhoPagina titulo="Séries" descricao="Assuntos que rendem mais de um artigo, para ler em ordem." />
+    <ul class="series">
+      {
+        series
+          .filter(({ posts }) => posts.length > 0)
+          .map(({ serie, posts }) => (
+            <li style={`--encadernacao:${serie.encadernacao};--letras:${serie.letras};--fita:${serie.fita}`}>
+              <a href={urlSerie(serie)}>
+                <span class="capa" aria-hidden="true">
+                  <span class="fita" />
+                </span>
+                <span class="texto">
+                  <span class="nome">{serie.nome}</span>
+                  <span class="descricao">{serie.descricao}</span>
+                  <span class="conta">{posts.length} partes</span>
+                </span>
+              </a>
+            </li>
+          ))
+      }
+    </ul>
+  </div>
+</Base>
+
+<style>
+  .series {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .series a {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
+    gap: 22px;
+    align-items: center;
+    padding: 22px 0;
+    border-top: 1px solid var(--rule);
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .capa {
+    position: relative;
+    height: 84px;
+    border-radius: 2px 4px 4px 2px;
+    background: var(--encadernacao);
+    box-shadow: inset 4px 0 0 rgb(0 0 0 / 0.25);
+  }
+
+  .fita {
+    position: absolute;
+    top: -8px;
+    left: 58%;
+    width: 7px;
+    height: 22px;
+    background: var(--fita);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
+  }
+
+  .texto {
+    display: grid;
+    gap: 4px;
+  }
+
+  .nome {
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    font-size: 24px;
+  }
+
+  a:hover .nome {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+  }
+
+  .descricao {
+    color: var(--ink-2);
+  }
+
+  .conta {
+    font-size: 14.5px;
+    color: var(--ink-2);
+    font-variant-numeric: lining-nums;
+  }
+</style>

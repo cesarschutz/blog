@@ -1,0 +1,32 @@
+# build
+dist/
+.astro/
+
+# dependências
+node_modules/
+
+# logs
+npm-debug.log*
+
+# ambiente
+.env
+.env.*
+
+# sistema e editores
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# arquivos pessoais do Claude Code
+CLAUDE.local.md
+.claude/settings.local.json
+
+# gerado por scripts/copiar-katex.mjs
+public/katex/
+
+# medição da busca (scripts/bench-busca)
+bench/
+
+# Renders de conferência dos desenhos (scripts/desenho/render.mjs)
+.render/

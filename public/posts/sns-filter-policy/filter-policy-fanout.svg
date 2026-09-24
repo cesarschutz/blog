@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 440" font-family="Inter, system-ui, sans-serif">
+<rect width="940" height="440" fill="#ffffff"/>
+<defs>
+<marker id="m" markerWidth="10" markerHeight="10" refX="8" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7 Z" fill="#4b5563"/></marker>
+<marker id="mg" markerWidth="10" markerHeight="10" refX="8" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7 Z" fill="#2e9e5b"/></marker>
+<marker id="mr" markerWidth="10" markerHeight="10" refX="8" refY="3.5" orient="auto"><path d="M0,0 L8,3.5 L0,7 Z" fill="#d9534f"/></marker>
+</defs>
+<text x="30" y="42" font-size="21" font-weight="700" fill="#111827">Filter Policy: o SNS decide o que cada fila recebe</text>
+
+<!-- produtor -->
+<rect x="20" y="150" width="240" height="140" rx="12" fill="#eaf3fb" stroke="#2b7fc4" stroke-width="2.5"/>
+<text x="140" y="180" font-size="16" font-weight="700" fill="#1f2937" text-anchor="middle">Produtor</text>
+<text x="140" y="203" font-size="13" fill="#6b7280" text-anchor="middle">publica com o atributo eventType:</text>
+<text x="140" y="230" font-size="13" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#1f2937" text-anchor="middle">OrderCreatedEvent</text>
+<text x="140" y="252" font-size="13" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#1f2937" text-anchor="middle">OrderCancelledEvent</text>
+<text x="140" y="274" font-size="13" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#1f2937" text-anchor="middle">OrderShippedEvent</text>
+<path d="M262 220 H294" fill="none" stroke="#4b5563" stroke-width="2" marker-end="url(#m)"/>
+
+<!-- tópico -->
+<circle cx="370" cy="220" r="70" fill="#fdf1e3" stroke="#e07a1f" stroke-width="2.5"/>
+<text x="370" y="214" font-size="16" font-weight="700" fill="#1f2937" text-anchor="middle">Tópico</text>
+<text x="370" y="236" font-size="16" font-weight="700" fill="#1f2937" text-anchor="middle">SNS</text>
+
+<!-- assinatura A -->
+<path d="M429 183 C500 130 540 113 610 113" fill="none" stroke="#2e9e5b" stroke-width="2.5" marker-end="url(#mg)"/>
+<rect x="430" y="80" width="150" height="28" rx="14" fill="#eaf7ef" stroke="#2e9e5b" stroke-width="1.5"/>
+<text x="505" y="99" font-size="13" font-weight="700" fill="#2e9e5b" text-anchor="middle">casa com o filtro ✓</text>
+<rect x="620" y="67" width="290" height="92" rx="12" fill="#eaf7ef" stroke="#2e9e5b" stroke-width="2.5"/>
+<text x="765" y="93" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Fila SQS · consumidor A</text>
+<text x="765" y="116" font-size="13" fill="#6b7280" text-anchor="middle">filtro da assinatura aceita só:</text>
+<text x="765" y="141" font-size="13" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#1f2937" text-anchor="middle">OrderCreatedEvent</text>
+
+<!-- assinatura B -->
+<path d="M442 226 H610" fill="none" stroke="#2e9e5b" stroke-width="2.5" marker-end="url(#mg)"/>
+<rect x="452" y="186" width="150" height="28" rx="14" fill="#eaf7ef" stroke="#2e9e5b" stroke-width="1.5"/>
+<text x="527" y="205" font-size="13" font-weight="700" fill="#2e9e5b" text-anchor="middle">casa com o filtro ✓</text>
+<rect x="620" y="180" width="290" height="92" rx="12" fill="#eaf7ef" stroke="#2e9e5b" stroke-width="2.5"/>
+<text x="765" y="206" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Fila SQS · consumidor B</text>
+<text x="765" y="229" font-size="13" fill="#6b7280" text-anchor="middle">filtro da assinatura aceita só:</text>
+<text x="765" y="254" font-size="13" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#1f2937" text-anchor="middle">OrderCancelledEvent</text>
+
+<!-- descarte -->
+<path d="M424 265 C470 340 540 356 610 356" fill="none" stroke="#d9534f" stroke-width="2.5" stroke-dasharray="7 6" marker-end="url(#mr)"/>
+<rect x="440" y="372" width="160" height="28" rx="14" fill="#fdecea" stroke="#d9534f" stroke-width="1.5"/>
+<text x="520" y="391" font-size="13" font-weight="700" fill="#d9534f" text-anchor="middle">nenhum filtro casa ✗</text>
+<rect x="620" y="310" width="290" height="92" rx="12" fill="#fdecea" stroke="#d9534f" stroke-width="2.5"/>
+<text x="765" y="336" font-size="15" font-weight="700" fill="#1f2937" text-anchor="middle">Não entregue pelo SNS</text>
+<text x="765" y="359" font-size="13" font-family="ui-monospace, Menlo, Consolas, monospace" fill="#1f2937" text-anchor="middle">OrderShippedEvent</text>
+<text x="765" y="384" font-size="13" fill="#6b7280" text-anchor="middle">não chega a nenhuma das filas</text>
+</svg>

@@ -1,0 +1,40 @@
+---
+/** Rodapé: licença, RSS, Sobre e a alternância discreta de tema. */
+import SeletorTema from "./SeletorTema.astro";
+import { url } from "../lib/url";
+---
+
+<footer class="rodape wrap">
+  <div class="linha">
+    <span>Conteúdo sob <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a>.</span>
+    <a href={url("/rss.xml")}>Assinar via RSS</a>
+    <a href={url("/sobre/")}>Sobre</a>
+    <SeletorTema />
+  </div>
+</footer>
+
+<style>
+  .rodape {
+    margin-top: 80px;
+    padding-bottom: 40px;
+  }
+
+  .linha {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 24px;
+    padding-top: 22px;
+    border-top: 1px solid var(--rule);
+    font-size: 14.5px;
+    color: var(--ink-2);
+  }
+
+  .linha a {
+    color: var(--ink-2);
+  }
+
+  .linha a:hover {
+    color: var(--ink);
+  }
+</style>

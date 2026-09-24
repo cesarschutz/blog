@@ -1,0 +1,1435 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Protótipo do blog: home e artigo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Besley:ital,wght@0,400..900;1,400..700&family=Literata:ital,opsz,wght@0,7..72,300..800;1,7..72,300..600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --paper:#ECEEE9; --paper-hi:#F7F8F4; --well:#E0E3DC;
+  --ink:#1C2427; --ink-2:#56605E; --ink-3:#7A8381;
+  --rule:#C4CAC3; --plank:#B5BBB1; --plank-edge:#959C92;
+  --link:#244A8A;
+  --c-note:#3F5878; --c-tip:#2F6B4F; --c-imp:#654262; --c-warn:#9A6B12; --c-bad:#A3432A;
+  --acc:#1F4D4A; --accd:var(--acc);
+  --lift:0 1px 0 rgba(28,36,39,.05),0 18px 34px -18px rgba(28,36,39,.45);
+  --cloth:repeating-linear-gradient(0deg,rgba(255,255,255,.045) 0 1px,transparent 1px 3px),repeating-linear-gradient(90deg,rgba(0,0,0,.05) 0 1px,transparent 1px 3px);
+  --display:"Besley","Rockwell","Georgia",serif;
+  --text:"Literata","Iowan Old Style","Georgia",serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --pad:clamp(18px,5vw,48px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#182022; --paper-hi:#1F282A; --well:#12181A;
+    --ink:#E3E6DF; --ink-2:#A7AFAB; --ink-3:#848D89;
+    --rule:#343E40; --plank:#3B4547; --plank-edge:#2A3234;
+    --link:#9FB8E8;
+    --c-note:#9DB3D4; --c-tip:#86C3A2; --c-imp:#C7A3C2; --c-warn:#E0B560; --c-bad:#E7957C;
+    --accd:color-mix(in oklab,var(--acc),#ffffff 42%);
+    --lift:0 18px 34px -16px rgba(0,0,0,.75);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#182022; --paper-hi:#1F282A; --well:#12181A;
+  --ink:#E3E6DF; --ink-2:#A7AFAB; --ink-3:#848D89;
+  --rule:#343E40; --plank:#3B4547; --plank-edge:#2A3234;
+  --link:#9FB8E8;
+  --c-note:#9DB3D4; --c-tip:#86C3A2; --c-imp:#C7A3C2; --c-warn:#E0B560; --c-bad:#E7957C;
+  --accd:color-mix(in oklab,var(--acc),#ffffff 42%);
+  --lift:0 18px 34px -16px rgba(0,0,0,.75);
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none!important}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 16px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--text);font-size:17px;line-height:1.6;font-variant-numeric:oldstyle-nums proportional-nums}
+a{color:var(--link);text-decoration-thickness:1px;text-underline-offset:.18em}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--link);outline-offset:3px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{max-width:1120px;margin:0 auto;padding-left:var(--pad);padding-right:var(--pad)}
+.btn{background:transparent;border:1px solid var(--rule);border-radius:4px;padding:7px 14px;min-height:40px;cursor:pointer;font-size:15px;color:var(--ink)}
+.btn:hover:not(:disabled){border-color:var(--ink-3)}
+.btn:disabled{opacity:.45;cursor:default}
+
+/* ---------- barra do protótipo ---------- */
+.proto{background:var(--well);border-bottom:1px solid var(--rule);font-size:15px;line-height:1.5}
+.proto .wrap{padding-top:16px;padding-bottom:12px}
+.proto h1{font-family:var(--display);font-size:18px;font-weight:700;margin:0 0 10px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--rule);background:transparent;border-radius:999px;padding:7px 15px;cursor:pointer;min-height:40px}
+.tab:hover{border-color:var(--ink-3)}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.proto-ctrl{display:flex;flex-wrap:wrap;align-items:center;gap:4px 24px;margin-top:8px;color:var(--ink-2);font-size:14.5px}
+.proto-ctrl label{display:inline-flex;align-items:center;gap:8px;min-height:36px}
+.proto-ctrl select{background:var(--paper-hi);border:1px solid var(--rule);border-radius:4px;padding:4px 8px}
+
+/* ---------- cabeçalho e rodapé ---------- */
+.bl-head{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-top:22px;flex-wrap:wrap}
+.wordmark{font-family:var(--display);font-weight:800;font-size:21px;color:var(--ink);text-decoration:none}
+.bl-nav{display:flex;align-items:center;gap:6px 20px;font-size:16px;flex-wrap:wrap}
+.bl-nav a,.bl-nav button{color:var(--ink-2);text-decoration:none;background:none;border:0;padding:6px 0;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.bl-nav a:hover,.bl-nav button:hover{color:var(--ink)}
+.bl-nav [aria-current="page"]{color:var(--ink);text-decoration:underline;text-underline-offset:.4em;text-decoration-thickness:2px}
+kbd{font-family:var(--mono);font-size:12px;border:1px solid var(--rule);border-radius:3px;padding:1px 5px;color:var(--ink-2)}
+@media (hover:none){kbd{display:none}}
+.bl-foot{margin-top:80px;padding-top:22px;border-top:1px solid var(--rule);font-size:14.5px;color:var(--ink-2);display:flex;flex-wrap:wrap;gap:8px 24px}
+
+/* ---------- home ---------- */
+.hero{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:40px 56px;align-items:end;padding-top:60px}
+.intro h1{font-family:var(--display);font-weight:800;font-size:clamp(40px,6.2vw,66px);line-height:1;letter-spacing:-.015em;margin:0 0 18px}
+.lede{font-size:clamp(18px,2vw,20px);line-height:1.5;margin:0;max-width:32ch}
+.ai-note{font-size:14.5px;line-height:1.5;color:var(--ink-2);margin:14px 0 0;max-width:44ch}
+@media (max-width:860px){.hero{grid-template-columns:minmax(0,1fr);gap:28px;padding-top:40px}.lede{max-width:40ch}}
+
+.shelf-unit{min-width:0}
+.shelf{display:flex;align-items:flex-end;gap:4px;padding:30px 16px 0;overflow-x:auto;overflow-y:visible;scrollbar-width:none}
+.shelf::-webkit-scrollbar{display:none}
+.plank{height:9px;background:var(--plank);border-bottom:3px solid var(--plank-edge);border-radius:1px 1px 2px 2px;box-shadow:0 14px 16px -14px rgba(0,0,0,.45)}
+.bookend{flex:0 0 auto;align-self:flex-end;width:9px;height:150px;background:var(--ink-3);border-radius:2px 2px 0 0;position:relative;margin:0 12px 0 10px}
+.bookend::after{content:"";position:absolute;bottom:0;left:-9px;width:27px;height:5px;background:var(--ink-3);border-radius:1px}
+
+.spine-look{
+  background-color:var(--c);color:var(--t);
+  background-image:linear-gradient(90deg,rgba(0,0,0,.18),rgba(255,255,255,.08) 18%,rgba(255,255,255,0) 42%,rgba(0,0,0,.14)),var(--cloth);
+  display:flex;flex-direction:column;align-items:center;
+  padding:calc(16px*var(--k)) 0 calc(12px*var(--k));border-radius:3px 3px 1px 1px;
+}
+.spine-look .band{flex:0 0 auto;width:68%;height:0;padding-top:3px;border-top:1px solid currentColor;border-bottom:1px solid currentColor;opacity:.55;transition:opacity .3s}
+.spine-look .st{writing-mode:vertical-rl;font-family:var(--display);font-weight:700;font-size:calc(16px*var(--k));letter-spacing:.03em;line-height:1;white-space:nowrap;margin:calc(14px*var(--k)) 0 auto}
+.spine-look .sn{font-size:calc(12px*var(--k));opacity:.8;margin-top:calc(10px*var(--k));font-variant-numeric:lining-nums}
+.spine-look .b2{margin-top:calc(8px*var(--k))}
+/* série: encadernação de couro com nervuras e marcador de fita */
+.series-look{background-image:linear-gradient(90deg,rgba(0,0,0,.3),rgba(255,255,255,.1) 20%,rgba(255,255,255,0) 45%,rgba(0,0,0,.25))}
+.series-look .band{width:100%;height:calc(7px*var(--k));padding:0;border:0;opacity:1;background:rgba(0,0,0,.28);box-shadow:0 1px 0 rgba(255,255,255,.14),0 -1px 0 rgba(255,255,255,.08)}
+.series-look .band+.band{margin-top:calc(5px*var(--k))}
+.series-look .st{font-weight:600;font-style:italic;letter-spacing:.02em}
+.ribbon{position:absolute;left:58%;top:calc(-18px*var(--k));width:calc(7px*var(--k));height:calc(24px*var(--k));background:var(--rb);clip-path:polygon(0 0,50% 22%,100% 0,100% 100%,0 100%)}
+
+.spine{--k:1;flex:0 0 auto;position:relative;width:calc(var(--w)*var(--k));height:calc(var(--h)*var(--k));border:0;cursor:pointer;transform:rotate(0deg) translateY(0);transition:transform .38s cubic-bezier(.2,.75,.2,1),background-color .35s,color .35s,box-shadow .35s}
+@media (hover:hover){.spine:hover{transform:rotate(0deg) translateY(-6px)}}
+.spine.lean{transform-origin:0 100%;transform:rotate(-6deg) translateY(0);margin-left:calc(var(--h)*var(--k)*.105)}
+.spine.lean.upright{transform:rotate(0deg) translateY(0)}
+.spine.lean.tipping{transition:transform 1.1s cubic-bezier(.45,1.6,.55,1)}
+@media (hover:hover){.spine.lean:hover{transform:rotate(-4deg) translateY(-4px)}}
+.spine.taken,.spine.lean.taken{background:transparent;color:transparent;box-shadow:inset 0 0 0 1px var(--rule);transform:rotate(0deg) translateY(0)}
+.spine.taken .band,.spine.taken .ribbon{opacity:0}
+@media (max-width:700px){.spine{--k:.82}}
+@media (max-width:440px){.spine{--k:.64}.spine-look .st{letter-spacing:.01em}.bookend{height:110px;margin:0 8px 0 6px}}
+
+.cover{
+  container-type:inline-size;position:relative;width:100%;height:100%;
+  background-color:var(--c);color:var(--t);
+  background-image:linear-gradient(90deg,rgba(0,0,0,.24) 0,rgba(0,0,0,.05) 4%,rgba(255,255,255,.07) 5.5%,rgba(255,255,255,0) 9%),var(--cloth);
+  border-radius:2px 5px 5px 2px;padding:9% 9% 8% 13%;display:flex;flex-direction:column;box-shadow:var(--lift)
+}
+.cv-rule{height:0;padding-top:3px;border-top:1px solid currentColor;border-bottom:1px solid currentColor;opacity:.5}
+.cover .cv-title{font-family:var(--display);font-weight:800;font-size:var(--cvf,12cqw);line-height:1.05;margin:16% 0 0}
+.cover .cv-desc{font-size:max(11px,5.8cqw);line-height:1.4;margin:6% 0 0;opacity:.88;font-style:italic}
+.cover .cv-foot{margin-top:auto;font-size:max(11px,5.6cqw);line-height:1.4;opacity:.88}
+.cover .cv-author{font-family:var(--display);font-weight:600}
+.cover.series{background-image:linear-gradient(90deg,rgba(0,0,0,.3) 0,rgba(0,0,0,.06) 4%,rgba(255,255,255,.08) 5.5%,rgba(255,255,255,0) 9%)}
+.cover.series::before{content:"";position:absolute;inset:6% 6% 6% 10%;border:1px solid currentColor;outline:1px solid currentColor;outline-offset:-5px;opacity:.55;pointer-events:none}
+.cover.series .cv-title{font-style:italic;font-weight:700}
+.cover.series .cv-kind{font-size:max(11px,5.4cqw);opacity:.85;margin-top:14%}
+.cover.series .cv-title{margin-top:4%}
+
+.drawer{display:grid;grid-template-rows:0fr;transition:grid-template-rows .5s cubic-bezier(.2,.75,.2,1)}
+.drawer.is-open{grid-template-rows:1fr}
+.drawer>div{overflow:hidden;min-height:0}
+.spread{display:grid;grid-template-columns:var(--cw) minmax(0,1fr);gap:56px;align-items:start;padding:48px 0 48px;border-bottom:1px solid var(--rule)}
+@media (max-width:760px){.spread{grid-template-columns:minmax(0,1fr);gap:28px;padding:32px 0 36px}}
+.b3d-box{position:relative;width:var(--cw);height:var(--bh);justify-self:center;perspective:1500px}
+.b3d{position:absolute;top:0;left:0;width:var(--sw);height:100%;transform-style:preserve-3d;transform-origin:100% 50%;transform:translateX(var(--x0)) rotateY(0deg);transition:transform .95s cubic-bezier(.35,.7,.15,1)}
+.b3d.turned{transform:translateX(var(--x1)) rotateY(-90deg)}
+.b3d.closing{transition-duration:.6s;transition-timing-function:cubic-bezier(.5,0,.6,1)}
+.f-spine{position:absolute;inset:0}
+.f-cover{position:absolute;top:0;left:100%;width:var(--cw);height:100%;transform-origin:0 50%;transform:rotateY(90deg)}
+.f-spine::after,.f-cover::after{content:"";position:absolute;inset:0;border-radius:inherit;background:#000;pointer-events:none;transition:opacity .95s}
+.b3d.closing .f-spine::after,.b3d.closing .f-cover::after{transition-duration:.6s}
+.f-spine::after{opacity:0}.f-cover::after{opacity:.4}
+.b3d.turned .f-spine::after{opacity:.45}.b3d.turned .f-cover::after{opacity:0}
+.spread-toc{opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s}
+.spread.is-in .spread-toc{opacity:1;transform:none;transition-duration:.35s;transition-delay:.5s}
+
+.toc-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px;margin-bottom:14px}
+.toc-head h2{font-family:var(--display);font-weight:700;font-size:26px;margin:0}
+.toc-head .meta{color:var(--ink-2);font-size:15px}
+.toc-head .close{margin-left:auto}
+.filter{display:block;width:100%;max-width:340px;font-size:15.5px;padding:9px 12px;border:1px solid var(--rule);border-radius:4px;background:var(--paper-hi);color:var(--ink);margin:0 0 10px}
+.toc{list-style:none;margin:0;padding:0 10px 0 0;max-height:300px;overflow:auto;scrollbar-width:thin}
+@media (max-width:760px){.toc{max-height:380px}}
+.toc-year{font-family:var(--display);font-weight:600;font-size:15px;color:var(--ink-2);padding:14px 0 4px;position:sticky;top:0;background:var(--paper);z-index:1}
+.toc-year:first-child{padding-top:2px}
+.toc-item a,.toc-item .ph{display:grid;grid-template-columns:minmax(0,max-content) minmax(18px,1fr) auto;align-items:baseline;gap:10px;padding:7px 0;color:var(--ink);text-decoration:none;cursor:pointer}
+.toc-item .ld{border-bottom:1px dotted var(--ink-3);opacity:.8;transform:translateY(-.28em)}
+.toc-item .dt{font-size:14.5px;color:var(--ink-2);white-space:nowrap}
+.toc-item .pn{color:var(--ink-2);font-style:italic;margin-right:8px}
+.toc-item a:hover .tt{text-decoration:underline;text-underline-offset:.2em}
+.toc-item .ph{color:var(--ink-3);font-style:italic;cursor:default}
+.empty{color:var(--ink-2);margin:8px 0 0}
+
+.sec-h{font-family:var(--display);font-weight:700;font-size:26px;margin:0 0 14px}
+.featured{padding-top:64px}
+.feat{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:40px;align-items:center}
+.feat h3{font-family:var(--display);font-weight:800;font-size:clamp(28px,3.6vw,40px);line-height:1.08;margin:8px 0 8px}
+.feat h3 a{color:var(--ink);text-decoration:none}
+.feat h3 a:hover{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.12em}
+@media (max-width:760px){.feat{grid-template-columns:minmax(0,1fr);gap:18px}}
+.ph-img{display:block;position:relative;overflow:hidden}
+.ph-img svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ph-card{aspect-ratio:3/2}
+.meta{font-size:14.5px;color:var(--ink-2);display:flex;align-items:center;gap:8px;margin:0;flex-wrap:wrap}
+.chip{flex:0 0 auto;width:8px;height:20px;border-radius:1.5px;background-color:var(--c,var(--acc));box-shadow:inset 0 3px 0 rgba(255,255,255,.2),inset 0 -3px 0 rgba(255,255,255,.2)}
+.sub{margin:0;color:var(--ink-2);font-size:18px;line-height:1.45}
+.tags{margin:12px 0 0;font-size:14.5px;display:flex;flex-wrap:wrap;gap:2px 14px}
+.tags button{background:none;border:0;padding:4px 0;color:var(--ink-2);cursor:pointer;font-size:14.5px}
+.tags button:hover{color:var(--ink);text-decoration:underline;text-underline-offset:.2em}
+
+.recent{padding-top:64px}
+.posts{list-style:none;margin:0;padding:0}
+.post{display:grid;grid-template-columns:118px minmax(0,1fr);gap:0 28px;padding:22px 0;border-top:1px solid var(--rule)}
+.post:first-child{border-top:0}
+.post .when{font-size:15px;color:var(--ink-2);padding-top:4px;white-space:nowrap}
+.post h3{font-family:var(--display);font-weight:700;font-size:clamp(20px,2.3vw,24px);line-height:1.2;margin:0}
+.post h3 a{color:var(--ink);text-decoration:none}
+.post h3 a:hover{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:.15em}
+.post .sub{margin:6px 0 0;max-width:62ch;font-size:17px}
+.post .meta{margin-top:8px;gap:4px 16px}
+.catlink{display:inline-flex;align-items:center;gap:8px;background:none;border:0;padding:6px 0;color:var(--ink-2);cursor:pointer;font-size:14.5px}
+.catlink:hover{color:var(--ink);text-decoration:underline;text-underline-offset:.2em}
+.more{margin-top:18px}
+.feed-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+.feed-head .sec-h{margin:0}
+.view-toggle{display:inline-flex;border:1px solid var(--rule);border-radius:999px;padding:3px}
+.view-toggle button{background:none;border:0;border-radius:999px;padding:6px 14px;cursor:pointer;font-size:14.5px;color:var(--ink-2);min-height:34px}
+.view-toggle button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.post{grid-template-columns:118px minmax(0,1fr) 108px!important;align-items:start}
+.thumb{display:block;position:relative;overflow:hidden}
+.thumb svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.thumb.sq{width:108px;aspect-ratio:1}
+/* traço mais grosso quando o desenho aparece pequeno */
+.thumb.sq .a-ink :is(path,rect,circle){stroke-width:7px!important}
+.card .thumb .a-ink :is(path,rect,circle),.feat .ph-img .a-ink :is(path,rect,circle){stroke-width:3.6px!important}
+.thumb.ph{display:grid;place-items:center;border:1px dashed var(--rule);border-radius:4px;color:var(--ink-3);font-size:12.5px;font-style:italic;text-align:center;line-height:1.3;padding:6px}
+.cards{list-style:none;margin:18px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:28px}
+.card{border:1px solid var(--rule);border-radius:6px;overflow:hidden;display:flex;flex-direction:column}
+.card .thumb.cd{aspect-ratio:3/2;border-bottom:1px solid var(--rule)}
+.card .thumb.cd.ph{border:0;border-bottom:1px dashed var(--rule);border-radius:0}
+.card-body{padding:16px 18px 20px}
+.card h3{font-family:var(--display);font-weight:700;font-size:21px;line-height:1.2;margin:8px 0 6px}
+.card h3 a{color:var(--ink);text-decoration:none}
+.card h3 a:hover{text-decoration:underline;text-underline-offset:.15em}
+.card .sub{font-size:16px}
+@media (max-width:640px){.post{grid-template-columns:minmax(0,1fr) 76px!important}.post .when{grid-column:1 / -1}.thumb.sq{width:76px}}
+@media (max-width:640px){.post .when{padding:0 0 4px}}
+.tagcloud{padding-top:64px}
+.tagcloud ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px 10px}
+.tagcloud button{background:transparent;border:1px solid var(--rule);border-radius:999px;padding:5px 12px;cursor:pointer;font-size:15px;color:var(--ink)}
+.tagcloud button:hover{border-color:var(--ink-3)}
+.tagcloud small{color:var(--ink-2);margin-left:4px;font-variant-numeric:lining-nums}
+
+/* ---------- busca ---------- */
+dialog.search{width:min(640px,calc(100vw - 32px));max-height:min(620px,calc(100vh - 64px));padding:0;border:1px solid var(--rule);border-radius:6px;background:var(--paper-hi);color:var(--ink);box-shadow:var(--lift)}
+dialog.search::backdrop{background:rgba(20,26,28,.45)}
+.search-in{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--rule)}
+.search-in input{flex:1;border:0;background:transparent;font-size:18px;outline:none;min-width:0}
+.search-res{list-style:none;margin:0;padding:6px 0;overflow:auto;max-height:440px}
+.search-res a{display:block;padding:10px 16px;color:var(--ink);text-decoration:none;cursor:pointer}
+.search-res a:hover,.search-res a:focus-visible{background:var(--well);outline:none}
+.search-res .t{font-family:var(--display);font-weight:700;font-size:17px;display:block;line-height:1.3}
+.search-res .m{font-size:14px;color:var(--ink-2)}
+.search-hint{padding:10px 16px 14px;font-size:14px;color:var(--ink-2);margin:0}
+
+/* ---------- artigo ---------- */
+.art-h{max-width:760px;margin:0 auto;padding-top:28px}
+.art-h .catlink{font-size:15px}
+.art-h h1{font-family:var(--display);font-weight:800;font-size:clamp(38px,5.6vw,62px);line-height:1.02;letter-spacing:-.014em;margin:10px 0 14px}
+.art-h .sub{font-size:clamp(19px,2.2vw,22px)}
+.art-h .meta{margin-top:16px}
+.art-h .ai-note{max-width:60ch;margin-top:18px;padding-top:14px;border-top:1px solid var(--rule)}
+.slides-link{display:inline-block;margin-top:6px;font-size:14.5px}
+.art-hero{margin:0 auto;max-width:1100px}
+.ph-hero{aspect-ratio:1100/468}
+.anno{display:none}.show-anno .anno{display:inline}
+.ph-hero.narrow{display:none;aspect-ratio:3/2}
+@media (max-width:600px){.show-anno .anno{display:none}.ph-hero.wide{display:none}.ph-hero.narrow{display:block}}
+
+.art-grid{display:grid;grid-template-columns:minmax(0,1fr) min(680px,100%) minmax(0,1fr);margin-top:40px}
+.side-toc{grid-column:1;justify-self:end;width:200px;margin-right:48px;display:none}
+.side-toc nav{position:sticky;top:28px}
+.side-toc p{font-family:var(--display);font-weight:700;font-size:15px;margin:0 0 8px}
+.side-toc ol{list-style:none;margin:0;padding:0;font-size:14.5px;line-height:1.4}
+.side-toc a{display:block;padding:5px 0 5px 12px;color:var(--ink-2);text-decoration:none;border-left:1px solid var(--rule)}
+.side-toc a:hover{color:var(--ink)}
+.side-toc a[aria-current="true"]{color:var(--ink);border-left:2px solid var(--ink);padding-left:11px}
+@media (min-width:1300px){.side-toc{display:block}}
+.prose{grid-column:2;font-size:18.5px;line-height:1.72}
+.prose>p{margin:0 0 1.15em}
+.prose h2{font-family:var(--display);font-weight:700;font-size:clamp(25px,3vw,30px);line-height:1.15;margin:1.9em 0 .6em}
+.prose code{font-family:var(--mono);font-size:.84em;background:var(--well);padding:.08em .32em;border-radius:3px}
+.mob-toc{margin:0 0 1.6em;border:1px solid var(--rule);border-radius:4px;background:var(--paper-hi)}
+.mob-toc summary{cursor:pointer;padding:10px 14px;font-family:var(--display);font-weight:700;font-size:16px;list-style-position:inside}
+.mob-toc ol{margin:0;padding:0 14px 12px 34px;font-size:16px}
+.mob-toc a{color:var(--ink)}
+@media (min-width:1300px){.mob-toc{display:none}}
+
+/* nota lateral: na margem em telas largas, abre no lugar em telas menores */
+.sn-ref{font:inherit;font-size:.72em;vertical-align:super;line-height:0;background:none;border:0;padding:0 2px;color:var(--link);cursor:pointer;font-variant-numeric:lining-nums}
+.snote{display:none;font-size:15px;line-height:1.5;color:var(--ink-2)}
+.snote .n{font-variant-numeric:lining-nums;margin-right:6px;color:var(--ink)}
+.snote.open{display:block;margin:10px 0 4px;padding:10px 14px;background:var(--paper-hi);border:1px solid var(--rule);border-radius:4px}
+@media (min-width:1180px){
+  .snote,.snote.open{display:block;float:right;clear:right;width:220px;margin:4px -264px 12px 0;padding:0;background:none;border:0}
+  .sn-ref{cursor:default}
+}
+
+/* código no estilo do blog atual: arquivo, linhas marcadas e diff */
+.code{margin:0 0 1.4em;border:1px solid var(--rule);border-radius:6px;background:var(--paper-hi);overflow:hidden}
+.code-bar{display:flex;align-items:stretch;gap:10px;border-bottom:1px solid var(--rule);background:var(--well)}
+.code-bar .file{font-family:var(--mono);font-size:13px;color:var(--ink);padding:8px 14px;background:var(--paper-hi);border-right:1px solid var(--rule);margin-bottom:-1px}
+.code-bar .lang{font-family:var(--mono);font-size:12px;color:var(--ink-2);margin-left:auto;align-self:center}
+.code-bar button{background:none;border:0;padding:6px 12px;cursor:pointer;color:var(--ink-2);font-size:13.5px;min-height:36px}
+.code-bar button:hover{color:var(--ink);background:var(--paper-hi)}
+.code pre{margin:0;padding:12px 0;overflow-x:auto;font-family:var(--mono);font-size:14px;line-height:1.65;tab-size:4}
+.code .rows{display:grid;min-width:100%;width:max-content;background:none;padding:0;font-size:inherit;border-radius:0}
+.code .row{display:flex;padding-right:20px;white-space:pre}
+.code .gut{flex:0 0 auto;width:2.4em;text-align:center;color:var(--ink-3);user-select:none;-webkit-user-select:none}
+.code .num{flex:0 0 auto;width:2.2em;text-align:right;padding-right:1.1em;color:var(--ink-3);user-select:none;-webkit-user-select:none}
+.code .row.ins{background:color-mix(in oklab,var(--c-tip) 14%,transparent)}
+.code .row.ins .gut{color:var(--c-tip);font-weight:600}
+.code .row.del{background:color-mix(in oklab,var(--c-bad) 12%,transparent)}
+.code .row.del .gut{color:var(--c-bad);font-weight:600}
+.code .row.del .src{opacity:.72}
+.code .row.mark{background:color-mix(in oklab,var(--c-note) 14%,transparent)}
+.code .row.mark .gut{box-shadow:inset 3px 0 0 var(--c-note)}
+.code .k{color:var(--accd);font-weight:600}.code .s{color:var(--ink-2)}.code .cm{color:var(--ink-3);font-style:italic}
+
+/* avisos: nota, dica, importante, atenção, cuidado */
+.callout{--cc:var(--c-note);display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;margin:0 0 1.4em;padding:14px 18px 14px 14px;border:1px solid color-mix(in oklab,var(--cc) 34%,var(--rule));border-radius:6px;background:color-mix(in oklab,var(--cc) 7%,var(--paper-hi));font-size:17px;line-height:1.6}
+.callout svg{width:22px;height:22px;margin-top:2px;fill:none;stroke:var(--cc);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.callout p{margin:0}
+.callout .lbl{font-family:var(--display);color:color-mix(in oklab,var(--cc) 78%,var(--ink))}
+.callout.tip{--cc:var(--c-tip)}.callout.imp{--cc:var(--c-imp)}.callout.warn{--cc:var(--c-warn)}.callout.bad{--cc:var(--c-bad)}
+
+/* rodapé do post */
+.post-foot{margin-top:2.6em;padding-top:22px;border-top:1px solid var(--rule)}
+.post-tags,.post-share{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.post-share{margin-top:14px}
+.post-share .lbl2{font-size:14.5px;color:var(--ink-2);margin-right:4px}
+.pill{background:transparent;border:1px solid var(--rule);border-radius:999px;padding:5px 13px;cursor:pointer;font-size:14.5px;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;gap:6px;min-height:36px}
+.pill:hover{border-color:var(--ink-3)}
+.pill svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.post-ai{display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;margin:18px 0 0;padding:12px 16px 12px 14px;border:1px solid color-mix(in oklab,var(--c-warn) 34%,var(--rule));border-radius:6px;background:color-mix(in oklab,var(--c-warn) 7%,var(--paper-hi));font-size:15px;line-height:1.55;color:var(--ink-2)}
+.post-ai svg{width:22px;height:22px;fill:none;stroke:var(--c-warn);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;margin-top:1px}
+.fontes{padding-left:1.1em;font-size:16.5px;line-height:1.55}
+.fontes li{margin:.35em 0}
+
+/* barra de leitura e voltar ao topo */
+.read-progress{position:fixed;top:0;left:0;right:0;height:3px;background:var(--rp,var(--accd));transform:scaleX(0);transform-origin:0 50%;z-index:40;pointer-events:none}
+.to-top{position:fixed;right:max(18px,env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));width:46px;height:46px;border-radius:50%;border:1px solid var(--rule);background:var(--paper-hi);box-shadow:var(--lift);display:grid;place-items:center;cursor:pointer;z-index:40;opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity .2s,transform .2s}
+.to-top.on{opacity:1;transform:none;pointer-events:auto}
+.to-top svg{width:20px;height:20px;fill:none;stroke:var(--ink);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* topo do artigo: a imagem vem primeiro */
+.art-top{padding-top:32px}
+.crumbs{display:flex;align-items:center;gap:8px;font-size:15px;color:var(--ink-2);flex-wrap:wrap}
+.crumbs>button{background:none;border:0;padding:6px 0;color:var(--ink-2);cursor:pointer;font-size:15px}
+.crumbs>button:hover{color:var(--ink);text-decoration:underline;text-underline-offset:.2em}
+
+/* figura controlada por arraste e pela roda do mouse */
+.scrub{touch-action:pan-y;cursor:ew-resize;user-select:none;-webkit-user-select:none}
+.scrub.dragging{cursor:grabbing}
+
+/* barra do tempo da animação curta */
+.loop-bar{position:relative;height:4px;margin:14px 10px 26px;background:var(--rule);border-radius:2px}
+.loop-bar .fill{position:absolute;inset:0;background:var(--accd);border-radius:2px;transform-origin:0 50%;transform:scaleX(0);animation:lfill 5.2s linear infinite}
+.loop-bar .tick{position:absolute;top:-4px;width:2px;height:12px;background:var(--ink-3);border-radius:1px}
+.loop-bar .tl{position:absolute;top:12px;font-size:12.5px;color:var(--ink-2);white-space:nowrap;transform:translateX(-50%)}
+.loop-bar .tl.first{transform:none}.loop-bar .tl.last{transform:translateX(-100%)}
+@keyframes lfill{0%{transform:scaleX(0)}100%{transform:scaleX(1)}}
+
+.fig{margin:0 0 1.6em}
+.fig svg{display:block;width:100%;height:auto}
+.fig figcaption{font-size:14.5px;color:var(--ink-2);margin-top:8px}
+.fig-box{border:1px solid var(--rule);border-radius:6px;padding:10px}
+
+.slider-row{display:flex;align-items:center;gap:14px;margin-top:10px;flex-wrap:wrap}
+.slider-row input[type=range]{flex:1;min-width:180px;accent-color:var(--ink);height:32px}
+.slider-row .st{font-size:15px;color:var(--ink-2);min-width:14ch}
+.play{flex:0 0 auto;width:42px;height:42px;border-radius:50%;border:1px solid var(--rule);background:var(--paper-hi);display:grid;place-items:center;cursor:pointer;color:var(--ink)}
+.play:hover{border-color:var(--ink-3)}
+.play svg{width:16px;height:16px;fill:currentColor}
+.play .i-pause{display:none}.play[aria-pressed="true"] .i-play{display:none}.play[aria-pressed="true"] .i-pause{display:block}
+.loop-ctrl{display:flex;justify-content:space-between;align-items:center;margin-top:6px;gap:10px;flex-wrap:wrap}
+.loop .env{animation:env 5.2s linear infinite}
+.loop .xm{animation:xm 5.2s linear infinite}
+.loop .wt{animation:wt 5.2s linear infinite}
+.loop .rt{stroke-dasharray:1;stroke-dashoffset:1;animation:rt 5.2s linear infinite}
+.loop .rth{animation:rth 5.2s linear infinite}
+.loop.paused *{animation-play-state:paused!important}
+@keyframes env{0%{transform:translateX(0);opacity:0}6%{opacity:1}42%{transform:translateX(-150px);opacity:1}52%{transform:translateX(-178px);opacity:0}100%{transform:translateX(-178px);opacity:0}}
+@keyframes xm{0%,46%{opacity:0}52%,78%{opacity:1}86%,100%{opacity:0}}
+@keyframes wt{0%,54%{opacity:0}60%,74%{opacity:1}80%,100%{opacity:0}}
+@keyframes rt{0%,72%{stroke-dashoffset:1;opacity:1}88%{stroke-dashoffset:0;opacity:1}96%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+@keyframes rth{0%,87%{opacity:0}88%,96%{opacity:1}100%{opacity:0}}
+
+/* diagrama que acompanha o texto: sai da coluna de texto */
+.bleed{width:min(1060px,calc(100vw - 2*var(--pad)));margin-left:calc(50% - min(1060px,calc(100vw - 2*var(--pad)))/2);margin-bottom:1.2em}
+@media (min-width:1300px){.bleed{width:calc(100% + 172px);margin-left:0}}
+.scrolly{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:48px}
+.sy-steps{padding:18vh 0 36vh}
+.sy-step{min-height:66vh;display:flex;align-items:center}
+.sy-step p{margin:0;max-width:38ch;font-size:18.5px;line-height:1.65;opacity:.28;transition:opacity .35s}
+.sy-step.on p{opacity:1}
+.sy-fig{position:relative}
+.sy-sticky{position:sticky;top:12vh;height:76vh;display:flex;align-items:center}
+.sy-sticky svg{display:block;width:100%;height:auto;max-height:100%}
+@media (max-width:760px){
+  .scrolly{grid-template-columns:minmax(0,1fr);gap:0}
+  .sy-fig{order:-1;position:sticky;top:0;z-index:2;background:var(--paper);padding:10px 0 8px;border-bottom:1px solid var(--rule)}
+  .sy-sticky{position:static;height:auto}
+  .sy-sticky svg{max-height:42svh;margin:0 auto}
+  .sy-steps{padding:8vh 0 30vh}
+  .sy-step{min-height:52vh}
+  .sy-step p{background:var(--paper-hi);padding:16px 18px;border-radius:4px;box-shadow:var(--lift);font-size:17.5px}
+}
+
+.deck{margin:0 0 1.4em}
+.deck-frame{--fig-bg:var(--paper-hi);position:relative;aspect-ratio:16/9;border:1px solid var(--rule);border-radius:5px;background:var(--paper-hi);overflow:hidden;container-type:inline-size}
+.slide{position:absolute;inset:0;padding:6cqw 7cqw;display:flex;flex-direction:column;justify-content:center;opacity:0;transition:opacity .3s;pointer-events:none}
+.slide.on{opacity:1;pointer-events:auto}
+.slide h3{font-family:var(--display);font-weight:800;font-size:5.6cqw;line-height:1.05;margin:0 0 1.6cqw}
+.slide p{margin:0;font-size:2.6cqw;color:var(--ink-2);max-width:40ch}
+.slide pre{font-family:var(--mono);font-size:2.1cqw;margin:2.4cqw 0 0;line-height:1.5}
+.slide .by{margin-top:auto;font-family:var(--display);font-weight:700;font-size:2.2cqw;color:var(--ink)}
+.slide.title{justify-content:flex-start}
+.slide.title h3{margin-top:auto;font-size:6.4cqw;max-width:56%}
+.slide.title p{max-width:50%}
+.slide.title svg{position:absolute;right:3cqw;top:4cqw;width:40cqw;height:auto}
+.deck-bar{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
+.deck-bar .pos{color:var(--ink-2);font-size:15px;margin-right:auto}
+.deck.full .deck-frame{position:fixed;inset:0;z-index:50;border-radius:0;border:0;aspect-ratio:auto;height:100vh;height:100dvh;width:100vw;display:flex;align-items:center;justify-content:center;background:var(--paper)}
+.deck.full .deck-bar{position:fixed;left:0;right:0;bottom:0;z-index:51;padding:12px var(--pad) calc(12px + env(safe-area-inset-bottom,0px));background:var(--paper);border-top:1px solid var(--rule);margin:0}
+
+.prevnext{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:28px}
+.prevnext a{display:block;padding:14px 16px;border:1px solid var(--rule);border-radius:5px;color:var(--ink);text-decoration:none}
+.prevnext a:hover{border-color:var(--ink-3)}
+.prevnext small{display:block;color:var(--ink-2);font-size:14px}
+.prevnext span{font-family:var(--display);font-weight:700;font-size:17px;line-height:1.3}
+.prevnext a:last-child{text-align:right}
+@media (max-width:600px){.prevnext{grid-template-columns:1fr}.prevnext a:last-child{text-align:left}}
+
+/* ---------- traço A + C ---------- */
+.a-ink path,.a-ink rect,.a-ink circle,.a-ink polyline{stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.a-paper{fill:var(--fig-bg,var(--paper))}
+.a-l{fill:none}
+.a-fill{fill:color-mix(in oklab,var(--accd) 62%,var(--fig-bg,var(--paper)));stroke:none!important}
+.a-stamp{fill:none;stroke:var(--accd)!important}
+.a-stamp-t{fill:var(--accd);font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:.06em}
+.a-t{font-family:var(--text);font-style:italic;font-size:26px;fill:var(--ink)}
+.a-amt{font-family:var(--display);font-weight:700;font-size:40px;fill:var(--ink)}
+.a-code{font-family:var(--mono);font-size:24px;fill:var(--ink)}
+.a-note{font-family:var(--text);font-style:italic;font-size:25px;fill:var(--ink)}
+.a-note-s{font-family:var(--text);font-style:italic;font-size:20px;fill:var(--ink-2)}
+.a-lead{fill:none;stroke:var(--ink-2);stroke-width:1.8;stroke-linecap:round}
+.a-okline{stroke:var(--accd)!important}
+.ac-hatch{fill:url(#hatch);stroke:none!important;opacity:.75}
+.ac-ph{fill:none;stroke-dasharray:24 8 4 8 4 8!important}
+.dg text{font-family:var(--text);font-style:italic;fill:var(--ink);font-size:17px}
+.dg .s{font-size:13.5px;fill:var(--ink-2)}
+.dg .c{font-family:var(--mono);font-style:normal;font-size:12px}
+.dg .ok{fill:var(--accd);font-weight:600}
+.dg .ln{fill:none;stroke-dasharray:1;stroke-dashoffset:1}
+.dg .fade{opacity:0}
+.dg .hd{opacity:0}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{transition-duration:.01ms!important;transition-delay:0s!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" style="stroke:var(--ink);stroke-width:1"/></pattern>
+    <filter id="wobble" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="4" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+<div class="proto">
+  <div class="wrap">
+    <h1>Protótipo do blog: home e artigo</h1>
+    <div class="tabs" role="tablist" aria-label="Páginas">
+      <button class="tab" role="tab" data-view="home" aria-selected="true">Home</button>
+      <button class="tab" role="tab" data-view="art" aria-selected="false">Artigo</button>
+    </div>
+    <div class="proto-ctrl">
+      <label>Tema <select id="theme"><option value="">Do sistema</option><option value="light">Claro</option><option value="dark">Escuro</option></select></label>
+      <span>Agora é a hora de opinar sobre fontes e cores também.</span>
+    </div>
+  </div>
+</div>
+
+<main class="wrap" id="app"></main>
+
+<dialog class="search" id="search" aria-label="Buscar no blog">
+  <div class="search-in">
+    <label class="sr" for="q">Buscar</label>
+    <input id="q" type="search" placeholder="Buscar artigos, categorias ou #tags" autocomplete="off">
+    <button type="button" class="btn" data-act="closeSearch">Fechar</button>
+  </div>
+  <ul class="search-res" id="res"></ul>
+  <p class="search-hint" id="hint">A busca ignora acentos. Use # para procurar por tag.</p>
+</dialog>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const MES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  const BASE = 'https://cesarschutz.com.br/posts/';
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  const T = ms => (reduce.matches ? 0 : ms);
+  const smooth = () => (reduce.matches ? 'auto' : 'smooth');
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const esc = s => String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+  const norm = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+  const plural = n => (n === 1 ? 'artigo' : 'artigos');
+  const parts = iso => iso.split('-').map(Number);
+  const fmt = iso => { const [y,m,d] = parts(iso); return `${d} ${MES[m-1]} ${y}`; };
+  const fmtShort = iso => { const [,m,d] = parts(iso); return `${d} ${MES[m-1]}`; };
+  const nextFrame = fn => requestAnimationFrame(() => requestAnimationFrame(fn));
+  const spineW = n => Math.min(104, Math.round(34 + 14 * Math.log2(1 + n)));
+  const ART = 'cobranca-duplicada-no-retry';
+
+  /* ---------- dados ---------- */
+  const CATS = [
+    {id:'arq', name:'Arquitetura', c:'#1F4D4A', t:'#EFEADF', h:256, desc:'Consistência, concorrência, mensageria e pagamentos: decisões que custam caro para mudar.'},
+    {id:'java', name:'Java', c:'#7A3E25', t:'#F2E7DA', h:240, desc:'A linguagem, a JVM e o Spring por dentro.'},
+    {id:'obs', name:'Observabilidade', c:'#C39A3E', t:'#1C2427', h:248, desc:'Logs, traces e o que eles contam sobre o sistema.'},
+    {id:'devops', name:'DevOps', c:'#3F5878', t:'#E8ECF2', h:228, desc:'Kubernetes, rotinas agendadas e o ciclo de vida dos pods.'},
+    {id:'dados', name:'Dados', c:'#654262', t:'#F1E7EF', h:236, desc:'Onde os dados moram e como eles se movem.'},
+    {id:'seg', name:'Segurança', c:'#55612E', t:'#EEF0E2', h:244, desc:'Tokens, assinaturas e criptografia.'}
+  ];
+  const SERIES = [
+    {id:'java-up', series:true, name:'Atualizações do Java', c:'#3A2A22', t:'#D8B66C', rb:'#9E3B26', h:262, w:62,
+     order:['guia-atualizacoes-java','java-8','java-11','java-17','java-21','java-25','java-29'],
+     desc:'Cada versão do Java explicada: o que mudou, por que importa e exemplos de código.'}
+  ];
+  const BOOKS = [...CATS, ...SERIES];
+  const book = id => BOOKS.find(b => b.id === id);
+
+  const RAW = [
+    ['cronjob-vs-endpoint-sqs','CronJob ou endpoint + fila — onde rodar o batch de uma API Spring Boot no Kubernetes','2026-09-23',7985,'arq',['Kubernetes','Spring','Mensageria','Trade-offs'],'Uma API Spring Boot no Kubernetes precisa de uma rotina agendada: CronJob com a mesma imagem e o perfil batch, ou endpoint que enfileira no SQS para a própria API consumir? Onze critérios comparados.'],
+    ['java-29','Java 29 (próxima LTS) — o que o Java 26 e o 27 já trouxeram','2026-09-16',9148,'java-up',['LTS','JVM','Concorrência','Criptografia'],'O caminho do Java 25 até a próxima LTS, o Java 29: as JEPs do Java 26 e do 27, o que ainda está em preview, exemplos de código e o que conferir na migração.'],
+    ['bloqueio-otimista-e-pessimista','Bloqueio otimista e pessimista — como funcionam e quando usar cada um','2026-09-13',3759,'arq',['Banco de Dados','Concorrência','Spring','Trade-offs'],'Como impedir que gravações simultâneas se atropelem: coluna de versão ou trava da linha.'],
+    ['virtual-threads-pinning-close-wait','Virtual threads no Java 21 — pinning e CLOSE_WAIT','2026-09-12',4684,'java',['Virtual Threads','Concorrência','JVM'],'Por que um serviço Java 21 com virtual threads congela sem erro no log.'],
+    ['efeito-externo-sem-registro-local','Efeito externo sem registro local — a cobrança passou e o banco não gravou','2026-09-11',1995,'arq',['Pagamentos','Mensageria','Banco de Dados'],'A captura no adquirente passa e a gravação no seu banco falha: grave a intenção antes de causar o efeito.'],
+    ['cobranca-duplicada-no-retry','Chave de idempotência — como impedir a cobrança duplicada no retry','2026-09-10',1976,'arq',['Pagamentos','Idempotência','Banco de Dados'],'Por que consultar antes de gravar não impede que um retry cobre o cliente duas vezes, e como resolver com chave de idempotência, restrição única e resposta guardada. Com SQL testado no PostgreSQL.'],
+    ['arquitetura-de-ledger','Arquitetura de ledger — partidas dobradas, saldos e conciliação','2026-05-28',6062,'arq',['Pagamentos','Banco de Dados','Idempotência'],'Registro append-only, double-entry garantido pelo banco, saldos materializados, idempotência e conciliação.'],
+    ['sns-filter-policy','SNS MessageAttributes e Filter Policy — filtrando mensagens antes do SQS','2026-05-20',1333,'arq',['AWS','Mensageria'],'Como fazer o SNS entregar a cada fila SQS só as mensagens que interessam.'],
+    ['w3c-trace-context','W3C Trace Context — correlacionando logs entre microsserviços com o traceparent','2026-05-20',1446,'obs',['Logs','Microsserviços','Mensageria'],'O padrão W3C que leva o mesmo ID de rastreamento por todos os serviços de uma operação.'],
+    ['aop-jdk-proxy-cglib','AOP no Spring — JDK Dynamic Proxy, CGLIB e aspects customizados','2026-05-19',2784,'java',['Spring','AOP'],'Como o Spring aplica log, transação e métricas fora da regra de negócio.'],
+    ['aoputils-gettargetclass','AopUtils.getTargetClass() — desembrulhando os proxies do Spring','2026-05-19',1342,'java',['Spring','AOP'],'Com o bean envolto em proxy, bean.getClass() devolve a classe do proxy e a leitura de anotações falha.'],
+    ['atomicboolean-parada-graciosa','AtomicBoolean — o sinalizador thread-safe da parada graciosa','2026-05-19',1774,'java',['Concorrência','Kubernetes','JVM'],'Por que um boolean comum pode não ser visto por outra thread e como ligar o SIGTERM a um job.'],
+    ['gradle-tipos-de-dependencia','Gradle — quando usar implementation, api, compileOnly e as demais configurações','2026-05-19',1656,'java',['Gradle','Spring'],'Cada configuração de dependência do Gradle alimenta um classpath.'],
+    ['kubernetes-cronjob-concorrencia','Kubernetes CronJob — concorrência, retries e tempo máximo de execução','2026-05-19',1783,'devops',['Kubernetes','Concorrência'],'Os campos que protegem rotinas agendadas e o que eles não garantem.'],
+    ['logging-estruturado-spring-boot','Logging estruturado em Spring Boot — LogstashEncoder vs o suporte nativo do 3.4+','2026-05-19',1872,'obs',['Spring','Logs','Trade-offs'],'Cada log como uma linha JSON pesquisável.'],
+    ['sigterm-sigkill-kubernetes','SIGTERM e SIGKILL — o ciclo de término de um pod no Kubernetes','2026-05-19',1935,'devops',['Kubernetes','Spring'],'Como o Kubernetes encerra um pod, a corrida com os endpoints e a pegadinha do PID 1.'],
+    ['wide-events-canonical-log-lines','Wide events e canonical log lines — a evolução do logging estruturado','2026-05-19',1607,'obs',['Logs','Spring'],'Um evento rico em contexto por requisição, no lugar de dezenas de logs parciais.'],
+    ['overhead-vs-overkill','Overhead vs overkill — o custo de toda escolha e o exagero dela','2026-05-16',1608,'arq',['Trade-offs','Microsserviços'],'O custo extra que toda decisão técnica cobra e a solução desproporcional ao problema.'],
+    ['jwt-estrutura-e-campos','JWT — a estrutura e o significado de cada campo','2026-04-12',1923,'seg',['JWT','Criptografia'],'As três partes de um JWT, campo a campo.'],
+    ['data-lake-vs-data-warehouse','Data lake vs data warehouse — e onde entra o lakehouse','2026-03-31',1230,'dados',['Trade-offs','AWS'],'O comparativo direto entre Data Warehouse e Data Lake.'],
+    ['guia-atualizacoes-java','Guia de atualizações do Java','2025-07-14',9170,'java-up',['LTS','Migração','JVM','Gradle'],'Como planejar a migração entre LTS do Java.'],
+    ['java-25','Java 25 (LTS) — arquivos-fonte compactos, Scoped Values, cache AOT e criptografia pós-quântica','2025-07-02',11115,'java-up',['LTS','Linguagem','JVM','Criptografia'],'Do Java 22 ao 25, para quem vem do Java 21.'],
+    ['java-21','Java 21 (LTS) — virtual threads, pattern matching e Sequenced Collections','2025-07-02',10421,'java-up',['LTS','Linguagem','Virtual Threads','Concorrência'],'O que mudou do Java 17 ao Java 21.'],
+    ['java-17','Java 17 (LTS) — records, sealed classes, text blocks e switch expressions','2025-07-02',10484,'java-up',['LTS','Linguagem','JVM','Migração'],'Do Java 12 ao 17, versão a versão.'],
+    ['java-11','Java 11 (LTS) — módulos, var, HTTP Client e o novo ciclo de releases','2025-07-02',10382,'java-up',['LTS','Linguagem','JVM','Migração'],'O que chegou do Java 9 ao 11 para quem migra do Java 8.'],
+    ['java-8','Java 8 (LTS) — lambdas, Stream API, java.time e o fim do PermGen','2025-07-02',8553,'java-up',['LTS','Linguagem','JVM','Concorrência'],'O que mudou do Java 7 para o Java 8.']
+  ];
+  const POSTS = RAW.map(([slug,full,d,words,cat,tags,desc]) => {
+    const [t, ...rest] = full.split(' — ');
+    return {slug, t, s: rest.join(' — '), d, m: Math.max(1, Math.round(words / 200)), cat, tags, desc, url: BASE + slug + '/'};
+  });
+  const post = slug => POSTS.find(p => p.slug === slug);
+
+  let feedPref = 'list';
+  try { feedPref = localStorage.getItem('blog-feed') === 'cards' ? 'cards' : 'list'; } catch(e){}
+  const S = {view:'home', open:null, showAll:false, feed:feedPref};
+  let busy = false, pending = null;
+
+  function entries(b){
+    if (b.series) return b.order.map((slug, k) => ({...post(slug), part:k+1}));
+    return POSTS.filter(p => p.cat === b.id);
+  }
+  function countText(b, list){
+    if (b.series) return `${list.length} partes`;
+    const ys = list.filter(p => p.d).map(p => +p.d.slice(0,4));
+    let y = '';
+    if (ys.length){ const a = Math.min(...ys), z = Math.max(...ys); y = a === z ? `${a}` : `de ${a} a ${z}`; }
+    return `${list.length} ${plural(list.length)}${y ? ', ' + y : ''}`;
+  }
+
+  /* ---------- desenho A + C ---------- */
+  function receipt(x, y, w, h, n = 12){
+    const tw = w / n;
+    let d = `M${x} ${y} H${x+w} V${y+h}`;
+    for (let i = 0; i < n; i++) d += ` L${(x+w-(i+.5)*tw).toFixed(1)} ${y+h+14} L${(x+w-(i+1)*tw).toFixed(1)} ${y+h}`;
+    return d + ' Z';
+  }
+  const KEY = 'M50 0 A50 50 0 1 1 -50 0 A50 50 0 1 1 50 0 Z M6 0 A16 16 0 1 0 -26 0 A16 16 0 1 0 6 0 Z M46 -14 H62 V-9 H280 V30 H262 V20 H244 V38 H226 V24 H210 V9 H62 V14 H46 Z';
+  const TAG = 'M0 20 L24 0 H170 V90 H24 L0 70 Z';
+  const BG = f => `<rect x="-600" y="-600" width="2400" height="2000" style="fill:${f}"/>`;
+  function drawIdem(){
+    return `
+    <g class="a-ink" filter="url(#wobble)">
+      <g transform="rotate(-8 505 370)"><path d="${receipt(380,180,250,380)}" class="a-l ac-ph" style="stroke-width:2.4"/></g>
+      <g transform="rotate(4 595 405)"><path d="${receipt(470,215,250,380)}" transform="translate(14 14)" class="ac-hatch"/></g>
+      <g transform="rotate(4 595 405)">
+        <path d="${receipt(470,215,250,380)}" class="a-paper"/>
+        <path d="M498 296 H668 M498 320 H628 M498 344 H648 M498 446 H618" class="a-l"/>
+        <g transform="rotate(-12 620 520)"><rect x="548" y="494" width="144" height="54" rx="6" class="a-stamp"/></g>
+      </g>
+      <path d="M875 286 C905 320 925 385 915 428" class="a-l"/>
+      <g transform="translate(905 380) rotate(14)">
+        <path d="${TAG}" transform="translate(7 6)" class="a-fill"/><path d="${TAG}" class="a-l"/><circle cx="22" cy="45" r="8" class="a-l"/>
+      </g>
+      <g transform="translate(852 262) rotate(128)"><path d="${KEY}" fill-rule="evenodd" class="ac-hatch"/></g>
+      <g transform="translate(840 250) rotate(128)"><path d="${KEY}" fill-rule="evenodd" class="a-paper"/><path d="M72 0 H200" class="a-l"/></g>
+    </g>
+    <g transform="rotate(4 595 405)">
+      <text x="498" y="266" class="a-t">Comprovante</text>
+      <text x="498" y="416" class="a-amt">R$ 150,00</text>
+      <g transform="rotate(-12 620 520)"><text x="620" y="532" text-anchor="middle" class="a-stamp-t">PAGO</text></g>
+    </g>
+    <g transform="translate(905 380) rotate(14)"><text x="44" y="55" class="a-code">abc-123</text></g>
+    <g class="anno">
+      <path d="M962 502 C 972 520 966 534 952 546" class="a-lead"/>
+      <text x="880" y="572" class="a-note">chave de idempotência</text>
+      <text x="880" y="598" class="a-note-s">a mesma nas duas tentativas</text>
+      <path d="M370 352 C 352 356 344 362 338 372" class="a-lead"/>
+      <text x="126" y="398" class="a-note">a segunda cobrança</text>
+      <text x="126" y="424" class="a-note-s">nunca acontece</text>
+    </g>`;
+  }
+  const svgBox = (vb, inner, anno) => `<svg viewBox="${vb}" preserveAspectRatio="xMidYMid slice" class="${anno ? 'show-anno' : ''}" aria-hidden="true" focusable="false">${inner}</svg>`;
+
+  /* ---------- peças compartilhadas ---------- */
+  function header(){
+    return `<header class="bl-head">
+      <a class="wordmark" href="#" data-act="home">Cesar Schutz</a>
+      <nav class="bl-nav" aria-label="Principal">
+        <button type="button" data-act="toRecent"${S.view === 'home' ? ' aria-current="page"' : ''}>Artigos</button>
+        <button type="button" data-act="toTags">Tags</button>
+        <button type="button" data-act="openSearch">Buscar <kbd>⌘K</kbd></button>
+        <a href="https://cesarschutz.com.br/rss.xml" target="_blank" rel="noopener">RSS</a>
+      </nav>
+    </header>`;
+  }
+  const footer = () => `<footer class="bl-foot"><span>Conteúdo sob CC BY 4.0.</span><a href="https://cesarschutz.com.br/rss.xml" target="_blank" rel="noopener">Assinar via RSS</a></footer>`;
+  const postLink = (p, inner, cls = '') => p.slug === ART
+    ? `<a href="#" class="${cls}" data-act="openArt">${inner}</a>`
+    : `<a href="${p.url}" class="${cls}" target="_blank" rel="noopener">${inner}</a>`;
+  const tagBtns = tags => tags.map(t => `<button type="button" data-act="tag" data-tag="${esc(t)}">#${esc(t)}</button>`).join('');
+
+  /* ---------- home ---------- */
+  function spineInner(b, n){
+    if (b.series) return `<span class="band" aria-hidden="true"></span><span class="band" aria-hidden="true"></span><span class="st">${b.name}</span><span class="sn">${n}</span><span class="band b2" aria-hidden="true"></span><span class="band" aria-hidden="true"></span>`;
+    return `<span class="band" aria-hidden="true"></span><span class="st">${b.name}</span><span class="sn">${n}</span><span class="band b2" aria-hidden="true"></span>`;
+  }
+  function spineBtn(b, lean){
+    const n = entries(b).length, open = S.open === b.id;
+    const w = b.series ? b.w : spineW(n);
+    const cls = ['spine','spine-look', b.series ? 'series-look' : '', lean ? 'lean' : '', open ? 'taken' : ''].join(' ');
+    const label = b.series ? `Série ${b.name}, ${n} partes` : `Livro ${b.name}, ${n} ${plural(n)}`;
+    return `<button type="button" class="${cls}" style="--c:${b.c};--t:${b.t};--w:${w}px;--h:${b.h}px${b.rb ? ';--rb:' + b.rb : ''}" data-act="open" data-cat="${b.id}" aria-label="${label}" aria-expanded="${open}" aria-controls="drawer">${spineInner(b,n)}${b.series ? '<span class="ribbon" aria-hidden="true"></span>' : ''}</button>`;
+  }
+  function coverHTML(b, list){
+    const f = Math.min(13, 74 / (0.64 * Math.max(...b.name.split(' ').map(w => w.length), 8))).toFixed(2);
+    if (b.series) return `<div class="cover series" style="--c:${b.c};--t:${b.t};--cvf:${f}cqw">
+      <p class="cv-kind">Série</p>
+      <div class="cv-title">${b.name}</div>
+      <p class="cv-desc">${b.desc}</p>
+      <div class="cv-foot">${list.length} partes<br><span class="cv-author">Cesar Schutz</span></div>
+    </div>`;
+    return `<div class="cover" style="--c:${b.c};--t:${b.t};--cvf:${f}cqw">
+      <div class="cv-rule"></div><div class="cv-title">${b.name}</div><p class="cv-desc">${b.desc}</p>
+      <div class="cv-foot">${countText(b, list)}<br><span class="cv-author">Cesar Schutz</span></div>
+    </div>`;
+  }
+  function tocItems(b, list){
+    let html = '', year;
+    list.forEach(p => {
+      if (!b.series){
+        const y = p.d ? p.d.slice(0,4) : 'Anteriores';
+        if (y !== year){ year = y; html += `<li class="toc-year" aria-hidden="true">${y}</li>`; }
+      }
+      const pn = b.series ? `<span class="pn">Parte ${p.part}</span>` : '';
+      if (p.ph){
+        html += `<li class="toc-item"><span class="ph"><span class="tt">${pn}[título do artigo]</span><span class="ld"></span><span class="dt">—</span></span></li>`;
+      } else {
+        html += `<li class="toc-item" data-q="${esc(norm(p.t + ' ' + p.s + ' ' + p.tags.join(' ')))}">${postLink(p, `<span class="tt">${pn}${esc(p.t)}</span><span class="ld"></span><span class="dt">${fmtShort(p.d)}</span>`)}</li>`;
+      }
+    });
+    return html;
+  }
+  function spreadHTML(b, settled){
+    const list = entries(b), n = list.length;
+    const small = matchMedia('(max-width:760px)').matches;
+    const bh = small ? 270 : 360, cw = small ? 180 : 240, k = small ? 0.95 : 1.3;
+    const sw = Math.round((b.series ? b.w : spineW(n)) * k);
+    return `<div class="spread${settled ? ' is-in' : ''}" style="--bh:${bh}px;--cw:${cw}px;--sw:${sw}px;--x0:${(cw - sw) / 2}px;--x1:${-sw}px">
+      <div class="b3d-box" aria-hidden="true">
+        <div class="b3d${settled ? ' turned' : ''}" style="--c:${b.c};--t:${b.t}">
+          <div class="f-spine spine-look${b.series ? ' series-look' : ''}" style="--k:${k}">${spineInner(b,n)}</div>
+          <div class="f-cover">${coverHTML(b, list)}</div>
+        </div>
+      </div>
+      <div class="spread-toc">
+        <div class="toc-head"><h2 id="toc-h">${b.series ? 'Ordem de leitura' : 'Sumário'}</h2><span class="meta">${b.name}, ${countText(b, list)}</span><button type="button" class="btn close" data-act="close">Fechar livro</button></div>
+        <label class="sr" for="filtro">Filtrar neste livro</label>
+        <input id="filtro" class="filter" type="search" placeholder="Filtrar neste livro" autocomplete="off">
+        <ul class="toc" aria-labelledby="toc-h">${tocItems(b, list)}</ul>
+        <p class="empty" hidden>Nenhum artigo deste livro tem esse termo.</p>
+      </div>
+    </div>`;
+  }
+  function thumb(p, kind){
+    if (p.slug === ART) return `<a href="#" class="thumb ${kind}" data-act="openArt" aria-hidden="true" tabindex="-1">${svgBox(kind === 'sq' ? '415 110 670 670' : '200 100 900 600', drawIdem())}</a>`;
+    return `<span class="thumb ${kind} ph" aria-hidden="true">desenho do post</span>`;
+  }
+  function metaLine(p){
+    const c = book(p.cat);
+    return `<div class="meta"><button type="button" class="catlink" data-act="cat" data-cat="${c.id}" style="--c:${c.c}"><span class="chip" aria-hidden="true"></span>${c.name}</button><span>${p.m} min de leitura</span></div>`;
+  }
+  function postItem(p){
+    return `<li class="post">
+      <div class="when">${fmt(p.d)}</div>
+      <div>
+        <h3>${postLink(p, esc(p.t))}</h3>
+        <p class="sub">${esc(cap(p.s || p.desc))}</p>
+        ${metaLine(p)}
+      </div>
+      ${thumb(p, 'sq')}
+    </li>`;
+  }
+  function cardItem(p){
+    return `<li class="card">
+      ${thumb(p, 'cd')}
+      <div class="card-body">
+        <p class="meta">${fmt(p.d)}</p>
+        <h3>${postLink(p, esc(p.t))}</h3>
+        <p class="sub">${esc(cap(p.s || p.desc))}</p>
+        ${metaLine(p)}
+      </div>
+    </li>`;
+  }
+  function recent(){
+    const rest = POSTS.filter(p => p.slug !== ART);
+    const list = [post(ART), ...(S.showAll ? rest : rest.slice(0,6))];
+    const more = S.showAll ? '' : `<button type="button" class="btn more" data-act="showAll">Mostrar todos os ${POSTS.length} artigos</button>`;
+    const toggle = `<div class="view-toggle" role="group" aria-label="Modo de exibição"><button type="button" data-act="feed" data-view="list" aria-pressed="${S.feed === 'list'}">Lista</button><button type="button" data-act="feed" data-view="cards" aria-pressed="${S.feed === 'cards'}">Cards</button></div>`;
+    const items = S.feed === 'cards' ? `<ul class="cards">${list.map(cardItem).join('')}</ul>` : `<ul class="posts">${list.map(postItem).join('')}</ul>`;
+    return `<section class="recent" id="recent" aria-labelledby="rec-h"><div class="feed-head"><h2 id="rec-h" class="sec-h">Artigos recentes</h2>${toggle}</div>${items}${more}</section>`;
+  }
+  function tagCloud(){
+    const count = {};
+    POSTS.forEach(p => p.tags.forEach(t => { count[t] = (count[t] || 0) + 1; }));
+    const tags = Object.keys(count).sort((a,b) => count[b] - count[a] || a.localeCompare(b, 'pt'));
+    return `<section class="tagcloud" id="tags" aria-labelledby="tags-h"><h2 id="tags-h" class="sec-h">Tags</h2><ul>${tags.map(t => `<li><button type="button" data-act="tag" data-tag="${esc(t)}">#${esc(t)}<small>${count[t]}</small></button></li>`).join('')}</ul></section>`;
+  }
+  function homeHTML(){
+    const p = post(ART), c = book(p.cat);
+    const leanIdx = CATS.length - 1;
+    return `${header()}
+    <section class="hero">
+      <div class="intro">
+        <h1>Cesar Schutz</h1>
+        <p class="lede">Arquiteto de soluções. Aqui publico o que estudo sobre arquitetura de software, Java e sistemas de pagamento.</p>
+        <p class="ai-note">Os textos são escritos com ajuda de IA e revisados por mim. Leia como anotações de estudo e confira antes de levar para produção.</p>
+      </div>
+      <div class="shelf-unit" id="shelfUnit">
+        <div class="shelf" role="group" aria-label="Estante: um livro por categoria e um por série">
+          ${CATS.map((b,i) => spineBtn(b, i === leanIdx)).join('')}
+          <span class="bookend" aria-hidden="true"></span>
+          ${SERIES.map(b => spineBtn(b, false)).join('')}
+        </div>
+        <div class="plank"></div>
+      </div>
+    </section>
+    <div class="drawer${S.open ? ' is-open' : ''}" id="drawer"><div>${S.open ? spreadHTML(book(S.open), true) : ''}</div></div>
+    <section class="featured" aria-labelledby="feat-h">
+      <h2 id="feat-h" class="sec-h">Em destaque</h2>
+      <article class="feat">
+        <a href="#" class="ph-img ph-card" data-act="openArt" aria-label="${esc(p.t)}">${svgBox('200 100 900 600', drawIdem())}</a>
+        <div>
+          <p class="meta"><button type="button" class="catlink" data-act="cat" data-cat="${c.id}" style="--c:${c.c}"><span class="chip" aria-hidden="true"></span>${c.name}</button><span>${fmt(p.d)}, ${p.m} min de leitura</span></p>
+          <h3><a href="#" data-act="openArt">${esc(p.t)}</a></h3>
+          <p class="sub">${esc(cap(p.s))}</p>
+          <p class="tags">${tagBtns(p.tags)}</p>
+        </div>
+      </article>
+    </section>
+    ${recent()}
+    ${tagCloud()}
+    ${footer()}`;
+  }
+
+  /* abrir, trocar e fechar livros */
+  function inner(){ return $('drawer').firstElementChild; }
+  function syncSpines(){
+    document.querySelectorAll('[data-act="open"]').forEach(b => {
+      const on = b.dataset.cat === S.open;
+      b.classList.toggle('taken', on);
+      b.setAttribute('aria-expanded', String(on));
+    });
+  }
+  function fold(after){
+    const sp = inner().querySelector('.spread'), b3d = inner().querySelector('.b3d');
+    if (!b3d){ after(); return; }
+    sp.classList.remove('is-in'); b3d.classList.add('closing'); b3d.classList.remove('turned');
+    setTimeout(after, T(620));
+  }
+  function show(id, wasClosed, fromList){
+    S.open = id; syncSpines();
+    const box = inner();
+    box.innerHTML = spreadHTML(book(id), false);
+    bindFilter(box);
+    const drawer = $('drawer');
+    drawer.classList.add('is-open');
+    const sp = box.querySelector('.spread'), b3d = box.querySelector('.b3d');
+    nextFrame(() => setTimeout(() => {
+      b3d.classList.add('turned'); sp.classList.add('is-in');
+      setTimeout(() => { busy = false; if (pending){ const p = pending; pending = null; openBook(p.id, p.fromList); } }, T(420));
+    }, T(wasClosed ? 180 : 0)));
+    setTimeout(() => {
+      const r = drawer.getBoundingClientRect();
+      if (fromList || r.top > innerHeight * 0.6 || r.bottom > innerHeight + 200) $('shelfUnit').scrollIntoView({behavior: smooth(), block:'start'});
+    }, T(wasClosed ? 260 : 60));
+  }
+  function openBook(id, fromList){
+    if (busy){ pending = {id, fromList}; return; }
+    if (S.open === id){ if (fromList) $('shelfUnit').scrollIntoView({behavior: smooth(), block:'start'}); else closeBook(); return; }
+    busy = true;
+    if (S.open) fold(() => { S.open = null; syncSpines(); show(id, false, fromList); });
+    else show(id, true, fromList);
+  }
+  function closeBook(){
+    if (!S.open || busy) return;
+    busy = true;
+    fold(() => {
+      S.open = null; syncSpines();
+      $('drawer').classList.remove('is-open');
+      setTimeout(() => { if (!S.open) inner().innerHTML = ''; busy = false; }, T(520));
+    });
+  }
+  function bindFilter(root){
+    const inp = root.querySelector('.filter');
+    if (!inp) return;
+    const ul = root.querySelector('.toc'), empty = root.querySelector('.empty');
+    inp.addEventListener('input', () => {
+      const q = norm(inp.value.trim());
+      let yearLi = null, yearHas = false, any = false;
+      const flush = () => { if (yearLi) yearLi.hidden = !yearHas; };
+      [...ul.children].forEach(li => {
+        if (li.classList.contains('toc-year')){ flush(); yearLi = li; yearHas = false; return; }
+        const ok = !q || (li.dataset.q || '').includes(q);
+        li.hidden = !ok; if (ok){ yearHas = true; any = true; }
+      });
+      flush(); empty.hidden = any;
+    });
+  }
+  function tipOnce(){
+    const lean = document.querySelector('.spine.lean');
+    if (!lean || reduce.matches) return;
+    let seen = false;
+    try { seen = sessionStorage.getItem('estante-tombou') === '1'; } catch(e){}
+    if (seen) return;
+    lean.classList.add('upright');
+    setTimeout(() => {
+      lean.classList.add('tipping'); lean.classList.remove('upright');
+      setTimeout(() => lean.classList.remove('tipping'), 1200);
+      try { sessionStorage.setItem('estante-tombou','1'); } catch(e){}
+    }, 700);
+  }
+
+  /* ---------- artigo ---------- */
+  const H2 = [
+    ['por-que','Por que consultar antes não basta'],
+    ['como','A chave, a restrição e a resposta'],
+    ['comparando','Com e sem a chave'],
+    ['tabela','A tabela e o código'],
+    ['retry','Por que o cliente tenta de novo'],
+    ['apresentacao','Apresentação'],
+    ['fontes','Fontes']
+  ];
+  const ICON = {
+    note:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.6v.01"/>',
+    tip:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.1V16h5v-.1c0-.8.4-1.6 1.1-2.1A6 6 0 0 0 12 3z"/>',
+    imp:'<circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.4v.01"/>',
+    warn:'<path d="M12 3.5 2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17.1v.01"/>',
+    bad:'<path d="M12 21c-3.9 0-6.6-2.7-6.6-6.2 0-3.3 2.2-5.1 3.6-7.4.3 1.6 1.1 2.8 2.3 3.4.1-3.1 1.8-5.9 4.6-7.8-.4 2.8.9 4.6 2.1 6.3 1.1 1.5 1.9 3 1.9 5.1 0 3.9-3.5 6.6-7.9 6.6z"/>',
+    up:'<path d="M12 19V5M6 11l6-6 6 6"/>',
+    link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+    share:'<path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 13v6h14v-6"/>'
+  };
+  const ic = k => `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICON[k]}</svg>`;
+  const LBL = {note:'Nota', tip:'Dica', imp:'Importante', warn:'Atenção', bad:'Cuidado'};
+  const callout = (k, html) => `<aside class="callout ${k}" aria-label="${LBL[k]}">${ic(k)}<p><strong class="lbl">${LBL[k]}.</strong> ${html}</p></aside>`;
+  function codeBlock({file, lang, numbers, lines}){
+    const rows = lines.map((l, i) => {
+      const [kind, html] = Array.isArray(l) ? l : ['', l];
+      const g = kind === 'ins' ? '+' : kind === 'del' ? '−' : '';
+      return `<span class="row ${kind}"><span class="gut">${g}</span>${numbers ? `<span class="num">${i+1}</span>` : ''}<span class="src">${html || '&#8203;'}</span></span>`;
+    }).join('');
+    return `<div class="code"><div class="code-bar">${file ? `<span class="file">${file}</span>` : ''}<span class="lang">${lang}</span><button type="button" data-act="copy">Copiar</button></div><pre><code class="rows">${rows}</code></pre></div>`;
+  }
+  const K = w => `<span class="k">${w}</span>`, STR = w => `<span class="s">${w}</span>`, CM = w => `<span class="cm">${w}</span>`;
+
+  function articleHTML(){
+    const p = post(ART), c = book(p.cat);
+    const toc = H2.map(([id, t]) => `<li><a href="#${id}" data-toc="${id}">${t}</a></li>`).join('');
+    const older = post('arquitetura-de-ledger'), newer = post('efeito-externo-sem-registro-local');
+    const u = encodeURIComponent(p.url);
+    return `${header()}
+    <div class="read-progress" id="readProgress" style="--rp:${c.c}" aria-hidden="true"></div>
+    <article id="art">
+      <div class="art-top">
+        <figure class="art-hero"><div class="ph-img ph-hero wide">${svgBox('80 158 1100 468', drawIdem(), true)}</div><div class="ph-img ph-hero narrow">${svgBox('200 100 900 600', drawIdem())}</div></figure>
+        <header class="art-h">
+          <nav class="crumbs" aria-label="Trilha"><button type="button" data-act="toRecent">Artigos</button><span aria-hidden="true">›</span><button type="button" class="catlink" data-act="cat" data-cat="${c.id}" style="--c:${c.c}"><span class="chip" aria-hidden="true"></span>${c.name}</button></nav>
+          <h1>${esc(p.t)}</h1>
+          <p class="sub">${esc(cap(p.s))}</p>
+          <p class="meta"><time datetime="${p.d}">${fmt(p.d)}</time><span>${p.m} min de leitura</span></p>
+        </header>
+      </div>
+
+      <div class="art-grid">
+        <aside class="side-toc"><nav aria-label="Neste artigo"><p>Neste artigo</p><ol>${toc}</ol></nav></aside>
+        <div class="prose">
+          <details class="mob-toc"><summary>Neste artigo</summary><ol>${toc}</ol></details>
+
+          <p>Um cliente pede uma cobrança, a rede falha no caminho de volta e ele tenta de novo. Se a API não souber reconhecer que é o mesmo pedido, cobra duas vezes. Idempotência<button type="button" class="sn-ref" aria-expanded="false" aria-controls="sn1">1</button><span class="snote" id="sn1"><span class="n">1</span>Uma operação é idempotente quando repeti-la produz o mesmo efeito que fazê-la uma vez.</span> é a propriedade que resolve isso, e aqui ela vem de três peças: uma chave enviada pelo cliente, uma restrição única no banco e a resposta guardada.</p>
+          ${callout('note', 'Os exemplos usam PostgreSQL 17, mas a ideia vale para qualquer banco com restrição única.')}
+
+          <h2 id="por-que">Por que consultar antes não basta</h2>
+          <p>A primeira ideia costuma ser consultar se o pedido já existe antes de gravar. O problema é o intervalo entre a consulta e a gravação: se a requisição original e o reenvio caem em instâncias diferentes ao mesmo tempo, as duas consultam antes de qualquer uma gravar, as duas encontram a tabela vazia e as duas cobram.</p>
+          ${codeBlock({lang:'SQL', lines:[
+            CM('-- as duas tentativas executam isto ao mesmo tempo'),
+            `${K('SELECT')} 1 ${K('FROM')} cobranca ${K('WHERE')} chave = ${STR("'abc-123'")};  ${CM('-- nenhuma linha')}`,
+            `${K('INSERT INTO')} cobranca (chave, valor) ${K('VALUES')} (${STR("'abc-123'")}, 150.00);`
+          ]})}
+          ${callout('warn', 'Um lock na aplicação não resolve quando a API roda em mais de uma instância. Quem precisa garantir a unicidade é o banco.')}
+
+          <h2 id="como">A chave, a restrição e a resposta</h2>
+          <p>O fluxo abaixo acompanha a leitura: role devagar e o diagrama avança um passo a cada parágrafo.</p>
+          <div class="bleed">
+            <div class="scrolly">
+              <div class="sy-steps" id="steps">
+                <div class="sy-step"><p>O cliente pede uma cobrança e manda junto uma chave de idempotência gerada por ele, <code>abc-123</code>. A chave é a mesma em todas as tentativas desse pedido.</p></div>
+                <div class="sy-step"><p>Antes de cobrar, a API grava a chave numa tabela com restrição <code>UNIQUE</code>. Quem grava primeiro fica com a chave, e o estado começa como em andamento.</p></div>
+                <div class="sy-step"><p>A API cobra no adquirente e guarda a resposta junto da chave. Agora a tabela sabe o resultado: concluída, 201.</p></div>
+                <div class="sy-step"><p>A resposta se perde no caminho de volta. Para o cliente é como se nada tivesse acontecido, então ele tenta de novo, com a mesma chave.</p></div>
+                <div class="sy-step"><p>O <code>INSERT</code> da segunda tentativa bate na restrição <code>UNIQUE</code>. Em vez de cobrar de novo, a API devolve a resposta que já estava guardada.</p></div>
+              </div>
+              <div class="sy-fig"><div class="sy-sticky">${scrollySVG()}</div></div>
+            </div>
+          </div>
+          ${callout('imp', 'A chave precisa ser a mesma em todas as tentativas do mesmo pedido. Gerar uma chave nova a cada tentativa desfaz a proteção.')}
+
+          <h2 id="comparando">Com e sem a chave</h2>
+          <p>A mesma falha de rede, com e sem a chave de idempotência. Avance no tempo e compare as duas linhas.</p>
+          <figure class="fig">
+            <div class="fig-box scrub" id="scrub">${sliderSVG()}</div>
+            <div class="slider-row">
+              <button type="button" class="play" id="playScrub" aria-label="Reproduzir" aria-pressed="false"><svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5z"/></svg><svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 2.5h3v11h-3zM9.5 2.5h3v11h-3z"/></svg></button>
+              <label class="sr" for="tempo">Tempo</label>
+              <input type="range" id="tempo" min="0" max="100" value="0" step="1">
+              <span class="st" id="tempoTxt" aria-live="polite">Antes do pedido</span>
+            </div>
+            <figcaption>Aperte o play, arraste sobre o desenho, gire a roda do mouse em cima dele (ou com Shift) ou use o controle.</figcaption>
+          </figure>
+
+          <h2 id="tabela">A tabela e o código</h2>
+          <p>A tabela guarda a chave como chave primária, o estado do pedido e a resposta que será devolvida nas próximas tentativas.</p>
+          ${codeBlock({file:'idempotencia.sql', lang:'SQL', numbers:true, lines:[
+            `${K('CREATE TABLE')} idempotencia (`,
+            ['mark', `    chave      ${K('text')} ${K('PRIMARY KEY')},`],
+            `    estado     ${K('text')} ${K('NOT NULL')},`,
+            `    resposta   ${K('jsonb')},`,
+            `    criado_em  ${K('timestamptz')} ${K('NOT NULL DEFAULT')} now()`,
+            `);`
+          ]})}
+          <p>No código, a gravação passa a vir antes da cobrança. Se a chave já existir, o banco recusa o <code>INSERT</code> e a API devolve o que estiver guardado.</p>
+          ${codeBlock({file:'CobrancaService.java', lang:'Java', lines:[
+            ['del', `${K('if')} (repositorio.existe(chave)) {`],
+            ['del', `    ${K('return')} repositorio.buscarResposta(chave);`],
+            ['del', `}`],
+            ['ins', `${K('try')} {`],
+            ['ins', `    repositorio.inserir(chave, Estado.EM_ANDAMENTO);`],
+            ['ins', `} ${K('catch')} (DuplicateKeyException e) {`],
+            ['ins', `    ${K('return')} repositorio.buscarResposta(chave);  ${CM('// não cobra de novo')}`],
+            ['ins', `}`],
+            `Resposta resposta = adquirente.cobrar(pedido);`,
+            `repositorio.concluir(chave, resposta);`,
+            `${K('return')} resposta;`
+          ]})}
+          ${callout('tip', 'Uma UUID gerada pelo cliente serve bem como chave: é única o bastante e não carrega significado.')}
+          ${callout('bad', 'Confirme o registro da chave antes de chamar o adquirente. Com a inserção e a chamada externa na mesma transação aberta, a segunda tentativa não é recusada na hora: o PostgreSQL a faz esperar até a primeira transação terminar.')}
+
+          <h2 id="retry">Por que o cliente tenta de novo</h2>
+          <p>Do lado do cliente, uma resposta que não chega é indistinguível de um pedido que nunca foi processado. Tentar de novo é o comportamento certo; o servidor é que precisa estar preparado para isso.</p>
+          <figure class="fig loop" id="loop">
+            <div class="fig-box">${loopSVG()}
+              <div class="loop-bar" aria-hidden="true">
+                <span class="fill"></span>
+                <span class="tick" style="left:0"></span><span class="tl first" style="left:0">início</span>
+                <span class="tick" style="left:47%"></span><span class="tl" style="left:47%">a resposta se perde</span>
+                <span class="tick" style="left:74%"></span><span class="tl" style="left:74%">tenta de novo</span>
+                <span class="tick" style="left:calc(100% - 2px)"></span><span class="tl last" style="left:100%">fim</span>
+              </div>
+            </div>
+            <div class="loop-ctrl"><figcaption>A resposta se perde e o cliente, sem saber, tenta de novo.</figcaption>
+              <span><button type="button" class="btn" data-act="restartLoop">Recomeçar</button> <button type="button" class="btn" data-act="pauseLoop" aria-pressed="false">Pausar</button></span></div>
+          </figure>
+
+          <h2 id="apresentacao">Apresentação</h2>
+          <div class="deck" id="deck">
+            <div class="deck-frame" id="deckFrame" aria-roledescription="apresentação" aria-label="Slides do post">
+              <section class="slide title on" aria-label="Slide 1">
+                ${svgBox('200 100 900 600', drawIdem()).replace('preserveAspectRatio="xMidYMid slice"','preserveAspectRatio="xMidYMid meet"')}
+                <h3>Chave de idempotência</h3><p>Como impedir a cobrança duplicada no retry</p><p class="by" style="margin-top:3cqw">Cesar Schutz</p>
+              </section>
+              <section class="slide" aria-label="Slide 2"><h3>Consultar antes não basta</h3><p>Duas tentativas simultâneas passam juntas pela consulta.</p>
+<pre>SELECT ... WHERE chave = 'abc-123'   -- nada
+SELECT ... WHERE chave = 'abc-123'   -- nada</pre></section>
+              <section class="slide" aria-label="Slide 3"><h3>O banco garante</h3><p>Chave enviada pelo cliente, restrição única na tabela e a resposta guardada para as próximas tentativas.</p></section>
+            </div>
+            <div class="deck-bar">
+              <span class="pos" id="deckPos">1 de 3</span>
+              <button type="button" class="btn" data-act="deckPrev">Anterior</button>
+              <button type="button" class="btn" data-act="deckNext">Próximo</button>
+              <button type="button" class="btn" data-act="deckFull" id="deckFull">Tela cheia</button>
+              <a class="btn" href="#" data-act="noop" title="No blog, baixa o PDF da apresentação" style="text-decoration:none;display:inline-flex;align-items:center">Baixar PDF</a>
+            </div>
+          </div>
+
+          <h2 id="fontes">Fontes</h2>
+          <ul class="fontes">
+            <li>IETF, <a href="https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/" target="_blank" rel="noopener">The Idempotency-Key HTTP Header Field (Internet-Draft)</a></li>
+            <li>Stripe, <a href="https://docs.stripe.com/api/idempotent_requests" target="_blank" rel="noopener">Idempotent requests</a></li>
+            <li>PostgreSQL 17, <a href="https://www.postgresql.org/docs/17/sql-insert.html" target="_blank" rel="noopener">INSERT (ON CONFLICT e RETURNING)</a></li>
+            <li>PostgreSQL 17, <a href="https://www.postgresql.org/docs/17/index-unique-checks.html" target="_blank" rel="noopener">Index Uniqueness Checks</a></li>
+            <li>MITRE, <a href="https://cwe.mitre.org/data/definitions/367.html" target="_blank" rel="noopener">CWE-367: Time-of-check Time-of-use (TOCTOU) Race Condition</a></li>
+          </ul>
+
+          <footer class="post-foot">
+            <div class="post-tags">${p.tags.map(t => `<button type="button" class="pill" data-act="tag" data-tag="${esc(t)}">#${esc(t)}</button>`).join('')}</div>
+            <div class="post-share">
+              <span class="lbl2">Compartilhar</span>
+              <button type="button" class="pill" data-act="copyLink" data-url="${p.url}">${ic('link')}<span>Copiar link</span></button>
+              <a class="pill" href="https://www.linkedin.com/sharing/share-offsite/?url=${u}" target="_blank" rel="noopener">LinkedIn</a>
+              <a class="pill" href="https://wa.me/?text=${encodeURIComponent(p.t + ' ' + p.url)}" target="_blank" rel="noopener">WhatsApp</a>
+              <button type="button" class="pill" data-act="nativeShare" id="nativeShare" hidden>${ic('share')}<span>Mais opções</span></button>
+            </div>
+            <p class="post-ai">${ic('warn')}<span>Artigo escrito com apoio de IA, revisado pelo autor, com o código testado. Ainda assim pode conter imprecisões: confirme nas fontes citadas e na documentação oficial antes de aplicar. <a href="#" data-act="noop">Saiba mais</a>.</span></p>
+          </footer>
+          <nav class="prevnext" aria-label="Outros artigos">
+            <a href="${older.url}" target="_blank" rel="noopener"><small>Artigo anterior</small><span>${esc(older.t)}</span></a>
+            <a href="${newer.url}" target="_blank" rel="noopener"><small>Próximo artigo</small><span>${esc(newer.t)}</span></a>
+          </nav>
+        </div>
+      </div>
+    </article>
+    <button type="button" class="to-top" id="toTop" data-act="toTop" aria-label="Voltar ao topo">${ic('up')}</button>
+    ${footer()}`;
+  }
+
+  /* diagrama que acompanha o texto */
+  function scrollySVG(){
+    const sh = (x, y, w, h, o = 1) => `<rect x="${x+7}" y="${y+7}" width="${w}" height="${h}" class="ac-hatch" style="opacity:${.75*o}"/>`;
+    return `<svg class="dg" viewBox="0 0 560 430" role="img" aria-label="Diagrama: cliente, API, adquirente e a tabela de idempotência">
+      <defs>
+        <clipPath id="clipRetry"><rect id="retryClip" x="128" y="76" width="0" height="24"/></clipPath>
+        <clipPath id="clipLost"><rect id="lostClip" x="220" y="56" width="0" height="24"/></clipPath>
+      </defs>
+      <g class="a-ink" filter="url(#wobble)">
+        ${sh(10,30,120,86)}${sh(220,30,120,86)}<g id="adqSh">${sh(430,30,120,86)}</g>${sh(170,250,220,68)}
+        <rect x="10" y="30" width="120" height="86" rx="4" class="a-paper" style="stroke-width:2"/>
+        <rect x="220" y="30" width="120" height="86" rx="4" class="a-paper" style="stroke-width:2"/>
+        <rect id="adqBox" x="430" y="30" width="120" height="86" rx="4" class="a-paper" style="stroke-width:2"/>
+        <rect x="170" y="250" width="220" height="68" class="a-paper" style="stroke-width:2"/>
+        <path d="M170 282 H390 M260 250 V318" class="a-l" style="stroke-width:1.6"/>
+        <path id="req" class="ln" pathLength="1" d="M130 48 H214" style="stroke-width:2"/>
+        <path id="reqH" class="a-l hd" d="M206 42 L214 48 L206 54" style="stroke-width:2"/>
+        <path id="ins1" class="ln" pathLength="1" d="M262 116 V244" style="stroke-width:2"/>
+        <path id="ins1H" class="a-l hd" d="M256 236 L262 244 L268 236" style="stroke-width:2"/>
+        <path id="pay" class="ln" pathLength="1" d="M340 58 H424" style="stroke-width:2"/>
+        <path id="payH" class="a-l hd" d="M416 52 L424 58 L416 64" style="stroke-width:2"/>
+        <path id="payB" class="ln" pathLength="1" d="M430 92 H346" style="stroke-width:2"/>
+        <path id="payBH" class="a-l hd" d="M354 86 L346 92 L354 98" style="stroke-width:2"/>
+        <g id="lost">
+          <g clip-path="url(#clipLost)"><path d="M220 68 H186" class="a-l" style="stroke-width:2;stroke-dasharray:12 5 3 5"/></g>
+          <path id="xMark" class="a-l fade" d="M166 60 L180 74 M180 60 L166 74" style="stroke-width:2.4"/>
+        </g>
+        <g clip-path="url(#clipRetry)"><path d="M130 88 H214 M206 82 L214 88 L206 94" class="a-l" style="stroke-width:2;stroke-dasharray:6 6"/></g>
+        <path id="ins2" class="ln" pathLength="1" d="M300 116 V244" style="stroke-width:2"/>
+        <path id="ins2H" class="a-l hd" d="M294 236 L300 244 L306 236" style="stroke-width:2"/>
+        <rect id="uqBox" x="170" y="334" width="220" height="34" rx="4" class="a-stamp fade" style="stroke-width:2"/>
+        <path id="resp2" class="ln a-okline" pathLength="1" d="M220 108 H136" style="stroke-width:2.4"/>
+        <path id="resp2H" class="a-l a-okline hd" d="M144 102 L136 108 L144 114" style="stroke-width:2.4"/>
+      </g>
+      <text x="70" y="79" text-anchor="middle">Cliente</text>
+      <text x="280" y="79" text-anchor="middle">API</text>
+      <text id="adqT" x="490" y="79" text-anchor="middle">Adquirente</text>
+      <text id="adqNote" x="490" y="146" text-anchor="middle" class="s fade">não é chamado de novo</text>
+      <text id="keyLbl" x="10" y="146" class="c fade">Idempotency-Key: abc-123</text>
+      <text id="retryL" x="10" y="168" class="s fade">tenta de novo, mesma chave</text>
+      <text id="finalL" x="10" y="192" class="ok fade">201, resposta guardada</text>
+      <text x="160" y="271" text-anchor="end" class="s">tabela</text><text x="160" y="289" text-anchor="end" class="s">idempotencia</text>
+      <text x="184" y="272">chave</text><text x="272" y="272">estado</text>
+      <text id="rowKey" x="184" y="306" class="c fade">abc-123</text>
+      <text id="stA" x="272" y="306" class="fade">em andamento</text>
+      <text id="stB" x="272" y="306" class="fade">concluída, 201</text>
+      <text id="uqT" x="280" y="357" text-anchor="middle" class="ok fade">UNIQUE: abc-123 já existe</text>
+      <text id="ins1L" x="254" y="190" text-anchor="end" class="c fade">INSERT</text>
+      <text id="ins2L" x="308" y="190" class="c fade">INSERT</text>
+    </svg>`;
+  }
+  let SY = null;
+  function initScrolly(){
+    const ids = ['req','reqH','keyLbl','ins1','ins1H','ins1L','rowKey','stA','stB','pay','payH','payB','payBH','lostClip','xMark','lost','retryClip','retryL','ins2','ins2H','ins2L','uqBox','uqT','resp2','resp2H','finalL','adqBox','adqT','adqSh','adqNote'];
+    const el = {}; ids.forEach(id => el[id] = $(id));
+    SY = {el, steps:[...document.querySelectorAll('.sy-step')]};
+    updScrolly();
+  }
+  function updScrolly(){
+    if (!SY) return;
+    const {el, steps} = SY;
+    let t = 0, reached = false;
+    if (reduce.matches){ t = steps.length; reached = true; }
+    else {
+      const anchor = innerHeight * (matchMedia('(max-width:760px)').matches ? 0.74 : 0.55);
+      steps.forEach((s, i) => { const r = s.getBoundingClientRect(); if (anchor >= r.top){ reached = true; t = i + Math.min(1, (anchor - r.top) / r.height); } });
+    }
+    const c = (a, b) => clamp((t - a) / (b - a));
+    const draw = (e, v) => { e.style.strokeDashoffset = 1 - v; };
+    const show = (e, v) => { e.style.opacity = v; };
+    const head = (e, v) => { e.style.opacity = v > .97 ? 1 : 0; };
+    draw(el.req, c(.1,.6)); head(el.reqH, c(.1,.6)); show(el.keyLbl, c(.3,.6));
+    draw(el.ins1, c(1.1,1.5)); head(el.ins1H, c(1.1,1.5)); show(el.ins1L, c(1.2,1.5));
+    show(el.rowKey, c(1.45,1.6)); show(el.stA, c(1.45,1.6) * (1 - c(2.65,2.8)));
+    draw(el.pay, c(2.05,2.35)); head(el.payH, c(2.05,2.35));
+    draw(el.payB, c(2.35,2.65)); head(el.payBH, c(2.35,2.65)); show(el.stB, c(2.65,2.8));
+    const lw = 34 * c(3.05,3.3); el.lostClip.setAttribute('x', 220 - lw); el.lostClip.setAttribute('width', lw);
+    show(el.xMark, c(3.3,3.4));
+    el.retryClip.setAttribute('width', 92 * c(3.5,3.85)); show(el.retryL, c(3.6,3.85));
+    show(el.lost, 1 - .7 * c(4.0,4.2));
+    draw(el.ins2, c(4.05,4.35)); head(el.ins2H, c(4.05,4.35)); show(el.ins2L, c(4.1,4.35));
+    show(el.uqBox, c(4.35,4.45)); show(el.uqT, c(4.35,4.45));
+    draw(el.resp2, c(4.5,4.8)); head(el.resp2H, c(4.5,4.8)); show(el.finalL, c(4.75,4.85));
+    const dim = 1 - .55 * c(4.6,4.8); [el.adqBox, el.adqT, el.adqSh].forEach(e => show(e, dim)); show(el.adqNote, c(4.6,4.8));
+    const on = reached ? Math.min(steps.length - 1, Math.floor(t)) : -1;
+    steps.forEach((s, i) => s.classList.toggle('on', reduce.matches || i === on));
+  }
+
+  /* linha do tempo com controle deslizante */
+  const EV = [[150,'pede'],[250,'cobra'],[350,'resposta se perde'],[450,'tenta de novo'],[550,'']];
+  function receiptMini(x, y){ return `<path d="M${x} ${y} h24 v30 l-4 4 -4 -4 -4 4 -4 -4 -4 4 -4 -4 z" class="a-paper" style="stroke-width:2"/><path d="M${x+5} ${y+8} h13 M${x+5} ${y+15} h9" class="a-l" style="stroke-width:1.6"/>`; }
+  function sliderSVG(){
+    const row = (y, label, id) => ({
+      shapes: `<path d="M130 ${y} H620" class="a-l" style="stroke-width:1.4;stroke:var(--rule)"/>
+        <g class="ev" data-x="150"><path d="M140 ${y-24} h18 m-6 -5 l6 5 -6 5" class="a-l" style="stroke-width:2"/></g>
+        <g class="ev" data-x="250">${receiptMini(238, y-44)}</g>
+        <g class="ev" data-x="350"><path d="M343 ${y-30} l14 14 m0 -14 l-14 14" class="a-l" style="stroke-width:2.4"/></g>
+        <g class="ev" data-x="450"><path d="M462 ${y-18} a12 12 0 1 1 -4 -14 m0 0 l1 -7 m-1 7 l-7 0" class="a-l" style="stroke-width:2"/></g>`,
+      texts: `<text x="10" y="${y+4}">${label}</text>
+        <text x="10" y="${y+26}" class="s" id="${id}Count">nenhuma cobrança</text>
+        <text class="ev s" data-x="150" x="150" y="${y+24}" text-anchor="middle">pede</text>
+        <text class="ev s" data-x="250" x="250" y="${y+24}" text-anchor="middle">cobra</text>
+        <text class="ev s" data-x="350" x="350" y="${y+24}" text-anchor="middle">resposta se perde</text>
+        <text class="ev s" data-x="450" x="450" y="${y+24}" text-anchor="middle">tenta de novo</text>`
+    });
+    const r1 = row(84, 'Sem a chave', 'sem'), r2 = row(196, 'Com a chave', 'com');
+    return `<svg class="dg" viewBox="0 0 640 260" role="img" aria-label="Linha do tempo comparando o retry com e sem chave de idempotência">
+      <g class="a-ink" filter="url(#wobble)">
+        ${r1.shapes}${r2.shapes}
+        <g class="ev" data-x="550">${receiptMini(538, 40)}</g>
+        <g class="ev" data-x="550"><rect x="508" y="160" width="84" height="26" rx="3" class="a-stamp" style="stroke-width:2"/></g>
+        <g id="playhead"><path d="M130 22 V236" class="a-l" style="stroke-width:1.6;stroke:var(--accd)"/><circle cx="130" cy="18" r="5" style="fill:var(--accd);stroke:none"/></g>
+      </g>
+      ${r1.texts}${r2.texts}
+      <text class="ev s" data-x="550" x="550" y="108" text-anchor="middle" style="fill:var(--ink);font-weight:600">cobra de novo</text>
+      <text class="ev ok" data-x="550" x="550" y="178" text-anchor="middle" style="font-size:13px;font-style:normal">UNIQUE</text>
+      <text class="ev s" data-x="550" x="550" y="220" text-anchor="middle">devolve a guardada</text>
+    </svg>`;
+  }
+  let scrubRaf = 0;
+  function initSlider(){
+    const range = $('tempo'), txt = $('tempoTxt'), ph = $('playhead'), btn = $('playScrub');
+    const evs = [...document.querySelectorAll('.fig .ev')];
+    let cur = +range.value, playing = false, last = 0, holdUntil = 0;
+    const upd = () => {
+      const v = cur / 100, x = 130 + 490 * v;
+      ph.setAttribute('transform', `translate(${(x - 130).toFixed(2)} 0)`);
+      evs.forEach(g => { g.style.opacity = clamp((x - +g.dataset.x + 12) / 24); });
+      const n = x >= 550 ? 2 : x >= 250 ? 1 : 0;
+      $('semCount').textContent = n === 0 ? 'nenhuma cobrança' : n === 1 ? '1 cobrança' : '2 cobranças';
+      $('comCount').textContent = n === 0 ? 'nenhuma cobrança' : '1 cobrança';
+      const stage = x < 150 ? 'Antes do pedido' : x < 250 ? 'O cliente pede' : x < 350 ? 'A cobrança é feita' : x < 450 ? 'A resposta se perde' : x < 550 ? 'O cliente tenta de novo' : 'Resultado';
+      if (txt.textContent !== stage){ txt.textContent = stage; range.setAttribute('aria-valuetext', stage); }
+    };
+    const setV = v => { cur = clamp(v, 0, 100); range.value = Math.round(cur); upd(); };
+
+    /* reproduzir: percorre a linha do tempo em 7 s, para 1,5 s no resultado e recomeça */
+    const SPEED = 100 / 7000;
+    const tick = ts => {
+      if (!playing) return;
+      const dt = last ? Math.min(ts - last, 64) : 0; last = ts;
+      if (holdUntil){
+        if (ts >= holdUntil){ holdUntil = 0; setV(0); }
+      } else {
+        setV(cur + dt * SPEED);
+        if (cur >= 100) holdUntil = ts + 1500;
+      }
+      scrubRaf = requestAnimationFrame(tick);
+    };
+    const play = () => {
+      if (cur >= 100) setV(0);
+      playing = true; last = 0; holdUntil = 0;
+      btn.setAttribute('aria-pressed', 'true'); btn.setAttribute('aria-label', 'Pausar');
+      cancelAnimationFrame(scrubRaf); scrubRaf = requestAnimationFrame(tick);
+    };
+    const stop = () => {
+      playing = false; cancelAnimationFrame(scrubRaf);
+      btn.setAttribute('aria-pressed', 'false'); btn.setAttribute('aria-label', 'Reproduzir');
+    };
+    btn.addEventListener('click', () => (playing ? stop() : play()));
+
+    /* controle manual: o que a pessoa fizer tem prioridade e pausa a reprodução */
+    range.addEventListener('input', () => { stop(); cur = +range.value; upd(); });
+    const box = $('scrub'), svg = box.querySelector('svg');
+    box.addEventListener('wheel', e => {
+      const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      if (!d) return;
+      if ((cur <= 0 && d < 0) || (cur >= 100 && d > 0)) return;   /* nas pontas, a página volta a rolar */
+      e.preventDefault(); stop();
+      setV(cur + d * (e.deltaMode === 1 ? 3 : 0.12));
+    }, {passive:false});
+    const fromX = e => { const r = svg.getBoundingClientRect(); const x = (e.clientX - r.left) / r.width * 640; return (x - 130) / 490 * 100; };
+    let drag = false;
+    box.addEventListener('pointerdown', e => { stop(); drag = true; box.classList.add('dragging'); box.setPointerCapture(e.pointerId); setV(fromX(e)); });
+    box.addEventListener('pointermove', e => { if (drag) setV(fromX(e)); });
+    ['pointerup','pointercancel','lostpointercapture'].forEach(t => box.addEventListener(t, () => { drag = false; box.classList.remove('dragging'); }));
+    upd();
+  }
+
+  /* animação curta em loop */
+  function loopSVG(){
+    return `<svg class="dg" viewBox="0 0 520 150" role="img" aria-label="Animação: a resposta da API se perde no caminho e o cliente tenta de novo">
+      <g class="a-ink" filter="url(#wobble)">
+        <rect x="17" y="37" width="120" height="70" class="ac-hatch"/><rect x="390" y="37" width="120" height="70" class="ac-hatch" transform="translate(-7 0)"/>
+        <rect x="10" y="30" width="120" height="70" rx="4" class="a-paper" style="stroke-width:2"/>
+        <rect x="376" y="30" width="120" height="70" rx="4" class="a-paper" style="stroke-width:2"/>
+        <path d="M130 58 H376" class="a-l" style="stroke-width:1.4;stroke:var(--rule)"/>
+        <g class="env"><rect x="330" y="46" width="30" height="22" rx="2" class="a-paper" style="stroke-width:2"/><path d="M330 47 l15 11 15 -11" class="a-l" style="stroke-width:1.8"/></g>
+        <path class="xm" d="M176 50 l16 16 m0 -16 l-16 16" style="fill:none;stroke-width:2.6"/>
+        <path class="rt" pathLength="1" d="M130 84 H370" style="fill:none;stroke-width:2;stroke:var(--accd)"/>
+        <path class="rth" d="M362 78 L370 84 L362 90" style="fill:none;stroke-width:2;stroke:var(--accd)"/>
+      </g>
+      <text x="70" y="70" text-anchor="middle">Cliente</text>
+      <text x="436" y="70" text-anchor="middle">API</text>
+      <text x="70" y="126" text-anchor="middle" class="s wt">esperando…</text>
+      <text x="250" y="116" text-anchor="middle" class="s rth">mesma chave</text>
+    </svg>`;
+  }
+
+  /* apresentação */
+  let deckI = 0;
+  function deckGo(d){
+    const slides = [...document.querySelectorAll('.slide')];
+    deckI = Math.max(0, Math.min(slides.length - 1, deckI + d));
+    slides.forEach((s, i) => s.classList.toggle('on', i === deckI));
+    $('deckPos').textContent = `${deckI + 1} de ${slides.length}`;
+  }
+  function deckFull(on){
+    const deck = $('deck');
+    const v = on === undefined ? !deck.classList.contains('full') : on;
+    deck.classList.toggle('full', v);
+    $('deckFull').textContent = v ? 'Sair da tela cheia' : 'Tela cheia';
+    document.body.style.overflow = v ? 'hidden' : '';
+  }
+
+  /* sumário lateral acompanha a leitura */
+  let tocObs = null;
+  function updToc(){
+    const links = [...document.querySelectorAll('.side-toc a')];
+    if (!links.length) return;
+    let cur = null;
+    H2.forEach(([id]) => { const h = $(id); if (h && h.getBoundingClientRect().top < 140) cur = id; });
+    links.forEach(a => a.setAttribute('aria-current', String(a.dataset.toc === cur)));
+  }
+  function initToc(){ updToc(); }
+
+  function updProgress(){
+    const bar = $('readProgress'), art = $('art'), tt = $('toTop');
+    if (!bar || !art) return;
+    const r = art.getBoundingClientRect(), total = r.height - innerHeight;
+    bar.style.transform = `scaleX(${clamp(-r.top / Math.max(total, 1)).toFixed(4)})`;
+    tt.classList.toggle('on', scrollY > innerHeight * 1.2);
+  }
+
+  /* ---------- busca ---------- */
+  function openSearch(q = ''){
+    const d = $('search');
+    if (!d.open) d.showModal();
+    $('q').value = q; runSearch(); $('q').focus();
+  }
+  function runSearch(){
+    const raw = $('q').value.trim(), q = norm(raw);
+    let list = [];
+    if (q.startsWith('#')){
+      const t = q.slice(1);
+      list = t ? POSTS.filter(p => p.tags.some(x => norm(x) === t || norm(x).startsWith(t))) : [];
+    } else if (q.length >= 2){
+      list = POSTS.filter(p => norm([p.t, p.s, p.desc, p.tags.join(' '), book(p.cat).name].join(' ')).includes(q));
+    }
+    $('res').innerHTML = list.map(p => `<li>${postLink(p, `<span class="t">${esc(p.t)}</span><span class="m">${book(p.cat).name}, ${fmt(p.d)}</span>`)}</li>`).join('');
+    $('hint').textContent = !raw ? 'A busca ignora acentos. Use # para procurar por tag.'
+      : list.length ? `${list.length} ${plural(list.length)}` : (q.length < 2 && !q.startsWith('#') ? 'Digite ao menos 2 letras.' : 'Nenhum artigo encontrado.');
+  }
+  $('q').addEventListener('input', runSearch);
+
+  /* ---------- controle ---------- */
+  const app = $('app');
+  function render(){
+    tocObs && tocObs.disconnect(); SY = null; cancelAnimationFrame(scrubRaf);
+    app.innerHTML = S.view === 'home' ? homeHTML() : articleHTML();
+    document.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-selected', String(t.dataset.view === S.view)));
+    if (S.view === 'home'){ if (S.open) bindFilter($('drawer')); tipOnce(); }
+    else { initScrolly(); initSlider(); initToc(); updProgress(); deckI = 0; if (navigator.share) $('nativeShare').hidden = false; }
+  }
+  function go(view){ S.view = view; S.open = null; busy = false; pending = null; render(); window.scrollTo({top:0}); }
+
+  document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => go(t.dataset.view)));
+  $('theme').addEventListener('change', e => {
+    if (e.target.value) document.documentElement.dataset.theme = e.target.value;
+    else delete document.documentElement.dataset.theme;
+  });
+
+  document.addEventListener('click', e => {
+    const el = e.target.closest('[data-act]');
+    if (!el){ const a = e.target.closest('a[href^="#"]'); if (a && a.getAttribute('href').length > 1){ e.preventDefault(); const t = $(a.getAttribute('href').slice(1)); if (t) t.scrollIntoView({behavior: smooth(), block:'start'}); } return; }
+    if (el.tagName === 'A' && el.getAttribute('href') === '#') e.preventDefault();
+    const id = el.dataset.cat;
+    switch (el.dataset.act){
+      case 'home': if ($('search').open) $('search').close(); go('home'); break;
+      case 'openArt': if ($('search').open) $('search').close(); go('art'); break;
+      case 'open': openBook(id, false); break;
+      case 'close': closeBook(); break;
+      case 'cat':
+        if (S.view !== 'home'){ go('home'); setTimeout(() => openBook(id, true), T(120)); }
+        else openBook(id, true);
+        break;
+      case 'showAll': S.showAll = true; $('recent').outerHTML = recent(); break;
+      case 'feed': S.feed = el.dataset.view; try { localStorage.setItem('blog-feed', S.feed); } catch(e){} $('recent').outerHTML = recent(); break;
+      case 'toRecent':
+        if (S.view !== 'home') go('home');
+        $('recent').scrollIntoView({behavior: smooth(), block:'start'}); break;
+      case 'toTags':
+        if (S.view !== 'home') go('home');
+        $('tags').scrollIntoView({behavior: smooth(), block:'start'}); break;
+      case 'openSearch': openSearch(); break;
+      case 'closeSearch': $('search').close(); break;
+      case 'tag': openSearch('#' + el.dataset.tag); break;
+      case 'copy': {
+        const code = [...el.closest('.code').querySelectorAll('.row')].filter(r => !r.classList.contains('del')).map(r => r.querySelector('.src').textContent.replace(/\u200b/g,'')).join('\n');
+        const done = () => { el.textContent = 'Copiado'; setTimeout(() => { el.textContent = 'Copiar'; }, 1600); };
+        try { navigator.clipboard.writeText(code).then(done, () => { el.textContent = 'Não deu para copiar'; }); } catch(err){ el.textContent = 'Não deu para copiar'; }
+        break;
+      }
+      case 'pauseLoop': {
+        const f = $('loop'), p = !f.classList.contains('paused');
+        f.classList.toggle('paused', p); el.textContent = p ? 'Continuar' : 'Pausar'; el.setAttribute('aria-pressed', String(p));
+        break;
+      }
+      case 'toTop': window.scrollTo({top:0, behavior: smooth()}); break;
+      case 'noop': break;
+      case 'copyLink': {
+        const lbl = el.querySelector('span');
+        const ok = () => { lbl.textContent = 'Link copiado'; setTimeout(() => { lbl.textContent = 'Copiar link'; }, 1600); };
+        try { navigator.clipboard.writeText(el.dataset.url).then(ok, () => { lbl.textContent = 'Não deu para copiar'; }); } catch(err){ lbl.textContent = 'Não deu para copiar'; }
+        break;
+      }
+      case 'nativeShare': { const p = post(ART); navigator.share && navigator.share({title:p.t, url:p.url}).catch(() => {}); break; }
+      case 'restartLoop': {
+        const f = $('loop');
+        f.getAnimations ? f.getAnimations({subtree:true}).forEach(a => { a.currentTime = 0; a.play(); }) : null;
+        f.classList.remove('paused');
+        const pb = f.querySelector('[data-act="pauseLoop"]'); pb.textContent = 'Pausar'; pb.setAttribute('aria-pressed','false');
+        break;
+      }
+      case 'deckPrev': deckGo(-1); break;
+      case 'deckNext': deckGo(1); break;
+      case 'deckFull': deckFull(); break;
+    }
+  });
+  document.addEventListener('click', e => {
+    const b = e.target.closest('.sn-ref');
+    if (!b || !matchMedia('(max-width:1179px)').matches) return;
+    const sn = $(b.getAttribute('aria-controls')), o = !sn.classList.contains('open');
+    sn.classList.toggle('open', o); b.setAttribute('aria-expanded', String(o));
+  });
+
+  document.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k'){ e.preventDefault(); openSearch(); return; }
+    if (e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) && !$('search').open){ e.preventDefault(); openSearch(); return; }
+    if (e.key === 'Escape'){
+      const deck = $('deck');
+      if (deck && deck.classList.contains('full')){ deckFull(false); return; }
+      if (S.view === 'home' && S.open && !$('search').open) closeBook();
+    }
+    const deck = $('deck');
+    if (deck && deck.classList.contains('full')){ if (e.key === 'ArrowRight') deckGo(1); if (e.key === 'ArrowLeft') deckGo(-1); }
+  });
+
+  let ticking = false;
+  addEventListener('scroll', () => {
+    if (S.view !== 'art' || ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { ticking = false; updScrolly(); updToc(); updProgress(); });
+  }, {passive:true});
+  let rz, wasSmall = matchMedia('(max-width:760px)').matches;
+  addEventListener('resize', () => {
+    clearTimeout(rz);
+    rz = setTimeout(() => {
+      if (S.view === 'art') updScrolly();
+      const small = matchMedia('(max-width:760px)').matches;
+      if (S.view === 'home' && small !== wasSmall && S.open && !busy){
+        const box = inner(); box.innerHTML = spreadHTML(book(S.open), true); bindFilter(box);
+      }
+      wasSmall = small;
+    }, 200);
+  });
+  const onMotion = () => { if (S.view === 'art') updScrolly(); };
+  reduce.addEventListener ? reduce.addEventListener('change', onMotion) : reduce.addListener(onMotion);
+
+  render();
+})();
+</script>
+</body>
+</html>

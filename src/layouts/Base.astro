@@ -1,0 +1,123 @@
+---
+/**
+ * Layout de todas as páginas: head (SEO mínimo, fontes, tokens, anti-piscada), cabeçalho,
+ * conteúdo e rodapé. Open Graph, JSON-LD e RSS entram na Fase 2.
+ */
+import "@fontsource-variable/besley/wght.css";
+import "@fontsource-variable/literata/opsz.css";
+import "@fontsource-variable/literata/opsz-italic.css";
+import "@fontsource-variable/jetbrains-mono/wght.css";
+import "@fontsource-variable/jetbrains-mono/wght-italic.css";
+import "../styles/fontes.css";
+import "../styles/base.css";
+import "../styles/avisos.css";
+import "../styles/desenho.css";
+// Só as duas fontes do primeiro quadro são pré-carregadas (D5); itálico e código baixam quando usados.
+import besley from "@fontsource-variable/besley/files/besley-latin-wght-normal.woff2?url";
+import literata from "@fontsource-variable/literata/files/literata-latin-opsz-normal.woff2?url";
+import { claro, cssDosTokens, escuro } from "../styles/tokens";
+import { url } from "../lib/url";
+import Cabecalho from "../components/Cabecalho.astro";
+import Rodape from "../components/Rodape.astro";
+import Busca from "../components/Busca.astro";
+import { ESTATISTICAS } from "../data/site";
+import DefinicoesDesenho from "../components/DefinicoesDesenho.astro";
+
+interface Props {
+  /** Título da página, sem o nome do site. A home não passa título. */
+  titulo?: string;
+  descricao?: string;
+  /** Item do menu que fica marcado como atual. */
+  atual?: "artigos" | "tags";
+  /** Open Graph: "article" nos posts. */
+  tipo?: "website" | "article";
+  /** Imagem de compartilhamento (caminho interno, 1200×630, D10); por padrão, a do blog. */
+  imagem?: string;
+  publicado?: Date;
+  modificado?: Date;
+  /** Dados estruturados (BlogPosting nos posts, WebSite na home). */
+  jsonLd?: Record<string, unknown>;
+}
+
+const NOME = "Cesar Schutz";
+const {
+  titulo,
+  descricao = "Cesar Schutz, arquiteto de soluções. Artigos sobre arquitetura de software, Java e sistemas de pagamento, revisados por mim e com código testado.",
+  atual,
+  tipo = "website",
+  imagem = "/og/default.png",
+  publicado,
+  modificado,
+  jsonLd,
+} = Astro.props;
+const tituloDaAba = titulo ? `${titulo} · ${NOME}` : `${NOME} · Arquitetura e engenharia de software`;
+const canonico = new URL(Astro.url.pathname, Astro.site);
+const imagemAbsoluta = new URL(url(imagem), Astro.site).href;
+// A pré-visualização não pode concorrer com o blog atual nos buscadores.
+const preVisualizacao = process.env.PREVIEW === "true";
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <script is:inline>
+      // Antes da primeira pintura: tema escolhido (sem escolha, segue o sistema), modo Lista/Cards da
+      // home e, na primeira visita da sessão, o livro inclinado em pé para tombar (Gaveta.astro).
+      try {
+        var raiz = document.documentElement;
+        var tema = localStorage.getItem("cs-theme");
+        if (tema === "light" || tema === "dark") raiz.dataset.theme = tema;
+        if (localStorage.getItem("cs-post-view") === "cards") raiz.dataset.postView = "cards";
+        if (sessionStorage.getItem("estante-tombou") !== "1" && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          raiz.dataset.tombar = "";
+        }
+      } catch (e) {}
+    </script>
+    <style is:inline set:html={cssDosTokens()}></style>
+    <title>{tituloDaAba}</title>
+    <meta name="description" content={descricao} />
+    <link rel="canonical" href={canonico} />
+    {preVisualizacao && <meta name="robots" content="noindex, nofollow" />}
+    <meta name="theme-color" content={claro.paper} media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content={escuro.paper} media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href={url("/favicon.svg")} type="image/svg+xml" />
+    <link rel="icon" href={url("/favicon.ico")} sizes="32x32" />
+    <link rel="apple-touch-icon" href={url("/apple-touch-icon.png")} />
+    <link rel="alternate" type="application/rss+xml" title={NOME} href={url("/rss.xml")} />
+    <link rel="sitemap" href={url("/sitemap-index.xml")} />
+    <meta name="author" content={NOME} />
+    <meta property="og:type" content={tipo} />
+    <meta property="og:site_name" content={NOME} />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:title" content={titulo ?? NOME} />
+    <meta property="og:description" content={descricao} />
+    <meta property="og:url" content={canonico} />
+    <meta property="og:image" content={imagemAbsoluta} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    {publicado && <meta property="article:published_time" content={publicado.toISOString()} />}
+    {modificado && <meta property="article:modified_time" content={modificado.toISOString()} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    <link rel="preload" href={besley} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={literata} as="font" type="font/woff2" crossorigin />
+    <slot name="head" />
+    {
+      ESTATISTICAS.goatcounter && (
+        <script is:inline async data-goatcounter={`https://${ESTATISTICAS.goatcounter}.goatcounter.com/count`} src="https://gc.zgo.at/count.js" />
+      )
+    }
+  </head>
+  <body>
+    <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+    <DefinicoesDesenho />
+    <Cabecalho atual={atual} />
+    <main id="conteudo">
+      <slot />
+    </main>
+    <Rodape />
+    <Busca />
+  </body>
+</html>

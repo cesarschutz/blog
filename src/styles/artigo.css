@@ -1,0 +1,170 @@
+/*
+ * Partes do artigo que saem do Markdown (notas laterais e apresentação) ou do script (visor de
+ * imagens), por isso globais. Briefing §5.3; medidas do protótipo aprovado.
+ */
+
+/* ---------- notas laterais ---------- */
+
+.ref-nota {
+  font-size: 0.72em;
+  line-height: 0;
+  font-variant-numeric: lining-nums;
+}
+
+.ref-nota a {
+  padding: 0 2px;
+  text-decoration: none;
+}
+
+.nota-lateral {
+  display: none;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.numero-nota {
+  margin-right: 6px;
+  color: var(--ink);
+  font-variant-numeric: lining-nums;
+}
+
+/* Telas menores: a nota abre no lugar, por âncora (sem JS) ou pela classe (com JS). */
+.nota-lateral:target,
+.nota-lateral.aberta {
+  display: block;
+  margin: 10px 0 4px;
+  padding: 10px 14px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--paper-hi);
+}
+
+/* Telas largas: a nota vai para a margem direita, na altura da chamada (cabe a partir de 1180px). */
+@media (min-width: 1180px) {
+  .nota-lateral,
+  .nota-lateral:target,
+  .nota-lateral.aberta {
+    display: block;
+    float: right;
+    clear: right;
+    width: 200px;
+    margin: 4px -232px 12px 0;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  .ref-nota a {
+    cursor: default;
+  }
+}
+
+/* ---------- apresentação (rehype-apresentacao) ---------- */
+
+.apresentacao .slides {
+  position: relative;
+  display: flex;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  list-style: none;
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  background: var(--paper-hi);
+}
+
+.apresentacao .slides::-webkit-scrollbar {
+  display: none;
+}
+
+.apresentacao .slide {
+  flex: 0 0 100%;
+  margin: 0;
+  scroll-snap-align: center;
+}
+
+.apresentacao .slide img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0;
+}
+
+.barra-slides {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 1.4em;
+}
+
+.barra-slides .posicao {
+  margin-right: auto;
+  font-size: 15px;
+  color: var(--ink-2);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* ---------- visor de imagens e tela cheia da apresentação ---------- */
+
+.visor {
+  width: 100vw;
+  max-width: none;
+  height: 100vh;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.visor[open] {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.visor::backdrop {
+  background: var(--paper);
+}
+
+.visor-quadro {
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  margin: 0;
+  padding: 16px var(--pad);
+}
+
+.visor-quadro img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.visor-quadro img[src$=".svg"] {
+  padding: 12px;
+  border-radius: 6px;
+  background: var(--quadro);
+}
+
+.visor-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 12px var(--pad) calc(12px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--rule);
+}
+
+.visor-barra .posicao {
+  margin-right: auto;
+  font-size: 15px;
+  color: var(--ink-2);
+  font-variant-numeric: lining-nums tabular-nums;
+}

@@ -1,0 +1,68 @@
+{
+  "_sobre": "Respostas esperadas da busca (D2), escritas antes de medir. 'real' roda com os 26 posts; 'escala', com 500 (reais + sintéticos com frases-marcadoras).",
+  "real": [
+    { "consulta": "idempotencia", "criterio": "ignora acentos", "espera": { "noTopo3": ["/posts/cobranca-duplicada-no-retry/"] } },
+    { "consulta": "configuracao", "criterio": "ignora acentos", "espera": { "minimo": 5 } },
+    { "consulta": "chave de idempotência", "criterio": "frase exata primeiro", "espera": { "primeiro": "/posts/cobranca-duplicada-no-retry/" } },
+    { "consulta": "retry cobrança duplicada", "criterio": "todas as palavras, em qualquer ordem", "espera": { "noTopo3": ["/posts/cobranca-duplicada-no-retry/"] } },
+    { "consulta": "JWT", "criterio": "título antes do corpo", "espera": { "primeiro": "/posts/jwt-estrutura-e-campos/" } },
+    {
+      "consulta": "#Kubernetes",
+      "criterio": "#tag",
+      "espera": {
+        "exatamente": [
+          "/posts/atomicboolean-parada-graciosa/",
+          "/posts/cronjob-vs-endpoint-sqs/",
+          "/posts/kubernetes-cronjob-concorrencia/",
+          "/posts/sigterm-sigkill-kubernetes/"
+        ]
+      }
+    },
+    {
+      "consulta": "#kubernetes cronjob",
+      "criterio": "#tag com texto",
+      "espera": {
+        "contem": ["/posts/kubernetes-cronjob-concorrencia/", "/posts/cronjob-vs-endpoint-sqs/"],
+        "dentro": [
+          "/posts/atomicboolean-parada-graciosa/",
+          "/posts/cronjob-vs-endpoint-sqs/",
+          "/posts/kubernetes-cronjob-concorrencia/",
+          "/posts/sigterm-sigkill-kubernetes/"
+        ]
+      }
+    },
+    {
+      "consulta": "#banco-de-dados",
+      "criterio": "tag com espaço",
+      "espera": {
+        "exatamente": [
+          "/posts/arquitetura-de-ledger/",
+          "/posts/bloqueio-otimista-e-pessimista/",
+          "/posts/cobranca-duplicada-no-retry/",
+          "/posts/efeito-externo-sem-registro-local/"
+        ]
+      }
+    },
+    { "consulta": "idempot", "criterio": "prefixo enquanto digita", "espera": { "noTopo3": ["/posts/cobranca-duplicada-no-retry/"] } },
+    { "consulta": "AopUtils.getTargetClass", "criterio": "identificador de código", "espera": { "primeiro": "/posts/aoputils-gettargetclass/" } },
+    {
+      "consulta": "@Transactional",
+      "criterio": "identificador de código",
+      "espera": { "algumNoTopo3": ["/posts/aoputils-gettargetclass/", "/posts/aop-jdk-proxy-cglib/", "/posts/bloqueio-otimista-e-pessimista/"] }
+    },
+    { "consulta": "CLOSE_WAIT", "criterio": "identificador de código", "espera": { "primeiro": "/posts/virtual-threads-pinning-close-wait/" } },
+    { "consulta": "JEP 444", "criterio": "identificador de código", "espera": { "noTopo3": ["/posts/java-21/"] } },
+    {
+      "consulta": "virtual thread",
+      "criterio": "singular e plural",
+      "espera": { "algumNoTopo3": ["/posts/java-21/", "/posts/virtual-threads-pinning-close-wait/"] }
+    }
+  ],
+  "escala": [
+    { "consulta": "zarvelino", "criterio": "título antes do corpo, com 500 posts", "espera": { "primeiro": "/posts/sintetico-0042/" } },
+    { "consulta": "reconciliação tardia de lotes", "criterio": "frase exata primeiro, com 500 posts", "espera": { "primeiro": "/posts/sintetico-0077/" } },
+    { "consulta": "macaneta", "criterio": "ignora acentos, com 500 posts", "espera": { "contem": ["/posts/sintetico-0099/"] } },
+    { "consulta": "JWT", "criterio": "o post real continua no topo, com 500 posts", "espera": { "primeiro": "/posts/jwt-estrutura-e-campos/" } },
+    { "consulta": "CLOSE_WAIT", "criterio": "o post real continua no topo, com 500 posts", "espera": { "primeiro": "/posts/virtual-threads-pinning-close-wait/" } }
+  ]
+}

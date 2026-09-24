@@ -1,0 +1,48 @@
+/*
+ * Fontes de reserva ajustadas para a troca não deslocar o texto enquanto as fontes do site
+ * carregam (D5). As fontes do site vêm do @fontsource, importadas no layout.
+ *
+ * Conta (a mesma do Capsize): size-adjust = largura média da fonte ÷ largura média da reserva;
+ * ascent/descent/line-gap = métrica da fonte ÷ size-adjust. Métricas do @capsizecss/metrics 4.3.0:
+ * Literata Regular contra Georgia e Besley ExtraBold contra Georgia Bold.
+ */
+
+@font-face {
+  font-family: "Literata fallback";
+  src: local("Georgia");
+  size-adjust: 107.67%;
+  ascent-override: 109.31%;
+  descent-override: 28.61%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Literata fallback";
+  font-style: italic;
+  src: local("Georgia Italic"), local("Georgia-Italic");
+  size-adjust: 107.67%;
+  ascent-override: 109.31%;
+  descent-override: 28.61%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Literata fallback";
+  font-weight: 700;
+  src: local("Georgia Bold"), local("Georgia-Bold");
+  size-adjust: 107.67%;
+  ascent-override: 109.31%;
+  descent-override: 28.61%;
+  line-gap-override: 0%;
+}
+
+/* Besley só aparece em títulos (700 a 900): a reserva já é o negrito, sem negrito sintético. */
+@font-face {
+  font-family: "Besley fallback";
+  font-weight: 700 900;
+  src: local("Georgia Bold"), local("Georgia-Bold");
+  size-adjust: 109.73%;
+  ascent-override: 113.92%;
+  descent-override: 38.73%;
+  line-gap-override: 0%;
+}

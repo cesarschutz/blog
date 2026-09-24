@@ -1,0 +1,44 @@
+---
+/** Todos os artigos (/archive/), agrupados por ano. Os ids #y2026 vêm do blog atual. */
+import Base from "../layouts/Base.astro";
+import CabecalhoPagina from "../components/CabecalhoPagina.astro";
+import ItemLista from "../components/ItemLista.astro";
+import { getResumos } from "../lib/posts";
+
+const resumos = await getResumos();
+const anos = [...new Set(resumos.map((r) => r.publicado.getUTCFullYear()))];
+---
+
+<Base titulo="Todos os artigos" descricao="Todos os artigos do blog de Cesar Schutz, do mais recente ao mais antigo." atual="artigos">
+  <div class="wrap">
+    <CabecalhoPagina titulo="Todos os artigos" descricao={`${resumos.length} artigos, do mais recente ao mais antigo.`} />
+    {
+      anos.map((ano) => (
+        <section aria-labelledby={`y${ano}`}>
+          <h2 id={`y${ano}`} class="ano">{ano}</h2>
+          <ol class="lista">
+            {resumos
+              .filter((r) => r.publicado.getUTCFullYear() === ano)
+              .map((r) => (
+                <ItemLista post={r} miniatura={false} />
+              ))}
+          </ol>
+        </section>
+      ))
+    }
+  </div>
+</Base>
+
+<style>
+  .ano {
+    margin: 36px 0 4px;
+    font-size: 26px;
+    font-variant-numeric: lining-nums;
+  }
+
+  .lista {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

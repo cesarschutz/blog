@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Estilo dos desenhos: A, C e a mistura</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Besley:ital,wght@0,400..900;1,400..700&family=Literata:ital,opsz,wght@0,7..72,300..800;1,7..72,300..600&display=swap">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --paper:#ECEEE9; --paper-hi:#F7F8F4; --well:#E0E3DC;
+  --ink:#1C2427; --ink-2:#56605E; --ink-3:#7A8381;
+  --rule:#C4CAC3;
+  --link:#244A8A;
+  --acc:#1F4D4A; --acc2:#E3A83A;
+  --accd:var(--acc);
+  --lift:0 1px 0 rgba(28,36,39,.05),0 18px 34px -18px rgba(28,36,39,.45);
+  --display:"Besley","Rockwell","Georgia",serif;
+  --text:"Literata","Iowan Old Style","Georgia",serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --blend:multiply;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#182022; --paper-hi:#1F282A; --well:#12181A;
+    --ink:#E3E6DF; --ink-2:#A7AFAB; --ink-3:#848D89;
+    --rule:#343E40; --link:#9FB8E8;
+    --accd:color-mix(in oklab,var(--acc),#ffffff 42%);
+    --lift:0 18px 34px -16px rgba(0,0,0,.75);
+    --blend:normal;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#182022; --paper-hi:#1F282A; --well:#12181A;
+  --ink:#E3E6DF; --ink-2:#A7AFAB; --ink-3:#848D89;
+  --rule:#343E40; --link:#9FB8E8;
+  --accd:color-mix(in oklab,var(--acc),#ffffff 42%);
+  --lift:0 18px 34px -16px rgba(0,0,0,.75);
+  --blend:normal;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--text);font-size:17px;line-height:1.6;font-variant-numeric:oldstyle-nums proportional-nums}
+button,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--link);outline-offset:3px}
+.wrap{max-width:1120px;margin:0 auto;padding-left:clamp(18px,5vw,48px);padding-right:clamp(18px,5vw,48px)}
+
+/* ---------- barra do protótipo ---------- */
+.proto{background:var(--well);border-bottom:1px solid var(--rule);font-size:15px;line-height:1.5}
+.proto .wrap{padding-top:18px;padding-bottom:14px}
+.proto h1{font-family:var(--display);font-size:18px;font-weight:700;margin:0 0 12px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--rule);background:transparent;border-radius:999px;padding:7px 15px;cursor:pointer;min-height:40px}
+.tab:hover{border-color:var(--ink-3)}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.proto-desc{margin:12px 0 0;max-width:78ch}
+.proto-ctrl{display:flex;flex-wrap:wrap;align-items:center;gap:4px 24px;margin-top:8px;color:var(--ink-2);font-size:14.5px}
+.proto-ctrl label{display:inline-flex;align-items:center;gap:8px;min-height:36px}
+.proto-ctrl select{background:var(--paper-hi);border:1px solid var(--rule);border-radius:4px;padding:4px 8px}
+.lbl{background:var(--well);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);font-size:15px;line-height:1.5}
+.lbl .wrap{padding-top:12px;padding-bottom:12px}
+.lbl strong{font-family:var(--display);font-size:17px;margin-right:10px}
+.lbl span{color:var(--ink-2)}
+.sec{padding-top:32px;padding-bottom:48px}
+
+/* ---------- lugares onde a imagem aparece ---------- */
+.ph{display:block;position:relative;overflow:hidden;border-radius:3px;background:var(--paper-hi);box-shadow:inset 0 0 0 1px var(--rule)}
+.ph svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.ph-card{aspect-ratio:3/2}
+.ph-hero{aspect-ratio:1100/468}
+.feat{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:40px;align-items:center}
+.feat h2{font-family:var(--display);font-weight:800;font-size:clamp(28px,3.6vw,40px);line-height:1.08;margin:8px 0 8px}
+.meta{font-size:14.5px;color:var(--ink-2);display:flex;align-items:center;gap:8px;margin:0;flex-wrap:wrap}
+.chip{flex:0 0 auto;width:8px;height:20px;border-radius:1.5px;background:var(--acc);box-shadow:inset 0 3px 0 rgba(255,255,255,.2),inset 0 -3px 0 rgba(255,255,255,.2)}
+.sub{margin:0;color:var(--ink-2);font-size:18px;line-height:1.45}
+.tags{margin:12px 0 0;font-size:14.5px;display:flex;flex-wrap:wrap;gap:2px 14px}
+.tags a{color:var(--ink-2);text-decoration:none;padding:4px 0}
+.tags a:hover{color:var(--ink);text-decoration:underline;text-underline-offset:.2em}
+@media (max-width:760px){.feat{grid-template-columns:minmax(0,1fr);gap:18px}}
+
+.art-h{max-width:760px;margin:0 auto 28px}
+.art-h h1{font-family:var(--display);font-weight:800;font-size:clamp(36px,5.4vw,58px);line-height:1.02;letter-spacing:-.012em;margin:12px 0 12px}
+.hero{margin:0}
+.hero figcaption{max-width:760px;margin:12px auto 0;font-size:14.5px;color:var(--ink-2);font-style:italic}
+
+.og{container-type:inline-size;aspect-ratio:1200/630;display:grid;grid-template-columns:56% 44%;background:var(--paper-hi);border-radius:4px;box-shadow:var(--lift);overflow:hidden;max-width:880px}
+.og.grid{background-image:linear-gradient(var(--rule) 1px,transparent 1px),linear-gradient(90deg,var(--rule) 1px,transparent 1px);background-size:14px 14px}
+.og-txt{display:flex;flex-direction:column;padding:6cqw 3cqw 5cqw 6cqw;min-width:0}
+.og-blog{font-family:var(--display);font-weight:800;font-size:2.5cqw;line-height:1}
+.og-title{font-family:var(--display);font-weight:800;font-size:6.4cqw;line-height:1.02;margin-top:auto;letter-spacing:-.01em}
+.og-sub{font-size:2.6cqw;color:var(--ink-2);margin-top:1.6cqw;line-height:1.3}
+.og-cat{display:flex;align-items:center;gap:1.2cqw;font-size:2.2cqw;color:var(--ink-2);margin-top:3cqw}
+.og-cat .chip{width:.9cqw;height:2.4cqw}
+.og-art{position:relative}
+.og-art svg{position:absolute;inset:0;width:100%;height:100%}
+.og-note{font-size:14.5px;color:var(--ink-2);margin:12px 0 0}
+
+.dgm{max-width:760px;margin:0 auto;border-radius:4px;overflow:hidden;box-shadow:inset 0 0 0 1px var(--rule);background:var(--paper-hi)}
+.dgm svg{display:block;width:100%;height:auto}
+.dgm-note{max-width:760px;margin:12px auto 0;font-size:14.5px;color:var(--ink-2)}
+
+/* anotações só aparecem nas imagens grandes */
+.anno{display:none}
+.show-anno .anno{display:inline}
+@media (max-width:600px){.show-anno .anno{display:none}}
+
+/* ---------- A: caderno de engenharia ---------- */
+.a-ink path,.a-ink rect,.a-ink circle{stroke:var(--ink);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.a-paper{fill:var(--paper-hi)}
+.a-ghost{fill:none;stroke-dasharray:10 9}
+.a-ghost-l{fill:none;stroke-dasharray:6 8;opacity:.55}
+.a-l{fill:none}
+.a-fill{fill:color-mix(in oklab,var(--accd) 62%,var(--paper-hi));stroke:none!important}
+.a-stamp{fill:none;stroke:var(--accd)!important}
+.a-stamp-t{fill:var(--accd);font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:.06em}
+.a-t{font-family:var(--text);font-style:italic;font-size:26px;fill:var(--ink)}
+.a-amt{font-family:var(--display);font-weight:700;font-size:40px;fill:var(--ink)}
+.a-code{font-family:var(--mono);font-size:25px;fill:var(--ink)}
+.a-note{font-family:var(--text);font-style:italic;font-size:25px;fill:var(--ink)}
+.a-note-s{font-family:var(--text);font-style:italic;font-size:20px;fill:var(--ink-2)}
+.a-lead{fill:none;stroke:var(--ink-2);stroke-width:1.8;stroke-linecap:round}
+.a-okline{stroke:var(--accd)!important}
+.ad text{font-family:var(--text);font-style:italic;fill:var(--ink);font-size:17px}
+.ad .s{font-size:13.5px;fill:var(--ink-2)}
+.ad .c{font-family:var(--mono);font-style:normal;font-size:12.5px}
+.ad .ok{fill:var(--accd);font-weight:600}
+
+/* ---------- A + C ---------- */
+.ac-hatch{fill:url(#hatch);stroke:none!important;opacity:.75}
+.ac-ph{fill:none;stroke-dasharray:24 8 4 8 4 8!important}
+
+/* ---------- B: impressão em duas cores ---------- */
+.mb{mix-blend-mode:var(--blend)}
+.b1{fill:var(--accd)}
+.b2{fill:var(--acc2)}
+.b1dots{fill:url(#dots)}
+.bpaper{fill:var(--paper)}
+.b-t{font-family:var(--text);font-style:italic;font-size:26px;fill:var(--accd)}
+.b-l{fill:none;stroke:var(--accd);stroke-width:5;stroke-linecap:round}
+.b-amt{font-family:var(--display);font-weight:800;font-size:42px;fill:var(--accd)}
+.b-stamp{fill:none;stroke:var(--accd);stroke-width:4}
+.b-stamp-t{fill:var(--accd);font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:.06em}
+.b-str{fill:none;stroke:var(--accd);stroke-width:4;stroke-linecap:round}
+.b-code{font-family:var(--mono);font-size:27px;font-weight:700;fill:var(--accd)}
+.grain{opacity:.3;mix-blend-mode:var(--blend);pointer-events:none}
+.bd text{font-family:var(--text);font-size:16px;fill:var(--accd)}
+.bd .on-acc{fill:var(--paper-hi);font-family:var(--display);font-weight:700}
+.bd .bx{font-family:var(--display);font-weight:700;font-size:17px}
+.bd .s{font-size:13.5px;fill:var(--ink-2)}
+.bd .c{font-family:var(--mono);font-size:12.5px}
+.bd .ln{fill:none;stroke:var(--accd);stroke-width:3.5;stroke-linecap:round}
+.bd .ln2{fill:none;stroke:var(--acc2);stroke-width:3.5;stroke-linecap:round}
+
+/* ---------- C: desenho de patente ---------- */
+.c-ph{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-dasharray:22 6 3 6 3 6;vector-effect:non-scaling-stroke}
+.c-hatch{fill:url(#hatch);stroke:var(--ink);stroke-width:1.4;vector-effect:non-scaling-stroke}
+.c-top{fill:var(--paper-hi);stroke:var(--ink);stroke-width:1.8;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.c-tag{fill:color-mix(in oklab,var(--accd) 38%,var(--paper-hi));stroke:var(--ink);stroke-width:1.8;vector-effect:non-scaling-stroke}
+.c-l{fill:none;stroke:var(--ink);stroke-width:1.6;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.c-t{font-family:var(--text);font-size:24px;fill:var(--ink)}
+.c-amt{font-family:var(--display);font-weight:700;font-size:36px;fill:var(--ink)}
+.c-stamp{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:.06em;fill:var(--ink)}
+.c-code{font-family:var(--mono);font-size:24px;fill:var(--ink)}
+.c-lead{fill:none;stroke:var(--ink);stroke-width:1.4}
+.c-num{font-family:var(--text);font-size:26px;fill:var(--ink)}
+.c-fig{font-family:var(--text);font-style:italic;font-size:28px;fill:var(--ink)}
+.cd text{font-family:var(--text);font-size:15px;fill:var(--ink)}
+.cd .bx{font-family:var(--display);font-weight:600;font-size:16px}
+.cd .s{font-size:13px;fill:var(--ink-2)}
+.cd .c{font-family:var(--mono);font-size:12px}
+.cd .ok{fill:var(--accd);font-weight:600}
+.cd .ln{fill:none;stroke:var(--ink);stroke-width:1.3}
+.cd .ln.ok{stroke:var(--accd)}
+.cd .hd{fill:var(--ink)}
+.cd .hd.ok{fill:var(--accd)}
+.cd .box{fill:var(--paper-hi);stroke:var(--ink);stroke-width:1.3}
+.cd .sh{fill:url(#hatch);stroke:none}
+.cd .ph{fill:none;stroke:var(--ink);stroke-width:1.3;stroke-dasharray:14 4 2 4}
+.cd .rt{fill:none;stroke:var(--ink);stroke-width:1.3;stroke-dasharray:6 4}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="grid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0 H0 V24" style="fill:none;stroke:var(--rule);stroke-width:1"/></pattern>
+    <pattern id="dots" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(20)"><circle cx="5" cy="5" r="2.3" style="fill:var(--accd)"/></pattern>
+    <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" style="stroke:var(--ink);stroke-width:1"/></pattern>
+    <filter id="wobble" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="7" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="4" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="3" result="t"/>
+      <feColorMatrix in="t" type="saturate" values="0" result="g"/>
+      <feComponentTransfer in="g"><feFuncA type="table" tableValues="0 0.85"/></feComponentTransfer>
+    </filter>
+  </defs>
+</svg>
+
+<div class="proto">
+  <div class="wrap">
+    <h1>Estilo dos desenhos: A, C e uma mistura dos dois</h1>
+    <div class="tabs" role="tablist" aria-label="Estilos">
+      <button class="tab" role="tab" data-s="A" aria-selected="true">A. Caderno, sem quadriculado</button>
+      <button class="tab" role="tab" data-s="AC" aria-selected="false">A + C. Caderno com traços de patente</button>
+      <button class="tab" role="tab" data-s="C" aria-selected="false">C. Desenho de patente</button>
+    </div>
+    <p class="proto-desc" id="desc"></p>
+    <div class="proto-ctrl">
+      <label>Cor do livro <select id="cat"><option value="arq">Arquitetura</option><option value="java">Java</option><option value="obs">Observabilidade</option></select></label>
+      <label>Tema <select id="theme"><option value="">Do sistema</option><option value="light">Claro</option><option value="dark">Escuro</option></select></label>
+      <span>O desenho é o mesmo em todos os lugares; só o recorte muda.</span>
+    </div>
+  </div>
+</div>
+
+<main id="view"></main>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+
+  const CATS = {
+    arq:  {name:'Arquitetura',     acc:'#1F4D4A', acc2:'#E3A83A'},
+    java: {name:'Java',            acc:'#7A3E25', acc2:'#E3A83A'},
+    obs:  {name:'Observabilidade', acc:'#9C7A26', acc2:'#3F5878'}
+  };
+  const S = {style:'A', cat:'arq'};
+
+  /* ---------- geometria compartilhada ---------- */
+  function receipt(x, y, w, h, n = 12){
+    const tw = w / n;
+    let d = `M${x} ${y} H${x+w} V${y+h}`;
+    for (let i = 0; i < n; i++) d += ` L${(x+w-(i+.5)*tw).toFixed(1)} ${y+h+14} L${(x+w-(i+1)*tw).toFixed(1)} ${y+h}`;
+    return d + ' Z';
+  }
+  const KEY = 'M50 0 A50 50 0 1 1 -50 0 A50 50 0 1 1 50 0 Z M6 0 A16 16 0 1 0 -26 0 A16 16 0 1 0 6 0 Z M46 -14 H62 V-9 H280 V30 H262 V20 H244 V38 H226 V24 H210 V9 H62 V14 H46 Z';
+  const TAG = 'M0 20 L24 0 H170 V90 H24 L0 70 Z';
+  const BG = f => `<rect x="-600" y="-600" width="2400" height="2000" style="fill:${f}"/>`;
+
+  /* ---------- A: caderno de engenharia ---------- */
+  function drawA(o = {}){
+    return `${o.bg === false ? '' : BG('var(--paper-hi)')}
+    <g class="a-ink" filter="url(#wobble)">
+      <g transform="rotate(-8 505 370)">
+        <path d="${receipt(380,180,250,380)}" class="a-ghost"/>
+        <path d="M408 236 H560 M408 262 H520 M408 288 H545" class="a-ghost-l"/>
+      </g>
+      <g transform="rotate(4 595 405)">
+        <path d="${receipt(470,215,250,380)}" class="a-paper"/>
+        <path d="M498 296 H668 M498 320 H628 M498 344 H648 M498 446 H618" class="a-l"/>
+        <g transform="rotate(-12 620 520)"><rect x="548" y="494" width="144" height="54" rx="6" class="a-stamp"/></g>
+      </g>
+      <path d="M875 286 C905 320 925 385 915 428" class="a-l"/>
+      <g transform="translate(905 380) rotate(14)">
+        <path d="${TAG}" transform="translate(7 6)" class="a-fill"/>
+        <path d="${TAG}" class="a-l"/>
+        <circle cx="22" cy="45" r="8" class="a-l"/>
+      </g>
+      <g transform="translate(840 250) rotate(128)">
+        <path d="${KEY}" fill-rule="evenodd" class="a-paper"/>
+        <path d="M72 0 H200" class="a-l"/>
+      </g>
+    </g>
+    <g transform="rotate(4 595 405)">
+      <text x="498" y="266" class="a-t">Comprovante</text>
+      <text x="498" y="416" class="a-amt">R$ 150,00</text>
+      <g transform="rotate(-12 620 520)"><text x="620" y="532" text-anchor="middle" class="a-stamp-t">PAGO</text></g>
+    </g>
+    <g transform="translate(905 380) rotate(14)"><text x="44" y="55" class="a-code">abc-123</text></g>
+    <g class="anno">
+      <path d="M962 502 C 972 520 966 534 952 546" class="a-lead"/>
+      <text x="880" y="572" class="a-note">chave de idempotência</text>
+      <text x="880" y="598" class="a-note-s">a mesma nas duas tentativas</text>
+      <path d="M370 352 C 352 356 344 362 338 372" class="a-lead"/>
+      <text x="126" y="398" class="a-note">a segunda cobrança</text>
+      <text x="126" y="424" class="a-note-s">nunca acontece</text>
+    </g>`;
+  }
+
+  /* ---------- A + C: caderno com o vocabulário da patente ---------- */
+  function drawAC(o = {}){
+    return `${o.bg === false ? '' : BG('var(--paper-hi)')}
+    <g class="a-ink" filter="url(#wobble)">
+      <g transform="rotate(-8 505 370)">
+        <path d="${receipt(380,180,250,380)}" class="a-l ac-ph" style="stroke-width:2.4"/>
+      </g>
+      <g transform="rotate(4 595 405)"><path d="${receipt(470,215,250,380)}" transform="translate(14 14)" class="ac-hatch"/></g>
+      <g transform="rotate(4 595 405)">
+        <path d="${receipt(470,215,250,380)}" class="a-paper"/>
+        <path d="M498 296 H668 M498 320 H628 M498 344 H648 M498 446 H618" class="a-l"/>
+        <g transform="rotate(-12 620 520)"><rect x="548" y="494" width="144" height="54" rx="6" class="a-stamp"/></g>
+      </g>
+      <path d="M875 286 C905 320 925 385 915 428" class="a-l"/>
+      <g transform="translate(905 380) rotate(14)">
+        <path d="${TAG}" transform="translate(7 6)" class="a-fill"/>
+        <path d="${TAG}" class="a-l"/>
+        <circle cx="22" cy="45" r="8" class="a-l"/>
+      </g>
+      <g transform="translate(852 262) rotate(128)"><path d="${KEY}" fill-rule="evenodd" class="ac-hatch"/></g>
+      <g transform="translate(840 250) rotate(128)">
+        <path d="${KEY}" fill-rule="evenodd" class="a-paper"/>
+        <path d="M72 0 H200" class="a-l"/>
+      </g>
+    </g>
+    <g transform="rotate(4 595 405)">
+      <text x="498" y="266" class="a-t">Comprovante</text>
+      <text x="498" y="416" class="a-amt">R$ 150,00</text>
+      <g transform="rotate(-12 620 520)"><text x="620" y="532" text-anchor="middle" class="a-stamp-t">PAGO</text></g>
+    </g>
+    <g transform="translate(905 380) rotate(14)"><text x="44" y="55" class="a-code">abc-123</text></g>
+    <g class="anno">
+      <path d="M962 502 C 972 520 966 534 952 546" class="a-lead"/>
+      <text x="880" y="572" class="a-note">chave de idempotência</text>
+      <text x="880" y="598" class="a-note-s">a mesma nas duas tentativas</text>
+      <path d="M370 352 C 352 356 344 362 338 372" class="a-lead"/>
+      <text x="126" y="398" class="a-note">a segunda cobrança</text>
+      <text x="126" y="424" class="a-note-s">nunca acontece</text>
+    </g>`;
+  }
+
+  function diagAC(){
+    const sh = (x, y, w, h, o = 1) => `<rect x="${x+7}" y="${y+7}" width="${w}" height="${h}" class="ac-hatch" style="opacity:${.75*o}"/>`;
+    return `${BG('var(--paper-hi)')}
+    <g class="ad">
+      <g class="a-ink" filter="url(#wobble)">
+        ${sh(10,30,120,86)}${sh(220,30,120,86)}${sh(430,30,120,86,.5)}${sh(170,250,220,68)}
+        <rect x="10" y="30" width="120" height="86" rx="4" class="a-paper" style="stroke-width:2"/>
+        <rect x="220" y="30" width="120" height="86" rx="4" class="a-paper" style="stroke-width:2"/>
+        <rect x="430" y="30" width="120" height="86" rx="4" class="a-paper" style="stroke-width:2;stroke-opacity:.5"/>
+        <path d="M130 48 H214 M206 42 L214 48 L206 54 M340 58 H424 M416 52 L424 58 L416 64 M430 92 H346 M354 86 L346 92 L354 98 M262 116 V244 M256 236 L262 244 L268 236" class="a-l" style="stroke-width:2"/>
+        <path d="M220 68 H186" class="a-l" style="stroke-width:2;stroke-dasharray:12 5 3 5"/>
+        <path d="M166 60 L180 74 M180 60 L166 74" class="a-l" style="stroke-width:2.4"/>
+        <path d="M130 88 H214 M206 82 L214 88 L206 94" class="a-l" style="stroke-width:2;stroke-dasharray:6 6"/>
+        <path d="M300 116 V244 M294 236 L300 244 L306 236" class="a-l" style="stroke-width:2"/>
+        <path d="M220 108 H136 M144 102 L136 108 L144 114" class="a-l a-okline" style="stroke-width:2.4"/>
+        <rect x="170" y="250" width="220" height="68" class="a-paper" style="stroke-width:2"/>
+        <path d="M170 282 H390 M260 250 V318" class="a-l" style="stroke-width:1.6"/>
+        <rect x="170" y="334" width="220" height="34" rx="4" class="a-stamp" style="stroke-width:2"/>
+      </g>
+      <text x="70" y="79" text-anchor="middle">Cliente</text>
+      <text x="280" y="79" text-anchor="middle">API</text>
+      <text x="490" y="79" text-anchor="middle" style="opacity:.5">Adquirente</text>
+      <text x="490" y="146" text-anchor="middle" class="s">não é chamado de novo</text>
+      <text x="10" y="146" class="c">Idempotency-Key: abc-123</text>
+      <text x="10" y="168" class="s">tenta de novo, mesma chave</text>
+      <text x="10" y="192" class="ok">201, resposta guardada</text>
+      <text x="160" y="271" text-anchor="end" class="s">tabela</text><text x="160" y="289" text-anchor="end" class="s">idempotencia</text>
+      <text x="184" y="272">chave</text><text x="272" y="272">estado</text>
+      <text x="184" y="306" class="c">abc-123</text><text x="272" y="306">concluída, 201</text>
+      <text x="280" y="357" text-anchor="middle" class="ok">UNIQUE: abc-123 já existe</text>
+      <text x="254" y="190" text-anchor="end" class="c">INSERT</text><text x="308" y="190" class="c">INSERT</text>
+    </g>`;
+  }
+
+  /* ---------- B: impressão em duas cores ---------- */
+  function drawB(o = {}){
+    return `${o.bg === false ? '' : BG('var(--paper-hi)')}
+    <g class="mb" transform="translate(7 6)">
+      <g transform="rotate(-8 505 370)"><path d="${receipt(380,180,250,380)}" class="b2"/></g>
+      <g transform="translate(905 380) rotate(14)"><path d="${TAG} M30 45 A8 8 0 1 0 14 45 A8 8 0 1 0 30 45 Z" fill-rule="evenodd" class="b2"/></g>
+    </g>
+    <g class="mb"><g transform="rotate(4 595 405)"><path d="${receipt(470,215,250,380)}" transform="translate(18 20)" class="b1dots"/></g></g>
+    <g transform="rotate(4 595 405)"><path d="${receipt(470,215,250,380)}" class="bpaper"/></g>
+    <g class="mb">
+      <g transform="rotate(4 595 405)">
+        <text x="498" y="266" class="b-t">Comprovante</text>
+        <path d="M498 296 H668 M498 320 H628 M498 344 H648 M498 446 H618" class="b-l"/>
+        <text x="498" y="416" class="b-amt">R$ 150,00</text>
+        <g transform="rotate(-12 620 520)"><rect x="548" y="494" width="144" height="54" rx="6" class="b-stamp"/><text x="620" y="532" text-anchor="middle" class="b-stamp-t">PAGO</text></g>
+      </g>
+      <path d="M875 286 C905 320 925 385 915 428" class="b-str"/>
+      <g transform="translate(905 380) rotate(14)"><text x="44" y="56" class="b-code">abc-123</text></g>
+      <g transform="translate(840 250) rotate(128)"><path d="${KEY}" fill-rule="evenodd" class="b1"/></g>
+    </g>
+    ${o.bg === false ? '' : '<rect x="-600" y="-600" width="2400" height="2000" filter="url(#grain)" class="grain"/>'}`;
+  }
+
+  /* ---------- C: desenho de patente ---------- */
+  const M = 'matrix(0.866 0.5 -0.866 0.5 640 200)';
+  function drawC(o = {}){
+    const back = receipt(0,0,250,380), front = receipt(60,70,250,380);
+    return `${o.bg === false ? '' : BG('var(--paper-hi)')}
+    <g transform="${M}"><path d="${back}" class="c-ph"/></g>
+    <g transform="translate(0 10)"><g transform="${M}"><path d="${front}" class="c-hatch"/></g></g>
+    <g transform="${M}">
+      <path d="${front}" class="c-top"/>
+      <text x="88" y="122" class="c-t">Comprovante</text>
+      <path d="M88 150 H250 M88 172 H212 M88 194 H232 M88 290 H200" class="c-l"/>
+      <text x="88" y="262" class="c-amt">R$ 150,00</text>
+      <g transform="rotate(-10 230 395)"><rect x="160" y="370" width="140" height="50" rx="5" class="c-l"/><text x="230" y="405" text-anchor="middle" class="c-stamp">PAGO</text></g>
+    </g>
+    <g transform="translate(0 7)"><g transform="${M}"><g transform="translate(420 120) rotate(20)"><path d="${TAG}" class="c-hatch"/></g></g></g>
+    <g transform="${M}">
+      <g transform="translate(420 120) rotate(20)">
+        <path d="${TAG}" class="c-tag"/><circle cx="22" cy="45" r="8" class="c-l"/>
+        <text x="44" y="56" class="c-code">abc-123</text>
+      </g>
+      <path d="M400 255 C420 230 440 200 425 170" class="c-l"/>
+    </g>
+    <g transform="translate(0 -4)"><g transform="${M}"><g transform="translate(360 280) rotate(163)"><path d="${KEY}" fill-rule="evenodd" class="c-hatch"/></g></g></g>
+    <g transform="translate(0 -12)"><g transform="${M}"><g transform="translate(360 280) rotate(163)"><path d="${KEY}" fill-rule="evenodd" class="c-top"/><path d="M72 0 H200" class="c-l"/></g></g></g>
+    <path d="M428 388 Q 380 420 334 440" class="c-lead"/><text x="296" y="452" class="c-num">10</text>
+    <path d="M484 310 Q 450 272 414 262" class="c-lead"/><text x="378" y="266" class="c-num">12</text>
+    <path d="M700 540 Q 690 575 676 600" class="c-lead"/><text x="652" y="628" class="c-num">20</text>
+    <path d="M936 520 Q 966 492 990 474" class="c-lead"/><text x="996" y="472" class="c-num">22</text>
+    <text x="1010" y="612" class="c-fig anno">Fig. 1</text>`;
+  }
+
+  /* ---------- diagramas ---------- */
+  function diagA(){
+    return `${BG('var(--paper-hi)')}
+    <g class="ad">
+      <g class="a-ink" filter="url(#wobble)">
+        <rect x="10" y="30" width="120" height="86" rx="4" class="a-paper" style="stroke-width:2"/>
+        <rect x="220" y="30" width="120" height="86" rx="4" class="a-paper" style="stroke-width:2"/>
+        <rect x="430" y="30" width="120" height="86" rx="4" class="a-paper" style="stroke-width:2;stroke-opacity:.5"/>
+        <path d="M130 48 H214 M206 42 L214 48 L206 54 M340 58 H424 M416 52 L424 58 L416 64 M430 92 H346 M354 86 L346 92 L354 98 M262 116 V244 M256 236 L262 244 L268 236 M220 68 H186" class="a-l" style="stroke-width:2"/>
+        <path d="M166 60 L180 74 M180 60 L166 74" class="a-l" style="stroke-width:2.4"/>
+        <path d="M130 88 H214 M206 82 L214 88 L206 94" class="a-l" style="stroke-width:2;stroke-dasharray:6 6"/>
+        <path d="M300 116 V244 M294 236 L300 244 L306 236" class="a-l" style="stroke-width:2"/>
+        <path d="M220 108 H136 M144 102 L136 108 L144 114" class="a-l a-okline" style="stroke-width:2.4"/>
+        <rect x="170" y="250" width="220" height="68" class="a-paper" style="stroke-width:2"/>
+        <path d="M170 282 H390 M260 250 V318" class="a-l" style="stroke-width:1.6"/>
+        <rect x="170" y="334" width="220" height="34" rx="4" class="a-stamp" style="stroke-width:2"/>
+      </g>
+      <text x="70" y="79" text-anchor="middle">Cliente</text>
+      <text x="280" y="79" text-anchor="middle">API</text>
+      <text x="490" y="79" text-anchor="middle" style="opacity:.5">Adquirente</text>
+      <text x="490" y="140" text-anchor="middle" class="s">não é chamado de novo</text>
+      <text x="10" y="142" class="c">Idempotency-Key: abc-123</text>
+      <text x="10" y="164" class="s">tenta de novo, mesma chave</text>
+      <text x="10" y="188" class="ok">201, resposta guardada</text>
+      <text x="160" y="271" text-anchor="end" class="s">tabela</text><text x="160" y="289" text-anchor="end" class="s">idempotencia</text>
+      <text x="184" y="272">chave</text><text x="272" y="272">estado</text>
+      <text x="184" y="306" class="c">abc-123</text><text x="272" y="306">concluída, 201</text>
+      <text x="280" y="357" text-anchor="middle" class="ok">UNIQUE: abc-123 já existe</text>
+      <text x="254" y="190" text-anchor="end" class="c">INSERT</text><text x="308" y="190" class="c">INSERT</text>
+    </g>`;
+  }
+
+  function diagB(){
+    const arrows = 'M130 48 H212 M340 58 H422 M430 92 H348 M262 116 V242 M300 116 V242 M220 68 H188';
+    return `${BG('var(--paper-hi)')}
+    <g class="bd">
+      <g class="mb">
+        <rect x="10" y="30" width="120" height="86" class="b2"/>
+        <rect x="430" y="30" width="120" height="86" class="b2" style="opacity:.45"/>
+        <rect x="170" y="334" width="220" height="34" class="b2"/>
+        <path d="${arrows}" class="ln2" transform="translate(3 3)"/>
+        <path d="M164 58 L182 78 M182 58 L164 78" class="ln2" style="stroke-width:4.5"/>
+      </g>
+      <rect x="170" y="282" width="220" height="36" style="fill:var(--paper)"/>
+      <g class="mb">
+        <rect x="220" y="30" width="120" height="86" class="b1"/>
+        <rect x="170" y="250" width="220" height="32" class="b1"/>
+        <path d="${arrows}" class="ln"/>
+        <path d="M130 88 H212" class="ln" style="stroke-dasharray:7 6"/>
+        <path d="M220 108 H138" class="ln" style="stroke-width:4.5"/>
+        <path d="M212 42 L222 48 L212 54 Z M422 52 L432 58 L422 64 Z M348 86 L338 92 L348 98 Z M256 242 L262 252 L268 242 Z M294 242 L300 252 L306 242 Z M212 82 L222 88 L212 94 Z M140 101 L128 108 L140 115 Z" class="b1"/>
+      </g>
+      <text x="70" y="79" text-anchor="middle" class="bx">Cliente</text>
+      <text x="280" y="79" text-anchor="middle" class="bx on-acc">API</text>
+      <text x="490" y="79" text-anchor="middle" class="bx">Adquirente</text>
+      <text x="490" y="140" text-anchor="middle" class="s">não é chamado de novo</text>
+      <text x="10" y="142" class="c">Idempotency-Key: abc-123</text>
+      <text x="10" y="164" class="s">tenta de novo, mesma chave</text>
+      <text x="10" y="188" style="font-weight:700">201, resposta guardada</text>
+      <text x="160" y="271" text-anchor="end" class="s">tabela</text><text x="160" y="289" text-anchor="end" class="s">idempotencia</text>
+      <text x="184" y="272" class="on-acc">chave</text><text x="272" y="272" class="on-acc">estado</text>
+      <text x="184" y="306" class="c">abc-123</text><text x="272" y="306">concluída, 201</text>
+      <text x="280" y="357" text-anchor="middle" style="font-weight:700">UNIQUE: abc-123 já existe</text>
+      <text x="254" y="190" text-anchor="end" class="c">INSERT</text><text x="308" y="190" class="c">INSERT</text>
+    </g>
+    <rect x="-600" y="-600" width="2400" height="2000" filter="url(#grain)" class="grain"/>`;
+  }
+
+  function diagC(){
+    const box = (x, o = 1) => `<g style="opacity:${o}"><rect x="${x+6}" y="36" width="120" height="86" class="sh"/><rect x="${x}" y="30" width="120" height="86" class="box"/></g>`;
+    return `${BG('var(--paper-hi)')}
+    <g class="cd">
+      ${box(10)}${box(220)}${box(430, .5)}
+      <rect x="176" y="256" width="220" height="68" class="sh"/>
+      <rect x="170" y="250" width="220" height="68" class="box"/>
+      <path d="M170 282 H390 M260 250 V318" class="ln"/>
+      <path d="M130 48 H214 M340 58 H424 M430 92 H346 M262 116 V242 M300 116 V242" class="ln"/>
+      <path d="M220 68 H176" class="ph"/>
+      <path d="M166 62 L178 74 M178 62 L166 74" class="ln" style="stroke-width:1.8"/>
+      <path d="M130 88 H214" class="rt"/>
+      <path d="M220 108 H138" class="ln ok" style="stroke-width:1.8"/>
+      <path d="M214 44 L222 48 L214 52 Z M424 54 L432 58 L424 62 Z M346 88 L338 92 L346 96 Z M258 242 L262 250 L266 242 Z M296 242 L300 250 L304 242 Z M214 84 L222 88 L214 92 Z" class="hd"/>
+      <path d="M138 104 L130 108 L138 112 Z" class="hd ok"/>
+      <rect x="170" y="334" width="220" height="34" class="box" style="stroke-dasharray:4 3"/>
+      <text x="70" y="78" text-anchor="middle" class="bx">Cliente</text>
+      <text x="280" y="78" text-anchor="middle" class="bx">API</text>
+      <text x="490" y="78" text-anchor="middle" class="bx" style="opacity:.5">Adquirente</text>
+      <text x="490" y="146" text-anchor="middle" class="s">não é chamado de novo</text>
+      <text x="10" y="146" class="c">Idempotency-Key: abc-123</text>
+      <text x="10" y="168" class="s">tenta de novo, mesma chave</text>
+      <text x="10" y="192" class="ok">201, resposta guardada</text>
+      <text x="160" y="271" text-anchor="end" class="s">tabela</text><text x="160" y="289" text-anchor="end" class="s">idempotencia</text>
+      <text x="184" y="272">chave</text><text x="272" y="272">estado</text>
+      <text x="184" y="306" class="c">abc-123</text><text x="272" y="306">concluída, 201</text>
+      <text x="280" y="356" text-anchor="middle">UNIQUE: abc-123 já existe</text>
+      <text x="254" y="190" text-anchor="end" class="c">INSERT</text><text x="308" y="190" class="c">INSERT</text>
+    </g>`;
+  }
+
+  const STY = {
+    A: {
+      draw: drawA, diagram: diagA,
+      vb: {card:'200 100 900 600', hero:'80 158 1100 468', og:'350 -40 740 883'},
+      desc: 'Traço de caneta com um leve tremor de mão, agora em papel liso, com notas escritas ao lado e uma única cor, a do livro do post, pintada um pouco fora da linha.'
+    },
+    AC: {
+      draw: drawAC, diagram: diagAC,
+      vb: {card:'200 100 900 600', hero:'80 158 1100 468', og:'350 -40 740 883'},
+      desc: 'O traço de caneta do A, em papel liso, com três convenções emprestadas da patente: hachura para dar volume às sombras, linha fantasma (traço e ponto) para o que não chega a acontecer e a cor do livro como única cor. O desenho continua de frente, como o diagrama.'
+    },
+    C: {
+      draw: drawC, diagram: diagC,
+      vb: {card:'190 150 900 600', hero:'140 170 1100 468', og:'260 -57 800 955'},
+      caption: 'Fig. 1. 10, comprovante da cobrança; 12, a segunda cobrança, que não chega a acontecer; 20, chave; 22, etiqueta com a chave abc-123.',
+      desc: 'Traço técnico fino em perspectiva isométrica, com hachuras, linha fantasma para o que não chega a acontecer e números de referência, como as figuras de uma patente. É o que mais combina com um arquiteto explicando um mecanismo.'
+    }
+  };
+
+  const svg = (vb, inner, anno, par = 'xMidYMid slice') =>
+    `<svg viewBox="${vb}" preserveAspectRatio="${par}" class="${anno ? 'show-anno' : ''}" aria-hidden="true" focusable="false">${inner}</svg>`;
+
+  function render(){
+    const s = STY[S.style], c = CATS[S.cat];
+    $('desc').textContent = s.desc;
+    const tags = '<a href="#">#Pagamentos</a><a href="#">#Idempotência</a><a href="#">#Banco de Dados</a>';
+    $('view').innerHTML = `
+    <div class="lbl"><div class="wrap"><strong>Destaque na home</strong><span>O post mais recente, com a imagem em 3:2.</span></div></div>
+    <div class="wrap sec">
+      <article class="feat">
+        <a class="ph ph-card" href="#" aria-label="Chave de idempotência">${svg(s.vb.card, s.draw())}</a>
+        <div>
+          <p class="meta"><span class="chip" aria-hidden="true"></span>${c.name}, 10 set 2026, 10 min de leitura</p>
+          <h2>Chave de idempotência</h2>
+          <p class="sub">Como impedir a cobrança duplicada no retry</p>
+          <p class="tags">${tags}</p>
+        </div>
+      </article>
+    </div>
+
+    <div class="lbl"><div class="wrap"><strong>Topo do artigo</strong><span>A imagem larga, com as anotações que só cabem aqui.</span></div></div>
+    <div class="wrap sec">
+      <header class="art-h">
+        <p class="meta"><span class="chip" aria-hidden="true"></span>${c.name}</p>
+        <h1>Chave de idempotência</h1>
+        <p class="sub">Como impedir a cobrança duplicada no retry</p>
+        <p class="meta" style="margin-top:14px">10 set 2026, 10 min de leitura</p>
+        <p class="tags">${tags}</p>
+      </header>
+      <figure class="hero">
+        <div class="ph ph-hero">${svg(s.vb.hero, s.draw(), true)}</div>
+        ${s.caption ? `<figcaption>${s.caption}</figcaption>` : ''}
+      </figure>
+    </div>
+
+    <div class="lbl"><div class="wrap"><strong>Compartilhamento</strong><span>A imagem de 1200 por 630 que aparece no LinkedIn, no WhatsApp e afins.</span></div></div>
+    <div class="wrap sec">
+      <div class="og${s.ogGrid ? ' grid' : ''}">
+        <div class="og-txt">
+          <span class="og-blog">Cesar Schutz</span>
+          <span class="og-title">Chave de idempotência</span>
+          <span class="og-sub">Como impedir a cobrança duplicada no retry</span>
+          <span class="og-cat"><span class="chip" aria-hidden="true"></span>${c.name}</span>
+        </div>
+        <div class="og-art">${svg(s.vb.og, s.draw({bg:false}), false, 'xMidYMid meet')}</div>
+      </div>
+      <p class="og-note">No blog de verdade, essa imagem é gerada em PNG na hora do build, a partir do mesmo desenho.</p>
+    </div>
+
+    <div class="lbl"><div class="wrap"><strong>Diagrama do post</strong><span>O diagrama de rolagem no mesmo traço, parado no último passo.</span></div></div>
+    <div class="wrap sec">
+      <div class="dgm">${svg('0 0 560 430', s.diagram(), true, 'xMidYMid meet')}</div>
+    </div>`;
+  }
+
+  function setCat(){
+    const c = CATS[S.cat], r = document.documentElement.style;
+    r.setProperty('--acc', c.acc);
+    r.setProperty('--acc2', c.acc2);
+  }
+
+  document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+    S.style = t.dataset.s;
+    document.querySelectorAll('.tab').forEach(x => x.setAttribute('aria-selected', String(x === t)));
+    render();
+  }));
+  $('cat').addEventListener('change', e => { S.cat = e.target.value; setCat(); render(); });
+  $('theme').addEventListener('change', e => {
+    if (e.target.value) document.documentElement.dataset.theme = e.target.value;
+    else delete document.documentElement.dataset.theme;
+  });
+  document.addEventListener('click', e => { const a = e.target.closest('a[href="#"]'); if (a) e.preventDefault(); });
+
+  setCat();
+  render();
+})();
+</script>
+</body>
+</html>

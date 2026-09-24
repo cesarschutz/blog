@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -43 1200 903" data-largo="80 164 1100 468" data-medio="300 98 900 600" data-quadrado="415 63 670 670" data-og="380 -43 740 883" data-segura="440 258 620 280"
+  aria-label="Lotes numa esteira e uma bandeira erguida entre o segundo e o terceiro: com o SIGTERM, o sinalizador vira true e o job para entre um lote e outro.">
+  <g class="tinta">
+    <path d="M440 510 H1060" class="linha"/>
+    <path d="M492 526 A12 12 0 1 1 468 526 A12 12 0 1 1 492 526 Z M612 526 A12 12 0 1 1 588 526 A12 12 0 1 1 612 526 Z M732 526 A12 12 0 1 1 708 526 A12 12 0 1 1 732 526 Z M852 526 A12 12 0 1 1 828 526 A12 12 0 1 1 852 526 Z M972 526 A12 12 0 1 1 948 526 A12 12 0 1 1 972 526 Z" class="linha"/>
+    <path d="M476 400 H574 A6 6 0 0 1 580 406 V494 A6 6 0 0 1 574 500 H476 A6 6 0 0 1 470 494 V406 A6 6 0 0 1 476 400 Z" transform="translate(8 8)" class="hachura"/>
+    <path d="M476 400 H574 A6 6 0 0 1 580 406 V494 A6 6 0 0 1 574 500 H476 A6 6 0 0 1 470 494 V406 A6 6 0 0 1 476 400 Z" class="papel"/>
+    <path d="M616 400 H714 A6 6 0 0 1 720 406 V494 A6 6 0 0 1 714 500 H616 A6 6 0 0 1 610 494 V406 A6 6 0 0 1 616 400 Z" transform="translate(8 8)" class="hachura"/>
+    <path d="M616 400 H714 A6 6 0 0 1 720 406 V494 A6 6 0 0 1 714 500 H616 A6 6 0 0 1 610 494 V406 A6 6 0 0 1 616 400 Z" class="papel"/>
+    <path d="M836 400 H934 A6 6 0 0 1 940 406 V494 A6 6 0 0 1 934 500 H836 A6 6 0 0 1 830 494 V406 A6 6 0 0 1 836 400 Z" class="fantasma"/>
+    <path d="M775 510 V300" class="linha"/>
+    <path d="M775 305 H860 L842 335 L860 365 H775 Z" transform="translate(8 8)" class="hachura"/>
+    <path d="M775 305 H860 L842 335 L860 365 H775 Z" transform="translate(6 5)" class="cor"/>
+    <path d="M775 305 H860 L842 335 L860 365 H775 Z" class="linha"/>
+    <path d="M700 286 L766 310 M755.1 311.7 L766 310 L758.7 301.7" class="linha"/>
+  </g>
+  <text x="525" y="458" text-anchor="middle" class="codigo">lote 1</text>
+  <text x="665" y="458" text-anchor="middle" class="codigo">lote 2</text>
+  <text x="885" y="458" text-anchor="middle" class="codigo">lote 3</text>
+  <text x="804" y="344" text-anchor="middle" class="codigo">true</text>
+  <text x="690" y="284" text-anchor="end" class="codigo">SIGTERM</text>
+  <g class="anotacao">
+    <text x="100" y="330" class="nota">o hook do SIGTERM</text>
+    <text x="100" y="358" class="nota-pequena">liga a bandeira: set(true)</text>
+    <text x="100" y="470" class="nota">o job termina o lote</text>
+    <text x="100" y="498" class="nota-pequena">e para antes do próximo</text>
+  </g>
+</svg>

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -56 1200 916" data-largo="80 152 1100 468" data-medio="277 86 900 600" data-quadrado="392 51 670 670" data-og="357 -56 740 883" data-segura="440 192 574 388"
+  aria-label="A mesma aplicação com dois caminhos: um relógio, o CronJob, e uma fila de envelopes, o SQS; o relógio está em destaque.">
+  <g class="tinta">
+    <path d="M450 350 H580 A10 10 0 0 1 590 360 V450 A10 10 0 0 1 580 460 H450 A10 10 0 0 1 440 450 V360 A10 10 0 0 1 450 350 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M450 350 H580 A10 10 0 0 1 590 360 V450 A10 10 0 0 1 580 460 H450 A10 10 0 0 1 440 450 V360 A10 10 0 0 1 450 350 Z" class="papel"/>
+    <path d="M462 400 H568 M462 425 H540" class="linha"/>
+    <path d="M592 382 C650 360 690 300 732 280" class="linha"/>
+    <path d="M720 272 L734 280 L722 292" class="linha"/>
+    <path d="M880 262 A70 70 0 1 1 740 262 A70 70 0 1 1 880 262 Z" transform="translate(12 12)" class="hachura"/>
+    <path d="M880 262 A70 70 0 1 1 740 262 A70 70 0 1 1 880 262 Z" transform="translate(7 6)" class="cor"/>
+    <path d="M880 262 A70 70 0 1 1 740 262 A70 70 0 1 1 880 262 Z" class="linha"/>
+    <path d="M810 262 V214 M810 262 L848 280" class="linha"/>
+    <path d="M592 430 C640 450 680 490 722 500" class="linha"/>
+    <path d="M710 492 L724 500 L712 512" class="linha"/>
+    <path d="M765 470 H965 A35 35 0 0 1 1000 505 V505 A35 35 0 0 1 965 540 H765 A35 35 0 0 1 730 505 V505 A35 35 0 0 1 765 470 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M765 470 H965 A35 35 0 0 1 1000 505 V505 A35 35 0 0 1 965 540 H765 A35 35 0 0 1 730 505 V505 A35 35 0 0 1 765 470 Z" class="papel"/>
+    <path d="M773 484 H819 A3 3 0 0 1 822 487 V517 A3 3 0 0 1 819 520 H773 A3 3 0 0 1 770 517 V487 A3 3 0 0 1 773 484 Z" class="papel"/><path d="M770 486 L796 503.8 L822 486" class="linha"/>
+    <path d="M835 484 H881 A3 3 0 0 1 884 487 V517 A3 3 0 0 1 881 520 H835 A3 3 0 0 1 832 517 V487 A3 3 0 0 1 835 484 Z" class="papel"/><path d="M832 486 L858 503.8 L884 486" class="linha"/>
+    <path d="M897 484 H943 A3 3 0 0 1 946 487 V517 A3 3 0 0 1 943 520 H897 A3 3 0 0 1 894 517 V487 A3 3 0 0 1 897 484 Z" class="papel"/><path d="M894 486 L920 503.8 L946 486" class="linha"/>
+  </g>
+  <text x="515" y="385" text-anchor="middle" class="rotulo">app</text>
+  <text x="900" y="262" class="codigo">CronJob</text>
+  <text x="865" y="572" text-anchor="middle" class="codigo">SQS</text>
+  <g class="anotacao">
+    <text x="100" y="330" class="nota">A: CronJob com o perfil batch</text>
+    <text x="100" y="358" class="nota-pequena">a mesma imagem, agendada</text>
+    <text x="100" y="470" class="nota">B: endpoint que enfileira</text>
+    <text x="100" y="498" class="nota-pequena">e a própria API consome</text>
+  </g>
+</svg>

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 260">
+  <g class="traco">
+    <path d="M130 84 H620" class="guia"/>
+    <g data-aparece="0.016 0.065"><path d="M140 60 h18 m-6 -5 l6 5 -6 5"/></g>
+    <g data-aparece="0.220 0.269"><path d="M238 40 h24 v30 l-4 4 -4 -4 -4 4 -4 -4 -4 4 -4 -4 z" class="fino"/><path d="M243 48 h13 M243 55 h9" class="fino"/></g>
+    <g data-aparece="0.424 0.473"><path d="M343 54 l14 14 m0 -14 l-14 14"/></g>
+    <g data-aparece="0.629 0.678"><path d="M462 66 a12 12 0 1 1 -4 -14 m0 0 l1 -7 m-1 7 l-7 0"/></g>
+    <path d="M130 196 H620" class="guia"/>
+    <g data-aparece="0.016 0.065"><path d="M140 172 h18 m-6 -5 l6 5 -6 5"/></g>
+    <g data-aparece="0.220 0.269"><path d="M238 152 h24 v30 l-4 4 -4 -4 -4 4 -4 -4 -4 4 -4 -4 z" class="fino"/><path d="M243 160 h13 M243 167 h9" class="fino"/></g>
+    <g data-aparece="0.424 0.473"><path d="M343 166 l14 14 m0 -14 l-14 14"/></g>
+    <g data-aparece="0.629 0.678"><path d="M462 178 a12 12 0 1 1 -4 -14 m0 0 l1 -7 m-1 7 l-7 0"/></g>
+    <g data-aparece="0.833 0.882"><path d="M538 40 h24 v30 l-4 4 -4 -4 -4 4 -4 -4 -4 4 -4 -4 z" class="fino"/><path d="M543 48 h13 M543 55 h9" class="fino"/></g>
+    <rect x="508" y="160" width="84" height="26" rx="3" class="destaque" data-aparece="0.833 0.882"/>
+    <g data-desloca="0 1 490 0">
+      <path d="M130 22 V236" class="destaque fino"/>
+      <circle cx="130" cy="18" r="5" class="cheio destaque"/>
+    </g>
+  </g>
+  <g>
+    <text x="10" y="88">Sem a chave</text>
+    <text x="10" y="110" class="secundario" data-some="0.22 0.25">nenhuma cobrança</text>
+    <text x="10" y="110" class="secundario" data-aparece="0.22 0.25" data-some="0.83 0.86">1 cobrança</text>
+    <text x="10" y="110" class="secundario" data-aparece="0.83 0.86">2 cobranças</text>
+    <text x="150" y="108" text-anchor="middle" class="secundario" data-aparece="0.016 0.065">pede</text>
+    <text x="250" y="108" text-anchor="middle" class="secundario" data-aparece="0.220 0.269">cobra</text>
+    <text x="350" y="108" text-anchor="middle" class="secundario" data-aparece="0.424 0.473">resposta se perde</text>
+    <text x="450" y="108" text-anchor="middle" class="secundario" data-aparece="0.629 0.678">tenta de novo</text>
+    <text x="10" y="200">Com a chave</text>
+    <text x="10" y="222" class="secundario" data-some="0.22 0.25">nenhuma cobrança</text>
+    <text x="10" y="222" class="secundario" data-aparece="0.22 0.25">1 cobrança</text>
+    <text x="150" y="220" text-anchor="middle" class="secundario" data-aparece="0.016 0.065">pede</text>
+    <text x="250" y="220" text-anchor="middle" class="secundario" data-aparece="0.220 0.269">cobra</text>
+    <text x="350" y="220" text-anchor="middle" class="secundario" data-aparece="0.424 0.473">resposta se perde</text>
+    <text x="450" y="220" text-anchor="middle" class="secundario" data-aparece="0.629 0.678">tenta de novo</text>
+    <text x="550" y="126" text-anchor="middle" data-aparece="0.833 0.882">cobra de novo</text>
+    <text x="550" y="178" text-anchor="middle" class="codigo destaque" data-aparece="0.833 0.882">UNIQUE</text>
+    <text x="550" y="240" text-anchor="middle" class="secundario" data-aparece="0.833 0.882">devolve a guardada</text>
+  </g>
+</svg>

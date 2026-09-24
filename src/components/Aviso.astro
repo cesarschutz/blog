@@ -1,0 +1,22 @@
+---
+/**
+ * Aviso (briefing §5.3): Nota, Dica, Importante, Atenção e Cuidado, com ícone de traço e cor
+ * própria. Estilo em src/styles/avisos.css. A mesma marcação sai dos avisos escritos no Markdown
+ * (src/plugins/rehype-avisos.mjs). O conteúdo entra no mesmo parágrafo do rótulo, como no protótipo.
+ */
+import { ICONES } from "../lib/icones";
+import { NOMES_DOS_AVISOS, type TipoAviso } from "../lib/avisos";
+
+interface Props {
+  tipo: TipoAviso;
+  /** Rótulo em destaque; por padrão, o nome do tipo. */
+  rotulo?: string;
+}
+
+const { tipo, rotulo = NOMES_DOS_AVISOS[tipo] } = Astro.props;
+---
+
+<aside class="aviso" data-aviso={tipo} aria-label={rotulo}>
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES[tipo]} />
+  <div class="aviso-corpo"><p><strong class="aviso-rotulo">{rotulo}.</strong> <slot /></p></div>
+</aside>

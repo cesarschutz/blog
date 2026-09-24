@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -70 1200 930" data-largo="80 173 1100 468" data-medio="282 71 900 600" data-quadrado="397 36 670 670" data-og="362 -70 740 883" data-segura="430 248 604 246"
+  aria-label="Três serviços ligados por setas e uma etiqueta de bagagem com o traceparent, o mesmo ID que acompanha a operação por todos eles.">
+  <g class="tinta">
+    <path d="M440 380 H570 A10 10 0 0 1 580 390 V470 A10 10 0 0 1 570 480 H440 A10 10 0 0 1 430 470 V390 A10 10 0 0 1 440 380 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M440 380 H570 A10 10 0 0 1 580 390 V470 A10 10 0 0 1 570 480 H440 A10 10 0 0 1 430 470 V390 A10 10 0 0 1 440 380 Z" class="papel"/>
+    <path d="M660 380 H790 A10 10 0 0 1 800 390 V470 A10 10 0 0 1 790 480 H660 A10 10 0 0 1 650 470 V390 A10 10 0 0 1 660 380 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M660 380 H790 A10 10 0 0 1 800 390 V470 A10 10 0 0 1 790 480 H660 A10 10 0 0 1 650 470 V390 A10 10 0 0 1 660 380 Z" class="papel"/>
+    <path d="M880 380 H1010 A10 10 0 0 1 1020 390 V470 A10 10 0 0 1 1010 480 H880 A10 10 0 0 1 870 470 V390 A10 10 0 0 1 880 380 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M880 380 H1010 A10 10 0 0 1 1020 390 V470 A10 10 0 0 1 1010 480 H880 A10 10 0 0 1 870 470 V390 A10 10 0 0 1 880 380 Z" class="papel"/>
+    <path d="M582 430 L646 430 M636.3 435.3 L646 430 L636.3 424.7" class="linha"/>
+    <path d="M802 430 L866 430 M856.3 435.3 L866 430 L856.3 424.7" class="linha"/>
+    <path d="M592 280 C566 300 600 370 614 424" class="linha"/>
+    <path d="M852 280 C880 300 846 380 834 424" class="linha"/>
+    <path d="M612 248 H852 V312 H612 L592 280 Z" transform="translate(8 8)" class="hachura"/>
+    <path d="M612 248 H852 V312 H612 L592 280 Z" transform="translate(6 5)" class="cor"/>
+    <path d="M612 248 H852 V312 H612 L592 280 Z" class="linha"/>
+    <path d="M614 280 A6 6 0 1 1 602 280 A6 6 0 1 1 614 280 Z" class="linha"/>
+  </g>
+  <text x="736" y="274" text-anchor="middle" class="codigo">traceparent</text>
+  <text x="736" y="302" text-anchor="middle" class="codigo">00-4bf92f35…-01</text>
+  <text x="505" y="438" text-anchor="middle" class="rotulo">api</text>
+  <text x="725" y="438" text-anchor="middle" class="rotulo">fila</text>
+  <text x="945" y="438" text-anchor="middle" class="rotulo">worker</text>
+  <g class="anotacao">
+    <text x="100" y="330" class="nota">o mesmo trace-id</text>
+    <text x="100" y="358" class="nota-pequena">passa de serviço em serviço</text>
+    <text x="725" y="560" text-anchor="middle" class="nota-pequena">também dentro das mensagens</text>
+  </g>
+</svg>

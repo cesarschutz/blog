@@ -1,0 +1,36 @@
+---
+/**
+ * Páginas que viram imagem de compartilhamento (D10): /og/<slug>/ para cada post e /og/default/
+ * para as outras páginas. scripts/og.mjs (no postbuild) fotografa cada uma em 1200×630, grava
+ * /og/<slug>.png e apaga o HTML. No dev, dá para abrir e conferir.
+ */
+import Imagem from "../../layouts/Imagem.astro";
+import CartaoCompartilhamento from "../../components/CartaoCompartilhamento.astro";
+import { getPosts, resumir, type Resumo } from "../../lib/posts";
+import { montarLivros } from "../../lib/estante";
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return [
+    ...posts.map((post) => ({ params: { slug: post.id }, props: { resumo: resumir(post) } })),
+    { params: { slug: "default" }, props: { resumo: undefined } },
+  ];
+}
+
+interface Props {
+  resumo?: Resumo;
+}
+
+const { resumo } = Astro.props;
+const livros = resumo ? undefined : await montarLivros();
+---
+
+<Imagem titulo={resumo?.titulo ?? "Cesar Schutz"}>
+  {
+    resumo ? (
+      <CartaoCompartilhamento titulo={resumo.titulo} subtitulo={resumo.subtitulo} rotulo={resumo.rotulo} cor={resumo.cor} slug={resumo.slug} />
+    ) : (
+      <CartaoCompartilhamento titulo="Arquitetura de software, Java e sistemas de pagamento" livros={livros} />
+    )
+  }
+</Imagem>

@@ -1,0 +1,41 @@
+---
+/**
+ * Um recorte da ilustração do post (briefing §6), embutido na página para herdar tinta, superfície
+ * e fontes do tema. "slice" preenche o espaço do recorte (o centro de cada recorte é a área segura);
+ * o de compartilhamento usa "meet". Post sem ilustração não mostra nada.
+ */
+import { ilustracao, type Recorte } from "../lib/ilustracoes";
+
+interface Props {
+  slug: string;
+  recorte: Recorte;
+  /** Cor da categoria (ou da série). */
+  cor: string;
+  /** Espessura do traço conforme o tamanho na tela: topo 3, cartão 3,6, miniatura 7. */
+  tamanho?: "topo" | "cartao" | "miniatura";
+  /** Anotações (só nos recortes grandes). */
+  anotacoes?: boolean;
+  /** Ao lado de um título que já diz o mesmo: fora da leitura de tela. */
+  decorativa?: boolean;
+  class?: string;
+}
+
+const { slug, recorte, cor, tamanho = "topo", anotacoes = false, decorativa = false, class: classe } = Astro.props;
+const desenho = ilustracao(slug);
+---
+
+{
+  desenho && (
+    <svg
+      class:list={["ilustracao", tamanho !== "topo" && tamanho, { "com-anotacoes": anotacoes }, classe]}
+      viewBox={desenho.recortes[recorte]}
+      preserveAspectRatio={recorte === "og" ? "xMidYMid meet" : "xMidYMid slice"}
+      role={decorativa ? undefined : "img"}
+      aria-label={decorativa ? undefined : desenho.alt}
+      aria-hidden={decorativa ? "true" : undefined}
+      focusable="false"
+      style={`--cor:${cor}`}
+      set:html={desenho.corpo}
+    />
+  )
+}

@@ -1,0 +1,79 @@
+---
+/** Índice das categorias (/categories/): um bloco por categoria, com os artigos mais recentes. */
+import Base from "../../layouts/Base.astro";
+import CabecalhoPagina from "../../components/CabecalhoPagina.astro";
+import Chip from "../../components/Chip.astro";
+import { getCategorias, urlCategoria } from "../../lib/posts";
+
+const categorias = await getCategorias();
+---
+
+<Base titulo="Categorias" descricao="As categorias do blog de Cesar Schutz e os artigos de cada uma." atual="artigos">
+  <div class="wrap">
+    <CabecalhoPagina titulo="Categorias" descricao="Cada categoria é um livro na estante da página inicial." />
+    <ul class="categorias">
+      {
+        categorias.map(({ categoria, posts }) => (
+          <li>
+            <h2>
+              <Chip cor={categoria.tecido} nome={categoria.nome} href={urlCategoria(categoria.nome)} />
+            </h2>
+            <p class="descricao">{categoria.descricao}</p>
+            <p class="conta">
+              {posts.length} {posts.length === 1 ? "artigo" : "artigos"}
+            </p>
+            <ul class="recentes">
+              {posts.slice(0, 3).map((p) => (
+                <li>
+                  <a href={p.url}>{p.titulo}</a>
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Base>
+
+<style>
+  .categorias {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+    gap: 0 40px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .categorias > li {
+    padding: 22px 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 22px;
+  }
+
+  .descricao {
+    margin: 8px 0 0;
+    color: var(--ink-2);
+  }
+
+  .conta {
+    margin: 6px 0 0;
+    font-size: 14.5px;
+    color: var(--ink-2);
+    font-variant-numeric: lining-nums;
+  }
+
+  .recentes {
+    margin: 10px 0 0;
+    padding-left: 1.1em;
+  }
+
+  .recentes li {
+    margin: 4px 0;
+  }
+</style>

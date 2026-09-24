@@ -1,0 +1,40 @@
+# Deploy no GitHub Pages (preparado na Fase 7; só roda quando o projeto estiver num repositório do
+# GitHub, na virada: docs/virada.md). O `npm run build` gera as imagens de compartilhamento com o
+# Chrome que já vem no runner Ubuntu (D10) e o índice do Pagefind (D2), no postbuild.
+name: Deploy no GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Build do site com Astro
+        uses: withastro/action@v6
+        with:
+          node-version: 24
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy no GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

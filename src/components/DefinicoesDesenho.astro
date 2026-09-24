@@ -1,0 +1,27 @@
+---
+/**
+ * Definições globais dos desenhos (briefing §6 e §7, valores em docs/estilo-desenho.md): o tremor
+ * da caneta e a hachura, uma vez por página. Ilustrações e lousas não declaram <defs> nem ids
+ * próprios; usam estes pelas classes de src/styles/desenho.css. O SVG fica com tamanho zero, e não
+ * em display:none, porque aí o navegador deixa de aplicar filtro e padrão.
+ */
+---
+
+<svg class="definicoes-desenho" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="tremor" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="7" result="ruido"></feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="ruido" scale="4" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+    </filter>
+    <filter id="tremor-lousa" x="-5%" y="-10%" width="110%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="7" result="ruido"></feTurbulence>
+      <feDisplacementMap in="SourceGraphic" in2="ruido" scale="2" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap>
+    </filter>
+    <pattern id="hachura" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="7" class="traco-hachura"></line>
+    </pattern>
+    <pattern id="hachura-lousa" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="7" class="traco-hachura-lousa"></line>
+    </pattern>
+  </defs>
+</svg>

@@ -1,0 +1,120 @@
+---
+/**
+ * Topo do artigo (briefing §5.3): a ilustração antes do título (recorte largo, com anotações, no
+ * computador; 3:2 no celular), depois a trilha "Artigos › Categoria" (ou "Séries › Nome"), título,
+ * subtítulo, data, "Atualizado em" quando houver e tempo de leitura.
+ */
+import Chip from "./Chip.astro";
+import Ilustracao from "./Ilustracao.astro";
+import { temIlustracao } from "../lib/ilustracoes";
+import { dataIso, dataPorExtenso } from "../lib/formato";
+import { url } from "../lib/url";
+import type { Resumo } from "../lib/posts";
+
+interface Props {
+  post: Resumo;
+}
+
+const { post } = Astro.props;
+const atualizado =
+  post.atualizado && dataIso(post.atualizado) !== dataIso(post.publicado) ? post.atualizado : undefined;
+const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "Artigos", href: url("/archive/") };
+// Identificador no título ("AopUtils.getTargetClass()"): no celular, quebra de preferência depois do ponto.
+const partesDoTitulo = post.titulo.split(/(?<=\.)(?=[A-Za-z])/);
+---
+
+{
+  temIlustracao(post.slug) && (
+    <figure class="ilustracao-topo" data-pagefind-ignore>
+      <div class="largo">
+        <Ilustracao slug={post.slug} recorte="largo" cor={post.cor} anotacoes />
+      </div>
+      <div class="medio">
+        <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} />
+      </div>
+    </figure>
+  )
+}
+<header class="topo">
+  <nav class="trilha" aria-label="Trilha" data-pagefind-ignore>
+    <a href={raiz.href}>{raiz.nome}</a>
+    <span aria-hidden="true">›</span>
+    <Chip cor={post.cor} nome={post.rotulo} href={post.urlRotulo} />
+  </nav>
+  <h1 data-pagefind-meta="title" tabindex="-1">{partesDoTitulo.map((parte, i) => (i ? [<wbr />, parte] : parte))}</h1>
+  {post.subtitulo && <p class="subtitulo">{post.subtitulo}</p>}
+  <p class="meta" data-pagefind-ignore>
+    <time datetime={dataIso(post.publicado)}>{dataPorExtenso(post.publicado)}</time>
+    {atualizado && <span>Atualizado em <time datetime={dataIso(atualizado)}>{dataPorExtenso(atualizado)}</time></span>}
+    <span>{post.minutos} min de leitura</span>
+  </p>
+</header>
+
+<style>
+  .ilustracao-topo {
+    max-width: 1100px;
+    margin: 32px auto 0;
+  }
+
+  .largo {
+    aspect-ratio: 1100 / 468;
+  }
+
+  .medio {
+    display: none;
+    aspect-ratio: 3 / 2;
+  }
+
+  @media (max-width: 600px) {
+    .largo {
+      display: none;
+    }
+
+    .medio {
+      display: block;
+    }
+  }
+
+  .topo {
+    max-width: 760px;
+    margin-inline: auto;
+    padding-top: 28px;
+  }
+
+  .trilha {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    font-size: 15px;
+    color: var(--ink-2);
+  }
+
+  .trilha a {
+    color: var(--ink-2);
+  }
+
+  h1 {
+    margin: 14px 0 0;
+    font-weight: 800;
+    font-size: clamp(38px, 5.6vw, 62px);
+    line-height: 1.02;
+    letter-spacing: -0.014em;
+  }
+
+  .subtitulo {
+    margin: 12px 0 0;
+    font-size: clamp(19px, 2.2vw, 22px);
+    line-height: 1.4;
+    color: var(--ink-2);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 18px;
+    margin: 16px 0 0;
+    font-size: 14.5px;
+    color: var(--ink-2);
+  }
+</style>

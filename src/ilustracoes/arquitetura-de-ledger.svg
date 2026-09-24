@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -40 1217 919" data-largo="80 203 1100 468" data-medio="317 137 900 600" data-quadrado="432 102 670 670" data-og="397 -4 740 883" data-segura="488 283 558 307"
+  aria-label="Um livro-razão aberto: débito de 100,00 numa página, crédito de 100,00 na outra, e o carimbo de conciliado.">
+  <g class="tinta">
+    <path d="M488 296 C560 278 700 280 760 298 C820 280 960 278 1032 296 V552 C960 536 820 536 760 556 C700 536 560 536 488 552 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M488 296 C560 278 700 280 760 298 C820 280 960 278 1032 296 V552 C960 536 820 536 760 556 C700 536 560 536 488 552 Z" transform="translate(7 6)" class="cor"/>
+    <path d="M488 296 C560 278 700 280 760 298 C820 280 960 278 1032 296 V552 C960 536 820 536 760 556 C700 536 560 536 488 552 Z" class="linha"/>
+    <path d="M500 300 C560 285 700 285 760 305 V545 C700 525 560 525 500 540 Z" class="papel"/>
+    <path d="M760 305 C820 285 960 285 1020 300 V540 C960 525 820 525 760 545 Z" class="papel"/>
+    <path d="M530 360 H730 M530 420 H730 M790 360 H990 M790 420 H990" class="linha"/>
+    <path d="M530 478 H730 M790 478 H990" class="fantasma"/>
+  </g>
+  <text x="630" y="340" text-anchor="middle" class="rotulo">débito</text>
+  <text x="890" y="340" text-anchor="middle" class="rotulo">crédito</text>
+  <text x="630" y="402" text-anchor="middle" class="codigo">100,00</text>
+  <text x="890" y="402" text-anchor="middle" class="codigo">100,00</text>
+  <g transform="rotate(-12 905 552)"><text x="905" y="563" text-anchor="middle" class="carimbo-texto" transform="translate(905 552) scale(0.78) translate(-905 -552)">CONCILIADO</text></g>
+  <g class="anotacao">
+    <text x="100" y="330" class="nota">cada lançamento tem dois lados</text>
+    <text x="100" y="358" class="nota-pequena">e a soma dos dois dá zero</text>
+    <path d="M470 470 C490 470 510 476 528 478" class="chamada"/>
+    <text x="100" y="470" class="nota">só se acrescenta linha</text>
+    <text x="100" y="498" class="nota-pequena">nada se apaga</text>
+  </g>
+</svg>

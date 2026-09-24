@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -64 1200 924" data-largo="80 165 1100 468" data-medio="298 78 900 600" data-quadrado="413 43 670 670" data-og="378 -64 740 883" data-segura="482 180 532 396"
+  aria-label="Uma maquininha imprime o comprovante aprovado, mas a seta até o banco de dados está cortada: a cobrança passou e nada foi gravado.">
+  <g class="tinta">
+    <path d="M520 310 V192 L526.5 180 L533 192 L539.5 180 L546 192 L552.5 180 L559 192 L565.5 180 L572 192 L578.5 180 L585 192 L591.5 180 L598 192 L604.5 180 L611 192 L617.5 180 L624 192 L630.5 180 L637 192 L643.5 180 L650 192 V310 Z" transform="translate(8 8)" class="hachura"/>
+    <path d="M520 310 V192 L526.5 180 L533 192 L539.5 180 L546 192 L552.5 180 L559 192 L565.5 180 L572 192 L578.5 180 L585 192 L591.5 180 L598 192 L604.5 180 L611 192 L617.5 180 L624 192 L630.5 180 L637 192 L643.5 180 L650 192 V310 Z" class="papel"/>
+    <path d="M540 228 H630 M540 280 H610" class="linha"/>
+    <path d="M520 300 H650 A20 20 0 0 1 670 320 V530 A20 20 0 0 1 650 550 H520 A20 20 0 0 1 500 530 V320 A20 20 0 0 1 520 300 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M520 300 H650 A20 20 0 0 1 670 320 V530 A20 20 0 0 1 650 550 H520 A20 20 0 0 1 500 530 V320 A20 20 0 0 1 520 300 Z" class="papel"/>
+    <path d="M531 325 H639 A6 6 0 0 1 645 331 V389 A6 6 0 0 1 639 395 H531 A6 6 0 0 1 525 389 V331 A6 6 0 0 1 531 325 Z" transform="translate(5 4)" class="cor"/>
+    <path d="M531 325 H639 A6 6 0 0 1 645 331 V389 A6 6 0 0 1 639 395 H531 A6 6 0 0 1 525 389 V331 A6 6 0 0 1 531 325 Z" class="linha"/>
+    <path d="M539 420 H557 A4 4 0 0 1 561 424 V438 A4 4 0 0 1 557 442 H539 A4 4 0 0 1 535 438 V424 A4 4 0 0 1 539 420 Z M539 454 H557 A4 4 0 0 1 561 458 V472 A4 4 0 0 1 557 476 H539 A4 4 0 0 1 535 472 V458 A4 4 0 0 1 539 454 Z M539 488 H557 A4 4 0 0 1 561 492 V506 A4 4 0 0 1 557 510 H539 A4 4 0 0 1 535 506 V492 A4 4 0 0 1 539 488 Z M575 420 H593 A4 4 0 0 1 597 424 V438 A4 4 0 0 1 593 442 H575 A4 4 0 0 1 571 438 V424 A4 4 0 0 1 575 420 Z M575 454 H593 A4 4 0 0 1 597 458 V472 A4 4 0 0 1 593 476 H575 A4 4 0 0 1 571 472 V458 A4 4 0 0 1 575 454 Z M575 488 H593 A4 4 0 0 1 597 492 V506 A4 4 0 0 1 593 510 H575 A4 4 0 0 1 571 506 V492 A4 4 0 0 1 575 488 Z M611 420 H629 A4 4 0 0 1 633 424 V438 A4 4 0 0 1 629 442 H611 A4 4 0 0 1 607 438 V424 A4 4 0 0 1 611 420 Z M611 454 H629 A4 4 0 0 1 633 458 V472 A4 4 0 0 1 629 476 H611 A4 4 0 0 1 607 472 V458 A4 4 0 0 1 611 454 Z M611 488 H629 A4 4 0 0 1 633 492 V506 A4 4 0 0 1 629 510 H611 A4 4 0 0 1 607 506 V492 A4 4 0 0 1 611 488 Z" class="linha"/>
+    <path d="M690 430 H822" class="fantasma"/>
+    <path d="M810 422 L824 430 L810 438" class="fantasma"/>
+    <path d="M745 413 L771 439 M771 413 L745 439" class="linha"/>
+    <path d="M840 340 V520 A80 22 0 0 0 1000 520 V340 A80 22 0 0 1 840 340 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M840 340 V520 A80 22 0 0 0 1000 520 V340 A80 22 0 0 1 840 340 Z" class="papel"/>
+    <path d="M840 340 A80 22 0 1 0 1000 340 A80 22 0 1 0 840 340 Z" class="papel"/>
+    <path d="M840 400 A80 22 0 0 0 1000 400 M840 450 A80 22 0 0 0 1000 450" class="linha"/>
+    <path d="M872 472 H968 A4 4 0 0 1 972 476 V496 A4 4 0 0 1 968 500 H872 A4 4 0 0 1 868 496 V476 A4 4 0 0 1 872 472 Z" class="fantasma"/>
+    <g transform="rotate(-12 585 250)"><rect x="485" y="223" width="200" height="54" rx="6" class="carimbo"/></g>
+  </g>
+  <text x="920" y="568" text-anchor="middle" class="rotulo">banco</text>
+  <g transform="rotate(-12 585 250)"><text x="585" y="261" text-anchor="middle" class="carimbo-texto" transform="translate(585 250) scale(0.62) translate(-585 -250)">APROVADA</text></g>
+  <g class="anotacao">
+    <text x="100" y="330" class="nota">a captura passou no adquirente</text>
+    <text x="100" y="358" class="nota-pequena">e o processo morreu antes de gravar</text>
+    <text x="920" y="612" text-anchor="middle" class="nota-pequena">nenhum registro local</text>
+  </g>
+</svg>

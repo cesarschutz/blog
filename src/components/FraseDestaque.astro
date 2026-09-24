@@ -1,0 +1,52 @@
+---
+/**
+ * Frase em destaque (briefing §7, recurso raro): uma citação cujas palavras acendem com a rolagem.
+ * No máximo de vez em quando; o Cesar pode tirar. Sem JS ou com movimento reduzido, a frase já
+ * vem acesa.
+ *
+ *   <FraseDestaque texto="Em vez de verificar e depois gravar, você grava e deixa o banco recusar." />
+ */
+import "../styles/lousa.css";
+
+interface Props {
+  texto: string;
+}
+
+const { texto } = Astro.props;
+const escapar = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const palavras = texto.trim().split(/\s+/).map((p) => `<span class="palavra">${escapar(p)}</span>`).join(" ");
+---
+
+<blockquote class="frase-destaque" data-frase-destaque><p set:html={palavras} /></blockquote>
+
+<script>
+  const reduzir = matchMedia("(prefers-reduced-motion: reduce)");
+  const frases = [...document.querySelectorAll<HTMLElement>("[data-frase-destaque]")];
+  if (!reduzir.matches && frases.length) {
+    const acender = () => {
+      for (const frase of frases) {
+        const caixa = frase.getBoundingClientRect();
+        // Acende enquanto a frase sobe do pé da tela até perto do meio.
+        const lido = Math.min(1, Math.max(0, (innerHeight * 0.85 - caixa.top) / (innerHeight * 0.4 + caixa.height)));
+        const palavras = frase.querySelectorAll(".palavra");
+        const acesas = Math.round(lido * palavras.length);
+        palavras.forEach((p, i) => p.classList.toggle("acesa", i < acesas));
+      }
+    };
+    for (const frase of frases) frase.classList.add("animada");
+    let agendado = false;
+    addEventListener(
+      "scroll",
+      () => {
+        if (agendado) return;
+        agendado = true;
+        requestAnimationFrame(() => {
+          agendado = false;
+          acender();
+        });
+      },
+      { passive: true },
+    );
+    acender();
+  }
+</script>

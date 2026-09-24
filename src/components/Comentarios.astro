@@ -1,0 +1,76 @@
+---
+/**
+ * Comentários com Giscus (briefing §5.3): opcionais e desligados. A página só usa este componente
+ * com COMENTARIOS preenchido em src/data/site.ts (sem ele, nem o script vai para a página). O
+ * script do Giscus só carrega quando a seção chega perto da tela, no tema atual, e acompanha a troca.
+ */
+import { COMENTARIOS } from "../data/site";
+---
+
+<section class="comentarios" aria-labelledby="comentarios-titulo" data-pagefind-ignore>
+  <h2 id="comentarios-titulo">Comentários</h2>
+  <div
+    data-comentarios
+    data-repo={COMENTARIOS.repo}
+    data-repo-id={COMENTARIOS.repoId}
+    data-categoria={COMENTARIOS.categoria}
+    data-categoria-id={COMENTARIOS.categoriaId}
+  >
+  </div>
+</section>
+
+<script>
+  const lugar = document.querySelector<HTMLElement>("[data-comentarios]");
+  if (lugar) {
+    const raiz = document.documentElement;
+    const escuro = () => (raiz.dataset.theme ? raiz.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches);
+    const tema = () => (escuro() ? "dark_dimmed" : "light");
+    const carregar = () => {
+      const script = document.createElement("script");
+      script.src = "https://giscus.app/client.js";
+      script.async = true;
+      script.crossOrigin = "anonymous";
+      const atributos: Record<string, string> = {
+        "data-repo": lugar.dataset.repo!,
+        "data-repo-id": lugar.dataset.repoId!,
+        "data-category": lugar.dataset.categoria!,
+        "data-category-id": lugar.dataset.categoriaId!,
+        "data-mapping": "pathname",
+        "data-strict": "1",
+        "data-reactions-enabled": "1",
+        "data-input-position": "top",
+        "data-lang": "pt",
+        "data-loading": "lazy",
+        "data-theme": tema(),
+      };
+      for (const [nome, valor] of Object.entries(atributos)) script.setAttribute(nome, valor);
+      lugar.append(script);
+    };
+    new IntersectionObserver(
+      (entradas, observador) => {
+        if (!entradas[0].isIntersecting) return;
+        carregar();
+        observador.disconnect();
+      },
+      { rootMargin: "400px" },
+    ).observe(lugar);
+    new MutationObserver(() =>
+      document
+        .querySelector<HTMLIFrameElement>("iframe.giscus-frame")
+        ?.contentWindow?.postMessage({ giscus: { setConfig: { theme: tema() } } }, "https://giscus.app"),
+    ).observe(raiz, { attributes: true, attributeFilter: ["data-theme"] });
+  }
+</script>
+
+<style>
+  .comentarios {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+  }
+
+  h2 {
+    margin: 0 0 16px;
+    font-size: 24px;
+  }
+</style>

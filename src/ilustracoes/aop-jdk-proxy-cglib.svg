@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -40 1200 900" data-largo="80 158 1100 468" data-medio="200 100 900 600" data-quadrado="415 110 670 670" data-og="350 -40 740 883" data-segura="415 158 670 468"
+  aria-label="Uma chamada chega pela esquerda e passa primeiro pelo proxy, a moldura colorida em volta do PedidoService, antes de chegar ao bean.">
+  <g class="tinta">
+    <path d="M624 262 H936 A24 24 0 0 1 960 286 V514 A24 24 0 0 1 936 538 H624 A24 24 0 0 1 600 514 V286 A24 24 0 0 1 624 262 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M624 262 H936 A24 24 0 0 1 960 286 V514 A24 24 0 0 1 936 538 H624 A24 24 0 0 1 600 514 V286 A24 24 0 0 1 624 262 Z" transform="translate(7 6)" class="cor"/>
+    <path d="M624 262 H936 A24 24 0 0 1 960 286 V514 A24 24 0 0 1 936 538 H624 A24 24 0 0 1 600 514 V286 A24 24 0 0 1 624 262 Z" class="linha"/>
+    <path d="M660 304 H900 A12 12 0 0 1 912 316 V484 A12 12 0 0 1 900 496 H660 A12 12 0 0 1 648 484 V316 A12 12 0 0 1 660 304 Z" class="papel"/>
+    <path d="M672 402 H888 M672 432 H850 M672 462 H870" class="linha"/>
+    <path d="M440 400 L596 400 M584.6 406.2 L596 400 L584.6 393.8" class="linha"/>
+    <path d="M600 400 H640" class="linha"/>
+    <path d="M628 392 L642 400 L628 408" class="linha"/>
+  </g>
+  <text x="780" y="362" text-anchor="middle" class="codigo">PedidoService</text>
+  <text x="624" y="294" class="rotulo">proxy</text>
+  <g class="anotacao">
+    <text x="100" y="330" class="nota">o Spring põe um proxy na frente</text>
+    <text x="100" y="358" class="nota-pequena">que abre a transação e chama o bean</text>
+    <text x="100" y="470" class="nota">proxy JDK ou subclasse CGLIB</text>
+    <text x="100" y="498" class="nota-pequena">o Spring Boot prefere a CGLIB</text>
+  </g>
+</svg>

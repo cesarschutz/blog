@@ -1,0 +1,51 @@
+---
+/**
+ * Botão "voltar ao topo" (briefing §5.3): aparece depois de uma tela de rolagem. Começa escondido;
+ * src/scripts/artigo.ts o liga. Sem JS, não aparece (o Home do teclado continua valendo).
+ */
+import { ICONES } from "../lib/icones";
+---
+
+<button type="button" class="voltar-topo" aria-label="Voltar ao topo" hidden data-voltar-topo>
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.subir} />
+</button>
+
+<style>
+  .voltar-topo {
+    position: fixed;
+    right: max(18px, env(safe-area-inset-right, 0px));
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    z-index: 40;
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: 1px solid var(--rule);
+    border-radius: 50%;
+    background: var(--paper-hi);
+    box-shadow: var(--ergue);
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    transition:
+      opacity 0.2s,
+      transform 0.2s;
+  }
+
+  .voltar-topo:global(.visivel) {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+</style>

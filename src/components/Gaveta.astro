@@ -1,0 +1,289 @@
+---
+/**
+ * Gaveta da estante (briefing §5.1): ao abrir um livro, a lombada sai da prateleira e, abaixo, o livro
+ * gira da lombada para a capa (3D), com o sumário ao lado (filtro sem acento; por ano nas categorias,
+ * "Parte N" nas séries). Trocar de livro fecha o atual antes de abrir o próximo; cliques rápidos
+ * terminam a animação e abrem o último escolhido. Botão "Fechar livro" e Esc. Cada livro vem pronto
+ * num <template>; o script só monta. O tombo do livro inclinado começa no script do <head>.
+ */
+import MioloLombada from "./MioloLombada.astro";
+import { tamanhoDoTituloDaCapa, textoDoFiltro, type Livro } from "../lib/estante";
+import { diaEMes } from "../lib/formato";
+import type { Resumo } from "../lib/posts";
+import "../styles/estante.css";
+
+interface Props {
+  livros: Livro[];
+}
+
+const { livros } = Astro.props;
+
+type Linha = { tipo: "ano"; ano: number } | { tipo: "post"; post: Resumo; parte?: number };
+function linhas(l: Livro): Linha[] {
+  if (l.serie) return l.posts.map((post, i) => ({ tipo: "post", post, parte: i + 1 }));
+  const saida: Linha[] = [];
+  let ano: number | undefined;
+  for (const post of l.posts) {
+    const a = post.publicado.getUTCFullYear();
+    if (a !== ano) saida.push({ tipo: "ano", ano: (ano = a) });
+    saida.push({ tipo: "post", post });
+  }
+  return saida;
+}
+---
+
+<div class="gaveta" id="gaveta" data-gaveta><div></div></div>
+
+{
+  livros.map((l) => (
+    <template data-modelo={l.id}>
+      <div class="livro-aberto" data-largura={l.largura} style={`--tecido:${l.tecido};--texto:${l.texto}${l.fita ? `;--fita:${l.fita}` : ""}`}>
+        <div class="livro-3d-caixa" aria-hidden="true">
+          <div class="livro-3d">
+            <div class:list={["face-lombada", "lombada-visual", { "de-serie": l.serie }]}>
+              <MioloLombada livro={l} semFita />
+            </div>
+            <div class="face-capa">
+              <div class:list={["capa", { "de-serie": l.serie }]} style={`--cvf:${tamanhoDoTituloDaCapa(l.nome)}cqw`}>
+                {l.serie ? <p class="tipo-capa">Série</p> : <div class="filete" />}
+                <div class="titulo-capa">{l.nome}</div>
+                <p class="descricao-capa">{l.descricao}</p>
+                <div class="pe-capa">
+                  {l.contagem}
+                  <br />
+                  <span class="autor-capa">Cesar Schutz</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="sumario-livro">
+          <div class="topo-sumario">
+            <h2 id={`sumario-${l.id}`} tabindex="-1">{l.serie ? "Ordem de leitura" : "Sumário"}</h2>
+            <span class="meta-sumario">{`${l.nome}, ${l.contagem}`}</span>
+            <button type="button" class="botao fechar-livro" data-fechar-livro>Fechar livro</button>
+          </div>
+          <label class="sr" for={`filtro-${l.id}`}>Filtrar neste livro</label>
+          <input id={`filtro-${l.id}`} class="filtro-livro" type="search" placeholder="Filtrar neste livro" autocomplete="off" data-filtro-livro />
+          <ul class="indice-livro" aria-labelledby={`sumario-${l.id}`}>
+            {linhas(l).map((linha) =>
+              linha.tipo === "ano" ? (
+                <li class="ano" aria-hidden="true">{linha.ano}</li>
+              ) : (
+                <li data-q={textoDoFiltro(linha.post)}>
+                  <a href={linha.post.url}>
+                    <span class="titulo-item">{linha.parte && <span class="parte">Parte {linha.parte}</span>}{linha.post.titulo}</span>
+                    <span class="pontilhado" aria-hidden="true" />
+                    <span class="dia">{diaEMes(linha.post.publicado)}</span>
+                  </a>
+                </li>
+              ),
+            )}
+          </ul>
+          <p class="vazio-livro" hidden>Nenhum artigo deste livro tem esse termo.</p>
+        </div>
+      </div>
+    </template>
+  ))
+}
+
+<script>
+  import { normalizar } from "../lib/busca/tipos";
+
+  const gaveta = document.querySelector<HTMLElement>("[data-gaveta]");
+  const estante = document.querySelector<HTMLElement>("[data-estante]");
+  if (gaveta && estante) {
+    const miolo = gaveta.firstElementChild as HTMLElement;
+    const lombadas = [...estante.querySelectorAll<HTMLAnchorElement>("[data-livro]")];
+    const reduzir = matchMedia("(prefers-reduced-motion: reduce)");
+    const pequeno = matchMedia("(max-width: 760px)");
+    const T = (ms: number) => (reduzir.matches ? 0 : ms);
+    const rolar = (): ScrollBehavior => (reduzir.matches ? "auto" : "smooth");
+
+    let aberto: string | null = null;
+    let ocupado = false;
+    let pendente: { id: string; daLista: boolean; foco: boolean } | null = null;
+
+    function medidas(largura: number) {
+      const p = pequeno.matches;
+      const bh = p ? 270 : 360;
+      const cw = p ? 180 : 240;
+      const k = p ? 0.95 : 1.3;
+      const sw = Math.round(largura * k);
+      return { bh, cw, k, sw, x0: (cw - sw) / 2, x1: -sw };
+    }
+
+    function ligarFiltro(no: HTMLElement) {
+      const campo = no.querySelector<HTMLInputElement>("[data-filtro-livro]")!;
+      const lista = no.querySelector<HTMLUListElement>(".indice-livro")!;
+      const vazio = no.querySelector<HTMLElement>(".vazio-livro")!;
+      campo.addEventListener("input", () => {
+        const q = normalizar(campo.value.trim());
+        let ano: HTMLElement | null = null;
+        let anoTem = false;
+        let algum = false;
+        const fecharAno = () => ano && (ano.hidden = !anoTem);
+        for (const li of lista.children as HTMLCollectionOf<HTMLElement>) {
+          if (li.classList.contains("ano")) {
+            fecharAno();
+            ano = li;
+            anoTem = false;
+            continue;
+          }
+          const passa = !q || (li.dataset.q ?? "").includes(q);
+          li.hidden = !passa;
+          if (passa) anoTem = algum = true;
+        }
+        fecharAno();
+        vazio.hidden = algum;
+      });
+    }
+
+    function montar(id: string, assentado: boolean) {
+      const modelo = document.querySelector<HTMLTemplateElement>(`template[data-modelo="${id}"]`)!;
+      const no = modelo.content.firstElementChild!.cloneNode(true) as HTMLElement;
+      const m = medidas(Number(no.dataset.largura));
+      for (const [nome, valor] of Object.entries({ bh: m.bh, cw: m.cw, sw: m.sw, x0: m.x0, x1: m.x1 })) {
+        no.style.setProperty(`--${nome}`, `${valor}px`);
+      }
+      no.querySelector<HTMLElement>(".face-lombada")!.style.setProperty("--u", `${m.k}px`);
+      if (assentado) {
+        no.classList.add("aparecendo");
+        no.querySelector(".livro-3d")!.classList.add("virado");
+      }
+      miolo.replaceChildren(no);
+      ligarFiltro(no);
+      return no;
+    }
+
+    function sincronizar() {
+      for (const l of lombadas) {
+        const este = l.dataset.livro === aberto;
+        l.classList.toggle("retirado", este);
+        l.setAttribute("aria-expanded", String(este));
+      }
+    }
+
+    function dobrar(depois: () => void) {
+      const livro = miolo.querySelector(".livro-3d");
+      if (!livro) return depois();
+      miolo.querySelector(".livro-aberto")!.classList.remove("aparecendo");
+      livro.classList.add("fechando");
+      livro.classList.remove("virado");
+      setTimeout(depois, T(620));
+    }
+
+    function mostrar(id: string, estavaFechado: boolean, daLista: boolean, foco: boolean) {
+      aberto = id;
+      sincronizar();
+      const no = montar(id, false);
+      gaveta!.classList.add("aberta");
+      // Ler o layout confirma o estado inicial (lombada de frente) antes de girar. Sem depender de
+      // requestAnimationFrame, que não roda em aba oculta e deixaria a estante presa em "ocupado".
+      void no.getBoundingClientRect();
+      setTimeout(() => {
+        no.querySelector(".livro-3d")!.classList.add("virado");
+        no.classList.add("aparecendo");
+        if (foco) no.querySelector<HTMLElement>("h2")!.focus({ preventScroll: true });
+        setTimeout(() => {
+          ocupado = false;
+          if (pendente) {
+            const p = pendente;
+            pendente = null;
+            abrirLivro(p.id, p.daLista, p.foco);
+          }
+        }, T(420));
+      }, T(estavaFechado ? 180 : 0));
+      setTimeout(() => {
+        const r = gaveta!.getBoundingClientRect();
+        if (daLista || r.top > innerHeight * 0.6 || r.bottom > innerHeight + 200) {
+          estante!.scrollIntoView({ behavior: rolar(), block: "start" });
+        }
+      }, T(estavaFechado ? 260 : 60));
+    }
+
+    function abrirLivro(id: string, daLista = false, foco = false) {
+      if (ocupado) {
+        pendente = { id, daLista, foco };
+        return;
+      }
+      if (aberto === id) {
+        if (daLista) estante!.scrollIntoView({ behavior: rolar(), block: "start" });
+        else fecharLivro(foco);
+        return;
+      }
+      ocupado = true;
+      if (aberto)
+        dobrar(() => {
+          aberto = null;
+          sincronizar();
+          mostrar(id, false, daLista, foco);
+        });
+      else mostrar(id, true, daLista, foco);
+    }
+
+    function fecharLivro(devolverFoco = false) {
+      if (!aberto || ocupado) return;
+      ocupado = true;
+      const id = aberto;
+      dobrar(() => {
+        aberto = null;
+        sincronizar();
+        gaveta!.classList.remove("aberta");
+        if (devolverFoco) lombadas.find((l) => l.dataset.livro === id)?.focus();
+        setTimeout(() => {
+          if (!aberto) miolo.replaceChildren();
+          ocupado = false;
+        }, T(520));
+      });
+    }
+
+    const clique = (e: MouseEvent) => e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
+    for (const l of lombadas) {
+      l.setAttribute("aria-controls", "gaveta");
+      l.setAttribute("aria-expanded", "false");
+      l.addEventListener("click", (e) => {
+        if (!clique(e)) return;
+        e.preventDefault();
+        abrirLivro(l.dataset.livro!, false, e.detail === 0);
+      });
+    }
+
+    // Na home, os links de categoria (chips) também abrem o livro, rolando até a estante.
+    const porEndereco = new Map(lombadas.map((l) => [new URL(l.href).pathname, l.dataset.livro!]));
+    document.addEventListener("click", (e) => {
+      const link = (e.target as HTMLElement).closest<HTMLAnchorElement>("a[href]");
+      if (!link || link.closest("[data-estante], [data-gaveta]") || !clique(e)) return;
+      const id = porEndereco.get(new URL(link.href, location.href).pathname);
+      if (!id) return;
+      e.preventDefault();
+      abrirLivro(id, true, e.detail === 0);
+    });
+
+    miolo.addEventListener("click", (e) => {
+      if ((e.target as HTMLElement).closest("[data-fechar-livro]")) fecharLivro(e.detail === 0);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && aberto && !document.querySelector("dialog[open]")) fecharLivro(true);
+    });
+    pequeno.addEventListener("change", () => {
+      if (aberto && !ocupado) montar(aberto, true);
+    });
+
+    // Primeira visita da sessão: o livro inclinado começa em pé (script do <head>) e tomba devagar.
+    const raiz = document.documentElement;
+    const inclinada = estante.querySelector<HTMLElement>(".lombada.inclinada");
+    if (inclinada && "tombar" in raiz.dataset) {
+      setTimeout(() => {
+        inclinada.classList.add("tombando");
+        delete raiz.dataset.tombar;
+        setTimeout(() => inclinada.classList.remove("tombando"), 1200);
+        try {
+          sessionStorage.setItem("estante-tombou", "1");
+        } catch {
+          // Sem armazenamento: tomba de novo na próxima visita, sem outro efeito.
+        }
+      }, 700);
+    }
+  }
+</script>

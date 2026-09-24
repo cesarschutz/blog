@@ -1,0 +1,114 @@
+---
+/**
+ * Sumário do artigo (briefing §5.3), só com 3 seções ou mais. "lateral": fixo na coluna da
+ * esquerda em telas ≥ 1300px, marcando a seção atual (src/scripts/artigo.ts). "recolhivel": no
+ * início do texto, nas telas menores.
+ */
+interface Props {
+  secoes: { slug: string; text: string }[];
+  variante: "lateral" | "recolhivel";
+}
+
+const { secoes, variante } = Astro.props;
+---
+
+{
+  variante === "lateral" ? (
+    <aside class="lateral" data-pagefind-ignore>
+      <nav aria-label="Neste artigo">
+        <p class="titulo">Neste artigo</p>
+        <ol>
+          {secoes.map((s) => (
+            <li>
+              <a href={`#${s.slug}`} data-secao={s.slug}>{s.text}</a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </aside>
+  ) : (
+    <details class="recolhivel" data-pagefind-ignore>
+      <summary>Neste artigo</summary>
+      <nav aria-label="Neste artigo">
+        <ol>
+          {secoes.map((s) => (
+            <li>
+              <a href={`#${s.slug}`}>{s.text}</a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </details>
+  )
+}
+
+<style>
+  .lateral {
+    display: none;
+    grid-column: 1;
+    justify-self: end;
+    width: 200px;
+    margin-right: 48px;
+  }
+
+  .lateral nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+
+  .titulo {
+    margin: 0 0 8px;
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    font-size: 15px;
+  }
+
+  .lateral ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 14.5px;
+    line-height: 1.4;
+  }
+
+  .lateral a {
+    display: block;
+    padding: 5px 0 5px 12px;
+    border-left: 1px solid var(--rule);
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+
+  .lateral a:hover {
+    color: var(--ink);
+  }
+
+  .lateral a[aria-current="true"] {
+    padding-left: 11px;
+    border-left: 2px solid var(--ink);
+    color: var(--ink);
+  }
+
+  .recolhivel ol {
+    margin: 0;
+    padding: 0 16px 12px 36px;
+    font-size: 16px;
+  }
+
+  .recolhivel a {
+    color: var(--ink);
+  }
+
+  @media (min-width: 1300px) {
+    .lateral {
+      display: block;
+    }
+
+    .recolhivel {
+      display: none;
+    }
+  }
+</style>

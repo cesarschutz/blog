@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -87 1200 947" data-largo="80 121 1100 468" data-medio="295 55 900 600" data-quadrado="405 15 680 680" data-og="375 -87 740 883" data-segura="430 176 630 358"
+  aria-label="Uma tachinha prende o fio da virtual thread na placa da carrier, dentro do bloco synchronized; ao lado, dois plugues soltos em CLOSE_WAIT.">
+  <g class="tinta">
+    <path d="M484 390 H856 A14 14 0 0 1 870 404 V506 A14 14 0 0 1 856 520 H484 A14 14 0 0 1 470 506 V404 A14 14 0 0 1 484 390 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M484 390 H856 A14 14 0 0 1 870 404 V506 A14 14 0 0 1 856 520 H484 A14 14 0 0 1 470 506 V404 A14 14 0 0 1 484 390 Z" class="papel"/>
+    <path d="M618 404 H802 A8 8 0 0 1 810 412 V498 A8 8 0 0 1 802 506 H618 A8 8 0 0 1 610 498 V412 A8 8 0 0 1 618 404 Z" class="fantasma"/>
+    <path d="M430 290 C500 250 560 360 620 400 C660 425 690 450 705 455 C760 470 820 380 850 362 C862 355 872 352 882 350" class="linha"/>
+    <path d="M705 455 L729 416" class="linha"/>
+    <path d="M743 410 A10 10 0 1 1 723 410 A10 10 0 1 1 743 410 Z" class="papel"/>
+    <path d="M788 378 A36 36 0 1 1 716 378 A36 36 0 1 1 788 378 Z" transform="translate(10 10)" class="hachura"/>
+    <path d="M788 378 A36 36 0 1 1 716 378 A36 36 0 1 1 788 378 Z" transform="translate(7 6)" class="cor"/>
+    <path d="M788 378 A36 36 0 1 1 716 378 A36 36 0 1 1 788 378 Z" class="linha"/>
+    <path d="M945 176 C940 220 956 260 950 300" class="linha"/>
+    <path d="M936 300 H964 A6 6 0 0 1 970 306 V344 A6 6 0 0 1 964 350 H936 A6 6 0 0 1 930 344 V306 A6 6 0 0 1 936 300 Z" transform="translate(6 6)" class="hachura"/>
+    <path d="M936 300 H964 A6 6 0 0 1 970 306 V344 A6 6 0 0 1 964 350 H936 A6 6 0 0 1 930 344 V306 A6 6 0 0 1 936 300 Z" class="papel"/>
+    <path d="M940 350 V368 M960 350 V368" class="linha"/>
+    <path d="M1025 176 C1030 230 1004 280 1010 330" class="linha"/>
+    <path d="M996 330 H1024 A6 6 0 0 1 1030 336 V374 A6 6 0 0 1 1024 380 H996 A6 6 0 0 1 990 374 V336 A6 6 0 0 1 996 330 Z" transform="translate(6 6)" class="hachura"/>
+    <path d="M996 330 H1024 A6 6 0 0 1 1030 336 V374 A6 6 0 0 1 1024 380 H996 A6 6 0 0 1 990 374 V336 A6 6 0 0 1 996 330 Z" class="papel"/>
+    <path d="M1000 380 V398 M1020 380 V398" class="linha"/>
+  </g>
+  <text x="490" y="426" class="codigo">carrier</text>
+  <text x="625" y="494" class="codigo">synchronized</text>
+  <text x="985" y="440" text-anchor="middle" class="codigo">CLOSE_WAIT</text>
+  <g class="anotacao">
+    <text x="100" y="300" class="nota">a virtual thread presa</text>
+    <text x="100" y="328" class="nota-pequena">enquanto está no synchronized</text>
+    <path d="M368 308 C392 302 410 297 426 292" class="chamada"/>
+  </g>
+</svg>

@@ -1,0 +1,133 @@
+---
+/**
+ * Destaque da home (briefing §5.1): o post mais recente, com a ilustração em 3:2, categoria, data,
+ * tempo de leitura, título, subtítulo e tags. Sem ilustração, ocupa uma coluna só.
+ */
+import Chip from "./Chip.astro";
+import Ilustracao from "./Ilustracao.astro";
+import { dataIso, dataPorExtenso } from "../lib/formato";
+import { temIlustracao } from "../lib/ilustracoes";
+import { urlTag, type Resumo } from "../lib/posts";
+
+interface Props {
+  post: Resumo;
+}
+
+const { post } = Astro.props;
+---
+
+<section class="destaque wrap" aria-labelledby="destaque-titulo">
+  <h2 id="destaque-titulo" class="titulo-secao">Em destaque</h2>
+  <article class:list={["cartao-destaque", { "com-ilustracao": temIlustracao(post.slug) }]}>
+    {
+      temIlustracao(post.slug) && (
+        <a class="ilustracao-destaque" href={post.url} tabindex="-1" aria-hidden="true">
+          <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} tamanho="cartao" decorativa />
+        </a>
+      )
+    }
+    <div>
+      <p class="meta">
+        <Chip cor={post.cor} nome={post.rotulo} href={post.urlRotulo} />
+        <span><time datetime={dataIso(post.publicado)}>{dataPorExtenso(post.publicado)}</time>, {post.minutos} min de leitura</span>
+      </p>
+      <h3><a href={post.url}>{post.titulo}</a></h3>
+      {post.subtitulo && <p class="subtitulo">{post.subtitulo}</p>}
+      <ul class="tags" aria-label="Tags">
+        {
+          post.tags.map((t) => (
+            <li>
+              <a href={urlTag(t)} data-busca-tag={t}>
+                #{t}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </article>
+</section>
+
+<style>
+  .destaque {
+    padding-top: 64px;
+  }
+
+  .ilustracao-destaque {
+    display: block;
+    aspect-ratio: 3 / 2;
+  }
+
+  .cartao-destaque.com-ilustracao {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 40px;
+    align-items: center;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 14px;
+    margin: 0;
+    font-size: 14.5px;
+    color: var(--ink-2);
+  }
+
+  h3 {
+    margin: 10px 0 8px;
+    font-weight: 800;
+    font-size: clamp(28px, 3.6vw, 40px);
+    line-height: 1.08;
+  }
+
+  h3 a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  h3 a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.12em;
+  }
+
+  .subtitulo {
+    max-width: 52ch;
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.45;
+    color: var(--ink-2);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 14px;
+    margin: 12px 0 0;
+    padding: 0;
+    font-size: 14.5px;
+    list-style: none;
+  }
+
+  .tags a {
+    display: inline-block;
+    padding: 4px 0;
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+
+  .tags a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  @media (max-width: 760px) {
+    .cartao-destaque.com-ilustracao {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 18px;
+    }
+  }
+</style>

@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "deny": [
+      "Edit(//Users/cesar.schutz/Downloads/novo site/blog-atual/**)"
+    ]
+  }
+}

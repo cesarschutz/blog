@@ -1,0 +1,101 @@
+---
+/**
+ * Home (briefing §5.1): abertura com a estante, a gaveta do livro aberto, o destaque (post mais
+ * recente, que não se repete na lista), os artigos recentes (Lista / Cards) e a nuvem de tags.
+ */
+import Base from "../layouts/Base.astro";
+import Estante from "../components/Estante.astro";
+import Gaveta from "../components/Gaveta.astro";
+import Destaque from "../components/Destaque.astro";
+import Recentes from "../components/Recentes.astro";
+import NuvemTags from "../components/NuvemTags.astro";
+import { montarLivros } from "../lib/estante";
+import { getResumos, getTags } from "../lib/posts";
+import { url } from "../lib/url";
+
+const RECENTES = 8;
+const livros = await montarLivros();
+const resumos = await getResumos();
+const [destaque, ...demais] = resumos;
+const tags = await getTags();
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Cesar Schutz",
+  url: new URL(url("/"), Astro.site).href,
+  inLanguage: "pt-BR",
+  author: { "@type": "Person", name: "Cesar Schutz", jobTitle: "Arquiteto de soluções" },
+};
+---
+
+<Base jsonLd={jsonLd}>
+  <div class="wrap abertura">
+    <section class="intro" aria-labelledby="home-titulo">
+      <h1 id="home-titulo">Cesar Schutz</h1>
+      <p class="frase">
+        Arquiteto de soluções. Aqui publico o que estudo sobre arquitetura de software, Java e sistemas de pagamento.
+      </p>
+      <p class="nota-ia">
+        Os textos são escritos com ajuda de IA e revisados por mim. Leia como anotações de estudo e confira antes de
+        levar para produção.
+      </p>
+    </section>
+    <Estante livros={livros} />
+  </div>
+  <div class="wrap">
+    <Gaveta livros={livros} />
+  </div>
+  {destaque && <Destaque post={destaque} />}
+  <Recentes posts={demais.slice(0, RECENTES)} total={resumos.length} />
+  <NuvemTags tags={tags} />
+</Base>
+
+<style>
+  .abertura {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 40px 56px;
+    align-items: end;
+    padding-top: 60px;
+  }
+
+  h1 {
+    margin: 0 0 18px;
+    font-weight: 800;
+    font-size: clamp(40px, 6.2vw, 66px);
+    line-height: 1;
+    letter-spacing: -0.015em;
+  }
+
+  .frase {
+    max-width: 32ch;
+    margin: 0;
+    font-size: clamp(18px, 2vw, 20px);
+    line-height: 1.5;
+  }
+
+  .nota-ia {
+    max-width: 44ch;
+    margin: 14px 0 0;
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--ink-2);
+  }
+
+  @media (max-width: 860px) {
+    .abertura {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 28px;
+      padding-top: 40px;
+    }
+
+    /* Em coluna única, a tábua ocupa a largura toda, como no protótipo. */
+    .abertura > :global(.estante) {
+      width: auto;
+    }
+
+    .frase {
+      max-width: 40ch;
+    }
+  }
+</style>

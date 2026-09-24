@@ -1,0 +1,185 @@
+---
+/** Página da série "Atualizações do Java" (/java/), portada do blog atual (skill serie-java). */
+import Base from "../layouts/Base.astro";
+import CabecalhoPagina from "../components/CabecalhoPagina.astro";
+import { GUIA_JAVA, JAVA_LTS, RELEASED_LTS } from "../data/java";
+import { serie } from "../data/series";
+import { getResumos } from "../lib/posts";
+import { url } from "../lib/url";
+
+const resumos = await getResumos();
+const java = serie("java")!;
+const versoes = JAVA_LTS.map((lts) => ({ lts, post: resumos.find((r) => r.slug === `java-${lts.version}`) })).filter(
+  (v) => v.post,
+);
+const guia = resumos.find((r) => r.slug === GUIA_JAVA);
+const proxima = JAVA_LTS.find((v) => v.upcoming);
+---
+
+<Base
+  titulo="Atualizações do Java"
+  descricao="Cada versão LTS do Java explicada: o que mudou desde a LTS anterior, em qual versão cada recurso chegou, com exemplos de código e fontes oficiais."
+>
+  <div class="wrap java" style={`--cor:${java.destaque}`}>
+    <CabecalhoPagina
+      titulo="Atualizações do Java"
+      descricao="Uma leitura por versão LTS. Cada artigo reúne o que as versões intermediárias trouxeram desde a LTS anterior, mostra em qual versão cada recurso chegou e traz exemplos de código, diagramas e fontes oficiais."
+      trilha={{ nome: "Séries", href: url("/series/") }}
+    >
+      <p class="numeros">
+        <span><strong>{RELEASED_LTS.length}</strong> LTS lançadas</span>
+        <span>mais recente: <strong>Java {RELEASED_LTS[0].version}</strong></span>
+        {proxima && <span>próxima: <strong>Java {proxima.version}</strong>, prevista para {proxima.release}</span>}
+      </p>
+    </CabecalhoPagina>
+
+    {
+      guia && (
+        <a class="guia" href={guia.url}>
+          <span class="guia-rotulo">Comece por aqui</span>
+          <span class="guia-titulo">{guia.titulo}</span>
+          <span class="guia-texto">
+            Como o ciclo de releases funciona, qual distribuição de JDK usar e como migrar com segurança: a base para ler
+            as LTS.
+          </span>
+        </a>
+      )
+    }
+
+    <ul class="versoes" aria-label="Versões LTS">
+      {
+        versoes.map(({ lts, post }) => (
+          <li>
+            <a class:list={["versao", { proxima: lts.upcoming }]} href={post!.url}>
+              <span class="topo-versao">
+                <span class="numero">{lts.version}</span>
+                <span class="selo">{lts.upcoming ? "Próxima LTS" : "LTS"}</span>
+              </span>
+              <span class="subtitulo">{post!.subtitulo}</span>
+              <span class="rodape-versao">
+                <span>{lts.covers}</span>
+                <span>{lts.upcoming ? `previsto: ${lts.release}` : lts.release}</span>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Base>
+
+<style>
+  .java {
+    --destaque: color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro));
+  }
+
+  .numeros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+    margin: 16px 0 0;
+    font-size: 15px;
+    color: var(--ink-2);
+  }
+
+  .numeros strong {
+    color: var(--ink);
+    font-variant-numeric: lining-nums;
+  }
+
+  .guia {
+    display: grid;
+    gap: 4px;
+    padding: 20px 22px;
+    border: 1px solid color-mix(in oklab, var(--destaque) 40%, var(--rule));
+    border-radius: 6px;
+    background: color-mix(in oklab, var(--destaque) 6%, var(--paper-hi));
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .guia:hover {
+    border-color: var(--destaque);
+  }
+
+  .guia-rotulo {
+    font-size: 14.5px;
+    color: var(--destaque);
+  }
+
+  .guia-titulo {
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    font-size: 24px;
+  }
+
+  .guia-texto {
+    color: var(--ink-2);
+  }
+
+  .versoes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+    margin: 24px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .versao {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 10px;
+    height: 100%;
+    padding: 18px 18px 16px;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .versao:hover {
+    border-color: var(--ink-3);
+  }
+
+  .versao.proxima {
+    border-style: dashed;
+  }
+
+  .topo-versao {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .numero {
+    font-family: var(--font-titulo);
+    font-weight: 900;
+    font-size: 44px;
+    line-height: 1;
+    color: var(--destaque);
+    font-variant-numeric: lining-nums;
+  }
+
+  .selo {
+    font-size: 13.5px;
+    color: var(--ink-2);
+  }
+
+  .subtitulo {
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 1.35;
+  }
+
+  .rodape-versao {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 4px 12px;
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+</style>

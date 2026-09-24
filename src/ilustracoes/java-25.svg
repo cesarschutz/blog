@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -40 1231 900" data-largo="80 175 1100 468" data-medio="331 109 900 600" data-quadrado="446 74 670 670" data-og="411 -32 740 883" data-segura="565 194 431 430"
+  aria-label="Uma caneca com JAVA 25 e o carimbo LTS, a versão de suporte longo lançada em set/2025.">
+  <g class="tinta">
+    <g transform="translate(590 330)">
+      <path d="M75 -48 C58 -80 92 -100 75 -132" class="linha"/>
+      <path d="M155 -48 C138 -80 172 -100 155 -136" class="linha"/>
+      <path d="M0 0 H240 V120 A60 60 0 0 1 180 180 H60 A60 60 0 0 1 0 120 Z" transform="translate(14 14)" class="hachura"/>
+      <path d="M0 0 H240 V120 A60 60 0 0 1 180 180 H60 A60 60 0 0 1 0 120 Z" transform="translate(7 6)" class="cor"/>
+      <path d="M0 0 H240 V120 A60 60 0 0 1 180 180 H60 A60 60 0 0 1 0 120 Z" class="linha"/>
+      <path d="M240 28 H282 A52 52 0 0 1 282 132 H240" class="linha"/>
+      <path d="M-25 222 H265" class="linha"/>
+    </g>
+    <g transform="rotate(-12 930 585)"><rect x="868" y="558" width="124" height="54" rx="6" class="carimbo"/></g>
+  </g>
+  <g transform="translate(590 330)"><text x="120" y="58" text-anchor="middle" class="codigo">JAVA</text>
+      <text x="120" y="150" text-anchor="middle" class="numero">25</text></g>
+  <g transform="rotate(-12 930 585)"><text x="930" y="596" text-anchor="middle" class="carimbo-texto">LTS</text></g>
+  <g class="anotacao">
+      <text x="110" y="386" class="nota">desde o Java 21</text>
+      <path d="M118 430 H372" class="chamada"/>
+      <path d="M362 422 L372 430 L362 438" class="chamada"/>
+      <circle cx="181.5" cy="430" r="6" class="chamada"/>
+      <text x="181.5" y="466" text-anchor="middle" class="nota-pequena">22</text>
+      <circle cx="245" cy="430" r="6" class="chamada"/>
+      <text x="245" y="466" text-anchor="middle" class="nota-pequena">23</text>
+      <circle cx="308.5" cy="430" r="6" class="chamada"/>
+      <text x="308.5" y="466" text-anchor="middle" class="nota-pequena">24</text>
+      <text x="110" y="518" class="nota-pequena">lançado em set/2025</text>
+    </g>
+</svg>

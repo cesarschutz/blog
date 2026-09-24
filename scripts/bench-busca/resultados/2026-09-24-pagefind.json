@@ -1,0 +1,246 @@
+{
+  "data": "2026-09-24T04:30:05.891Z",
+  "observacao": "CPU limitada só na página: o Chrome recusa limitar Web Workers (usado pelo Pagefind).",
+  "variantes": [
+    {
+      "total": 26,
+      "motor": "pagefind",
+      "construcao": {
+        "total": 26,
+        "motor": "pagefind",
+        "buildMs": 5208,
+        "indiceMs": 591,
+        "indiceBytes": 867226
+      },
+      "condicoes": {
+        "celular": {
+          "primeiroResultadoMs": {
+            "mediana": 2600.800000011921,
+            "p90": 2978.0999999940395
+          },
+          "bytesAtePrimeiro": 227848,
+          "requisicoesAtePrimeiro": 14,
+          "heapMB": 2.6759414672851562,
+          "aposDigitarMs": {
+            "mediana": 1330,
+            "p90": 1913.7999999821186
+          },
+          "porTeclaMs": {
+            "mediana": 18,
+            "p90": 23.700000017881393
+          },
+          "visitaRepetida": {
+            "ms": 2413,
+            "bytes": 223876,
+            "requisicoes": 17,
+            "revalidadas": 0
+          }
+        },
+        "desktop": {
+          "primeiroResultadoMs": {
+            "mediana": 116.19999998807907,
+            "p90": 123.5
+          },
+          "bytesAtePrimeiro": 227848,
+          "requisicoesAtePrimeiro": 14,
+          "heapMB": 2.706127166748047,
+          "aposDigitarMs": {
+            "mediana": 199.30000001192093,
+            "p90": 219.59999999403954
+          },
+          "porTeclaMs": {
+            "mediana": 22.200000017881393,
+            "p90": 42.900000005960464
+          },
+          "visitaRepetida": {
+            "ms": 124,
+            "bytes": 223876,
+            "requisicoes": 17,
+            "revalidadas": 0
+          }
+        }
+      },
+      "bytesSemAbrir": 0
+    },
+    {
+      "total": 250,
+      "motor": "pagefind",
+      "construcao": {
+        "total": 250,
+        "motor": "pagefind",
+        "buildMs": 15985,
+        "indiceMs": 1168,
+        "indiceBytes": 4663305
+      },
+      "condicoes": {
+        "celular": {
+          "primeiroResultadoMs": {
+            "mediana": 2764.399999976158,
+            "p90": 3076.5
+          },
+          "bytesAtePrimeiro": 269956,
+          "requisicoesAtePrimeiro": 18,
+          "heapMB": 2.987285614013672,
+          "aposDigitarMs": {
+            "mediana": 1506.7999999821186,
+            "p90": 2074.7000000178814
+          },
+          "porTeclaMs": {
+            "mediana": 19.19999998807907,
+            "p90": 37.30000001192093
+          },
+          "visitaRepetida": {
+            "ms": 1956.9000000059605,
+            "bytes": 147209,
+            "requisicoes": 17,
+            "revalidadas": 0
+          }
+        },
+        "desktop": {
+          "primeiroResultadoMs": {
+            "mediana": 118.89999997615814,
+            "p90": 126.7000000178814
+          },
+          "bytesAtePrimeiro": 269956,
+          "requisicoesAtePrimeiro": 18,
+          "heapMB": 2.919841766357422,
+          "aposDigitarMs": {
+            "mediana": 204.40000000596046,
+            "p90": 222.19999998807907
+          },
+          "porTeclaMs": {
+            "mediana": 36.400000005960464,
+            "p90": 46.29999998211861
+          },
+          "visitaRepetida": {
+            "ms": 116.80000001192093,
+            "bytes": 147209,
+            "requisicoes": 17,
+            "revalidadas": 0
+          }
+        }
+      },
+      "bytesSemAbrir": 0
+    },
+    {
+      "total": 500,
+      "motor": "pagefind",
+      "construcao": {
+        "total": 500,
+        "motor": "pagefind",
+        "buildMs": 38728,
+        "indiceMs": 1716,
+        "indiceBytes": 9070887
+      },
+      "condicoes": {
+        "celular": {
+          "primeiroResultadoMs": {
+            "mediana": 2787.5999999940395,
+            "p90": 3243.2999999821186
+          },
+          "bytesAtePrimeiro": 263192,
+          "requisicoesAtePrimeiro": 18,
+          "heapMB": 3.20074462890625,
+          "aposDigitarMs": {
+            "mediana": 1630.699999988079,
+            "p90": 2097.699999988079
+          },
+          "porTeclaMs": {
+            "mediana": 22.799999982118607,
+            "p90": 43.5
+          },
+          "visitaRepetida": {
+            "ms": 1968.5999999940395,
+            "bytes": 153325,
+            "requisicoes": 17,
+            "revalidadas": 0
+          }
+        },
+        "desktop": {
+          "primeiroResultadoMs": {
+            "mediana": 118.90000000596046,
+            "p90": 149
+          },
+          "bytesAtePrimeiro": 263192,
+          "requisicoesAtePrimeiro": 18,
+          "heapMB": 3.106891632080078,
+          "aposDigitarMs": {
+            "mediana": 211.80000001192093,
+            "p90": 230
+          },
+          "porTeclaMs": {
+            "mediana": 40.900000005960464,
+            "p90": 60
+          },
+          "visitaRepetida": {
+            "ms": 121.30000001192093,
+            "bytes": 153325,
+            "requisicoes": 17,
+            "revalidadas": 0
+          }
+        }
+      },
+      "bytesSemAbrir": 0
+    },
+    {
+      "total": 1000,
+      "motor": "pagefind",
+      "construcao": {
+        "total": 1000,
+        "motor": "pagefind",
+        "buildMs": 116006,
+        "indiceMs": 2908,
+        "indiceBytes": 17487036
+      },
+      "condicoes": {
+        "celular": {
+          "primeiroResultadoMs": {
+            "mediana": 2675,
+            "p90": 3263.0999999940395
+          },
+          "bytesAtePrimeiro": 261120,
+          "requisicoesAtePrimeiro": 18,
+          "heapMB": 2.5515060424804688,
+          "aposDigitarMs": {
+            "mediana": 1647.0999999940395,
+            "p90": 2213.4000000059605
+          },
+          "porTeclaMs": {
+            "mediana": 26.30000001192093,
+            "p90": 70.30000001192093
+          },
+          "visitaRepetida": {
+            "ms": 1868.0999999940395,
+            "bytes": 131592,
+            "requisicoes": 17,
+            "revalidadas": 0
+          }
+        },
+        "desktop": {
+          "primeiroResultadoMs": {
+            "mediana": 120.5,
+            "p90": 171.69999998807907
+          },
+          "bytesAtePrimeiro": 261120,
+          "requisicoesAtePrimeiro": 18,
+          "heapMB": 3.0966796875,
+          "aposDigitarMs": {
+            "mediana": 221.19999998807907,
+            "p90": 243.09999999403954
+          },
+          "porTeclaMs": {
+            "mediana": 46.900000005960464,
+            "p90": 92
+          },
+          "visitaRepetida": {
+            "ms": 128.69999998807907,
+            "bytes": 131592,
+            "requisicoes": 17,
+            "revalidadas": 0
+          }
+        }
+      },
+      "bytesSemAbrir": 0
+    }
+  ]
+}

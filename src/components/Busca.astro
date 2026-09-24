@@ -1,0 +1,288 @@
+---
+/**
+ * Busca (briefing §3): abre com ⌘K, Ctrl+K, "/" ou pelas tags (data-busca-tag); aceita #tag;
+ * link compartilhável /?q=termo. O motor (Pagefind, D2) e o índice só são baixados quando a busca
+ * abre. O índice sai no build (`pagefind --site dist`, no postbuild), então no `npm run dev` a busca
+ * avisa que não há índice. Marca o tempo até o primeiro resultado (performance "busca:aberta" e
+ * "busca:resultado") para a medição de scripts/bench-busca.
+ */
+---
+
+<dialog class="busca" data-busca aria-labelledby="busca-titulo">
+  <form method="dialog" class="caixa" role="search">
+    <h2 id="busca-titulo" class="sr">Buscar nos artigos</h2>
+    <div class="campo">
+      <label for="busca-campo" class="sr">Termo da busca</label>
+      <input
+        id="busca-campo"
+        type="search"
+        data-busca-campo
+        placeholder="Buscar nos artigos…"
+        autocomplete="off"
+        spellcheck="false"
+        enterkeyhint="go"
+      />
+      <button type="submit" class="fechar" data-busca-fechar>Fechar</button>
+    </div>
+    <p class="estado" data-busca-estado aria-live="polite">A busca ignora acentos. Use # para procurar por tag.</p>
+    <ul class="resultados" data-busca-resultados></ul>
+  </form>
+</dialog>
+
+<script>
+  import type { MotorDeBusca, ResultadoBusca } from "../lib/busca/tipos";
+  import { escaparHtml } from "../lib/busca/tipos";
+
+  const dialogo = document.querySelector<HTMLDialogElement>("[data-busca]")!;
+  const campo = dialogo.querySelector<HTMLInputElement>("[data-busca-campo]")!;
+  const estado = dialogo.querySelector<HTMLElement>("[data-busca-estado]")!;
+  const lista = dialogo.querySelector<HTMLUListElement>("[data-busca-resultados]")!;
+  const DICA = estado.textContent ?? "";
+
+  const FALHOU = import.meta.env.DEV
+    ? "No npm run dev não há índice: ele sai no build (npm run build e npm run preview)."
+    : "Não consegui carregar a busca. Tente de novo.";
+
+  // Se o carregamento falhar (rede), a próxima abertura tenta de novo.
+  let motor: Promise<MotorDeBusca> | undefined;
+  const obterMotor = () =>
+    (motor ??= import("../lib/busca/pagefind")
+      .then((m) => m.motorPagefind)
+      .catch((erro) => {
+        motor = undefined;
+        throw erro;
+      }));
+
+  const consultaValida = (q: string) => q.trim().startsWith("#") ? q.trim().length > 1 : q.trim().length >= 2;
+
+  function atualizarEndereco(q: string | null) {
+    const endereco = new URL(location.href);
+    if (q) endereco.searchParams.set("q", q);
+    else endereco.searchParams.delete("q");
+    history.replaceState(history.state, "", endereco);
+  }
+
+  function desenhar(resultados: ResultadoBusca[], consulta: string) {
+    lista.innerHTML = resultados
+      .map(
+        (r) => `<li><a class="resultado" href="${r.url}">
+          <span class="r-titulo">${escaparHtml(r.titulo)}</span>
+          <span class="r-meta">${escaparHtml([r.rotulo, r.data].filter(Boolean).join(", "))}</span>
+          <span class="r-trecho">${r.trecho}</span>
+        </a></li>`,
+      )
+      .join("");
+    estado.textContent = resultados.length
+      ? resultados.length === 1
+        ? "1 artigo"
+        : `${resultados.length} artigos`
+      : `Nenhum artigo encontrado para “${consulta}”.`;
+  }
+
+  let vez = 0;
+  let primeiroResultadoMarcado = false;
+  async function buscar() {
+    const consulta = campo.value;
+    const minha = ++vez;
+    atualizarEndereco(consultaValida(consulta) ? consulta.trim() : null);
+    if (!consultaValida(consulta)) {
+      lista.innerHTML = "";
+      estado.textContent = consulta.trim() ? "Digite ao menos 2 letras." : DICA;
+      return;
+    }
+    const inicio = performance.now();
+    let resultados: ResultadoBusca[];
+    try {
+      resultados = await (await obterMotor()).buscar(consulta);
+    } catch {
+      if (minha === vez) estado.textContent = FALHOU;
+      return;
+    }
+    if (minha !== vez) return;
+    desenhar(resultados, consulta.trim());
+    if (!primeiroResultadoMarcado) {
+      primeiroResultadoMarcado = true;
+      performance.mark("busca:resultado");
+    }
+    dispatchEvent(new CustomEvent("busca:resultado", { detail: { consulta, n: resultados.length, ms: performance.now() - inicio } }));
+  }
+
+  function abrir(consulta?: string) {
+    if (!dialogo.open) {
+      primeiroResultadoMarcado = false;
+      performance.mark("busca:aberta");
+      dialogo.showModal();
+      obterMotor()
+        .then((m) => m.preparar())
+        .catch(() => (estado.textContent = FALHOU));
+    }
+    if (consulta !== undefined) {
+      campo.value = consulta;
+      buscar();
+    }
+    campo.focus();
+    campo.select();
+  }
+
+  dialogo.addEventListener("close", () => atualizarEndereco(null));
+  dialogo.addEventListener("click", (e) => {
+    if (e.target === dialogo) dialogo.close();
+  });
+  // Espera uma pausa curta na digitação: buscar cada prefixo ("id", "ide"…) só baixaria índice à toa.
+  let pausa: ReturnType<typeof setTimeout> | undefined;
+  campo.addEventListener("input", () => {
+    clearTimeout(pausa);
+    pausa = setTimeout(buscar, 160);
+  });
+
+  document.addEventListener("click", (e) => {
+    const alvo = e.target as HTMLElement;
+    const botao = alvo.closest<HTMLElement>("[data-busca-abrir]");
+    const tag = alvo.closest<HTMLElement>("[data-busca-tag]");
+    if (botao) {
+      e.preventDefault();
+      abrir();
+    } else if (tag && !(e as MouseEvent).metaKey && !(e as MouseEvent).ctrlKey) {
+      e.preventDefault();
+      abrir(`#${tag.dataset.buscaTag!.replace(/\s+/g, "-")}`);
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    const digitando = (e.target as HTMLElement).closest("input, textarea, select, [contenteditable]");
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+      e.preventDefault();
+      dialogo.open ? dialogo.close() : abrir();
+    } else if (e.key === "/" && !digitando && !dialogo.open) {
+      e.preventDefault();
+      abrir();
+    }
+  });
+
+  // Setas percorrem os resultados; Enter no campo abre o primeiro.
+  dialogo.addEventListener("keydown", (e) => {
+    const itens = [...lista.querySelectorAll<HTMLAnchorElement>(".resultado")];
+    if (!itens.length) return;
+    const atual = itens.indexOf(document.activeElement as HTMLAnchorElement);
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      itens[Math.min(atual + 1, itens.length - 1)].focus();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      atual <= 0 ? campo.focus() : itens[atual - 1].focus();
+    } else if (e.key === "Enter" && document.activeElement === campo) {
+      e.preventDefault();
+      itens[0].click();
+    }
+  });
+
+  const inicial = new URLSearchParams(location.search).get("q");
+  if (inicial) abrir(inicial);
+</script>
+
+<style>
+  .busca {
+    width: min(640px, calc(100vw - 32px));
+    max-height: min(620px, calc(100vh - 64px));
+    margin: 64px auto auto;
+    padding: 0;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    background: var(--paper-hi);
+    color: var(--ink);
+  }
+
+  .busca::backdrop {
+    background: rgb(20 26 28 / 0.45);
+  }
+
+  .caixa {
+    display: flex;
+    flex-direction: column;
+    max-height: inherit;
+  }
+
+  .campo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px 12px 18px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    font-size: 18px;
+    outline: none;
+  }
+
+  input::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  .fechar {
+    padding: 4px 10px;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--ink-2);
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .estado {
+    margin: 0;
+    padding: 12px 18px 6px;
+    font-size: 14.5px;
+    color: var(--ink-2);
+  }
+
+  .resultados {
+    margin: 0;
+    padding: 0 8px 10px;
+    overflow-y: auto;
+    list-style: none;
+    overscroll-behavior: contain;
+  }
+
+  .resultados :global(.resultado) {
+    display: grid;
+    gap: 2px;
+    padding: 10px 10px;
+    border-radius: 4px;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .resultados :global(.resultado:hover),
+  .resultados :global(.resultado:focus-visible) {
+    background: var(--well);
+    outline-offset: 0;
+  }
+
+  .resultados :global(.r-titulo) {
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    font-size: 17px;
+  }
+
+  .resultados :global(.r-meta) {
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+
+  .resultados :global(.r-trecho) {
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--ink-2);
+  }
+
+  .resultados :global(mark) {
+    background: color-mix(in oklab, var(--aviso-atencao) 28%, transparent);
+    color: var(--ink);
+    border-radius: 2px;
+  }
+</style>

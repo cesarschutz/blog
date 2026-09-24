@@ -1,0 +1,28 @@
+---
+/**
+ * Barra de progresso da leitura (briefing §5.3): faixa de 3px no topo, na cor da categoria (no
+ * escuro, clareada como os chips). Quem a move é src/scripts/artigo.ts; sem JS, fica vazia.
+ */
+interface Props {
+  cor: string;
+}
+
+const { cor } = Astro.props;
+---
+
+<div class="barra-leitura" style={`--cor-barra:${cor}`} aria-hidden="true" data-barra-leitura></div>
+
+<style>
+  .barra-leitura {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 40;
+    height: 3px;
+    background: color-mix(in oklab, var(--cor-barra), #fff var(--branco-no-escuro));
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    pointer-events: none;
+  }
+</style>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 150">
+  <g class="traco">
+    <rect x="17" y="37" width="120" height="70" class="hachura"/>
+    <rect x="383" y="37" width="120" height="70" class="hachura"/>
+    <rect x="10" y="30" width="120" height="70" rx="4"/>
+    <rect x="376" y="30" width="120" height="70" rx="4"/>
+    <path d="M130 58 H376" class="guia"/>
+    <g data-aparece="0 0.06" data-desloca="0 0.52 -178 0" data-some="0.44 0.52">
+      <rect x="330" y="46" width="30" height="22" rx="2" class="fino"/>
+      <path d="M330 47 l15 11 15 -11" class="fino"/>
+    </g>
+    <path d="M176 50 l16 16 m0 -16 l-16 16" data-aparece="0.46 0.52" data-some="0.78 0.86"/>
+    <path d="M130 84 H370" class="destaque" data-traco="0.72 0.88" data-some="0.96 1"/>
+    <path d="M362 78 L370 84 L362 90" class="destaque" data-aparece="0.87 0.88" data-some="0.96 1"/>
+  </g>
+  <g>
+    <text x="70" y="70" text-anchor="middle">App</text>
+    <text x="436" y="70" text-anchor="middle">Serviço</text>
+    <text x="70" y="126" text-anchor="middle" class="secundario" data-aparece="0.54 0.6" data-some="0.74 0.8">esperando…</text>
+    <text x="250" y="116" text-anchor="middle" class="secundario" data-aparece="0.87 0.88" data-some="0.96 1">envia de novo</text>
+  </g>
+</svg>

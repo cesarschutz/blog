@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -62 1202 922" data-largo="80 188 1100 468" data-medio="302 79 900 600" data-quadrado="401 29 701 701" data-og="382 -62 740 883" data-segura="427 269 649 221"
+  aria-label="Um token JWT cortado em três pedaços, header, payload e signature; a assinatura leva um selo.">
+  <g class="tinta">
+    <path d="M590 290 V490" class="fantasma"/>
+    <path d="M880 290 V490" class="fantasma"/>
+    <g transform="rotate(-3 505 390)"><path d="M442 335 H568 A12 12 0 0 1 580 347 V433 A12 12 0 0 1 568 445 H442 A12 12 0 0 1 430 433 V347 A12 12 0 0 1 442 335 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M442 335 H568 A12 12 0 0 1 580 347 V433 A12 12 0 0 1 568 445 H442 A12 12 0 0 1 430 433 V347 A12 12 0 0 1 442 335 Z" class="papel"/>
+    <path d="M500 368 H560 M500 413 H545" class="linha"/></g>
+    <g transform="rotate(1.5 735 390)"><path d="M612 325 H858 A12 12 0 0 1 870 337 V443 A12 12 0 0 1 858 455 H612 A12 12 0 0 1 600 443 V337 A12 12 0 0 1 612 325 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M612 325 H858 A12 12 0 0 1 870 337 V443 A12 12 0 0 1 858 455 H612 A12 12 0 0 1 600 443 V337 A12 12 0 0 1 612 325 Z" class="papel"/>
+    <path d="M690 368 H840 M690 413 H800" class="linha"/></g>
+    <g transform="rotate(-2 975 390)"><path d="M902 335 H1048 A12 12 0 0 1 1060 347 V433 A12 12 0 0 1 1048 445 H902 A12 12 0 0 1 890 433 V347 A12 12 0 0 1 902 335 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M902 335 H1048 A12 12 0 0 1 1060 347 V433 A12 12 0 0 1 1048 445 H902 A12 12 0 0 1 890 433 V347 A12 12 0 0 1 902 335 Z" transform="translate(7 6)" class="cor"/>
+    <path d="M902 335 H1048 A12 12 0 0 1 1060 347 V433 A12 12 0 0 1 1048 445 H902 A12 12 0 0 1 890 433 V347 A12 12 0 0 1 902 335 Z" class="linha"/>
+    <path d="M1007 390 A32 32 0 1 1 943 390 A32 32 0 1 1 1007 390 Z" class="carimbo"/>
+    <path d="M960 391 L972 403 L992 378" class="carimbo"/></g>
+  </g>
+  <text x="505" y="305" text-anchor="middle" class="rotulo" transform="rotate(-3 505 390)">header</text>
+  <text x="735" y="300" text-anchor="middle" class="rotulo" transform="rotate(1.5 735 390)">payload</text>
+  <text x="975" y="305" text-anchor="middle" class="rotulo" transform="rotate(-2 975 390)">signature</text>
+  <g transform="rotate(1.5 735 390)"><text x="625" y="377" class="codigo">sub</text><text x="625" y="422" class="codigo">exp</text></g>
+  <g transform="rotate(-3 505 390)"><text x="450" y="377" class="codigo">alg</text><text x="450" y="422" class="codigo">kid</text></g>
+  <g class="anotacao">
+    <text x="100" y="540" class="nota">o payload não é criptografado</text>
+    <text x="100" y="568" class="nota-pequena">base64url: qualquer um lê</text>
+    <path d="M455 526 C540 512 620 500 690 466" class="chamada"/>
+  </g>
+</svg>

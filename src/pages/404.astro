@@ -1,0 +1,45 @@
+---
+/** Página não encontrada. O GitHub Pages serve este 404.html sozinho. */
+import Base from "../layouts/Base.astro";
+import { url } from "../lib/url";
+---
+
+<Base titulo="Página não encontrada" descricao="Esta página não existe ou mudou de endereço.">
+  <div class="wrap nao-encontrada">
+    <p class="codigo">Erro 404</p>
+    <h1>Página não encontrada</h1>
+    <p>O endereço pode ter mudado ou nunca ter existido. Tente a busca, a lista de artigos ou a página inicial.</p>
+    <p class="caminhos">
+      <a href={url("/archive/")}>Todos os artigos</a>
+      <a href={url("/")}>Página inicial</a>
+      <button type="button" class="pilula" data-busca-abrir>Buscar</button>
+    </p>
+  </div>
+</Base>
+
+<style>
+  .nao-encontrada {
+    max-width: calc(var(--coluna) + 2 * var(--pad));
+    padding-top: 64px;
+  }
+
+  .codigo {
+    margin: 0;
+    color: var(--ink-2);
+    font-variant-numeric: lining-nums;
+  }
+
+  h1 {
+    margin: 8px 0 12px;
+    font-weight: 800;
+    font-size: clamp(34px, 5vw, 52px);
+  }
+
+  .caminhos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 24px;
+    margin-top: 24px;
+  }
+</style>

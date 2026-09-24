@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lousas para os diagramas do blog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Besley:ital,wght@0,400..900;1,400..700&family=Literata:ital,opsz,wght@0,7..72,300..800;1,7..72,300..600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --paper:#ECEEE9; --paper-hi:#F7F8F4; --well:#E0E3DC;
+  --ink:#1C2427; --ink-2:#56605E; --ink-3:#7A8381;
+  --rule:#C4CAC3; --link:#244A8A;
+  --acc:#1F4D4A;
+  --display:"Besley","Rockwell","Georgia",serif;
+  --text:"Literata","Iowan Old Style","Georgia",serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --pad:clamp(18px,5vw,48px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#182022; --paper-hi:#1F282A; --well:#12181A;
+    --ink:#E3E6DF; --ink-2:#A7AFAB; --ink-3:#848D89;
+    --rule:#343E40; --link:#9FB8E8; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#182022; --paper-hi:#1F282A; --well:#12181A;
+  --ink:#E3E6DF; --ink-2:#A7AFAB; --ink-3:#848D89;
+  --rule:#343E40; --link:#9FB8E8; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--text);font-size:17px;line-height:1.6;font-variant-numeric:oldstyle-nums proportional-nums}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--link);outline-offset:3px}
+.wrap{max-width:1120px;margin:0 auto;padding-left:var(--pad);padding-right:var(--pad)}
+
+/* ---------- barra do protótipo (fica presa no topo para trocar enquanto rola) ---------- */
+.proto{position:sticky;top:0;z-index:20;background:var(--well);border-bottom:1px solid var(--rule);font-size:15px;line-height:1.45}
+.proto .wrap{padding-top:12px;padding-bottom:10px}
+.proto h1{font-family:var(--display);font-size:17px;font-weight:700;margin:0 0 8px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{border:1px solid var(--rule);background:transparent;border-radius:999px;padding:6px 14px;cursor:pointer;min-height:38px;font-size:14.5px}
+.tab:hover{border-color:var(--ink-3)}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.proto-row{display:flex;flex-wrap:wrap;align-items:center;gap:4px 22px;margin-top:8px;color:var(--ink-2);font-size:14.5px}
+.proto-row label{display:inline-flex;align-items:center;gap:8px;min-height:34px;cursor:pointer}
+.proto-row select{background:var(--paper-hi);border:1px solid var(--rule);border-radius:4px;padding:3px 8px}
+.proto-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--ink)}
+.desc{margin:6px 0 0;max-width:80ch;color:var(--ink)}
+@media (max-width:640px){.proto .desc{display:none}.proto h1{display:none}.tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 calc(-1*var(--pad));padding:0 var(--pad)}.tabs::-webkit-scrollbar{display:none}.tab{flex:0 0 auto;min-height:34px;padding:5px 12px}.proto-row{margin-top:4px;gap:0 16px}}
+
+/* ---------- trecho do artigo ---------- */
+.prose{max-width:680px;margin:0 auto;font-size:18.5px;line-height:1.72;padding-top:44px}
+.prose h2{font-family:var(--display);font-weight:700;font-size:clamp(25px,3vw,30px);line-height:1.15;margin:1.4em 0 .6em}
+.prose>p{margin:0 0 1.15em}
+.prose code{font-family:var(--mono);font-size:.84em;background:var(--well);padding:.08em .32em;border-radius:3px}
+.kicker{font-size:15px;color:var(--ink-2);margin:0}
+.title{font-family:var(--display);font-weight:800;font-size:clamp(34px,5vw,52px);line-height:1.04;margin:6px 0 10px}
+
+.bleed{width:min(1060px,calc(100vw - 2*var(--pad)));margin-left:calc(50% - min(1060px,calc(100vw - 2*var(--pad)))/2);margin-bottom:1.2em}
+.scrolly{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:44px}
+.sy-steps{padding:16vh 0 34vh}
+.sy-step{min-height:64vh;display:flex;align-items:center}
+.sy-step p{margin:0;max-width:36ch;font-size:18.5px;line-height:1.65;opacity:.28;transition:opacity .35s}
+.sy-step.on p{opacity:1}
+.sy-step code{font-family:var(--mono);font-size:.84em;background:var(--well);padding:.08em .32em;border-radius:3px}
+.sy-fig{position:relative}
+.sy-sticky{position:sticky;top:calc(12vh + 40px);height:72vh;display:flex;align-items:center}
+@media (max-width:760px){
+  .scrolly{grid-template-columns:minmax(0,1fr);gap:0}
+  .sy-fig{order:-1;position:sticky;top:var(--proto-h,0px);z-index:2;background:var(--paper);padding:8px 0}
+  .sy-sticky{position:static;height:auto}
+  .sy-steps{padding:6vh 0 30vh}
+  .sy-step{min-height:54vh}
+  .sy-step p{background:var(--paper-hi);padding:16px 18px;border-radius:4px;box-shadow:0 14px 30px -18px rgba(0,0,0,.4);font-size:17.5px}
+}
+
+/* ---------- a lousa ---------- */
+.board{width:100%;border-radius:10px;padding:clamp(10px,2vw,20px);position:relative;transition:background-color .3s}
+.board svg{display:block;width:100%;height:auto;max-height:calc(72vh - 40px)}
+@media (max-width:760px){.board svg{max-height:38svh;margin:0 auto}.board{border-radius:8px}}
+
+/* quadro-negro com giz */
+.board.chalk{
+  --b-bg:#27332C; --b-ink:#EFEEE6; --b-muted:rgba(239,238,230,.66); --b-hatch:rgba(239,238,230,.32);
+  --b-acc:color-mix(in oklab,var(--acc),#ffffff 58%);
+  background:
+    radial-gradient(120% 90% at 18% 12%,rgba(255,255,255,.07),transparent 55%),
+    radial-gradient(80% 70% at 88% 92%,rgba(255,255,255,.05),transparent 60%),
+    repeating-linear-gradient(168deg,rgba(255,255,255,.02) 0 2px,transparent 2px 11px),
+    #27332C;
+  border:1px solid rgba(0,0,0,.35);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.05),inset 0 12px 40px rgba(0,0,0,.28);
+}
+/* lousa de vidro escura com canetinha */
+.board.glass{
+  --b-bg:#15191C; --b-ink:#F4F6F5; --b-muted:rgba(244,246,245,.6); --b-hatch:rgba(244,246,245,.22);
+  --b-acc:color-mix(in oklab,var(--acc),#9ff5dc 55%);
+  background:
+    linear-gradient(118deg,rgba(255,255,255,.07) 0%,rgba(255,255,255,.015) 26%,rgba(255,255,255,0) 27%),
+    radial-gradient(60% 50% at 80% 85%,rgba(255,255,255,.03),transparent 70%),
+    #14191C;
+  border:1px solid #2C3438;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 18px 34px -22px rgba(0,0,0,.6);
+}
+/* quadro branco com canetinha */
+.board.white{
+  --b-bg:#F6F7F5; --b-ink:#1D2A36; --b-muted:#5D6973; --b-hatch:rgba(29,42,54,.28);
+  --b-acc:color-mix(in oklab,var(--acc),#0f9a7a 30%);
+  background:
+    linear-gradient(118deg,rgba(255,255,255,.95) 0%,rgba(255,255,255,0) 32%),
+    radial-gradient(55% 40% at 78% 72%,rgba(110,122,132,.07),transparent 70%),
+    radial-gradient(40% 30% at 22% 80%,rgba(110,122,132,.05),transparent 70%),
+    #F6F7F5;
+  border:3px solid #C9CED2;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.8),0 1px 0 rgba(0,0,0,.05),0 16px 30px -24px rgba(0,0,0,.45);
+}
+
+/* quadro branco suavizado, para a página escura: claro, mas sem ofuscar */
+.board.white-dim{
+  --b-bg:#CFD5D1; --b-ink:#16212B; --b-muted:#46525B; --b-hatch:rgba(22,33,43,.3);
+  --b-acc:color-mix(in oklab,var(--acc),#0b6f58 35%);
+  background:
+    linear-gradient(118deg,rgba(255,255,255,.28) 0%,rgba(255,255,255,0) 30%),
+    radial-gradient(55% 40% at 78% 72%,rgba(60,70,80,.06),transparent 70%),
+    #CFD5D1;
+  border:3px solid #8F989D;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.25),0 16px 30px -22px rgba(0,0,0,.7);
+}
+.dg text{font-family:var(--text);font-style:italic;font-size:17px;fill:var(--b-ink)}
+.dg .s{font-size:13.5px;fill:var(--b-muted)}
+.dg .c{font-family:var(--mono);font-style:normal;font-size:12px}
+.dg .ok{fill:var(--b-acc);font-weight:600}
+.dg .bx,.dg .tl{fill:none;stroke:var(--b-ink);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.dg .tl{stroke-width:1.5}
+.dg .sh{fill:url(#bh);stroke:none}
+.dg .hl{stroke:var(--b-hatch);stroke-width:1.2}
+.dg .ln{fill:none;stroke:var(--b-ink);stroke-width:2.3;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1}
+.dg .ln.acc,.dg .hd.acc{stroke:var(--b-acc)}
+.dg .hd{fill:none;stroke:var(--b-ink);stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+.dg .dim{transition:opacity .3s}
+.board.chalk .strokes{filter:url(#fx-chalk)}
+.board.chalk .txt{filter:url(#fx-chalk-t)}
+.board.glass .strokes,.board.white .strokes,.board.white-dim .strokes{filter:url(#fx-marker)}
+.board.glass .ln,.board.white .ln,.board.white-dim .ln,.board.glass .bx,.board.white .bx,.board.white-dim .bx,.board.glass .hd,.board.white .hd,.board.white-dim .hd{stroke-width:2.7}
+
+/* giz e canetinha */
+#tool{opacity:0;transition:opacity .2s;pointer-events:none;filter:drop-shadow(1.5px 2.5px 1.5px rgba(0,0,0,.35))}
+#tool.on{opacity:1}
+.t-chalk,.t-marker{display:none}
+.board.chalk .t-chalk{display:inline}
+.board.glass .t-marker,.board.white .t-marker,.board.white-dim .t-marker{display:inline}
+.t-chalk .body{fill:var(--ti,#F2F0E7)}
+.t-marker .body,.t-marker .tip{fill:var(--ti,#222)}
+.board.glass .t-marker .body{fill:color-mix(in oklab,var(--ti) 88%,#000)}
+
+.end{max-width:680px;margin:0 auto;padding:12px 0 90px;font-size:18.5px;line-height:1.72}
+@media (prefers-reduced-motion:reduce){.sy-step p{transition:none}#tool{display:none}}
+</style>
+</head>
+<body>
+
+<div class="proto" id="proto">
+  <div class="wrap">
+    <h1>Lousas para os diagramas: escolha a superfície</h1>
+    <div class="tabs" role="tablist" aria-label="Tipo de lousa">
+      <button class="tab" role="tab" data-b="chalk" aria-selected="true">Quadro-negro com giz</button>
+      <button class="tab" role="tab" data-b="glass" aria-selected="false">Lousa escura com canetinha</button>
+      <button class="tab" role="tab" data-b="white" aria-selected="false">Quadro branco com canetinha</button>
+      <button class="tab" role="tab" data-b="auto" aria-selected="false">Acompanha o tema</button>
+      <button class="tab" role="tab" data-b="inv-marker" aria-selected="false">Invertida, canetinha</button>
+      <button class="tab" role="tab" data-b="inv-chalk" aria-selected="false">Invertida, giz no claro</button>
+    </div>
+    <p class="desc" id="desc"></p>
+    <div class="proto-row">
+      <label>Tema da página <select id="theme"><option value="light" selected>Claro</option><option value="dark">Escuro</option><option value="">Do sistema</option></select></label>
+      <label><input type="checkbox" id="showTool" checked> <span id="toolLbl">Mostrar o giz desenhando</span></label>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <article class="prose">
+    <p class="kicker">Trecho do artigo</p>
+    <p class="title">Chave de idempotência</p>
+    <p>Um cliente pede uma cobrança, a rede falha no caminho de volta e ele tenta de novo. Se a API não souber reconhecer que é o mesmo pedido, cobra duas vezes. A solução vem de três peças: uma chave enviada pelo cliente, uma restrição única no banco e a resposta guardada.</p>
+    <h2>A chave, a restrição e a resposta</h2>
+    <p>Role devagar: a lousa acompanha a leitura e o desenho avança um passo a cada parágrafo. Rolando de volta, ele se apaga.</p>
+
+    <div class="bleed">
+      <div class="scrolly">
+        <div class="sy-steps" id="steps">
+          <div class="sy-step"><p>O cliente pede uma cobrança e manda junto uma chave de idempotência gerada por ele, <code>abc-123</code>. A chave é a mesma em todas as tentativas desse pedido.</p></div>
+          <div class="sy-step"><p>Antes de cobrar, a API grava a chave numa tabela com restrição <code>UNIQUE</code>. Quem grava primeiro fica com a chave, e o estado começa como em andamento.</p></div>
+          <div class="sy-step"><p>A API cobra no adquirente e guarda a resposta junto da chave. Agora a tabela sabe o resultado: concluída, 201.</p></div>
+          <div class="sy-step"><p>A resposta se perde no caminho de volta. Para o cliente é como se nada tivesse acontecido, então ele tenta de novo, com a mesma chave.</p></div>
+          <div class="sy-step"><p>O <code>INSERT</code> da segunda tentativa bate na restrição <code>UNIQUE</code>. Em vez de cobrar de novo, a API devolve a resposta que já estava guardada.</p></div>
+        </div>
+        <div class="sy-fig">
+          <div class="sy-sticky">
+            <div class="board chalk" id="board">
+              <svg class="dg" id="dg" viewBox="0 0 560 430" role="img" aria-label="Diagrama: cliente, API, adquirente e a tabela de idempotência">
+                <defs>
+                  <pattern id="bh" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line class="hl" x1="0" y1="0" x2="0" y2="7"/></pattern>
+                  <filter id="fx-chalk" x="-5%" y="-10%" width="110%" height="120%">
+                    <feTurbulence type="fractalNoise" baseFrequency="1.2" numOctaves="2" seed="4" result="n"/>
+                    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  2.6 0 0 0 -0.55" result="m"/>
+                    <feComposite in="SourceGraphic" in2="m" operator="in" result="g"/>
+                    <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="9" result="w"/>
+                    <feDisplacementMap in="g" in2="w" scale="2.4" xChannelSelector="R" yChannelSelector="G"/>
+                  </filter>
+                  <filter id="fx-chalk-t" x="-5%" y="-20%" width="110%" height="140%">
+                    <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="11" result="n"/>
+                    <feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  3.2 0 0 0 -0.45" result="m"/>
+                    <feComposite in="SourceGraphic" in2="m" operator="in"/>
+                  </filter>
+                  <filter id="fx-marker" x="-5%" y="-10%" width="110%" height="120%">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="7" result="n"/>
+                    <feDisplacementMap in="SourceGraphic" in2="n" scale="2" xChannelSelector="R" yChannelSelector="G"/>
+                  </filter>
+                  <clipPath id="clipRetry"><rect id="retryClip" x="128" y="76" width="0" height="24"/></clipPath>
+                  <clipPath id="clipLost"><rect id="lostClip" x="220" y="56" width="0" height="24"/></clipPath>
+                </defs>
+
+                <g class="strokes">
+                  <path d="M130 37 H137 V123 H17 V116 H130 Z" class="sh"/><path d="M340 37 H347 V123 H227 V116 H340 Z" class="sh"/>
+                  <path id="adqSh" d="M550 37 H557 V123 H437 V116 H550 Z" class="sh dim"/><path d="M390 257 H397 V325 H177 V318 H390 Z" class="sh"/>
+                  <rect x="10" y="30" width="120" height="86" rx="4" class="bx"/>
+                  <rect x="220" y="30" width="120" height="86" rx="4" class="bx"/>
+                  <rect id="adqBox" x="430" y="30" width="120" height="86" rx="4" class="bx dim"/>
+                  <rect x="170" y="250" width="220" height="68" class="bx"/>
+                  <path d="M170 282 H390 M260 250 V318" class="tl"/>
+
+                  <path id="req" class="ln" pathLength="1" d="M130 48 H214"/>
+                  <path id="reqH" class="hd" d="M206 42 L214 48 L206 54"/>
+                  <path id="ins1" class="ln" pathLength="1" d="M262 116 V244"/>
+                  <path id="ins1H" class="hd" d="M256 236 L262 244 L268 236"/>
+                  <path id="pay" class="ln" pathLength="1" d="M340 58 H424"/>
+                  <path id="payH" class="hd" d="M416 52 L424 58 L416 64"/>
+                  <path id="payB" class="ln" pathLength="1" d="M430 92 H346"/>
+                  <path id="payBH" class="hd" d="M354 86 L346 92 L354 98"/>
+                  <g id="lost" class="dim">
+                    <g clip-path="url(#clipLost)"><path d="M220 68 H186" class="ln" style="stroke-dasharray:12 5 3 5;stroke-dashoffset:0"/></g>
+                    <path id="xMark" class="hd" d="M166 60 L180 74 M180 60 L166 74" style="stroke-width:2.6"/>
+                  </g>
+                  <g clip-path="url(#clipRetry)"><path d="M130 88 H214 M206 82 L214 88 L206 94" class="ln" style="stroke-dasharray:6 6;stroke-dashoffset:0"/></g>
+                  <path id="ins2" class="ln" pathLength="1" d="M300 116 V244"/>
+                  <path id="ins2H" class="hd" d="M294 236 L300 244 L306 236"/>
+                  <rect id="uqBox" x="170" y="334" width="220" height="34" rx="4" class="ln acc" pathLength="1"/>
+                  <path id="resp2" class="ln acc" pathLength="1" d="M220 108 H136" style="stroke-width:2.8"/>
+                  <path id="resp2H" class="hd acc" d="M144 102 L136 108 L144 114" style="stroke-width:2.8"/>
+                </g>
+
+                <g class="txt">
+                  <text x="70" y="79" text-anchor="middle">Cliente</text>
+                  <text x="280" y="79" text-anchor="middle">API</text>
+                  <text id="adqT" x="490" y="79" text-anchor="middle" class="dim">Adquirente</text>
+                  <text x="160" y="271" text-anchor="end" class="s">tabela</text><text x="160" y="289" text-anchor="end" class="s">idempotencia</text>
+                  <text x="184" y="272">chave</text><text x="272" y="272">estado</text>
+                  <text data-w="keyLbl" x="10" y="146" class="c">Idempotency-Key: abc-123</text>
+                  <text data-w="ins1L" x="254" y="190" text-anchor="end" class="c">INSERT</text>
+                  <text data-w="rowKey" x="184" y="306" class="c">abc-123</text>
+                  <text data-w="stA" x="272" y="306">em andamento</text>
+                  <text data-w="stB" x="272" y="306">concluída, 201</text>
+                  <text data-w="retryL" x="10" y="168" class="s">tenta de novo, mesma chave</text>
+                  <text data-w="ins2L" x="308" y="190" class="c">INSERT</text>
+                  <text data-w="uqT" x="280" y="357" text-anchor="middle" class="ok">UNIQUE: abc-123 já existe</text>
+                  <text data-w="adqNote" x="490" y="146" text-anchor="middle" class="s">não é chamado de novo</text>
+                  <text data-w="finalL" x="10" y="192" class="ok">201, resposta guardada</text>
+                </g>
+
+                <g id="tool" aria-hidden="true">
+                  <g class="t-chalk"><g transform="rotate(-52)">
+                    <rect class="body" x="0" y="-5.5" width="42" height="11" rx="4.5"/>
+                    <rect x="0" y="-5.5" width="7" height="11" rx="3" fill="rgba(0,0,0,.08)"/>
+                    <rect x="33" y="-5.5" width="9" height="11" rx="4" fill="rgba(0,0,0,.12)"/>
+                    <rect x="8" y="-5.5" width="24" height="3" rx="1.5" fill="rgba(255,255,255,.35)"/>
+                  </g></g>
+                  <g class="t-marker"><g transform="rotate(-52)">
+                    <path class="tip" d="M0 0 L9 -3.4 L9 3.4 Z"/>
+                    <rect x="9" y="-5" width="7" height="10" rx="1" fill="#9AA3A8"/>
+                    <rect class="body" x="16" y="-7" width="52" height="14" rx="3"/>
+                    <rect x="46" y="-7.8" width="26" height="15.6" rx="3.5" fill="rgba(0,0,0,.22)"/>
+                    <rect x="21" y="-3" width="18" height="6" rx="1" fill="rgba(255,255,255,.5)"/>
+                  </g></g>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+  <div class="end"><p>Depois do diagrama, o texto segue normalmente. As outras figuras de explicação (a de arrastar e a animação curta) usariam a mesma lousa.</p></div>
+</main>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  const darkMq = matchMedia('(prefers-color-scheme: dark)');
+
+  const DESC = {
+    chalk: 'O quadro-negro clássico: verde-escuro, traço de giz com falhas e um pouco de pó, e giz colorido na cor do livro para o que importa. Fica escuro nos dois temas da página.',
+    glass: 'A lousa de vidro preta das salas mais novas, com caneta de tinta líquida: traço limpo e bem contrastado. Também fica escura nos dois temas.',
+    white: 'O quadro branco de sala de reunião: superfície branca com reflexo, borda de alumínio, caneta escura e caneta na cor do livro. Fica claro nos dois temas.',
+    auto: 'Muda com o tema da página: quadro branco com canetinha no tema claro e quadro-negro com giz no escuro.',
+    'inv-marker': 'O contrário da página, sempre com canetinha: lousa de vidro escura no tema claro e quadro branco suavizado no tema escuro.',
+    'inv-chalk': 'O contrário da página, trocando a ferramenta: quadro-negro com giz no tema claro e quadro branco suavizado com canetinha no tema escuro.'
+  };
+  let style = 'chalk';
+  const isDark = () => { const t = document.documentElement.dataset.theme; return t ? t === 'dark' : darkMq.matches; };
+  const kind = () => {
+    if (style === 'auto') return isDark() ? 'chalk' : 'white';
+    if (style === 'inv-marker') return isDark() ? 'white-dim' : 'glass';
+    if (style === 'inv-chalk') return isDark() ? 'white-dim' : 'chalk';
+    return style;
+  };
+
+  function applyBoard(){
+    const k = kind();
+    $('board').className = 'board ' + k;
+    $('desc').textContent = DESC[style];
+    $('toolLbl').textContent = k === 'chalk' ? 'Mostrar o giz desenhando' : 'Mostrar a canetinha desenhando';
+    update();
+  }
+  document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+    style = t.dataset.b;
+    document.querySelectorAll('.tab').forEach(x => x.setAttribute('aria-selected', String(x === t)));
+    applyBoard();
+  }));
+  $('theme').addEventListener('change', e => {
+    if (e.target.value) document.documentElement.dataset.theme = e.target.value;
+    else delete document.documentElement.dataset.theme;
+    applyBoard();
+  });
+  darkMq.addEventListener ? darkMq.addEventListener('change', applyBoard) : darkMq.addListener(applyBoard);
+  $('showTool').addEventListener('change', update);
+
+  /* ---------- diagrama ---------- */
+  const el = {};
+  ['req','reqH','ins1','ins1H','pay','payH','payB','payBH','lostClip','xMark','lost','retryClip','ins2','ins2H','uqBox','resp2','resp2H','adqBox','adqT','adqSh','tool'].forEach(id => el[id] = $(id));
+  const LEN = {};
+  ['req','ins1','pay','payB','ins2','uqBox','resp2'].forEach(id => { LEN[id] = el[id].getTotalLength(); });
+  const steps = [...document.querySelectorAll('.sy-step')];
+
+  /* textos escritos da esquerda para a direita, com recorte que cresce */
+  const W = {};
+  function initWriting(){
+    const defs = $('dg').querySelector('defs');
+    document.querySelectorAll('[data-w]').forEach(t => {
+      const id = t.dataset.w, bb = t.getBBox();
+      let cp = $('cw-' + id);
+      if (!cp){
+        cp = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath'); cp.id = 'cw-' + id;
+        cp.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'rect'));
+        defs.appendChild(cp); t.setAttribute('clip-path', `url(#cw-${id})`);
+      }
+      const r = cp.firstChild;
+      r.setAttribute('x', bb.x - 2); r.setAttribute('y', bb.y - 4); r.setAttribute('height', bb.height + 8); r.setAttribute('width', 0);
+      W[id] = {t, r, bb, acc: t.classList.contains('ok')};
+    });
+  }
+
+  function update(){
+    let t = 0, reached = false;
+    if (reduce.matches){ t = steps.length; reached = true; }
+    else {
+      const small = matchMedia('(max-width:760px)').matches;
+      const anchor = innerHeight * (small ? 0.78 : 0.58);
+      steps.forEach((s, i) => { const r = s.getBoundingClientRect(); if (anchor >= r.top){ reached = true; t = i + Math.min(1, (anchor - r.top) / r.height); } });
+    }
+    const c = (a, b) => clamp((t - a) / (b - a));
+    const active = [];   /* o que está sendo desenhado agora: [início, ponto, cor de destaque?] */
+    const draw = (id, a, b, acc) => {
+      const v = c(a, b); el[id].style.strokeDashoffset = 1 - v; el[id].style.visibility = v > 0 ? 'visible' : 'hidden';
+      if (v > 0 && v < 1){ const p = el[id].getPointAtLength(v * LEN[id]); active.push([a, p.x, p.y, acc]); }
+      return v;
+    };
+    const head = (id, v) => { el[id].style.opacity = v > .97 ? 1 : 0; };
+    const write = (id, a, b, alpha = 1) => {
+      const w = W[id]; if (!w) return;
+      const v = c(a, b); w.r.setAttribute('width', (w.bb.width + 4) * v); w.t.style.opacity = alpha;
+      if (v > 0 && v < 1) active.push([a, w.bb.x + w.bb.width * v, w.bb.y + w.bb.height * .8, w.acc]);
+    };
+
+    head('reqH', draw('req', .1, .6)); write('keyLbl', .6, .85);
+    head('ins1H', draw('ins1', 1.1, 1.45)); write('ins1L', 1.45, 1.55);
+    write('rowKey', 1.55, 1.7); write('stA', 1.7, 1.9, 1 - c(2.65, 2.75));
+    head('payH', draw('pay', 2.05, 2.3)); head('payBH', draw('payB', 2.3, 2.55));
+    write('stB', 2.75, 2.97);
+    const lv = c(3.05, 3.3), lw = 34 * lv;
+    el.lostClip.setAttribute('x', 220 - lw); el.lostClip.setAttribute('width', lw);
+    if (lv > 0 && lv < 1) active.push([3.05, 220 - lw, 68, false]);
+    el.xMark.style.opacity = c(3.3, 3.4);
+    const rv = c(3.5, 3.8); el.retryClip.setAttribute('width', 92 * rv);
+    if (rv > 0 && rv < 1) active.push([3.5, 130 + 86 * rv, 88, false]);
+    write('retryL', 3.8, 3.97);
+    el.lost.style.opacity = 1 - .7 * c(4.0, 4.1);
+    head('ins2H', draw('ins2', 4.05, 4.3)); write('ins2L', 4.3, 4.4);
+    draw('uqBox', 4.4, 4.52, true); write('uqT', 4.52, 4.65);
+    head('resp2H', draw('resp2', 4.65, 4.8, true));
+    write('adqNote', 4.8, 4.9);
+    write('finalL', 4.9, 4.99);
+    const dim = 1 - .55 * c(4.8, 4.9); [el.adqBox, el.adqT, el.adqSh].forEach(e => { e.style.opacity = dim; });
+
+    const on = reached ? Math.min(steps.length - 1, Math.floor(t)) : -1;
+    steps.forEach((s, i) => s.classList.toggle('on', reduce.matches || i === on));
+
+    /* giz ou canetinha na ponta do traço que está sendo feito */
+    const tool = el.tool;
+    if ($('showTool').checked && active.length && !reduce.matches){
+      active.sort((a, b) => b[0] - a[0]);
+      const [, x, y, acc] = active[0];
+      tool.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)})`);
+      tool.style.setProperty('--ti', acc ? 'var(--b-acc)' : (/white/.test(kind()) ? 'var(--b-ink)' : kind() === 'glass' ? '#EEF1F0' : '#F2F0E7'));
+      tool.classList.add('on');
+    } else tool.classList.remove('on');
+  }
+
+  let ticking = false;
+  addEventListener('scroll', () => { if (!ticking){ ticking = true; requestAnimationFrame(() => { ticking = false; update(); }); } }, {passive:true});
+  const setProtoH = () => document.documentElement.style.setProperty('--proto-h', $('proto').offsetHeight + 'px');
+  addEventListener('resize', () => { setProtoH(); update(); });
+  setProtoH();
+  initWriting();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { initWriting(); update(); });
+  applyBoard();
+})();
+</script>
+</body>
+</html>

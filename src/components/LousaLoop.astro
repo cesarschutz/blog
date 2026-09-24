@@ -1,0 +1,135 @@
+---
+/**
+ * Lousa com animação curta em loop (briefing §7.3): poucos segundos, com barra de tempo por baixo
+ * (marcas de início, eventos e fim), botões Recomeçar e Pausar e uma pausa perceptível no fim antes
+ * de reiniciar. Só anda quando está na tela e nunca sozinha com movimento reduzido. Sem JS: o
+ * quadro parado escolhido (por padrão, o fim).
+ *
+ *   <LousaLoop desenho="<slug>/<nome>" rotulo="…" duracao={5.2} marcas={[{ em: 0.47, rotulo: "…" }]} legenda="…" />
+ */
+import { quadroDaLousa } from "../lib/lousas";
+import "../styles/lousa.css";
+
+interface Props {
+  desenho: string;
+  rotulo: string;
+  /** Duração de uma volta, em segundos. */
+  duracao: number;
+  /** Eventos na barra de tempo (de 0 a 1); início e fim entram sozinhos. */
+  marcas?: { em: number; rotulo: string }[];
+  legenda: string;
+  /** Instante (de 0 a 1) do quadro parado, sem JS ou com movimento reduzido. */
+  parado?: number;
+}
+
+const { desenho, rotulo, duracao, marcas = [], legenda, parado = 1 } = Astro.props;
+const { svg, fim } = quadroDaLousa(desenho, rotulo);
+const quadroParado = quadroDaLousa(desenho, rotulo, parado * fim).svg;
+const todasAsMarcas = [{ em: 0, rotulo: "início" }, ...marcas, { em: 1, rotulo: "fim" }];
+const rss = Astro.locals.rss;
+---
+
+{
+  rss ? (
+    <p>
+      <em>{rotulo}</em> <a href={rss.endereco}>A animação está no site.</a>
+    </p>
+  ) : (
+    <figure class="lousa-loop" data-lousa-loop data-duracao={duracao} data-parado={parado} data-pagefind-ignore>
+      <div class="lousa" set:html={parado === 1 ? svg : quadroParado} />
+      <div class="barra-tempo" aria-hidden="true">
+        <span class="preenchido"></span>
+        {
+          todasAsMarcas.map((m, i) => (
+            <>
+              <span class="marca" style={`left:${m.em * 100}%`} />
+              <span class:list={["rotulo-marca", { primeira: i === 0, ultima: i === todasAsMarcas.length - 1 }]} style={`left:${m.em * 100}%`}>
+                {m.rotulo}
+              </span>
+            </>
+          ))
+        }
+      </div>
+      <div class="controles-loop">
+        <figcaption>{legenda}</figcaption>
+        <span class="botoes" hidden>
+          <button type="button" class="botao" data-recomecar>Recomeçar</button>
+          <button type="button" class="botao" data-pausar aria-pressed="false">Pausar</button>
+        </span>
+      </div>
+    </figure>
+  )
+}
+
+<script>
+  import { prepararLousa, quandoVisivel } from "../scripts/lousa";
+
+  const reduzir = matchMedia("(prefers-reduced-motion: reduce)");
+  const PAUSA_NO_FIM = 1200;
+
+  for (const figura of document.querySelectorAll<HTMLElement>("[data-lousa-loop]")) {
+    const lousa = prepararLousa(figura.querySelector("svg")!);
+    const preenchido = figura.querySelector<HTMLElement>(".preenchido")!;
+    const recomecar = figura.querySelector<HTMLButtonElement>("[data-recomecar]")!;
+    const pausar = figura.querySelector<HTMLButtonElement>("[data-pausar]")!;
+    const duracao = Number(figura.dataset.duracao) * 1000;
+    const parado = Number(figura.dataset.parado ?? 1);
+    figura.querySelector<HTMLElement>(".botoes")!.hidden = false;
+
+    let t = 0;
+    let pausado = reduzir.matches;
+    let visivel = false;
+    let quadro = 0;
+    let anterior = 0;
+    let segurarAte = 0;
+
+    const mostrar = (novo: number) => {
+      t = Math.min(1, Math.max(0, novo));
+      preenchido.style.transform = `scaleX(${t})`;
+      lousa.desenhar(t * lousa.fim, !pausado);
+    };
+    const passo = (agora: number) => {
+      if (pausado || !visivel) return;
+      const dt = anterior ? Math.min(agora - anterior, 64) : 0;
+      anterior = agora;
+      if (segurarAte) {
+        if (agora >= segurarAte) {
+          segurarAte = 0;
+          mostrar(0);
+        }
+      } else {
+        mostrar(t + dt / duracao);
+        if (t >= 1) segurarAte = agora + PAUSA_NO_FIM;
+      }
+      quadro = requestAnimationFrame(passo);
+    };
+    const andar = () => {
+      cancelAnimationFrame(quadro);
+      anterior = 0;
+      if (!pausado && visivel) quadro = requestAnimationFrame(passo);
+    };
+    const marcarPausa = (valor: boolean) => {
+      pausado = valor;
+      pausar.setAttribute("aria-pressed", String(valor));
+      pausar.textContent = valor ? "Continuar" : "Pausar";
+      if (valor) lousa.desenhar(t * lousa.fim, false);
+      andar();
+    };
+
+    recomecar.addEventListener("click", () => {
+      segurarAte = 0;
+      mostrar(0);
+      marcarPausa(false);
+    });
+    pausar.addEventListener("click", () => marcarPausa(!pausado));
+    quandoVisivel(figura, (v) => {
+      visivel = v;
+      andar();
+    });
+    // Com movimento reduzido, fica no quadro parado até a pessoa pedir.
+    if (reduzir.matches) {
+      mostrar(parado);
+      marcarPausa(true);
+    } else mostrar(0);
+  }
+</script>

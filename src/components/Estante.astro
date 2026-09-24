@@ -1,0 +1,57 @@
+---
+/**
+ * Estante da home (briefing §5.1): um livro por categoria, o aparador e os livros de série. Cada
+ * lombada é um link para a página da categoria (funciona sem JS); com JS, abre o livro na gaveta
+ * (Gaveta.astro). O último livro de categoria fica inclinado.
+ */
+import MioloLombada from "./MioloLombada.astro";
+import type { Livro } from "../lib/estante";
+import "../styles/estante.css";
+
+interface Props {
+  livros: Livro[];
+}
+
+const { livros } = Astro.props;
+const categorias = livros.filter((l) => !l.serie);
+const series = livros.filter((l) => l.serie);
+const estilo = (l: Livro) =>
+  `--tecido:${l.tecido};--texto:${l.texto};--w:${l.largura};--h:${l.altura}${l.fita ? `;--fita:${l.fita}` : ""}`;
+// Largura da estante com --u = 1px, pelas medidas de estante.css: 16 de respiro de cada lado, 4 entre
+// os livros, o aparador (9 mais margens de 10 e 12) e o recuo do livro inclinado (0,105 da altura).
+const inclinado = categorias.at(-1);
+const natural = Math.ceil(
+  2 * 16 + livros.reduce((soma, l) => soma + l.largura, 0) + 4 * livros.length + 31 + (inclinado ? inclinado.altura * 0.105 : 0),
+);
+const rotulo = (l: Livro) =>
+  l.serie
+    ? `Série ${l.nome}, ${l.posts.length} partes`
+    : `Livro ${l.nome}, ${l.posts.length} ${l.posts.length === 1 ? "artigo" : "artigos"}`;
+---
+
+<div class="estante" data-estante style={`--natural:${natural}`}>
+  <div class="prateleira-livros" role="group" aria-label="Estante: um livro por categoria e um por série">
+    {
+      categorias.map((l, i) => (
+        <a
+          class:list={["lombada", "lombada-visual", { inclinada: i === categorias.length - 1 }]}
+          href={l.href}
+          data-livro={l.id}
+          aria-label={rotulo(l)}
+          style={estilo(l)}
+        >
+          <MioloLombada livro={l} />
+        </a>
+      ))
+    }
+    <span class="aparador" aria-hidden="true"></span>
+    {
+      series.map((l) => (
+        <a class="lombada lombada-visual de-serie" href={l.href} data-livro={l.id} aria-label={rotulo(l)} style={estilo(l)}>
+          <MioloLombada livro={l} />
+        </a>
+      ))
+    }
+  </div>
+  <div class="tabua" aria-hidden="true"></div>
+</div>

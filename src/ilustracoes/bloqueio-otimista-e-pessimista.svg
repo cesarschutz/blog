@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -40 1207 929" data-largo="80 207 1100 468" data-medio="307 147 900 600" data-quadrado="422 112 670 670" data-og="387 5 740 883" data-segura="520 273 474 348"
+  aria-label="Dois cadeados: à esquerda, um aberto com a etiqueta version 2, o bloqueio otimista; à direita, um fechado, o pessimista.">
+  <g class="tinta">
+    <path d="M565 380 V318 A45 45 0 0 1 655 318 V338" class="linha"/>
+    <path d="M538 380 H682 A18 18 0 0 1 700 398 V532 A18 18 0 0 1 682 550 H538 A18 18 0 0 1 520 532 V398 A18 18 0 0 1 538 380 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M538 380 H682 A18 18 0 0 1 700 398 V532 A18 18 0 0 1 682 550 H538 A18 18 0 0 1 520 532 V398 A18 18 0 0 1 538 380 Z" transform="translate(7 6)" class="cor"/>
+    <path d="M538 380 H682 A18 18 0 0 1 700 398 V532 A18 18 0 0 1 682 550 H538 A18 18 0 0 1 520 532 V398 A18 18 0 0 1 538 380 Z" class="linha"/>
+    <path d="M623 450 A13 13 0 1 1 597 450 A13 13 0 1 1 623 450 Z M610 463 V495" class="linha"/>
+    <path d="M610 550 V566" class="linha"/>
+    <path d="M560 566 H722 V614 H560 L545 590 Z" transform="translate(7 7)" class="hachura"/>
+    <path d="M560 566 H722 V614 H560 L545 590 Z" class="papel"/>
+    <path d="M568 590 A5 5 0 1 1 558 590 A5 5 0 1 1 568 590 Z" class="linha"/>
+    <path d="M845 380 V325 A45 45 0 0 1 935 325 V380" class="linha"/>
+    <path d="M818 380 H962 A18 18 0 0 1 980 398 V532 A18 18 0 0 1 962 550 H818 A18 18 0 0 1 800 532 V398 A18 18 0 0 1 818 380 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M818 380 H962 A18 18 0 0 1 980 398 V532 A18 18 0 0 1 962 550 H818 A18 18 0 0 1 800 532 V398 A18 18 0 0 1 818 380 Z" class="papel"/>
+    <path d="M903 450 A13 13 0 1 1 877 450 A13 13 0 1 1 903 450 Z M890 463 V495" class="linha"/>
+  </g>
+  <text x="648" y="599" text-anchor="middle" class="codigo">version 2</text>
+  <g class="anotacao">
+    <text x="100" y="290" class="nota">otimista: não trava</text>
+    <text x="100" y="318" class="nota-pequena">confere a versão ao gravar</text>
+    <path d="M345 300 C420 300 480 330 515 372" class="chamada"/>
+    <text x="890" y="600" text-anchor="middle" class="nota">pessimista: trava a linha</text>
+  </g>
+</svg>

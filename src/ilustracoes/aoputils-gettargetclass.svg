@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -40 1200 900" data-largo="80 158 1100 468" data-medio="200 100 900 600" data-quadrado="415 110 670 670" data-og="350 -40 740 883" data-segura="415 158 670 468"
+  aria-label="Um papel de embrulho com o nome da classe do proxy sendo puxado para o lado e, à direita, a classe real, PedidoService, que o getTargetClass() devolve.">
+  <g class="tinta">
+    <path d="M450 300 H740 C720 360 730 450 770 520 H450 Z" transform="translate(12 12)" class="hachura"/>
+    <path d="M450 300 H740 C720 360 730 450 770 520 H450 Z" transform="translate(7 6)" class="cor"/>
+    <path d="M450 300 H740 C720 360 730 450 770 520 H450 Z" class="linha"/>
+    <path d="M740 300 C752 340 750 380 744 420" class="linha"/>
+    <path d="M812 330 H1018 A12 12 0 0 1 1030 342 V468 A12 12 0 0 1 1018 480 H812 A12 12 0 0 1 800 468 V342 A12 12 0 0 1 812 330 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M812 330 H1018 A12 12 0 0 1 1030 342 V468 A12 12 0 0 1 1018 480 H812 A12 12 0 0 1 800 468 V342 A12 12 0 0 1 812 330 Z" class="papel"/>
+    <path d="M824 430 H1006 M824 456 H960" class="linha"/>
+    <path d="M700 282 C760 250 840 262 880 318" class="linha"/>
+    <path d="M866 308 L880 318 L882 300" class="linha"/>
+  </g>
+  <text x="470" y="412" class="codigo">$$SpringCGLIB$$0</text>
+  <text x="915" y="400" text-anchor="middle" class="codigo">PedidoService</text>
+  <text x="790" y="246" text-anchor="middle" class="codigo">getTargetClass()</text>
+  <g class="anotacao">
+    <text x="100" y="560" class="nota">getClass() devolve o embrulho</text>
+    <text x="100" y="588" class="nota-pequena">getTargetClass() devolve a classe real</text>
+  </g>
+</svg>
