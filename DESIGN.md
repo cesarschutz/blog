@@ -600,7 +600,10 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
     sobe 40px (0,45s) e o lugar fica escurecido; o livro 3D sai da posição exata da lombada, com a
     lombada de frente, e vai para a gaveta girando até 18° (1,05s, `power3.inOut`); a capa abre
     (-165°) enquanto o livro desliza para centralizar as páginas e gira até 4°; os artigos aparecem
-    em sequência (`stagger` 0,05s). Fechar faz o caminho de volta 1,5× mais rápido. O livro 3D é o
+    em sequência (`stagger` 0,05s), 6 por página. Com mais de 6, "Próximas ▸" vira uma folha com a
+    mesma animação da capa (-160°, 1,05s) e mostra os 6 seguintes, e "◂ Anteriores" desvira (1,5×
+    mais rápido); o foco vai para o primeiro artigo quando o comando vem do teclado. No celular, cada
+    título ocupa uma linha, para a página caber. Fechar faz o caminho de volta 1,5× mais rápido. O livro 3D é o
     inteiro (`Livro3D`: contracapa, lombada, bordas, página e capa com verso).
   - **Pilha lateral**: ao passar o mouse (ou com o foco), o livro sai 14px da pilha (0,35s,
     `power3.out`) e volta com `elastic.out(1, 0.55)`. O clique leva à página do livro pela View

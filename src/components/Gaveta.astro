@@ -4,7 +4,9 @@
  * toque numa lombada, o livro sobe e o lugar dele fica escurecido; um livro 3D sai da posição exata da
  * lombada, com a lombada de frente, e vem para a gaveta girando até 18°; a capa abre (-165°) enquanto
  * o livro desliza para centralizar as duas páginas e gira até 4°; na página da direita aparecem os
- * artigos mais recentes (até 6), com "Ver todos os N artigos" e "Ver o livro". O verso da capa leva a
+ * artigos mais recentes (6 por página), com "Ver todos os N artigos" e "Ver o livro"; com mais de 6,
+ * "Próximas ▸" vira a folha (com a mesma animação da capa) e mostra os 6 seguintes, e "◂ Anteriores"
+ * volta. Tudo funciona pelo teclado. O verso da capa leva a
  * assinatura do blog. "Guardar o livro", Esc ou um clique no lugar escurecido fazem o caminho de
  * volta, 1,5× mais rápido; outro livro fecha o atual e abre o novo. No celular, o livro aberto cabe na
  * largura da tela. Com movimento reduzido, tudo direto no estado final.
@@ -25,7 +27,7 @@ interface Props {
 const { livros } = Astro.props;
 /** Quantos artigos cabem na página da direita. */
 const NA_PAGINA = 6;
-const recentes = (l: Livro) => [...l.posts].sort((a, b) => b.publicado.getTime() - a.publicado.getTime()).slice(0, NA_PAGINA);
+const recentes = (l: Livro) => [...l.posts].sort((a, b) => b.publicado.getTime() - a.publicado.getTime());
 const quantos = (l: Livro) => {
   const n = l.posts.length;
   if (l.serie) return `${n} ${n === 1 ? "edição" : "edições"}`;
@@ -48,8 +50,8 @@ const quantos = (l: Livro) => {
             <p class="sub-pagina">{l.posts.length > 0 ? `${l.nome} · ${quantos(l)}` : l.nome}</p>
             {l.posts.length > 0 ? (
               <ol class="itens-pagina">
-                {recentes(l).map((p) => (
-                  <li>
+                {recentes(l).map((p, i) => (
+                  <li data-pag={Math.floor(i / NA_PAGINA)} hidden={i >= NA_PAGINA}>
                     <a href={p.url}>{p.titulo}</a>
                     <small>{diaEMes(p.publicado)}</small>
                   </li>
@@ -57,6 +59,16 @@ const quantos = (l: Livro) => {
               </ol>
             ) : (
               <p class="vazio-pagina">Este livro ainda não tem artigos. O primeiro está a caminho.</p>
+            )}
+            {l.posts.length > NA_PAGINA && (
+              <p class="virar-pagina">
+                <button type="button" data-anteriores hidden aria-label="Página anterior do livro">
+                  ◂ Anteriores
+                </button>
+                <button type="button" data-proximas aria-label="Próxima página do livro">
+                  Próximas ▸
+                </button>
+              </p>
             )}
             <p class="links-pagina">
               {l.posts.length > 0 && <a href={url(`/archive/?livro=${l.id}`)}>{l.serie ? "Ver todas as" : "Ver todos os"} {quantos(l)}</a>}
@@ -103,7 +115,7 @@ const quantos = (l: Livro) => {
       return Math.round(Math.min(360, (largura / 2) * 1.5));
     };
 
-    type Aberto = { id: string; lombada: HTMLElement; clone: HTMLElement; tl: gsap.core.Timeline };
+    type Aberto = { id: string; lombada: HTMLElement; clone: HTMLElement; tl: gsap.core.Timeline; folhas: HTMLElement[] };
     let aberto: Aberto | null = null;
     let ocupado = false;
     let pendente: string | null = null;
@@ -131,7 +143,7 @@ const quantos = (l: Livro) => {
 
       const livro = clone.querySelector<HTMLElement>(".livro-3d")!;
       const capa = clone.querySelector<HTMLElement>(".face-capa")!;
-      const itens = clone.querySelectorAll(".pagina-aberta > *, .itens-pagina li");
+      const itens = clone.querySelectorAll(".pagina-aberta > *, .itens-pagina li:not([hidden])");
       const p = palco!.getBoundingClientRect();
       const l = lombada.getBoundingClientRect();
       const g = gaveta!.getBoundingClientRect();
@@ -159,7 +171,8 @@ const quantos = (l: Livro) => {
           .to(livro, { rotationY: 4, duration: 1.05 }, "<")
           .from(itens, { opacity: 0, y: 6, stagger: 0.05, duration: 0.35, ease: "power2.out" }, "-=0.4");
       }
-      aberto = { id, lombada, clone, tl };
+      aberto = { id, lombada, clone, tl, folhas: [] };
+      ligarPaginas(gsap, aberto);
 
       // A gaveta à vista: rola até ela, se o livro aberto ficar fora da tela.
       const fim = g.top + m.bh + 80;
@@ -169,8 +182,10 @@ const quantos = (l: Livro) => {
 
     function fechar(depois?: () => void, devolverFoco = false) {
       if (!aberto) return depois?.();
-      const { lombada, clone, tl } = aberto;
+      const { lombada, clone, tl, folhas } = aberto;
       aberto = null;
+      // As folhas viradas somem antes da capa fechar.
+      for (const f of folhas) f.remove();
       ocupado = true;
       tl.eventCallback("onComplete", null);
       tl.eventCallback("onReverseComplete", () => {
@@ -201,6 +216,82 @@ const quantos = (l: Livro) => {
             pendente = null;
             if (p !== aberto?.id) escolher(p, false);
           }
+        });
+      });
+    }
+
+    // ---------- virar a página (mais de 6 artigos) ----------
+    // "Próximas ▸" põe por cima da página uma folha com o que ela mostra e a vira para a esquerda, com a
+    // mesma animação da capa, revelando os 6 seguintes; "◂ Anteriores" desvira a última folha.
+    const NA_PAGINA = 6;
+    function ligarPaginas(gsap: GSAP, livroAberto: Aberto) {
+      const pagina = livroAberto.clone.querySelector<HTMLElement>(".pagina-aberta");
+      const proximas = pagina?.querySelector<HTMLButtonElement>("[data-proximas]");
+      const anteriores = pagina?.querySelector<HTMLButtonElement>("[data-anteriores]");
+      if (!pagina || !proximas || !anteriores) return;
+      const itens = [...pagina.querySelectorAll<HTMLElement>(".itens-pagina li")];
+      const total = Math.ceil(itens.length / NA_PAGINA);
+      const livro = livroAberto.clone.querySelector<HTMLElement>(".livro-3d")!;
+      const folhaDaPagina = livroAberto.clone.querySelector<HTMLElement>(".livro-3d .pagina")!;
+      let atual = 0;
+      let virando = false;
+
+      const mostrar = (n: number) => {
+        atual = n;
+        for (const li of itens) li.hidden = Number(li.dataset.pag) !== n;
+        anteriores.hidden = n === 0;
+        proximas.hidden = n >= total - 1;
+      };
+      const focar = (teclado: boolean) => teclado && pagina.querySelector<HTMLElement>(".itens-pagina li:not([hidden]) a")?.focus();
+      const novos = () => pagina.querySelectorAll(".itens-pagina li:not([hidden])");
+
+      proximas.addEventListener("click", (e) => {
+        if (virando || atual >= total - 1) return;
+        const teclado = e.detail === 0;
+        if (movimentoReduzido.matches) {
+          mostrar(atual + 1);
+          return focar(teclado);
+        }
+        virando = true;
+        // A folha: a frente é uma cópia do que a página mostra agora; o verso, papel.
+        const folha = document.createElement("div");
+        folha.className = "f folha-virando";
+        folha.setAttribute("aria-hidden", "true");
+        const frente = folhaDaPagina.cloneNode(true) as HTMLElement;
+        frente.className = "frente-folha";
+        frente.inert = true;
+        const verso = document.createElement("div");
+        verso.className = "verso-folha";
+        folha.append(frente, verso);
+        livro.append(folha);
+        livroAberto.folhas.push(folha);
+        mostrar(atual + 1);
+        gsap
+          .timeline({ defaults: { ease: "power3.inOut" }, onComplete: () => ((virando = false), focar(teclado)) })
+          .to(folha, { rotationY: -160, duration: 1.05 })
+          .from(novos(), { opacity: 0, y: 6, stagger: 0.05, duration: 0.35, ease: "power2.out" }, "-=0.4");
+      });
+
+      anteriores.addEventListener("click", (e) => {
+        if (virando || atual === 0) return;
+        const teclado = e.detail === 0;
+        const folha = livroAberto.folhas.pop();
+        if (!folha || movimentoReduzido.matches) {
+          folha?.remove();
+          mostrar(atual - 1);
+          return focar(teclado);
+        }
+        virando = true;
+        gsap.to(folha, {
+          rotationY: 0,
+          duration: 1.05 / 1.5,
+          ease: "power3.inOut",
+          onComplete: () => {
+            mostrar(atual - 1);
+            folha.remove();
+            virando = false;
+            focar(teclado);
+          },
         });
       });
     }

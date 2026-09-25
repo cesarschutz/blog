@@ -374,6 +374,110 @@
   outline-offset: 2px;
 }
 
+/* "◂ Anteriores" e "Próximas ▸": botões de texto na cor do livro, acima dos links. */
+.virar-pagina {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5em;
+  margin-top: auto !important;
+  padding-top: 0.6em;
+}
+
+.virar-pagina + .links-pagina {
+  margin-top: 0 !important;
+}
+
+.virar-pagina button {
+  margin: 0 0 0 auto;
+  padding: 0.2em 0;
+  border: 0;
+  background: none;
+  color: var(--livro-destaque-texto);
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 0.95em;
+  cursor: pointer;
+}
+
+.virar-pagina button[data-anteriores] {
+  margin: 0 auto 0 0;
+}
+
+.virar-pagina button[hidden] {
+  display: none;
+}
+
+.virar-pagina button:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.virar-pagina button:focus-visible {
+  outline: 1.5px solid var(--livro-destaque-texto);
+  outline-offset: 2px;
+}
+
+/* A folha que vira: presa pela lombada, como a capa; a frente copia a página, o verso é papel. */
+.livro-3d .folha-virando {
+  top: 4px;
+  width: calc(var(--cw) - 6px);
+  height: calc(var(--bh) - 8px);
+  transform: translateZ(calc(var(--sw) / 2 - 0.4px));
+  transform-origin: 0 50%;
+  transform-style: preserve-3d;
+  backface-visibility: visible;
+}
+
+.folha-virando > .frente-folha,
+.folha-virando > .verso-folha {
+  position: absolute;
+  inset: 0;
+  border-radius: 0 3px 3px 0;
+  background: color-mix(in oklab, var(--livro-papel), white 55%);
+  color: var(--livro-tinta-papel);
+  backface-visibility: hidden;
+  box-shadow: inset 10px 0 18px -14px rgb(0 0 0 / 0.35);
+}
+
+.folha-virando > .verso-folha {
+  border-radius: 3px 0 0 3px;
+  transform: rotateY(180deg);
+  box-shadow: inset -10px 0 18px -14px rgb(0 0 0 / 0.35);
+}
+
+/*
+ * No livro pequeno (celular), a página cabe inteira: cada título numa linha só, itens mais juntos
+ * e os dois links lado a lado.
+ */
+@media (max-width: 760px) {
+  .pagina-aberta {
+    padding: 8% 7% 6% 9%;
+  }
+
+  .itens-pagina {
+    gap: 0.4em;
+    margin-top: 0.7em;
+  }
+
+  .itens-pagina a {
+    -webkit-line-clamp: 1;
+  }
+
+  .titulo-pagina {
+    font-size: 1.35em;
+  }
+
+  .sub-pagina {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .links-pagina {
+    padding-top: 0.5em;
+  }
+}
+
 @media (max-width: 760px) {
   .gaveta {
     height: calc(var(--altura-livro, 270px) + 84px);

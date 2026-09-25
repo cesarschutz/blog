@@ -215,7 +215,8 @@ Referência: aba "Home" do protótipo.
   - **Abrir um livro** (D40, "tirar da estante e abrir"): o livro sobe e o lugar dele fica
     escurecido; um livro 3D sai da posição da lombada e vem para a gaveta, abaixo da estante,
     girando até 18°; a capa abre e o livro desliza para centralizar as duas páginas: no verso da
-    capa, a assinatura do blog; na página da direita, os **artigos mais recentes** (até 6), com
+    capa, a assinatura do blog; na página da direita, os **artigos mais recentes** (6 por página;
+    com mais, "Próximas ▸" vira a folha e mostra os seguintes, e "◂ Anteriores" volta), com
     "Ver todos os N artigos" (o arquivo filtrado pelo livro) e "Ver o livro". **Guardar o livro**,
     Esc ou um clique no lugar escurecido fazem o caminho de volta, 1,5× mais rápido; **trocar de
     livro** fecha o atual antes de abrir o próximo. No celular, o livro aberto cabe na largura da
