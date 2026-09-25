@@ -3,8 +3,8 @@
  * Sumário do artigo (briefing §5.3), só com 3 seções ou mais.
  *
  * "lateral" (D26, D33): em telas ≥ 1300px, à esquerda do texto, numa folha própria e fixa. As seções
- * ficam num trilho: o número de cada uma (quando o título é numerado, "3. …") num marco redondo, e um
- * ponto nas sem número (Apresentação, Fontes). O script (src/scripts/artigo.ts) pinta o trilho até a
+ * ficam num trilho, com um ponto em cada uma e sem número (D36): o "3. " de um título numerado sai
+ * também do nome, nas duas variantes. O script (src/scripts/artigo.ts) pinta o trilho até a
  * seção atual, marca as já lidas e a atual (em azul-tinta), abre as subseções da atual e mantém a
  * atual à vista quando a lista rola. Embaixo, a barra de quanto já foi lido, com "NN% lido" e o tempo
  * que falta; só com JS. Depois vem o post-it das frases (PostIt), quando a página passa.
@@ -24,11 +24,8 @@ interface Props {
 }
 
 const { secoes, variante, minutos = 0, chave } = Astro.props;
-// "3. Bloqueio pessimista" → marco "3" e nome "Bloqueio pessimista".
-const partes = (texto: string) => {
-  const m = texto.match(/^(\d{1,2})[.)]\s+(.+)$/);
-  return m ? { numero: m[1], nome: m[2] } : { numero: "", nome: texto };
-};
+// "3. Bloqueio pessimista" → "Bloqueio pessimista": o sumário não mostra número (D36).
+const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
 ---
 
 {
@@ -39,17 +36,11 @@ const partes = (texto: string) => {
           <p class="titulo">Neste artigo</p>
           <ol class="trilho">
             {secoes.map((s) => {
-              const { numero, nome } = partes(s.text);
               return (
-                <li class:list={["secao", { "sem-numero": !numero }]}>
+                <li class="secao">
                   <a href={`#${s.slug}`} data-secao={s.slug}>
-                    <span class="marco" aria-hidden="true">
-                      {numero}
-                    </span>
-                    <span class="nome">
-                      {numero && <span class="sr">{numero}. </span>}
-                      {nome}
-                    </span>
+                    <span class="marco" aria-hidden="true" />
+                    <span class="nome">{semNumero(s.text)}</span>
                   </a>
                   {s.sub.length > 0 && (
                     <ol class="subsecoes">
@@ -84,7 +75,7 @@ const partes = (texto: string) => {
         <ol>
           {secoes.map((s) => (
             <li>
-              <a href={`#${s.slug}`}>{s.text}</a>
+              <a href={`#${s.slug}`}>{semNumero(s.text)}</a>
             </li>
           ))}
         </ol>
@@ -157,23 +148,17 @@ const partes = (texto: string) => {
     color: var(--ink);
   }
 
+  /* Um ponto no trilho em cada seção, sem número (D36). */
   .marco {
     position: absolute;
     z-index: 1;
-    top: 3px;
-    left: 0;
-    display: grid;
-    place-items: center;
-    width: var(--marco);
-    height: var(--marco);
+    top: 10px;
+    left: calc(var(--marco) / 2 - 4.5px);
+    width: 9px;
+    height: 9px;
     border: 1.5px solid var(--rule);
     border-radius: 50%;
     background: var(--paper-hi);
-    color: var(--ink-3);
-    font-family: var(--font-codigo);
-    font-size: 11px;
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
     transition:
       background 0.2s,
       border-color 0.2s,
@@ -181,18 +166,9 @@ const partes = (texto: string) => {
       box-shadow 0.2s;
   }
 
-  /* Sem número (Apresentação, Fontes): só um ponto no trilho. */
-  .sem-numero .marco {
-    top: 10px;
-    left: calc(var(--marco) / 2 - 4.5px);
-    width: 9px;
-    height: 9px;
-  }
-
   .secao.lida .marco {
     border-color: color-mix(in oklab, var(--acento) 55%, var(--rule));
     background: color-mix(in oklab, var(--acento) 12%, var(--paper-hi));
-    color: var(--acento);
   }
 
   .secao > a[aria-current="true"] {
@@ -203,7 +179,6 @@ const partes = (texto: string) => {
   .secao > a[aria-current="true"] .marco {
     border-color: var(--acento);
     background: var(--acento);
-    color: var(--sobre-acento);
     box-shadow: 0 0 0 4px color-mix(in oklab, var(--acento) 16%, transparent);
   }
 

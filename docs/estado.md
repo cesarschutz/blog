@@ -90,6 +90,7 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
   uma lousa de passos. Código rodado com Jackson 3.2.3 e 2.21.0 e com Spring Boot 4.1.1. Entraram
   as quatro sugestões aprovadas (PCI DSS, `JsonMapper.Builder` do Boot, frase do mapper padrão
   conferida, Fontes).
+- **Sumário sem números (D36, 25/09/2026):** só um ponto no trilho de cada seção, em todos os posts.
 
 ## Próximos passos
 

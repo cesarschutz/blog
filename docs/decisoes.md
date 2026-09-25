@@ -824,3 +824,12 @@ nada muda.
 - **GSAP sob demanda baixado antes do uso (Cesar, 25/09/2026, no `DESIGN.md`, "Movimento"):** o
   download começa ao passar o mouse, ao tocar ou quando a página fica ociosa, para a primeira animação
   não atrasar. Acrescentado também o foco do teclado, para quem navega sem mouse ter o mesmo ganho.
+
+## D36 · Sumário sem números
+- **Data:** 25/09/2026 · **Status:** aprovado pelo Cesar (pedido dele).
+- **Decisão:** o trilho do sumário lateral mostra só um ponto em cada seção, sem o número no marco
+  redondo, em todos os posts. O "3. " de um título numerado também sai do nome, no sumário lateral e
+  no recolhível. Os títulos dentro do artigo e as âncoras não mudam (D7).
+- **Motivo:** o Cesar preferiu o trilho sem números.
+- **Mudado:** `src/components/Sumario.astro` e `docs/briefing.md` (§5.3, Sumário). Substitui o
+  "número de cada seção num marco" da D33.

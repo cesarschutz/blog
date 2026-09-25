@@ -295,8 +295,8 @@ Referência: aba "Artigo" do protótipo.
   navegação. A divisão em título e subtítulo pelo " — " fica só na imagem de compartilhamento (D33).
 - **Barra de progresso de leitura**: faixa de 3px no topo, na cor da categoria.
 - **Sumário**: em telas ≥ 1300px, à esquerda do texto, numa folha própria e fixa; recolhível no
-  início do texto nas menores. Só aparece com 3 ou mais seções. No lateral (D33), um trilho: o número
-  de cada seção num marco (um ponto nas sem número), as lidas e a atual pintadas em azul-tinta, as
+  início do texto nas menores. Só aparece com 3 ou mais seções. No lateral (D33), um trilho: um ponto
+  em cada seção, sem número (D36; o "3. " do título sai do nome, nas duas variantes), as lidas e a atual pintadas em azul-tinta, as
   subseções da atual abertas, e a atual sempre à vista. Embaixo, a barra fina com "19% lido" e o tempo
   que falta (em fonte de código), que soma à barra do topo; só com JS. Depois dele, o post-it das
   frases (em telas com 720px de altura ou mais).
