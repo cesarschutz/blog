@@ -3,7 +3,7 @@
  * Grade de livros (D31): as páginas de categorias e de séries mostram os livros lado a lado, grandes,
  * abertos em três quartos, como o livro do topo da página de cada um. Cada cartão é uma folha com o
  * livro num painel tingido pela cor dele, o nome, o subtítulo e a contagem. Ao passar o mouse, o
- * cartão sobe e o livro gira um pouco para o leitor. Ao clicar, o livro voa até o topo da página
+ * cartão sobe e a capa acompanha o mouse e entreabre (D40, src/scripts/capa-viva.ts). Ao clicar, o livro voa até o topo da página
  * dele (transição de página, D29).
  */
 import LivroEmPe from "./LivroEmPe.astro";
@@ -24,7 +24,7 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.vo
   {
     livros.map((l) => (
       <li>
-        <a class="cartao-livro folha" href={l.href}>
+        <a class="cartao-livro folha" href={l.href} data-capa-viva>
           <span class="palco painel" style={`--cor:${l.cores.cor}`}>
             <LivroEmPe livro={l} altura={270} transicao="ao-clicar" />
           </span>
@@ -41,6 +41,12 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.vo
     ))
   }
 </ul>
+
+<script>
+  import { capasVivas } from "../scripts/capa-viva";
+
+  capasVivas();
+</script>
 
 <style>
   .grade-livros {
@@ -74,11 +80,6 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.vo
     place-items: center;
     margin: 12px 12px 0;
     padding: 30px 12px 34px;
-  }
-
-  /* O livro gira um pouco para o leitor quando o cartão sobe. */
-  .palco :global(.livro-3d) {
-    transition: transform 0.45s cubic-bezier(0.2, 0.75, 0.2, 1) !important;
   }
 
   .texto {
@@ -139,24 +140,15 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.vo
     .cartao-livro:hover .nome {
       color: var(--acento);
     }
-
-    .cartao-livro:hover :global(.livro-3d) {
-      --giro: 32deg;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .cartao-livro,
-    .palco :global(.livro-3d) {
+    .cartao-livro {
       transition: none !important;
     }
 
     .cartao-livro:hover {
       transform: none;
-    }
-
-    .cartao-livro:hover :global(.livro-3d) {
-      --giro: 18deg;
     }
   }
 </style>

@@ -75,7 +75,7 @@ const rotulos = naSerie
   <div class="fim-do-artigo">
     {
       livro && (
-        <a class="livro-do-artigo" href={livro.href}>
+        <a class="livro-do-artigo" href={livro.href} data-capa-viva>
           <span class="livro-3d-pequeno" aria-hidden="true">
             <LivroEmPe livro={livro} altura={150} transicao="ao-clicar" />
           </span>
@@ -118,6 +118,10 @@ const rotulos = naSerie
 }
 
 <script>
+  import { capasVivas } from "../scripts/capa-viva";
+
+  capasVivas();
+
   const caixa = document.querySelector<HTMLElement>("[data-compartilhar]");
   if (caixa) {
     const { titulo = "", endereco = location.href } = caixa.dataset;

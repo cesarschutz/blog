@@ -695,6 +695,24 @@
   backface-visibility: hidden;
 }
 
+/* A luz que segue o mouse na capa (capa-viva.ts, D40): maior que a capa, anda por transform. */
+.capa-frente {
+  overflow: hidden;
+}
+
+.luz-capa {
+  position: absolute;
+  z-index: 4;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  opacity: 0;
+  background: radial-gradient(circle at center, rgb(255 255 255 / 0.75), transparent 28%);
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+
 /* No livro 3D, a sombra é do livro inteiro (a contracapa), e não da capa. */
 .face-capa .capa-face {
   box-shadow: 0 1px 1px rgb(0 0 0 / 0.22);

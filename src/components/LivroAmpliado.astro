@@ -30,6 +30,7 @@ import "../styles/visor.css";
 
 <script>
   import { GIRO } from "../lib/livro-3d";
+  import { adiantar, carregarArrastar, movimentoReduzido } from "../scripts/gsap";
 
   const dialogo = document.querySelector<HTMLDialogElement>("[data-livro-ampliado]");
   if (dialogo && !dialogo.dataset.ligado) {
@@ -43,10 +44,53 @@ import "../styles/visor.css";
     let m = { u: 0, bh: 0, cw: 0, sw: 0 };
     let giro = GIRO;
 
-    // O livro gira em volta do próprio centro (Livro3D): 0° é a capa de frente, 90° a lombada.
+    // O livro gira em volta do próprio centro (Livro3D): 0° é a capa de frente, 90° a lombada. Sem o
+    // GSAP (ou com movimento reduzido), pela variável do CSS; com ele, arrastar gira com embalo (D40).
     function girar(graus: number) {
       giro = Math.min(88, Math.max(-88, graus));
       livro?.style.setProperty("--giro", `${giro}deg`);
+    }
+
+    // Arrastar com embalo (Draggable + InertiaPlugin): o livro continua girando depois de soltar e
+    // volta sozinho a 18° com um balanço. O Draggable mexe num elemento de mentira (o proxy).
+    let arrasto: { kill(): void } | null = null;
+    let gsapNoAr: Awaited<ReturnType<typeof carregarArrastar>>["gsap"] | null = null;
+    async function ligarArrasto() {
+      if (!livro || movimentoReduzido.matches) return;
+      const { gsap, Draggable } = await carregarArrastar();
+      gsapNoAr = gsap;
+      const alvo = livro;
+      if (!alvo || !dialogo!.open) return;
+      gsap.set(alvo, { rotationY: GIRO });
+      const proxy = document.createElement("div");
+      let inicio = GIRO;
+      const voltar = () => {
+        const agora = Number(gsap.getProperty(alvo, "rotationY"));
+        const destino = GIRO + Math.round((agora - GIRO) / 360) * 360;
+        gsap.to(alvo, { rotationY: destino, duration: 1.1, ease: "elastic.out(1, 0.6)", onComplete: () => gsap.set(alvo, { rotationY: GIRO }) });
+      };
+      [arrasto] = Draggable.create(proxy, {
+        type: "x",
+        trigger: palco,
+        inertia: true,
+        onPress() {
+          gsap.killTweensOf(alvo);
+          inicio = Number(gsap.getProperty(alvo, "rotationY"));
+          gsap.set(proxy, { x: 0 });
+          this.update();
+        },
+        onDrag() {
+          arrastou = Math.abs(this.x) > 4;
+          gsap.set(alvo, { rotationY: inicio + this.x * 0.55 });
+        },
+        onThrowUpdate() {
+          gsap.set(alvo, { rotationY: inicio + this.x * 0.55 });
+        },
+        onRelease() {
+          if (!this.tween) voltar();
+        },
+        onThrowComplete: voltar,
+      });
     }
 
     function abrir(raiz: HTMLElement) {
@@ -82,10 +126,13 @@ import "../styles/visor.css";
       ir.href = destino || "#";
 
       dialogo!.showModal();
-      // Abre quase de frente, como o livro de origem (D39); arrastar gira o livro.
+      // Abre quase de frente, como o livro de origem (D39); arrastar gira o livro, com embalo.
+      ligarArrasto();
     }
 
     dialogo.addEventListener("close", () => {
+      arrasto?.kill();
+      arrasto = null;
       palco.replaceChildren();
       origem?.querySelector<HTMLElement>("[data-ampliar]")?.focus({ preventScroll: true });
       origem = livro = null;
@@ -102,9 +149,11 @@ import "../styles/visor.css";
       if (alvo === dialogo || alvo === palco) dialogo.close();
     });
     dialogo.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft") girar(giro - 8);
-      else if (e.key === "ArrowRight") girar(giro + 8);
-      else return;
+      const passo = e.key === "ArrowLeft" ? -8 : e.key === "ArrowRight" ? 8 : 0;
+      if (!passo) return;
+      // Com o GSAP, as setas giram o livro aos poucos; sem ele, pela variável do CSS.
+      if (arrasto && gsapNoAr && livro) gsapNoAr.to(livro, { rotationY: `+=${passo}`, duration: 0.3, ease: "power2.out" });
+      else girar(giro + passo);
       e.preventDefault();
     });
 
@@ -112,7 +161,8 @@ import "../styles/visor.css";
     let inicio: { x: number; giro: number } | null = null;
     palco.addEventListener("pointerdown", (e) => {
       arrastou = false;
-      if (!livro || !(e.target as HTMLElement).closest(".livro-3d-caixa")) return;
+      // Com o embalo do GSAP ligado, é o Draggable que cuida do arrasto.
+      if (arrasto || !livro || !(e.target as HTMLElement).closest(".livro-3d-caixa")) return;
       inicio = { x: e.clientX, giro };
       palco.setPointerCapture(e.pointerId);
       palco.classList.add("arrastando");
@@ -128,6 +178,9 @@ import "../styles/visor.css";
     };
     palco.addEventListener("pointerup", soltar);
     palco.addEventListener("pointercancel", soltar);
+
+    // O GSAP com o arrasto vem um pouco antes: ao passar o mouse, tocar ou focar a lupa.
+    for (const lupa of document.querySelectorAll("[data-ampliar]")) adiantar(lupa, carregarArrastar);
 
     // Quem abre: o livro (clique) ou a lupa (clique e teclado). Na gaveta, a capa é um link para a
     // página do livro (D38) e só a lupa amplia.

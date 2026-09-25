@@ -605,6 +605,12 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
     `power3.out`) e volta com `elastic.out(1, 0.55)`. O clique leva à página do livro pela View
     Transition nativa (a lombada da pilha vira o livro do topo). Na chegada (ou quando a pilha
     aparece, no celular), o livro atual é puxado 46px e volta a 10px com `back.out(2)`, escurecido.
+  - **Capas com profundidade** (grade de categorias e séries, "Do livro", topo da página do livro e
+    destaque de Séries, `capa-viva.ts`): com o mouse em cima, o livro vira para 8° e acompanha o
+    cursor (até 11° em Y e 7° em X), com uma luz radial suave que anda por `transform`; a capa
+    entreabre -28°, com três camadas de página a -6°, -12° e -18°. No toque, o primeiro toque
+    entreabre e o segundo abre o link. No livro ampliado, arrastar gira com embalo (Draggable +
+    InertiaPlugin) e, ao soltar, o livro volta a 18° com `elastic.out(1, 0.6)`.
 - **Lousa de passos** (D39): com a rolagem só na tela de 1024px ou mais e sem movimento reduzido
   (passos a 40% da tela, o atual inteiro e os outros esmaecidos); fora disso, passo a passo com
   "◀ 2 de 5 ▶", pontos e deslizar.

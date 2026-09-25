@@ -23,7 +23,7 @@ const primeira = unica?.posts[0];
     {
       unica ? (
         <section class="destaque-serie folha" aria-labelledby="nome-serie">
-          <a class="palco painel" href={unica.href} style={`--cor:${unica.cores.cor}`} aria-label={`Abrir a série ${unica.nome}`}>
+          <a class="palco painel" href={unica.href} style={`--cor:${unica.cores.cor}`} aria-label={`Abrir a série ${unica.nome}`} data-capa-viva>
             <LivroEmPe livro={unica} altura={330} transicao="ao-clicar" />
           </a>
           <div class="texto">
@@ -62,6 +62,12 @@ const primeira = unica?.posts[0];
     }
   </div>
 </Base>
+
+<script>
+  import { capasVivas } from "../../scripts/capa-viva";
+
+  capasVivas();
+</script>
 
 <style>
   .destaque-serie {

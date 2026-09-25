@@ -269,7 +269,8 @@ mostra também as tags que aparecem junto com ela.
 **Categorias** (`/categories/`, D31) e **Séries** (`/series/`, D31): os livros lado a lado, grandes,
 abertos quase de frente como o livro do topo da página de cada um, cada um num cartão (folha) com o
 livro num painel tingido pela cor dele, "Volume 0N" (ou "Série"), o nome, o subtítulo e a contagem.
-Ao passar o mouse, o cartão sobe e o livro gira um pouco para o leitor; ao clicar, o livro voa até o
+Ao passar o mouse, o cartão sobe, a capa acompanha o mouse com uma luz suave e entreabre, mostrando
+as páginas (D40; no toque, o primeiro toque entreabre e o segundo abre); ao clicar, o livro voa até o
 topo da página dele. Em Categorias, os oito volumes. Em Séries, enquanto houver uma série só, um
 **destaque largo** (D39): a revista, o nome, a descrição, as edições em ordem de leitura (número,
 título e ano) e "Começar pelo guia" (a primeira edição), com "Ver a série".
