@@ -545,7 +545,9 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   a página continuar funcionando sem JavaScript.
 - **GSAP** para sequências, animações ligadas à rolagem e objetos interativos (abrir, fechar e girar
   os livros, por exemplo), carregado só nos componentes que usam, nunca no pacote de todas as
-  páginas.
+  páginas. Quando for carregado sob demanda, o download começa um pouco antes do uso (ao passar o
+  mouse, ao tocar, ao receber o foco do teclado ou quando a página ficar ociosa), para a primeira
+  animação não atrasar.
 - **Trocar uma animação que já existe por GSAP** exige, antes, um trace de performance (antes e
   depois, no MCP `chrome-devtools`) e o ganho concreto medido, mostrados ao Cesar. A troca só entra
   com a aprovação dele.

@@ -821,3 +821,6 @@ nada muda.
   usam. Trocar uma animação existente por GSAP só com trace de performance, ganho concreto e aprovação
   do Cesar. Nas transições entre páginas, o Cesar escolheu manter as **nativas entre documentos**
   (D29), e não o `<ClientRouter />` do Astro, que poria JavaScript em toda página.
+- **GSAP sob demanda baixado antes do uso (Cesar, 25/09/2026, no `DESIGN.md`, "Movimento"):** o
+  download começa ao passar o mouse, ao tocar ou quando a página fica ociosa, para a primeira animação
+  não atrasar. Acrescentado também o foco do teclado, para quem navega sem mouse ter o mesmo ganho.
