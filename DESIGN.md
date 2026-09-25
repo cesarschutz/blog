@@ -524,7 +524,8 @@ frase e desenho; medidas em `docs/capas/CAPAS.md`):
   temas.** No pé, a assinatura **BLOG.CESARSCHUTZ.COM.BR**.
 - **Lombada:** ícone no papel de cima, título na vertical e número de artigos na cor do livro, com a
   divisão à mesma altura em todos, formando uma linha contínua na estante. **É uma lombada só em
-  todo lugar** (D39): a pilha lateral usa a mesma, girada 90°.
+  todo lugar** (D39): a pilha lateral usa a mesma, girada 90° e, só ali, 12% mais grossa, para o
+  título chegar a uns 11 ou 12px (D40).
 - **Livro escolhido:** o livro que foi para a gaveta, o da página atual na pilha e os não escolhidos
   do filtro aparecem **escurecidos** (opacidade 0,4 e metade da saturação), nunca como lugar vazio e
   nunca com contorno azul. O foco do teclado é um anel fino e discreto.

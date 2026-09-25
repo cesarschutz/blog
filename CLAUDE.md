@@ -50,8 +50,8 @@ Cesar acompanhar. Ele revisa tudo no fim.
   `chrome-devtools`, nunca o `claude-in-chrome`.
 - Não pode parecer feito por IA: nada de fonte genérica, gradiente decorativo, sombra genérica em
   tudo, animação de entrada em cada seção, rótulo em caixa alta ou emoji.
-- Os protótipos em `docs/referencias/` mostram aparência e comportamento, mas não são código para
-  copiar. Onde divergirem do briefing, vale o briefing.
+- Os protótipos em `docs/referencias/` e `docs/prototipos/` (os novos vão para esta, D40) mostram
+  aparência e comportamento, mas não são código para copiar. Onde divergirem do briefing, vale o briefing.
 - O caminho do projeto tem espaço (`novo site`): use aspas em todo comando e script.
 - Se o Cesar corrigir a mesma coisa duas vezes, isso vira regra no lugar certo (skill, `.claude/rules/` ou aqui).
 

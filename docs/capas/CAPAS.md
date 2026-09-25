@@ -79,7 +79,9 @@ A ordem, de cima para baixo, é: ícone, título e número. O ícone e o número
 Desde a D39, é **a mesma lombada em pé** (`MioloLombada` dentro de `.lombada-visual`), com as mesmas
 proporções, ícone, tipografia e contagem, girada 90° para a esquerda: o ícone fica na ponta
 esquerda e o título e o número correm na horizontal. A escala da pilha faz o livro mais longo caber
-na largura da lateral (teto de 0,42px por unidade, o da estante). O volume 1 fica embaixo, cada livro
+na largura da lateral (teto de 0,42px por unidade, o da estante). Só na pilha, a lombada fica 12%
+mais grossa que isso, com o texto na mesma proporção, para o título chegar a uns 11 ou 12px (D40);
+o comprimento e a divisão do papel não mudam. O volume 1 fica embaixo, cada livro
 deslocado pelo `deslocamento` de `livros.json` (em unidades da lombada em pé), com uma prateleira
 embaixo na cor da estante. Os campos `comprimento` e `espessura` de `lombadaDeitada` não são mais
 usados. O livro da página atual continua na pilha, escurecido.

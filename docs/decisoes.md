@@ -971,6 +971,12 @@ nada muda.
      -28° com três camadas de página (-6°, -12°, -18°); no toque, entreabre no primeiro e abre o link
      no segundo. No livro ampliado, arrastar gira com embalo (Draggable + InertiaPlugin) e, ao soltar,
      o livro volta a 18° com `elastic`.
+- **Ajustes aprovados pelo Cesar depois dos lotes (25/09/2026):** a página do livro aberto ganha
+  "Próximas ▸", que vira a folha com a mesma animação da capa e mostra os próximos 6 artigos (o link
+  para ver todos continua, e funciona pelo teclado); a capa entreaberta da ideia 5 abre a -40°, com as
+  camadas de página em proporção; as lombadas deitadas ficam 12% mais grossas só na pilha, para o
+  título chegar a uns 11 ou 12px. A lombada do livro que voa fica como está. O protótipo fica no git,
+  e os próximos também vão para `docs/prototipos/`.
 - **Consequência técnica:** o `Livro3D` passa a ser o livro inteiro, como no protótipo (contracapa,
   lombada, bordas das páginas, página de dentro e capa com verso), para a capa poder abrir e
   entreabrir. Continua sendo o único componente de livro 3D.

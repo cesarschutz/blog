@@ -160,15 +160,18 @@ const TAGS_NO_PAINEL = 10;
 
   /*
    * A lombada em pé da estante (livro.css), girada 90° para a esquerda: o ícone fica na ponta
-   * esquerda e o título e o número passam a correr na horizontal. --u (px por unidade) faz o livro
-   * mais longo com o recuo caber na largura da pilha, com o teto da estante da home (0,42px).
+   * esquerda e o título e o número passam a correr na horizontal. --u-comprimento faz o livro mais
+   * longo com o recuo caber na largura da pilha, com o teto da estante da home (0,42px). Só na pilha,
+   * a lombada é 12% mais grossa que isso (--u, que também dá o corpo do título e do número), para o
+   * título chegar a uns 11 ou 12px (D40); o comprimento e a divisão do papel não mudam.
    */
   .pilha {
     container-type: inline-size;
   }
 
   .pilha ol {
-    --u: min(0.42px, 100cqw / 680);
+    --u-comprimento: min(0.42px, 100cqw / 680);
+    --u: min(0.42px, var(--u-comprimento) * 1.12);
     display: flex;
     flex-direction: column;
     margin: 0;
@@ -179,9 +182,9 @@ const TAGS_NO_PAINEL = 10;
   .deitado {
     position: relative;
     display: block;
-    width: calc(var(--h) * var(--u));
+    width: calc(var(--h) * var(--u-comprimento));
     height: calc(var(--w) * var(--u));
-    margin-left: calc(var(--recuo) * var(--u));
+    margin-left: calc(var(--recuo) * var(--u-comprimento));
     border-radius: max(1.5px, calc(3 * var(--u)));
     text-decoration: none;
     transition:
@@ -195,7 +198,7 @@ const TAGS_NO_PAINEL = 10;
     top: 100%;
     left: 0;
     width: calc(var(--w) * var(--u));
-    height: calc(var(--h) * var(--u));
+    height: calc(var(--h) * var(--u-comprimento));
     transform-origin: 0 0;
     rotate: -90deg;
     /* Girada, a sombra da lombada cai para baixo, como a de um livro deitado. */
@@ -206,6 +209,16 @@ const TAGS_NO_PAINEL = 10;
   .deitado:focus-visible {
     outline: 1.5px solid color-mix(in oklab, var(--acento), transparent 35%);
     outline-offset: 3px;
+  }
+
+  /* A divisão do papel acompanha o comprimento (a revista, toda de papel, tem a regra dela). */
+  .deitado > .lombada-visual:not(.de-serie) {
+    --papel-h: calc(400 * var(--u-comprimento));
+  }
+
+  /* O título da revista, que na estante é menor que o das categorias, também chega aos 11px na pilha. */
+  .deitado > .lombada-visual.de-serie :global(.titulo-lombada) {
+    font-size: calc(29 * var(--u));
   }
 
   /* O livro da página atual continua na pilha, escurecido, como os não escolhidos do filtro (D39). */
