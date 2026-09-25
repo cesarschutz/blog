@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 430">
+  <g class="traco">
+    <path d="M550 33 H557 V113 H17 V106 H550 Z" class="hachura"/>
+    <path d="M400 303 H407 V413 H67 V406 H400 Z" class="hachura"/>
+    <rect x="10" y="26" width="540" height="80" rx="4"/>
+    <path d="M190 26 V106 M370 26 V106" class="fino"/>
+    <rect x="60" y="296" width="340" height="110" rx="4"/>
+    <rect x="10" y="150" width="540" height="44" data-traco="0.05 0.35"/>
+    <path d="M100 106 V148 M280 106 V148 M460 106 V148" data-traco="0.6 0.8"/>
+    <path d="M94 140 L100 148 L106 140 M274 140 L280 148 L286 140 M454 140 L460 148 L466 140" data-aparece="0.78 0.8"/>
+    <path d="M460 194 V262" class="fantasma" data-revela="1.1 1.4"/>
+    <path d="M452 264 L468 280 M468 264 L452 280" data-aparece="1.4 1.5"/>
+    <path d="M280 194 V294" class="destaque" data-traco="2.1 2.4"/>
+    <path d="M274 286 L280 294 L286 286" class="destaque" data-aparece="2.38 2.4"/>
+    <path d="M100 194 V294" data-traco="3.1 3.35"/>
+    <path d="M94 286 L100 294 L106 286" data-aparece="3.33 3.35"/>
+  </g>
+  <g>
+    <text x="10" y="17" class="secundario">Cartao</text>
+    <text x="100" y="60" text-anchor="middle">titular</text>
+    <text x="280" y="60" text-anchor="middle">numero</text>
+    <text x="460" y="60" text-anchor="middle" data-esmaece="1.7 1.8 0.35">cvv</text>
+    <text x="100" y="88" text-anchor="middle" class="codigo">Cesar</text>
+    <text x="280" y="88" text-anchor="middle" class="codigo">5502 0912 3456 7890</text>
+    <text x="460" y="88" text-anchor="middle" class="codigo" data-esmaece="1.7 1.8 0.35">123</text>
+    <text x="24" y="178" class="codigo" data-escrita="0.35 0.6">MascaraCartaoFilter</text>
+    <text x="536" y="178" text-anchor="end" class="codigo" data-escrita="0.8 0.99">writer.getName()</text>
+    <text x="474" y="236" class="secundario" data-escrita="1.5 1.7">omitido</text>
+    <text x="292" y="236" class="destaque" data-escrita="2.4 2.55">mascarado</text>
+    <text x="112" y="236" class="secundario" data-escrita="3.35 3.5">fluxo normal</text>
+    <text x="80" y="322" class="codigo">{</text>
+    <text x="96" y="346" class="codigo" data-escrita="3.5 3.8">"titular":"Cesar",</text>
+    <text x="96" y="370" class="codigo destaque" data-escrita="2.55 2.9">"numero":"550209******7890"</text>
+    <text x="80" y="394" class="codigo">}</text>
+    <text x="410" y="402" class="secundario">JSON do log</text>
+  </g>
+</svg>

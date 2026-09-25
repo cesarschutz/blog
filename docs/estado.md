@@ -85,6 +85,11 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
   Depois, no mesmo dia: a abertura refeita como cena (estante e post-it juntos), a frase sorteada a
   cada visita, as 132 frases revisadas contra a fonte (125 ficaram, todas com origem), os chips de
   categoria levando à página da categoria e o som do painel funcionando também depois de navegar.
+- **Primeiro post novo pela skill `post` (25/09/2026):** `/posts/jackson-filtros-mascarando-cartao/`,
+  adaptado de `entrada/` (Desenvolvimento de Software; Spring, Logs, Pagamentos), com ilustração e
+  uma lousa de passos. Código rodado com Jackson 3.2.3 e 2.21.0 e com Spring Boot 4.1.1. Entraram
+  as quatro sugestões aprovadas (PCI DSS, `JsonMapper.Builder` do Boot, frase do mapper padrão
+  conferida, Fontes).
 
 ## Próximos passos
 

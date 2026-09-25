@@ -1,0 +1,424 @@
+---
+title: "Filtros de serialização no Jackson — mascarando número de cartão nos logs"
+published: 2026-09-25
+description: "Como usar `@JsonFilter`, `PropertyFilter` e um mixin em `Object` para mascarar o número do cartão e remover o CVV só no mapper de log, com a API ainda devolvendo tudo."
+tags: [Spring, Logs, Pagamentos]
+category: Desenvolvimento de Software
+draft: false
+---
+
+import LousaPassos from "../../components/LousaPassos.astro";
+import Passo from "../../components/Passo.astro";
+
+Logar o payload de uma requisição ou de um evento é uma das formas mais práticas de investigar problemas. Num sistema de cartões, o risco é óbvio: o JSON que vai pro log carrega número do cartão, CVV, CPF. Ao mesmo tempo, a resposta da API precisa continuar trazendo esses dados completos.
+
+O Jackson resolve isso com **filtros de serialização**, um mecanismo que deixa você decidir, campo a campo, o que é escrito no JSON, sem alterar as classes e sem mexer no mapper usado pela API.
+
+> [!NOTA]
+> Os exemplos usam **Jackson 3** (pacote `tools.jackson`, o que vem no Spring Boot 4). No fim há uma tabela com o que muda no Jackson 2. Todo o código foi compilado e executado com Jackson 3.2.3 (e a versão adaptada com Jackson 2.21.0); as saídas mostradas são as reais.
+
+## 1. As três peças
+
+Um filtro envolve três coisas, e vale entender cada uma antes do código.
+
+**`@JsonFilter("id")`** é uma etiqueta colocada na classe. Ela diz ao Jackson: "quando for serializar esta classe, passe cada campo pelo filtro chamado *id*". A anotação não diz *qual* é o filtro, só o nome dele.
+
+**`PropertyFilter`** é o filtro em si, a regra. O Jackson chama o filtro uma vez para cada propriedade do objeto, e o filtro decide o que fazer: escrever normalmente, omitir, ou escrever outra coisa no lugar. Na prática você estende `SimpleBeanPropertyFilter`, que já traz o comportamento padrão.
+
+**`FilterProvider`** é o registro, configurado no mapper, que liga o nome ao filtro. A implementação padrão é `SimpleFilterProvider`, usada com `addFilter("id", filtro)`.
+
+A consequência dessa separação é que a mesma classe pode ser serializada com filtros diferentes, dependendo do mapper que está sendo usado.
+
+## 2. Primeiro exemplo: removendo o CVV
+
+O caso mais simples usa um filtro pronto do Jackson:
+
+```java title="Cartao.java"
+import com.fasterxml.jackson.annotation.JsonFilter;
+
+@JsonFilter("cartaoFilter")
+public record Cartao(String titular, String numero, String cvv) {}
+```
+
+```java
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.ser.std.SimpleBeanPropertyFilter;
+import tools.jackson.databind.ser.std.SimpleFilterProvider;
+
+JsonMapper mapper = JsonMapper.builder()
+        .filterProvider(new SimpleFilterProvider()
+                .addFilter("cartaoFilter", SimpleBeanPropertyFilter.serializeAllExcept("cvv")))
+        .build();
+
+mapper.writeValueAsString(new Cartao("Cesar", "5502091234567890", "123"));
+```
+
+Saída:
+
+```json
+{"titular":"Cesar","numero":"5502091234567890"}
+```
+
+O `SimpleBeanPropertyFilter` tem quatro filtros prontos: `serializeAll()` não filtra nada, `serializeAllExcept(...)` escreve tudo menos os campos listados, `filterOutAllExcept(...)` escreve só os campos listados e `filterOutAll()` não escreve nenhum.
+
+Também dá para passar o provider só na hora de escrever, sem configurá-lo no mapper: `mapper.writer(filterProvider).writeValueAsString(objeto)`.
+
+### O efeito colateral de anotar a classe
+
+Com `@JsonFilter` na classe, **todo** mapper que serializar essa classe precisa conhecer o filtro. Um mapper sem provider falha:
+
+```txt
+tools.jackson.databind.exc.InvalidDefinitionException:
+Cannot resolve PropertyFilter with id 'cartaoFilter'; no FilterProvider configured
+```
+
+Ou seja, se o mapper da API não tiver o filtro registrado, a anotação quebra a API. Guarde isso: é o motivo de existir o mixin da seção 4.
+
+## 3. Mascarando o número do cartão
+
+Remover campo é fácil com os filtros prontos. Para **mascarar**, você escreve um filtro próprio e sobrescreve `serializeAsProperty`, o método que o Jackson chama para cada propriedade:
+
+```java title="MascaraCartaoFilter.java"
+import java.util.Set;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ser.BeanPropertyWriter;
+import tools.jackson.databind.ser.PropertyWriter;
+import tools.jackson.databind.ser.jdk.MapProperty;
+import tools.jackson.databind.ser.std.SimpleBeanPropertyFilter;
+
+public class MascaraCartaoFilter extends SimpleBeanPropertyFilter {
+
+    private static final Set<String> CAMPOS_MASCARADOS = Set.of("numero", "numeroCartao", "pan");
+    private static final Set<String> CAMPOS_REMOVIDOS = Set.of("cvv", "senha");
+
+    @Override
+    public void serializeAsProperty(Object pojo, JsonGenerator g, SerializationContext ctxt,
+                                    PropertyWriter writer) throws Exception {
+        String nome = writer.getName();
+
+        // 1. Campo proibido: não escreve nada
+        if (CAMPOS_REMOVIDOS.contains(nome)) {
+            writer.serializeAsOmittedProperty(pojo, g, ctxt);
+            return;
+        }
+
+        // 2. Campo sensível: escreve a versão mascarada
+        if (CAMPOS_MASCARADOS.contains(nome)) {
+            Object valor = valorDe(pojo, writer);
+            if (valor != null) {
+                g.writeStringProperty(nome, mascarar(valor.toString()));
+                return;
+            }
+        }
+
+        // 3. Qualquer outro campo: segue o fluxo normal
+        writer.serializeAsProperty(pojo, g, ctxt);
+    }
+
+    private static Object valorDe(Object pojo, PropertyWriter writer) throws Exception {
+        if (writer instanceof BeanPropertyWriter propriedade) {
+            return propriedade.get(pojo);          // campo de um objeto/record
+        }
+        if (writer instanceof MapProperty entrada) {
+            return entrada.getValue();             // entrada de um Map
+        }
+        return null;
+    }
+
+    static String mascarar(String numero) {
+        String digitos = numero.replaceAll("\\D", "");
+        if (digitos.length() < 12) {
+            return "*".repeat(digitos.length());
+        }
+        return digitos.substring(0, 6)
+                + "*".repeat(digitos.length() - 10)
+                + digitos.substring(digitos.length() - 4);
+    }
+}
+```
+
+<LousaPassos desenho="jackson-filtros-mascarando-cartao/passos" rotulo="Diagrama: um Cartao com titular, numero e cvv passa pelo MascaraCartaoFilter, uma propriedade por vez. O cvv é omitido, o numero sai mascarado como 550209******7890 e o titular segue o fluxo normal para o JSON do log.">
+  <Passo>O `writer` representa a propriedade que está sendo escrita, e `writer.getName()` é o nome dela no JSON. A partir daí, o filtro segue um de três caminhos.</Passo>
+  <Passo>Para **remover**, chama `serializeAsOmittedProperty`, que é o mesmo que os filtros prontos fazem. Em JSON, isso simplesmente não escreve nada.</Passo>
+  <Passo>Para **mascarar**, lê o valor original e, em vez de delegar ao `writer`, escreve ele mesmo o par nome/valor com `g.writeStringProperty(...)`.</Passo>
+  <Passo>Para **qualquer outro campo**, chama `writer.serializeAsProperty(...)`, o fluxo normal.</Passo>
+</LousaPassos>
+
+O método `valorDe` trata dois tipos de `writer`: `BeanPropertyWriter` para campos de objetos e records, e `MapProperty` para entradas de um `Map` (o filtro também é aplicado a mapas, como aparece na seção 4). A função `mascarar` remove espaços e hífens, mantém os 6 primeiros e os 4 últimos dígitos e, se o valor for curto demais para ser um número de cartão, mascara tudo.
+
+O registro é o mesmo de antes, usando o `Cartao` anotado com `@JsonFilter("cartaoFilter")`:
+
+```java
+JsonMapper mapper = JsonMapper.builder()
+        .filterProvider(new SimpleFilterProvider()
+                .addFilter("cartaoFilter", new MascaraCartaoFilter()))
+        .build();
+
+mapper.writeValueAsString(new Cartao("Cesar", "5502 0912 3456 7890", "123"));
+```
+
+Saída:
+
+```json
+{"titular":"Cesar","numero":"550209******7890"}
+```
+
+Se o número vier `null`, o filtro não inventa nada e segue o fluxo normal: `{"titular":"Cesar","numero":null}`.
+
+## 4. Aplicando em todas as classes com mixin
+
+Anotar cada DTO com `@JsonFilter` tem dois problemas: é fácil esquecer uma classe e, como vimos, a anotação obriga todo mapper a conhecer o filtro.
+
+O **mixin** resolve os dois. Mixin é o recurso do Jackson para "colar" anotações numa classe sem alterar o código dela. Você cria uma classe auxiliar só com as anotações e registra no mapper com `addMixIn(alvo, classeComAsAnotacoes)`. Aquele mapper passa a tratar o alvo como se tivesse aquelas anotações; os outros mappers não enxergam nada.
+
+O truque é usar `Object.class` como alvo. Toda classe herda de `Object`, e o Jackson considera os mixins de `Object` ao ler as anotações de qualquer classe. Resultado: toda classe ganha o `@JsonFilter`, mas só dentro deste mapper.
+
+```java title="LogFilterMixin.java"
+import com.fasterxml.jackson.annotation.JsonFilter;
+
+@JsonFilter("logFilter")
+public abstract class LogFilterMixin {
+}
+```
+
+```java
+JsonMapper logMapper = JsonMapper.builder()
+        .addMixIn(Object.class, LogFilterMixin.class)
+        .filterProvider(new SimpleFilterProvider()
+                .addFilter("logFilter", new MascaraCartaoFilter()))
+        .build();
+```
+
+Agora as classes de domínio não precisam de nenhuma anotação do Jackson:
+
+```java
+public record Cartao(String titular, String numero, String cvv) {}
+public record Cliente(String nome, String cpf) {}
+public record Pedido(Long id, Cliente cliente, Cartao cartao,
+                     List<Cartao> adicionais, Map<String, Object> extras) {}
+```
+
+O mesmo pedido serializado pelos dois mappers:
+
+```jsonc
+// mapper normal (API)
+{"id":10,"cliente":{"nome":"Cesar","cpf":"123.456.789-00"},
+ "cartao":{"titular":"Cesar","numero":"5502091234567890","cvv":"123"},
+ "adicionais":[{"titular":"Maria","numero":"4000123412341234","cvv":"999"}],
+ "extras":{"numero":"4111111111111111"}}
+
+// logMapper
+{"id":10,"cliente":{"nome":"Cesar","cpf":"123.456.789-00"},
+ "cartao":{"titular":"Cesar","numero":"550209******7890"},
+ "adicionais":[{"titular":"Maria","numero":"400012******1234"}],
+ "extras":{"numero":"411111******1111"}}
+```
+
+O filtro alcançou o objeto aninhado, os itens da lista e a entrada do `Map`. O mapper normal continuou escrevendo tudo.
+
+## 5. Juntando tudo no Spring
+
+Na aplicação, isso vira dois beans: o mapper padrão, marcado como `@Primary`, e o mapper de log.
+
+```java title="JacksonConfig.java"
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.cfg.DateTimeFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.ser.std.SimpleFilterProvider;
+
+@Configuration
+public class JacksonConfig {
+
+    @Bean
+    @Primary
+    public JsonMapper objectMapper() {
+        return baseBuilder().build();
+    }
+
+    @Bean
+    public JsonMapper logMapper() {
+        return baseBuilder()
+                .addMixIn(Object.class, LogFilterMixin.class)
+                .filterProvider(new SimpleFilterProvider()
+                        .addFilter("logFilter", new MascaraCartaoFilter()))
+                .build();
+    }
+
+    private JsonMapper.Builder baseBuilder() {
+        return JsonMapper.builder()
+                .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+                .disable(DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS);
+    }
+}
+```
+
+O `@Primary` é o que o Spring injeta quando ninguém especifica qual mapper quer, então é ele que serializa as requisições e respostas HTTP. O `logMapper` só é usado onde for pedido pelo nome (o nome do bean é o nome do método). O `baseBuilder()` evita repetir a configuração comum nos dois.
+
+Não pule o mapper `@Primary`: o Spring Boot só cria o mapper padrão dele quando a aplicação não declara nenhum bean desse tipo. Se você declarar apenas o `logMapper`, ele vira o único mapper da aplicação e passa a ser usado também nas respostas da API, que começam a devolver cartão mascarado.
+
+Um detalhe do `baseBuilder()`: como ele parte de `JsonMapper.builder()`, as propriedades `spring.jackson.*` do `application.yml` não valem para nenhum dos dois mappers (declarar um `JsonMapper` próprio desliga toda a configuração automática do mapper). Se a aplicação depende delas, receba o `JsonMapper.Builder` que o Spring Boot oferece. Ele já vem com as `spring.jackson.*` aplicadas e é criado de novo a cada injeção, então o mixin do `logMapper` não vaza para o mapper da API:
+
+```java title="JacksonConfig.java" {3,8}
+@Bean
+@Primary
+public JsonMapper objectMapper(JsonMapper.Builder builder) {
+    return builder.build();
+}
+
+@Bean
+public JsonMapper logMapper(JsonMapper.Builder builder) {
+    return builder
+            .addMixIn(Object.class, LogFilterMixin.class)
+            .filterProvider(new SimpleFilterProvider()
+                    .addFilter("logFilter", new MascaraCartaoFilter()))
+            .build();
+}
+```
+
+Para usar o mapper de log, vale centralizar num componente:
+
+```java title="LogJson.java"
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.json.JsonMapper;
+
+@Component
+public class LogJson {
+
+    private final JsonMapper logMapper;
+
+    public LogJson(@Qualifier("logMapper") JsonMapper logMapper) {
+        this.logMapper = logMapper;
+    }
+
+    public String toJson(Object objeto) {
+        try {
+            return logMapper.writeValueAsString(objeto);
+        } catch (JacksonException e) {
+            // nunca cair no toString() aqui: ele não passa pelo filtro
+            return "<falha ao serializar " + objeto.getClass().getSimpleName() + ">";
+        }
+    }
+}
+```
+
+E no código:
+
+```java
+log.info("Pedido recebido: {}", logJson.toJson(pedido));
+```
+
+## 6. Variação: marcar os campos com uma anotação própria
+
+Filtrar pelo nome do campo tem um ponto fraco: `numero` é um nome genérico. O número da conta ou o número do endereço também seriam mascarados, e um campo de cartão com outro nome (`cartaoVinculado`, por exemplo) escaparia.
+
+Uma alternativa é criar uma anotação sua (não do Jackson) e fazer o filtro procurar por ela:
+
+```java title="NumeroCartao.java"
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
+public @interface NumeroCartao {
+}
+```
+
+```java title="MascaraPorAnotacaoFilter.java"
+public class MascaraPorAnotacaoFilter extends SimpleBeanPropertyFilter {
+
+    @Override
+    public void serializeAsProperty(Object pojo, JsonGenerator g, SerializationContext ctxt,
+                                    PropertyWriter writer) throws Exception {
+        if (writer.getAnnotation(NumeroCartao.class) != null
+                && writer instanceof BeanPropertyWriter propriedade) {
+            Object valor = propriedade.get(pojo);
+            if (valor != null) {
+                g.writeStringProperty(writer.getName(), MascaraCartaoFilter.mascarar(valor.toString()));
+                return;
+            }
+        }
+        writer.serializeAsProperty(pojo, g, ctxt);
+    }
+}
+```
+
+```java
+public record Cartao(String titular, @NumeroCartao String numero) {}
+
+public class Conta {
+    @NumeroCartao
+    private String cartaoVinculado;
+    private String numero;          // número da conta: não deve ser mascarado
+    // getters...
+}
+```
+
+Saída de uma `Conta` pelo mapper de log:
+
+```json
+{"cartaoVinculado":"550209******7890","numero":"12345-6"}
+```
+
+A troca é que agora os DTOs precisam da anotação. A diferença para o `@JsonFilter` é que uma anotação própria não quebra os outros mappers, porque eles simplesmente a ignoram. Também dá para combinar as duas abordagens (lista de nomes e anotação) no mesmo filtro. Só lembre que entradas de `Map` não têm anotação, então essa variação vale apenas para campos de objetos e records.
+
+## 7. Cuidados
+
+**O filtro só age quando o objeto passa pelo mapper.** Um `log.info("{}", pedido)` usa o `toString()`, e o `toString()` de um record (ou de uma classe com `@Data`/`@ToString` do Lombok) imprime tudo:
+
+```txt
+Cartao[titular=Cesar, numero=5502091234567890, cvv=123]
+```
+
+Por isso a regra é logar sempre via `logJson.toJson(...)`.
+
+**O que passa pelo filtro e o que não passa.** Com o mixin em `Object`, passam objetos, records, objetos aninhados, itens de listas e entradas de `Map` (a chave vira o nome da propriedade). Uma `String` solta não passa, inclusive uma `String` que já contém JSON: `logJson.toJson("5502091234567890")` sai inteiro. Se o sistema loga o corpo cru da requisição como texto, o filtro não protege.
+
+**Classes com `@JsonFilter` próprio.** Uma anotação diretamente na classe tem prioridade sobre o mixin de `Object`. Se alguma classe tiver `@JsonFilter("outroId")`, o `logMapper` falha com `No filter configured with id 'outroId'`. A solução é registrar esse id também no provider ou definir um filtro padrão com `new SimpleFilterProvider().setDefaultFilter(filtro)`, que é usado para qualquer id sem registro.
+
+**O filtro é compartilhado entre threads.** Uma única instância atende todas as serializações do mapper. Mantenha o filtro sem estado mutável, como no exemplo (conjuntos imutáveis e métodos que só dependem dos parâmetros).
+
+**Só serialização.** Filtros não afetam a leitura de JSON. O `logMapper` desserializa normalmente.
+
+**O tipo muda.** O campo mascarado sempre sai como string no JSON, mesmo que o original seja numérico.
+
+**CVV não se mascara, se remove.** CVV não deve aparecer em log nenhum, nem parcialmente. Por isso o exemplo remove o campo em vez de mascará-lo. O PCI DSS proíbe guardar o código de verificação do cartão depois da autorização, mesmo cifrado, e um log é um lugar onde ele fica guardado.
+
+**Quantos dígitos mostrar.** O PCI DSS (requisito 3.4.1) limita o número exibido a, no máximo, o BIN e os 4 últimos dígitos. Como o BIN tem de 6 a 8 dígitos, os 6 primeiros e os 4 últimos do `mascarar` ficam dentro desse limite.
+
+## 8. Jackson 2 x Jackson 3
+
+A ideia é a mesma nas duas versões; mudam pacotes e nomes de métodos.
+
+| | Jackson 3 | Jackson 2 |
+|---|---|---|
+| Pacote base | `tools.jackson.databind` | `com.fasterxml.jackson.databind` |
+| `@JsonFilter` | `com.fasterxml.jackson.annotation` | `com.fasterxml.jackson.annotation` (igual) |
+| `SimpleBeanPropertyFilter` e `SimpleFilterProvider` | `...databind.ser.std` | `...databind.ser.impl` |
+| `MapProperty` | `...databind.ser.jdk` | `...databind.ser.std` |
+| Método do filtro | `serializeAsProperty(Object, JsonGenerator, SerializationContext, PropertyWriter)` | `serializeAsField(Object, JsonGenerator, SerializerProvider, PropertyWriter)` |
+| Omitir campo | `writer.serializeAsOmittedProperty(...)` | `writer.serializeAsOmittedField(...)` |
+| Delegar ao fluxo normal | `writer.serializeAsProperty(...)` | `writer.serializeAsField(...)` |
+| Escrever o campo mascarado | `g.writeStringProperty(nome, valor)` | `gen.writeStringField(nome, valor)` |
+| Registrar o provider | `JsonMapper.builder().filterProvider(...)` | `builder().filterProvider(...)` ou `mapper.setFilterProvider(...)` |
+| Datas como ISO | `DateTimeFeature.WRITE_DATES_AS_TIMESTAMPS` | `SerializationFeature.WRITE_DATES_AS_TIMESTAMPS` |
+| Exceção de `writeValueAsString` | `JacksonException` (unchecked) | `JsonProcessingException` (checked) |
+
+`addMixIn`, `BeanPropertyWriter`, `PropertyWriter` e o resto do fluxo funcionam da mesma forma.
+
+## Resumo
+
+`@JsonFilter` dá um nome de filtro a uma classe, o `FilterProvider` diz qual regra responde por esse nome, e o `PropertyFilter` decide campo a campo o que escrever. Para mascarar, o filtro lê o valor e escreve a versão mascarada no lugar. Com um mixin em `Object.class`, o filtro vale para todas as classes, mas só no mapper de log, e o mapper `@Primary` continua servindo a API com os dados completos.
+
+## Fontes
+
+- Jackson — [Migrating to Jackson 3](https://github.com/FasterXML/jackson/blob/main/jackson3/MIGRATING_TO_JACKSON_3.md) (pacote `tools.jackson`, `SerializationContext`, métodos "field" que viraram "property", `JacksonException` e `DateTimeFeature`)
+- Jackson API — [`@JsonFilter`](https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-annotations/latest/com/fasterxml/jackson/annotation/JsonFilter.html), [`PropertyFilter`](https://javadoc.io/doc/tools.jackson.core/jackson-databind/3.2.3/tools/jackson/databind/ser/PropertyFilter.html) e [`SimpleBeanPropertyFilter`](https://javadoc.io/doc/tools.jackson.core/jackson-databind/3.2.3/tools/jackson/databind/ser/std/SimpleBeanPropertyFilter.html) (Jackson 3.2.3)
+- Jackson Wiki — [Mix-in Annotations](https://github.com/FasterXML/jackson-docs/wiki/JacksonMixInAnnotations)
+- Spring Boot Reference — [Customize the Jackson JsonMapper](https://docs.spring.io/spring-boot/how-to/spring-mvc.html#howto.spring-mvc.customize-jackson-jsonmapper) (o `JsonMapper` próprio com `@Primary`, o `JsonMapper.Builder` e as propriedades `spring.jackson.*`)
+- PCI SSC — [FAQ 1492: mascaramento e truncamento do PAN com BIN de 8 dígitos](https://www.pcisecuritystandards.org/faq/articles/Frequently_Asked_Question/how-can-an-entity-meet-pci-dss-requirements-for-pan-masking-and-truncation-if-it-has-migrated-to-8-digit-bins/) (requisito 3.4.1: no máximo o BIN e os 4 últimos dígitos)
+- PCI SSC — [FAQ: o código de verificação pode ser guardado para cartão salvo ou cobrança recorrente?](https://blog.pcisecuritystandards.org/faq-can-cvc-be-stored-for-card-on-file-or-recurring-transactions) (não pode ser guardado depois da autorização, nem cifrado)

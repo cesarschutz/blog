@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -40 1200 900"
+  aria-label="Um cartão com o número 5502 09, uma fita cobrindo os dígitos do meio e 7890, apoiado na folha do log; o CVV fica de fora, numa etiqueta tracejada e riscada."
+  data-largo="80 171 1100 468" data-medio="154 131 822 548" data-quadrado="178 17 775 775"
+  data-og="182 -37 767 883" data-segura="217 180 697 449">
+  <g class="tinta">
+    <path d="M660 180 H900 V600 H660 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M660 180 H900 V600 H660 Z" class="papel"/>
+    <path d="M690 230 H860 M690 266 H830 M690 302 H870 M690 338 H812 M690 374 H850 M690 410 H826 M690 446 H866 M690 482 H800 M690 518 H846 M690 554 H820" class="linha"/>
+    <path d="M368 516 C 330 540 316 552 300 566" class="fantasma"/>
+    <g transform="rotate(-8 290 590)"><rect x="220" y="560" width="140" height="60" rx="8" class="fantasma"/></g>
+    <g transform="rotate(-5 560 396)">
+      <rect x="360" y="270" width="400" height="252" rx="22" transform="translate(14 14)" class="hachura"/>
+      <rect x="360" y="270" width="400" height="252" rx="22" transform="translate(7 6)" class="cor"/>
+      <rect x="360" y="270" width="400" height="252" rx="22" class="papel"/>
+      <rect x="400" y="316" width="64" height="48" rx="8" class="linha"/>
+      <path d="M400 340 H464 M432 316 V364" class="linha"/>
+      <rect x="508" y="418" width="98" height="30" rx="3" transform="translate(4 3)" class="cor"/>
+      <rect x="508" y="418" width="98" height="30" rx="3" class="linha"/>
+    </g>
+    <g transform="rotate(-8 290 590)"><path d="M234 590 H350" class="linha"/></g>
+  </g>
+  <g transform="rotate(-5 560 396)">
+    <text x="400" y="442" class="codigo">5502 09</text>
+    <text x="616" y="442" class="codigo">7890</text>
+    <text x="400" y="494" class="codigo">CESAR</text>
+  </g>
+  <g transform="rotate(-8 290 590)"><text x="240" y="598" class="codigo">cvv 123</text></g>
+  <g class="anotacao">
+    <path d="M500 250 C 480 226 452 214 420 214" class="chamada"/>
+    <text x="150" y="208" class="nota">o número vai mascarado</text>
+    <text x="150" y="234" class="nota-pequena">550209******7890 no log</text>
+    <path d="M922 300 C 950 300 966 310 976 326" class="chamada"/>
+    <text x="930" y="360" class="nota">o log</text>
+    <text x="930" y="386" class="nota-pequena">só pelo logMapper</text>
+  </g>
+</svg>
