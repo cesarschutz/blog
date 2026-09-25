@@ -15,6 +15,8 @@
   --largura: 1320px;
   /* Altura do cabeçalho fixo (D31): as âncoras, o sumário, o painel e as lousas fixas descontam. */
   --altura-topo: 60px;
+  /* A altura do próprio cabeçalho; --altura-topo é o quanto as peças fixas descontam (0 quando ele se esconde, D38). */
+  --altura-cabecalho: 60px;
   --coluna: 760px;
   /* Folhas (D26): o conteúdo fica em superfícies com borda fina e sombra leve; painéis dentro delas. */
   --raio-folha: 14px;
@@ -55,6 +57,12 @@
 @media (max-width: 860px) {
   :root {
     --altura-topo: 104px;
+    --altura-cabecalho: 104px;
+  }
+
+  /* No celular, o cabeçalho some ao rolar para baixo e volta ao subir (D38, Cabecalho.astro). */
+  :root[data-topo-oculto] {
+    --altura-topo: 0px;
   }
 }
 

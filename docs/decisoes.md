@@ -867,7 +867,11 @@ nada muda.
     compartilhamento nativo do sistema.
 - **Definido depois, com o Cesar (25/09/2026):** na home, a lombada continua abrindo a gaveta, e a
   capa aberta dentro dela leva à página do livro; nas outras páginas, a lombada leva ao livro. A
-  abertura mais curta é, até 640px, sem a marca grande (ela já está no cabeçalho).
+  abertura mais curta é, até 640px, sem a marca grande (ela já está no cabeçalho). A estante de
+  filtro do arquivo e das tags continua filtrando (e `/archive/?livro=` continua valendo), mas, para
+  não confundir com a lombada que leva ao livro: o rótulo "Filtrar por livro" acima dela, a lombada
+  escolhida visivelmente marcada, um "Limpar filtro", e as lombadas como botões com `aria-pressed`,
+  não como links.
 - **Textos aprovados no lote 8 da D37:** descrição padrão do blog e da imagem de compartilhamento
   padrão a partir da frase do rodapé (D33); na gaveta, "Neste livro" no lugar de "Sumário"; no filtro,
   "Escolha um livro"; o livro vazio numa folha, com saídas; "N artigos · o último em AAAA"; descrição

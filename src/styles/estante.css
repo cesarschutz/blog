@@ -148,13 +148,27 @@
     filter 0.25s;
 }
 
-.estante-filtro.filtrando .lombada:not([aria-current="true"]) {
+.estante-filtro.filtrando .lombada:not([aria-pressed="true"]) {
   opacity: 0.4;
   filter: saturate(0.5);
 }
 
-.estante-filtro .lombada[aria-current="true"] {
+/* A lombada do filtro é um botão (D38): sem a cara de botão do navegador. */
+.estante-filtro button.lombada {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: inherit;
+  line-height: inherit;
+  cursor: pointer;
+  appearance: none;
+}
+
+/* A escolhida sai da prateleira e ganha o contorno azul-tinta, para ficar clara (D38). */
+.estante-filtro .lombada[aria-pressed="true"] {
   transform: translateY(-10px);
+  outline: 2px solid var(--acento);
+  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -162,10 +176,8 @@
     transition: none;
   }
 
-  .estante-filtro .lombada[aria-current="true"] {
+  .estante-filtro .lombada[aria-pressed="true"] {
     transform: none;
-    outline: 2px solid var(--acento);
-    outline-offset: 3px;
   }
 }
 
@@ -210,6 +222,12 @@
 .livro-na-gaveta {
   position: relative;
   justify-self: center;
+}
+
+/* A capa aberta é o link para a página do livro (D38). */
+.capa-link {
+  display: block;
+  border-radius: 3px;
 }
 
 .sumario-livro {

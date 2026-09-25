@@ -42,8 +42,8 @@ Cesar acompanhar. Ele revisa tudo no fim.
 - Toda animação respeita `prefers-reduced-motion`: com ele ligado, tudo aparece no estado final,
   sem prender a tela.
 - JavaScript só onde há interação (estante, busca, lousas, apresentação, lista/cards, menu de
-  aparência e som, post-it das frases, filtro por livro, livro ampliado e o nome de transição do livro
-  do painel, D29, D33).
+  aparência e som, post-it das frases, filtro por livro, livro ampliado, o nome de transição do livro
+  do painel e o cabeçalho que se esconde no celular, D29, D33, D38).
   Artigo sem esses componentes funciona sem JS.
 - Fontes servidas pelo próprio site (`@fontsource`). Nunca Google Fonts nem CDN em produção.
 - Para verificar o blog no navegador (visual, console, performance), use sempre o MCP

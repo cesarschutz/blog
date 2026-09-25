@@ -5,7 +5,9 @@
  * no blog atual) e o menu de aparência (tema e som). Fica fixo no alto enquanto a página rola
  * (sticky), com fundo translúcido e um fio embaixo que aparece depois de rolar. No celular, marca,
  * busca (só o ícone) e aparência na primeira linha; o menu na segunda. A altura dele fica em
- * --altura-topo (base.css), que as outras peças fixas e as âncoras descontam.
+ * --altura-cabecalho e o quanto as outras peças fixas e as âncoras descontam, em --altura-topo
+ * (base.css). No celular (até 860px), ele some ao rolar para baixo e volta ao rolar para cima (D38):
+ * sobe por translate, sem mudar a altura da página, e --altura-topo vai a 0 enquanto isso.
  */
 import Marca from "./Marca.astro";
 import SeletorTema from "./SeletorTema.astro";
@@ -47,6 +49,29 @@ const { atual } = Astro.props;
 </div>
 
 <script>
+  // No celular, o cabeçalho some ao rolar para baixo e volta ao rolar para cima (D38). Volta também
+  // perto do topo, com o foco dentro dele (teclado) e com o menu de aparência aberto.
+  {
+    const raiz = document.documentElement;
+    const celular = matchMedia("(max-width: 860px)");
+    const topo = document.querySelector<HTMLElement>(".topo-fixo")!;
+    let ultimo = scrollY;
+    let pedido = 0;
+    const mostrar = () => delete raiz.dataset.topoOculto;
+    const conferir = () => {
+      pedido = 0;
+      const y = scrollY;
+      const aberto = topo.contains(document.activeElement) || topo.querySelector("[aria-expanded='true']");
+      if (!celular.matches || y < 120 || aberto) mostrar();
+      else if (y > ultimo + 8) raiz.dataset.topoOculto = "";
+      else if (y < ultimo - 8) mostrar();
+      if (Math.abs(y - ultimo) > 8 || y < 120) ultimo = y;
+    };
+    addEventListener("scroll", () => (pedido ||= requestAnimationFrame(conferir)), { passive: true });
+    topo.addEventListener("focusin", mostrar);
+    celular.addEventListener("change", mostrar);
+  }
+
   // Fora do macOS e do iOS, o atalho é Ctrl+K.
   const apple = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent);
   if (!apple) {
@@ -63,6 +88,7 @@ const { atual } = Astro.props;
     position: sticky;
     top: 0;
     z-index: 30;
+    transition: translate 0.25s cubic-bezier(0.2, 0.75, 0.2, 1);
     background: color-mix(in oklab, var(--paper) 94%, transparent);
     -webkit-backdrop-filter: saturate(1.4) blur(12px);
     backdrop-filter: saturate(1.4) blur(12px);
@@ -74,6 +100,12 @@ const { atual } = Astro.props;
       animation: fio-do-topo linear both;
       animation-timeline: scroll(root);
       animation-range: 0 24px;
+    }
+  }
+
+  @media (max-width: 860px) {
+    :global(:root[data-topo-oculto]) .topo-fixo {
+      translate: 0 -100%;
     }
   }
 
@@ -90,7 +122,7 @@ const { atual } = Astro.props;
     flex-wrap: wrap;
     align-items: center;
     gap: 10px 22px;
-    min-height: var(--altura-topo);
+    min-height: var(--altura-cabecalho);
     padding-top: 10px;
     padding-bottom: 10px;
   }

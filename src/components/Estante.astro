@@ -26,10 +26,12 @@ const series = livros.filter((l) => l.serie);
 const comAparador = !filtro || (categorias.length > 0 && series.length > 0);
 const estilo = (l: Livro) => `${coresDoLivroCss(l)};--w:${l.emPe.largura};--h:${l.emPe.altura}`;
 const natural = larguraDaEstante(livros, comAparador);
+// Na estante de filtro, a lombada é um botão (aria-pressed): filtra a lista (D38). Nas outras, um link.
+const Lombada = filtro ? "button" : "a";
 // O rótulo começa pelo que está escrito na lombada (nome e número), para quem usa comando de voz (WCAG 2.5.3).
 const rotulo = (l: Livro) => {
   const n = l.posts.length;
-  if (filtro) return `${l.nome}, ${n} ${n === 1 ? "artigo" : "artigos"}: mostrar só ${l.serie ? "esta série" : "este livro"}`;
+  if (filtro) return `${l.nome}, ${n} ${n === 1 ? "artigo" : "artigos"}`;
   if (l.serie) return `${l.nome}, ${n} ${n === 1 ? "parte" : "partes"}`;
   return n === 0 ? `${l.nome}, ainda sem artigos` : `${l.nome}, ${n} ${n === 1 ? "artigo" : "artigos"}`;
 };
@@ -44,13 +46,16 @@ const rotulo = (l: Livro) => {
   <div
     class="prateleira-livros"
     role="group"
-    aria-label={filtro ? "Filtrar por livro" : "Estante: um livro por categoria e um por série"}
+    aria-label={filtro ? undefined : "Estante: um livro por categoria e um por série"}
+    aria-labelledby={filtro ? "rotulo-filtro" : undefined}
   >
     {
       categorias.map((l, i) => (
-        <a
+        <Lombada
           class:list={["lombada", "lombada-visual", { inclinada: !filtro && i === categorias.length - 1 }]}
-          href={l.href}
+          href={filtro ? undefined : l.href}
+          type={filtro ? "button" : undefined}
+          aria-pressed={filtro ? "false" : undefined}
           data-livro={l.id}
           data-filtro={filtro ? l.id : undefined}
           data-nome={filtro ? l.nome : undefined}
@@ -58,15 +63,17 @@ const rotulo = (l: Livro) => {
           style={estilo(l)}
         >
           <MioloLombada livro={l} />
-        </a>
+        </Lombada>
       ))
     }
     {comAparador && <span class="aparador" aria-hidden="true" />}
     {
       series.map((l) => (
-        <a
+        <Lombada
           class="lombada lombada-visual de-serie"
-          href={l.href}
+          href={filtro ? undefined : l.href}
+          type={filtro ? "button" : undefined}
+          aria-pressed={filtro ? "false" : undefined}
           data-livro={l.id}
           data-filtro={filtro ? l.id : undefined}
           data-nome={filtro ? l.nome : undefined}
@@ -74,7 +81,7 @@ const rotulo = (l: Livro) => {
           style={estilo(l)}
         >
           <MioloLombada livro={l} />
-        </a>
+        </Lombada>
       ))
     }
   </div>

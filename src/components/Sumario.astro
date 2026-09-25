@@ -7,11 +7,10 @@
  * também do nome, nas duas variantes. O script (src/scripts/artigo.ts) pinta o trilho até a
  * seção atual, marca as já lidas e a atual (em azul-tinta), abre as subseções da atual e mantém a
  * atual à vista quando a lista rola. Embaixo, a barra de quanto já foi lido, com "NN% lido" e o tempo
- * que falta; só com JS. Depois vem o post-it das frases (PostIt), quando a página passa.
+ * que falta; só com JS. O post-it das frases saiu daqui para o fim do artigo (D38).
  *
  * "recolhivel": no início do texto, nas telas menores.
  */
-import PostIt from "./PostIt.astro";
 import type { SecaoDoSumario } from "../lib/posts";
 
 interface Props {
@@ -19,13 +18,9 @@ interface Props {
   variante: "lateral" | "recolhivel";
   /** Tempo de leitura do artigo, para o "faltam N min". */
   minutos?: number;
-  /** Slug do artigo, para a frase do post-it. */
-  chave?: string;
-  /** Tags e livro do artigo, para o post-it sortear entre as frases do assunto (D37). */
-  temas?: string[];
 }
 
-const { secoes, variante, minutos = 0, chave, temas } = Astro.props;
+const { secoes, variante, minutos = 0 } = Astro.props;
 // "3. Bloqueio pessimista" → "Bloqueio pessimista": o sumário não mostra número (D36).
 const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
 ---
@@ -68,7 +63,6 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
           </p>
         </div>
       </div>
-      <PostIt chave={chave} temas={temas} giro={-2} class="postit-sumario" />
     </aside>
   ) : (
     <details class="recolhivel" data-pagefind-ignore>
@@ -299,20 +293,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
       padding-right: 8px;
     }
 
-    .lateral :global(.postit-sumario) {
-      flex: none;
-      --largura-postit: 212px;
-      margin: 0 0 12px 12px;
-    }
-
     .recolhivel {
-      display: none;
-    }
-  }
-
-  /* Tela baixa: o post-it sai do lado do sumário (fica o do fim do artigo, RodapeArtigo). */
-  @media (min-width: 1300px) and (max-height: 719px) {
-    .lateral :global(.postit-sumario) {
       display: none;
     }
   }

@@ -91,20 +91,24 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
   as quatro sugestões aprovadas (PCI DSS, `JsonMapper.Builder` do Boot, frase do mapper padrão
   conferida, Fontes).
 - **Sumário sem números (D36, 25/09/2026):** só um ponto no trilho de cada seção, em todos os posts.
-
-## Em andamento: auditoria de acabamento (D37, D38)
-
-Relatório da fase 1 em `.impeccable/review/auditoria/relatorio.md` (fora do git). Lotes aprovados,
-um commit cada, sem push: 1 quebras visíveis, 2 acessibilidade, 3 busca, 5 DOM e peso, 4 post-it por
-tema, 6 SEO, 8 DESIGN.md e textos; por último, o lote das mudanças da D38 (post-it no fim do artigo,
-som desligado, lombada que leva ao livro, tags como links, cabeçalho que se esconde no celular,
-abertura mais curta, um botão de compartilhar). O lote 7 (densidade do topo do post e da lista no
-celular) ficou de fora.
-
-- [x] Lote 1 · [x] Lote 2 · [x] Lote 3 · [x] Lote 5 · [x] Lote 4 · [x] Lote 6 · [x] Lote 8 · [ ] D38
+- **Auditoria de acabamento (D37, D38, 25/09/2026), só local, sem push:** relatório em
+  `.impeccable/review/auditoria/relatorio.md` (fora do git, com screenshots, traces e Lighthouse) e
+  oito lotes, um commit cada: quebras visíveis (rolagem lateral em 375 e 320px, 4 imagens de
+  compartilhamento, quebra depois do ponto, barra dupla da busca); acessibilidade (rótulos das
+  lombadas, contrastes, títulos da página 2, 404 sem índice, alvos de 24px, foco do Copiar); busca
+  sem resultados falsos; DOM e peso (cards em `<template>`, blocos de código com
+  `content-visibility`); post-it por tema (`temas` nas frases) e com altura fixa; metadados (JSON-LD,
+  `og:image:alt`, RSS); DESIGN.md e textos aprovados. Depois, a D38: post-it no fim do artigo e visível
+  desde o início, som desligado, capa da gaveta levando ao livro, filtro com botões e "Limpar filtro",
+  tags da lista como links, cabeçalho que se esconde no celular, abertura mais curta e um só botão de
+  compartilhar no celular. Lighthouse no celular: 100 em acessibilidade, boas práticas e SEO nas 7
+  páginas medidas; sem rolagem lateral em 120 combinações de página, largura e tema.
 
 ## Próximos passos
 
+0. Publicar a auditoria de acabamento (D37, D38): o Cesar dá o push quando revisar. Fora dela ficou
+   o lote 7 (topo do post e miniatura da lista mais compactos no celular), que mexe na densidade da
+   D27 e da D33.
 1. Aprovação do ajuste visual (D26 a D33) e retoques; depois, medir o Lighthouse de novo (a
    fonte da interface soma 45,7 KB, e ele não foi medido depois do ajuste).
 2. A página Sobre: o Cesar escreve depois (D33). Até lá, `/about/` leva à home.

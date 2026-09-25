@@ -62,9 +62,13 @@ const rotulos = naSerie
     <a class="pilula" href={linkedin} target="_blank" rel="noopener">LinkedIn</a>
     <a class="pilula" href={whatsapp} target="_blank" rel="noopener">WhatsApp</a>
     <button type="button" class="pilula" data-nativo hidden>
-      <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ICONES.compartilhar} /><span>Mais opções</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ICONES.compartilhar} /><span class="no-largo">Mais opções</span
+      ><span class="no-celular">Compartilhar</span>
     </button>
   </div>
+
+  {/* O post-it fecha a leitura com uma frase do assunto do artigo, antes do aviso de IA (D38). */}
+  <PostIt chave={post.slug} temas={[...post.tags, post.livro]} giro={2.2} class="postit-fim" />
 
   <aside class="aviso aviso-ia" data-aviso="atencao" aria-label="Aviso sobre IA">
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.nota} />
@@ -95,7 +99,6 @@ const rotulos = naSerie
         </a>
       )
     }
-    <PostIt chave={post.slug} temas={[...post.tags, post.livro]} giro={2.2} class="postit-fim" />
   </div>
 </footer>
 
@@ -143,6 +146,7 @@ const rotulos = naSerie
 
     if (nativo && typeof navigator.share === "function") {
       nativo.hidden = false;
+      caixa.classList.add("com-nativo");
       nativo.addEventListener("click", () => navigator.share({ title: titulo, url: endereco }).catch(() => {}));
     }
   }
@@ -173,6 +177,25 @@ const rotulos = naSerie
     margin: 0 0 22px;
   }
 
+  .no-celular {
+    display: none;
+  }
+
+  /* No celular, com o compartilhar do sistema, fica só ele, com o nome "Compartilhar" (D38). */
+  @media (max-width: 640px) {
+    .compartilhar.com-nativo > :not([data-nativo]) {
+      display: none;
+    }
+
+    .compartilhar.com-nativo .no-largo {
+      display: none;
+    }
+
+    .compartilhar.com-nativo .no-celular {
+      display: inline;
+    }
+  }
+
   .rotulo {
     margin-right: 4px;
     font-family: var(--font-ui);
@@ -200,11 +223,12 @@ const rotulos = naSerie
   /* ---------- o livro do artigo e o post-it ---------- */
 
   .fim-do-artigo {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 28px 36px;
-    align-items: center;
     margin-top: 30px;
+  }
+
+  /* No centro, entre o compartilhar e o aviso de IA (D38); o seletor longo vence a margem do PostIt. */
+  .rodape-artigo :global(.postit-fim) {
+    margin: 34px auto 36px;
   }
 
   .livro-do-artigo {
@@ -286,31 +310,6 @@ const rotulos = naSerie
 
   .livro-do-artigo:hover .ver-livro svg {
     translate: 3px 0;
-  }
-
-  .fim-do-artigo :global(.postit-fim) {
-    margin: 4px 8px 8px 0;
-  }
-
-  /* Com o sumário lateral numa tela alta, o post-it já está ao lado dele. */
-  @media (min-width: 1300px) and (min-height: 720px) {
-    :global(.artigo-grade.com-sumario) .fim-do-artigo {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    :global(.artigo-grade.com-sumario) .fim-do-artigo :global(.postit-fim) {
-      display: none;
-    }
-  }
-
-  @media (max-width: 600px) {
-    .fim-do-artigo {
-      grid-template-columns: minmax(0, 1fr);
-    }
-
-    .fim-do-artigo :global(.postit-fim) {
-      justify-self: center;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {

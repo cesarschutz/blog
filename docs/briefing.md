@@ -170,7 +170,8 @@ livro aparece na estante e na lateral, mesmo sem artigos; o número de artigos, 
 - **Marca** (D33): o livro "cs" (capa do Volume 01 com a fita laranja da série), "Cesar Schutz" e
   "blog" em itálico, no cabeçalho, no rodapé, grande na abertura da home e no ícone do navegador.
 - **Acabamento**: busca como campo (ícone, "Buscar" e ⌘K), GitHub e LinkedIn só com os ícones e o
-  menu de aparência (claro, escuro, sistema e o som dos livros, D33) no cabeçalho;
+  menu de aparência (claro, escuro, sistema e o som dos livros, D33, desligado por padrão, D38) no
+  cabeçalho;
   destaque com a descrição do post, tags em pílulas e "Ler artigo"; cards que sobem 4px ao passar o
   mouse (parados com `prefers-reduced-motion`); linhas da lista com fundo leve ao passar o mouse;
   chip de categoria com quadradinho da cor e nome tingido (no claro, a cor com 34% de tinta, para o
@@ -189,16 +190,20 @@ Referência: aba "Home" do protótipo.
   do GitHub e do LinkedIn e o menu de aparência (§4.3). O RSS saiu do menu (fica no painel lateral e no
   rodapé). Até 860px, duas linhas: marca, busca, perfis (somem abaixo de 520px) e aparência numa; o
   menu na outra. A altura dele (`--altura-topo`) é descontada pelas âncoras, pelo sumário do
-  artigo, pelo painel lateral e pelas lousas fixas.
+  artigo, pelo painel lateral e pelas lousas fixas. Até 860px, ele some ao rolar para baixo e volta
+  ao rolar para cima (D38).
 - **Abertura** (D33): a identidade (a marca e a apresentação do blog atual, "Publico aqui o que ando
   estudando — …") e a **cena**: a **estante** com o **post-it** das frases colado na parede ao lado
   dos livros (a borda atrás da revista) e uma prateleira única por baixo dos dois. A partir de 1360px,
   identidade à esquerda e cena à direita; até 1359px, a cena desce para baixo do texto, no centro; até
-  640px, o post-it sobe para a parede acima dos livros. A linha sobre IA saiu da abertura (fica no fim
-  de cada artigo).
+  640px, o post-it sobe para a parede acima dos livros e a marca grande sai (fica a do cabeçalho; ela
+  continua como o h1 para leitor de tela), para a abertura ficar mais curta (D38). A linha sobre IA
+  saiu da abertura (fica no fim de cada artigo).
 - **Post-it das frases** (D33): frase em itálico, autor com link para a fonte, **sorteada a cada
   visita** (sem repetir a última vista), e "outra frase" riscado à mão, que arranca a folha e mostra
-  outra ao acaso. As frases foram revisadas uma a uma contra a fonte (125, todas com a origem). Nos
+  outra ao acaso. O texto aparece desde o início (D38): na primeira visita, a frase do HTML; nas
+  seguintes, o sorteio é feito antes da primeira pintura, com a lista guardada no navegador. No tema
+  escuro, o papel é mais apagado. As frases foram revisadas uma a uma contra a fonte (125, todas com a origem). Nos
   artigos, o sorteio fica entre as frases do assunto do post, pelos `temas` de cada frase (D37); o
   papel tem a altura fixa (4:5) e a letra acompanha a largura dele, para a troca não mexer na página.
 - **Estante** (D30, pela regra de `docs/capas/CAPAS.md`):
@@ -211,6 +216,8 @@ Referência: aba "Home" do protótipo.
   - O último livro da coleção fica inclinado 6°, apoiado no alto do aparador, **parado** (D35: ele
     tombava na primeira visita da sessão, e isso saiu porque na home nenhum livro cai).
   - Ao passar o mouse, a lombada sobe alguns pixels.
+  - Na home, a lombada abre a gaveta; a capa aberta dentro dela leva à página do livro, e a lupa
+    amplia (D38). Nas outras páginas, a lombada leva ao livro.
   - **Abrir um livro**: a lombada sai e deixa o espaço vazio na prateleira; abaixo da estante
     abre uma gaveta com o livro girando da lombada até ficar em **três quartos**, com a lombada e a
     capa à vista (como na página do livro), e, ao lado, o **sumário
@@ -224,8 +231,8 @@ Referência: aba "Home" do protótipo.
   **título inteiro**, a descrição e as tags (D33). O post em destaque **não se repete** na lista abaixo.
 - **Artigos recentes**: alternância **Lista / Cards** (guardada no navegador), no formato do blog
   atual (D27). Em cima, categoria, data e tempo de leitura com relógio; o **título inteiro**, grande;
-  a **descrição completa** (fonte da interface); até 4 tags em `#tag` (fonte de código). O item
-  inteiro é clicável.
+  a **descrição completa** (fonte da interface); até 4 tags em `#tag` (fonte de código), que levam à
+  página da tag (D38). O item inteiro é clicável.
   Lista: miniatura quadrada da ilustração à direita (104 a 148px; 84px no celular, sem as tags).
   Cards: grade de até 3 colunas, com a ilustração em 3:2 no topo e as tags no pé do card.
   Mesmo formato de lista nas páginas de categoria, tag e série; o arquivo por ano continua compacto.
@@ -260,7 +267,10 @@ componentes novos.
 **Todos os artigos** e **tag** (D33): no formato da lista da home, com Lista / Cards; o arquivo
 agrupado por ano, sem a coluna de datas. No topo, numa folha, uma **estante de filtro** com os livros
 que têm artigos na página (e o número deles): clicar num livro mostra só os artigos dele
-(`?livro=<slug>` na URL). A tag mostra também as tags que aparecem junto com ela.
+(`?livro=<slug>` na URL). Para não confundir com a lombada que leva ao livro (D38): o rótulo "Filtrar
+por livro" acima da estante, a lombada escolhida com o contorno azul-tinta, "Limpar filtro" e as
+lombadas como botões com `aria-pressed`; sem JavaScript, a estante de filtro não aparece. A tag
+mostra também as tags que aparecem junto com ela.
 
 **Categorias** (`/categories/`, D31) e **Séries** (`/series/`, D31): os livros lado a lado, grandes,
 abertos em três quartos como o livro do topo da página de cada um, cada um num cartão (folha) com o
@@ -301,8 +311,8 @@ Referência: aba "Artigo" do protótipo.
   início do texto nas menores. Só aparece com 3 ou mais seções. No lateral (D33), um trilho: um ponto
   em cada seção, sem número (D36; o "3. " do título sai do nome, nas duas variantes), as lidas e a atual pintadas em azul-tinta, as
   subseções da atual abertas, e a atual sempre à vista. Embaixo, a barra fina com "19% lido" e o tempo
-  que falta (em fonte de código), que soma à barra do topo; só com JS. Depois dele, o post-it das
-  frases (em telas com 720px de altura ou mais).
+  que falta (em fonte de código), que soma à barra do topo; só com JS. O post-it das frases saiu
+  daqui (D38): fica no fim do artigo.
 - **Notas laterais**: notas de rodapé do Markdown viram notas na margem direita da folha do corpo
   quando ela tem espaço (a folha, e não a tela, decide, D33) e abrem no lugar, ao tocar no número,
   nas outras.
@@ -321,13 +331,13 @@ Referência: aba "Artigo" do protótipo.
   com ←/→) e botão **Baixar PDF**.
 - **Fontes**: sempre a última seção.
 - **Rodapé do post**, nesta ordem: tags; "Compartilhar" (copiar link, LinkedIn, WhatsApp e o
-  compartilhar nativo do celular quando existir); **aviso sobre IA** num bloco com o ícone de
+  compartilhar nativo quando existir; no celular, com o do sistema, só ele, D38); o **post-it das
+  frases**, que fecha a leitura com uma frase do assunto (D38); **aviso sobre IA** num bloco com o ícone de
   nota (era o de atenção até a D37, que fechava a leitura como um alarme), com o texto atual:
   "Artigo escrito com apoio de IA, revisado pelo autor, com o código testado. Ainda assim pode
   conter imprecisões: confirme nas fontes citadas e na documentação oficial antes de aplicar."
   (sem o "Saiba mais" desde a D33); o cartão **"Do livro"** (o livro 3D da categoria ou a revista da
-  série, que leva à página do livro), com o post-it das frases ao lado quando o do sumário não está à
-  vista; depois a navegação **Artigo anterior / Próximo artigo** (ou anterior/próxima dentro da
+  série, que leva à página do livro); depois a navegação **Artigo anterior / Próximo artigo** (ou anterior/próxima dentro da
   série), com o título inteiro. Sem bloco de "artigos relacionados".
 - Botão "voltar ao topo" depois de uma tela de rolagem. Comentários (Giscus) e estatísticas
   (GoatCounter) continuam opcionais e desligados.

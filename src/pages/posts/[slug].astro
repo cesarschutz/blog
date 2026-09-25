@@ -2,7 +2,7 @@
 /**
  * Página do artigo (briefing §5.3), em folhas (D26): o topo (desenho e título) numa folha e o corpo
  * em outra, com o texto em até 760px (D33); em telas ≥ 1300px, o sumário vai para a esquerda, numa
- * folha própria e fixa, com o post-it das frases embaixo. As notas laterais vão para a margem direita
+ * folha própria e fixa; o post-it das frases fica no fim, antes do aviso de IA (D38). As notas laterais vão para a margem direita
  * da folha do corpo quando ela tem espaço (artigo.css); senão, abrem no lugar. Avisos, notas e a
  * apresentação saem do Markdown (src/plugins); as interações ficam em src/scripts/artigo.ts.
  */
@@ -91,7 +91,7 @@ const jsonLd = {
   <article class="artigo wrap" data-artigo data-pagefind-body style={`--cor:${resumo.cor}`}>
     <TopoArtigo post={resumo} />
     <div class:list={["artigo-grade", { "com-sumario": temSumario }]}>
-      {temSumario && <Sumario secoes={secoes} variante="lateral" minutos={resumo.minutos} chave={post.id} temas={[...resumo.tags, resumo.livro]} />}
+      {temSumario && <Sumario secoes={secoes} variante="lateral" minutos={resumo.minutos} />}
       <div class="folha artigo-folha">
         <div class="artigo-corpo">
           <div class="prose" data-corpo>

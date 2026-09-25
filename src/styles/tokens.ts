@@ -112,7 +112,7 @@ export const escuro: Paleta = {
   "marca-letra": "#F2EDE2",
   "marca-fita": "#C24D1C",
   // No escuro, o post-it perde um pouco de brilho para não ofuscar; a tinta continua escura.
-  postit: "#DDCD8C",
+  postit: "#BFB27E",
   "postit-tinta": "#2B2619",
   veu: "#050708",
   "veu-tinta": "#EEF1EE",

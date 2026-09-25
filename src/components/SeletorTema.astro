@@ -3,7 +3,7 @@
  * Menu de aparência do cabeçalho (D33): o botão mostra a escolha (sol, lua ou tela) e abre um menu
  * com Claro, Escuro e Sistema, e o som dos livros (ligado ou desligado). O site sempre abre no tema
  * do sistema: a escolha de tema vale só nesta visita (`cs-theme`, em sessionStorage); a do som fica
- * guardada (`cs-som`). O script do <head> (Base.astro) aplica o tema antes da primeira pintura. Sem
+ * guardada (`cs-som`, desligado por padrão desde a D38). O script do <head> (Base.astro) aplica o tema antes da primeira pintura. Sem
  * JS, o botão some e o tema segue o sistema.
  */
 import { ICONES } from "../lib/icones";
@@ -44,7 +44,7 @@ const OPCOES = [
       ))
     }
     <hr />
-    <button type="button" role="menuitemcheckbox" aria-checked="true" data-som tabindex="-1">
+    <button type="button" role="menuitemcheckbox" aria-checked="false" data-som tabindex="-1">
       <svg class="com-som" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.som} />
       <svg class="sem-som" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.semSom} />
       <span>Som dos livros</span>

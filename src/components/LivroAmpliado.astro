@@ -140,11 +140,12 @@ import "../styles/visor.css";
     palco.addEventListener("pointerup", soltar);
     palco.addEventListener("pointercancel", soltar);
 
-    // Quem abre: o livro (clique) ou a lupa (clique e teclado).
+    // Quem abre: o livro (clique) ou a lupa (clique e teclado). Na gaveta, a capa é um link para a
+    // página do livro (D38) e só a lupa amplia.
     document.addEventListener("click", (e) => {
       const alvo = e.target as HTMLElement;
       const raiz = alvo.closest<HTMLElement>("[data-ampliar-livro]");
-      if (!raiz || dialogo.open) return;
+      if (!raiz || dialogo.open || alvo.closest(".capa-link")) return;
       if (alvo.closest("[data-ampliar]") || alvo.closest(".livro-3d-caixa")) {
         e.preventDefault();
         abrir(raiz);

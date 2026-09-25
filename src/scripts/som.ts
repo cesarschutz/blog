@@ -6,7 +6,7 @@
  *   assentando (um baque macio), e o contrário;
  * - `tocarPapel()`: o post-it das frases sendo arrancado.
  * O navegador só libera som depois de um clique ou tecla (no Chrome, vale o clique da página anterior
- * do site). O menu de aparência do cabeçalho desliga tudo (`cs-som` = "off").
+ * do site). O som vem desligado (D38): o menu de aparência do cabeçalho liga (`cs-som` = "on").
  */
 const CHAVE = "cs-som";
 let ctx: AudioContext | undefined;
@@ -18,17 +18,17 @@ let escolhaDaPagina: boolean | undefined;
 export function somLigado(): boolean {
   if (escolhaDaPagina !== undefined) return escolhaDaPagina;
   try {
-    return localStorage.getItem(CHAVE) !== "off";
+    return localStorage.getItem(CHAVE) === "on";
   } catch {
-    return true;
+    return false;
   }
 }
 
 export function ligarSom(ligado: boolean) {
   escolhaDaPagina = ligado;
   try {
-    if (ligado) localStorage.removeItem(CHAVE);
-    else localStorage.setItem(CHAVE, "off");
+    if (ligado) localStorage.setItem(CHAVE, "on");
+    else localStorage.removeItem(CHAVE);
   } catch {
     // fica só a escolha da página
   }

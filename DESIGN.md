@@ -52,7 +52,7 @@ colors:
   lousa-borda-escuro: "#8F989D"
   lousa-caneta-escuro: "#16212B"
   lousa-mistura-escuro: "#0B6F58"
-  postit-escuro: "#DDCD8C"
+  postit-escuro: "#BFB27E"
   # Livros (docs/capas/livros.json e cores.js): a cor principal de cada categoria
   arquitetura-de-software: "#2d4b46"
   desenvolvimento-de-software: "#7a4430"
@@ -568,7 +568,9 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
 - **Frase em destaque** (palavras que acendem com a rolagem): recurso raro dos posts, usado só de
   vez em quando.
 - **Na home, só coisas discretas:** um livro que sobe ao passar o mouse, a gaveta que abre o livro
-  clicado, o post-it que troca de frase quando pedido. **Nenhum livro cai** (o tombo do livro
+  clicado (a capa aberta leva à página do livro, D38), o post-it que troca de frase quando pedido.
+- **Cabeçalho no celular** (até 860px, D38): some ao rolar para baixo e volta ao rolar para cima,
+  subindo por `translate` (a página não muda de altura); com o foco nele ou o menu aberto, fica. **Nenhum livro cai** (o tombo do livro
   inclinado saiu na D35) e **nenhum texto muda de cor**. Sem animação de entrada nas seções.
 - Toda animação respeita `prefers-reduced-motion`: tudo aparece no estado final, sem prender a
   tela.

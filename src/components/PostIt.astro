@@ -2,13 +2,13 @@
 /**
  * Post-it das frases de autores (D33): um bloquinho de post-it amarelo apagado, colado meio torto,
  * com a frase em Newsreader itálico (a letra das frases dos livros) e o nome do autor levando à fonte.
- * A cada visita, a frase é sorteada (pedido do Cesar): o script busca /frases.json ao carregar e
- * escolhe uma ao acaso, sem repetir a última mostrada (guardada no navegador) nem as já vistas na
- * sessão. Enquanto sorteia, o texto fica invisível e aparece num fade curto; se a lista não chegar,
- * fica a frase do HTML (fraseDaPagina), que é também a de quem está sem JS. "outra frase", riscado à
- * mão no pé do papel, arranca a folha de cima (ela sai voando e revela a de baixo, com outra frase).
- * Com prefers-reduced-motion, a troca é direta. Se houver dois na página (o do sumário e o do fim do
- * artigo), os dois mostram a mesma frase.
+ * A cada visita, a frase é sorteada (pedido do Cesar), sem repetir a última mostrada (guardada no
+ * navegador) nem as já vistas na sessão; nos artigos, só entre as do assunto (D37). O texto aparece
+ * desde o início (D38): na primeira visita, a frase do HTML (fraseDaPagina, também a de quem está
+ * sem JS); depois de carregar, a lista vai para o navegador (cs-frases), e nas visitas seguintes o
+ * script logo depois do post-it sorteia antes da primeira pintura. "outra frase", riscado à mão no pé
+ * do papel, arranca a folha de cima (ela sai voando e revela a de baixo, com outra frase). Com
+ * prefers-reduced-motion, a troca é direta.
  */
 import "@fontsource-variable/newsreader/opsz-italic.css";
 import { conjuntoDoArtigo, fraseDaPagina, tamanhoDaFrase } from "../lib/frases";
@@ -57,7 +57,30 @@ const { frase, indice } = fraseDaPagina(chave, conjunto);
   </div>
 </figure>
 <script is:inline>
-  document.currentScript.previousElementSibling.setAttribute("data-sorteando", "");
+  // A frase da visita (D33, D38): com a lista guardada numa visita anterior (cs-frases), sorteia aqui,
+  // antes da primeira pintura, sem esconder nada; na primeira visita, fica a do HTML. O corpo da letra
+  // segue a regra de src/lib/tamanho-da-frase.ts.
+  (function (p) {
+    try {
+      var l = JSON.parse(localStorage.getItem("cs-frases") || "null");
+      if (!l || !l.length) return;
+      var c = p.dataset.conjunto ? p.dataset.conjunto.split(",").map(Number) : l.map(function (_, i) { return i; });
+      var vistas = JSON.parse(sessionStorage.getItem("cs-frases-vistas") || "[]");
+      var ultima = Number(localStorage.getItem("cs-frase-ultima"));
+      var livres = c.filter(function (i) { return l[i] && vistas.indexOf(i) < 0 && i !== ultima; });
+      if (!livres.length) livres = c.filter(function (i) { return l[i] && i !== ultima; });
+      if (!livres.length) return;
+      var i = livres[Math.floor(Math.random() * livres.length)];
+      var f = l[i], n = f[0].length;
+      var papel = p.querySelector("[data-papel]"), autor = papel.querySelector("[data-autor]");
+      papel.querySelector("[data-texto]").textContent = f[0];
+      papel.dataset.tamanho = n <= 90 ? "curta" : n <= 140 ? "media" : n <= 170 ? "longa" : "muito-longa";
+      autor.firstChild.textContent = f[1];
+      autor.title = f[2];
+      autor.href = f[3];
+      p.dataset.indice = i;
+    } catch (e) {}
+  })(document.currentScript.previousElementSibling);
 </script>
 
 <script>
@@ -159,24 +182,24 @@ const { frase, indice } = fraseDaPagina(chave, conjunto);
     botao.hidden = false;
   }
 
-  // A frase da visita: sorteada ao carregar. Se a lista demorar, aparece a do HTML.
+  // A frase da visita já foi escolhida pelo script logo depois do post-it (D38): aqui ela é
+  // registrada, e a lista fica guardada para a próxima visita sortear antes de pintar.
   if (postits.length) {
-    const revelar = () => postits.forEach((p) => p.removeAttribute("data-sorteando"));
-    const limite = setTimeout(revelar, 1500);
-    buscar(postits[0].dataset.fonte!)
-      .then((frases) => {
-        atual = sortear(frases.length);
-        for (const postit of postits) escrever(postit, frases[atual]);
-      })
-      .catch(() => {
-        lista = undefined;
-      })
-      .finally(() => {
-        clearTimeout(limite);
-        guardar([...vistas(), atual]);
-        marcarUltima(atual);
-        revelar();
-      });
+    guardar([...vistas(), atual]);
+    marcarUltima(atual);
+    const guardarLista = () =>
+      buscar(postits[0].dataset.fonte!)
+        .then((frases) => {
+          try {
+            localStorage.setItem("cs-frases", JSON.stringify(frases));
+          } catch {
+            // Sem armazenamento: cada visita fica com a frase do HTML.
+          }
+        })
+        .catch(() => {
+          lista = undefined;
+        });
+    "requestIdleCallback" in window ? requestIdleCallback(guardarLista) : setTimeout(guardarLista, 1500);
   }
 </script>
 
@@ -217,15 +240,6 @@ const { frase, indice } = fraseDaPagina(chave, conjunto);
 
   blockquote {
     margin: 0;
-  }
-
-  /* Enquanto a frase da visita é sorteada, o papel fica sem texto; depois, o texto aparece. */
-  .papel > :is(blockquote, figcaption) {
-    transition: opacity 0.25s;
-  }
-
-  .postit[data-sorteando] .papel > :is(blockquote, figcaption) {
-    opacity: 0;
   }
 
   p {

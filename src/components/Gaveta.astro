@@ -51,7 +51,10 @@ function linhas(l: Livro): Linha[] {
         style={`${coresDoLivroCss(l)};--h:${l.emPe.altura}`}
       >
         <div class="livro-na-gaveta">
-          <Livro3D livro={l} desenho="adiado" />
+          {/* A capa aberta leva à página do livro (D38); a lupa amplia. */}
+          <a class="capa-link" href={l.href} aria-label={`Ver o livro ${l.nome}`}>
+            <Livro3D livro={l} desenho="adiado" />
+          </a>
           <button type="button" class="lupa" data-ampliar aria-label={`Ampliar o livro ${l.nome}`} title="Ampliar"
             ><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.ampliar} /></button
           >

@@ -47,18 +47,21 @@ const nivelDoItem = porAno ? "h3" : "h2";
   </header>
   {
     livros.length > 0 && (
-      <div class="lado-estante">
+      <div class="lado-estante" data-lado-estante hidden>
+        <p class="rotulo-filtro" id="rotulo-filtro">Filtrar por livro</p>
         <Estante livros={livros} modo="filtro" />
         <p class="dica">Escolha um livro para ver só os artigos dele.</p>
       </div>
     )
   }
+  {/* Com JavaScript, a estante aparece já na primeira pintura, sem empurrar a lista (D38). */}
+  {livros.length > 0 && <script is:inline>document.querySelector("[data-lado-estante]").hidden = false;</script>}
 </div>
 
 <section class="lista-filtrada" aria-label="Artigos" data-lista-filtrada>
   <div class="barra-lista">
     <p class="status" aria-live="polite" data-status data-total={posts.length}>{plural(posts.length)}</p>
-    <button type="button" class="pilula limpar" data-limpar hidden>Ver todos</button>
+    <button type="button" class="pilula limpar" data-limpar hidden>Limpar filtro</button>
     <SeletorModo />
   </div>
   {
@@ -97,7 +100,7 @@ const nivelDoItem = porAno ? "h3" : "h2";
   const lista = document.querySelector<HTMLElement>("[data-lista-filtrada]");
   const estante = document.querySelector<HTMLElement>("[data-estante-filtro]");
   if (lista && estante) {
-    const livros = [...estante.querySelectorAll<HTMLAnchorElement>("[data-filtro]")];
+    const livros = [...estante.querySelectorAll<HTMLButtonElement>("[data-filtro]")];
     // Os cards podem entrar depois (template, D37): a lista de itens é lida a cada filtro.
     const itens = () => [...lista.querySelectorAll<HTMLElement>("[data-livro]")];
     const grupos = [...lista.querySelectorAll<HTMLElement>("[data-grupo]")];
@@ -105,7 +108,7 @@ const nivelDoItem = porAno ? "h3" : "h2";
     const limpar = lista.querySelector<HTMLButtonElement>("[data-limpar]")!;
     const total = Number(status.dataset.total);
     const plural = (n: number) => `${n} ${n === 1 ? "artigo" : "artigos"}`;
-    const nome = (a: HTMLAnchorElement) => a.dataset.nome!;
+    const nome = (b: HTMLButtonElement) => b.dataset.nome!;
     let atual = "";
 
     function aplicar(id: string) {
@@ -117,10 +120,7 @@ const nivelDoItem = porAno ? "h3" : "h2";
         const contagem = grupo.querySelector("[data-contagem]");
         if (contagem) contagem.textContent = plural(n);
       }
-      for (const livro of livros) {
-        if (livro.dataset.filtro === id) livro.setAttribute("aria-current", "true");
-        else livro.removeAttribute("aria-current");
-      }
+      for (const livro of livros) livro.setAttribute("aria-pressed", String(livro.dataset.filtro === id));
       estante!.classList.toggle("filtrando", Boolean(id));
       const escolhido = livros.find((l) => l.dataset.filtro === id);
       const n = itens().filter((i) => !i.hidden && i.matches(".lista-modo > *")).length;
@@ -133,11 +133,7 @@ const nivelDoItem = porAno ? "h3" : "h2";
     }
 
     livros.forEach((livro, i) => {
-      livro.addEventListener("click", (e) => {
-        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-        e.preventDefault();
-        aplicar(atual === livro.dataset.filtro ? "" : livro.dataset.filtro!);
-      });
+      livro.addEventListener("click", () => aplicar(atual === livro.dataset.filtro ? "" : livro.dataset.filtro!));
       livro.addEventListener("pointerenter", (e) => {
         if (e.pointerType === "mouse") tocarToque(livros.length > 1 ? i / (livros.length - 1) : 0.5);
       });
@@ -196,6 +192,18 @@ const nivelDoItem = porAno ? "h3" : "h2";
     justify-items: end;
     gap: 10px;
     min-width: 0;
+  }
+
+  .lado-estante[hidden] {
+    display: none;
+  }
+
+  .rotulo-filtro {
+    margin: 0;
+    font-family: var(--font-ui);
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--ink);
   }
 
   .dica {

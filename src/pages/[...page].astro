@@ -221,8 +221,21 @@ const jsonLd = {
       gap: 22px;
     }
 
+    /*
+     * Abertura mais curta no celular (D38): a marca grande sai da tela (ela já está no cabeçalho) e
+     * continua como o h1 da página para quem usa leitor de tela.
+     */
+    .marca-abertura {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
     .frase {
-      margin-top: 16px;
+      margin-top: 0;
     }
 
     .cena {
