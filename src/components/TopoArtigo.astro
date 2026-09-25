@@ -4,15 +4,14 @@
  * que encosta nas bordas da folha (recorte largo, com anotações, no computador; 3:2 no celular),
  * depois a trilha "Artigos › Categoria" (ou "Séries › Nome"), o título inteiro e a descrição, como no
  * blog atual (D33), e a assinatura: a foto e o nome do autor, a data com o calendário, "Atualizado
- * em" quando houver e o tempo de leitura com o relógio. No canto de baixo, bem clarinho, o desenho da
- * capa do livro do artigo, como marca d'água (a xícara, na série do Java).
+ * em" quando houver e o tempo de leitura com o relógio. A marca d'água do livro saiu daqui (D39): fica
+ * no fim do artigo.
  */
 import Chip from "./Chip.astro";
 import DataLeitura from "./DataLeitura.astro";
 import Ilustracao from "./Ilustracao.astro";
 import { AUTOR } from "../data/site";
 import { temIlustracao } from "../lib/ilustracoes";
-import { desenhoDaCapa, iconeDoLivro, temDesenho } from "../lib/livros-svg";
 import { mdEmLinha, tituloComQuebras } from "../lib/formato";
 import { url } from "../lib/url";
 import type { Resumo } from "../lib/posts";
@@ -23,11 +22,6 @@ interface Props {
 
 const { post } = Astro.props;
 const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "Artigos", href: url("/archive/") };
-const marcaDagua = post.serie
-  ? iconeDoLivro(post.serie.emblema)
-  : post.categoria && temDesenho(post.categoria.slug)
-    ? desenhoDaCapa(post.categoria.slug)
-    : undefined;
 ---
 
 <div class="folha topo-folha">
@@ -44,7 +38,6 @@ const marcaDagua = post.serie
     )
   }
   <header class="topo">
-    {marcaDagua && <span class:list={["marca-dagua", { emblema: post.serie }]} aria-hidden="true" set:html={marcaDagua} />}
     <nav class="trilha" aria-label="Trilha" data-pagefind-ignore>
       <a href={raiz.href}>{raiz.nome}</a>
       <span aria-hidden="true">›</span>
@@ -100,66 +93,6 @@ const marcaDagua = post.serie
     max-width: calc(var(--coluna) + 184px);
     margin-inline: auto;
     padding: 32px 32px 30px;
-  }
-
-  /*
-   * Marca d'água: o desenho da capa do livro, na cor dele, quase apagado, no canto de baixo da folha,
-   * cortado pela borda. Fica atrás do texto (z-index) e some da leitura de tela.
-   */
-  .marca-dagua {
-    position: absolute;
-    z-index: 0;
-    right: -250px;
-    bottom: -64px;
-    width: 400px;
-    height: 350px;
-    color: color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro));
-    opacity: 0.1;
-    pointer-events: none;
-  }
-
-  .marca-dagua.emblema {
-    right: -190px;
-    bottom: -34px;
-    width: 240px;
-    height: 260px;
-  }
-
-  .marca-dagua :global(svg) {
-    display: block;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-  }
-
-  .marca-dagua :global(:is(path, circle)) {
-    vector-effect: non-scaling-stroke;
-  }
-
-  .marca-dagua :global(:is(.cz-ln, .cz-gh, .cz-ghs)) {
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.4px;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-
-  .marca-dagua :global(.cz-w3) {
-    stroke-width: 0.8px;
-  }
-
-  .marca-dagua :global(.cz-gh) {
-    stroke-dasharray: 2px 5px;
-  }
-
-  .marca-dagua :global(.cz-fi) {
-    fill: currentColor;
-    stroke: none;
-  }
-
-  .topo > :not(.marca-dagua) {
-    position: relative;
-    z-index: 1;
   }
 
   .trilha {
@@ -247,18 +180,12 @@ const marcaDagua = post.serie
 
   @media (max-width: 760px) {
     .topo {
-      padding: 22px 20px 24px;
+      padding: 20px 16px 22px;
     }
 
     .assinatura {
       gap: 8px 14px;
       font-size: 13.5px;
-    }
-
-    .marca-dagua {
-      right: -200px;
-      width: 320px;
-      height: 280px;
     }
   }
 </style>

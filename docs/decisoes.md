@@ -882,7 +882,7 @@ nada muda.
   cabeçalho de 104px ocupava 12% da tela e a abertura, a primeira tela inteira.
 
 ## D39 · Acabamento de design: livros de cor fixa, lombada única, tema direto, sem som
-- **Data:** 25/09/2026 · **Status:** aprovada pelo Cesar; em execução, um commit por lote, sem push.
+- **Data:** 25/09/2026 · **Status:** aprovada e aplicada, em oito lotes (um commit cada), sem push.
   Os itens 2, 6 e 9 passaram antes por propostas em screenshots: o 6 e o 9 foram aprovados como
   propostos, e o 2 virou a retirada das frases.
 - **Substitui**, no que houver em contrário: a D27, a D29, a D33, a D38 e o lote 4 da D37 (frases por

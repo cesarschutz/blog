@@ -14,6 +14,7 @@ import Sumario from "../../components/Sumario.astro";
 import RodapeArtigo from "../../components/RodapeArtigo.astro";
 import VoltarTopo from "../../components/VoltarTopo.astro";
 import Comentarios from "../../components/Comentarios.astro";
+import MarcaDagua from "../../components/MarcaDagua.astro";
 import { AUTOR, COMENTARIOS_LIGADOS } from "../../data/site";
 import { getPosts, getVizinhos, resumir, secoesDoSumario, type Post } from "../../lib/posts";
 import { dataIso, dataPorExtenso, descricaoCurta, semMd } from "../../lib/formato";
@@ -99,6 +100,7 @@ const jsonLd = {
     <div class:list={["artigo-grade", { "com-sumario": temSumario }]}>
       {temSumario && <Sumario secoes={secoes} variante="lateral" minutos={resumo.minutos} livro={livroDoPost} />}
       <div class="folha artigo-folha">
+        {livroDoPost && <MarcaDagua livro={livroDoPost} />}
         <div class="artigo-corpo">
           <div class="prose" data-corpo>
             {temSumario && <Sumario secoes={secoes} variante="recolhivel" />}

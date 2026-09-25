@@ -164,7 +164,7 @@ spacing:
   gutter-min: 16px
   gutter-max: 32px
   largura: 1320px
-  coluna: 760px
+  coluna: 720px
   altura-topo: 60px
   altura-topo-celular: 104px
   estante-entre-livros: 6px
@@ -207,7 +207,7 @@ components:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.on-surface}"
     typography: "{typography.body-artigo}"
-    width: 760px
+    width: 720px
   codigo:
     backgroundColor: "{colors.well}"
     textColor: "{colors.on-surface}"
@@ -438,7 +438,7 @@ pequeno da série. Hoje isso vale para as lombadas, em pé e deitadas (`corTexto
 
 - **Títulos:** Besley 700. O nome na abertura da home e a marca, 800.
 - **Texto:** Literata, com o eixo `opsz`. No artigo, 18,5px com entrelinha 1,72 numa coluna de até
-  760px, com números em estilo antigo (`oldstyle-nums`).
+  720px (uns 72 caracteres, D39), com números em estilo antigo (`oldstyle-nums`).
 - **Interface:** IBM Plex Sans 400, 500 e 600, em menu, busca, datas, tempo de leitura, categoria,
   tags, botões, trilha, sumário e legendas. Rótulos em caixa normal, sem caixa alta.
 - **Títulos que acompanham a tela** usam `clamp`, e os valores do meio não entram na rampa: o h1 das
@@ -460,7 +460,10 @@ pequeno da série. Hoje isso vale para as lombadas, em pé e deitadas (`corTexto
 
 Conteúdo de até 1320px, com margem lateral de 16 a 32px (`clamp`). O cabeçalho é fixo, e toda
 âncora ou peça `sticky` desconta `--altura-topo` (60px; 104px no celular). No artigo, a coluna de
-texto tem até 760px e, a partir de 1300px, o sumário fica à esquerda numa folha própria e fixa,
+texto tem até 720px (uns 72 caracteres), o cartão do corpo tem 30px de respiro dos lados, e código,
+tabelas, diagramas, lousas e a apresentação usam a largura toda do cartão, até 1000px (D39). No
+celular, o corpo do artigo não fica num cartão: o texto usa a largura da página, com a margem normal.
+A partir de 1300px, o sumário fica à esquerda numa folha própria e fixa,
 com a barra "NN% lido" embaixo; o fio das seções lidas, o ponto atual e a barra usam **a cor do
 livro do post** (o destaque do livro; no escuro, com 42% de branco), e embaixo da folha do sumário
 fica o **"Do livro" compacto** (capa pequena, nome e "Ver o livro", D39). A home é paginada de 12 em 12. A estante tem 6px entre os livros.
@@ -499,6 +502,10 @@ têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm can
 - **Chip de categoria:** quadradinho na cor do livro e nome tingido (34% de tinta no claro, 50% de
   branco no escuro). Leva à página da categoria.
 - **Botão "Ler artigo":** pílula azul-tinta com seta, texto em `on-primary`.
+- **Marca d'água do livro** (D39): o desenho da capa (ou o emblema da revista), grande, na cor do
+  livro com 10% de opacidade, cortado pela borda da folha, no topo das páginas de categoria e de
+  série e no fim do artigo, atrás de "anterior / próximo". Entra como máscara
+  (`/livros/marca/<slug>.svg`, `MarcaDagua.astro`), sem repetir o desenho no HTML.
 - **Diagramas antigos** (SVG com fundo branco, `public/posts/`): num quadro claro no tema claro e,
   no escuro, na versão escura feita por filtro (luz invertida e matiz de volta, D39), nunca um bloco
   branco na página escura.

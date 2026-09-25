@@ -17,7 +17,8 @@
   --altura-topo: 60px;
   /* A altura do próprio cabeçalho; --altura-topo é o quanto as peças fixas descontam (0 quando ele se esconde, D38). */
   --altura-cabecalho: 60px;
-  --coluna: 760px;
+  /* ~72 caracteres por linha no corpo do artigo (D39; era 760px, ~76). */
+  --coluna: 720px;
   /* Folhas (D26): o conteúdo fica em superfícies com borda fina e sombra leve; painéis dentro delas. */
   --raio-folha: 14px;
   --raio-painel: 10px;

@@ -1,0 +1,40 @@
+---
+/**
+ * Marca d'água do livro (D39): o desenho da capa (ou o emblema da revista) grande e bem suave, na cor
+ * do livro, cortado pela borda da folha. Está no topo das páginas de categoria e de série e no fim do
+ * artigo, atrás de "anterior / próximo". O desenho vem como máscara (/livros/marca/<slug>.svg), para
+ * não repetir o SVG no HTML. Quem usa posiciona pela classe e põe `overflow: clip` na folha.
+ */
+import type { Livro } from "../lib/estante";
+import { url } from "../lib/url";
+
+interface Props {
+  livro: Livro;
+  class?: string;
+}
+
+const { livro, class: classe } = Astro.props;
+const arquivo = livro.serie ? livro.id : livro.slug;
+const estilo = `--mascara:url("${url(`/livros/marca/${arquivo}.svg`)}");--cor-marca:${livro.cores.destaque}`;
+---
+
+<span class:list={["marca-dagua", { emblema: livro.serie }, classe]} style={estilo} aria-hidden="true"></span>
+
+<style>
+  .marca-dagua {
+    position: absolute;
+    z-index: 0;
+    width: 520px;
+    aspect-ratio: 480 / 420;
+    background: color-mix(in oklab, var(--cor-marca), #fff var(--branco-no-escuro));
+    opacity: 0.1;
+    pointer-events: none;
+    mask: var(--mascara) center / contain no-repeat luminance;
+  }
+
+  /* O emblema da revista (a xícara) é mais alto que largo. */
+  .marca-dagua.emblema {
+    width: 300px;
+    aspect-ratio: 1;
+  }
+</style>

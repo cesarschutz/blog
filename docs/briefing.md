@@ -92,7 +92,9 @@ camada visual: estrutura, conteúdo, rotas e comportamento seguem as seções 5 
   tempo de leitura, categoria, tags, botões, trilha, sumário, legendas e o aviso curto de IA da home.
 - Livros (capas, lombadas e os títulos Séries e Categorias da lateral, D30): **Bitter** e
   **Newsreader** itálico (com o eixo de tamanho óptico, D32), servidas pelo próprio site, pela regra de `docs/capas/CAPAS.md`.
-- Artigo: corpo 18,5px, entrelinha 1,72, coluna de texto com no máximo 760px (era 680px até a D33).
+- Artigo: corpo 18,5px, entrelinha 1,72, coluna de texto com no máximo 720px, uns 72 caracteres
+  (D39; era 760px desde a D33 e 680px antes). Código, tabelas, diagramas, lousas e a apresentação
+  usam a largura toda do cartão (até 1000px); no celular, o corpo não fica num cartão.
   Números em estilo antigo (`oldstyle-nums`) no texto corrido.
 - Sem fonte de "letra de mão" em lugar nenhum, inclusive nos desenhos e nas lousas.
 
@@ -298,8 +300,9 @@ Referência: aba "Artigo" do protótipo.
 - **Topo**: a ilustração vem **antes do título** (recorte largo no computador, 3:2 no celular),
   depois trilha "Artigos › Categoria" (ou "Séries › Nome"), o **título inteiro** e a **descrição**,
   como no blog atual (D33), e a assinatura: foto e nome do autor, data com o calendário,
-  "Atualizado em" quando houver e o tempo de leitura com o relógio. No canto de baixo, a marca d'água
-  com o desenho da capa do livro do artigo.
+  "Atualizado em" quando houver e o tempo de leitura com o relógio. A marca d'água do livro saiu do
+  topo (D39): fica no fim do artigo, atrás de "anterior / próximo", e no topo das páginas de
+  categoria e de série, grande e bem suave, cortada pela borda da folha.
 - **Título**: aparece inteiro, como no `title` do frontmatter, no topo, nas listas, nos cards e na
   navegação. A divisão em título e subtítulo pelo " — " fica só na imagem de compartilhamento (D33).
 - **Barra de progresso de leitura**: faixa de 3px no topo, na cor da categoria.

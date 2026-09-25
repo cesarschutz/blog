@@ -4,10 +4,11 @@
  * três quartos num painel tingido pela cor dele e, ao lado, a trilha, o nome, o subtítulo, a
  * contagem e as tags mais usadas. O livro chega da pilha do painel ou da grade de livros por
  * transição de página (LivroEmPe). O slot recebe o que for próprio da página (na série Java, os
- * números das LTS).
+ * números das LTS). No canto de baixo, à direita, a marca d'água do livro (D39).
  */
 import LivroAmpliado from "./LivroAmpliado.astro";
 import LivroEmPe from "./LivroEmPe.astro";
+import MarcaDagua from "./MarcaDagua.astro";
 import type { Livro } from "../lib/estante";
 import { urlTag } from "../lib/posts";
 import { url } from "../lib/url";
@@ -31,6 +32,7 @@ const tags = [...contagem]
 ---
 
 <header class="topo-livro folha" style={`--cor:${livro.cores.cor}`}>
+  <MarcaDagua livro={livro} />
   <div class="palco painel">
     <LivroEmPe livro={livro} ampliavel />
   </div>
@@ -60,6 +62,9 @@ const tags = [...contagem]
 
 <style>
   .topo-livro {
+    position: relative;
+    overflow: clip;
+    isolation: isolate;
     display: grid;
     grid-template-columns: minmax(250px, 34%) minmax(0, 1fr);
     gap: clamp(22px, 3vw, 40px);
@@ -68,6 +73,23 @@ const tags = [...contagem]
   }
 
   /* O palco do livro: o painel tingido, como o dos desenhos (D26). */
+  /* A marca d'água, cortada pela borda da folha, atrás do texto. */
+  .topo-livro > :global(.marca-dagua) {
+    right: -70px;
+    bottom: -110px;
+  }
+
+  .topo-livro > :global(.marca-dagua.emblema) {
+    right: -40px;
+    bottom: -60px;
+  }
+
+  .palco,
+  .texto {
+    position: relative;
+    z-index: 1;
+  }
+
   .palco {
     display: grid;
     place-items: center;
