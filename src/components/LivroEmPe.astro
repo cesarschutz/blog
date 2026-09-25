@@ -1,7 +1,7 @@
 ---
 /**
- * O livro aberto no topo da página do livro (D29, D30): o mesmo livro 3D da gaveta, já girado até os
- * três quartos (a lombada à esquerda e a capa de frente), com o desenho da capa (ou o emblema da
+ * O livro parado (D29, D30, D40): o mesmo livro 3D da gaveta, a 18° da frente (a capa quase de frente
+ * e uma faixa da lombada à esquerda), com o desenho da capa (ou o emblema da
  * revista) inline: fora da gaveta não há quem busque o desenho adiado (D33). Tem o mesmo
  * `view-transition-name` do livro deitado do painel (PainelHome): ao abrir a página, o navegador leva
  * o livro da pilha até aqui.
@@ -35,8 +35,6 @@ const estilo = [
   `--bh:${px(m.bh)}`,
   `--cw:${px(m.cw)}`,
   `--sw:${px(m.sw)}`,
-  `--x0:${px(m.x0)}`,
-  `--x1:${px(m.x1)}`,
   transicao === "fixa" ? `view-transition-name:${livro.id}` : "",
   "view-transition-class:livro",
 ]
@@ -54,7 +52,7 @@ const estilo = [
   data-dados={ampliavel ? dadosDoLivro(livro) : undefined}
   data-href={ampliavel ? livro.href : undefined}
 >
-  <Livro3D livro={livro} desenho="inline" virado />
+  <Livro3D livro={livro} desenho="inline" folhas={3} />
   {
     ampliavel && (
       <button type="button" class="lupa" data-ampliar aria-label={`Ampliar o livro ${livro.nome}`} title="Ampliar">
@@ -69,10 +67,5 @@ const estilo = [
     position: relative;
     width: var(--cw);
     height: var(--bh);
-  }
-
-  /* Parado: sem a transição do giro. */
-  .livro-em-pe :global(.livro-3d) {
-    transition: none;
   }
 </style>

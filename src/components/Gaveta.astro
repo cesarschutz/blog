@@ -1,18 +1,21 @@
 ---
 /**
- * Gaveta da estante (briefing §5.1): ao abrir um livro, a lombada sai da prateleira e, abaixo, o livro
- * gira da lombada até os três quartos, com a lombada e a capa à vista (3D, D30), com o sumário ao lado (filtro sem acento; por ano nas categorias,
- * "Parte N" nas séries). Trocar de livro fecha o atual antes de abrir o próximo; cliques rápidos
- * terminam a animação e abrem o último escolhido. Botão "Fechar livro" e Esc. Cada livro vem pronto
- * num <template>; o script só monta. O desenho da capa só é buscado quando o livro abre
- * (/livros/<slug>.svg) e entra inline. O tombo do livro inclinado começa no script do <head>.
+ * A gaveta da estante (briefing §5.1, D40, ideia 3): tirar o livro da estante e abrir. No clique ou
+ * toque numa lombada, o livro sobe e o lugar dele fica escurecido; um livro 3D sai da posição exata da
+ * lombada, com a lombada de frente, e vem para a gaveta girando até 18°; a capa abre (-165°) enquanto
+ * o livro desliza para centralizar as duas páginas e gira até 4°; na página da direita aparecem os
+ * artigos mais recentes (até 6), com "Ver todos os N artigos" e "Ver o livro". O verso da capa leva a
+ * assinatura do blog. "Guardar o livro", Esc ou um clique no lugar escurecido fazem o caminho de
+ * volta, 1,5× mais rápido; outro livro fecha o atual e abre o novo. No celular, o livro aberto cabe na
+ * largura da tela. Com movimento reduzido, tudo direto no estado final.
+ *
+ * Cada livro vem pronto num <template>; o script só monta. O desenho da capa só é buscado quando o
+ * livro abre (/livros/<slug>.svg) e entra inline. Sem JS, a lombada leva à página do livro.
  */
 import Livro3D from "./Livro3D.astro";
-import LivroAmpliado from "./LivroAmpliado.astro";
-import { ICONES } from "../lib/icones";
-import { coresDoLivroCss, dadosDoLivro, textoDoFiltro, type Livro } from "../lib/estante";
+import { coresDoLivroCss, type Livro } from "../lib/estante";
 import { diaEMes } from "../lib/formato";
-import type { Resumo } from "../lib/posts";
+import { url } from "../lib/url";
 import "../styles/estante.css";
 
 interface Props {
@@ -20,243 +23,185 @@ interface Props {
 }
 
 const { livros } = Astro.props;
-
-type Linha = { tipo: "ano"; ano: number } | { tipo: "post"; post: Resumo; parte?: number };
-function linhas(l: Livro): Linha[] {
-  if (l.serie) return l.posts.map((post, i) => ({ tipo: "post", post, parte: i + 1 }));
-  const saida: Linha[] = [];
-  let ano: number | undefined;
-  for (const post of l.posts) {
-    const a = post.publicado.getUTCFullYear();
-    if (a !== ano) saida.push({ tipo: "ano", ano: (ano = a) });
-    saida.push({ tipo: "post", post });
-  }
-  return saida;
-}
+/** Quantos artigos cabem na página da direita. */
+const NA_PAGINA = 6;
+const recentes = (l: Livro) => [...l.posts].sort((a, b) => b.publicado.getTime() - a.publicado.getTime()).slice(0, NA_PAGINA);
+const quantos = (l: Livro) => {
+  const n = l.posts.length;
+  if (l.serie) return `${n} ${n === 1 ? "edição" : "edições"}`;
+  return `${n} ${n === 1 ? "artigo" : "artigos"}`;
+};
 ---
 
-<div class="gaveta" id="gaveta" data-gaveta><div></div></div>
-<LivroAmpliado />
+<div class="gaveta" id="gaveta" data-gaveta hidden>
+  <h2 class="sr" tabindex="-1" data-titulo-gaveta></h2>
+  <button type="button" class="botao guardar" data-guardar>Guardar o livro</button>
+</div>
 
 {
   livros.map((l) => (
     <template data-modelo={l.id}>
-      <div
-        class="livro-aberto"
-        data-largura={l.emPe.largura}
-        data-ampliar-livro
-        data-nome={l.nome}
-        data-dados={dadosDoLivro(l)}
-        data-href={l.href}
-        style={`${coresDoLivroCss(l)};--h:${l.emPe.altura}`}
-      >
-        <div class="livro-na-gaveta">
-          {/* A capa aberta leva à página do livro (D38); a lupa amplia. */}
-          <a class="capa-link" href={l.href} aria-label={`Ver o livro ${l.nome}`}>
-            <Livro3D livro={l} desenho="adiado" />
-          </a>
-          <button type="button" class="lupa" data-ampliar aria-label={`Ampliar o livro ${l.nome}`} title="Ampliar"
-            ><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.ampliar} /></button
-          >
-        </div>
-        <div class="sumario-livro">
-          <div class="topo-sumario">
-            <h2 id={`sumario-${l.id}`} tabindex="-1">{l.serie ? "Ordem de leitura" : "Neste livro"}</h2>
-            <span class="meta-sumario">{l.posts.length > 0 ? `${l.nome}, ${l.contagem}` : l.nome}</span>
-            <button type="button" class="botao fechar-livro" data-fechar-livro>Fechar livro</button>
-          </div>
-          {l.posts.length === 0 && <p class="sem-artigos">Este livro ainda não tem artigos.</p>}
-          {l.posts.length > 0 && <label class="sr" for={`filtro-${l.id}`}>Filtrar neste livro</label>}
-          {l.posts.length > 0 && <input id={`filtro-${l.id}`} class="filtro-livro" type="search" placeholder="Filtrar neste livro" autocomplete="off" data-filtro-livro />}
-          <ul class="indice-livro" aria-labelledby={`sumario-${l.id}`} hidden={l.posts.length === 0}>
-            {linhas(l).map((linha) =>
-              linha.tipo === "ano" ? (
-                <li class="ano" aria-hidden="true">{linha.ano}</li>
-              ) : (
-                <li data-q={textoDoFiltro(linha.post)}>
-                  <a href={linha.post.url}>
-                    <span class="titulo-item">{linha.parte && <span class="parte">Parte {linha.parte}</span>}{linha.post.tituloCompleto}</span>
-                    <span class="pontilhado" aria-hidden="true" />
-                    <span class="dia">{diaEMes(linha.post.publicado)}</span>
-                  </a>
-                </li>
-              ),
+      <div class="livro-voando" data-largura={l.emPe.largura} style={`${coresDoLivroCss(l)};--h:${l.emPe.altura}`}>
+        <Livro3D livro={l} desenho="adiado">
+          <div slot="pagina" class="pagina-aberta">
+            <p class="titulo-pagina">{l.serie ? "Nesta série" : "Neste livro"}</p>
+            <p class="sub-pagina">{l.posts.length > 0 ? `${l.nome} · ${quantos(l)}` : l.nome}</p>
+            {l.posts.length > 0 ? (
+              <ol class="itens-pagina">
+                {recentes(l).map((p) => (
+                  <li>
+                    <a href={p.url}>{p.titulo}</a>
+                    <small>{diaEMes(p.publicado)}</small>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p class="vazio-pagina">Este livro ainda não tem artigos. O primeiro está a caminho.</p>
             )}
-          </ul>
-          <p class="vazio-livro" hidden>Nenhum artigo deste livro tem esse termo.</p>
-        </div>
+            <p class="links-pagina">
+              {l.posts.length > 0 && <a href={url(`/archive/?livro=${l.id}`)}>{l.serie ? "Ver todas as" : "Ver todos os"} {quantos(l)}</a>}
+              <a href={l.href}>{l.serie ? "Ver a série" : "Ver o livro"}</a>
+            </p>
+          </div>
+        </Livro3D>
       </div>
     </template>
   ))
 }
 
 <script>
-  import { normalizar } from "../lib/busca/tipos";
+  import { carregarGsap, movimentoReduzido, type GSAP } from "../scripts/gsap";
   import { medidasDoLivro3D } from "../lib/livro-3d";
 
   const gaveta = document.querySelector<HTMLElement>("[data-gaveta]");
   const estante = document.querySelector<HTMLElement>("[data-estante]");
-  if (gaveta && estante) {
-    const miolo = gaveta.firstElementChild as HTMLElement;
-    const lombadas = [...estante.querySelectorAll<HTMLAnchorElement>("[data-livro]")];
-    const reduzir = matchMedia("(prefers-reduced-motion: reduce)");
-    const pequeno = matchMedia("(max-width: 760px)");
-    const T = (ms: number) => (reduzir.matches ? 0 : ms);
-    const rolar = (): ScrollBehavior => (reduzir.matches ? "auto" : "smooth");
+  const palco = gaveta?.closest<HTMLElement>(".folha");
+  if (gaveta && estante && palco) {
+    const lombadas = [...estante.querySelectorAll<HTMLElement>("[data-livro]")];
+    const titulo = gaveta.querySelector<HTMLElement>("[data-titulo-gaveta]")!;
+    const guardar = gaveta.querySelector<HTMLButtonElement>("[data-guardar]")!;
+    palco.classList.add("palco-gaveta");
 
-    let aberto: string | null = null;
-    let ocupado = false;
-    let pendente: { id: string; daLista: boolean; foco: boolean } | null = null;
-
-    const medidas = (largura: number) => medidasDoLivro3D(largura, pequeno.matches ? 270 : 360);
-
-    // O desenho da capa (ou o emblema da revista) só vem quando o livro abre (D30, D32): uma busca
-    // por arquivo, guardada.
+    // O desenho da capa (ou o emblema da revista) só vem quando o livro abre (D30, D32).
     const desenhos = new Map<string, Promise<string>>();
     function trazerDesenho(no: HTMLElement) {
       for (const alvo of no.querySelectorAll<HTMLElement>("[data-desenho]")) {
         const endereco = alvo.dataset.desenho!;
         if (!desenhos.has(endereco)) {
-          desenhos.set(
-            endereco,
-            fetch(endereco).then((r) => (r.ok ? r.text() : Promise.reject(new Error(String(r.status))))),
-          );
+          desenhos.set(endereco, fetch(endereco).then((r) => (r.ok ? r.text() : Promise.reject(new Error(String(r.status))))));
         }
         desenhos
           .get(endereco)!
-          .then((svg) => {
-            alvo.innerHTML = svg;
-            if (!reduzir.matches) alvo.classList.add("chegou");
-          })
+          .then((svg) => (alvo.innerHTML = svg))
           .catch(() => desenhos.delete(endereco));
       }
     }
 
-    function ligarFiltro(no: HTMLElement) {
-      const campo = no.querySelector<HTMLInputElement>("[data-filtro-livro]");
-      if (!campo) return;
-      const lista = no.querySelector<HTMLUListElement>(".indice-livro")!;
-      const vazio = no.querySelector<HTMLElement>(".vazio-livro")!;
-      campo.addEventListener("input", () => {
-        const q = normalizar(campo.value.trim());
-        let ano: HTMLElement | null = null;
-        let anoTem = false;
-        let algum = false;
-        const fecharAno = () => ano && (ano.hidden = !anoTem);
-        for (const li of lista.children as HTMLCollectionOf<HTMLElement>) {
-          if (li.classList.contains("ano")) {
-            fecharAno();
-            ano = li;
-            anoTem = false;
-            continue;
-          }
-          const passa = !q || (li.dataset.q ?? "").includes(q);
-          li.hidden = !passa;
-          if (passa) anoTem = algum = true;
-        }
-        fecharAno();
-        vazio.hidden = algum;
-      });
-    }
+    // Altura do livro: 360px, ou o que couber com as duas páginas abertas na largura do palco.
+    const alturaDoLivro = () => {
+      const largura = palco.clientWidth - 40;
+      return Math.round(Math.min(360, (largura / 2) * 1.5));
+    };
 
-    function montar(id: string, assentado: boolean) {
+    type Aberto = { id: string; lombada: HTMLElement; clone: HTMLElement; tl: gsap.core.Timeline };
+    let aberto: Aberto | null = null;
+    let ocupado = false;
+    let pendente: string | null = null;
+
+    function montar(id: string) {
       const modelo = document.querySelector<HTMLTemplateElement>(`template[data-modelo="${id}"]`)!;
-      const no = modelo.content.firstElementChild!.cloneNode(true) as HTMLElement;
-      const m = medidas(Number(no.dataset.largura));
-      for (const [nome, valor] of Object.entries({ bh: m.bh, cw: m.cw, sw: m.sw, x0: m.x0, x1: m.x1, u: m.u })) {
-        no.style.setProperty(`--${nome}`, `${valor}px`);
-      }
-      if (assentado) {
-        no.classList.add("aparecendo");
-        no.querySelector(".livro-3d")!.classList.add("virado");
-      }
-      const icone = no.querySelector<HTMLElement>("[data-icone-de]");
+      const clone = modelo.content.firstElementChild!.cloneNode(true) as HTMLElement;
+      const altura = alturaDoLivro();
+      const m = medidasDoLivro3D(Number(clone.dataset.largura), altura);
+      for (const [k, v] of Object.entries(m)) clone.style.setProperty(`--${k}`, `${v}px`);
+      const icone = clone.querySelector<HTMLElement>("[data-icone-de]");
       if (icone) icone.innerHTML = estante!.querySelector(`[data-livro="${id}"] :is(.icone-lombada, .emblema-lombada)`)?.innerHTML ?? "";
-      miolo.replaceChildren(no);
-      ligarFiltro(no);
-      trazerDesenho(no);
-      return no;
+      palco!.append(clone);
+      trazerDesenho(clone);
+      return { clone, m };
     }
 
-    function sincronizar() {
-      for (const l of lombadas) {
-        const este = l.dataset.livro === aberto;
-        l.classList.toggle("retirado", este);
-        l.setAttribute("aria-expanded", String(este));
+    function abrir(gsap: GSAP, id: string, foco: boolean) {
+      const lombada = lombadas.find((l) => l.dataset.livro === id)!;
+      gaveta!.hidden = false;
+      const { clone, m } = montar(id);
+      gaveta!.style.setProperty("--altura-livro", `${m.bh}px`);
+      titulo.textContent = `${lombada.dataset.titulo}, aberto na gaveta`;
+      lombada.setAttribute("aria-expanded", "true");
+
+      const livro = clone.querySelector<HTMLElement>(".livro-3d")!;
+      const capa = clone.querySelector<HTMLElement>(".face-capa")!;
+      const itens = clone.querySelectorAll(".pagina-aberta > *, .itens-pagina li");
+      const p = palco!.getBoundingClientRect();
+      const l = lombada.getBoundingClientRect();
+      const g = gaveta!.getBoundingClientRect();
+      // De onde sai: a lombada, com a mesma altura. Para onde vai: o meio da gaveta.
+      const s0 = l.height / m.bh;
+      const x0 = l.left - p.left + l.width / 2 - m.cw / 2;
+      const y0 = l.top - p.top + l.height / 2 - m.bh / 2;
+      const meio = p.width / 2 - m.cw * 0.02;
+      const ym = g.top - p.top + 18;
+
+      gsap.set(clone, { x: x0, y: y0, scale: s0, transformOrigin: "50% 50%" });
+      gsap.set(livro, { rotationY: 90 });
+      gsap.set(capa, { rotationY: 0 });
+      const tl = gsap.timeline({ defaults: { ease: "power3.inOut" }, onComplete: () => foco && clone.querySelector<HTMLElement>(".pagina-aberta a")?.focus() });
+      if (movimentoReduzido.matches) {
+        lombada.classList.add("retirado");
+        tl.set(clone, { x: meio, y: ym, scale: 1 }).set(livro, { rotationY: 4 }).set(capa, { rotationY: -165 });
+      } else {
+        tl.to(clone, { y: y0 - 40, duration: 0.45, ease: "power2.out" }, 0)
+          .add(() => lombada.classList.add("retirado"), 0.3)
+          .to(clone, { x: meio - m.cw * 0.45, y: ym, scale: 1, duration: 1.05 }, 0.38)
+          .to(livro, { rotationY: 18, duration: 1.05 }, 0.38)
+          .to(capa, { rotationY: -165, duration: 1.05 }, "+=0.12")
+          .to(clone, { x: meio, duration: 1.05 }, "<")
+          .to(livro, { rotationY: 4, duration: 1.05 }, "<")
+          .from(itens, { opacity: 0, y: 6, stagger: 0.05, duration: 0.35, ease: "power2.out" }, "-=0.4");
       }
+      aberto = { id, lombada, clone, tl };
+
+      // A gaveta à vista: rola até ela, se o livro aberto ficar fora da tela.
+      const fim = g.top + m.bh + 80;
+      if (fim > innerHeight) scrollBy({ top: fim - innerHeight + 24, behavior: movimentoReduzido.matches ? "auto" : "smooth" });
+      return tl;
     }
 
-    function dobrar(depois: () => void) {
-      const livro = miolo.querySelector(".livro-3d");
-      if (!livro) return depois();
-      miolo.querySelector(".livro-aberto")!.classList.remove("aparecendo");
-      livro.classList.add("fechando");
-      livro.classList.remove("virado");
-      setTimeout(depois, T(620));
+    function fechar(depois?: () => void, devolverFoco = false) {
+      if (!aberto) return depois?.();
+      const { lombada, clone, tl } = aberto;
+      aberto = null;
+      ocupado = true;
+      tl.eventCallback("onComplete", null);
+      tl.eventCallback("onReverseComplete", () => {
+        clone.remove();
+        lombada.classList.remove("retirado");
+        lombada.setAttribute("aria-expanded", "false");
+        gaveta!.hidden = true;
+        ocupado = false;
+        if (devolverFoco) lombada.focus();
+        depois?.();
+      });
+      // Sem movimento, fecha na hora; com, faz o caminho de volta 1,5× mais rápido.
+      if (movimentoReduzido.matches) tl.progress(0).eventCallback("onReverseComplete")?.();
+      else tl.timeScale(1.5).reverse();
     }
 
-    function mostrar(id: string, estavaFechado: boolean, daLista: boolean, foco: boolean) {
-      aberto = id;
-      sincronizar();
-      const no = montar(id, false);
-      gaveta!.classList.add("aberta");
-      // Ler o layout confirma o estado inicial (lombada de frente) antes de girar. Sem depender de
-      // requestAnimationFrame, que não roda em aba oculta e deixaria a estante presa em "ocupado".
-      void no.getBoundingClientRect();
-      setTimeout(() => {
-        no.querySelector(".livro-3d")!.classList.add("virado");
-        no.classList.add("aparecendo");
-        if (foco) no.querySelector<HTMLElement>("h2")!.focus({ preventScroll: true });
-        setTimeout(() => {
+    async function escolher(id: string, foco: boolean) {
+      if (ocupado) return void (pendente = id);
+      if (aberto?.id === id) return fechar(undefined, foco);
+      const gsap = await carregarGsap();
+      fechar(() => {
+        ocupado = true;
+        const tl = abrir(gsap, id, foco);
+        tl.then(() => {
           ocupado = false;
           if (pendente) {
             const p = pendente;
             pendente = null;
-            abrirLivro(p.id, p.daLista, p.foco);
+            if (p !== aberto?.id) escolher(p, false);
           }
-        }, T(420));
-      }, T(estavaFechado ? 180 : 0));
-      setTimeout(() => {
-        const r = gaveta!.getBoundingClientRect();
-        if (daLista || r.top > innerHeight * 0.6 || r.bottom > innerHeight + 200) {
-          estante!.scrollIntoView({ behavior: rolar(), block: "start" });
-        }
-      }, T(estavaFechado ? 260 : 60));
-    }
-
-    function abrirLivro(id: string, daLista = false, foco = false) {
-      if (ocupado) {
-        pendente = { id, daLista, foco };
-        return;
-      }
-      if (aberto === id) {
-        if (daLista) estante!.scrollIntoView({ behavior: rolar(), block: "start" });
-        else fecharLivro(foco);
-        return;
-      }
-      ocupado = true;
-      if (aberto)
-        dobrar(() => {
-          aberto = null;
-          sincronizar();
-          mostrar(id, false, daLista, foco);
         });
-      else mostrar(id, true, daLista, foco);
-    }
-
-    function fecharLivro(devolverFoco = false) {
-      if (!aberto || ocupado) return;
-      ocupado = true;
-      const id = aberto;
-      dobrar(() => {
-        aberto = null;
-        sincronizar();
-        gaveta!.classList.remove("aberta");
-        if (devolverFoco) lombadas.find((l) => l.dataset.livro === id)?.focus();
-        setTimeout(() => {
-          if (!aberto) miolo.replaceChildren();
-          ocupado = false;
-        }, T(520));
       });
     }
 
@@ -267,21 +212,25 @@ function linhas(l: Livro): Linha[] {
       l.addEventListener("click", (e) => {
         if (!clique(e)) return;
         e.preventDefault();
-        abrirLivro(l.dataset.livro!, false, e.detail === 0);
+        escolher(l.dataset.livro!, e.detail === 0);
       });
     }
-
-    // Só as lombadas da estante abrem a gaveta. Os links de categoria (chips da lista, dos cards e do
-    // destaque) levam à página da categoria, como os livros do painel (pedido do Cesar, D33).
-
-    miolo.addEventListener("click", (e) => {
-      if ((e.target as HTMLElement).closest("[data-fechar-livro]")) fecharLivro(e.detail === 0);
-    });
+    guardar.addEventListener("click", (e) => fechar(undefined, e.detail === 0));
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && aberto && !document.querySelector("dialog[open]")) fecharLivro(true);
+      if (e.key === "Escape" && aberto && !document.querySelector("dialog[open]")) fechar(undefined, true);
     });
-    pequeno.addEventListener("change", () => {
-      if (aberto && !ocupado) montar(aberto, true);
-    });
+    // Mudou a largura com o livro aberto: remonta no estado final, no tamanho novo.
+    let largura = palco.clientWidth;
+    new ResizeObserver(() => {
+      if (palco.clientWidth === largura) return;
+      largura = palco.clientWidth;
+      if (!aberto || ocupado) return;
+      const { id, clone, tl } = aberto;
+      tl.kill();
+      clone.remove();
+      aberto.lombada.classList.remove("retirado");
+      aberto = null;
+      carregarGsap().then((gsap) => abrir(gsap, id, false).progress(1));
+    }).observe(palco);
   }
 </script>

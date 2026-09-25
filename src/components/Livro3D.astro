@@ -1,9 +1,14 @@
 ---
 /**
- * O livro 3D (D30): a lombada em pé, na altura da capa, e a capa colada a ela, formando um bloco que
- * gira. Na gaveta ele começa com a lombada de frente e gira até os três quartos (classe `virado`); na
- * página do livro já aparece virado. As medidas vêm de src/lib/livro-3d.ts; as cores, do elemento pai
- * (coresDoLivroCss).
+ * O livro 3D inteiro (D30, D40): contracapa, lombada (a mesma da estante, MioloLombada), bordas das
+ * páginas, a página de dentro e a capa, com o verso, presa pela lombada para poder abrir. O livro
+ * gira em volta do centro: com `rotateY(90deg)` mostra a lombada de frente; parado, fica a 18° da
+ * frente (`--giro`, GIRO em src/lib/livro-3d.ts), com só uma faixa da lombada à vista. A capa abre
+ * pelo GSAP (a gaveta da home, D40) e entreabre com as camadas de página (`folhas`, a ideia 5).
+ *
+ * As medidas vêm de src/lib/livro-3d.ts: --cw (largura da capa), --bh (altura), --sw (espessura, a
+ * largura da lombada na mesma escala) e --u (px por unidade da referência, para a lombada). As cores,
+ * do elemento pai (coresDoLivroCss). O slot "pagina" é o que aparece dentro quando a capa abre.
  */
 import MioloLombada from "./MioloLombada.astro";
 import Capa from "./Capa.astro";
@@ -12,21 +17,36 @@ import type { Livro } from "../lib/estante";
 interface Props {
   livro: Livro;
   desenho: "inline" | "adiado";
-  virado?: boolean;
+  /** Camadas de página por baixo da capa, que aparecem quando ela entreabre (D40). */
+  folhas?: number;
 }
 
-const { livro, desenho, virado = false } = Astro.props;
+const { livro, desenho, folhas = 0 } = Astro.props;
 ---
 
-<div class="livro-3d-caixa" aria-hidden="true">
-  <div class:list={["livro-3d", { virado }]}>
-    <div class:list={["face-lombada", "lombada-visual", { "de-serie": livro.serie }]}>
+<div class="livro-3d-caixa" aria-hidden={Astro.slots.has("pagina") ? undefined : "true"}>
+  <div class="livro-3d">
+    <div class="f contra"></div>
+    <div class="f miolo-dir"></div>
+    <div class="f miolo-topo"></div>
+    <div class:list={["f", "face-lombada", "lombada-visual", { "de-serie": livro.serie }]} aria-hidden="true">
       <MioloLombada livro={livro} iconeDaEstante={desenho === "adiado"} />
-      <span class="luz"></span>
     </div>
-    <div class="face-capa">
-      <Capa livro={livro} desenho={desenho} />
-      <span class="luz"></span>
+    <div class="f pagina">
+      <slot name="pagina" />
+    </div>
+    {Array.from({ length: folhas }, (_, i) => <div class="f folha-livro" style={`--i:${i}`} aria-hidden="true" />)}
+    <div class="f face-capa" aria-hidden="true">
+      <div class="capa-verso">
+        <p class="assinatura-verso">
+          <span>Cesar Schutz</span>
+          <em>blog</em>
+          <small>blog.cesarschutz.com.br</small>
+        </p>
+      </div>
+      <div class="capa-frente">
+        <Capa livro={livro} desenho={desenho} />
+      </div>
     </div>
   </div>
 </div>

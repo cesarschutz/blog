@@ -41,7 +41,7 @@ Cesar acompanhar. Ele revisa tudo no fim.
 - Cores só por tokens CSS (`var(--ink)`, `var(--cat)`…). Nada de hex solto em componente ou SVG.
 - Toda animação respeita `prefers-reduced-motion`: com ele ligado, tudo aparece no estado final,
   sem prender a tela.
-- JavaScript só onde há interação (estante, busca, lousas, apresentação, lista/cards, menu de
+- JavaScript só onde há interação (estante, gaveta, busca, lousas, apresentação, lista/cards, menu de
   tema, filtro por livro, livro ampliado, o nome de transição do livro
   do painel e o cabeçalho que se esconde no celular, D29, D33, D38).
   Artigo sem esses componentes funciona sem JS.

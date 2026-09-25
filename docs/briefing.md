@@ -212,13 +212,14 @@ Referência: aba "Home" do protótipo.
   - Ao passar o mouse, a lombada sobe alguns pixels.
   - Na home, a lombada abre a gaveta; a capa aberta dentro dela leva à página do livro, e a lupa
     amplia (D38). Nas outras páginas, a lombada leva ao livro.
-  - **Abrir um livro**: o lugar dele na prateleira mostra o próprio livro escurecido (D39); abaixo
-    da estante abre uma gaveta com o livro girando da lombada até ficar **quase de frente** (72°,
-    só uma faixa da lombada à vista, D39), como na página do livro, e, ao lado, o **sumário
-    em lista com filtro** (ignora acentos; agrupado por ano; nas séries, em ordem de leitura
-    com "Parte N"). **Trocar de livro** fecha o atual (gira de volta e volta para a
-    prateleira) antes de abrir o próximo; cliques rápidos terminam a animação e abrem o
-    último escolhido. Botão "Fechar livro" e tecla Esc.
+  - **Abrir um livro** (D40, "tirar da estante e abrir"): o livro sobe e o lugar dele fica
+    escurecido; um livro 3D sai da posição da lombada e vem para a gaveta, abaixo da estante,
+    girando até 18°; a capa abre e o livro desliza para centralizar as duas páginas: no verso da
+    capa, a assinatura do blog; na página da direita, os **artigos mais recentes** (até 6), com
+    "Ver todos os N artigos" (o arquivo filtrado pelo livro) e "Ver o livro". **Guardar o livro**,
+    Esc ou um clique no lugar escurecido fazem o caminho de volta, 1,5× mais rápido; **trocar de
+    livro** fecha o atual antes de abrir o próximo. No celular, o livro aberto cabe na largura da
+    tela. O sumário com filtro da gaveta antiga saiu (a lista inteira fica na página do livro).
   - No celular, as lombadas diminuem para caber todas na largura.
 - **Destaque** (só na primeira página): o post mais recente, com a ilustração (o painel acompanha a
   altura do texto; até 960px, vai para cima), categoria, data e tempo de leitura com os ícones, o

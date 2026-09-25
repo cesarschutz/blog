@@ -33,7 +33,7 @@
  * ícone na cor do livro, e a cor do livro embaixo, com o texto e o desenho na tinta dela; a revista
  * (série) é sempre papel claro, com a faixa e os destaques no laranja.
  */
-:is(.lombada-visual, .capa, .deitado) {
+:is(.lombada-visual, .capa, .deitado, .livro-3d) {
   --cima: var(--livro-papel);
   --cima-tinta: var(--livro-destaque);
   --baixo: var(--livro-cor);
@@ -568,98 +568,175 @@
   font-size: calc(26 * var(--u));
 }
 
-/* ---------- livro 3D: a lombada gira e mostra a capa (gaveta e página do livro) ---------- */
+/* ---------- livro 3D inteiro (Livro3D.astro, D40) ---------- */
 
 /*
- * --sw (lombada), --cw (capa) e --bh (altura) em px; --x0 e --x1 deslocam o livro para ficar no
- * centro com a lombada de frente e depois de girar. O livro aberto fica em três quartos, com a
- * lombada e a capa à vista (--giro), como na página do livro (D29).
+ * O livro é um bloco de --cw × --bh com --sw de espessura, centrado na caixa e girando em volta do
+ * próprio centro. De frente, a capa fica em z = +sw/2 e a contracapa em -sw/2; a lombada é a face da
+ * esquerda. Parado, o livro fica a --giro (18°) da frente. Tudo com `backface-visibility: hidden`, e
+ * nenhuma peça usa `filter`, que achataria o 3D.
  */
 .livro-3d-caixa {
   position: relative;
   justify-self: center;
   width: var(--cw);
   height: var(--bh);
-  perspective: 1500px;
+  perspective: 1700px;
 }
 
 .livro-3d {
-  --giro: -72deg;
+  --giro: 18deg;
+  position: absolute;
+  inset: 0;
+  transform: rotateY(var(--giro));
+  transform-style: preserve-3d;
+}
+
+.livro-3d .f {
   position: absolute;
   top: 0;
   left: 0;
-  width: var(--sw);
-  height: 100%;
-  transform: translateX(var(--x0)) rotateY(0deg);
-  transform-origin: 100% 50%;
-  transform-style: preserve-3d;
-  transition: transform 0.95s cubic-bezier(0.35, 0.7, 0.15, 1);
+  backface-visibility: hidden;
 }
 
-.livro-3d.virado {
-  transform: translateX(var(--x1)) rotateY(var(--giro));
+/* A contracapa, na cor de baixo do livro, com a sombra do livro no chão. */
+.livro-3d .contra {
+  width: var(--cw);
+  height: var(--bh);
+  border-radius: max(2px, calc(3 * var(--u, 0.5px))) max(1px, var(--u, 0.5px)) max(1px, var(--u, 0.5px)) max(2px, calc(3 * var(--u, 0.5px)));
+  background: var(--baixo);
+  transform: rotateY(180deg) translateZ(calc(var(--sw) / 2));
+  box-shadow: 0 calc(var(--bh) * 0.08) calc(var(--bh) * 0.12) calc(var(--bh) * -0.06) rgb(0 0 0 / 0.45);
 }
 
-.livro-3d.fechando {
-  transition-duration: 0.6s;
-  transition-timing-function: cubic-bezier(0.5, 0, 0.6, 1);
+.de-serie .livro-3d .contra,
+.livro-3d:has(.de-serie) .contra {
+  background: var(--revista-papel);
+}
+
+/* As bordas das páginas, à direita e em cima: papel com as linhas das folhas. */
+.livro-3d .miolo-dir {
+  top: 4px;
+  left: calc((var(--cw) - var(--sw)) / 2 + 2px);
+  width: calc(var(--sw) - 4px);
+  height: calc(var(--bh) - 8px);
+  background: repeating-linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--livro-papel), black 7%) 0 1px,
+    color-mix(in oklab, var(--livro-papel), white 45%) 1px 3px
+  );
+  transform: rotateY(90deg) translateZ(calc(var(--cw) / 2 - 3px));
+}
+
+.livro-3d .miolo-topo {
+  top: calc((var(--bh) - var(--sw)) / 2 + 2px);
+  left: 0;
+  width: calc(var(--cw) - 6px);
+  height: calc(var(--sw) - 4px);
+  background: repeating-linear-gradient(
+    0deg,
+    color-mix(in oklab, var(--livro-papel), black 7%) 0 1px,
+    color-mix(in oklab, var(--livro-papel), white 45%) 1px 3px
+  );
+  transform: rotateX(90deg) translateZ(calc(var(--bh) / 2 - 4px));
 }
 
 /*
- * A lombada assume a altura da capa, com a mesma divisão da lombada na estante (D33): o papel ocupa
- * 400 da altura dela (--h, em livros.json), agora em proporção. A divisão não precisa bater com a da
- * capa; o que importa é o livro grande ter a lombada igual à da estante.
+ * A lombada, na face da esquerda, com a mesma divisão da lombada da estante (D33): o papel ocupa 400
+ * da altura dela (--h, em livros.json), em proporção.
  */
-.face-lombada {
-  position: absolute;
-  inset: 0;
+.livro-3d .face-lombada {
+  left: calc((var(--cw) - var(--sw)) / 2);
+  width: var(--sw);
+  height: var(--bh);
+  transform: rotateY(-90deg) translateZ(calc(var(--cw) / 2));
 }
 
 .face-lombada.lombada-visual:not(.de-serie) {
   --papel-h: calc(100% * 400 / var(--h, 640));
 }
 
-.face-capa {
-  position: absolute;
-  top: 0;
-  left: 100%;
-  width: var(--cw);
-  height: 100%;
-  transform: rotateY(90deg);
+/* A página de dentro e as camadas de página, logo abaixo da capa. */
+.livro-3d .pagina,
+.livro-3d .folha-livro {
+  top: 4px;
+  width: calc(var(--cw) - 6px);
+  height: calc(var(--bh) - 8px);
+  border-radius: 0 3px 3px 0;
+  background: color-mix(in oklab, var(--livro-papel), white 55%);
+  color: var(--livro-tinta-papel);
+  box-shadow: inset 10px 0 18px -14px rgb(0 0 0 / 0.35);
+}
+
+.livro-3d .pagina {
+  transform: translateZ(calc(var(--sw) / 2 - 1px));
+}
+
+.livro-3d .folha-livro {
+  background: var(--livro-papel);
+  transform: translateZ(calc(var(--sw) / 2 - 1.2px - var(--i) * 0.6px));
   transform-origin: 0 50%;
 }
 
-/* Luz: a lombada escurece e a capa clareia enquanto o livro gira. */
-.face-lombada > .luz,
-.face-capa > .luz {
+/* A capa, presa pela lombada (a borda esquerda): abre girando em Y. O verso leva a assinatura. */
+.livro-3d .face-capa {
+  width: var(--cw);
+  height: var(--bh);
+  transform: translateZ(calc(var(--sw) / 2 + 0.6px));
+  transform-origin: 0 50%;
+  transform-style: preserve-3d;
+  backface-visibility: visible;
+}
+
+.face-capa > .capa-frente,
+.face-capa > .capa-verso {
   position: absolute;
   inset: 0;
-  z-index: 4;
-  border-radius: inherit;
-  background: rgb(0 0 0);
-  pointer-events: none;
-  transition: opacity 0.95s;
+  backface-visibility: hidden;
 }
 
-.livro-3d.fechando .luz {
-  transition-duration: 0.6s;
+/* No livro 3D, a sombra é do livro inteiro (a contracapa), e não da capa. */
+.face-capa .capa-face {
+  box-shadow: 0 1px 1px rgb(0 0 0 / 0.22);
 }
 
-.face-lombada > .luz {
-  opacity: 0;
+.capa-verso {
+  display: grid;
+  place-items: center;
+  border-radius: max(2px, calc(3 * var(--u, 0.5px))) max(1px, var(--u, 0.5px)) max(1px, var(--u, 0.5px)) max(2px, calc(3 * var(--u, 0.5px)));
+  background: var(--livro-papel);
+  color: var(--livro-tinta-papel);
+  transform: rotateY(180deg);
 }
 
-.face-capa > .luz {
-  opacity: 0.4;
+.assinatura-verso {
+  display: grid;
+  place-items: center;
+  gap: 0.3em;
+  width: 76%;
+  margin: 0;
+  padding: 1.4em 0.6em;
+  border: 1px solid color-mix(in oklab, var(--livro-tinta-papel) 18%, transparent);
+  font-family: var(--font-livro);
+  font-size: calc(var(--cw) * 0.06);
+  text-align: center;
+  opacity: 0.75;
 }
 
-/* Só uma sombra leve na lombada virada: o título dela tem de continuar legível (D33). */
-.livro-3d.virado .face-lombada > .luz {
-  opacity: 0.08;
+.assinatura-verso span {
+  font-weight: 800;
+  font-size: 1.25em;
 }
 
-.livro-3d.virado .face-capa > .luz {
-  opacity: 0;
+.assinatura-verso em {
+  font-family: var(--font-livro-italico);
+  font-weight: 400;
+}
+
+.assinatura-verso small {
+  font-size: 0.55em;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 /*

@@ -240,175 +240,143 @@
   }
 }
 
-/* ---------- gaveta: livro aberto e sumário ---------- */
+/* ---------- gaveta: o livro que sai da estante e abre (Gaveta.astro, D40) ---------- */
 
+/* O livro voa por cima da folha da abertura, da lombada até a gaveta. */
+.palco-gaveta {
+  position: relative;
+}
+
+/* O espaço do livro aberto, abaixo da estante, separado por um fio. */
 .gaveta {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.5s cubic-bezier(0.2, 0.75, 0.2, 1);
-}
-
-.gaveta.aberta {
-  grid-template-rows: 1fr;
-}
-
-.gaveta > div {
-  min-height: 0;
-  overflow: hidden;
-}
-
-/* A gaveta abre dentro da folha da abertura (D26), separada da estante por um fio. */
-.livro-aberto {
-  display: grid;
-  grid-template-columns: var(--cw) minmax(0, 1fr);
-  gap: 56px;
-  align-items: start;
-  margin-top: 28px;
-  padding: 40px 0 12px;
+  position: relative;
+  height: calc(var(--altura-livro, 360px) + 92px);
+  margin-top: 26px;
   border-top: 1px solid var(--rule);
 }
 
-@media (max-width: 760px) {
-  .livro-aberto {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 28px;
-    margin-top: 20px;
-    padding: 28px 0 8px;
-  }
+.gaveta[hidden] {
+  display: none;
 }
 
-/* O livro da gaveta com a lupa no canto (o livro ampliado, D33). */
-.livro-na-gaveta {
-  position: relative;
-  justify-self: center;
+.guardar {
+  position: absolute;
+  right: 0;
+  bottom: 8px;
 }
 
-/* A capa aberta é o link para a página do livro (D38). */
-.capa-link {
-  display: block;
-  border-radius: 3px;
+.livro-voando {
+  position: absolute;
+  z-index: 6;
+  top: 0;
+  left: 0;
+  width: var(--cw);
+  height: var(--bh);
+  will-change: transform;
 }
 
-.sumario-livro {
-  opacity: 0;
-  transform: translateY(8px);
-  transition:
-    opacity 0.25s,
-    transform 0.25s;
+/* A página da direita: o papel do livro, com os artigos mais recentes, sempre nas cores do livro. */
+.pagina-aberta {
+  --corpo-pagina: max(11px, calc(var(--cw) * 0.052));
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 9% 8% 7% 11%;
+  font-family: var(--font-texto);
+  font-size: var(--corpo-pagina);
+  line-height: 1.3;
+  color: var(--livro-tinta-papel);
 }
 
-.livro-aberto.aparecendo .sumario-livro {
-  opacity: 1;
-  transform: none;
-  transition-delay: 0.5s;
-  transition-duration: 0.35s;
+.pagina-aberta > p {
+  margin: 0;
 }
 
-.topo-sumario {
+.titulo-pagina {
+  font-family: var(--font-titulo);
+  font-weight: 700;
+  font-size: 1.5em;
+  line-height: 1.1;
+  color: var(--livro-destaque-texto);
+}
+
+.sub-pagina {
+  margin-top: 0.2em !important;
+  font-family: var(--font-ui);
+  font-size: 0.9em;
+  opacity: 0.7;
+}
+
+.itens-pagina {
+  display: grid;
+  gap: 0.55em;
+  margin: 1em 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.itens-pagina li {
+  display: flex;
+  gap: 0.5em;
+  align-items: baseline;
+}
+
+.itens-pagina a {
+  display: -webkit-box;
+  flex: 1;
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.itens-pagina a:hover,
+.itens-pagina a:focus-visible {
+  color: var(--livro-destaque-texto);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.itens-pagina small {
+  flex: none;
+  font-family: var(--font-ui);
+  font-size: 0.82em;
+  opacity: 0.65;
+}
+
+.vazio-pagina {
+  margin-top: 1em !important;
+  font-style: italic;
+  opacity: 0.75;
+}
+
+/* Os links do pé da página, na cor do livro (passa de 4,5:1 sobre o papel, npm run contraste). */
+.links-pagina {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
-  gap: 6px 18px;
-  margin-bottom: 14px;
-}
-
-.topo-sumario h2 {
-  margin: 0;
-  font-size: 26px;
-}
-
-.topo-sumario .meta-sumario {
+  gap: 0.3em 1em;
+  margin-top: auto !important;
+  padding-top: 0.8em;
   font-family: var(--font-ui);
-  font-size: 14px;
-  color: var(--ink-2);
+  font-weight: 600;
+  font-size: 0.95em;
 }
 
-.fechar-livro {
-  margin-left: auto;
+.links-pagina a {
+  color: var(--livro-destaque-texto);
+  text-underline-offset: 0.15em;
 }
 
-.filtro-livro {
-  display: block;
-  width: 100%;
-  max-width: 340px;
-  margin: 0 0 10px;
-  padding: 9px 14px;
-  border: 1px solid var(--rule);
-  border-radius: 999px;
-  background: var(--paper-hi);
-  color: var(--ink);
-  font-family: var(--font-ui);
-  font-size: 15px;
-}
-
-.indice-livro {
-  max-height: 300px;
-  margin: 0;
-  padding: 0 10px 0 0;
-  overflow: auto;
-  list-style: none;
-  scrollbar-width: thin;
+.pagina-aberta a:focus-visible {
+  outline: 1.5px solid var(--livro-destaque-texto);
+  outline-offset: 2px;
 }
 
 @media (max-width: 760px) {
-  .indice-livro {
-    max-height: 380px;
+  .gaveta {
+    height: calc(var(--altura-livro, 270px) + 84px);
+    margin-top: 18px;
   }
-}
-
-.indice-livro .ano {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  padding: 14px 0 4px;
-  background: var(--paper-hi);
-  font-family: var(--font-titulo);
-  font-weight: 600;
-  font-size: 15px;
-  color: var(--ink-2);
-  font-variant-numeric: lining-nums;
-}
-
-.indice-livro .ano:first-child {
-  padding-top: 2px;
-}
-
-/* Com o título inteiro (D33), o item pode quebrar: o pontilhado e a data ficam na última linha. */
-.indice-livro a {
-  display: grid;
-  grid-template-columns: minmax(0, max-content) minmax(18px, 1fr) auto;
-  align-items: last baseline;
-  gap: 10px;
-  padding: 7px 0;
-  color: var(--ink);
-  text-decoration: none;
-}
-
-.indice-livro .pontilhado {
-  border-bottom: 1px dotted var(--ink-3);
-  opacity: 0.8;
-  transform: translateY(-0.28em);
-}
-
-.indice-livro .dia {
-  font-family: var(--font-ui);
-  font-size: 14px;
-  color: var(--ink-2);
-  white-space: nowrap;
-}
-
-.indice-livro .parte {
-  margin-right: 8px;
-  font-style: italic;
-  color: var(--ink-2);
-}
-
-.indice-livro a:hover .titulo-item {
-  color: var(--acento);
-}
-
-.vazio-livro,
-.sem-artigos {
-  margin: 8px 0 0;
-  color: var(--ink-2);
 }

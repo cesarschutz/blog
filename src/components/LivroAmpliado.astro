@@ -43,13 +43,10 @@ import "../styles/visor.css";
     let m = { u: 0, bh: 0, cw: 0, sw: 0 };
     let giro = GIRO;
 
-    // Deslocamento que deixa o que se vê do livro no centro, para qualquer giro (livro-3d.ts).
+    // O livro gira em volta do próprio centro (Livro3D): 0° é a capa de frente, 90° a lombada.
     function girar(graus: number) {
-      giro = Math.min(84, Math.max(6, graus));
-      const rad = (giro * Math.PI) / 180;
-      const visivel = m.sw * Math.cos(rad) + m.cw * Math.sin(rad);
-      palco.style.setProperty("--x1", `${(m.cw - visivel) / 2 - m.sw + m.sw * Math.cos(rad)}px`);
-      livro?.style.setProperty("--giro", `-${giro}deg`);
+      giro = Math.min(88, Math.max(-88, graus));
+      livro?.style.setProperty("--giro", `${giro}deg`);
     }
 
     function abrir(raiz: HTMLElement) {
@@ -71,13 +68,10 @@ import "../styles/visor.css";
       const u = altura / 720;
       m = { u, bh: altura, cw: Math.round(480 * u), sw: Math.round(largura * u) };
       for (const [k, v] of Object.entries(m)) palco.style.setProperty(`--${k}`, `${v}px`);
-      palco.style.setProperty("--x0", `${(m.cw - m.sw) / 2}px`);
 
       const copia = caixa.cloneNode(true) as HTMLElement;
       copia.removeAttribute("style");
-      copia.querySelectorAll(".fechando").forEach((e) => e.classList.remove("fechando"));
       livro = copia.querySelector<HTMLElement>(".livro-3d");
-      livro?.classList.add("virado");
       palco.replaceChildren(copia);
       girar(GIRO);
 
@@ -108,8 +102,8 @@ import "../styles/visor.css";
       if (alvo === dialogo || alvo === palco) dialogo.close();
     });
     dialogo.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft") girar(giro + 8);
-      else if (e.key === "ArrowRight") girar(giro - 8);
+      if (e.key === "ArrowLeft") girar(giro - 8);
+      else if (e.key === "ArrowRight") girar(giro + 8);
       else return;
       e.preventDefault();
     });
@@ -126,7 +120,7 @@ import "../styles/visor.css";
     palco.addEventListener("pointermove", (e) => {
       if (!inicio) return;
       if (Math.abs(e.clientX - inicio.x) > 4) arrastou = true;
-      girar(inicio.giro - (e.clientX - inicio.x) * 0.35);
+      girar(inicio.giro + (e.clientX - inicio.x) * 0.35);
     });
     const soltar = () => {
       inicio = null;

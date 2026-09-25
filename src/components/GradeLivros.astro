@@ -140,8 +140,8 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.vo
       color: var(--acento);
     }
 
-    .cartao-livro:hover :global(.livro-3d.virado) {
-      --giro: -58deg;
+    .cartao-livro:hover :global(.livro-3d) {
+      --giro: 32deg;
     }
   }
 
@@ -155,8 +155,8 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.vo
       transform: none;
     }
 
-    .cartao-livro:hover :global(.livro-3d.virado) {
-      --giro: -72deg;
+    .cartao-livro:hover :global(.livro-3d) {
+      --giro: 18deg;
     }
   }
 </style>
