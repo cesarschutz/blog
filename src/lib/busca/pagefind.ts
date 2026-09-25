@@ -8,6 +8,11 @@
  * - `#tag` sozinha: procura a palavra da tag (palavraDaTag), em ordem de data, com a descrição no
  *   lugar do trecho. O filtro sem termo baixaria o índice inteiro (4 MB com 500 posts).
  * - `#tag texto`: o texto, filtrado pela tag.
+ * - Sem nenhuma palavra que case, o Pagefind encurta o termo até sobrar uma letra ("bananada" → "b")
+ *   e devolve qualquer coisa. Por isso cada resultado é conferido: exato se todo termo começa alguma
+ *   palavra do post (texto, título, descrição ou tags); parecido se cada termo divide com alguma
+ *   palavra pelo menos 60% do começo (3 letras no mínimo). Os exatos vêm primeiro; os parecidos só
+ *   aparecem, marcados, quando não há exato; o resto sai (D37).
  * Só baixa o texto dos resultados exibidos.
  */
 import { url } from "../url";
@@ -60,6 +65,26 @@ async function nomeDaTag(pagefind: Pagefind, digitada: string): Promise<string |
   return tags.find((t) => normalizar(t) === alvo) ?? tags.find((t) => normalizar(t).startsWith(alvo));
 }
 
+const palavrasDe = (d: DadosPagefind) =>
+  new Set(normalizar([d.content, d.meta.title, d.meta.descricao, d.meta.tags].join(" ")).split(/[^a-z0-9]+/).filter(Boolean));
+
+const prefixoComum = (a: string, b: string) => {
+  let i = 0;
+  while (i < a.length && i < b.length && a[i] === b[i]) i++;
+  return i;
+};
+
+/** "exato", "parecido" ou undefined (fora), pelos termos já normalizados. */
+function conferir(d: DadosPagefind, termos: string[]): "exato" | "parecido" | undefined {
+  const palavras = [...palavrasDe(d)];
+  if (termos.every((t) => palavras.some((p) => p.startsWith(t)))) return "exato";
+  const parecido = termos.every((t) => {
+    const minimo = Math.max(3, Math.ceil(t.length * 0.6));
+    return palavras.some((p) => prefixoComum(p, t) >= minimo);
+  });
+  return parecido ? "parecido" : undefined;
+}
+
 const paraResultado = (d: DadosPagefind, comDescricao = false): ResultadoBusca => ({
   url: d.url,
   titulo: d.meta.title ?? "",
@@ -94,6 +119,10 @@ export const motorPagefind: MotorDeBusca = {
     const comFrase = new Set(exata?.results.map((r) => r.id));
     const ordem = [...todas.results.filter((r) => comFrase.has(r.id)), ...todas.results.filter((r) => !comFrase.has(r.id))];
     const dados = await Promise.all(ordem.slice(0, LIMITE).map((r) => r.data()));
-    return dados.map((d) => paraResultado(d));
+    const normalizados = normalizar(termos).split(/[^a-z0-9]+/).filter((t) => t.length >= 2);
+    const conferidos = dados.map((d) => ({ d, tipo: conferir(d, normalizados) }));
+    const exatos = conferidos.filter((c) => c.tipo === "exato");
+    if (exatos.length) return exatos.map((c) => paraResultado(c.d));
+    return conferidos.filter((c) => c.tipo === "parecido").map((c) => ({ ...paraResultado(c.d), aproximado: true }));
   },
 };

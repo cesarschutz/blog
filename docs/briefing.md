@@ -73,7 +73,8 @@ protótipo divergirem, vale o briefing.
   atalhos ⌘K, Ctrl+K e `/`; o índice só é baixado quando a busca abre; continua rápida com
   centenas de posts. Compare o índice próprio do blog atual com uma alternativa como o
   Pagefind (índice em fragmentos): meça com os 26 posts reais e com uns 500 posts sintéticos
-  (tamanho baixado e tempo até o primeiro resultado) e escolha com números.
+  (tamanho baixado e tempo até o primeiro resultado) e escolha com números. Resultado sem o termo
+  sai; sem nenhum exato, mostra só os parecidos, com "Nada exato para …" (D37).
 - Metas: Lighthouse ≥ 95 em desempenho, acessibilidade, boas práticas e SEO na home e num
   artigo, no celular.
 

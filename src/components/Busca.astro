@@ -73,11 +73,14 @@
         </a></li>`,
       )
       .join("");
-    estado.textContent = resultados.length
-      ? resultados.length === 1
-        ? "1 artigo"
-        : `${resultados.length} artigos`
-      : `Nenhum artigo encontrado para “${consulta}”.`;
+    const n = resultados.length;
+    estado.textContent = !n
+      ? `Nenhum artigo encontrado para “${consulta}”.`
+      : resultados[0].aproximado
+        ? `Nada exato para “${consulta}”. ${n === 1 ? "Parecido" : "Parecidos"}:`
+        : n === 1
+          ? "1 artigo"
+          : `${n} artigos`;
   }
 
   let vez = 0;

@@ -9,6 +9,8 @@ export interface ResultadoBusca {
   data: string;
   /** Trecho em HTML, com o termo em <mark>. */
   trecho: string;
+  /** Sem o termo exato, só uma palavra parecida ("kafkaxyz" → Kafka). */
+  aproximado?: boolean;
 }
 
 export interface MotorDeBusca {
