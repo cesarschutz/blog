@@ -595,6 +595,10 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
     a cada ~9s (uma faixa dentro de cada lombada, para não acender o fundo entre os livros), e a cada 4
     a 7s um livro sorteado sobe 10px, inclina 1,2°, espera 0,6s e volta com `elastic`. Qualquer
     interação para tudo e devolve os livros ao lugar. Desligada com movimento reduzido.
+  - **Pilha lateral**: ao passar o mouse (ou com o foco), o livro sai 14px da pilha (0,35s,
+    `power3.out`) e volta com `elastic.out(1, 0.55)`. O clique leva à página do livro pela View
+    Transition nativa (a lombada da pilha vira o livro do topo). Na chegada (ou quando a pilha
+    aparece, no celular), o livro atual é puxado 46px e volta a 10px com `back.out(2)`, escurecido.
 - **Lousa de passos** (D39): com a rolagem só na tela de 1024px ou mais e sem movimento reduzido
   (passos a 40% da tela, o atual inteiro e os outros esmaecidos); fora disso, passo a passo com
   "◀ 2 de 5 ▶", pontos e deslizar.

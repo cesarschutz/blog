@@ -94,6 +94,49 @@ const TAGS_NO_PAINEL = 10;
   >
 </aside>
 
+<script>
+  // A pilha viva (D40): ao passar o mouse (ou com o foco do teclado), o livro sai 14px da pilha e volta
+  // com um balanço; na chegada à página de um livro, o livro atual é puxado 46px e volta a 10px,
+  // escurecido, marcando o livro aberto. Com movimento reduzido, fica tudo no lugar final (CSS).
+  import { adiantar, carregarGsap, movimentoReduzido } from "../scripts/gsap";
+
+  for (const pilha of document.querySelectorAll<HTMLElement>(".pilha")) {
+    if (movimentoReduzido.matches) continue;
+    const livros = [...pilha.querySelectorAll<HTMLElement>(".deitado")];
+    const atual = pilha.querySelector<HTMLElement>(".retirado");
+    const ligar = (gsap: Awaited<ReturnType<typeof carregarGsap>>) => {
+      if (pilha.classList.contains("viva")) return;
+      pilha.classList.add("viva");
+      for (const livro of livros) {
+        if (livro === atual) continue;
+        const sair = () => gsap.to(livro, { x: 14, duration: 0.35, ease: "power3.out", overwrite: true });
+        const voltar = () => gsap.to(livro, { x: 0, duration: 0.5, ease: "elastic.out(1, 0.55)", overwrite: true });
+        livro.addEventListener("pointerenter", (e) => e.pointerType === "mouse" && sair());
+        livro.addEventListener("pointerleave", (e) => e.pointerType === "mouse" && voltar());
+        livro.addEventListener("focus", () => livro.matches(":focus-visible") && sair());
+        livro.addEventListener("blur", voltar);
+      }
+    };
+    if (atual) {
+      // Na chegada (ou quando a pilha aparece, no celular, onde ela fica no fim da página): o livro
+      // atual é puxado, volta com back.out e escurece junto.
+      const gsapPronto = carregarGsap().then((gsap) => (ligar(gsap), gsap));
+      const observador = new IntersectionObserver(([e]) => {
+        if (!e.isIntersecting) return;
+        observador.disconnect();
+        gsapPronto.then((gsap) =>
+          gsap
+            .timeline({ delay: 0.25 })
+            .fromTo(atual, { x: 0, opacity: 1 }, { x: 46, duration: 0.32, ease: "power2.out" })
+            .to(atual, { opacity: 0.4, duration: 0.3 }, "<0.1")
+            .to(atual, { x: 10, duration: 0.55, ease: "back.out(2)" }),
+        );
+      }, { threshold: 1 });
+      observador.observe(atual);
+    } else adiantar(pilha, () => carregarGsap().then(ligar));
+  }
+</script>
+
 <style>
   .painel-home {
     padding: 22px 18px 18px;
@@ -143,8 +186,7 @@ const TAGS_NO_PAINEL = 10;
     text-decoration: none;
     transition:
       transform 0.25s cubic-bezier(0.2, 0.75, 0.2, 1),
-      opacity 0.25s,
-      filter 0.25s;
+      opacity 0.25s;
     view-transition-class: livro;
   }
 
@@ -170,6 +212,12 @@ const TAGS_NO_PAINEL = 10;
   .retirado {
     opacity: 0.4;
     filter: saturate(0.5);
+    transform: translateX(10px);
+  }
+
+  /* Com o GSAP no ar (D40), é ele que move os livros da pilha. */
+  .pilha.viva .deitado {
+    transition: none;
   }
 
   /* A prateleira sob a pilha: 5 na cor da estante e 2 de borda. */
@@ -186,7 +234,7 @@ const TAGS_NO_PAINEL = 10;
     }
 
     .retirado:hover {
-      transform: none;
+      transform: translateX(10px);
     }
   }
 
@@ -197,6 +245,11 @@ const TAGS_NO_PAINEL = 10;
 
     .deitado:hover {
       transform: none;
+    }
+
+    .retirado,
+    .retirado:hover {
+      transform: translateX(10px);
     }
   }
 

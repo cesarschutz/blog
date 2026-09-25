@@ -241,7 +241,7 @@ Referência: aba "Home" do protótipo.
   - **Séries** e **Categorias** como **pilhas de livros deitados** (D30, D32, `CAPAS.md`): a mesma
     lombada da estante, girada 90° (D39), com o ícone na ponta esquerda, o título e o número; o
     deslocamento de `livros.json`; o volume 1 embaixo; todos retos; a pilha sobre uma prateleira da cor da estante. A pilha escala com a largura da lateral.
-    Ao passar o mouse, o livro sai 8px da pilha (sem movimento com `prefers-reduced-motion`).
+    Ao passar o mouse, o livro sai 14px da pilha e volta com um balanço; o livro da página atual é puxado na chegada e fica 10px para fora, escurecido (D40; sem movimento com `prefers-reduced-motion`).
   - **Tags**: as 10 mais usadas em pílulas (o clique leva à página da tag, D33) e "Todas as
     tags →".
   - "Assinar via RSS" no pé.
