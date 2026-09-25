@@ -275,7 +275,12 @@ mostra também as tags que aparecem junto com ela.
 abertos quase de frente como o livro do topo da página de cada um, cada um num cartão (folha) com o
 livro num painel tingido pela cor dele, "Volume 0N" (ou "Série"), o nome, o subtítulo e a contagem.
 Ao passar o mouse, o cartão sobe e o livro gira um pouco para o leitor; ao clicar, o livro voa até o
-topo da página dele. Em Categorias, os oito volumes; em Séries, só o livro da série do Java.
+topo da página dele. Em Categorias, os oito volumes. Em Séries, enquanto houver uma série só, um
+**destaque largo** (D39): a revista, o nome, a descrição, as edições em ordem de leitura (número,
+título e ano) e "Começar pelo guia" (a primeira edição), com "Ver a série".
+
+**Tags** (`/tags/`, D39): cada tag numa folha, das mais usadas às menos usadas, com a contagem, os
+quadradinhos dos livros em que ela aparece e os três artigos mais recentes, com "Todos os N".
 
 **Série "Atualizações do Java"** (`/series/java/`, D31, D32): como a página de categoria, com o painel lateral à
 esquerda (o livro da série fora da pilha) e o livro da série aberto no topo, com os números das LTS;

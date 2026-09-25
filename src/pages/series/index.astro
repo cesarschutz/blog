@@ -1,19 +1,184 @@
 ---
 /**
- * Índice das séries (/series/, D31): os livros de série, como a grade das categorias. Hoje, só o da
- * série "Atualizações do Java". Cada série tem a própria encadernação (docs/capas/CAPAS.md).
+ * Índice das séries (/series/, D31). Enquanto houver uma série só, ela vem num destaque largo (D39):
+ * o livro da série (a revista, quase de frente), o nome, a descrição, as edições em ordem de leitura e
+ * "Começar pelo guia" (a primeira edição). Com mais de uma, os livros lado a lado, como a grade das
+ * categorias. Cada série tem a própria encadernação (docs/capas/CAPAS.md).
  */
 import Base from "../../layouts/Base.astro";
 import CabecalhoPagina from "../../components/CabecalhoPagina.astro";
 import GradeLivros from "../../components/GradeLivros.astro";
+import LivroEmPe from "../../components/LivroEmPe.astro";
+import { ICONES } from "../../lib/icones";
 import { montarLivros } from "../../lib/estante";
 
 const livros = (await montarLivros()).filter((l) => l.serie);
+const unica = livros.length === 1 ? livros[0] : undefined;
+const primeira = unica?.posts[0];
 ---
 
 <Base titulo="Séries" descricao="As séries do blog de Cesar Schutz: assuntos que rendem mais de um artigo, em ordem de leitura." atual="series">
   <div class="wrap">
     <CabecalhoPagina titulo="Séries" descricao="Assuntos que rendem mais de um artigo, para ler em ordem." />
-    <GradeLivros livros={livros} />
+    {
+      unica ? (
+        <section class="destaque-serie folha" aria-labelledby="nome-serie">
+          <a class="palco painel" href={unica.href} style={`--cor:${unica.cores.cor}`} aria-label={`Abrir a série ${unica.nome}`}>
+            <LivroEmPe livro={unica} altura={330} transicao="ao-clicar" />
+          </a>
+          <div class="texto">
+            <p class="volume">Série · {unica.contagem}</p>
+            <h2 id="nome-serie">
+              <a href={unica.href}>{unica.nome}</a>
+            </h2>
+            <p class="descricao">{unica.descricao}</p>
+            <ol class="edicoes">
+              {unica.posts.map((p, i) => (
+                <li>
+                  <a href={p.url}>
+                    <span class="numero">{String(i + 1).padStart(2, "0")}</span>
+                    <span class="titulo-edicao">{p.titulo}</span>
+                    <span class="ano">{p.publicado.getUTCFullYear()}</span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+            <p class="acoes">
+              {primeira && (
+                <a class="botao-primario" href={primeira.url}>
+                  Começar pelo guia
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
+                </a>
+              )}
+              <a class="ver-serie" href={unica.href}>
+                Ver a série
+              </a>
+            </p>
+          </div>
+        </section>
+      ) : (
+        <GradeLivros livros={livros} />
+      )
+    }
   </div>
 </Base>
+
+<style>
+  .destaque-serie {
+    display: grid;
+    grid-template-columns: minmax(280px, 400px) minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+    padding: 20px 40px 20px 20px;
+  }
+
+  .palco {
+    display: grid;
+    place-items: center;
+    min-height: 400px;
+    padding: 32px 20px;
+  }
+
+  .texto {
+    padding-block: 18px;
+  }
+
+  .volume {
+    margin: 0;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+
+  h2 {
+    margin: 6px 0 0;
+    font-size: clamp(30px, 3.4vw, 40px);
+    line-height: 1.1;
+  }
+
+  h2 a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  h2 a:hover {
+    color: var(--acento);
+  }
+
+  .descricao {
+    max-width: 58ch;
+    margin: 12px 0 0;
+    font-size: 17.5px;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
+  /* As edições, em ordem de leitura: número, título e ano, com um fio entre elas. */
+  .edicoes {
+    margin: 22px 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--rule);
+  }
+
+  .edicoes a {
+    display: grid;
+    grid-template-columns: 2.2em minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: baseline;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .edicoes .numero,
+  .edicoes .ano {
+    font-family: var(--font-ui);
+    font-size: 13.5px;
+    color: var(--ink-2);
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
+  .edicoes .titulo-edicao {
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    font-size: 16.5px;
+    line-height: 1.3;
+  }
+
+  .edicoes a:hover .titulo-edicao {
+    color: var(--acento);
+  }
+
+  .acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 22px;
+    align-items: center;
+    margin: 24px 0 0;
+  }
+
+  .ver-serie {
+    font-family: var(--font-ui);
+    font-size: 15px;
+    color: var(--acento);
+  }
+
+  @media (max-width: 860px) {
+    .destaque-serie {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 8px;
+      padding: 14px 14px 18px;
+    }
+
+    .palco {
+      min-height: 0;
+      padding: 26px 16px;
+    }
+
+    .texto {
+      padding: 12px 8px 0;
+    }
+  }
+</style>

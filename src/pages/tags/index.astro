@@ -1,36 +1,174 @@
 ---
-/** Nuvem de tags (/tags/): mais usadas primeiro, com a contagem. */
+/**
+ * Tags (/tags/, D39): cada tag numa folha, das mais usadas às menos usadas, com a contagem, os
+ * livros em que ela aparece (o quadradinho na cor de cada um) e os três artigos mais recentes.
+ */
 import Base from "../../layouts/Base.astro";
 import CabecalhoPagina from "../../components/CabecalhoPagina.astro";
-import { getTags, urlTag } from "../../lib/posts";
+import { ICONES } from "../../lib/icones";
+import { getTags, urlTag, type Resumo } from "../../lib/posts";
+import { tituloComQuebras } from "../../lib/formato";
 
 const tags = await getTags();
+const recentes = (posts: Resumo[]) => [...posts].sort((a, b) => b.publicado.getTime() - a.publicado.getTime()).slice(0, 3);
+// Os livros da tag, do que tem mais artigos com ela para o que tem menos.
+const livrosDa = (posts: Resumo[]) => {
+  const mapa = new Map<string, { nome: string; cor: string; n: number }>();
+  for (const p of posts) {
+    const l = mapa.get(p.livro) ?? { nome: p.rotulo, cor: p.cor, n: 0 };
+    l.n++;
+    mapa.set(p.livro, l);
+  }
+  return [...mapa.values()].sort((a, b) => b.n - a.n);
+};
 ---
 
 <Base titulo="Tags" descricao="Todas as tags do blog de Cesar Schutz, com o número de artigos de cada uma." atual="tags">
   <div class="wrap">
     <CabecalhoPagina titulo="Tags" descricao={`${tags.length} tags, das mais usadas às menos usadas.`} />
-    <ul class="nuvem">
+    <ul class="grade-tags">
       {
-        tags.map((t) => (
-          <li>
-            <a class="pilula" href={urlTag(t.nome)}>
-              #{t.nome} <small>{t.posts.length}</small>
-            </a>
-          </li>
-        ))
+        tags.map((t) => {
+          const n = t.posts.length;
+          const livros = livrosDa(t.posts);
+          return (
+            <li class="tag folha">
+              <h2>
+                <a href={urlTag(t.nome)}>#{t.nome}</a>
+              </h2>
+              <p class="dados">
+                <span>
+                  {n} {n === 1 ? "artigo" : "artigos"}
+                </span>
+                <span class="livros" role="list" aria-label="Livros">
+                  {livros.map((l) => (
+                    <span role="listitem" class="livro" style={`--cor:${l.cor}`} title={`${l.nome}: ${l.n}`}>
+                      <span class="quadradinho" aria-hidden="true" />
+                      <span class="sr">
+                        {l.nome}, {l.n}
+                      </span>
+                    </span>
+                  ))}
+                </span>
+              </p>
+              <ol class="recentes">
+                {recentes(t.posts).map((p) => (
+                  <li>
+                    <a href={p.url} set:html={tituloComQuebras(p.titulo)} />
+                  </li>
+                ))}
+              </ol>
+              {n > 3 && (
+                <a class="todos" href={urlTag(t.nome)}>
+                  Todos os {n}
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
+                </a>
+              )}
+            </li>
+          );
+        })
       }
     </ul>
   </div>
 </Base>
 
 <style>
-  .nuvem {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+  .grade-tags {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr));
+    gap: 18px;
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  .tag {
+    display: flex;
+    flex-direction: column;
+    padding: 18px 20px 16px;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 21px;
+    line-height: 1.25;
+  }
+
+  h2 a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  h2 a:hover {
+    color: var(--acento);
+  }
+
+  .dados {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 12px;
+    align-items: center;
+    margin: 4px 0 0;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+
+  .livros {
+    display: inline-flex;
+    gap: 4px;
+  }
+
+  .quadradinho {
+    display: block;
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    background: color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro));
+  }
+
+  .recentes {
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--rule);
+  }
+
+  .recentes li {
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .recentes a {
+    display: block;
+    padding: 7px 0;
+    color: var(--ink);
+    font-size: 15.5px;
+    line-height: 1.4;
+    text-decoration: none;
+  }
+
+  .recentes a:hover {
+    color: var(--acento);
+  }
+
+  .todos {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 10px;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    color: var(--acento);
+  }
+
+  .todos svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 </style>
