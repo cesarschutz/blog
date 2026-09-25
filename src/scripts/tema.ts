@@ -1,6 +1,6 @@
 /**
- * Tema (D24, D33): claro, escuro ou sistema, escolhido no menu de aparência do cabeçalho. O site
- * sempre abre no tema do sistema (pedido do Cesar): a escolha fica em `sessionStorage["cs-theme"]`,
+ * Tema (D24, D33, D39): claro ou escuro, pelo botão do cabeçalho, ou o do sistema. O site sempre
+ * abre no tema do sistema (pedido do Cesar): a escolha fica em `sessionStorage["cs-theme"]`,
  * vale enquanto a aba está aberta (de página em página) e some ao fechar. O evento "tema:mudou"
  * mantém os controles em sincronia; o script anti-piscada do <head> (Base.astro) aplica a escolha
  * antes da primeira pintura.

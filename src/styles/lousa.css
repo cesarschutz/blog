@@ -13,10 +13,16 @@
   --destaque-texto: color-mix(in oklab, var(--destaque-base), var(--lousa-caneta) var(--lousa-caneta-texto));
   position: relative;
   padding: clamp(10px, 2vw, 20px);
-  border: var(--lousa-borda-largura) solid var(--lousa-borda);
+  /*
+   * A borda tem sempre 1px; a moldura mais grossa do quadro branco (tema escuro) é uma sombra sólida,
+   * que não ocupa espaço: trocar o tema não pode mudar a altura da lousa nem mexer na página (D39).
+   */
+  border: 1px solid var(--lousa-borda);
   border-radius: 10px;
   background: var(--lousa-reflexo), var(--lousa);
-  box-shadow: 0 18px 34px -22px rgb(0 0 0 / 0.6);
+  box-shadow:
+    0 0 0 calc(var(--lousa-borda-largura) - 1px) var(--lousa-borda),
+    0 18px 34px -22px rgb(0 0 0 / 0.6);
 }
 
 .lousa svg {

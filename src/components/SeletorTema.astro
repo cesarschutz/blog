@@ -1,140 +1,38 @@
 ---
 /**
- * Menu de aparência do cabeçalho (D33): o botão mostra a escolha (sol, lua ou tela) e abre um menu
- * com Claro, Escuro e Sistema, e o som dos livros (ligado ou desligado). O site sempre abre no tema
- * do sistema: a escolha de tema vale só nesta visita (`cs-theme`, em sessionStorage); a do som fica
- * guardada (`cs-som`, desligado por padrão desde a D38). O script do <head> (Base.astro) aplica o tema antes da primeira pintura. Sem
- * JS, o botão some e o tema segue o sistema.
+ * Botão de tema do cabeçalho (D39): alterna direto entre claro e escuro, sem menu. Mostra a lua no
+ * claro e o sol no escuro (o tema para onde vai). O site sempre abre no tema do sistema: a escolha
+ * vale até fechar o site (`cs-theme`, em sessionStorage), e o script do <head> (Base.astro) a aplica
+ * antes da primeira pintura. Sem JS, o botão some e o tema segue o sistema.
  */
 import { ICONES } from "../lib/icones";
-
-const OPCOES = [
-  { valor: "light", nome: "Claro", icone: ICONES.sol },
-  { valor: "dark", nome: "Escuro", icone: ICONES.lua },
-  { valor: "", nome: "Sistema", icone: ICONES.sistema },
-];
 ---
 
-<div class="aparencia" data-aparencia hidden>
-  <button
-    type="button"
-    class="botao-aparencia"
-    aria-haspopup="menu"
-    aria-expanded="false"
-    aria-controls="menu-aparencia"
-    aria-label="Aparência"
-    title="Aparência"
-    data-aparencia-botao
-  >
-    <svg class="i-light" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.sol} />
-    <svg class="i-dark" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.lua} />
-    <svg class="i-sistema" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.sistema} />
-  </button>
-  <div class="menu-aparencia" id="menu-aparencia" role="menu" aria-label="Aparência" hidden data-aparencia-menu>
-    <p class="rotulo-menu" aria-hidden="true">Tema</p>
-    {
-      OPCOES.map((o) => (
-        <button type="button" role="menuitemradio" aria-checked="false" data-valor={o.valor} tabindex="-1">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={o.icone} />
-          <span>{o.nome}</span>
-          <svg class="marcado" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="m5 12.5 4.5 4.5L19 7.5" />
-          </svg>
-        </button>
-      ))
-    }
-    <hr />
-    <button type="button" role="menuitemcheckbox" aria-checked="false" data-som tabindex="-1">
-      <svg class="com-som" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.som} />
-      <svg class="sem-som" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.semSom} />
-      <span>Som dos livros</span>
-      <span class="chave" aria-hidden="true"></span>
-    </button>
-  </div>
-</div>
+<button type="button" class="botao-tema" aria-label="Usar o tema escuro" title="Tema escuro" data-botao-tema hidden>
+  <svg class="i-lua" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.lua} />
+  <svg class="i-sol" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.sol} />
+</button>
 
 <script>
-  import { aoMudarTema, aplicarTema, lerEscolha, type Escolha } from "../scripts/tema";
-  import { ligarSom, somLigado } from "../scripts/som";
+  import { aoMudarTema, aplicarTema, temaNaTela } from "../scripts/tema";
 
-  const caixa = document.querySelector<HTMLElement>("[data-aparencia]");
-  const botao = caixa?.querySelector<HTMLButtonElement>("[data-aparencia-botao]");
-  const menu = caixa?.querySelector<HTMLElement>("[data-aparencia-menu]");
-  if (caixa && botao && menu) {
-    const itens = [...menu.querySelectorAll<HTMLButtonElement>("[role^=menuitem]")];
-    const temas = itens.filter((b) => b.hasAttribute("data-valor"));
-    const som = menu.querySelector<HTMLButtonElement>("[data-som]")!;
-
-    const aberto = () => botao.getAttribute("aria-expanded") === "true";
-    const abrir = (foco: "primeiro" | "atual" = "atual") => {
-      menu.hidden = false;
-      botao.setAttribute("aria-expanded", "true");
-      const marcado = temas.find((b) => b.getAttribute("aria-checked") === "true");
-      (foco === "atual" && marcado ? marcado : itens[0]).focus();
-    };
-    const fechar = (devolverFoco = true) => {
-      if (!aberto()) return;
-      menu.hidden = true;
-      botao.setAttribute("aria-expanded", "false");
-      if (devolverFoco) botao.focus();
-    };
-
-    botao.addEventListener("click", () => (aberto() ? fechar() : abrir()));
-    temas.forEach((b) =>
-      b.addEventListener("click", () => {
-        aplicarTema((b.dataset.valor ?? "") as Escolha);
-        fechar();
-      }),
-    );
-    som.addEventListener("click", () => ligarSom(!somLigado()));
-
-    // Setas, Home e End andam pelo menu; Esc fecha e devolve o foco; Tab fecha e segue.
-    menu.addEventListener("keydown", (e) => {
-      const i = itens.indexOf(document.activeElement as HTMLButtonElement);
-      const ir = (n: number) => itens[(n + itens.length) % itens.length].focus();
-      if (e.key === "ArrowDown") ir(i + 1);
-      else if (e.key === "ArrowUp") ir(i - 1);
-      else if (e.key === "Home") ir(0);
-      else if (e.key === "End") ir(itens.length - 1);
-      else if (e.key === "Escape") fechar();
-      else if (e.key === "Tab") return fechar(false);
-      else return;
-      e.preventDefault();
-    });
-    botao.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-        e.preventDefault();
-        abrir("primeiro");
-      }
-    });
-    document.addEventListener("click", (e) => {
-      if (aberto() && !caixa.contains(e.target as Node)) fechar(false);
-    });
-
+  const botao = document.querySelector<HTMLButtonElement>("[data-botao-tema]");
+  if (botao) {
+    botao.addEventListener("click", () => aplicarTema(temaNaTela() === "dark" ? "light" : "dark"));
     aoMudarTema(() => {
-      const escolha = lerEscolha();
-      caixa.dataset.escolha = escolha || "sistema";
-      temas.forEach((b) => b.setAttribute("aria-checked", String(b.dataset.valor === escolha)));
+      const escuro = temaNaTela() === "dark";
+      botao.dataset.tela = escuro ? "escuro" : "claro";
+      botao.setAttribute("aria-label", escuro ? "Usar o tema claro" : "Usar o tema escuro");
+      botao.title = escuro ? "Tema claro" : "Tema escuro";
     });
-    const marcarSom = () => som.setAttribute("aria-checked", String(somLigado()));
-    addEventListener("som:mudou", marcarSom);
-    marcarSom();
-    caixa.hidden = false;
+    botao.hidden = false;
   }
 </script>
 
 <style>
-  .aparencia {
-    position: relative;
-    flex: none;
-  }
-
-  .aparencia[hidden] {
-    display: none;
-  }
-
-  .botao-aparencia {
+  .botao-tema {
     display: grid;
+    flex: none;
     place-items: center;
     width: 38px;
     height: 38px;
@@ -146,14 +44,20 @@ const OPCOES = [
     cursor: pointer;
   }
 
-  .botao-aparencia:hover,
-  .botao-aparencia[aria-expanded="true"] {
+  .botao-tema[hidden] {
+    display: none;
+  }
+
+  .botao-tema:hover {
     border-color: var(--ink-3);
     color: var(--ink);
   }
 
   svg {
-    flex: none;
+    display: none;
+    grid-area: 1 / 1;
+    width: 17px;
+    height: 17px;
     fill: none;
     stroke: currentColor;
     stroke-width: 1.8;
@@ -161,145 +65,8 @@ const OPCOES = [
     stroke-linejoin: round;
   }
 
-  /* O ícone do botão é o da escolha: sol, lua ou tela (sistema). */
-  .botao-aparencia svg {
-    display: none;
-    grid-area: 1 / 1;
-    width: 17px;
-    height: 17px;
-  }
-
-  [data-escolha="light"] .i-light,
-  [data-escolha="dark"] .i-dark,
-  [data-escolha="sistema"] .i-sistema {
+  [data-tela="claro"] .i-lua,
+  [data-tela="escuro"] .i-sol {
     display: block;
-  }
-
-  .menu-aparencia {
-    position: absolute;
-    z-index: 40;
-    top: calc(100% + 8px);
-    right: 0;
-    width: 236px;
-    padding: 6px;
-    border: 1px solid var(--rule);
-    border-radius: var(--raio-folha);
-    background: var(--paper-hi);
-    box-shadow: var(--sombra-folha-alta);
-    font-family: var(--font-ui);
-    font-size: 14.5px;
-  }
-
-  .menu-aparencia[hidden] {
-    display: none;
-  }
-
-  .rotulo-menu {
-    margin: 4px 10px;
-    font-size: 12.5px;
-    color: var(--ink-2);
-  }
-
-  .menu-aparencia button {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    min-height: 38px;
-    padding: 6px 10px;
-    border: 0;
-    border-radius: var(--raio-painel);
-    background: none;
-    color: var(--ink);
-    font: inherit;
-    text-align: left;
-    cursor: pointer;
-  }
-
-  .menu-aparencia button:hover,
-  .menu-aparencia button:focus-visible {
-    background: var(--well);
-  }
-
-  .menu-aparencia button:focus-visible {
-    outline: 2px solid var(--acento);
-    outline-offset: -2px;
-  }
-
-  .menu-aparencia button svg {
-    width: 17px;
-    height: 17px;
-    color: var(--ink-2);
-  }
-
-  .menu-aparencia button span {
-    flex: 1;
-  }
-
-  .marcado {
-    visibility: hidden;
-  }
-
-  .menu-aparencia button[aria-checked="true"][role="menuitemradio"],
-  .menu-aparencia button[aria-checked="true"][role="menuitemradio"] svg {
-    color: var(--acento);
-  }
-
-  [aria-checked="true"] > .marcado {
-    visibility: visible;
-  }
-
-  hr {
-    margin: 6px 4px;
-    border: 0;
-    border-top: 1px solid var(--rule);
-  }
-
-  /* Som: o ícone com ou sem as ondas e uma chave que liga e desliga. */
-  [data-som] .sem-som,
-  [data-som][aria-checked="false"] .com-som {
-    display: none;
-  }
-
-  [data-som][aria-checked="false"] .sem-som {
-    display: block;
-  }
-
-  .menu-aparencia button .chave {
-    position: relative;
-    flex: none;
-    width: 30px;
-    height: 18px;
-    border-radius: 999px;
-    background: var(--rule);
-    transition: background 0.2s;
-  }
-
-  .chave::after {
-    content: "";
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: var(--paper-hi);
-    box-shadow: 0 1px 2px color-mix(in oklab, var(--veu) 25%, transparent);
-    transition: translate 0.2s;
-  }
-
-  .menu-aparencia button[data-som][aria-checked="true"] .chave {
-    background: var(--acento);
-  }
-
-  .menu-aparencia button[data-som][aria-checked="true"] .chave::after {
-    translate: 12px 0;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .chave,
-    .chave::after {
-      transition: none;
-    }
   }
 </style>

@@ -382,8 +382,10 @@ explica alguma coisa. **Não pode parecer feito por IA**: nada de fonte genéric
 decorativo, sombra genérica em tudo, animação de entrada em cada seção, rótulo em caixa alta na
 interface ou emoji.
 
-O site sempre abre no tema do sistema; o menu de aparência troca para claro ou escuro só durante a
-visita (D33). Nos dois temas, as cores vêm dos tokens.
+O site sempre abre no tema do sistema; o botão do cabeçalho alterna direto entre claro e escuro
+(lua ou sol), e a escolha vale até fechar o site (D39). Nos dois temas, as cores vêm dos tokens, e
+**nenhuma medida depende do tema** (bordas, alturas, espaços): trocar o tema só muda as cores, sem
+mexer na página. O site não tem som.
 
 ## Colors
 
@@ -481,8 +483,7 @@ caixas e desenhos dentro de uma folha **não** levam sombra.
 ## Shapes
 
 Folhas com raio de 14px e painéis e caixas dentro delas com 10px (aviso, tabela, `<details>`, nota
-lateral, bloco de código, resultado da busca, item do menu de aparência); o menu de aparência, que
-flutua como uma folha, usa 14px. Marcadores e detalhes em linha (código em linha, `kbd`, quadradinho
+lateral, bloco de código, resultado da busca, item de menu). Marcadores e detalhes em linha (código em linha, `kbd`, quadradinho
 do chip, destaque da busca, foco do post-it) ficam entre 2 e 4px. Um painel encostado na borda da
 folha herda o canto dela. A pílula (botão "Ler artigo", tags) é totalmente arredondada. As capas
 têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm cantos quase retos.

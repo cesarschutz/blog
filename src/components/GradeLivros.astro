@@ -42,20 +42,6 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.vo
   }
 </ul>
 
-<script>
-  // Som dos livros (D33): um toque de madeira ao passar o mouse; a nota sobe de um livro ao outro.
-  import { tocarToque } from "../scripts/som";
-
-  for (const grupo of document.querySelectorAll<HTMLElement>("[data-grade-livros]")) {
-    const livros = [...grupo.querySelectorAll<HTMLElement>("a")];
-    livros.forEach((livro, i) =>
-      livro.addEventListener("pointerenter", (e) => {
-        if (e.pointerType === "mouse") tocarToque(i / Math.max(1, livros.length - 1));
-      }),
-    );
-  }
-</script>
-
 <style>
   .grade-livros {
     display: grid;

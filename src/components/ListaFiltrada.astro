@@ -95,7 +95,6 @@ const nivelDoItem = porAno ? "h3" : "h2";
 </section>
 
 <script>
-  import { tocarToque } from "../scripts/som";
 
   const lista = document.querySelector<HTMLElement>("[data-lista-filtrada]");
   const estante = document.querySelector<HTMLElement>("[data-estante-filtro]");
@@ -132,11 +131,8 @@ const nivelDoItem = porAno ? "h3" : "h2";
       history.replaceState(history.state, "", endereco);
     }
 
-    livros.forEach((livro, i) => {
+    livros.forEach((livro) => {
       livro.addEventListener("click", () => aplicar(atual === livro.dataset.filtro ? "" : livro.dataset.filtro!));
-      livro.addEventListener("pointerenter", (e) => {
-        if (e.pointerType === "mouse") tocarToque(livros.length > 1 ? i / (livros.length - 1) : 0.5);
-      });
     });
     limpar.addEventListener("click", () => aplicar(""));
     addEventListener("cartoes:prontos", () => aplicar(atual));

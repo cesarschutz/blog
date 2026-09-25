@@ -93,7 +93,6 @@ function linhas(l: Livro): Linha[] {
 <script>
   import { normalizar } from "../lib/busca/tipos";
   import { medidasDoLivro3D } from "../lib/livro-3d";
-  import { tocarAbrir, tocarFechar, tocarToque } from "../scripts/som";
 
   const gaveta = document.querySelector<HTMLElement>("[data-gaveta]");
   const estante = document.querySelector<HTMLElement>("[data-estante]");
@@ -201,7 +200,6 @@ function linhas(l: Livro): Linha[] {
       sincronizar();
       const no = montar(id, false);
       gaveta!.classList.add("aberta");
-      tocarAbrir();
       // Ler o layout confirma o estado inicial (lombada de frente) antes de girar. Sem depender de
       // requestAnimationFrame, que não roda em aba oculta e deixaria a estante presa em "ocupado".
       void no.getBoundingClientRect();
@@ -249,7 +247,6 @@ function linhas(l: Livro): Linha[] {
     function fecharLivro(devolverFoco = false) {
       if (!aberto || ocupado) return;
       ocupado = true;
-      tocarFechar();
       const id = aberto;
       dobrar(() => {
         aberto = null;
@@ -264,12 +261,6 @@ function linhas(l: Livro): Linha[] {
     }
 
     const clique = (e: MouseEvent) => e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
-    lombadas.forEach((l, i) => {
-      // Um toque de madeira ao passar o mouse; a nota sobe da primeira à última lombada (D33).
-      l.addEventListener("pointerenter", (e) => {
-        if (e.pointerType === "mouse") tocarToque(i / Math.max(1, lombadas.length - 1));
-      });
-    });
     for (const l of lombadas) {
       l.setAttribute("aria-controls", "gaveta");
       l.setAttribute("aria-expanded", "false");

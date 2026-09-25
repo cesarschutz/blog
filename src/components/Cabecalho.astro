@@ -2,7 +2,7 @@
 /**
  * Cabeçalho (briefing §5.1, D26, D31, D33): a marca à esquerda; à direita Artigos, Categorias,
  * Séries e Tags, a busca como campo (ícone, "Buscar" e ⌘K), o GitHub e o LinkedIn (só os ícones, como
- * no blog atual) e o menu de aparência (tema e som). Fica fixo no alto enquanto a página rola
+ * no blog atual) e o botão de tema (D39). Fica fixo no alto enquanto a página rola
  * (sticky), com fundo translúcido e um fio embaixo que aparece depois de rolar. No celular, marca,
  * busca (só o ícone) e aparência na primeira linha; o menu na segunda. A altura dele fica em
  * --altura-cabecalho e o quanto as outras peças fixas e as âncoras descontam, em --altura-topo
@@ -50,7 +50,7 @@ const { atual } = Astro.props;
 
 <script>
   // No celular, o cabeçalho some ao rolar para baixo e volta ao rolar para cima (D38). Volta também
-  // perto do topo, com o foco dentro dele (teclado) e com o menu de aparência aberto.
+  // perto do topo, com o foco dentro dele (teclado) e com algum menu aberto.
   {
     const raiz = document.documentElement;
     const celular = matchMedia("(max-width: 860px)");
@@ -201,7 +201,7 @@ const { atual } = Astro.props;
     margin-left: auto;
   }
 
-  /* GitHub e LinkedIn: só os ícones, sem borda, colados ao botão de aparência. */
+  /* GitHub e LinkedIn: só os ícones, sem borda, colados ao botão de tema. */
   .perfis {
     display: flex;
     flex: none;
@@ -228,7 +228,7 @@ const { atual } = Astro.props;
     height: 18px;
   }
 
-  /* Até 1100px, a busca vira só o ícone, redonda como o botão de aparência. */
+  /* Até 1100px, a busca vira só o ícone, redonda como o botão de tema. */
   @media (max-width: 1100px) {
     .campo-busca {
       display: grid;
@@ -269,7 +269,7 @@ const { atual } = Astro.props;
 
     .campo-busca,
     .perfis,
-    .cabecalho > :global(.aparencia) {
+    .cabecalho > :global(.botao-tema) {
       order: 1;
     }
 

@@ -29,7 +29,6 @@ import "../styles/visor.css";
 </dialog>
 
 <script>
-  import { tocarAbrir, tocarFechar } from "../scripts/som";
   import { GIRO } from "../lib/livro-3d";
 
   const dialogo = document.querySelector<HTMLDialogElement>("[data-livro-ampliado]");
@@ -89,12 +88,10 @@ import "../styles/visor.css";
       ir.href = destino || "#";
 
       dialogo!.showModal();
-      tocarAbrir();
       // Abre quase de frente, como o livro de origem (D39); arrastar gira o livro.
     }
 
     dialogo.addEventListener("close", () => {
-      tocarFechar();
       palco.replaceChildren();
       origem?.querySelector<HTMLElement>("[data-ampliar]")?.focus({ preventScroll: true });
       origem = livro = null;

@@ -75,12 +75,13 @@ const preVisualizacao = process.env.PREVIEW === "true";
     <script is:inline>
       // Antes da primeira pintura: tema escolhido nesta visita (o site sempre abre no tema do
       // sistema, D33) e modo Lista/Cards da home. A escolha de tema antiga, guardada para sempre
-      // (também pelo blog atual, com a mesma chave), é apagada. O livro inclinado não tomba mais (D35).
+      // (também pelo blog atual, com a mesma chave), é apagada, e a do som, que saiu (D39), também. O livro inclinado não tomba mais (D35).
       try {
         var raiz = document.documentElement;
         var tema = sessionStorage.getItem("cs-theme");
         if (tema === "light" || tema === "dark") raiz.dataset.theme = tema;
         localStorage.removeItem("cs-theme");
+        localStorage.removeItem("cs-som");
         if (localStorage.getItem("cs-post-view") === "cards") raiz.dataset.postView = "cards";
       } catch (e) {}
     </script>

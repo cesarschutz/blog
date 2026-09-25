@@ -84,7 +84,6 @@ const { frase, indice } = fraseDaPagina(chave, conjunto);
 </script>
 
 <script>
-  import { tocarPapel } from "../scripts/som";
   import { tamanhoDaFrase } from "../lib/tamanho-da-frase";
 
   type Linha = [texto: string, autor: string, contexto: string, url: string];
@@ -159,7 +158,6 @@ const { frase, indice } = fraseDaPagina(chave, conjunto);
     atual = sortear(frases.length);
     guardar([...vistas(), atual]);
     marcarUltima(atual);
-    tocarPapel();
     for (const postit of postits) {
       // A folha de cima sai voando (uma cópia dela); a de baixo já tem a frase nova.
       if (!semMovimento.matches) {

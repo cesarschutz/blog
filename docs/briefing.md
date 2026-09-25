@@ -116,9 +116,10 @@ camada visual: estrutura, conteúdo, rotas e comportamento seguem as seções 5 
 
 - `--well` não veio do protótipo: é a superfície com 4% de tinta, para código em linha, cabeçalho
   de tabela e o fundo dos blocos de código, que ficam sobre a folha.
-- Tema: o site **sempre abre no tema do sistema** (D33). O menu de aparência do cabeçalho troca
-  para claro, escuro ou sistema, e a escolha vale só naquela visita (de página em página, até fechar a
-  aba), com script anti-piscada no `<head>`.
+- Tema: o site **sempre abre no tema do sistema** (D33). O botão do cabeçalho alterna direto entre
+  claro e escuro (lua ou sol, sem menu, D39), e a escolha vale até fechar o site (`sessionStorage`),
+  com script anti-piscada no `<head>`. Trocar o tema só muda as cores: nenhum tamanho depende do
+  tema, e a página não sai do lugar.
 - **Categorias = livros de uma coleção numerada, no estilo "edição de estudo"; séries = revistas
   técnicas** (D30, D32). A regra visual de capas, lombadas, estante, livros e séries novos está em
   **`docs/capas/CAPAS.md`**, com as imagens de referência em `docs/capas/referencia/`. Os dados de
@@ -170,8 +171,7 @@ livro aparece na estante e na lateral, mesmo sem artigos; o número de artigos, 
 - **Marca** (D33): o livro "cs" (capa do Volume 01 com a fita laranja da série), "Cesar Schutz" e
   "blog" em itálico, no cabeçalho, no rodapé, grande na abertura da home e no ícone do navegador.
 - **Acabamento**: busca como campo (ícone, "Buscar" e ⌘K), GitHub e LinkedIn só com os ícones e o
-  menu de aparência (claro, escuro, sistema e o som dos livros, D33, desligado por padrão, D38) no
-  cabeçalho;
+  botão de tema (claro ou escuro, D39; o som dos livros saiu) no cabeçalho;
   destaque com a descrição do post, tags em pílulas e "Ler artigo"; cards que sobem 4px ao passar o
   mouse (parados com `prefers-reduced-motion`); linhas da lista com fundo leve ao passar o mouse;
   chip de categoria com quadradinho da cor e nome tingido (no claro, a cor com 34% de tinta, para o
@@ -187,8 +187,8 @@ Referência: aba "Home" do protótipo.
 - **Cabeçalho** (D31): **fixo no alto** enquanto a página rola, com o fundo da página levemente
   translúcido e um fio embaixo que aparece depois de rolar. A marca à esquerda (D33); à direita
   **Artigos, Categorias, Séries e Tags**, a busca como campo (com ⌘K; só o ícone até 1100px), os ícones
-  do GitHub e do LinkedIn e o menu de aparência (§4.3). O RSS saiu do menu (fica no painel lateral e no
-  rodapé). Até 860px, duas linhas: marca, busca, perfis (somem abaixo de 520px) e aparência numa; o
+  do GitHub e do LinkedIn e o botão de tema (§4.3, D39). O RSS saiu do menu (fica no painel lateral e no
+  rodapé). Até 860px, duas linhas: marca, busca, perfis (somem abaixo de 520px) e tema numa; o
   menu na outra. A altura dele (`--altura-topo`) é descontada pelas âncoras, pelo sumário do
   artigo, pelo painel lateral e pelas lousas fixas. Até 860px, ele some ao rolar para baixo e volta
   ao rolar para cima (D38).

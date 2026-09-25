@@ -42,7 +42,7 @@ Cesar acompanhar. Ele revisa tudo no fim.
 - Toda animação respeita `prefers-reduced-motion`: com ele ligado, tudo aparece no estado final,
   sem prender a tela.
 - JavaScript só onde há interação (estante, busca, lousas, apresentação, lista/cards, menu de
-  aparência e som, post-it das frases, filtro por livro, livro ampliado, o nome de transição do livro
+  tema, post-it das frases, filtro por livro, livro ampliado, o nome de transição do livro
   do painel e o cabeçalho que se esconde no celular, D29, D33, D38).
   Artigo sem esses componentes funciona sem JS.
 - Fontes servidas pelo próprio site (`@fontsource`). Nunca Google Fonts nem CDN em produção.
@@ -182,8 +182,7 @@ src/lib/                 posts, formatos, busca (Pagefind), código (Expressive 
                          (livros), livros-svg (desenhos e ícones), livro-3d (medidas do livro aberto),
                          marca (traçado da marca, gerado), frases (post-it)
 src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, apresentação)
-src/scripts/tema.ts      tema claro/escuro/sistema (menu de aparência do cabeçalho, D33)
-src/scripts/som.ts       som dos livros e do post-it (Web Audio, sem arquivos; desliga no menu, D33)
+src/scripts/tema.ts      tema: o botão do cabeçalho alterna claro e escuro (D39)
 scripts/                 contraste, links, apresentacao, og, copiar-katex, desenho/, bench-busca/,
                          verificar-ambiente (npm run setup e hook do início da sessão)
 public/posts/<slug>/     diagramas antigos e slides das apresentações (deck/)
