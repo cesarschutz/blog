@@ -82,7 +82,6 @@ O que o blog faz e outro blog técnico em pt-BR não pode copiar sem mudar o jei
 
 - 26 posts publicados em `src/content/posts/`, com as ilustrações em `src/ilustracoes/`, as lousas em
   `src/lousas/` e as apresentações em `public/posts/<slug>/deck/` (`src/data/decks.json`).
-- Frases de autores em `src/data/frases.json`, só as que têm fonte primária conferida.
 - **Não existem e não podem ser inventados:** depoimentos, números de audiência, métricas de leitura
   e benchmarks próprios sem medição.
 

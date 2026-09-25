@@ -883,8 +883,8 @@ nada muda.
 
 ## D39 · Acabamento de design: livros de cor fixa, lombada única, tema direto, sem som
 - **Data:** 25/09/2026 · **Status:** aprovada pelo Cesar; em execução, um commit por lote, sem push.
-  Os itens 2 (post-it), 6 (lousa de passos) e 9 (largura do texto e marca d'água) só entram depois
-  do OK dele às propostas em screenshots.
+  Os itens 2, 6 e 9 passaram antes por propostas em screenshots: o 6 e o 9 foram aprovados como
+  propostos, e o 2 virou a retirada das frases.
 - **Substitui**, no que houver em contrário: a D27, a D29, a D33, a D38 e o lote 4 da D37 (frases por
   tema). O `DESIGN.md` foi atualizado junto.
 - **Pedido do Cesar (1 a 10) e da revisão de designer (A a G):**
@@ -893,10 +893,11 @@ nada muda.
      Vale para lombadas, pilha, livro 3D, capas da grade, gaveta e livro ampliado. Os papéis
      `--cima`/`--baixo` de `livro.css` deixam de ter versão escura; o contraste das lombadas é o
      mesmo nos dois temas (`npm run contraste`).
-  2. **Post-it só na home, discreto:** sai dos posts; na home, menor, preso por um alfinete desenhado
-     e levemente inclinado, sem encostar nos livros; no celular, abaixo do texto de apresentação.
-     Frase sorteada entre todas a cada visita, sem piscar e sem pesar no LCP; sai a lógica de frases
-     por tema e por post (lote 4 da D37). *Aguarda o OK às duas propostas.*
+  2. **Frases de autores fora do blog:** o pedido era o post-it só na home, menor e com alfinete; o
+     Cesar viu as duas propostas (no canto do painel e junto do texto), não gostou de nenhuma e
+     decidiu **tirar as frases do blog por enquanto**, com tudo o que era delas: o post-it da home e
+     dos artigos, `src/data/frases.json`, `/frases.json`, o sorteio por tema (lote 4 da D37), as cores
+     `postit` e as chaves guardadas no navegador.
   3. **Livro escolhido escurecido, sem contorno azul:** o lugar do livro que foi para a gaveta mostra
      o próprio livro escurecido (como os não escolhidos do filtro), e o livro da página atual aparece
      escurecido na pilha, em vez do lugar vazio. O contorno azul da lombada escolhida no filtro (D38)
@@ -910,7 +911,7 @@ nada muda.
   6. **Lousa de passos:** no desktop (≥ 1024px), lousa fixa ao lado e os passos mais próximos (uns
      40% da tela entre eles), todos visíveis, o ativo inteiro e os outros esmaecidos; no celular,
      tablet e com movimento reduzido, passo a passo com a lousa em cima, o texto embaixo e
-     "◀ 2/5 ▶" com pontos e deslizar. *Aguarda o OK às duas versões.*
+     "◀ 2/5 ▶" com pontos e deslizar. Aprovado como proposto.
   7. **"Neste artigo" na cor do livro:** a linha que preenche, o ponto ativo e a barra de porcentagem
      na cor do livro do post; abaixo do painel, em tela larga, um "Do livro" compacto (capa pequena,
      nome e "Ver o livro"), que sai do fim do artigo no desktop e continua lá no celular.
@@ -918,7 +919,8 @@ nada muda.
      com rolagem interna usam uma barra fina nas cores do tema.
   9. **Texto mais largo e marca d'água em outro lugar:** coluna de uns 70 a 72 caracteres, menos
      espaço lateral no cartão, código, tabelas, diagramas e lousas na largura do cartão; no celular,
-     o corpo do artigo sem cartão; a marca d'água sai do topo do artigo. *Aguarda o OK à proposta.*
+     o corpo do artigo sem cartão; a marca d'água sai do topo do artigo e vai para o topo das páginas de categoria e de série e para o
+     fim do artigo, atrás de "anterior / próximo" (os dois lugares propostos, aprovados).
   10. **Tema e som:** o site abre no tema do sistema; o botão alterna direto entre claro e escuro
       (sol ou lua), sem painel; a escolha vale até fechar o site (`sessionStorage`); trocar o tema não
       mexe na posição da página; o som sai por completo (`som.ts`, a opção do menu e as referências).

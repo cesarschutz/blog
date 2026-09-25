@@ -124,10 +124,9 @@ for (const [tema, p] of Object.entries({ claro, escuro })) {
   for (const s of SERIES) conferir(grupo, s.nome, naFolha(s.destaque), p["paper-hi"], 3, true);
 }
 
-// Post-it das frases e visor (D33): texto de verdade, com o mínimo de 4,5:1 (falha o script).
+// Visor e marca (D33): texto de verdade, com o mínimo de 4,5:1 (falha o script).
 for (const [tema, p] of Object.entries({ claro, escuro })) {
-  const grupo = `Post-it e visor, tema ${tema} (4,5:1)`;
-  conferir(grupo, "tinta do post-it / post-it", p["postit-tinta"], p.postit, 4.5, true);
+  const grupo = `Visor e marca, tema ${tema} (4,5:1)`;
   conferir(grupo, "texto do visor / véu (88%) sobre o fundo", p["veu-tinta"], misturar(p.paper, p.veu, 88), 4.5, true);
   conferir(grupo, "contador do visor (78%) / véu", misturar(p["veu-tinta"], misturar(p.paper, p.veu, 88), 22), misturar(p.paper, p.veu, 88), 4.5, true);
   conferir(grupo, "letras da marca / capa da marca", p["marca-letra"], p.marca, 4.5, true);

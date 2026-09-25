@@ -15,7 +15,6 @@ import Destaque from "../components/Destaque.astro";
 import Recentes from "../components/Recentes.astro";
 import ComPainel from "../components/ComPainel.astro";
 import Marca from "../components/Marca.astro";
-import PostIt from "../components/PostIt.astro";
 import { TEXTOS } from "../data/site";
 import { montarLivros } from "../lib/estante";
 import { getResumos, type Resumo } from "../lib/posts";
@@ -56,8 +55,7 @@ const jsonLd = {
       <>
         {/*
           A abertura (D33) é uma folha: a identidade (a marca grande e a apresentação do blog atual) e a
-          cena, a estante com o post-it das frases colado na parede ao lado dela; a gaveta do livro
-          aberto abre dentro da folha (D26).
+          estante; a gaveta do livro aberto abre dentro da folha (D26). O post-it das frases saiu (D39).
         */}
         <div class="wrap topo-home">
           <div class="folha folha-abertura">
@@ -70,9 +68,6 @@ const jsonLd = {
               </div>
               <div class="cena">
                 <Estante livros={livros} />
-                <div class="parede">
-                  <PostIt giro={-2.4} />
-                </div>
               </div>
             </div>
             <Gaveta livros={livros} />
@@ -113,8 +108,7 @@ const jsonLd = {
 
   /*
    * Computador: a identidade à esquerda e a cena à direita, no centro da altura uma da outra.
-   * Tablet (até 1359px): a cena desce para baixo da identidade, no centro. Celular (até 640px): o
-   * post-it sobe para a parede acima dos livros.
+   * Tablet (até 1359px): a cena desce para baixo da identidade, no centro.
    */
   .abertura {
     display: grid;
@@ -146,48 +140,10 @@ const jsonLd = {
     line-height: 1.6;
   }
 
-  /*
-   * A cena: os livros na frente e o post-it colado na parede ao lado deles, com a borda esquerda atrás
-   * da revista. Uma prateleira só corre por baixo dos dois (a da estante some aqui).
-   */
+  /* A cena: a estante, sem encolher além da largura da folha. */
   .cena {
-    position: relative;
-    display: flex;
-    align-items: flex-end;
     max-width: 100%;
-    padding-bottom: 8px;
-  }
-
-  .cena :global(.estante .tabua) {
-    display: none;
-  }
-
-  .cena::after {
-    content: "";
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    height: 6px;
-    border-bottom: 2px solid var(--tabua-borda);
-    border-radius: 1px 1px 2px 2px;
-    background: var(--tabua);
-  }
-
-  .cena > :global(.estante) {
-    position: relative;
-    z-index: 1;
-    flex: 0 1 auto;
     min-width: 0;
-  }
-
-  .parede {
-    flex: none;
-    margin: 0 4px 44px -18px;
-  }
-
-  .parede :global(.postit) {
-    --largura-postit: 196px;
   }
 
   @media (max-width: 1359px) {
@@ -215,7 +171,6 @@ const jsonLd = {
     }
   }
 
-  /* Celular: o post-it na parede acima dos livros, à direita, com a ponta de baixo atrás da revista. */
   @media (max-width: 640px) {
     .abertura {
       gap: 22px;
@@ -236,26 +191,6 @@ const jsonLd = {
 
     .frase {
       margin-top: 0;
-    }
-
-    .cena {
-      flex-direction: column;
-      align-items: stretch;
-      justify-self: stretch;
-    }
-
-    .cena > :global(.estante) {
-      width: auto;
-    }
-
-    .parede {
-      order: -1;
-      align-self: flex-end;
-      margin: 0 10px -18px 0;
-    }
-
-    .parede :global(.postit) {
-      --largura-postit: 184px;
     }
   }
 </style>

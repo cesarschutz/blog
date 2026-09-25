@@ -7,7 +7,7 @@
  * também do nome, nas duas variantes. O script (src/scripts/artigo.ts) pinta o trilho até a
  * seção atual, marca as já lidas e a atual (em azul-tinta), abre as subseções da atual e mantém a
  * atual à vista quando a lista rola. Embaixo, a barra de quanto já foi lido, com "NN% lido" e o tempo
- * que falta; só com JS. O post-it das frases saiu daqui para o fim do artigo (D38).
+ * que falta; só com JS. Embaixo, o "Do livro" compacto (D39).
  *
  * "recolhivel": no início do texto, nas telas menores.
  */
@@ -364,7 +364,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
   @media (min-width: 1300px) {
     /*
      * Na coluna da esquerda da grade do artigo (artigo.css), fixa enquanto o texto rola. Só a lista
-     * rola, se for longa; a barra fica sempre à vista, e o post-it vem embaixo quando a tela é alta.
+     * rola, se for longa; a barra fica sempre à vista, e o "Do livro" vem embaixo.
      */
     .lateral {
       display: flex;

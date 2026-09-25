@@ -34,8 +34,6 @@ colors:
   marca: "#2D4B46"
   marca-letra: "#F2EDE2"
   marca-fita: "#C24D1C"
-  postit: "#F1E3A6"
-  postit-tinta: "#2B2619"
   veu: "#0C0F11"
   veu-tinta: "#EEF1EE"
   # Interface, tema escuro (tokens.ts, escuro)
@@ -52,7 +50,6 @@ colors:
   lousa-borda-escuro: "#8F989D"
   lousa-caneta-escuro: "#16212B"
   lousa-mistura-escuro: "#0B6F58"
-  postit-escuro: "#BFB27E"
   # Livros (docs/capas/livros.json e cores.js): a cor principal de cada categoria
   arquitetura-de-software: "#2d4b46"
   desenvolvimento-de-software: "#7a4430"
@@ -287,12 +284,6 @@ components:
     textColor: "{colors.marca-letra}"
   marca-fita:
     backgroundColor: "{colors.marca-fita}"
-  post-it:
-    backgroundColor: "{colors.postit}"
-    textColor: "{colors.postit-tinta}"
-  post-it-escuro:
-    backgroundColor: "{colors.postit-escuro}"
-    textColor: "{colors.postit-tinta}"
   veu:
     backgroundColor: "{colors.veu}"
     textColor: "{colors.veu-tinta}"
@@ -406,7 +397,7 @@ mexer na página. O site não tem som.
   caixa pintada da cor inteira.
 - **Lousa:** sempre o contrário da página. No tema claro é vidro escuro (#15191C) com caneta clara;
   no escuro, quadro branco suavizado (#CFD5D1, nunca branco puro) com caneta escura.
-- **Marca, post-it e véu** (D33): o livro "cs", o post-it das frases e o fundo do visor de imagens.
+- **Marca e véu** (D33): o livro "cs" e o fundo do visor de imagens.
 
 **Livros (cor principal de cada categoria, `docs/capas/livros.json`).** A mesma cor pinta a capa, a
 lombada, o chip da categoria (quadradinho e nome tingido), a barra de leitura e o **painel dos
@@ -494,7 +485,7 @@ caixas e desenhos dentro de uma folha **não** levam sombra.
 
 Folhas com raio de 14px e painéis e caixas dentro delas com 10px (aviso, tabela, `<details>`, nota
 lateral, bloco de código, resultado da busca, item de menu). Marcadores e detalhes em linha (código em linha, `kbd`, quadradinho
-do chip, destaque da busca, foco do post-it) ficam entre 2 e 4px. Um painel encostado na borda da
+do chip, destaque da busca) ficam entre 2 e 4px. Um painel encostado na borda da
 folha herda o canto dela. A pílula (botão "Ler artigo", tags) é totalmente arredondada. As capas
 têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm cantos quase retos.
 
@@ -590,7 +581,7 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
 - **Frase em destaque** (palavras que acendem com a rolagem): recurso raro dos posts, usado só de
   vez em quando.
 - **Na home, só coisas discretas:** um livro que sobe ao passar o mouse, a gaveta que abre o livro
-  clicado (a capa aberta leva à página do livro, D38), o post-it que troca de frase quando pedido.
+  clicado (a capa aberta leva à página do livro, D38).
 - **Cabeçalho no celular** (até 860px, D38): some ao rolar para baixo e volta ao rolar para cima,
   subindo por `translate` (a página não muda de altura); com o foco nele ou o menu aberto, fica. **Nenhum livro cai** (o tombo do livro
   inclinado saiu na D35) e **nenhum texto muda de cor**. Sem animação de entrada nas seções.

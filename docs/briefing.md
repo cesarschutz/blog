@@ -29,8 +29,8 @@ protótipo divergirem, vale o briefing.
   D34); o blog antigo continua em `https://cesarschutz.com.br`.
 - É **só um blog**: artigos, categorias, tags, séries, busca e RSS. Sai tudo o que existe
   hoje além disso: página de projetos, card de identidade com números, ícones animados. Voltaram na
-  D33, a pedido do Cesar: a **foto** do autor (na assinatura do topo de cada artigo) e as **frases de
-  autores** (num post-it, na home e nos artigos). Não há página Sobre por enquanto (D33: o Cesar
+  D33, a pedido do Cesar: a **foto** do autor (na assinatura do topo de cada artigo) e as frases de
+  autores num post-it, que saíram de novo na D39. Não há página Sobre por enquanto (D33: o Cesar
   escreve depois); `/about/` leva à home.
 - Os textos são escritos com apoio de IA e revisados pelo Cesar. Isso aparece no fim de cada
   post (seção 5.3).
@@ -193,19 +193,11 @@ Referência: aba "Home" do protótipo.
   artigo, pelo painel lateral e pelas lousas fixas. Até 860px, ele some ao rolar para baixo e volta
   ao rolar para cima (D38).
 - **Abertura** (D33): a identidade (a marca e a apresentação do blog atual, "Publico aqui o que ando
-  estudando — …") e a **cena**: a **estante** com o **post-it** das frases colado na parede ao lado
-  dos livros (a borda atrás da revista) e uma prateleira única por baixo dos dois. A partir de 1360px,
-  identidade à esquerda e cena à direita; até 1359px, a cena desce para baixo do texto, no centro; até
-  640px, o post-it sobe para a parede acima dos livros e a marca grande sai (fica a do cabeçalho; ela
-  continua como o h1 para leitor de tela), para a abertura ficar mais curta (D38). A linha sobre IA
-  saiu da abertura (fica no fim de cada artigo).
-- **Post-it das frases** (D33): frase em itálico, autor com link para a fonte, **sorteada a cada
-  visita** (sem repetir a última vista), e "outra frase" riscado à mão, que arranca a folha e mostra
-  outra ao acaso. O texto aparece desde o início (D38): na primeira visita, a frase do HTML; nas
-  seguintes, o sorteio é feito antes da primeira pintura, com a lista guardada no navegador. No tema
-  escuro, o papel é mais apagado. As frases foram revisadas uma a uma contra a fonte (125, todas com a origem). Nos
-  artigos, o sorteio fica entre as frases do assunto do post, pelos `temas` de cada frase (D37); o
-  papel tem a altura fixa (4:5) e a letra acompanha a largura dele, para a troca não mexer na página.
+  estudando — …") e a **estante**. A partir de 1360px, identidade à esquerda e estante à direita;
+  até 1359px, a estante desce para baixo do texto, no centro; até 640px, a marca grande sai (fica a
+  do cabeçalho; ela continua como o h1 para leitor de tela), para a abertura ficar mais curta (D38).
+  A linha sobre IA saiu da abertura (fica no fim de cada artigo). O post-it das frases de autores
+  saiu do blog (D39).
 - **Estante** (D30, pela regra de `docs/capas/CAPAS.md`):
   - Um livro por categoria, na ordem dos volumes, com as alturas e larguras de `livros.json`. A
     lombada tem o ícone do livro (girado) no bloco de cor de cima e, no papel de baixo, o título na
@@ -315,8 +307,7 @@ Referência: aba "Artigo" do protótipo.
   início do texto nas menores. Só aparece com 3 ou mais seções. No lateral (D33), um trilho: um ponto
   em cada seção, sem número (D36; o "3. " do título sai do nome, nas duas variantes), o fio das lidas, o ponto atual e a barra de porcentagem na cor do livro do post (D39), as
   subseções da atual abertas, e a atual sempre à vista. Embaixo, a barra fina com "19% lido" e o tempo
-  que falta (em fonte de código), que soma à barra do topo; só com JS. O post-it das frases saiu
-  daqui (D38): fica no fim do artigo. Embaixo da folha do sumário, o **"Do livro" compacto** (D39):
+  que falta (em fonte de código), que soma à barra do topo; só com JS. Embaixo da folha do sumário, o **"Do livro" compacto** (D39):
   a capa pequena, o nome e "Ver o livro"; com ele, o cartão do fim do artigo some no desktop.
 - **Notas laterais**: notas de rodapé do Markdown viram notas na margem direita da folha do corpo
   quando ela tem espaço (a folha, e não a tela, decide, D33) e abrem no lugar, ao tocar no número,
@@ -336,8 +327,7 @@ Referência: aba "Artigo" do protótipo.
   com ←/→) e botão **Baixar PDF**.
 - **Fontes**: sempre a última seção.
 - **Rodapé do post**, nesta ordem: tags; "Compartilhar" (copiar link, LinkedIn, WhatsApp e o
-  compartilhar nativo quando existir; no celular, com o do sistema, só ele, D38); o **post-it das
-  frases**, que fecha a leitura com uma frase do assunto (D38); **aviso sobre IA** num bloco com o ícone de
+  compartilhar nativo quando existir; no celular, com o do sistema, só ele, D38); **aviso sobre IA** num bloco com o ícone de
   nota (era o de atenção até a D37, que fechava a leitura como um alarme), com o texto atual:
   "Artigo escrito com apoio de IA, revisado pelo autor, com o código testado. Ainda assim pode
   conter imprecisões: confirme nas fontes citadas e na documentação oficial antes de aplicar."

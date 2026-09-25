@@ -34,8 +34,6 @@ export const TOKENS = [
   "marca",
   "marca-letra",
   "marca-fita",
-  "postit",
-  "postit-tinta",
   "veu",
   "veu-tinta",
 ] as const;
@@ -74,9 +72,6 @@ export const claro: Paleta = {
   marca: "#2D4B46",
   "marca-letra": "#F2EDE2", // o papel dos livros (PAPEL em docs/capas/cores.js)
   "marca-fita": "#C24D1C",
-  // Post-it das frases (D33): amarelo apagado, que combina com o papel dos livros.
-  postit: "#F1E3A6",
-  "postit-tinta": "#2B2619",
   // Véu do visor de imagens e do livro ampliado (D33): escurece a página por trás, nos dois temas.
   veu: "#0C0F11",
   "veu-tinta": "#EEF1EE",
@@ -111,9 +106,6 @@ export const escuro: Paleta = {
   marca: "#2D4B46",
   "marca-letra": "#F2EDE2",
   "marca-fita": "#C24D1C",
-  // No escuro, o post-it perde um pouco de brilho para não ofuscar; a tinta continua escura.
-  postit: "#BFB27E",
-  "postit-tinta": "#2B2619",
   veu: "#050708",
   "veu-tinta": "#EEF1EE",
 };

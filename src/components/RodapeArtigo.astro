@@ -2,13 +2,10 @@
 /**
  * Rodapé do post (briefing §5.3, D33), nesta ordem: tags; compartilhar (copiar link, LinkedIn,
  * WhatsApp e o compartilhar nativo quando existir); aviso sobre IA; o livro do artigo (o livro 3D da
- * categoria ou da série, em três quartos, que voa até a página do livro ao clicar) com o post-it das
- * frases ao lado; anterior e
- * próximo (ou dentro da série), com o título inteiro. O post-it daqui só aparece quando o do sumário
- * lateral não está à vista.
+ * categoria ou da série, que voa até a página do livro ao clicar; no desktop com o sumário lateral,
+ * ele fica embaixo do sumário, D39); anterior e próximo (ou dentro da série), com o título inteiro.
  */
 import LivroEmPe from "./LivroEmPe.astro";
-import PostIt from "./PostIt.astro";
 import { ICONES } from "../lib/icones";
 import { montarLivros } from "../lib/estante";
 import { urlTag, type Resumo } from "../lib/posts";
@@ -66,9 +63,6 @@ const rotulos = naSerie
       ><span class="no-celular">Compartilhar</span>
     </button>
   </div>
-
-  {/* O post-it fecha a leitura com uma frase do assunto do artigo, antes do aviso de IA (D38). */}
-  <PostIt chave={post.slug} temas={[...post.tags, post.livro]} giro={2.2} class="postit-fim" />
 
   <aside class="aviso aviso-ia" data-aviso="atencao" aria-label="Aviso sobre IA">
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.nota} />
@@ -220,15 +214,10 @@ const rotulos = naSerie
     margin-top: 1px;
   }
 
-  /* ---------- o livro do artigo e o post-it ---------- */
+  /* ---------- o livro do artigo ---------- */
 
   .fim-do-artigo {
     margin-top: 30px;
-  }
-
-  /* No centro, entre o compartilhar e o aviso de IA (D38); o seletor longo vence a margem do PostIt. */
-  .rodape-artigo :global(.postit-fim) {
-    margin: 34px auto 36px;
   }
 
   .livro-do-artigo {

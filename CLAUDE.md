@@ -42,7 +42,7 @@ Cesar acompanhar. Ele revisa tudo no fim.
 - Toda animação respeita `prefers-reduced-motion`: com ele ligado, tudo aparece no estado final,
   sem prender a tela.
 - JavaScript só onde há interação (estante, busca, lousas, apresentação, lista/cards, menu de
-  tema, post-it das frases, filtro por livro, livro ampliado, o nome de transição do livro
+  tema, filtro por livro, livro ampliado, o nome de transição do livro
   do painel e o cabeçalho que se esconde no celular, D29, D33, D38).
   Artigo sem esses componentes funciona sem JS.
 - Fontes servidas pelo próprio site (`@fontsource`). Nunca Google Fonts nem CDN em produção.
@@ -78,16 +78,11 @@ A **marca** (D33) é o livro "cs": `Marca.astro` com o traçado de `src/lib/marc
 `pdftocairo`, do poppler do Homebrew, para tirar o contorno das letras da própria fonte). Não edite à
 mão.
 
-## Frases do post-it
+## Frases de autores
 
-As frases de autores (`src/data/frases.json`, post-it da home e dos artigos, D33) vieram do blog
-atual, e a revisão de 24/09/2026 mostrou que a maioria era **inventada ou atribuída sem base**. Por
-isso, frase nova só entra com a **fonte primária aberta e conferida** (o post, o livro, o paper, a
-palestra ou a entrevista do próprio autor): texto traduzido com fidelidade, sem acréscimos, autor
-certo, `url` para onde ela está, `contexto` dizendo o que o link mostra e `temas` (as tags e o livro,
-como `livro-dados` ou `serie-java`, a que ela se aplica, ou `geral`): cada artigo só sorteia entre as
-frases do assunto dele (D37). Na dúvida, não entra. A primeira do arquivo é a da home (sai no HTML sem
-JavaScript): uma frase sobre o assunto do blog.
+As frases de autores (o post-it da home e dos artigos, D33) **saíram do blog na D39**, a pedido do
+Cesar, com o arquivo delas. Se voltarem um dia, só com a **fonte primária aberta e conferida** (a
+revisão de 24/09/2026 mostrou que a maioria das antigas era inventada ou atribuída sem base).
 
 ## URLs que não podem quebrar
 
@@ -168,7 +163,7 @@ docs/virada.md           plano para o domínio passar ao blog novo (só com OK d
 docs/referencias/        protótipos aprovados
 src/content/posts/       posts; nome do arquivo = slug da URL
 src/data/                taxonomia e series (leem docs/capas), java, decks (apresentações), site
-                         (autor, perfis e textos), frases.json (as frases do post-it, D33)
+                         (autor, perfis e textos)
 src/styles/tokens.ts     cores dos dois temas: fonte única, gera as variáveis CSS (D4)
 src/styles/              base (folha, painel, transição de página), fontes, avisos, prosa, artigo (grade,
                          notas, visor), estante e livro (lombada, livro 3D e capa)
@@ -180,7 +175,7 @@ src/pages/               rotas; a home é [...page].astro (paginada, D27); livro
 src/plugins/             Markdown: avisos, notas laterais, apresentação, tabelas, matemática
 src/lib/                 posts, formatos, busca (Pagefind), código (Expressive Code), PDF, estante
                          (livros), livros-svg (desenhos e ícones), livro-3d (medidas do livro aberto),
-                         marca (traçado da marca, gerado), frases (post-it)
+                         marca (traçado da marca, gerado)
 src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, apresentação)
 src/scripts/tema.ts      tema: o botão do cabeçalho alterna claro e escuro (D39)
 scripts/                 contraste, links, apresentacao, og, copiar-katex, desenho/, bench-busca/,
