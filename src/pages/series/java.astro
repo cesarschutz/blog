@@ -5,6 +5,7 @@
  * livro aberto no topo, que chega da pilha ou da página de séries por transição de página.
  */
 import Base from "../../layouts/Base.astro";
+import { paginaDeColecao } from "../../lib/seo";
 import ComPainel from "../../components/ComPainel.astro";
 import TopoLivro from "../../components/TopoLivro.astro";
 import { montarLivros } from "../../lib/estante";
@@ -21,12 +22,15 @@ const versoes = JAVA_LTS.map((lts) => ({ lts, post: resumos.find((r) => r.slug =
 const guia = resumos.find((r) => r.slug === GUIA_JAVA);
 const proxima = JAVA_LTS.find((v) => v.upcoming);
 const livro = (await montarLivros()).find((l) => l.id === "serie-java")!;
+const DESCRICAO =
+  "Cada versão LTS do Java explicada: o que mudou desde a LTS anterior, em qual versão cada recurso chegou, com exemplos de código e fontes oficiais.";
 ---
 
 <Base
   titulo="Atualizações do Java"
-  descricao="Cada versão LTS do Java explicada: o que mudou desde a LTS anterior, em qual versão cada recurso chegou, com exemplos de código e fontes oficiais."
+  descricao={DESCRICAO}
   atual="series"
+  jsonLd={paginaDeColecao("Atualizações do Java", DESCRICAO, Astro.url.pathname, Astro.site)}
 >
   <ComPainel atual={livro.id}>
   <div class="java" style={`--cor:${java.destaque};--cor-texto:${java.destaqueTexto ?? java.destaque}`}>

@@ -60,6 +60,7 @@ export async function GET(contexto: APIContext) {
         content: html ? paraLeitor(html, resumo.url) : undefined,
       };
     }),
-    customData: "<language>pt-BR</language>",
+    xmlns: { atom: "http://www.w3.org/2005/Atom" },
+    customData: `<language>pt-BR</language><atom:link href="${new URL(url("/rss.xml"), contexto.site).href}" rel="self" type="application/rss+xml"/>`,
   });
 }

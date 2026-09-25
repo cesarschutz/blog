@@ -5,6 +5,7 @@
  * filtro no topo: clicar num livro mostra só os artigos dele (ListaFiltrada).
  */
 import Base from "../layouts/Base.astro";
+import { paginaDeColecao } from "../lib/seo";
 import ListaFiltrada from "../components/ListaFiltrada.astro";
 import { getResumos } from "../lib/posts";
 
@@ -19,7 +20,7 @@ const partes = [
 const descricao = `${resumos.length} artigos em ${partes.join(" e ")}, do mais recente ao mais antigo.`;
 ---
 
-<Base titulo="Todos os artigos" descricao="Todos os artigos do blog de Cesar Schutz, do mais recente ao mais antigo." atual="artigos">
+<Base titulo="Todos os artigos" descricao={descricao} atual="artigos" jsonLd={paginaDeColecao("Todos os artigos", descricao, Astro.url.pathname, Astro.site)}>
   <div class="wrap">
     <ListaFiltrada posts={resumos} titulo="Todos os artigos" descricao={descricao} porAno />
   </div>

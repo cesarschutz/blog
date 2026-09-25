@@ -7,6 +7,7 @@
  * artigos da categoria com a alternância Lista / Cards.
  */
 import Base from "../../layouts/Base.astro";
+import { paginaDeColecao } from "../../lib/seo";
 import ComPainel from "../../components/ComPainel.astro";
 import TopoLivro from "../../components/TopoLivro.astro";
 import Recentes from "../../components/Recentes.astro";
@@ -28,7 +29,12 @@ const { categoria, posts } = grupo;
 const livro = (await montarLivros()).find((l) => !l.serie && l.nome === categoria.nome)!;
 ---
 
-<Base titulo={categoria.nome} descricao={`Artigos de ${categoria.nome}: ${categoria.descricao}`} atual="categorias">
+<Base
+  titulo={categoria.nome}
+  descricao={`Artigos de ${categoria.nome}: ${categoria.descricao}`}
+  atual="categorias"
+  jsonLd={paginaDeColecao(categoria.nome, `Artigos de ${categoria.nome}: ${categoria.descricao}`, Astro.url.pathname, Astro.site)}
+>
   <ComPainel atual={livro.id}>
     <TopoLivro livro={livro} />
     <div class="artigos">

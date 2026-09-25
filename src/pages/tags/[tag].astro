@@ -6,6 +6,7 @@
  * (ListaFiltrada).
  */
 import Base from "../../layouts/Base.astro";
+import { paginaDeColecao } from "../../lib/seo";
 import ListaFiltrada from "../../components/ListaFiltrada.astro";
 import { getTags, urlTag, type Grupo } from "../../lib/posts";
 import { url } from "../../lib/url";
@@ -32,7 +33,7 @@ const junto = [...vizinhas]
   .map(([nome]) => nome);
 ---
 
-<Base titulo={`#${grupo.nome}`} descricao={`Artigos marcados com ${grupo.nome}.`} atual="tags">
+<Base titulo={`#${grupo.nome}`} descricao={descricao} atual="tags" jsonLd={paginaDeColecao(`#${grupo.nome}`, descricao, Astro.url.pathname, Astro.site)}>
   <div class="wrap">
     <ListaFiltrada posts={grupo.posts} titulo={`#${grupo.nome}`} descricao={descricao} trilha={{ nome: "Tags", href: url("/tags/") }}>
       {
