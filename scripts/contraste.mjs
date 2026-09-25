@@ -110,6 +110,17 @@ for (const s of SERIES) {
   conferir(livro, `${s.nome} no escuro: destaque / papel escuro`, misturar(s.destaque, PAPEL, 30), papelEscuro, 4.5, false);
 }
 
+// Texto pequeno nas lombadas (D35): onde a cor do livro fica abaixo de 4,5:1, a lombada usa a
+// variante (corTexto, destaqueTexto em docs/capas/livros.json). Texto de verdade: falha o script.
+const pequeno = "Texto pequeno nas lombadas (4,5:1)";
+for (const c of CATEGORIAS) {
+  conferir(pequeno, `${c.nome}: tinta / cor da lombada`, c.cores.tinta, c.cores.corTexto ?? c.cores.cor, 4.5, true);
+  conferir(pequeno, `${c.nome}: destaque / papel`, c.cores.destaque, c.cores.papel, 4.5, true);
+}
+for (const s of SERIES) {
+  conferir(pequeno, `${s.nome}: destaque da lombada / papel`, s.destaqueTexto ?? s.destaque, PAPEL, 4.5, true);
+}
+
 // Post-it das frases e visor (D33): texto de verdade, com o mínimo de 4,5:1 (falha o script).
 for (const [tema, p] of Object.entries({ claro, escuro })) {
   const grupo = `Post-it e visor, tema ${tema} (4,5:1)`;

@@ -69,6 +69,31 @@
   }
 }
 
+/*
+ * Texto pequeno nas lombadas (D35): onde a cor do livro não passa de 4,5:1 com texto pequeno, as
+ * lombadas (em pé e deitadas) usam a variante de docs/capas/livros.json. No claro, o destaque da
+ * série vira texto pequeno sobre o papel; no escuro, a cor da Carreira fica por trás do título e do
+ * número. As capas e os títulos grandes continuam na cor principal (exceção decidida pelo Cesar).
+ */
+:is(.lombada-visual, .deitado) {
+  --baixo-tinta: var(--livro-destaque-texto);
+  --revista-destaque-texto: var(--livro-destaque-texto);
+}
+
+:root[data-theme="dark"] :is(.lombada-visual, .deitado) {
+  --baixo: var(--livro-cor-texto);
+  --baixo-tinta: var(--livro-tinta);
+  --revista-destaque-texto: var(--revista-destaque);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) :is(.lombada-visual, .deitado) {
+    --baixo: var(--livro-cor-texto);
+    --baixo-tinta: var(--livro-tinta);
+    --revista-destaque-texto: var(--revista-destaque);
+  }
+}
+
 /* ---------- traço dos desenhos e dos ícones ---------- */
 
 /*
@@ -572,7 +597,7 @@
   font-family: var(--font-livro-italico);
   font-variation-settings: "opsz" 26;
   font-weight: 500;
-  color: var(--revista-destaque);
+  color: var(--revista-destaque-texto);
 }
 
 .de-serie .numero-lombada {

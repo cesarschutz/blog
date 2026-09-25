@@ -99,7 +99,7 @@ export function montarLivros(): Promise<Livro[]> {
             linhas: [s.nome],
             descricao: s.descricao,
             // A revista é papel com o destaque: a faixa do topo, o complemento, o número e a barra.
-            cores: { cor: s.destaque, tinta: PAPEL, destaque: s.destaque, papel: PAPEL, tintaPapel: TINTA_PAPEL },
+            cores: { cor: s.destaque, tinta: PAPEL, destaque: s.destaque, papel: PAPEL, tintaPapel: TINTA_PAPEL, destaqueTexto: s.destaqueTexto },
             revista: {
               numero: s.numero,
               tituloPrincipal: s.tituloPrincipal,
@@ -124,7 +124,8 @@ export function montarLivros(): Promise<Livro[]> {
 /** Variáveis de cor do livro, para o style de lombadas e capas. */
 export const coresDoLivroCss = (l: Livro) =>
   `--livro-cor:${l.cores.cor};--livro-tinta:${l.cores.tinta};--livro-destaque:${l.cores.destaque};` +
-  `--livro-papel:${l.cores.papel};--livro-tinta-papel:${l.cores.tintaPapel}`;
+  `--livro-papel:${l.cores.papel};--livro-tinta-papel:${l.cores.tintaPapel};` +
+  `--livro-cor-texto:${l.cores.corTexto ?? l.cores.cor};--livro-destaque-texto:${l.cores.destaqueTexto ?? l.cores.destaque}`;
 
 /** Texto que o filtro do sumário procura: título, subtítulo e tags, sem acento. */
 export const textoDoFiltro = (p: Resumo) => normalizar(`${p.titulo} ${p.subtitulo} ${p.tags.join(" ")}`);

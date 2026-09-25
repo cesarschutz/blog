@@ -30,3 +30,12 @@ bench/
 
 # Renders de conferência dos desenhos (scripts/desenho/render.mjs)
 .render/
+
+# posts trazidos pelo Cesar para adaptar (skill post, D35)
+entrada/
+
+# Impeccable: o motor fica em ~/.impeccable (D35); cache e ajustes locais do hook
+.claude/skills/impeccable/scripts/bin/
+.impeccable/hook.cache.json
+.impeccable/hook.pending.json
+.impeccable/config.local.json

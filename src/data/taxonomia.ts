@@ -21,6 +21,13 @@ export interface CoresDoLivro {
   papel: string;
   /** Texto comum sobre o papel. */
   tintaPapel: string;
+  /**
+   * Variantes para texto pequeno (D35), só onde a cor principal não passa de 4,5:1: a cor por trás de
+   * texto claro pequeno (Carreira) e o destaque como texto pequeno sobre o papel (série). As capas e
+   * os títulos grandes continuam com a cor principal.
+   */
+  corTexto?: string;
+  destaqueTexto?: string;
 }
 
 export interface Categoria {
@@ -61,7 +68,7 @@ export const CATEGORIAS: Categoria[] = dados.livros.map((l) => ({
   descricao: l.subtituloCompleto,
   temas: l.temas,
   cor: l.cor,
-  cores: { ...coresDoLivro(l.cor), papel: PAPEL, tintaPapel: TINTA_PAPEL },
+  cores: { ...coresDoLivro(l.cor), papel: PAPEL, tintaPapel: TINTA_PAPEL, corTexto: l.corTexto },
   instrumento: l.instrumento,
   emPe: l.lombadaEmPe,
   deitada: l.lombadaDeitada,

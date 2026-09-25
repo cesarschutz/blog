@@ -260,6 +260,7 @@
         "O time"
       ],
       "cor": "#9a7650",
+      "corTexto": "#816342",
       "cores": {
         "tinta": "#efe8d8",
         "destaque": "#7f5b36"
@@ -284,6 +285,7 @@
       "complemento": "do Java",
       "numero": 1,
       "destaque": "#c24d1c",
+      "destaqueTexto": "#b8481a",
       "numeroDeCapa": "25",
       "rotuloDoNumero": "Última edição",
       "edicoes": [

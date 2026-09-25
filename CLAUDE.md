@@ -20,6 +20,15 @@ Modo de trabalho combinado em 23/09/2026: seguir as fases do briefing **sem para
 (atualizando o `docs/estado.md` ao fechar cada uma) e deixar o site rodando **só na máquina**, para o
 Cesar acompanhar. Ele revisa tudo no fim.
 
+## Posts, visual e ferramentas (D35)
+
+- O **`DESIGN.md`** (raiz) é a fonte de verdade do visual. Ele vence qualquer ferramenta, inclusive o
+  Impeccable (sem "go all out", redesign ou troca do `DESIGN.md`).
+- Todo trabalho em post (criar, escrever, adaptar, importar, migrar, revisar) segue a skill **`post`**.
+- Posts para adaptar ficam em **`entrada/`** (fora do git).
+- **Nunca** instalar skill, MCP ou pacote de terceiros sem ler o código antes e reportar ao Cesar o que
+  for suspeito (rede, variáveis de ambiente, credenciais, comandos destrutivos).
+
 ## Regras que valem sempre
 
 - Tudo em pt-BR, com acentuação correta. Identificadores de código podem ficar em inglês.
@@ -120,6 +129,7 @@ npm run check        # astro check: 0 erros antes de mostrar qualquer coisa ao C
 npm run preview      # serve o dist/; é onde a busca funciona (no dev não há índice)
 npm run contraste    # contraste dos tokens (D22); falha se texto ficar abaixo do mínimo
 npm run links        # confere links internos, âncoras e redirecionamentos do dist/
+npm run setup        # confere o ambiente (Node, dependências, skills, Chrome, motor do Impeccable)
 npm run apresentacao -- <slug> --pptx <arquivo> --titulo "…"   # slides do NotebookLM
 node scripts/desenho/validar.mjs [slug]   # regras da ilustração e das lousas
 node scripts/desenho/centrar.mjs <slug>   # centra os recortes no desenho (dev no ar)
@@ -140,6 +150,8 @@ Medição da busca (D2): `scripts/bench-busca/` (construir, conferir, medir), co
 "(planejado)" marca o que ainda não existe. Atualize quando mudar.
 
 ```
+DESIGN.md                sistema visual (fonte de verdade do visual, formato DESIGN.md do Google)
+entrada/                 posts trazidos para adaptar (fora do git)
 docs/briefing.md         decisões de produto e design (fonte da verdade)
 docs/estado.md           painel: fase, pronto, próximos passos, perguntas
 docs/decisoes.md         registro de decisões (data, decisão, motivo, alternativas)
@@ -165,22 +177,48 @@ src/lib/                 posts, formatos, busca (Pagefind), código (Expressive 
 src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, apresentação)
 src/scripts/tema.ts      tema claro/escuro/sistema (menu de aparência do cabeçalho, D33)
 src/scripts/som.ts       som dos livros e do post-it (Web Audio, sem arquivos; desliga no menu, D33)
-scripts/                 contraste, links, apresentacao, og, copiar-katex, desenho/, bench-busca/
+scripts/                 contraste, links, apresentacao, og, copiar-katex, desenho/, bench-busca/,
+                         verificar-ambiente (npm run setup e hook do início da sessão)
 public/posts/<slug>/     diagramas antigos e slides das apresentações (deck/)
 src/ilustracoes/         uma ilustração SVG por post (<slug>.svg), com os recortes na raiz (D11)
 src/lousas/<slug>/       desenhos das lousas de cada post .mdx
 .github/workflows/       deploy no GitHub Pages (a cada push na main, D34)
-.claude/skills/          procedimentos (carregados sob demanda)
+.claude/skills/          procedimentos (carregados sob demanda); as de terceiros são cópias lidas
+.claude/agents/          subagentes do Impeccable
+.claude/revisao-posts.md lista e status da revisão em lote dos posts
+.mcp.json                MCPs do projeto (astro-docs, chrome-devtools)
 .claude/rules/           regras por caminho (posts, desenhos)
 ```
 
 ## Skills
 
-- `novo-post`: criar, reescrever, revisar ou migrar um artigo (fluxo e checklist)
+- `post`: todo post, nos modos Novo e Adaptar, com o checklist único e a revisão em lote
+  (`.claude/revisao-posts.md`)
 - `desenho`: a ilustração de cada post (o que desenhar, regras técnicas, recortes, validação)
 - `lousa`: diagramas na lousa (passo a passo, linha do tempo, loop) e frase em destaque
 - `apresentacao`: PowerPoint do NotebookLM → slides WebP e PDF
 - `serie-java`: série "Atualizações do Java" (só LTS)
+- De terceiros, lidas antes de instalar (D35): `impeccable` (revisão de design; o motor fica em
+  `~/.impeccable`), `gsap-*` (animações), `web-quality-audit`, `accessibility`, `performance`,
+  `core-web-vitals`, `seo` e `best-practices`. Atualizar = ler a versão nova antes.
+- MCPs do projeto (`.mcp.json`): `astro-docs` (documentação do Astro) e `chrome-devtools`
+  (`chrome-devtools-mcp@1.10.1`, sem telemetria), usados na conferência dos posts.
+
+## Em outro computador
+
+- **Instalar à mão:** Node 22.12 ou mais novo (o Astro 7 exige; o projeto usa o 24, `.node-version`),
+  o Google Chrome e o Claude Code. O `pdftocairo` (poppler) só para regerar a marca.
+- **Depois do clone:** `npm run setup` (`scripts/verificar-ambiente.mjs`). Ele roda o `npm install`
+  se faltar `node_modules`, confere as skills em `.claude/skills`, o Chrome e o **motor do
+  Impeccable**, que não fica no git: é baixado para `~/.impeccable/bin/<versão>/` no primeiro uso
+  (`.claude/skills/impeccable/scripts/impeccable engine-probe` baixa e confere o SHA-256). Termina
+  com "Ambiente OK" ou com a lista do que falta e como resolver.
+- O mesmo script roda sozinho no início de cada sessão do Claude Code (hook `SessionStart`). **Se ele
+  apontar falta, resolva antes de qualquer tarefa ou diga ao Cesar o que ele precisa fazer.**
+- Ao abrir o projeto, o Claude Code pede para aprovar os MCPs do `.mcp.json` (eles já estão
+  habilitados no `.claude/settings.json`) e os hooks do projeto: aprove.
+- Telemetria desligada no `env` do `.claude/settings.json` (`DO_NOT_TRACK`, `IMPECCABLE_NO_TELEMETRY`,
+  `DISABLE_TELEMETRY`).
 
 ## Armadilhas do ambiente
 

@@ -20,6 +20,12 @@ livros invertidos no escuro, ilustrações maiores e os bugs da apresentação e
 Tudo isso **aguarda a aprovação do Cesar** (antes e depois mostrados a ele). A virada do
 domínio (`docs/virada.md`) só acontece com o OK dele; nada foi commitado nem publicado.
 
+**Configuração de posts (D35), 25/09/2026, na branch `configuracao-posts`:** processo único de post
+(skill `post`, modos Novo e Adaptar), `DESIGN.md` na raiz, pasta `entrada/`, skills Impeccable, GSAP
+e web quality lidas e instaladas, MCPs `astro-docs` e `chrome-devtools`, `npm run setup` com hook no
+início da sessão, revisão em lote em `.claude/revisao-posts.md` (26 posts pendentes). Junto: o livro
+inclinado não tomba mais e as lombadas da Carreira e da série usam a variante de texto pequeno.
+
 ## Como ver
 
 - `fnm exec --using=24 npm run dev -- --host 127.0.0.1`: o Astro 7 sobe em segundo plano (hoje <http://127.0.0.1:4322>).
@@ -81,12 +87,10 @@ domínio (`docs/virada.md`) só acontece com o OK dele; nada foi commitado nem p
 1. Aprovação do ajuste visual (D26 a D33) e retoques; depois, medir o Lighthouse de novo (a
    fonte da interface soma 45,7 KB, e ele não foi medido depois do ajuste).
 2. A página Sobre: o Cesar escreve depois (D33). Até lá, `/about/` leva à home.
-3. Decidir com o Cesar o contraste de dois livros (D32): o texto claro na cor da Carreira (3,39:1) e
-   o laranja da série sobre o papel (4,11:1) ficam abaixo de 4,5:1, exatamente como nas referências.
-4. Decidir com o Cesar o que fazer com o blog antigo (D34): os dois têm os mesmos artigos. Ou o novo
+3. Decidir com o Cesar o que fazer com o blog antigo (D34): os dois têm os mesmos artigos. Ou o novo
    fica fora dos buscadores (`noindex`) até o antigo sair, ou o antigo passa a redirecionar para o
    novo, ou a virada do domínio principal (`docs/virada.md`).
-5. Medir a busca e o Lighthouse no site publicado (regra 4 da D2).
+4. Medir a busca e o Lighthouse no site publicado (regra 4 da D2).
 
 ## Perguntas abertas para o Cesar
 

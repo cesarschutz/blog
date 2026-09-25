@@ -752,3 +752,43 @@ nada muda.
   conteúdo duplicado para os buscadores. Opções: o novo fora do Google (`noindex`, já previsto no
   layout pela variável `PREVIEW`) até o antigo sair; o antigo redirecionando para o novo; ou a virada
   do domínio principal (`docs/virada.md`).
+
+## D35 · Processo único de posts, ferramentas do projeto e portabilidade
+- **Data:** 25/09/2026 · **Status:** aprovado pelo Cesar; em execução na branch `configuracao-posts`.
+- **Pedido do Cesar:** todo post (novo ou adaptado) segue o mesmo processo e o mesmo estilo, e tudo
+  funciona igual num clone em outro computador: skills, MCPs e hooks versionados no projeto, um
+  `DESIGN.md` na raiz, a pasta `entrada/` (fora do git) e uma skill única `post`.
+- **Segurança (lido antes de instalar, relatório na conversa de 25/09/2026):** gsap-skills e
+  web-quality-skills são só Markdown (o `analyze.sh` só lê HTML). O Impeccable roda um motor
+  compilado em Rust (o código é aberto, o binário vem do GitHub Releases com SHA-256); os hooks rodam a
+  cada edição de arquivo de interface e no fim de cada resposta, sem rede nesse caminho; alguns
+  comandos (`shape`, `generate`, `live`) usam a rede só quando chamados. O chrome-devtools-mcp coleta
+  uso por padrão e manda URLs à API CrUX. Aceito pelo Cesar com estas condições:
+  - **Motor do Impeccable** baixado para `~/.impeccable/bin/` no primeiro uso (não versionado; seriam
+    ~74 MB no git). O `scripts/verificar-ambiente.mjs` confere se ele está lá.
+  - **Telemetria desligada:** `DO_NOT_TRACK=1`, `IMPECCABLE_NO_TELEMETRY=1` e `DISABLE_TELEMETRY=1` no
+    `env` do `.claude/settings.json`; o chrome-devtools-mcp com `--no-usage-statistics` e
+    `--no-performance-crux`.
+  - **Versão fixa:** `chrome-devtools-mcp@1.10.1` (a que foi lida), atualizada à mão.
+  - **As decisões do blog vencem o Impeccable:** o "go all out", o redesign e a troca do `DESIGN.md`
+    que a skill dele sugere não valem aqui (escrito no `DESIGN.md` e na skill `post`).
+- **Desenhos:** continua o método atual (SVG desenhado à mão, tremor por `feTurbulence`, D11 e
+  `docs/estilo-desenho.md`). **O Rough.js não entra**, embora estivesse no pedido original. Na
+  conferência no navegador, olhar o custo do filtro no trace de performance, principalmente nos
+  desenhos animados.
+- **Bibliotecas:** `gsap` (animações das lousas novas, carregado só no post que usa). Rough.js recusado
+  (acima).
+- **Movimento na home (pergunta respondida em 25/09/2026):** o livro inclinado não tomba mais na
+  primeira visita da sessão; ele já aparece apoiado no aparador. Na home, nenhum livro cai e nenhum
+  texto muda de cor. A frase em destaque que acende é um recurso raro **dos posts**, não da home.
+  Código mudado: `Base.astro` (script do `<head>`), `Gaveta.astro` e `estante.css`.
+- **Contraste da Carreira e da série (pendência de D32, decidida em 25/09/2026):** as cores atuais
+  continuam nas capas e nos títulos grandes (acima de 3:1, texto grande), como exceção decidida.
+  Texto pequeno nessas cores usa sempre uma variante escura: Carreira `#816342` (4,53:1 com a tinta
+  clara) e série Java `#b8481a` (4,52:1 sobre o papel), em `docs/capas/livros.json` (`corTexto`,
+  `destaqueTexto`). Conferido onde elas eram texto pequeno: só nas lombadas (em pé na estante e
+  deitadas na lateral), o complemento e o número da série no claro e o título e o número da Carreira
+  no escuro. Mudado: `taxonomia.ts`, `series.ts`, `estante.ts` (`--livro-cor-texto`,
+  `--livro-destaque-texto`), `livro.css`, `PainelHome.astro`; o `npm run contraste` passou a exigir
+  4,5:1 no texto pequeno das lombadas. No escuro, a lombada da Carreira no livro 3D fica um tom mais
+  escura que a capa ao lado, igual à da estante.

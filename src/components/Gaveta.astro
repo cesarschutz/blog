@@ -289,21 +289,5 @@ function linhas(l: Livro): Linha[] {
     pequeno.addEventListener("change", () => {
       if (aberto && !ocupado) montar(aberto, true);
     });
-
-    // Primeira visita da sessão: o livro inclinado começa em pé (script do <head>) e tomba devagar.
-    const raiz = document.documentElement;
-    const inclinada = estante.querySelector<HTMLElement>(".lombada.inclinada");
-    if (inclinada && "tombar" in raiz.dataset) {
-      setTimeout(() => {
-        inclinada.classList.add("tombando");
-        delete raiz.dataset.tombar;
-        setTimeout(() => inclinada.classList.remove("tombando"), 1200);
-        try {
-          sessionStorage.setItem("estante-tombou", "1");
-        } catch {
-          // Sem armazenamento: tomba de novo na próxima visita, sem outro efeito.
-        }
-      }, 700);
-    }
   }
 </script>

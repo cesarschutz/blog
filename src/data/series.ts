@@ -23,6 +23,8 @@ export interface Serie {
   complemento: string;
   /** Cor de destaque da revista; faz também o papel da cor da categoria (chip, barra, desenho, D23). */
   destaque: string;
+  /** O destaque para texto pequeno sobre o papel, quando o destaque não passa de 4,5:1 (D35). */
+  destaqueTexto?: string;
   numeroDeCapa: string;
   rotuloDoNumero: string;
   /** As edições da capa; a última é a atual. */
@@ -52,6 +54,7 @@ export const SERIES: Serie[] = CADASTRO.map((s) => {
     tituloPrincipal: l.tituloPrincipal,
     complemento: l.complemento,
     destaque: l.destaque,
+    destaqueTexto: l.destaqueTexto,
     numeroDeCapa: l.numeroDeCapa,
     rotuloDoNumero: l.rotuloDoNumero,
     edicoes: l.edicoes,

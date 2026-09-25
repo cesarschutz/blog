@@ -5,7 +5,7 @@ paths:
 
 # Arquivos de post
 
-Para criar, reescrever ou revisar um post, siga a skill `novo-post`. O essencial:
+Para criar, adaptar, reescrever ou revisar um post, siga a skill `post` (e o `DESIGN.md`). O essencial:
 
 - **Tamanho:** de 1.500 a 2.500 palavras (8 a 12 min), com teto de ~3.000. Assunto maior vira série
   ou partes. Os posts migrados do blog atual não precisam ser encurtados.

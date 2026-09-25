@@ -205,8 +205,8 @@ Referência: aba "Home" do protótipo.
     atravessando a estante. Sem artigos, o número não aparece.
   - Depois das categorias, um **aparador de livros** e as **séries**, finas como revistas: papel com
     a faixa no destaque no topo, o emblema, o título com o complemento em itálico e o número.
-  - O último livro da coleção fica inclinado 6°, apoiado no alto do aparador. Na **primeira visita
-    da sessão**, ele começa em pé e tomba até o aparador (uma vez só; `sessionStorage`).
+  - O último livro da coleção fica inclinado 6°, apoiado no alto do aparador, **parado** (D35: ele
+    tombava na primeira visita da sessão, e isso saiu porque na home nenhum livro cai).
   - Ao passar o mouse, a lombada sobe alguns pixels.
   - **Abrir um livro**: a lombada sai e deixa o espaço vazio na prateleira; abaixo da estante
     abre uma gaveta com o livro girando da lombada até ficar em **três quartos**, com a lombada e a
@@ -479,7 +479,7 @@ com `@` organiza, mas não economiza contexto; o que economiza é skill e regra 
 - `docs/estilo-desenho.md`: o estilo das ilustrações e das lousas (seções 6 e 7).
 - `docs/briefing.md`: este arquivo.
 - Skills em `.claude/skills/<nome>/SKILL.md` (com `name` e `description` no frontmatter),
-  por exemplo: `novo-post` (fluxo completo e checklist da seção 8.2), `desenho` (regras
+  por exemplo: `post` (fluxo completo e checklist da seção 8.2; era `novo-post` até a D35), `desenho` (regras
   técnicas da seção 6, lendo `docs/estilo-desenho.md`, e os scripts de validação), `lousa`
   (como montar os três componentes da seção 7), `apresentacao` (seção 8.3), `serie-java`.
 - Regras em `.claude/rules/` com `paths`: uma para os arquivos de post (tamanho, fontes,
