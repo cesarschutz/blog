@@ -936,7 +936,7 @@ nada muda.
   aberto em três quartos escondia a capa; o som e o painel de aparência eram peso sem uso.
 
 ## D40 · Livros em movimento, com GSAP
-- **Data:** 25/09/2026 · **Status:** aprovada pelo Cesar; em execução, um lote por ideia, sem push.
+- **Data:** 25/09/2026 · **Status:** aprovada e aplicada, um lote por ideia (cinco commits), sem push.
 - **Pedido do Cesar:** animar os livros com GSAP, tendo como guia de movimento, tempos e ângulos o
   protótipo `docs/prototipos/livros-em-movimento.html` (peças reais do blog; não é código para
   copiar), a partir do acabamento da D39 (cor fixa, lombada única, 18°, livro escurecido). Esta

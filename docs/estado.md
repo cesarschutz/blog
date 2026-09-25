@@ -118,9 +118,18 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
   topo da categoria e da série e no fim do artigo. Antes e depois em
   `.impeccable/review/acabamento/index.html` (fora do git).
 
+- **Livros em movimento (D40, 25/09/2026), só local, sem push:** GSAP sob demanda
+  (`src/scripts/gsap.ts`) e cinco lotes: 1 a estante responde ao mouse (home e filtro, com legenda);
+  2 a estante em repouso (luz e espiadinhas, só a home); 3 a pilha lateral (sai 14px, o atual puxado
+  na chegada); 4 tirar da estante e abrir (a gaveta nova, com o `Livro3D` inteiro: contracapa, lombada,
+  bordas, página e capa com verso); 5 capas com profundidade e o livro ampliado com embalo. Capturas e
+  traces do celular (CPU 4×) em `.impeccable/review/movimento/index.html` (fora do git).
+
 ## Próximos passos
 
-0. Publicar a D39: o Cesar dá o push quando revisar.
+0. Publicar a D39 e a D40: o Cesar dá o push quando revisar. Na D40, aguardam o OK dele: como mostrar
+   os artigos além dos 6 na página do livro aberto (proposta: virar a página) e se a capa entreaberta
+   da ideia 5 deve abrir mais que -28° para as páginas aparecerem melhor.
 0.1. Publicar a auditoria de acabamento (D37, D38): o Cesar dá o push quando revisar. Fora dela ficou
    o lote 7 (topo do post e miniatura da lista mais compactos no celular), que mexe na densidade da
    D27 e da D33.

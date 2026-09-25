@@ -199,7 +199,12 @@ export function estanteViva(raiz: HTMLElement, { emRepouso = false } = {}) {
         if (document.activeElement === el) mover(caixa.left + caixa.width / 2);
       });
     });
-    el.addEventListener("blur", () => (gsap && !movimentoReduzido.matches ? soltar() : mostrarLegenda(null)));
+    el.addEventListener("blur", (e) => {
+      // Indo para outra lombada, quem cuida é o foco dela: devolver tudo ao lugar atropelaria o movimento.
+      if (lombadas.includes(e.relatedTarget as HTMLElement)) return;
+      if (gsap && !movimentoReduzido.matches) soltar();
+      else mostrarLegenda(null);
+    });
   }
 
   raiz.addEventListener("pointermove", (e) => {
