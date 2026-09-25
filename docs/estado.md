@@ -104,9 +104,26 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
   compartilhar no celular. Lighthouse no celular: 100 em acessibilidade, boas práticas e SEO nas 7
   páginas medidas; sem rolagem lateral em 120 combinações de página, largura e tema.
 
+- **Acabamento de design (D39, 25/09/2026), só local, sem push:** cinco lotes, um commit cada:
+  1 livros de cor fixa (categoria sempre com o papel em cima, série sempre clara), a pilha lateral
+  com a mesma lombada da estante, o livro escolhido escurecido (sem contorno azul) e o livro aberto a
+  72°; 2 botão de tema direto (lua ou sol), o som removido e a troca de tema sem pulo (a borda da
+  lousa mudava de 1 para 3px); 3 barras de rolagem finas, sumário sem rolagem lateral, `<wbr>` no
+  código em linha, etiqueta da linguagem no código, diagramas antigos escuros por filtro, travessão
+  preso; 4 sumário na cor do livro e "Do livro" compacto embaixo dele; 5 Séries com destaque largo e
+  Tags com os artigos de cada tag. Antes e depois (e as propostas) em
+  `.impeccable/review/acabamento/index.html` (fora do git).
+
 ## Próximos passos
 
-0. Publicar a auditoria de acabamento (D37, D38): o Cesar dá o push quando revisar. Fora dela ficou
+0. **D39, aguardando o OK do Cesar às propostas** (em `.impeccable/review/acabamento/index.html`):
+   item 2 (post-it só na home, A no canto do painel ou B junto do texto), item 6 (lousa de passos:
+   desktop com passos a 40% e esmaecidos; celular, tablet e movimento reduzido com ◀ 2 de 5 ▶) e item 9
+   com o E (texto em 720px, ~72 caracteres; blocos na largura do cartão; corpo sem cartão no celular;
+   marca d'água no topo da categoria e da série e/ou no fim do artigo). Depois do OK: aplicar, tirar
+   a lógica de frases por tema (lote 4 da D37) e o post-it dos posts.
+
+0.1. Publicar a auditoria de acabamento (D37, D38) e a D39: o Cesar dá o push quando revisar. Fora dela ficou
    o lote 7 (topo do post e miniatura da lista mais compactos no celular), que mexe na densidade da
    D27 e da D33.
 1. Aprovação do ajuste visual (D26 a D33) e retoques; depois, medir o Lighthouse de novo (a
