@@ -1,8 +1,10 @@
 # Blog de Cesar Schutz
 
-Blog técnico pessoal de **Cesar Schutz**, arquiteto de soluções, em **pt-BR**. Domínio final:
-<https://cesarschutz.com.br> (GitHub Pages). É **só um blog**: artigos, categorias, tags, séries,
-busca e RSS. O blog antigo continua no ar até a troca do domínio, que só acontece com o OK do Cesar.
+Blog técnico pessoal de **Cesar Schutz**, arquiteto de soluções, em **pt-BR**. Publicado em
+<https://blog.cesarschutz.com.br> pelo GitHub Pages do repositório `cesarschutz/blog` (D34): **todo
+push na `main` publica o site** (workflow `deploy.yml`). É **só um blog**: artigos, categorias,
+tags, séries, busca e RSS. O blog antigo continua em <https://cesarschutz.com.br>; mexer nele ou no
+domínio principal só com o OK do Cesar (`docs/virada.md`).
 
 As decisões de produto e design estão em `docs/briefing.md`, que é a fonte da verdade. Não reabra o
 que está marcado como **decidido** sem perguntar. O que for decidido aqui vai para `docs/decisoes.md`.
@@ -102,8 +104,9 @@ Aprovada em 23/09/2026. Detalhes em `docs/decisoes.md`.
   (código); nos livros, Bitter e Newsreader itálico (D30)
 - Busca com Pagefind e interface própria (D2, por medição): índice gerado no `postbuild`
 - Node 24 (`.node-version`, instalado pelo fnm) e npm
-- Por enquanto tudo roda só na máquina, sem pré-visualização publicada (D13). O deploy final será por
-  GitHub Actions no GitHub Pages
+- Publicado por GitHub Actions no GitHub Pages, em `blog.cesarschutz.com.br` (D34): o `deploy.yml`
+  roda a cada push na `main` (`withastro/action` e `deploy-pages`), e o domínio fica nas
+  configurações do Pages do repositório (DNS: `blog` CNAME `cesarschutz.github.io`, no registro.br)
 
 ## Comandos
 
@@ -166,7 +169,7 @@ scripts/                 contraste, links, apresentacao, og, copiar-katex, desen
 public/posts/<slug>/     diagramas antigos e slides das apresentações (deck/)
 src/ilustracoes/         uma ilustração SVG por post (<slug>.svg), com os recortes na raiz (D11)
 src/lousas/<slug>/       desenhos das lousas de cada post .mdx
-.github/workflows/       deploy no GitHub Pages (preparado; roda só depois da virada)
+.github/workflows/       deploy no GitHub Pages (a cada push na main, D34)
 .claude/skills/          procedimentos (carregados sob demanda)
 .claude/rules/           regras por caminho (posts, desenhos)
 ```

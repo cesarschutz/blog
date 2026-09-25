@@ -25,7 +25,8 @@ protótipo divergirem, vale o briefing.
 ## 1. O que é o blog
 
 - Blog técnico pessoal de **Cesar Schutz**, arquiteto de soluções. Idioma **pt-BR**.
-  Domínio: `https://cesarschutz.com.br` (GitHub Pages).
+  Endereço: `https://blog.cesarschutz.com.br` (GitHub Pages do repositório `cesarschutz/blog`,
+  D34); o blog antigo continua em `https://cesarschutz.com.br`.
 - É **só um blog**: artigos, categorias, tags, séries, busca e RSS. Sai tudo o que existe
   hoje além disso: página de projetos, card de identidade com números, ícones animados. Voltaram na
   D33, a pedido do Cesar: a **foto** do autor (na assinatura do topo de cada artigo) e as **frases de

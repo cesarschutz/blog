@@ -5,6 +5,9 @@ abertas. O que for aprovado sai daqui e fica no histórico do git e em `docs/dec
 
 ## Fase atual
 
+**Publicado em 25/09/2026 em <https://blog.cesarschutz.com.br>** (repositório `cesarschutz/blog`,
+D34): todo push na `main` publica o site. O blog antigo continua em `cesarschutz.com.br`.
+
 **Fases 1 a 7 prontas em 24/09/2026, só local.** No mesmo dia entrou o ajuste visual "Folhas claras"
 (D26, briefing §4) e, depois, a lista e os cards no formato antigo com a home paginada (D27) e o
 painel lateral com as pilhas de livros (D28), a página de categoria (D29) e os livros no padrão da
@@ -80,7 +83,10 @@ domínio (`docs/virada.md`) só acontece com o OK dele; nada foi commitado nem p
 2. A página Sobre: o Cesar escreve depois (D33). Até lá, `/about/` leva à home.
 3. Decidir com o Cesar o contraste de dois livros (D32): o texto claro na cor da Carreira (3,39:1) e
    o laranja da série sobre o papel (4,11:1) ficam abaixo de 4,5:1, exatamente como nas referências.
-4. Revisão geral do Cesar; com o OK dele, primeiro commit e a virada (`docs/virada.md`).
+4. Decidir com o Cesar o que fazer com o blog antigo (D34): os dois têm os mesmos artigos. Ou o novo
+   fica fora dos buscadores (`noindex`) até o antigo sair, ou o antigo passa a redirecionar para o
+   novo, ou a virada do domínio principal (`docs/virada.md`).
+5. Medir a busca e o Lighthouse no site publicado (regra 4 da D2).
 
 ## Perguntas abertas para o Cesar
 
@@ -96,4 +102,4 @@ domínio (`docs/virada.md`) só acontece com o OK dele; nada foi commitado nem p
   60 quadros por segundo (2 quadros lentos em 259). Falta conferir num iPhone de verdade.
   Plano B, se pesar: gravar o tremor na própria geometria, no build.
 - A imagem de compartilhamento precisa de Chrome no build (D10); os runners do GitHub Actions têm.
-- A busca não foi medida no GitHub Pages real (regra 4 da D2): conferir quando houver deploy.
+- A busca não foi medida no GitHub Pages real (regra 4 da D2): conferir no site publicado (D34).

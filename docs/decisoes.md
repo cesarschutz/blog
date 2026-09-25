@@ -727,3 +727,21 @@ nada muda.
   recorte largo (topo do artigo, com as anotações) foi conferido nos 26 e ficou como estava.
 - **Conferido:** `astro check` 0/0, contraste (0 falhas; alertas só nas artes dos livros),
   validador (29 de 29) e cada tela nos dois temas e no celular.
+
+## D34 · Publicação em blog.cesarschutz.com.br, num repositório próprio
+- **Data:** 25/09/2026 · **Status:** feito, a pedido do Cesar.
+- **Pedido do Cesar:** subir o projeto no repositório público `cesarschutz/blog` (criado por ele);
+  no Pages, a fonte "GitHub Actions" (`withastro/action`); no `astro.config.mjs`,
+  `site: 'https://blog.cesarschutz.com.br'` sem `base`; o domínio `blog.cesarschutz.com.br` nas
+  configurações do Pages, com HTTPS obrigatório.
+- **Feito:** o `site` passou para o subdomínio (o `base` fica no padrão, `/`; a variável
+  `BASE_PATH` só existe para uma eventual pré-visualização); o Pages foi ligado com build por
+  workflow; o projeto subiu para a `main` (o `deploy.yml`, que já existia, publica a cada push); o
+  domínio foi configurado no Pages. O DNS já estava pronto no registro.br (`blog` CNAME
+  `cesarschutz.github.io`). O HTTPS obrigatório é ligado assim que o GitHub emite o certificado.
+- **Consequência:** todo push na `main` publica o site. A assinatura das capas, "BLOG.CESARSCHUTZ.COM.BR"
+  (D30), que era pergunta aberta, agora bate com o endereço.
+- **Em aberto:** o blog antigo continua em `cesarschutz.com.br` com os mesmos artigos, o que é
+  conteúdo duplicado para os buscadores. Opções: o novo fora do Google (`noindex`, já previsto no
+  layout pela variável `PREVIEW`) até o antigo sair; o antigo redirecionando para o novo; ou a virada
+  do domínio principal (`docs/virada.md`).

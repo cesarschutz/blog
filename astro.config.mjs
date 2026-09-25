@@ -61,7 +61,7 @@ const redirecionamentos = {
 };
 
 export default defineConfig({
-  site: process.env.SITE_URL ?? "https://cesarschutz.com.br",
+  site: process.env.SITE_URL ?? "https://blog.cesarschutz.com.br",
   base,
   outDir: process.env.OUT_DIR ?? "./dist",
   trailingSlash: "ignore",

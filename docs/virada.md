@@ -1,5 +1,10 @@
 # Plano de virada: o domínio passa a servir o blog novo
 
+> **Mudou em 25/09/2026 (D34):** o blog novo foi publicado num repositório próprio
+> (`cesarschutz/blog`), em `blog.cesarschutz.com.br`, e o blog atual segue em `cesarschutz.com.br`.
+> Este plano (levar o blog novo para o domínio principal) fica para quando o Cesar quiser aposentar o
+> blog antigo; aí há também a opção mais simples de fazer o antigo redirecionar para o novo.
+
 **Nada daqui é executado sem o OK do Cesar.** O blog atual (`cesarschutz/cesarschutz.github.io`,
 servido em `cesarschutz.com.br`) continua no ar até a última etapa, e a volta atrás é um revert.
 
