@@ -10,9 +10,6 @@
     "DISABLE_TELEMETRY": "1"
   },
   "enabledMcpjsonServers": ["astro-docs", "chrome-devtools"],
-  "enabledPlugins": {
-    "frontend-design@claude-plugins-official": false
-  },
   "hooks": {
     "SessionStart": [
       {

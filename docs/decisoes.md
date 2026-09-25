@@ -792,7 +792,10 @@ nada muda.
   `--livro-destaque-texto`), `livro.css`, `PainelHome.astro`; o `npm run contraste` passou a exigir
   4,5:1 no texto pequeno das lombadas. No escuro, a lombada da Carreira no livro 3D fica um tom mais
   escura que a capa ao lado, igual à da estante.
-- **Plugin `frontend-design` desligado neste projeto (pedido do Cesar em 25/09/2026):**
-  `"enabledPlugins": {"frontend-design@claude-plugins-official": false}` no `.claude/settings.json`.
-  Ele continua instalado e ativo nos outros projetos (escopo do usuário). O plugin `warp` segue
-  ligado (só manda notificações ao terminal Warp, sem rede).
+- **Plugin `frontend-design` removido (pedido do Cesar em 25/09/2026):** primeiro foi desligado só
+  neste projeto, pelo `enabledPlugins` do `.claude/settings.json`. Depois o Cesar decidiu não usá-lo em
+  nenhum projeto: ele foi desinstalado do escopo do usuário (`claude plugin uninstall`) e a linha saiu
+  do `.claude/settings.json`. O plugin `warp` segue ligado (só manda notificações ao terminal Warp,
+  sem rede).
+- **Conferência do blog no navegador (pedido do Cesar em 25/09/2026):** visual, console e performance
+  sempre pelo MCP `chrome-devtools`, nunca pelo `claude-in-chrome` (regra no `CLAUDE.md`).

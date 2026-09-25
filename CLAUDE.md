@@ -46,6 +46,8 @@ Cesar acompanhar. Ele revisa tudo no fim.
   do painel, D29, D33).
   Artigo sem esses componentes funciona sem JS.
 - Fontes servidas pelo próprio site (`@fontsource`). Nunca Google Fonts nem CDN em produção.
+- Para verificar o blog no navegador (visual, console, performance), use sempre o MCP
+  `chrome-devtools`, nunca o `claude-in-chrome`.
 - Não pode parecer feito por IA: nada de fonte genérica, gradiente decorativo, sombra genérica em
   tudo, animação de entrada em cada seção, rótulo em caixa alta ou emoji.
 - Os protótipos em `docs/referencias/` mostram aparência e comportamento, mas não são código para
