@@ -406,11 +406,12 @@ Os diagramas de explicação dentro do post aparecem numa **lousa**. A lousa é 
 
 Três componentes, todos na lousa, com a mesma linguagem:
 
-1. **Passo a passo com a rolagem**: o texto rola à esquerda em parágrafos; a lousa fica fixa
-   à direita e avança um passo por parágrafo (o parágrafo atual fica em destaque). No
-   celular a lousa fica fixa no topo (até ~40% da altura) e os parágrafos passam por baixo em
-   cartões. Se o desenho não couber legível no celular, a versão pequena vira quadros
-   parados, um por passo, junto de cada parágrafo.
+1. **Passo a passo** (D39): na tela de 1024px ou mais, sem movimento reduzido, com a rolagem: a
+   lousa fica fixa à direita e avança um passo por parágrafo; os parágrafos ficam a uns 40% da
+   tela um do outro, todos à vista, o atual inteiro e os outros esmaecidos, sem trecho vazio grande.
+   No celular, no tablet e com movimento reduzido, sem rolagem guiada: a lousa em cima, o texto do
+   passo atual embaixo e "◀ 2 de 5 ▶" com pontos, aceitando deslizar o dedo na lousa. Sem JS, o
+   desenho completo e todos os passos.
 2. **Linha do tempo de arrastar**: comparação que avança no tempo (ex.: "com e sem a chave").
    Controle deslizante + **botão play/pausa** à esquerda (percorre em ~7 s, para 1,5 s no
    resultado e recomeça). Também responde a arrastar sobre o desenho e à roda do mouse (com

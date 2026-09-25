@@ -575,6 +575,9 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   depois, no MCP `chrome-devtools`) e o ganho concreto medido, mostrados ao Cesar. A troca só entra
   com a aprovação dele.
 
+- **Lousa de passos** (D39): com a rolagem só na tela de 1024px ou mais e sem movimento reduzido
+  (passos a 40% da tela, o atual inteiro e os outros esmaecidos); fora disso, passo a passo com
+  "◀ 2 de 5 ▶", pontos e deslizar.
 - **Diagrama que avança com a rolagem só em posts que explicam um fluxo** (passo a passo, linha do
   tempo, antes e depois). Em outros casos, desenho parado. Animações novas desse tipo usam GSAP em
   SVG, carregado só no post que as usa. Com play/pause quando não seguem a rolagem.

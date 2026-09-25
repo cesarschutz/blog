@@ -1,14 +1,17 @@
 ---
 /**
- * Lousa de passo a passo com a rolagem (briefing §7.1): o texto rola à esquerda, um <Passo> por
- * parágrafo, e a lousa fica fixa à direita, avançando um passo a cada parágrafo (o atual fica em
- * destaque; rolando para cima, o desenho se apaga). No celular, a lousa fica fixa no topo (até ~40%
- * da altura) e os parágrafos passam por baixo, em cartões. Sem JS ou com movimento reduzido: o
- * desenho completo e todos os passos acesos.
+ * Lousa de passo a passo (briefing §7.1, D39), um <Passo> por parágrafo. Dois modos:
+ * - com a rolagem (tela de 1024px ou mais, sem movimento reduzido): a lousa fixa ao lado, avançando
+ *   um passo a cada parágrafo; os passos ficam a uns 40% da tela um do outro, o atual inteiro e os
+ *   outros esmaecidos (rolando para cima, o desenho se apaga);
+ * - passo a passo (celular, tablet ou movimento reduzido): a lousa em cima, o texto do passo atual
+ *   embaixo e "◀ 2 de 5 ▶" com pontos; aceita deslizar o dedo na lousa e as setas do teclado.
+ * Sem JS: o desenho completo e todos os passos.
  *
  *   <LousaPassos desenho="<slug>/<nome>" rotulo="Diagrama: …"><Passo>…</Passo>…</LousaPassos>
  */
 import { quadroDaLousa } from "../lib/lousas";
+import { ICONES } from "../lib/icones";
 import "../styles/lousa.css";
 
 interface Props {
@@ -40,6 +43,18 @@ const rss = Astro.locals.rss;
         <div class="fixa">
           <div class="lousa" set:html={svg} />
         </div>
+        <div class="controles" hidden>
+          <button type="button" data-anterior aria-label="Passo anterior">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="rotate:180deg" set:html={ICONES.seta} />
+          </button>
+          <span class="meio">
+            <span data-contador aria-live="polite"></span>
+            <span class="pontos" aria-hidden="true"></span>
+          </span>
+          <button type="button" data-proximo aria-label="Próximo passo">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -48,53 +63,138 @@ const rss = Astro.locals.rss;
 <script>
   import { prepararLousa, quandoVisivel } from "../scripts/lousa";
 
+  // A rolagem guiada só na tela larga e sem movimento reduzido; senão, passo a passo (D39).
+  const comRolagem = matchMedia("(min-width: 1024px) and (prefers-reduced-motion: no-preference)");
   const reduzir = matchMedia("(prefers-reduced-motion: reduce)");
-  const pequeno = matchMedia("(max-width: 760px)");
 
   for (const bloco of document.querySelectorAll<HTMLElement>("[data-lousa-passos]")) {
     const lousa = prepararLousa(bloco.querySelector("svg")!);
     const passos = [...bloco.querySelectorAll<HTMLElement>(".passo")];
+    const controles = bloco.querySelector<HTMLElement>(".controles")!;
+    const anterior = controles.querySelector<HTMLButtonElement>("[data-anterior]")!;
+    const proximo = controles.querySelector<HTMLButtonElement>("[data-proximo]")!;
+    const contador = controles.querySelector<HTMLElement>("[data-contador]")!;
+    const pontos = controles.querySelector<HTMLElement>(".pontos")!;
+    pontos.innerHTML = passos.map(() => "<span></span>").join("");
     bloco.classList.add("animada");
-
-    const atualizar = () => {
-      let t = 0;
-      let chegou = false;
-      if (reduzir.matches) {
-        t = lousa.fim;
-        chegou = true;
-      } else {
-        // O passo avança quando o parágrafo passa por uma linha na tela; no celular, o meio da área
-        // abaixo da lousa fixa.
-        const ancora = innerHeight * (pequeno.matches ? 0.66 : 0.58);
-        passos.forEach((p, i) => {
-          const caixa = p.getBoundingClientRect();
-          if (ancora < caixa.top) return;
-          chegou = true;
-          t = i + Math.min(1, (ancora - caixa.top) / caixa.height);
-        });
-      }
-      lousa.desenhar(t, !reduzir.matches);
-      const atual = chegou ? Math.min(passos.length - 1, Math.floor(t)) : -1;
-      passos.forEach((p, i) => p.classList.toggle("atual", reduzir.matches || i === atual));
-    };
 
     let visivel = false;
     let agendado = false;
+    // Passo a passo: o passo mostrado e o instante já desenhado da lousa.
+    let passo = 0;
+    let t = 0;
+    let quadro = 0;
+    let comecou = false;
+
+    // ---------- com a rolagem ----------
+    const pelaRolagem = () => {
+      // O passo avança quando o parágrafo passa pelo meio da tela.
+      const ancora = innerHeight * 0.55;
+      let tr = 0;
+      let chegou = false;
+      passos.forEach((p, i) => {
+        const caixa = p.getBoundingClientRect();
+        if (ancora < caixa.top) return;
+        chegou = true;
+        tr = i + Math.min(1, (ancora - caixa.top) / caixa.height);
+      });
+      lousa.desenhar(tr, true);
+      const atual = chegou ? Math.min(passos.length - 1, Math.floor(tr)) : 0;
+      passos.forEach((p, i) => p.classList.toggle("atual", i === atual));
+    };
+
+    // ---------- passo a passo ----------
+    const animarAte = (alvo: number) => {
+      cancelAnimationFrame(quadro);
+      if (reduzir.matches) {
+        t = alvo;
+        lousa.desenhar(t, false);
+        return;
+      }
+      const de = t;
+      const duracao = Math.min(1400, 450 + Math.abs(alvo - de) * 700);
+      const inicio = performance.now();
+      const passoDoQuadro = (agora: number) => {
+        const k = Math.min(1, (agora - inicio) / duracao);
+        t = de + (alvo - de) * (1 - (1 - k) ** 2);
+        lousa.desenhar(t, k < 1);
+        if (k < 1) quadro = requestAnimationFrame(passoDoQuadro);
+      };
+      quadro = requestAnimationFrame(passoDoQuadro);
+    };
+
+    const mostrar = (i: number, animar = true) => {
+      passo = Math.max(0, Math.min(passos.length - 1, i));
+      passos.forEach((p, n) => p.classList.toggle("atual", n === passo));
+      [...pontos.children].forEach((p, n) => p.classList.toggle("atual", n === passo));
+      contador.textContent = `${passo + 1} de ${passos.length}`;
+      anterior.disabled = passo === 0;
+      proximo.disabled = passo === passos.length - 1;
+      if (animar) animarAte(passo + 1);
+      else {
+        t = passo + 1;
+        lousa.desenhar(t, false);
+      }
+    };
+
+    anterior.addEventListener("click", () => mostrar(passo - 1));
+    proximo.addEventListener("click", () => mostrar(passo + 1));
+    controles.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") mostrar(passo - 1);
+      else if (e.key === "ArrowRight") mostrar(passo + 1);
+    });
+
+    // Deslizar o dedo na lousa: para a esquerda, o próximo; para a direita, o anterior.
+    let toque: { x: number; y: number } | null = null;
+    const figura = bloco.querySelector<HTMLElement>(".figura")!;
+    figura.addEventListener("pointerdown", (e) => {
+      if (e.pointerType !== "mouse") toque = { x: e.clientX, y: e.clientY };
+    });
+    figura.addEventListener("pointerup", (e) => {
+      if (!toque) return;
+      const dx = e.clientX - toque.x;
+      const dy = e.clientY - toque.y;
+      toque = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) mostrar(passo + (dx < 0 ? 1 : -1));
+    });
+    figura.addEventListener("pointercancel", () => (toque = null));
+
+    // ---------- modo ----------
+    const aplicarModo = () => {
+      const guiada = comRolagem.matches;
+      bloco.classList.toggle("passo-a-passo", !guiada);
+      controles.hidden = guiada;
+      cancelAnimationFrame(quadro);
+      if (guiada) pelaRolagem();
+      else if (comecou) mostrar(passo, false);
+      else {
+        // O primeiro passo se desenha quando a lousa aparece na tela.
+        mostrar(0, false);
+        t = 0;
+        lousa.desenhar(reduzir.matches ? 1 : 0, false);
+      }
+    };
+
     const aoRolar = () => {
-      if (!visivel || agendado) return;
+      if (!visivel || agendado || !comRolagem.matches) return;
       agendado = true;
       requestAnimationFrame(() => {
         agendado = false;
-        atualizar();
+        pelaRolagem();
       });
     };
     quandoVisivel(bloco, (v) => {
       visivel = v;
-      if (v) atualizar();
+      if (!v) return;
+      if (comRolagem.matches) pelaRolagem();
+      else if (!comecou) {
+        comecou = true;
+        mostrar(passo);
+      }
     });
     addEventListener("scroll", aoRolar, { passive: true });
     addEventListener("resize", aoRolar);
-    reduzir.addEventListener("change", atualizar);
-    atualizar();
+    comRolagem.addEventListener("change", aplicarModo);
+    aplicarModo();
   }
 </script>

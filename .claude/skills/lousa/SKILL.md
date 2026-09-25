@@ -16,11 +16,13 @@ A frase em destaque é rara: use só de vez em quando.
 
 ## Os três componentes (briefing §7)
 
-1. **Passo a passo com a rolagem.**
-   - O texto rola à esquerda, em parágrafos. A lousa fica fixa à direita e avança um passo por
-     parágrafo, com o parágrafo atual em destaque.
-   - No celular, a lousa fica fixa no topo (até ~40% da altura) e os parágrafos passam por baixo, em
-     cartões. Se o desenho não couber legível, vira quadros parados, um por passo, junto de cada parágrafo.
+1. **Passo a passo** (D39).
+   - Na tela de 1024px ou mais, sem movimento reduzido: o texto rola à esquerda, em parágrafos a uns
+     40% da tela um do outro; a lousa fica fixa à direita e avança um passo por parágrafo, com o atual
+     inteiro e os outros esmaecidos.
+   - No celular, no tablet e com movimento reduzido: passo a passo, com a lousa em cima, o texto do
+     passo embaixo e "◀ 2 de 5 ▶" com pontos (e deslizar o dedo). Cada passo tem de caber num
+     parágrafo curto, que faça sentido sozinho embaixo da lousa.
 2. **Linha do tempo de arrastar.**
    - Controle deslizante com botão play/pausa à esquerda. A reprodução percorre tudo em ~7 s, para
      1,5 s no resultado e recomeça.

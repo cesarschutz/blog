@@ -148,14 +148,20 @@
   }
 }
 
-/* ---------- passo a passo com a rolagem (LousaPassos) ---------- */
+/* ---------- passo a passo (LousaPassos, D39) ---------- */
 
 /*
  * Mais larga que a coluna do texto, centrada nela: ocupa a largura útil da folha do corpo (o
- * contêiner, .artigo-folha em artigo.css) e avança 32px sobre o respiro de cada lado (D26).
+ * contêiner, .artigo-folha em artigo.css).
+ *
+ * Dois modos, escolhidos pelo script: com a rolagem (tela de 1024px ou mais, sem movimento reduzido),
+ * a lousa fixa ao lado e os passos a uns 40% da tela um do outro, todos à vista, o atual inteiro e os
+ * outros esmaecidos; e o passo a passo (.passo-a-passo: celular, tablet ou movimento reduzido), com a
+ * lousa em cima, o texto do passo atual embaixo e os controles "◀ 2 de 5 ▶" com pontos. Sem JS, o
+ * desenho completo e todos os passos, um embaixo do outro.
  */
 .lousa-passos {
-  --largura: min(1060px, 100cqw + 64px);
+  --largura: min(1060px, 100cqw);
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
   gap: 44px;
@@ -163,32 +169,44 @@
   margin: 0 0 1.2em calc((100% - var(--largura)) / 2);
 }
 
-.lousa-passos .passos {
-  padding: 16vh 0 34vh;
-}
-
-.lousa-passos .passo {
-  display: flex;
-  align-items: center;
-  min-height: 64vh;
-}
-
 .lousa-passos .passo p {
   max-width: 36ch;
   margin: 0;
-  transition: color 0.35s;
-}
-
-/* Os outros passos ficam em --ink-2, e não esmaecidos por opacidade: o texto continua passando de 4,5:1. */
-.lousa-passos.animada .passo:not(.atual) p {
-  color: var(--ink-2);
 }
 
 .lousa-passos .figura {
   position: relative;
 }
 
-.lousa-passos .fixa {
+.lousa-passos .lousa {
+  width: 100%;
+}
+
+.lousa-passos .controles[hidden] {
+  display: none;
+}
+
+/* ---------- com a rolagem ---------- */
+
+.lousa-passos:not(.passo-a-passo) .passos {
+  padding: 6vh 0 26vh;
+}
+
+.lousa-passos:not(.passo-a-passo) .passo {
+  display: flex;
+  align-items: center;
+  min-height: 40vh;
+}
+
+.lousa-passos.animada:not(.passo-a-passo) .passo p {
+  transition: opacity 0.35s;
+}
+
+.lousa-passos.animada:not(.passo-a-passo) .passo:not(.atual) p {
+  opacity: 0.42;
+}
+
+.lousa-passos:not(.passo-a-passo) .fixa {
   position: sticky;
   top: calc(var(--altura-topo) + 8vh);
   display: flex;
@@ -196,61 +214,134 @@
   height: 72vh;
 }
 
-.lousa-passos .lousa {
-  width: 100%;
-}
-
-.lousa-passos .lousa svg {
+.lousa-passos:not(.passo-a-passo) .lousa svg {
   max-height: calc(72vh - 40px);
 }
 
+/* ---------- passo a passo ---------- */
+
+.lousa-passos.passo-a-passo {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+  width: 100%;
+  margin-left: 0;
+}
+
+.passo-a-passo .figura {
+  order: -1;
+  touch-action: pan-y;
+}
+
+.passo-a-passo .lousa svg {
+  max-height: 52svh;
+  margin: 0 auto;
+}
+
+.passo-a-passo .passo:not(.atual) {
+  display: none;
+}
+
+.passo-a-passo .passo p {
+  max-width: none;
+  padding-top: 16px;
+}
+
+.controles {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.controles button {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  background: var(--paper-hi);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.controles button:disabled {
+  color: var(--ink-3);
+  cursor: default;
+}
+
+.controles button:hover:not(:disabled) {
+  border-color: var(--acento);
+  color: var(--acento);
+}
+
+.controles svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.controles .meio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.pontos {
+  display: flex;
+  gap: 7px;
+}
+
+.pontos span {
+  width: 7px;
+  height: 7px;
+  border-radius: 4px;
+  background: var(--rule);
+  transition: width 0.25s, background 0.25s;
+}
+
+.pontos span.atual {
+  width: 18px;
+  background: color-mix(in oklab, var(--cor, var(--acento)), #fff var(--branco-no-escuro));
+}
+
+/* Sem JS no celular: a lousa em cima e os passos embaixo, um depois do outro. */
 @media (max-width: 760px) {
   .lousa-passos {
     grid-template-columns: minmax(0, 1fr);
-    gap: 0;
+    gap: 16px;
     width: 100%;
     margin-left: 0;
   }
 
-  /* A lousa fixa no topo cobre o texto que passa por baixo: mesma cor da folha. */
   .lousa-passos .figura {
     order: -1;
-    position: sticky;
-    top: var(--altura-topo);
-    z-index: 2;
-    padding: 8px 0;
-    background: var(--paper-hi);
   }
 
-  .lousa-passos .fixa {
+  .lousa-passos:not(.passo-a-passo) .fixa {
     position: static;
     height: auto;
   }
 
-  .lousa-passos .lousa {
-    border-radius: 8px;
+  .lousa-passos:not(.passo-a-passo) .passos {
+    padding: 0;
   }
 
-  .lousa-passos .lousa svg {
-    max-height: 38svh;
-    margin: 0 auto;
-  }
-
-  .lousa-passos .passos {
-    padding: 6vh 0 30vh;
-  }
-
-  .lousa-passos .passo {
-    min-height: 54vh;
-  }
-
-  .lousa-passos .passo p {
-    padding: 16px 18px;
-    border: 1px solid var(--rule);
-    border-radius: var(--raio-painel);
-    background: var(--paper-hi);
-    box-shadow: var(--sombra-folha);
-    font-size: 17.5px;
+  .lousa-passos:not(.passo-a-passo) .passo {
+    min-height: 0;
+    margin-bottom: 0.9em;
   }
 }
 
