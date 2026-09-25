@@ -36,10 +36,12 @@ const modificadoEm = Object.fromEntries(
     }),
 );
 
-// URLs antigas que continuam valendo (D7). /about/ tem página própria, para levar a âncora #site.
+// URLs antigas que continuam valendo (D7). A página Sobre saiu (D33): /about/ leva à home, até o Cesar
+// escrever a dele.
 // /2/ e /3/ voltaram a ser as páginas da home (D27). As categorias que viraram livros com outro nome
 // (D30) levam ao livro novo.
 const redirecionamentos = {
+  "/about": comBase("/"),
   "/projects": comBase("/"),
   "/exercicios": comBase("/"),
   // A página da série Java passou para /series/java/, como as categorias (D32).
@@ -102,7 +104,7 @@ export default defineConfig({
     }),
     mdx(),
     sitemap({
-      filter: (pagina) => !/\/about\/$|\/og\//.test(pagina),
+      filter: (pagina) => !/\/og\//.test(pagina),
       serialize(item) {
         const slug = item.url.match(/\/posts\/([^/]+)\/?$/)?.[1];
         const data = slug && modificadoEm[slug];

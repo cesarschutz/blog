@@ -1,0 +1,140 @@
+---
+/**
+ * A marca do blog (D33): o livro "cs" (a capa do Volume 01, com a fita da série saindo por baixo), o
+ * nome e "blog" em itálico. Em linha no cabeçalho e no rodapé; grande na abertura da home, ao lado da
+ * estante, onde ela é o h1. O ícone do navegador é o mesmo livro sobre um quadrado de papel. O
+ * traçado do livro e do "blog" vem de src/lib/marca.ts, e os ícones de public/, todos gerados por
+ * scripts/marca.mjs.
+ */
+import { BLOG_DESCENDENTE, BLOG_SVG, BLOG_VIEWBOX, MARCA_SVG, MARCA_VIEWBOX } from "../lib/marca";
+import { url } from "../lib/url";
+
+interface Props {
+  variante?: "linha" | "grande";
+  /** Sem link: na abertura da home, que já é a página inicial. */
+  semLink?: boolean;
+}
+
+const { variante = "linha", semLink = false } = Astro.props;
+const Elemento = semLink ? "span" : "a";
+---
+
+<Elemento
+  class:list={["marca", `marca-${variante}`]}
+  href={semLink ? undefined : url("/")}
+  style={`--descendente:${BLOG_DESCENDENTE}`}
+>
+  <svg class="marca-livro" viewBox={MARCA_VIEWBOX} aria-hidden="true" focusable="false" set:html={MARCA_SVG} />
+  <span class="marca-texto"
+    ><span class="marca-nome">Cesar Schutz</span>
+    <svg class="marca-blog" viewBox={BLOG_VIEWBOX} role="img" aria-label="blog" set:html={BLOG_SVG} /></span
+  >
+</Elemento>
+
+<style>
+  .marca {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.42em;
+    color: var(--ink);
+    font-family: var(--font-titulo);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .marca-linha {
+    font-size: 21px;
+  }
+
+  /* O livro fica centrado nas maiúsculas; a fita pende abaixo da linha. */
+  .marca-livro {
+    flex: none;
+    width: auto;
+    height: 1.46em;
+    overflow: visible;
+    translate: 0 0.1em;
+  }
+
+  .marca-livro :global(.marca-capa) {
+    fill: var(--marca);
+  }
+
+  /* No escuro, um contorno claro bem leve separa a capa verde do fundo. */
+  :global(:root[data-theme="dark"]) .marca-livro :global(.marca-capa) {
+    stroke: color-mix(in oklab, var(--marca-letra) 30%, transparent);
+    stroke-width: 1.2px;
+    vector-effect: non-scaling-stroke;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme="light"])) .marca-livro :global(.marca-capa) {
+      stroke: color-mix(in oklab, var(--marca-letra) 30%, transparent);
+      stroke-width: 1.2px;
+      vector-effect: non-scaling-stroke;
+    }
+  }
+
+  .marca-livro :global(.marca-dobra) {
+    fill: black;
+    opacity: 0.24;
+  }
+
+  .marca-livro :global(.marca-letras) {
+    fill: var(--marca-letra);
+  }
+
+  .marca-livro :global(.marca-fita) {
+    fill: var(--marca-fita);
+    transform-box: fill-box;
+    transform-origin: 50% 0;
+    transition: rotate 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+
+  /* "blog" em traçado, com a linha de base na do nome (a perna do g desce, como na letra). */
+  .marca-blog {
+    width: auto;
+    height: 0.66em;
+    margin-left: 0.3em;
+    vertical-align: calc(-0.66em * var(--descendente));
+    color: var(--ink-2);
+    fill: currentColor;
+  }
+
+  a.marca:hover .marca-nome {
+    color: var(--ink);
+  }
+
+  a.marca:hover .marca-livro :global(.marca-fita) {
+    rotate: 9deg;
+  }
+
+  .marca-grande {
+    font-size: clamp(40px, 5.4vw, 62px);
+    gap: 0.3em;
+    letter-spacing: -0.015em;
+  }
+
+  .marca-grande .marca-livro {
+    height: 1.3em;
+    translate: 0 0.08em;
+    filter: drop-shadow(0 0.06em 0.08em rgb(0 0 0 / 0.18));
+  }
+
+  .marca-grande .marca-blog {
+    height: 0.56em;
+    vertical-align: calc(-0.56em * var(--descendente));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marca-livro :global(.marca-fita) {
+      transition: none;
+    }
+
+    a.marca:hover .marca-livro :global(.marca-fita) {
+      rotate: none;
+    }
+  }
+</style>

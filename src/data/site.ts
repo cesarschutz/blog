@@ -17,3 +17,22 @@ export const COMENTARIOS = {
 };
 
 export const COMENTARIOS_LIGADOS = Object.values(COMENTARIOS).every(Boolean);
+
+/**
+ * O autor (D33): nome e cargo, a foto do topo dos artigos e os perfis do cabeçalho e do rodapé, como
+ * no blog atual. A foto vem do GitHub, como lá (96 px, o dobro do tamanho em que aparece).
+ */
+export const AUTOR = {
+  nome: "Cesar Schutz",
+  cargo: "Arquiteto de soluções",
+  foto: "https://github.com/cesarschutz.png?size=96",
+  github: "https://github.com/cesarschutz",
+  linkedin: "https://www.linkedin.com/in/cesar-schutz-10341a21/",
+};
+
+/** Frases do rodapé e da abertura, as mesmas do blog atual (D33). */
+export const TEXTOS = {
+  apresentacao:
+    "Publico aqui o que ando estudando — lançamento do Java, código, arquitetura, IA, o que me despertar interesse. Quando o estudo rende algo que vale guardar, vira artigo.",
+  rodape: "O que eu estudo virando artigo — arquitetura, código, Java, IA e o que mais aparecer.",
+};

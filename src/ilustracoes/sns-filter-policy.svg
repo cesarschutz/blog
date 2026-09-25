@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -61 1252 921" data-largo="80 146 1100 468" data-medio="352 80 900 600" data-quadrado="467 45 670 670" data-og="432 -61 740 883" data-segura="600 176 405 408"
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -61 1252 921" data-largo="80 146 1100 468" data-medio="429 131 746 498" data-quadrado="576 153 453 453" data-og="433 -61 740 883" data-segura="600 176 405 408"
   aria-label="Três envelopes caem num funil com a filter policy; só o de tipo pedido chega à fila SQS, o outro é recusado.">
   <g class="tinta">
     <path d="M618 182 H682 A3 3 0 0 1 685 185 V225 A3 3 0 0 1 682 228 H618 A3 3 0 0 1 615 225 V185 A3 3 0 0 1 618 182 Z" transform="translate(6 6)" class="hachura"/>

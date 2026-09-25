@@ -1,12 +1,14 @@
 ---
 /**
  * O livro aberto no topo da página do livro (D29, D30): o mesmo livro 3D da gaveta, já girado até os
- * três quartos (a lombada à esquerda e a capa de frente), com o desenho da capa inline. Tem o mesmo
+ * três quartos (a lombada à esquerda e a capa de frente), com o desenho da capa (ou o emblema da
+ * revista) inline: fora da gaveta não há quem busque o desenho adiado (D33). Tem o mesmo
  * `view-transition-name` do livro deitado do painel (PainelHome): ao abrir a página, o navegador leva
  * o livro da pilha até aqui.
  */
 import Livro3D from "./Livro3D.astro";
-import { coresDoLivroCss, type Livro } from "../lib/estante";
+import { ICONES } from "../lib/icones";
+import { coresDoLivroCss, dadosDoLivro, type Livro } from "../lib/estante";
 import { medidasDoLivro3D } from "../lib/livro-3d";
 import "../styles/livro.css";
 
@@ -19,13 +21,16 @@ interface Props {
    * `data-vt`, e o script do <head> dá o nome quando o link leva à página dele (a grade de livros).
    */
   transicao?: "fixa" | "ao-clicar";
+  /** Clicar no livro abre o livro ampliado (LivroAmpliado, D33): o topo da página do livro. */
+  ampliavel?: boolean;
 }
 
-const { livro, altura = 300, transicao = "fixa" } = Astro.props;
+const { livro, altura = 300, transicao = "fixa", ampliavel = false } = Astro.props;
 const m = medidasDoLivro3D(livro.emPe.largura, altura);
 const px = (v: number) => `${Math.round(v * 100) / 100}px`;
 const estilo = [
   coresDoLivroCss(livro),
+  `--h:${livro.emPe.altura}`,
   `--u:${m.u}px`,
   `--bh:${px(m.bh)}`,
   `--cw:${px(m.cw)}`,
@@ -39,12 +44,29 @@ const estilo = [
   .join(";");
 ---
 
-<div class="livro-em-pe" style={estilo} data-vt={transicao === "ao-clicar" ? livro.id : undefined}>
-  <Livro3D livro={livro} desenho={livro.serie ? "adiado" : "inline"} virado />
+<div
+  class="livro-em-pe"
+  style={estilo}
+  data-vt={transicao === "ao-clicar" ? livro.id : undefined}
+  data-ampliar-livro={ampliavel ? "" : undefined}
+  data-largura={ampliavel ? livro.emPe.largura : undefined}
+  data-nome={ampliavel ? livro.nome : undefined}
+  data-dados={ampliavel ? dadosDoLivro(livro) : undefined}
+  data-href={ampliavel ? livro.href : undefined}
+>
+  <Livro3D livro={livro} desenho="inline" virado />
+  {
+    ampliavel && (
+      <button type="button" class="lupa" data-ampliar aria-label={`Ampliar o livro ${livro.nome}`} title="Ampliar">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.ampliar} />
+      </button>
+    )
+  }
 </div>
 
 <style>
   .livro-em-pe {
+    position: relative;
     width: var(--cw);
     height: var(--bh);
   }

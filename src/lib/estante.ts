@@ -128,3 +128,23 @@ export const coresDoLivroCss = (l: Livro) =>
 
 /** Texto que o filtro do sumário procura: título, subtítulo e tags, sem acento. */
 export const textoDoFiltro = (p: Resumo) => normalizar(`${p.titulo} ${p.subtitulo} ${p.tags.join(" ")}`);
+
+/**
+ * Largura natural da estante, em unidades da referência (as medidas de estante.css): 16 de respiro de
+ * cada lado, 6 entre os livros e o aparador (12 de largura, 43 de margem à esquerda para o livro
+ * inclinado encostar no alto dele e 25 à direita). Em px, vezes o teto de --u (0,42). A estante de
+ * filtro (D33) pode não ter o aparador.
+ */
+export function larguraDaEstante(livros: Livro[], comAparador = true): number {
+  const itens = livros.length + (comAparador ? 1 : 0);
+  const aparador = comAparador ? 43 + 12 + 25 : 0;
+  return Math.ceil(2 * 16 + livros.reduce((soma, l) => soma + l.emPe.largura, 0) + 6 * (itens - 1) + aparador);
+}
+
+/** Linha curta do livro, para legendas (D33): "Volume 01 · 6 artigos" ou "Série · 7 edições". */
+export function dadosDoLivro(l: Livro): string {
+  const n = l.posts.length;
+  if (l.serie) return `Série · ${n} ${n === 1 ? "edição" : "edições"}`;
+  const volume = `Volume ${String(l.volume).padStart(2, "0")}`;
+  return n === 0 ? `${volume} · ainda sem artigos` : `${volume} · ${n} ${n === 1 ? "artigo" : "artigos"}`;
+}

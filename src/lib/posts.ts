@@ -28,6 +28,8 @@ export interface Resumo {
   urlRotulo: string;
   /** Cor que faz o papel da categoria (a cor do livro ou o destaque da série, D23). */
   cor: string;
+  /** Id do livro do post na estante ("livro-<slug>" ou "serie-<chave>"), para os filtros (D33). */
+  livro: string;
   minutos: number;
 }
 
@@ -85,6 +87,7 @@ export function resumir(post: Post): Resumo {
     rotulo: ser?.nome ?? cat?.nome ?? "",
     urlRotulo: ser ? urlSerie(ser) : cat ? urlCategoria(cat.nome) : url("/archive/"),
     cor: ser?.destaque ?? cat?.cor ?? "#56605E",
+    livro: ser ? `serie-${ser.chave}` : cat ? `livro-${cat.slug}` : "",
     minutos: minutosDeLeitura(post.body ?? ""),
   };
 }
@@ -146,4 +149,20 @@ export async function getVizinhos(slug: string): Promise<{ anterior?: Resumo; pr
   }
   const i = resumos.findIndex((r) => r.slug === slug);
   return { anterior: resumos[i + 1], proximo: resumos[i - 1] };
+}
+
+export interface SecaoDoSumario {
+  slug: string;
+  text: string;
+  sub: { slug: string; text: string }[];
+}
+
+/** As seções (h2) de um texto, cada uma com as subseções (h3) dela, para o sumário (D33). */
+export function secoesDoSumario(titulos: { depth: number; slug: string; text: string }[]): SecaoDoSumario[] {
+  const lista: SecaoDoSumario[] = [];
+  for (const h of titulos) {
+    if (h.depth === 2) lista.push({ slug: h.slug, text: h.text, sub: [] });
+    else if (h.depth === 3 && lista.length) lista[lista.length - 1].sub.push({ slug: h.slug, text: h.text });
+  }
+  return lista;
 }

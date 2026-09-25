@@ -14,7 +14,7 @@ const tags = await getTags();
       {
         tags.map((t) => (
           <li>
-            <a class="pilula" href={urlTag(t.nome)} data-busca-tag={t.nome}>
+            <a class="pilula" href={urlTag(t.nome)}>
               #{t.nome} <small>{t.posts.length}</small>
             </a>
           </li>

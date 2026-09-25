@@ -27,11 +27,12 @@ protótipo divergirem, vale o briefing.
 - Blog técnico pessoal de **Cesar Schutz**, arquiteto de soluções. Idioma **pt-BR**.
   Domínio: `https://cesarschutz.com.br` (GitHub Pages).
 - É **só um blog**: artigos, categorias, tags, séries, busca e RSS. Sai tudo o que existe
-  hoje além disso: página de projetos, card de identidade com foto e números, frase do dia,
-  ícones animados. A página "Sobre" completa virá depois; por enquanto existe só `/sobre/`
-  com a seção "Como os artigos são produzidos" (texto no blog atual, em `src/pages/about.astro`).
+  hoje além disso: página de projetos, card de identidade com números, ícones animados. Voltaram na
+  D33, a pedido do Cesar: a **foto** do autor (na assinatura do topo de cada artigo) e as **frases de
+  autores** (num post-it, na home e nos artigos). Não há página Sobre por enquanto (D33: o Cesar
+  escreve depois); `/about/` leva à home.
 - Os textos são escritos com apoio de IA e revisados pelo Cesar. Isso aparece no fim de cada
-  post (seção 5.3) e em `/sobre/`.
+  post (seção 5.3).
 - Aparência: editorial, de livro técnico bem diagramado. Não pode parecer feito por IA:
   nada de fontes genéricas, gradientes decorativos, cards com sombra genérica em tudo,
   animação de entrada em cada seção, rótulos em caixa alta, emojis.
@@ -50,7 +51,7 @@ protótipo divergirem, vale o briefing.
 - **URLs existentes não podem quebrar**: `/posts/<slug>/`, `/archive/`, `/categories/<nome>/`,
   `/tags/<nome>/`, `/series/`, `/java/` (hoje redireciona para `/series/java/`, D32), `/rss.xml`, e os redirecionamentos da série Java
   (`/posts/java-NN/` → `/posts/java-<LTS>/#java-NN`). Páginas que deixam de existir
-  redirecionam: `/about/` → `/sobre/`, `/projects/` → `/`.
+  redirecionam: `/about/` → `/` (D33), `/projects/` → `/`.
 
 ## 3. Stack e desempenho
 
@@ -89,7 +90,7 @@ camada visual: estrutura, conteúdo, rotas e comportamento seguem as seções 5 
   tempo de leitura, categoria, tags, botões, trilha, sumário, legendas e o aviso curto de IA da home.
 - Livros (capas, lombadas e os títulos Séries e Categorias da lateral, D30): **Bitter** e
   **Newsreader** itálico (com o eixo de tamanho óptico, D32), servidas pelo próprio site, pela regra de `docs/capas/CAPAS.md`.
-- Artigo: corpo 18,5px, entrelinha 1,72, coluna de texto com no máximo 680px.
+- Artigo: corpo 18,5px, entrelinha 1,72, coluna de texto com no máximo 760px (era 680px até a D33).
   Números em estilo antigo (`oldstyle-nums`) no texto corrido.
 - Sem fonte de "letra de mão" em lugar nenhum, inclusive nos desenhos e nas lousas.
 
@@ -164,7 +165,10 @@ livro aparece na estante e na lateral, mesmo sem artigos; o número de artigos, 
   (`color-mix` da cor com 11% sobre a superfície no claro, 20% no escuro). As áreas preenchidas do
   desenho usam a mesma cor do painel, o traço fica um pouco mais grosso (×1,2) e o preenchimento de
   destaque, mais forte (78% da cor). Valores em `docs/estilo-desenho.md`.
-- **Acabamento**: busca como campo (ícone, "Buscar" e ⌘K) e botão de tema com ícone no cabeçalho;
+- **Marca** (D33): o livro "cs" (capa do Volume 01 com a fita laranja da série), "Cesar Schutz" e
+  "blog" em itálico, no cabeçalho, no rodapé, grande na abertura da home e no ícone do navegador.
+- **Acabamento**: busca como campo (ícone, "Buscar" e ⌘K), GitHub e LinkedIn só com os ícones e o
+  menu de aparência (claro, escuro, sistema e o som dos livros, D33) no cabeçalho;
   destaque com a descrição do post, tags em pílulas e "Ler artigo"; cards que sobem 4px ao passar o
   mouse (parados com `prefers-reduced-motion`); linhas da lista com fundo leve ao passar o mouse;
   chip de categoria com quadradinho da cor e nome tingido (no claro, a cor com 34% de tinta, para o
@@ -178,13 +182,21 @@ livro aparece na estante e na lateral, mesmo sem artigos; o número de artigos, 
 ### 5.1 Home
 Referência: aba "Home" do protótipo.
 - **Cabeçalho** (D31): **fixo no alto** enquanto a página rola, com o fundo da página levemente
-  translúcido e um fio embaixo que aparece depois de rolar. "Cesar Schutz" à esquerda; à direita
-  **Artigos, Categorias, Séries e Tags**, a busca como campo (com ⌘K) e o botão de tema (§4.3). O RSS
-  saiu do menu (fica no painel lateral e no rodapé). No celular, nome, busca (só o ícone) e tema numa
-  linha; o menu na outra. A altura dele (`--altura-topo`) é descontada pelas âncoras, pelo sumário do
+  translúcido e um fio embaixo que aparece depois de rolar. A marca à esquerda (D33); à direita
+  **Artigos, Categorias, Séries e Tags**, a busca como campo (com ⌘K; só o ícone até 1100px), os ícones
+  do GitHub e do LinkedIn e o menu de aparência (§4.3). O RSS saiu do menu (fica no painel lateral e no
+  rodapé). Até 860px, duas linhas: marca, busca, perfis (somem abaixo de 520px) e aparência numa; o
+  menu na outra. A altura dele (`--altura-topo`) é descontada pelas âncoras, pelo sumário do
   artigo, pelo painel lateral e pelas lousas fixas.
-- **Abertura**: nome, uma frase em primeira pessoa e a linha curta sobre IA; ao lado, a
-  **estante**. Em telas menores que ~860px a estante desce para baixo do texto.
+- **Abertura** (D33): a identidade (a marca e a apresentação do blog atual, "Publico aqui o que ando
+  estudando — …") e a **cena**: a **estante** com o **post-it** das frases colado na parede ao lado
+  dos livros (a borda atrás da revista) e uma prateleira única por baixo dos dois. A partir de 1360px,
+  identidade à esquerda e cena à direita; até 1359px, a cena desce para baixo do texto, no centro; até
+  640px, o post-it sobe para a parede acima dos livros. A linha sobre IA saiu da abertura (fica no fim
+  de cada artigo).
+- **Post-it das frases** (D33): frase em itálico, autor com link para a fonte, **sorteada a cada
+  visita** (sem repetir a última vista), e "outra frase" riscado à mão, que arranca a folha e mostra
+  outra ao acaso. As frases foram revisadas uma a uma contra a fonte (127, todas com a origem).
 - **Estante** (D30, pela regra de `docs/capas/CAPAS.md`):
   - Um livro por categoria, na ordem dos volumes, com as alturas e larguras de `livros.json`. A
     lombada tem o ícone do livro (girado) no bloco de cor de cima e, no papel de baixo, o título na
@@ -203,8 +215,9 @@ Referência: aba "Home" do protótipo.
     prateleira) antes de abrir o próximo; cliques rápidos terminam a animação e abrem o
     último escolhido. Botão "Fechar livro" e tecla Esc.
   - No celular, as lombadas diminuem para caber todas na largura.
-- **Destaque** (só na primeira página): o post mais recente, com a ilustração em 3:2, categoria, data, tempo de
-  leitura, título, subtítulo e tags. O post em destaque **não se repete** na lista abaixo.
+- **Destaque** (só na primeira página): o post mais recente, com a ilustração (o painel acompanha a
+  altura do texto; até 960px, vai para cima), categoria, data e tempo de leitura com os ícones, o
+  **título inteiro**, a descrição e as tags (D33). O post em destaque **não se repete** na lista abaixo.
 - **Artigos recentes**: alternância **Lista / Cards** (guardada no navegador), no formato do blog
   atual (D27). Em cima, categoria, data e tempo de leitura com relógio; o **título inteiro**, grande;
   a **descrição completa** (fonte da interface); até 4 tags em `#tag` (fonte de código). O item
@@ -226,10 +239,12 @@ Referência: aba "Home" do protótipo.
     "Atualizações *do Java*". Comprimento, espessura e deslocamento de `livros.json`; o volume 1 embaixo; todos
     retos; a pilha sobre uma prateleira da cor da estante. A pilha escala com a largura da lateral.
     Ao passar o mouse, o livro sai 8px da pilha (sem movimento com `prefers-reduced-motion`).
-  - **Tags**: as 10 mais usadas em pílulas (o clique abre a busca filtrada por `#tag`) e "Todas as
+  - **Tags**: as 10 mais usadas em pílulas (o clique leva à página da tag, D33) e "Todas as
     tags →".
   - "Assinar via RSS" no pé.
-  - Cada livro de categoria leva à página do livro (§5.2, D29), com a transição do livro.
+  - Cada livro de categoria leva à página do livro (§5.2, D29), com a transição do livro. Os chips de
+    categoria da lista, dos cards e do destaque também levam à página da categoria (D33); na home, só
+    as lombadas da estante abrem a gaveta.
     O de série ainda leva à página que já existia; as telas de série e de tag serão pensadas depois.
 - Sem animação de entrada nas seções.
 
@@ -237,6 +252,11 @@ Referência: aba "Home" do protótipo.
 Todos os artigos (`/archive/`), categoria, tag, série (ordem de leitura) e `/series/java/`
 (página especial da série; porte do blog atual; `/java/` redireciona, D32). Mesma linguagem visual, sem inventar
 componentes novos.
+
+**Todos os artigos** e **tag** (D33): no formato da lista da home, com Lista / Cards; o arquivo
+agrupado por ano, sem a coluna de datas. No topo, numa folha, uma **estante de filtro** com os livros
+que têm artigos na página (e o número deles): clicar num livro mostra só os artigos dele
+(`?livro=<slug>` na URL). A tag mostra também as tags que aparecem junto com ela.
 
 **Categorias** (`/categories/`, D31) e **Séries** (`/series/`, D31): os livros lado a lado, grandes,
 abertos em três quartos como o livro do topo da página de cada um, cada um num cartão (folha) com o
@@ -266,18 +286,22 @@ depois, o guia e as versões, como antes.
 ### 5.3 Artigo
 Referência: aba "Artigo" do protótipo.
 - **Topo**: a ilustração vem **antes do título** (recorte largo no computador, 3:2 no celular),
-  depois trilha "Artigos › Categoria" (ou "Séries › Nome"), título, subtítulo, data,
-  "Atualizado em" quando houver, tempo de leitura.
-- **Título e subtítulo**: o `title` do frontmatter usa " — " para separar; o que vem depois
-  vira subtítulo.
+  depois trilha "Artigos › Categoria" (ou "Séries › Nome"), o **título inteiro** e a **descrição**,
+  como no blog atual (D33), e a assinatura: foto e nome do autor, data com o calendário,
+  "Atualizado em" quando houver e o tempo de leitura com o relógio. No canto de baixo, a marca d'água
+  com o desenho da capa do livro do artigo.
+- **Título**: aparece inteiro, como no `title` do frontmatter, no topo, nas listas, nos cards e na
+  navegação. A divisão em título e subtítulo pelo " — " fica só na imagem de compartilhamento (D33).
 - **Barra de progresso de leitura**: faixa de 3px no topo, na cor da categoria.
-- **Sumário**: em telas ≥ 1300px, à esquerda do texto, numa folha própria e fixa (marca a seção
-  atual em azul-tinta); recolhível no início do texto nas menores. Só aparece com 3 ou mais seções.
-  Embaixo da lista, no sumário lateral, uma barra fina em azul-tinta com a porcentagem lida
-  ("19% lido", em fonte de código), que soma à barra do topo sem substituí-la. Só aparece com JS; se
-  a lista for longa, só ela rola, e a barra fica sempre à vista.
+- **Sumário**: em telas ≥ 1300px, à esquerda do texto, numa folha própria e fixa; recolhível no
+  início do texto nas menores. Só aparece com 3 ou mais seções. No lateral (D33), um trilho: o número
+  de cada seção num marco (um ponto nas sem número), as lidas e a atual pintadas em azul-tinta, as
+  subseções da atual abertas, e a atual sempre à vista. Embaixo, a barra fina com "19% lido" e o tempo
+  que falta (em fonte de código), que soma à barra do topo; só com JS. Depois dele, o post-it das
+  frases (em telas com 720px de altura ou mais).
 - **Notas laterais**: notas de rodapé do Markdown viram notas na margem direita da folha do corpo
-  em telas ≥ 1180px e abrem no lugar, ao tocar no número, nas menores.
+  quando ela tem espaço (a folha, e não a tela, decide, D33) e abrem no lugar, ao tocar no número,
+  nas outras.
 - **Avisos** (inspirados nos admonitions da documentação do Spring), cinco tipos com ícone
   de traço e cor própria, fundo levemente tingido, borda fina (nada de borda grossa à
   esquerda): **Nota, Dica, Importante, Atenção, Cuidado**. Sintaxe no Markdown estilo
@@ -296,13 +320,15 @@ Referência: aba "Artigo" do protótipo.
   compartilhar nativo do celular quando existir); **aviso sobre IA** num bloco com ícone de
   atenção, com o texto atual:
   "Artigo escrito com apoio de IA, revisado pelo autor, com o código testado. Ainda assim pode
-  conter imprecisões: confirme nas fontes citadas e na documentação oficial antes de aplicar.
-  Saiba mais." (link para `/sobre/#como-os-artigos-sao-produzidos`); depois a navegação
-  **Artigo anterior / Próximo artigo** (ou anterior/próxima dentro da série). Sem bloco de
-  "artigos relacionados".
+  conter imprecisões: confirme nas fontes citadas e na documentação oficial antes de aplicar."
+  (sem o "Saiba mais" desde a D33); o cartão **"Do livro"** (o livro 3D da categoria ou a revista da
+  série, que leva à página do livro), com o post-it das frases ao lado quando o do sumário não está à
+  vista; depois a navegação **Artigo anterior / Próximo artigo** (ou anterior/próxima dentro da
+  série), com o título inteiro. Sem bloco de "artigos relacionados".
 - Botão "voltar ao topo" depois de uma tela de rolagem. Comentários (Giscus) e estatísticas
   (GoatCounter) continuam opcionais e desligados.
-- Imagens do corpo abrem num lightbox. Tabelas rolam na horizontal no celular.
+- Imagens do corpo abrem num visor sobre a página escurecida (D33), com fechar, setas e contador na
+  apresentação. Tabelas rolam na horizontal no celular.
   Matemática com KaTeX, carregado só em posts que usam.
 
 ### 5.4 SEO e distribuição
@@ -415,7 +441,8 @@ com a rolagem. Use no máximo de vez em quando; o Cesar pode removê-la.
 - **Estrutura**: introdução com o problema concreto em 2 ou 3 frases; seções `##` claras;
   pelo menos **uma lousa** quando houver fluxo, sequência, antes/depois ou linha do tempo
   (post simples fica sem); avisos só quando ajudam; diff quando mostrar antes e depois.
-- **Frontmatter**: `title` (com " — " para o subtítulo), `description` até ~200 caracteres,
+- **Frontmatter**: `title` (aparece inteiro; o " — " só divide a imagem de compartilhamento),
+  `description` até ~200 caracteres,
   `published`, `updated` opcional, `category` **ou** `series`, `tags` (2 a 4, reaproveitando o
   vocabulário existente, sem repetir nome de categoria), `draft`.
 - **Categoria**: encaixe numa existente; se nenhuma servir de verdade, pode criar uma nova

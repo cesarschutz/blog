@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -40 1200 900" data-largo="80 158 1100 468" data-medio="200 100 900 600" data-quadrado="415 110 670 670" data-og="350 -40 740 883" data-segura="415 158 670 468"
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -40 1200 900" data-largo="80 173 1100 468" data-medio="397 200 621 414" data-quadrado="410 110 593 593" data-og="337 -34 740 883" data-segura="440 262 534 290"
   aria-label="Uma chamada chega pela esquerda e passa primeiro pelo proxy, a moldura colorida em volta do PedidoService, antes de chegar ao bean.">
   <g class="tinta">
     <path d="M624 262 H936 A24 24 0 0 1 960 286 V514 A24 24 0 0 1 936 538 H624 A24 24 0 0 1 600 514 V286 A24 24 0 0 1 624 262 Z" transform="translate(14 14)" class="hachura"/>

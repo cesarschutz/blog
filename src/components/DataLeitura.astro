@@ -1,0 +1,72 @@
+---
+/**
+ * Data e tempo de leitura com os ícones do blog atual (D33): o calendário na data e o relógio no
+ * tempo, em todo lugar que mostra os dois (lista, cards, destaque, topo do artigo e arquivo). O
+ * "Atualizado em" entra quando o artigo tem revisão relevante.
+ */
+import { ICONES } from "../lib/icones";
+import { dataIso, dataPorExtenso } from "../lib/formato";
+
+interface Props {
+  data: Date;
+  minutos?: number;
+  atualizado?: Date;
+  /** "40 min de leitura" (destaque e topo do artigo); sem ele, "40 min". */
+  longo?: boolean;
+}
+
+const { data, minutos, atualizado, longo = false } = Astro.props;
+const mostrarAtualizado = atualizado && dataIso(atualizado) !== dataIso(data);
+---
+
+<span class="data-leitura">
+  <span class="item"
+    ><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.calendario} /><time
+      datetime={dataIso(data)}>{dataPorExtenso(data)}</time
+    ></span
+  >
+  {
+    mostrarAtualizado && (
+      <span class="item">
+        Atualizado em <time datetime={dataIso(atualizado)}>{dataPorExtenso(atualizado)}</time>
+      </span>
+    )
+  }
+  {
+    minutos !== undefined && (
+      <span class="item">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.relogio} />
+        {longo ? `${minutos} min de leitura` : `${minutos} min`}
+        {!longo && <span class="sr"> de leitura</span>}
+      </span>
+    )
+  }
+</span>
+
+<style>
+  .data-leitura {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 14px;
+  }
+
+  .item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+  }
+
+  svg {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.85;
+  }
+</style>

@@ -1,13 +1,14 @@
 ---
 /**
- * Destaque da home (briefing §5.1, D26): o post mais recente numa folha, com a ilustração em 3:2 no
- * painel tingido, categoria, data, tempo de leitura, título, subtítulo, descrição, tags em pílulas e
- * o botão "Ler artigo". Sem ilustração, ocupa uma coluna só.
+ * Destaque da home (briefing §5.1, D26, D33): o post mais recente numa folha, com a ilustração no
+ * painel tingido, categoria, data e tempo de leitura (com os ícones), o título inteiro e a descrição
+ * (como no blog atual), tags em pílulas e o botão "Ler artigo". Sem ilustração, ocupa uma coluna só.
  */
 import Chip from "./Chip.astro";
+import DataLeitura from "./DataLeitura.astro";
 import Ilustracao from "./Ilustracao.astro";
 import { ICONES } from "../lib/icones";
-import { dataIso, dataPorExtenso, mdEmLinha } from "../lib/formato";
+import { mdEmLinha } from "../lib/formato";
 import { temIlustracao } from "../lib/ilustracoes";
 import { urlTag, type Resumo } from "../lib/posts";
 
@@ -24,24 +25,22 @@ const { post } = Astro.props;
     {
       temIlustracao(post.slug) && (
         <a class="ilustracao-destaque painel" href={post.url} tabindex="-1" aria-hidden="true" style={`--cor:${post.cor}`}>
-          <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} tamanho="cartao" decorativa />
+          <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} tamanho="cartao" decorativa inteira />
         </a>
       )
     }
     <div class="corpo-destaque">
       <p class="meta">
         <Chip cor={post.cor} nome={post.rotulo} href={post.urlRotulo} />
-        <time datetime={dataIso(post.publicado)}>{dataPorExtenso(post.publicado)}</time>
-        <span>{post.minutos} min de leitura</span>
+        <DataLeitura data={post.publicado} minutos={post.minutos} longo />
       </p>
-      <h3><a href={post.url}>{post.titulo}</a></h3>
-      {post.subtitulo && <p class="subtitulo">{post.subtitulo}</p>}
+      <h3><a href={post.url}>{post.tituloCompleto}</a></h3>
       <p class="descricao" set:html={mdEmLinha(post.descricao)} />
       <ul class="tags" aria-label="Tags">
         {
           post.tags.map((t) => (
             <li>
-              <a class="pilula" href={urlTag(t)} data-busca-tag={t}>
+              <a class="pilula" href={urlTag(t)}>
                 #{t}
               </a>
             </li>
@@ -49,7 +48,7 @@ const { post } = Astro.props;
         }
       </ul>
       <a class="botao-primario" href={post.url}
-        >Ler artigo<span class="sr">: {post.titulo}</span>
+        >Ler artigo<span class="sr">: {post.tituloCompleto}</span>
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} /></a
       >
     </div>
@@ -65,15 +64,20 @@ const { post } = Astro.props;
     padding: 14px;
   }
 
+  /*
+   * O painel do desenho acompanha a altura do texto (D33): o recorte médio aparece inteiro, o maior
+   * possível, centrado no painel, e o painel nunca fica solto no meio do card.
+   */
   .cartao-destaque.com-ilustracao {
     display: grid;
     grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
     gap: 36px;
-    align-items: center;
+    align-items: stretch;
   }
 
   .ilustracao-destaque {
-    aspect-ratio: 3 / 2;
+    display: grid;
+    min-height: 300px;
   }
 
   .corpo-destaque {
@@ -96,10 +100,11 @@ const { post } = Astro.props;
   }
 
   h3 {
-    margin: 10px 0 8px;
-    font-size: clamp(28px, 3.4vw, 40px);
-    line-height: 1.07;
+    margin: 12px 0 0;
+    font-size: clamp(26px, 2.6vw, 36px);
+    line-height: 1.1;
     letter-spacing: -0.01em;
+    text-wrap: pretty;
   }
 
   h3 a {
@@ -112,17 +117,9 @@ const { post } = Astro.props;
     color: var(--acento);
   }
 
-  .subtitulo {
-    max-width: 52ch;
-    margin: 0;
-    font-size: 18.5px;
-    line-height: 1.45;
-    color: var(--ink-2);
-  }
-
   .descricao {
-    max-width: 52ch;
-    margin: 12px 0 0;
+    max-width: 56ch;
+    margin: 14px 0 0;
     font-family: var(--font-ui);
     font-size: 15.5px;
     line-height: 1.6;
@@ -151,10 +148,16 @@ const { post } = Astro.props;
     margin-top: 22px;
   }
 
-  @media (max-width: 760px) {
+  /* Até 960px, o desenho vai para cima, na largura toda: lado a lado, ele ficaria pequeno no painel. */
+  @media (max-width: 960px) {
     .cartao-destaque.com-ilustracao {
       grid-template-columns: minmax(0, 1fr);
       gap: 18px;
+    }
+
+    .ilustracao-destaque {
+      min-height: 0;
+      aspect-ratio: 3 / 2;
     }
 
     .corpo-destaque,

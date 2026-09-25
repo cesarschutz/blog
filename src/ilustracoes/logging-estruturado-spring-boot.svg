@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -40 1202 900" data-largo="80 185 1100 468" data-medio="302 119 900 600" data-quadrado="415 82 674 674" data-og="382 -23 740 883" data-segura="440 262 624 314"
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -40 1202 901" data-largo="80 185 1100 468" data-medio="389 177 726 484" data-quadrado="405 72 693 693" data-og="382 -22 740 883" data-segura="440 262 624 314"
   aria-label="Uma linha de log em texto livre vira um documento JSON, com campos como level e traceId.">
   <g class="tinta">
     <path d="M446 360 H624 A6 6 0 0 1 630 366 V418 A6 6 0 0 1 624 424 H446 A6 6 0 0 1 440 418 V366 A6 6 0 0 1 446 360 Z" transform="translate(8 8)" class="hachura"/>

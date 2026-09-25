@@ -1,41 +1,170 @@
 ---
-/** Rodapé: licença, RSS, Sobre e a alternância discreta de tema. */
-import SeletorTema from "./SeletorTema.astro";
+/**
+ * Rodapé (D33), como no blog atual: à esquerda a marca, a frase do blog e "Assinar via RSS"; à
+ * direita, Conteúdo (Artigos, Categorias, Séries e Tags) e Autor (LinkedIn e GitHub); embaixo, o ano,
+ * o nome e a licença. O tema saiu daqui: fica no menu de aparência do cabeçalho.
+ */
+import Marca from "./Marca.astro";
+import { AUTOR, TEXTOS } from "../data/site";
+import { ICONES } from "../lib/icones";
 import { url } from "../lib/url";
+
+const ano = new Date().getFullYear();
+const grupos = [
+  {
+    titulo: "Conteúdo",
+    links: [
+      { nome: "Artigos", href: url("/archive/") },
+      { nome: "Categorias", href: url("/categories/") },
+      { nome: "Séries", href: url("/series/") },
+      { nome: "Tags", href: url("/tags/") },
+    ],
+  },
+  {
+    titulo: "Autor",
+    links: [
+      { nome: "LinkedIn", href: AUTOR.linkedin, externo: true },
+      { nome: "GitHub", href: AUTOR.github, externo: true },
+    ],
+  },
+];
 ---
 
-<footer class="rodape wrap">
-  <div class="linha">
-    <span>Conteúdo sob <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a>.</span>
-    <a href={url("/rss.xml")}>Assinar via RSS</a>
-    <a href={url("/sobre/")}>Sobre</a>
-    <SeletorTema />
+<footer class="rodape">
+  <div class="wrap rodape-grade">
+    <div class="rodape-marca">
+      <Marca />
+      <p>{TEXTOS.rodape}</p>
+      <a class="rss" href={url("/rss.xml")}>
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.rss} />Assinar via RSS
+      </a>
+    </div>
+    {
+      grupos.map((g) => (
+        <nav class="grupo" aria-label={g.titulo}>
+          <p class="titulo-grupo">{g.titulo}</p>
+          <ul>
+            {g.links.map((l) => (
+              <li>
+                <a href={l.href} rel={"externo" in l ? "me" : undefined}>
+                  {l.nome}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ))
+    }
+    <p class="fim">
+      © {ano} Cesar Schutz · Conteúdo sob <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a>
+    </p>
   </div>
 </footer>
 
 <style>
   .rodape {
-    margin-top: 80px;
-    padding-bottom: 40px;
-  }
-
-  .linha {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px 24px;
-    padding-top: 22px;
+    margin-top: 88px;
     border-top: 1px solid var(--rule);
     font-family: var(--font-ui);
+  }
+
+  .rodape-grade {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 28px 72px;
+    padding-top: 44px;
+    padding-bottom: 30px;
+  }
+
+  .rodape-marca p {
+    max-width: 44ch;
+    margin: 14px 0 0;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--ink-2);
+  }
+
+  .rss {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 14px;
+    font-size: 14px;
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+
+  .rss:hover {
+    color: var(--acento);
+  }
+
+  .rss svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .titulo-grupo {
+    margin: 4px 0 12px;
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--ink);
+  }
+
+  .grupo ul {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 15px;
+  }
+
+  .grupo a {
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+
+  .grupo a:hover {
+    color: var(--acento);
+  }
+
+  .fim {
+    grid-column: 1 / -1;
+    margin: 12px 0 0;
+    padding-top: 22px;
+    border-top: 1px solid var(--rule);
     font-size: 14px;
     color: var(--ink-2);
   }
 
-  .linha a {
+  .fim a {
     color: var(--ink-2);
   }
 
-  .linha a:hover {
+  .fim a:hover {
     color: var(--acento);
+  }
+
+  @media (max-width: 720px) {
+    .rodape {
+      margin-top: 64px;
+    }
+
+    .rodape-grade {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 26px 24px;
+      padding-top: 34px;
+    }
+
+    .rodape-marca {
+      grid-column: 1 / -1;
+    }
   }
 </style>

@@ -97,9 +97,12 @@ fnm exec --using=24 node scripts/desenho/render.mjs <slug>    # folha num PNG (p
 ```
 
 Depois de desenhar, rode o `centrar.mjs`: ele mede o conteúdo e reescreve `data-medio`,
-`data-quadrado`, `data-og` e `data-segura` centrados nele (o largo só muda na altura). Sem isso,
-o desenho fica mais perto de uma borda que da outra nos recortes pequenos.
-A série Java não se desenha: `node scripts/desenho/java.mjs` gera as oito a partir de `src/data/java.ts`.
+`data-quadrado`, `data-og` e `data-segura` centrados nele (o largo só muda na altura). Desde a
+D33, os recortes são **justos**: o desenho ocupa até 86% da largura e 82% da altura do médio e 90% do
+quadrado, para aparecer grande no destaque, nos cards e na miniatura (com folga maior, ele ficava
+pequeno no painel). Sem o `centrar.mjs`, o desenho fica fora do centro e pequeno nos recortes.
+A série Java não se desenha: `node scripts/desenho/java.mjs` gera as oito a partir de `src/data/java.ts`;
+depois, rode o `centrar.mjs` nelas (o guia e a próxima LTS têm outro desenho).
 
 O render gera `.render/desenhos/<slug>.png` com todos os recortes nos tamanhos reais e a imagem de
 compartilhamento, no claro e no escuro. A mesma folha abre no dev em `/amostra/desenhos/?slug=<slug>`.

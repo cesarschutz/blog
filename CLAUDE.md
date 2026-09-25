@@ -30,8 +30,9 @@ Cesar acompanhar. Ele revisa tudo no fim.
 - Cores só por tokens CSS (`var(--ink)`, `var(--cat)`…). Nada de hex solto em componente ou SVG.
 - Toda animação respeita `prefers-reduced-motion`: com ele ligado, tudo aparece no estado final,
   sem prender a tela.
-- JavaScript só onde há interação (estante, busca, lousas, apresentação, lista/cards, tema e o nome
-  de transição do livro do painel, D29).
+- JavaScript só onde há interação (estante, busca, lousas, apresentação, lista/cards, menu de
+  aparência e som, post-it das frases, filtro por livro, livro ampliado e o nome de transição do livro
+  do painel, D29, D33).
   Artigo sem esses componentes funciona sem JS.
 - Fontes servidas pelo próprio site (`@fontsource`). Nunca Google Fonts nem CDN em produção.
 - Não pode parecer feito por IA: nada de fonte genérica, gradiente decorativo, sombra genérica em
@@ -52,9 +53,26 @@ Desenhos, ícones e emblemas ficam em `docs/capas/desenhos/`, `icones/` e `serie
 abre na gaveta (`/livros/<slug>.svg`). O número das lombadas, da capa da revista e da página do livro
 é o total de artigos, contado pelos posts (some quando é zero); o "VOLUME 01" da capa é a posição na
 coleção. Categoria ou série nova = pela seção "Livros novos" do `CAPAS.md`, com o OK do Cesar. Os
-componentes são `Capa`, `MioloLombada` (em pé), `PainelHome` (deitada), `Estante`, `Gaveta`,
-`Livro3D`, `LivroEmPe`, `TopoLivro` e `GradeLivros`: altere esses, sem criar outros em paralelo.
-Para conferir, `/amostra/livros/` (só no dev).
+componentes são `Capa`, `MioloLombada` (em pé), `PainelHome` (deitada), `Estante` (também no modo
+"filtro" do arquivo e das tags), `Gaveta`, `Livro3D`, `LivroEmPe`, `TopoLivro` e `GradeLivros`:
+altere esses, sem criar outros em paralelo (`LivroAmpliado` só copia o livro 3D aberto para o visor).
+As peças usam os **papéis de cor** de `livro.css` (`--cima`, `--baixo`, `--revista-*`), nunca as
+cores cruas `--livro-*`: é isso que inverte os livros no tema escuro (D33: papel em cima, a cor do
+livro embaixo). Para conferir, `/amostra/livros/` (só no dev).
+
+A **marca** (D33) é o livro "cs": `Marca.astro` com o traçado de `src/lib/marca.ts`. Esse arquivo, o
+`favicon.svg`, o `favicon.ico` e o `apple-touch-icon.png` saem de `node scripts/marca.mjs` (usa o
+`pdftocairo`, do poppler do Homebrew, para tirar o contorno das letras da própria fonte). Não edite à
+mão.
+
+## Frases do post-it
+
+As frases de autores (`src/data/frases.json`, post-it da home e dos artigos, D33) vieram do blog
+atual, e a revisão de 24/09/2026 mostrou que a maioria era **inventada ou atribuída sem base**. Por
+isso, frase nova só entra com a **fonte primária aberta e conferida** (o post, o livro, o paper, a
+palestra ou a entrevista do próprio autor): texto traduzido com fidelidade, sem acréscimos, autor
+certo, `url` para onde ela está e `contexto` dizendo o que o link mostra. Na dúvida, não entra. A
+primeira do arquivo é a da home (sai no HTML sem JavaScript): uma frase sobre o assunto do blog.
 
 ## URLs que não podem quebrar
 
@@ -64,7 +82,9 @@ Para conferir, `/amostra/livros/` (só no dev).
 - `/categories/<Nome>/` e `/tags/<Nome>/` com o **nome cru** na URL (maiúsculas, acentos e espaços)
 - Redirecionamentos: `/categories/Arquitetura/`, `/Java/` e `/Observabilidade/` → o livro novo
   (`NOMES_ANTIGOS`, D30); `/posts/java-NN/` → `/posts/java-<LTS>/#java-NN` (vindo de `ABSORBED`),
-  `/about/` → `/sobre/`, `/projects/` → `/` e `/exercicios` → `/`
+  `/about/` → `/` (a página Sobre saiu na D33; o Cesar escreve depois), `/projects/` → `/` e
+  `/exercicios` → `/`
+- `/archive/?livro=<slug>` e `/tags/<Nome>/?livro=<slug>` abrem a lista já filtrada por um livro (D33)
 - `/2/` e `/3/`: páginas da home paginada, 12 por página, como no blog atual (D27)
 
 Detalhes e casos especiais estão em `docs/decisoes.md` (D7).
@@ -102,6 +122,7 @@ node scripts/desenho/validar.mjs [slug]   # regras da ilustração e das lousas
 node scripts/desenho/centrar.mjs <slug>   # centra os recortes no desenho (dev no ar)
 node scripts/desenho/render.mjs [slug]    # folha da ilustração, claro e escuro (dev no ar)
 node scripts/desenho/java.mjs             # as ilustrações da série Java (padrão fixo, D17)
+node scripts/marca.mjs                    # a marca e os ícones do navegador (precisa do pdftocairo)
 ```
 
 A porta 4321 desta máquina está ocupada por outra ferramenta do Cesar, que não deve ser tocada. O
@@ -125,6 +146,7 @@ docs/virada.md           plano para o domínio passar ao blog novo (só com OK d
 docs/referencias/        protótipos aprovados
 src/content/posts/       posts; nome do arquivo = slug da URL
 src/data/                taxonomia e series (leem docs/capas), java, decks (apresentações), site
+                         (autor, perfis e textos), frases.json (as frases do post-it, D33)
 src/styles/tokens.ts     cores dos dois temas: fonte única, gera as variáveis CSS (D4)
 src/styles/              base (folha, painel, transição de página), fontes, avisos, prosa, artigo (grade,
                          notas, visor), estante e livro (lombada, livro 3D e capa)
@@ -135,9 +157,11 @@ src/pages/               rotas; a home é [...page].astro (paginada, D27); livro
                          posts/[slug]/apresentacao.pdf.ts (PDF) e og/[slug] (imagem, D10)
 src/plugins/             Markdown: avisos, notas laterais, apresentação, tabelas, matemática
 src/lib/                 posts, formatos, busca (Pagefind), código (Expressive Code), PDF, estante
-                         (livros), livros-svg (desenhos e ícones), livro-3d (medidas do livro aberto)
+                         (livros), livros-svg (desenhos e ícones), livro-3d (medidas do livro aberto),
+                         marca (traçado da marca, gerado), frases (post-it)
 src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, apresentação)
-src/scripts/tema.ts      tema claro/escuro/sistema (botão do cabeçalho e seletor do rodapé)
+src/scripts/tema.ts      tema claro/escuro/sistema (menu de aparência do cabeçalho, D33)
+src/scripts/som.ts       som dos livros e do post-it (Web Audio, sem arquivos; desliga no menu, D33)
 scripts/                 contraste, links, apresentacao, og, copiar-katex, desenho/, bench-busca/
 public/posts/<slug>/     diagramas antigos e slides das apresentações (deck/)
 src/ilustracoes/         uma ilustração SVG por post (<slug>.svg), com os recortes na raiz (D11)
@@ -175,4 +199,12 @@ src/lousas/<slug>/       desenhos das lousas de cada post .mdx
 - O cabeçalho é fixo (D31): peça nova com `position: sticky` ou âncora que role até o topo precisa
   descontar `--altura-topo` (base.css), senão fica escondida atrás dele.
 - Instalar dependência com o dev no ar faz o Vite reiniciar, e componentes editados nesse meio-tempo
-  podem ficar com o CSS velho: salve-os de novo (um `touch` basta).
+  podem ficar com o CSS velho: salve-os de novo (um `touch` basta). O mesmo acontece quando um script
+  reescreve o arquivo inteiro (Write ou `writeFileSync`): se o CSS novo não aparecer, `touch` no
+  arquivo ou reinicie o dev antes de concluir que a regra está errada.
+- O CSS com escopo do Astro põe um atributo em **cada parte** do seletor, e isso soma especificidade:
+  `.menu button span` (três partes) vence `.menu .chave` (duas), mesmo vindo antes. Estado de um
+  elemento dentro de outro (aria-checked, aria-current) precisa de um seletor pelo menos tão longo
+  quanto o da regra de base (D33).
+- No bash do Claude, `node -e '…'` quebra com apóstrofo no texto ("d'água"): escreva o script num
+  arquivo do scratchpad e rode o arquivo.

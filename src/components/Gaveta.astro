@@ -8,7 +8,9 @@
  * (/livros/<slug>.svg) e entra inline. O tombo do livro inclinado começa no script do <head>.
  */
 import Livro3D from "./Livro3D.astro";
-import { coresDoLivroCss, textoDoFiltro, type Livro } from "../lib/estante";
+import LivroAmpliado from "./LivroAmpliado.astro";
+import { ICONES } from "../lib/icones";
+import { coresDoLivroCss, dadosDoLivro, textoDoFiltro, type Livro } from "../lib/estante";
 import { diaEMes } from "../lib/formato";
 import type { Resumo } from "../lib/posts";
 import "../styles/estante.css";
@@ -34,12 +36,26 @@ function linhas(l: Livro): Linha[] {
 ---
 
 <div class="gaveta" id="gaveta" data-gaveta><div></div></div>
+<LivroAmpliado />
 
 {
   livros.map((l) => (
     <template data-modelo={l.id}>
-      <div class="livro-aberto" data-largura={l.emPe.largura} style={coresDoLivroCss(l)}>
-        <Livro3D livro={l} desenho="adiado" />
+      <div
+        class="livro-aberto"
+        data-largura={l.emPe.largura}
+        data-ampliar-livro
+        data-nome={l.nome}
+        data-dados={dadosDoLivro(l)}
+        data-href={l.href}
+        style={`${coresDoLivroCss(l)};--h:${l.emPe.altura}`}
+      >
+        <div class="livro-na-gaveta">
+          <Livro3D livro={l} desenho="adiado" />
+          <button type="button" class="lupa" data-ampliar aria-label={`Ampliar o livro ${l.nome}`} title="Ampliar"
+            ><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.ampliar} /></button
+          >
+        </div>
         <div class="sumario-livro">
           <div class="topo-sumario">
             <h2 id={`sumario-${l.id}`} tabindex="-1">{l.serie ? "Ordem de leitura" : "Sumário"}</h2>
@@ -56,7 +72,7 @@ function linhas(l: Livro): Linha[] {
               ) : (
                 <li data-q={textoDoFiltro(linha.post)}>
                   <a href={linha.post.url}>
-                    <span class="titulo-item">{linha.parte && <span class="parte">Parte {linha.parte}</span>}{linha.post.titulo}</span>
+                    <span class="titulo-item">{linha.parte && <span class="parte">Parte {linha.parte}</span>}{linha.post.tituloCompleto}</span>
                     <span class="pontilhado" aria-hidden="true" />
                     <span class="dia">{diaEMes(linha.post.publicado)}</span>
                   </a>
@@ -74,6 +90,7 @@ function linhas(l: Livro): Linha[] {
 <script>
   import { normalizar } from "../lib/busca/tipos";
   import { medidasDoLivro3D } from "../lib/livro-3d";
+  import { tocarAbrir, tocarFechar, tocarToque } from "../scripts/som";
 
   const gaveta = document.querySelector<HTMLElement>("[data-gaveta]");
   const estante = document.querySelector<HTMLElement>("[data-estante]");
@@ -181,6 +198,7 @@ function linhas(l: Livro): Linha[] {
       sincronizar();
       const no = montar(id, false);
       gaveta!.classList.add("aberta");
+      tocarAbrir();
       // Ler o layout confirma o estado inicial (lombada de frente) antes de girar. Sem depender de
       // requestAnimationFrame, que não roda em aba oculta e deixaria a estante presa em "ocupado".
       void no.getBoundingClientRect();
@@ -228,6 +246,7 @@ function linhas(l: Livro): Linha[] {
     function fecharLivro(devolverFoco = false) {
       if (!aberto || ocupado) return;
       ocupado = true;
+      tocarFechar();
       const id = aberto;
       dobrar(() => {
         aberto = null;
@@ -242,6 +261,12 @@ function linhas(l: Livro): Linha[] {
     }
 
     const clique = (e: MouseEvent) => e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
+    lombadas.forEach((l, i) => {
+      // Um toque de madeira ao passar o mouse; a nota sobe da primeira à última lombada (D33).
+      l.addEventListener("pointerenter", (e) => {
+        if (e.pointerType === "mouse") tocarToque(i / Math.max(1, lombadas.length - 1));
+      });
+    });
     for (const l of lombadas) {
       l.setAttribute("aria-controls", "gaveta");
       l.setAttribute("aria-expanded", "false");
@@ -252,17 +277,8 @@ function linhas(l: Livro): Linha[] {
       });
     }
 
-    // Na home, os links de categoria (chips) também abrem o livro, rolando até a estante. Os livros
-    // do painel lateral, não: eles levam à página da categoria, com a transição do livro (D29).
-    const porEndereco = new Map(lombadas.map((l) => [new URL(l.href).pathname, l.dataset.livro!]));
-    document.addEventListener("click", (e) => {
-      const link = (e.target as HTMLElement).closest<HTMLAnchorElement>("a[href]");
-      if (!link || link.closest("[data-estante], [data-gaveta], .painel-home") || !clique(e)) return;
-      const id = porEndereco.get(new URL(link.href, location.href).pathname);
-      if (!id) return;
-      e.preventDefault();
-      abrirLivro(id, true, e.detail === 0);
-    });
+    // Só as lombadas da estante abrem a gaveta. Os links de categoria (chips da lista, dos cards e do
+    // destaque) levam à página da categoria, como os livros do painel (pedido do Cesar, D33).
 
     miolo.addEventListener("click", (e) => {
       if ((e.target as HTMLElement).closest("[data-fechar-livro]")) fecharLivro(e.detail === 0);

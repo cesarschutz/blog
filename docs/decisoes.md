@@ -176,7 +176,7 @@ por Dn**. As decisões de produto e design já fechadas estão em `docs/briefing
 - **Redirecionamentos:**
   - `/posts/java-NN/` → `/posts/java-<LTS>/#java-NN`: os 14 atuais, mais `27: 29` por coerência
     (`/posts/java-27/` nunca existiu);
-  - `/about/` → `/sobre/`. O meta refresh não leva o `#site`, então a página de redirecionamento
+  - `/about/` → `/sobre/` (na D33, com a página Sobre removida, `/about/` passou a levar à home). O meta refresh não leva o `#site`, então a página de redirecionamento
     troca `#site` por `#como-os-artigos-sao-produzidos` com um script pequeno;
   - `/projects/` → `/`;
   - `/exercicios` → `/`;
@@ -471,7 +471,8 @@ nada muda.
   (home → categoria e categoria → categoria).
 - **Gaveta:** na home, os links de categoria abriam o livro na gaveta (inclusive os do painel). Agora
   os livros do painel ficam de fora e vão para a página da categoria; os chips continuam abrindo a
-  gaveta.
+  gaveta. (Na D33, a pedido do Cesar, os chips também passaram a levar à página da categoria; só as
+  lombadas da estante abrem a gaveta.)
 - **Título:** o nome usa `clamp(24px, 10cqi, 56px)` na largura da coluna, para "Observabilidade"
   caber numa linha até em 320px.
 - **Conferido:** `astro check` 0/0, build, links (0 quebrados), contraste (0 falhas), sem rolagem
@@ -591,7 +592,8 @@ nada muda.
   de IA quebrava em duas linhas); e o número de capa usa algarismos proporcionais (na Bitter, os
   alinhados são de largura fixa, e o "25" invadia a lista de edições).
 - **Lombada em pé** (`MioloLombada.astro`): categoria com o ícone no bloco de cor e o papel de 400 da
-  base com o título e o número no destaque (no livro 3D, o bloco de cor vai a 300 de 720); série fina
+  base com o título e o número no destaque (no livro 3D, o bloco de cor ia a 300 de 720; na D33, passou
+  a ter a mesma divisão da lombada da estante); série fina
   (80), papel com a faixa no topo, a xícara girada, o título com o complemento em itálico e o número.
   A fita e os fios dourados saíram. O traço dos ícones acompanha a escala da lombada (mínimo 0,75px).
 - **Lombada deitada** (`PainelHome.astro`): ponta de cor com o ícone (traço de 0,9 e 0,6px, sem a
@@ -607,3 +609,111 @@ nada muda.
   contraste (0 falhas), validador (29 de 29), estante, gaveta (categoria e série), lateral, página de
   categoria e da série nos dois temas e no celular, sem rolagem lateral de 320 a 1440px.
 
+
+## D33 · Marca, cabeçalho e rodapé do blog atual, post-it das frases, livros invertidos no escuro e ilustrações maiores
+- **Data:** 24/09/2026 · **Status:** feito, aguardando a conferência do Cesar.
+- **Pedido do Cesar:** uma lista de ajustes na home, no artigo, em "Todos os artigos" e extras (tags,
+  tema, som, logo, frases), feitos um a um e conferidos; depois, no meio do trabalho, o livro ampliado
+  num visor, os livros invertidos no tema escuro, a lombada do livro grande igual à da estante, os bugs
+  da apresentação e das imagens do post, as ilustrações ocupando melhor o espaço e a revisão das frases.
+- **Marca** (`Marca.astro`, `src/lib/marca.ts`, `scripts/marca.mjs`): o livro "cs" (a capa do Volume
+  01, com a fita laranja da série saindo por baixo), "Cesar Schutz" e "blog" em Newsreader itálico.
+  As letras são traçado extraído da própria Besley 800 e da Newsreader (o Chrome imprime num PDF e o
+  `pdftocairo` converte), para não depender da fonte nem baixar a Newsreader inteira só pelo "blog".
+  Aparece no cabeçalho, no rodapé e grande na abertura da home (no lugar do nome). O ícone do navegador
+  é o mesmo livro num quadrado de papel (`favicon.svg`, `favicon.ico` com 16/32/48 e
+  `apple-touch-icon.png`), trocando os livrinhos. Tokens `--marca`, `--marca-letra` e `--marca-fita`,
+  iguais nos dois temas, como os livros. Alternativas desenhadas e descartadas: capa de duas cores,
+  quadrado com fita, duas lombadas com "C" e "S".
+- **Cabeçalho:** GitHub e LinkedIn só com os ícones, ao lado da aparência (somem abaixo de 520px e
+  ficam no rodapé); a busca vira só o ícone até 1100px; o cabeçalho vai para duas linhas até 860px
+  (`--altura-topo` de 104px). O botão de tema virou o **menu de aparência** (`SeletorTema.astro`):
+  Claro, Escuro e Sistema (o ícone do botão mostra a escolha) e a chave do **som dos livros**. O
+  seletor de tema saiu do rodapé.
+- **Rodapé** como o do blog atual: a marca, "O que eu estudo virando artigo — arquitetura, código,
+  Java, IA e o que mais aparecer." e "Assinar via RSS"; Conteúdo (Artigos, Categorias, Séries, Tags) e
+  Autor (LinkedIn, GitHub, sem Sobre e sem Projetos); embaixo, "© 2026 Cesar Schutz · Conteúdo sob CC
+  BY 4.0".
+- **Home:** a abertura com menos espaço em cima (a estante perdeu o respiro alto), a marca, a
+  apresentação do blog atual ("Publico aqui o que ando estudando — …") e o **post-it** das frases; a
+  linha sobre IA saiu da abertura (fica no fim de cada artigo). A primeira versão (post-it solto ao
+  lado da estante, ou embaixo dela no celular) o Cesar achou horrível nas larguras intermediárias
+  (vazio grande à direita, post-it sozinho). Ficou a **cena**: a estante e o post-it viram uma peça
+  só, com o post-it colado na parede ao lado dos livros, a borda esquerda atrás da revista, e uma
+  prateleira única por baixo dos dois. A partir de 1360px, identidade (marca e texto) à esquerda e a
+  cena à direita, no centro da altura uma da outra (a marca ocupa a largura da coluna, até 52px); até
+  1359px, a cena desce para baixo do texto, centralizada, com a marca grande; até 640px, o post-it
+  sobe para a parede acima dos livros, com a ponta de baixo atrás da revista. Seletor
+  Lista / Cards com os ícones do blog atual (`SeletorModo.astro`, compartilhado), "26 artigos
+  publicados" abaixo de "Artigos recentes" e o painel lateral começando na altura desse título (sem o
+  recuo). O destaque com o título inteiro e a descrição, sem o subtítulo separado.
+- **Data e tempo de leitura** com o calendário e o relógio do blog atual em todo lugar
+  (`DataLeitura.astro`: lista, cards, destaque, topo do artigo, arquivo).
+- **Artigo:** o topo como no blog atual: o título inteiro (não mais dividido em título e subtítulo), a
+  descrição, e a assinatura com a foto (a do GitHub, como no blog atual), o nome, a data e o tempo; e,
+  no canto, a **marca d'água** com o desenho da capa do livro do artigo (a xícara, na série). Coluna de
+  texto de 680 para **760px**; as notas laterais só vão para a margem quando a folha tem espaço
+  (consulta de contêiner). O **sumário** virou um trilho: número da seção num marco (ponto nas sem
+  número), as lidas e a atual pintadas, as subseções da atual abertas, a atual sempre à vista, e
+  embaixo "NN% lido" com o tempo que falta; o post-it das frases vem embaixo do sumário (telas de
+  720px de altura ou mais). No fim do artigo: o aviso de IA sem o "Saiba mais" e com o ícone
+  alinhado; o cartão **"Do livro"** com o livro 3D da categoria (ou a revista da série), que voa até
+  a página do livro; o post-it (quando o do sumário não está à vista); e anterior/próximo com o título
+  inteiro.
+- **Página Sobre removida** (pedido do Cesar; ele escreve depois): `/about/` leva à home.
+- **Todos os artigos e tags** (`ListaFiltrada.astro`): no formato da lista da home (título inteiro,
+  descrição, tags e a ilustração), com Lista / Cards; o arquivo por ano (#y2026 continua), sem a coluna
+  de datas. No topo, uma **estante de filtro** (`Estante` em modo "filtro"): só os livros com artigos
+  na página, com o número deles; clicar num livro mostra só os artigos dele (e a URL ganha
+  `?livro=<slug>`). A página de tag mostra por quais livros ela passa e as tags que aparecem junto. As
+  pílulas de tag agora levam à página da tag (antes abriam a busca). Os chips de categoria da lista,
+  dos cards e do destaque também levam à página da categoria (antes, na home, abriam o livro na gaveta).
+- **Frases de autores** (`PostIt.astro`, `src/data/frases.json`, `/frases.json`): as do blog atual,
+  num bloquinho de post-it amarelo apagado, torto, com a frase em Newsreader itálico e o autor levando
+  à fonte; "outra frase", riscado à mão, arranca a folha de cima (ela sai voando) e mostra outra ao
+  acaso, sem repetir na sessão, com um som de papel. **A cada visita, a frase é sorteada** (pedido do
+  Cesar): o script busca `/frases.json` ao carregar e escolhe uma sem repetir a última mostrada
+  (`cs-frase-ultima`, no navegador) nem as vistas na sessão; enquanto sorteia, o texto fica invisível
+  e aparece num fade curto. Sem JavaScript, fica a frase do HTML (na home, a primeira do arquivo; em
+  cada artigo, uma escolhida pelo nome dele). Quatro tamanhos de letra pelo tamanho da frase, para o
+  papel ficar quase quadrado.
+- **Revisão das frases:** as 132 frases do blog atual foram conferidas uma a uma contra a fonte
+  (quatro revisores em paralelo). Só 7 estavam certas; a maioria era **inventada ou atribuída sem
+  base** (frases que o autor nunca escreveu, links 404, livros sem a frase). Cada uma foi trocada pela
+  citação real do mesmo autor, traduzida com fidelidade e com o link para onde ela está (117); 8 saíram
+  (sem origem, falas fracas, um ditado anônimo e duas repetidas) e entraram 3 novas (Parnas, Lampson e
+  Spolsky): **127 frases**, a primeira a de Ralph Johnson citada por Fowler em "Who Needs an
+  Architect?". Links: 119 respondem 200 a robôs; os 8 da ACM, O'Reilly e Last Week in AWS bloqueiam
+  robôs, mas abrem no navegador (conferido). A regra para frase nova ficou no `CLAUDE.md`.
+- **Livro ampliado** (`LivroAmpliado.astro`, `visor.css`): clicar no livro aberto da gaveta ou do topo
+  da página do livro (ou na lupa do canto) abre o livro grande sobre a página escurecida, com o nome e
+  o volume, "Ver o livro" (fora da página dele), botão de fechar, Esc e clique fora; arrastar ou ←/→
+  gira o livro entre a lombada e a capa.
+- **Livros no tema escuro invertidos** (pedido do Cesar): no claro, como a regra; no escuro, o papel
+  em cima (título e ícone na cor do livro) e a cor do livro embaixo (título, número e desenho na tinta
+  dela). A revista fica em papel escuro com a tinta clara e o laranja clareado (4,6:1). Feito com
+  papéis de cor em `livro.css` (`--cima`, `--baixo`, `--revista-*`), que capa, lombada em pé e lombada
+  deitada usam no lugar das cores cruas.
+- **Lombada do livro grande igual à da estante:** a divisão de cor passou a ser a mesma da lombada da
+  estante (400 da altura dela, em proporção; não precisa bater com a da capa), a sombra da lombada
+  virada caiu de 22% para 8% e o giro de 62° para 52°, para o título dela ficar legível.
+- **Som dos livros** (`src/scripts/som.ts`, Web Audio, sem arquivos): um toque de madeira ao passar o
+  mouse numa lombada (a nota sobe de um livro ao outro), o livro saindo da prateleira e a capa
+  assentando ao abrir, o contrário ao fechar, e o papel do post-it. Só depois do primeiro clique na
+  página (regra dos navegadores); no Chrome, vale também o clique da página anterior do site, e o
+  áudio é preparado no primeiro movimento do mouse nas páginas com livros, para o primeiro toque soar
+  (o painel ficava mudo depois de chegar a uma categoria pelo clique num livro). Desliga no menu de
+  aparência (`cs-som`).
+- **Bugs corrigidos:** a apresentação (carrossel, tela cheia) e o visor de imagens tinham perdido o CSS
+  numa reescrita do `artigo.css` (os slides apareciam empilhados e a imagem ampliada não aparecia); o
+  carrossel voltou, e o visor foi refeito com a página escurecida, fechar no alto, setas e contador. O
+  emblema da revista (xícara) não aparecia em `/series/` e `/series/java/` (ficava "adiado" sem quem o
+  buscasse); agora vem inline.
+- **Ilustrações maiores:** os recortes médio (destaque, cards, topo no celular) e quadrado (miniatura)
+  eram folgados demais (um mínimo de 900 e 670 unidades deixava o desenho com 45% a 70% da largura).
+  O `centrar.mjs` agora faz recortes justos (até 86% da largura e 82% da altura no médio; 90% no
+  quadrado) e foi rodado nos 26 desenhos; o `java.mjs` já gera com os recortes novos. No destaque, o
+  painel acompanha a altura do texto e mostra o desenho inteiro; até 960px o desenho vai para cima. O
+  recorte largo (topo do artigo, com as anotações) foi conferido nos 26 e ficou como estava.
+- **Conferido:** `astro check` 0/0, contraste (0 falhas; alertas só nas artes dos livros),
+  validador (29 de 29) e cada tela nos dois temas e no celular.

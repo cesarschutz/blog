@@ -17,10 +17,15 @@ interface Props {
   anotacoes?: boolean;
   /** Ao lado de um título que já diz o mesmo: fora da leitura de tela. */
   decorativa?: boolean;
+  /**
+   * O recorte inteiro, sem cortar (meet), num quadro de proporção livre: o destaque da home, onde o
+   * painel acompanha a altura do texto (D33).
+   */
+  inteira?: boolean;
   class?: string;
 }
 
-const { slug, recorte, cor, tamanho = "topo", anotacoes = false, decorativa = false, class: classe } = Astro.props;
+const { slug, recorte, cor, tamanho = "topo", anotacoes = false, decorativa = false, inteira = false, class: classe } = Astro.props;
 const desenho = ilustracao(slug);
 ---
 
@@ -29,7 +34,7 @@ const desenho = ilustracao(slug);
     <svg
       class:list={["ilustracao", tamanho !== "topo" && tamanho, { "com-anotacoes": anotacoes }, classe]}
       viewBox={desenho.recortes[recorte]}
-      preserveAspectRatio={recorte === "og" ? "xMidYMid meet" : "xMidYMid slice"}
+      preserveAspectRatio={recorte === "og" || inteira ? "xMidYMid meet" : "xMidYMid slice"}
       role={decorativa ? undefined : "img"}
       aria-label={decorativa ? undefined : desenho.alt}
       aria-hidden={decorativa ? "true" : undefined}

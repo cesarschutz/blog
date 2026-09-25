@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -56 1200 916" data-largo="80 152 1100 468" data-medio="277 86 900 600" data-quadrado="392 51 670 670" data-og="357 -56 740 883" data-segura="440 192 574 388"
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -56 1200 916" data-largo="80 152 1100 468" data-medio="372 149 710 473" data-quadrado="408 67 638 638" data-og="357 -55 740 883" data-segura="440 192 574 388"
   aria-label="A mesma aplicação com dois caminhos: um relógio, o CronJob, e uma fila de envelopes, o SQS; o relógio está em destaque.">
   <g class="tinta">
     <path d="M450 350 H580 A10 10 0 0 1 590 360 V450 A10 10 0 0 1 580 460 H450 A10 10 0 0 1 440 450 V360 A10 10 0 0 1 450 350 Z" transform="translate(14 14)" class="hachura"/>

@@ -6,6 +6,7 @@
  * transição de página (LivroEmPe). O slot recebe o que for próprio da página (na série Java, os
  * números das LTS).
  */
+import LivroAmpliado from "./LivroAmpliado.astro";
 import LivroEmPe from "./LivroEmPe.astro";
 import type { Livro } from "../lib/estante";
 import { urlTag } from "../lib/posts";
@@ -31,7 +32,7 @@ const tags = [...contagem]
 
 <header class="topo-livro folha" style={`--cor:${livro.cores.cor}`}>
   <div class="palco painel">
-    <LivroEmPe livro={livro} />
+    <LivroEmPe livro={livro} ampliavel />
   </div>
   <div class="texto">
     <a class="trilha" href={trilha.href}>{trilha.nome}</a>
@@ -44,7 +45,7 @@ const tags = [...contagem]
         <ul class="tags" aria-label="Tags mais usadas neste livro">
           {tags.map((t) => (
             <li>
-              <a class="pilula" href={urlTag(t)} data-busca-tag={t}>
+              <a class="pilula" href={urlTag(t)}>
                 #{t}
               </a>
             </li>
@@ -54,6 +55,8 @@ const tags = [...contagem]
     }
   </div>
 </header>
+
+<LivroAmpliado />
 
 <style>
   .topo-livro {

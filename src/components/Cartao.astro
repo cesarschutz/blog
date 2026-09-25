@@ -18,7 +18,7 @@ interface Props {
 const { post } = Astro.props;
 ---
 
-<li class="cartao folha">
+<li class="cartao folha" data-livro={post.livro}>
   {
     temIlustracao(post.slug) && (
       <div class="ilustracao-cartao painel" aria-hidden="true" style={`--cor:${post.cor}`}>

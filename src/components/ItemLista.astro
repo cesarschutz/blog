@@ -4,14 +4,11 @@
  * categoria, a data e o tempo de leitura; o título inteiro, grande; a descrição completa; as tags; e,
  * à direita, a miniatura quadrada da ilustração num painel tingido. A linha inteira é clicável e
  * ganha um fundo leve ao passar o mouse, com o título em azul-tinta. A lista fica numa folha
- * (.lista-artigos.folha, D26).
- *
- * `compacto` (o arquivo por ano): data à esquerda, título, subtítulo e categoria, sem miniatura.
+ * (.lista-artigos.folha, D26). O `data-livro` serve ao filtro por livro do arquivo e das tags (D33).
  */
-import Chip from "./Chip.astro";
 import Ilustracao from "./Ilustracao.astro";
 import MetaItem from "./MetaItem.astro";
-import { dataIso, dataPorExtenso, mdEmLinha } from "../lib/formato";
+import { mdEmLinha } from "../lib/formato";
 import { temIlustracao } from "../lib/ilustracoes";
 import type { Resumo } from "../lib/posts";
 
@@ -19,63 +16,44 @@ interface Props {
   post: Resumo;
   /** Nível do título, para a lista respeitar a hierarquia da página. */
   nivel?: "h2" | "h3";
-  compacto?: boolean;
 }
 
-const { post, nivel = "h3", compacto = false } = Astro.props;
+const { post, nivel = "h3" } = Astro.props;
 const Titulo = nivel;
-const comMiniatura = !compacto && temIlustracao(post.slug);
+const comMiniatura = temIlustracao(post.slug);
 ---
 
-{
-  compacto ? (
-    <li class="item compacto">
-      <time class="quando" datetime={dataIso(post.publicado)}>{dataPorExtenso(post.publicado)}</time>
-      <div class="texto">
-        <Titulo class="titulo">
-          <a href={post.url}>{post.titulo}</a>
-        </Titulo>
-        {post.subtitulo && <p class="subtitulo">{post.subtitulo}</p>}
-        <p class="meta">
-          <Chip cor={post.cor} nome={post.rotulo} href={post.urlRotulo} />
-          <span>{post.minutos} min de leitura</span>
-        </p>
-      </div>
-    </li>
-  ) : (
-    <li class:list={["item", "completo", { "com-miniatura": comMiniatura }]}>
-      <div class="texto">
-        <MetaItem post={post} />
-        <Titulo class="titulo">
-          <a href={post.url}>{post.tituloCompleto}</a>
-        </Titulo>
-        <p class="descricao" set:html={mdEmLinha(post.descricao)} />
-        {post.tags.length > 0 && (
-          <p class="tags">
-            {post.tags.slice(0, 4).map((t) => (
-              <span>#{t}</span>
-            ))}
-          </p>
-        )}
-      </div>
-      {comMiniatura && (
-        <div class="miniatura painel" aria-hidden="true" style={`--cor:${post.cor}`}>
-          <Ilustracao slug={post.slug} recorte="quadrado" cor={post.cor} tamanho="miniatura" decorativa />
-        </div>
-      )}
-    </li>
-  )
-}
+<li class:list={["item", "completo", { "com-miniatura": comMiniatura }]} data-livro={post.livro}>
+  <div class="texto">
+    <MetaItem post={post} />
+    <Titulo class="titulo">
+      <a href={post.url}>{post.tituloCompleto}</a>
+    </Titulo>
+    <p class="descricao" set:html={mdEmLinha(post.descricao)} />
+    {post.tags.length > 0 && (
+      <p class="tags">
+        {post.tags.slice(0, 4).map((t) => (
+          <span>#{t}</span>
+        ))}
+      </p>
+    )}
+  </div>
+  {comMiniatura && (
+    <div class="miniatura painel" aria-hidden="true" style={`--cor:${post.cor}`}>
+      <Ilustracao slug={post.slug} recorte="quadrado" cor={post.cor} tamanho="miniatura" decorativa />
+    </div>
+  )}
+</li>
 
 <style>
   .item {
     position: relative;
-    border-top: 1px solid var(--rule);
     transition: background-color 0.15s;
   }
 
-  .item:first-child {
-    border-top: 0;
+  /* O fio só entre itens à vista: com o filtro por livro (D33), o primeiro visível fica sem fio. */
+  .item:not([hidden]) ~ .item:not([hidden]) {
+    border-top: 1px solid var(--rule);
   }
 
   .item:hover {
@@ -98,7 +76,7 @@ const comMiniatura = !compacto && temIlustracao(post.slug);
     color: var(--acento);
   }
 
-  /* ---------- completo (home, categorias, tags, séries) ---------- */
+  /* ---------- home, arquivo, categorias, tags e séries ---------- */
 
   .completo {
     display: grid;
@@ -152,44 +130,6 @@ const comMiniatura = !compacto && temIlustracao(post.slug);
     aspect-ratio: 1;
   }
 
-  /* ---------- compacto (arquivo por ano) ---------- */
-
-  .compacto {
-    display: grid;
-    grid-template-columns: 110px minmax(0, 1fr);
-    gap: 0 26px;
-    padding: 18px 22px;
-  }
-
-  .quando {
-    padding-top: 5px;
-    font-family: var(--font-ui);
-    font-size: 14px;
-    color: var(--ink-2);
-  }
-
-  .compacto .titulo {
-    font-size: clamp(20px, 2.2vw, 23px);
-  }
-
-  .subtitulo {
-    max-width: 62ch;
-    margin: 4px 0 0;
-    font-size: 17px;
-    line-height: 1.45;
-    color: var(--ink-2);
-  }
-
-  .meta {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 4px 14px;
-    margin: 8px 0 0;
-    font-family: var(--font-ui);
-    font-size: 14px;
-    color: var(--ink-2);
-  }
 
   @media (max-width: 640px) {
     .completo,
@@ -216,16 +156,6 @@ const comMiniatura = !compacto && temIlustracao(post.slug);
 
     .miniatura {
       margin-top: 4px;
-    }
-
-    .compacto {
-      grid-template-columns: minmax(0, 1fr);
-      padding: 16px;
-    }
-
-    .quando {
-      grid-column: 1 / -1;
-      padding: 0 0 4px;
     }
   }
 </style>

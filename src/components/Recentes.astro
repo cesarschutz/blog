@@ -10,6 +10,7 @@
 import ItemLista from "./ItemLista.astro";
 import Cartao from "./Cartao.astro";
 import Paginacao from "./Paginacao.astro";
+import SeletorModo from "./SeletorModo.astro";
 import type { Resumo } from "../lib/posts";
 
 interface Props {
@@ -33,45 +34,17 @@ const Titulo = nivel;
       <Titulo id="recentes-titulo" class="titulo-secao">{titulo}</Titulo>
       {subtitulo && <p class="subtitulo-secao">{subtitulo}</p>}
     </div>
-    <div class="modo" role="group" aria-label="Modo de exibição" data-modo hidden>
-      <button type="button" data-valor="list">Lista</button>
-      <button type="button" data-valor="cards">Cards</button>
-    </div>
+    <SeletorModo />
   </div>
-  <ol class="lista-recentes lista-artigos folha">
+  <ol class="lista-modo lista-artigos folha">
     {posts.map((p) => <ItemLista post={p} />)}
   </ol>
-  <ul class="cartoes-recentes">
+  <ul class="cartoes-modo">
     {posts.map((p) => <Cartao post={p} />)}
   </ul>
   {pagina && <Paginacao {...pagina} />}
 </section>
 
-<script>
-  const CHAVE = "cs-post-view";
-  const seletor = document.querySelector<HTMLElement>("[data-modo]");
-  if (seletor) {
-    const raiz = document.documentElement;
-    const botoes = [...seletor.querySelectorAll<HTMLButtonElement>("button")];
-    const marcar = () => {
-      const atual = raiz.dataset.postView === "cards" ? "cards" : "list";
-      botoes.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.valor === atual)));
-    };
-    botoes.forEach((b) =>
-      b.addEventListener("click", () => {
-        raiz.dataset.postView = b.dataset.valor!;
-        try {
-          localStorage.setItem(CHAVE, b.dataset.valor!);
-        } catch {
-          // Sem armazenamento: o modo vale só nesta página.
-        }
-        marcar();
-      }),
-    );
-    marcar();
-    seletor.hidden = false;
-  }
-</script>
 
 <style>
   .recentes {
@@ -98,49 +71,4 @@ const Titulo = nivel;
     color: var(--ink-2);
   }
 
-  .modo {
-    display: inline-flex;
-    padding: 3px;
-    border: 1px solid var(--rule);
-    border-radius: 999px;
-    background: var(--paper-hi);
-    font-family: var(--font-ui);
-  }
-
-  .modo button {
-    min-height: 34px;
-    padding: 6px 14px;
-    border: 0;
-    border-radius: 999px;
-    background: none;
-    color: var(--ink-2);
-    font-size: 14px;
-    cursor: pointer;
-  }
-
-  .modo button:hover {
-    color: var(--ink);
-  }
-
-  .modo button[aria-pressed="true"] {
-    background: var(--acento);
-    color: var(--sobre-acento);
-  }
-
-  .cartoes-recentes {
-    display: none;
-    grid-template-columns: repeat(auto-fill, minmax(min(290px, 100%), 1fr));
-    gap: 26px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  :global(:root[data-post-view="cards"]) .lista-recentes {
-    display: none;
-  }
-
-  :global(:root[data-post-view="cards"]) .cartoes-recentes {
-    display: grid;
-  }
 </style>

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -87 1200 947" data-largo="80 121 1100 468" data-medio="295 55 900 600" data-quadrado="405 15 680 680" data-og="375 -87 740 883" data-segura="430 176 630 358"
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -87 1200 947" data-largo="80 121 1100 468" data-medio="379 111 733 488" data-quadrado="395 5 700 700" data-og="375 -86 740 883" data-segura="430 176 630 358"
   aria-label="Uma tachinha prende o fio da virtual thread na placa da carrier, dentro do bloco synchronized; ao lado, dois plugues soltos em CLOSE_WAIT.">
   <g class="tinta">
     <path d="M484 390 H856 A14 14 0 0 1 870 404 V506 A14 14 0 0 1 856 520 H484 A14 14 0 0 1 470 506 V404 A14 14 0 0 1 484 390 Z" transform="translate(14 14)" class="hachura"/>

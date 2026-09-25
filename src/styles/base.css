@@ -15,7 +15,7 @@
   --largura: 1320px;
   /* Altura do cabeçalho fixo (D31): as âncoras, o sumário, o painel e as lousas fixas descontam. */
   --altura-topo: 60px;
-  --coluna: 680px;
+  --coluna: 760px;
   /* Folhas (D26): o conteúdo fica em superfícies com borda fina e sombra leve; painéis dentro delas. */
   --raio-folha: 14px;
   --raio-painel: 10px;
@@ -51,7 +51,8 @@
   display: none !important;
 }
 
-@media (max-width: 640px) {
+/* O cabeçalho vai para duas linhas até 860px (Cabecalho.astro). */
+@media (max-width: 860px) {
   :root {
     --altura-topo: 104px;
   }
@@ -387,4 +388,25 @@ kbd {
   @view-transition {
     navigation: none;
   }
+}
+
+/*
+ * Lista / Cards (D27, D33): as páginas com o seletor (SeletorModo) trazem as duas formas; o script do
+ * <head> põe `data-post-view="cards"` no <html> quando o leitor escolheu os cards.
+ */
+.cartoes-modo {
+  display: none;
+  grid-template-columns: repeat(auto-fill, minmax(min(290px, 100%), 1fr));
+  gap: 26px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:root[data-post-view="cards"] .lista-modo {
+  display: none;
+}
+
+:root[data-post-view="cards"] .cartoes-modo {
+  display: grid;
 }

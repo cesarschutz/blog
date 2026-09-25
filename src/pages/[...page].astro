@@ -14,6 +14,9 @@ import Gaveta from "../components/Gaveta.astro";
 import Destaque from "../components/Destaque.astro";
 import Recentes from "../components/Recentes.astro";
 import ComPainel from "../components/ComPainel.astro";
+import Marca from "../components/Marca.astro";
+import PostIt from "../components/PostIt.astro";
+import { TEXTOS } from "../data/site";
 import { montarLivros } from "../lib/estante";
 import { getResumos, type Resumo } from "../lib/posts";
 import { url } from "../lib/url";
@@ -28,7 +31,10 @@ export const getStaticPaths = (async ({ paginate }) => {
 const { page } = Astro.props as { page: Page<Resumo> };
 const primeira = page.currentPage === 1;
 const livros = primeira ? await montarLivros() : [];
-const [destaque] = await getResumos();
+const resumos = await getResumos();
+const [destaque] = resumos;
+// Como no blog atual: o total de artigos publicados abaixo do título da lista (D33).
+const total = `${resumos.length} ${resumos.length === 1 ? "artigo publicado" : "artigos publicados"}`;
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
@@ -46,22 +52,26 @@ const jsonLd = {
   {
     primeira && (
       <>
-        {/* A abertura (texto e estante) é uma folha; a gaveta do livro aberto abre dentro dela (D26). */}
+        {/*
+          A abertura (D33) é uma folha: a identidade (a marca grande e a apresentação do blog atual) e a
+          cena, a estante com o post-it das frases colado na parede ao lado dela; a gaveta do livro
+          aberto abre dentro da folha (D26).
+        */}
         <div class="wrap topo-home">
           <div class="folha folha-abertura">
             <div class="abertura">
-              <section class="intro" aria-labelledby="home-titulo">
-                <h1 id="home-titulo">Cesar Schutz</h1>
-                <p class="frase">
-                  Arquiteto de soluções. Aqui publico o que estudo sobre arquitetura de software, Java e sistemas de
-                  pagamento.
-                </p>
-                <p class="nota-ia">
-                  Os textos são escritos com ajuda de IA e revisados por mim. Leia como anotações de estudo e confira
-                  antes de levar para produção.
-                </p>
-              </section>
-              <Estante livros={livros} />
+              <div class="identidade">
+                <h1 class="marca-abertura">
+                  <Marca variante="grande" semLink />
+                </h1>
+                <p class="frase">{TEXTOS.apresentacao}</p>
+              </div>
+              <div class="cena">
+                <Estante livros={livros} />
+                <div class="parede">
+                  <PostIt giro={-2.4} />
+                </div>
+              </div>
             </div>
             <Gaveta livros={livros} />
           </div>
@@ -70,11 +80,15 @@ const jsonLd = {
       </>
     )
   }
-  {/* Os artigos e, à esquerda, o painel com séries, categorias e tags (D28). */}
-  <ComPainel recuo={58}>
+  {/*
+    Os artigos e, à esquerda, o painel com séries, categorias e tags (D28). O painel começa na altura
+    do título "Artigos recentes" e do seletor Lista / Cards (D33).
+  */}
+  <ComPainel>
     <Recentes
       posts={page.data}
       titulo={primeira ? "Artigos recentes" : `Artigos — página ${page.currentPage}`}
+      subtitulo={total}
       nivel={primeira ? "h2" : "h1"}
       pagina={{ atual: page.currentPage, ultima: page.lastPage, anterior: page.url.prev, proxima: page.url.next }}
     />
@@ -83,7 +97,7 @@ const jsonLd = {
 
 <style>
   .topo-home {
-    padding-top: 40px;
+    padding-top: 26px;
   }
 
   /* Espaço entre o destaque (ou o cabeçalho) e os artigos com o painel. */
@@ -92,61 +106,141 @@ const jsonLd = {
   }
 
   .folha-abertura {
-    padding: 40px 44px 28px;
+    padding: 34px 44px 30px;
   }
 
+  /*
+   * Computador: a identidade à esquerda e a cena à direita, no centro da altura uma da outra.
+   * Tablet (até 1359px): a cena desce para baixo da identidade, no centro. Celular (até 640px): o
+   * post-it sobe para a parede acima dos livros.
+   */
   .abertura {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 32px 56px;
-    align-items: end;
+    gap: 30px 52px;
+    align-items: center;
   }
 
-  h1 {
-    margin: 0 0 16px;
-    font-weight: 800;
-    font-size: clamp(40px, 6vw, 64px);
+  /* A marca ocupa a largura da coluna (a identidade é um contêiner), até 52px. */
+  .identidade {
+    container-type: inline-size;
+    min-width: 0;
+  }
+
+  .marca-abertura {
+    margin: 0;
+    font-size: clamp(28px, calc(100cqi / 9.9), 52px);
     line-height: 1;
-    letter-spacing: -0.015em;
+  }
+
+  .marca-abertura :global(.marca) {
+    font-size: inherit;
   }
 
   .frase {
-    max-width: 34ch;
-    margin: 0;
-    font-size: clamp(18px, 2vw, 20px);
-    line-height: 1.5;
+    max-width: 40ch;
+    margin: 20px 0 0;
+    font-size: clamp(17px, 1.4vw, 19px);
+    line-height: 1.6;
   }
 
-  .nota-ia {
-    max-width: 46ch;
-    margin: 12px 0 0;
-    font-family: var(--font-ui);
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--ink-2);
+  /*
+   * A cena: os livros na frente e o post-it colado na parede ao lado deles, com a borda esquerda atrás
+   * da revista. Uma prateleira só corre por baixo dos dois (a da estante some aqui).
+   */
+  .cena {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    max-width: 100%;
+    padding-bottom: 8px;
+  }
+
+  .cena :global(.estante .tabua) {
+    display: none;
+  }
+
+  .cena::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 6px;
+    border-bottom: 2px solid var(--tabua-borda);
+    border-radius: 1px 1px 2px 2px;
+    background: var(--tabua);
+  }
+
+  .cena > :global(.estante) {
+    position: relative;
+    z-index: 1;
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  .parede {
+    flex: none;
+    margin: 0 4px 44px -18px;
+  }
+
+  .parede :global(.postit) {
+    --largura-postit: 196px;
+  }
+
+  @media (max-width: 1359px) {
+    .abertura {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 30px;
+    }
+
+    .frase {
+      max-width: 60ch;
+    }
+
+    .cena {
+      justify-self: center;
+    }
   }
 
   @media (max-width: 860px) {
     .topo-home {
-      padding-top: 28px;
+      padding-top: 20px;
     }
 
     .folha-abertura {
-      padding: 28px 22px 20px;
+      padding: 26px 22px 20px;
     }
+  }
 
+  /* Celular: o post-it na parede acima dos livros, à direita, com a ponta de baixo atrás da revista. */
+  @media (max-width: 640px) {
     .abertura {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 28px;
-    }
-
-    /* Em coluna única, a tábua ocupa a largura toda, como no protótipo. */
-    .abertura > :global(.estante) {
-      width: auto;
+      gap: 22px;
     }
 
     .frase {
-      max-width: 40ch;
+      margin-top: 16px;
+    }
+
+    .cena {
+      flex-direction: column;
+      align-items: stretch;
+      justify-self: stretch;
+    }
+
+    .cena > :global(.estante) {
+      width: auto;
+    }
+
+    .parede {
+      order: -1;
+      align-self: flex-end;
+      margin: 0 10px -18px 0;
+    }
+
+    .parede :global(.postit) {
+      --largura-postit: 184px;
     }
   }
 </style>

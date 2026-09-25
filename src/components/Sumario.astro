@@ -1,35 +1,81 @@
 ---
 /**
- * Sumário do artigo (briefing §5.3), só com 3 seções ou mais. "lateral": em telas ≥ 1300px, à
- * esquerda do texto, numa folha própria e fixa (D26), marcando a seção atual em azul-tinta
- * (src/scripts/artigo.ts), com a barra de quanto já foi lido embaixo (a de cima continua; a daqui
- * só aparece com JS). "recolhivel": no início do texto, nas telas menores.
+ * Sumário do artigo (briefing §5.3), só com 3 seções ou mais.
+ *
+ * "lateral" (D26, D33): em telas ≥ 1300px, à esquerda do texto, numa folha própria e fixa. As seções
+ * ficam num trilho: o número de cada uma (quando o título é numerado, "3. …") num marco redondo, e um
+ * ponto nas sem número (Apresentação, Fontes). O script (src/scripts/artigo.ts) pinta o trilho até a
+ * seção atual, marca as já lidas e a atual (em azul-tinta), abre as subseções da atual e mantém a
+ * atual à vista quando a lista rola. Embaixo, a barra de quanto já foi lido, com "NN% lido" e o tempo
+ * que falta; só com JS. Depois vem o post-it das frases (PostIt), quando a página passa.
+ *
+ * "recolhivel": no início do texto, nas telas menores.
  */
+import PostIt from "./PostIt.astro";
+import type { SecaoDoSumario } from "../lib/posts";
+
 interface Props {
-  secoes: { slug: string; text: string }[];
+  secoes: SecaoDoSumario[];
   variante: "lateral" | "recolhivel";
+  /** Tempo de leitura do artigo, para o "faltam N min". */
+  minutos?: number;
+  /** Slug do artigo, para a frase do post-it. */
+  chave?: string;
 }
 
-const { secoes, variante } = Astro.props;
+const { secoes, variante, minutos = 0, chave } = Astro.props;
+// "3. Bloqueio pessimista" → marco "3" e nome "Bloqueio pessimista".
+const partes = (texto: string) => {
+  const m = texto.match(/^(\d{1,2})[.)]\s+(.+)$/);
+  return m ? { numero: m[1], nome: m[2] } : { numero: "", nome: texto };
+};
 ---
 
 {
   variante === "lateral" ? (
-    <aside class="lateral folha" data-pagefind-ignore>
-      <nav aria-label="Neste artigo">
-        <p class="titulo">Neste artigo</p>
-        <ol>
-          {secoes.map((s) => (
-            <li>
-              <a href={`#${s.slug}`} data-secao={s.slug}>{s.text}</a>
-            </li>
-          ))}
-        </ol>
-      </nav>
-      <div class="progresso" aria-hidden="true" hidden data-progresso-sumario>
-        <span class="trilho"><span class="feito"></span></span>
-        <span class="lido">0% lido</span>
+    <aside class="lateral" data-pagefind-ignore>
+      <div class="folha folha-sumario">
+        <nav aria-label="Neste artigo" data-trilho>
+          <p class="titulo">Neste artigo</p>
+          <ol class="trilho">
+            {secoes.map((s) => {
+              const { numero, nome } = partes(s.text);
+              return (
+                <li class:list={["secao", { "sem-numero": !numero }]}>
+                  <a href={`#${s.slug}`} data-secao={s.slug}>
+                    <span class="marco" aria-hidden="true">
+                      {numero}
+                    </span>
+                    <span class="nome">
+                      {numero && <span class="sr">{numero}. </span>}
+                      {nome}
+                    </span>
+                  </a>
+                  {s.sub.length > 0 && (
+                    <ol class="subsecoes">
+                      {s.sub.map((sub) => (
+                        <li>
+                          <a href={`#${sub.slug}`} data-subsecao={sub.slug}>
+                            {sub.text}
+                          </a>
+                        </li>
+                      ))}
+                    </ol>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
+        <div class="progresso" aria-hidden="true" hidden data-progresso-sumario data-minutos={minutos}>
+          <span class="barra"><span class="feito"></span></span>
+          <p class="numeros">
+            <span class="lido">0% lido</span>
+            <span class="falta">faltam {minutos} min</span>
+          </p>
+        </div>
       </div>
+      <PostIt chave={chave} giro={-2} class="postit-sumario" />
     </aside>
   ) : (
     <details class="recolhivel" data-pagefind-ignore>
@@ -53,20 +99,142 @@ const { secoes, variante } = Astro.props;
   }
 
   .titulo {
-    margin: 0 0 10px;
+    margin: 0 0 12px;
     font-family: var(--font-titulo);
     font-weight: 700;
     font-size: 15px;
   }
 
-  .lateral ol {
+  /* ---------- trilho das seções ---------- */
+
+  .trilho,
+  .subsecoes {
     margin: 0;
     padding: 0;
     list-style: none;
     font-family: var(--font-ui);
-    font-size: 14px;
-    line-height: 1.4;
   }
+
+  .secao {
+    --marco: 22px;
+    position: relative;
+    padding-left: calc(var(--marco) + 11px);
+  }
+
+  /* O fio do trilho, de um marco ao outro; já lido, em azul-tinta. */
+  .secao::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--marco) / 2 - 0.75px);
+    width: 1.5px;
+    background: var(--rule);
+  }
+
+  .secao:first-child::before {
+    top: 14px;
+  }
+
+  .secao:last-child::before {
+    bottom: calc(100% - 14px);
+  }
+
+  .secao.lida::before {
+    background: color-mix(in oklab, var(--acento) 55%, var(--rule));
+  }
+
+  .secao a {
+    display: block;
+    padding: 5px 0;
+    color: var(--ink-2);
+    font-size: 14px;
+    line-height: 1.38;
+    text-decoration: none;
+  }
+
+  .secao > a:hover .nome {
+    color: var(--ink);
+  }
+
+  .marco {
+    position: absolute;
+    z-index: 1;
+    top: 3px;
+    left: 0;
+    display: grid;
+    place-items: center;
+    width: var(--marco);
+    height: var(--marco);
+    border: 1.5px solid var(--rule);
+    border-radius: 50%;
+    background: var(--paper-hi);
+    color: var(--ink-3);
+    font-family: var(--font-codigo);
+    font-size: 11px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    transition:
+      background 0.2s,
+      border-color 0.2s,
+      color 0.2s,
+      box-shadow 0.2s;
+  }
+
+  /* Sem número (Apresentação, Fontes): só um ponto no trilho. */
+  .sem-numero .marco {
+    top: 10px;
+    left: calc(var(--marco) / 2 - 4.5px);
+    width: 9px;
+    height: 9px;
+  }
+
+  .secao.lida .marco {
+    border-color: color-mix(in oklab, var(--acento) 55%, var(--rule));
+    background: color-mix(in oklab, var(--acento) 12%, var(--paper-hi));
+    color: var(--acento);
+  }
+
+  .secao > a[aria-current="true"] {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .secao > a[aria-current="true"] .marco {
+    border-color: var(--acento);
+    background: var(--acento);
+    color: var(--sobre-acento);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--acento) 16%, transparent);
+  }
+
+  /* Subseções: só as da seção atual, em corpo menor, com a atual em azul-tinta. */
+  .subsecoes {
+    display: none;
+    margin: 0 0 6px;
+    padding-left: 10px;
+    border-left: 1px solid var(--rule);
+  }
+
+  .secao:has(> a[aria-current="true"]) > .subsecoes {
+    display: block;
+  }
+
+  .subsecoes a {
+    padding: 3px 0;
+    font-size: 13px;
+    line-height: 1.35;
+    font-weight: 400;
+  }
+
+  .subsecoes a:hover {
+    color: var(--ink);
+  }
+
+  .subsecoes a[aria-current="true"] {
+    color: var(--acento);
+  }
+
+  /* ---------- progresso ---------- */
 
   .progresso {
     flex: none;
@@ -79,7 +247,7 @@ const { secoes, variante } = Astro.props;
     display: none;
   }
 
-  .trilho {
+  .barra {
     display: block;
     height: 4px;
     border-radius: 2px;
@@ -95,32 +263,17 @@ const { secoes, variante } = Astro.props;
     transform-origin: left;
   }
 
-  .lido {
-    display: block;
-    margin-top: 8px;
+  .numeros {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 8px 0 0;
     font-family: var(--font-codigo);
     font-size: 12px;
     color: var(--ink-3);
   }
 
-  .lateral a {
-    display: block;
-    padding: 6px 0 6px 12px;
-    border-left: 1px solid var(--rule);
-    color: var(--ink-2);
-    text-decoration: none;
-  }
-
-  .lateral a:hover {
-    color: var(--ink);
-  }
-
-  .lateral a[aria-current="true"] {
-    padding-left: 11px;
-    border-left: 2px solid var(--acento);
-    color: var(--acento);
-    font-weight: 500;
-  }
+  /* ---------- recolhível ---------- */
 
   .recolhivel ol {
     margin: 0;
@@ -139,27 +292,57 @@ const { secoes, variante } = Astro.props;
   }
 
   @media (min-width: 1300px) {
-    /* Na coluna da esquerda da grade do artigo (artigo.css), fixa enquanto o texto rola. */
-    /* Só a lista rola, se for longa; a barra de progresso fica sempre à vista, embaixo. */
+    /*
+     * Na coluna da esquerda da grade do artigo (artigo.css), fixa enquanto o texto rola. Só a lista
+     * rola, se for longa; a barra fica sempre à vista, e o post-it vem embaixo quando a tela é alta.
+     */
     .lateral {
       display: flex;
       flex-direction: column;
+      gap: 26px;
       grid-column: 1;
       grid-row: 1;
       position: sticky;
       top: calc(var(--altura-topo) + 20px);
       max-height: calc(100vh - var(--altura-topo) - 40px);
-      padding: 20px 20px 16px;
     }
 
-    .lateral nav {
+    .folha-sumario {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding: 20px 18px 16px;
+    }
+
+    .folha-sumario nav {
       min-height: 0;
       overflow-y: auto;
       scrollbar-width: thin;
+      margin-right: -8px;
+      padding-right: 8px;
+    }
+
+    .lateral :global(.postit-sumario) {
+      flex: none;
+      --largura-postit: 212px;
+      margin: 0 0 12px 12px;
     }
 
     .recolhivel {
       display: none;
+    }
+  }
+
+  /* Tela baixa: o post-it sai do lado do sumário (fica o do fim do artigo, RodapeArtigo). */
+  @media (min-width: 1300px) and (max-height: 719px) {
+    .lateral :global(.postit-sumario) {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marco {
+      transition: none;
     }
   }
 </style>

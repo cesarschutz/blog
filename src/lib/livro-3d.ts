@@ -4,7 +4,8 @@
  * mesma escala. Aberto, o livro fica em três quartos (GIRO graus), com a lombada e a capa à vista, e
  * o que se vê fica no centro da caixa.
  */
-export const GIRO = 62;
+// 52°, e não mais 62° (D33): a lombada aparece mais larga e o título dela fica legível.
+export const GIRO = 52;
 
 export function medidasDoLivro3D(larguraDaLombada: number, altura: number) {
   const u = altura / 720;

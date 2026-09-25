@@ -34,8 +34,12 @@
   }
 }
 
-/* Com notas na margem, o texto encosta à esquerda e as notas ocupam a direita da folha. */
-@media (min-width: 1180px) {
+/*
+ * Com notas na margem, o texto encosta à esquerda e as notas ocupam a direita da folha. Pela largura
+ * da própria folha (contêiner), não da tela: com o sumário ao lado, a folha pode não ter espaço para
+ * a coluna de 760px e a nota (D33).
+ */
+@container (min-width: 940px) {
   .artigo-corpo:has(.nota-lateral) {
     margin-left: 0;
   }
@@ -89,11 +93,10 @@
 }
 
 /*
- * Telas largas: a nota vai para a margem direita da folha, na altura da chamada (cabe a partir de
- * 1180px, também com o sumário à esquerda; o texto encosta à esquerda da folha e a nota pode avançar
- * um pouco sobre o respiro). O script abre e fecha a nota só quando ela não está na margem (pelo `float`).
+ * Folha larga: a nota vai para a margem direita dela, na altura da chamada (cabe quando a folha tem
+ * 940px por dentro; o texto encosta à esquerda da folha e a nota pode avançar um pouco sobre o respiro). O script abre e fecha a nota só quando ela não está na margem (pelo `float`).
  */
-@media (min-width: 1180px) {
+@container (min-width: 940px) {
   .nota-lateral,
   .nota-lateral:target,
   .nota-lateral.aberta {
@@ -110,4 +113,75 @@
   .ref-nota a {
     cursor: default;
   }
+}
+
+/* ---------- apresentação (rehype-apresentacao, D9) ---------- */
+
+/*
+ * Os slides numa faixa que rola de lado (scroll-snap), um por vez; sem JS também funciona. As setas,
+ * o contador e a tela cheia vêm do script (artigo.ts). Estas regras tinham saído por engano numa
+ * reescrita deste arquivo e voltaram na D33.
+ */
+.apresentacao .slides {
+  position: relative;
+  display: flex;
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  list-style: none;
+  border: 1px solid var(--rule);
+  border-radius: var(--raio-painel);
+  background: var(--paper-hi);
+}
+
+.apresentacao .slides::-webkit-scrollbar {
+  display: none;
+}
+
+.apresentacao .slides:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 3px;
+}
+
+.apresentacao .slide {
+  flex: 0 0 100%;
+  margin: 0;
+  padding: 0;
+  scroll-snap-align: center;
+}
+
+.apresentacao .slide img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+
+.barra-slides {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 1.4em;
+  font-family: var(--font-ui);
+}
+
+.barra-slides .posicao {
+  margin-right: auto;
+  font-size: 14.5px;
+  color: var(--ink-2);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.barra-slides .botao {
+  min-height: 36px;
+  padding: 5px 14px;
+  font-size: 14px;
 }

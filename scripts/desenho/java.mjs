@@ -4,9 +4,12 @@
  * padrão fixo no traço "A + C" para cada LTS de src/data/java.ts: a caneca na cor da série com
  * "JAVA" e a versão, o carimbo LTS (na próxima LTS, caneca e carimbo em linha fantasma) e, só no
  * recorte largo, o caminho desde a LTS anterior, com as versões do meio e a data. O guia (Parte 1)
- * leva a caneca e a linha das LTS. Saída em src/ilustracoes/; depois, valide e confira na folha.
+ * leva a caneca e a linha das LTS. Saída em src/ilustracoes/; depois, rode o centrar.mjs em todas
+ * (o guia e a próxima LTS têm outro desenho, e os recortes justos da D33 saem de lá), valide e confira
+ * na folha.
  *
  *   node scripts/desenho/java.mjs        (todas)
+ *   node scripts/desenho/centrar.mjs guia-atualizacoes-java java-8 java-11 java-17 java-21 java-25 java-29
  */
 import { writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -15,8 +18,8 @@ import { GUIA_JAVA, JAVA_LTS } from "../../src/data/java.ts";
 
 const pasta = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "src", "ilustracoes");
 
-// Recortes iguais aos do desenho de referência: a caneca fica na área segura.
-const RAIZ = `viewBox="0 -40 1200 900" data-largo="80 158 1100 468" data-medio="200 100 900 600" data-quadrado="415 110 670 670" data-og="350 -40 740 883" data-segura="415 158 670 468"`;
+// Recortes justos na caneca de uma LTS (D33, os mesmos que o centrar.mjs calcula para ela).
+const RAIZ = `viewBox="0 -40 1231 900" data-largo="80 175 1100 468" data-medio="387 147 787 525" data-quadrado="541 170 479 479" data-og="411 -32 740 883" data-segura="565 194 431 430"`;
 
 const CORPO = "M0 0 H240 V120 A60 60 0 0 1 180 180 H60 A60 60 0 0 1 0 120 Z";
 const ALCA = "M240 28 H282 A52 52 0 0 1 282 132 H240";

@@ -1,12 +1,18 @@
 ---
 /**
- * Rodapé do post (briefing §5.3), nesta ordem: tags; compartilhar (copiar link, LinkedIn, WhatsApp
- * e o compartilhar nativo quando existir); aviso sobre IA; anterior e próximo (ou dentro da série).
+ * Rodapé do post (briefing §5.3, D33), nesta ordem: tags; compartilhar (copiar link, LinkedIn,
+ * WhatsApp e o compartilhar nativo quando existir); aviso sobre IA; o livro do artigo (o livro 3D da
+ * categoria ou da série, em três quartos, que voa até a página do livro ao clicar) com o post-it das
+ * frases ao lado; anterior e
+ * próximo (ou dentro da série), com o título inteiro. O post-it daqui só aparece quando o do sumário
+ * lateral não está à vista.
  */
+import LivroEmPe from "./LivroEmPe.astro";
+import PostIt from "./PostIt.astro";
 import { ICONES } from "../lib/icones";
+import { montarLivros } from "../lib/estante";
 import { urlTag, type Resumo } from "../lib/posts";
 import type { Serie } from "../data/series";
-import { url } from "../lib/url";
 
 interface Props {
   post: Resumo;
@@ -17,7 +23,16 @@ interface Props {
 }
 
 const { post, endereco, anterior, proximo, naSerie } = Astro.props;
-const tituloCompleto = post.subtitulo ? `${post.titulo} — ${post.subtitulo}` : post.titulo;
+const tituloCompleto = post.tituloCompleto;
+const livros = await montarLivros();
+const livro = post.serie
+  ? livros.find((l) => l.id === `serie-${post.serie!.chave}`)
+  : livros.find((l) => post.categoria && l.slug === post.categoria.slug);
+const quantos = livro
+  ? livro.serie
+    ? `${livro.posts.length} ${livro.posts.length === 1 ? "edição" : "edições"}`
+    : `${livro.posts.length} ${livro.posts.length === 1 ? "artigo" : "artigos"}`
+  : "";
 const linkedin = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(endereco)}`;
 const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${tituloCompleto} ${endereco}`)}`;
 const rotulos = naSerie
@@ -30,7 +45,7 @@ const rotulos = naSerie
     {
       post.tags.map((t) => (
         <li>
-          <a class="pilula" href={urlTag(t)} data-busca-tag={t}>
+          <a class="pilula" href={urlTag(t)}>
             #{t}
           </a>
         </li>
@@ -54,11 +69,33 @@ const rotulos = naSerie
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.atencao} />
     <p>
       Artigo escrito com apoio de IA, revisado pelo autor, com o código testado. Ainda assim pode conter imprecisões:
-      confirme nas fontes citadas e na documentação oficial antes de aplicar. <a
-        href={url("/sobre/#como-os-artigos-sao-produzidos")}>Saiba mais</a
-      >.
+      confirme nas fontes citadas e na documentação oficial antes de aplicar.
     </p>
   </aside>
+
+  <div class="fim-do-artigo">
+    {
+      livro && (
+        <a class="livro-do-artigo" href={livro.href}>
+          <span class="livro-3d-pequeno" aria-hidden="true">
+            <LivroEmPe livro={livro} altura={150} transicao="ao-clicar" />
+          </span>
+          <span class="sobre-livro">
+            <span class="rotulo-livro">{livro.serie ? "Da série" : "Do livro"}</span>
+            <span class="nome-livro">{livro.nome}</span>
+            <span class="dados-livro">
+              {livro.serie ? "Série" : `Volume ${String(livro.volume).padStart(2, "0")}`} · {quantos}
+            </span>
+            <span class="ver-livro">
+              {livro.serie ? "Ver a série" : "Ver o livro"}
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
+            </span>
+          </span>
+        </a>
+      )
+    }
+    <PostIt chave={post.slug} giro={2.2} class="postit-fim" />
+  </div>
 </footer>
 
 {
@@ -67,7 +104,7 @@ const rotulos = naSerie
       {anterior ? (
         <a href={anterior.url} rel="prev">
           <span class="dir">{rotulos.anterior}</span>
-          <span class="nome">{anterior.titulo}</span>
+          <span class="nome">{anterior.tituloCompleto}</span>
         </a>
       ) : (
         <span />
@@ -75,7 +112,7 @@ const rotulos = naSerie
       {proximo && (
         <a href={proximo.url} rel="next" class="proximo">
           <span class="dir">{rotulos.proximo}</span>
-          <span class="nome">{proximo.titulo}</span>
+          <span class="nome">{proximo.tituloCompleto}</span>
         </a>
       )}
     </nav>
@@ -142,9 +179,144 @@ const rotulos = naSerie
     color: var(--ink-2);
   }
 
+  /* O parágrafo sem margem, para o ícone ficar na altura da primeira linha. */
   .aviso-ia {
+    align-items: start;
+    margin: 0;
     font-size: 15px;
+    line-height: 1.6;
     color: var(--ink-2);
+  }
+
+  .aviso-ia p {
+    margin: 0;
+  }
+
+  .aviso-ia svg {
+    margin-top: 1px;
+  }
+
+  /* ---------- o livro do artigo e o post-it ---------- */
+
+  .fim-do-artigo {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 28px 36px;
+    align-items: center;
+    margin-top: 30px;
+  }
+
+  .livro-do-artigo {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 18px 24px;
+    border: 1px solid var(--rule);
+    border-radius: var(--raio-painel);
+    background: color-mix(in oklab, var(--well) 60%, var(--paper-hi));
+    color: var(--ink);
+    text-decoration: none;
+    transition:
+      border-color 0.15s,
+      background-color 0.15s;
+  }
+
+  /* O livro 3D em três quartos, como no topo da página do livro; ao passar o mouse, sobe um pouco. */
+  .livro-3d-pequeno {
+    flex: none;
+    transition: transform 0.35s cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  .livro-do-artigo:hover {
+    border-color: var(--acento);
+  }
+
+  .livro-do-artigo:hover .livro-3d-pequeno {
+    transform: translateY(-4px) rotate(-1deg);
+  }
+
+  .sobre-livro {
+    display: grid;
+    gap: 3px;
+    font-family: var(--font-ui);
+  }
+
+  .rotulo-livro {
+    font-size: 13.5px;
+    color: var(--ink-2);
+  }
+
+  .nome-livro {
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    font-size: 21px;
+    line-height: 1.2;
+  }
+
+  .dados-livro {
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+
+  .ver-livro {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--acento);
+  }
+
+  .ver-livro svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: translate 0.2s;
+  }
+
+  .livro-do-artigo:hover .ver-livro svg {
+    translate: 3px 0;
+  }
+
+  .fim-do-artigo :global(.postit-fim) {
+    margin: 4px 8px 8px 0;
+  }
+
+  /* Com o sumário lateral numa tela alta, o post-it já está ao lado dele. */
+  @media (min-width: 1300px) and (min-height: 720px) {
+    :global(.artigo-grade.com-sumario) .fim-do-artigo {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    :global(.artigo-grade.com-sumario) .fim-do-artigo :global(.postit-fim) {
+      display: none;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .fim-do-artigo {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .fim-do-artigo :global(.postit-fim) {
+      justify-self: center;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .livro-3d-pequeno,
+    .ver-livro svg {
+      transition: none;
+    }
+
+    .livro-do-artigo:hover .livro-3d-pequeno {
+      transform: none;
+    }
   }
 
   .vizinhos {

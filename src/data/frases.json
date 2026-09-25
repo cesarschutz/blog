@@ -1,0 +1,764 @@
+[
+  {
+    "texto": "Arquitetura são as decisões que você gostaria de acertar logo no início de um projeto, mas que você não tem necessariamente mais chance de acertar do que qualquer outra.",
+    "autor": "Ralph Johnson",
+    "contexto": "Leia 'Who Needs an Architect?', de Martin Fowler (IEEE Software, 2003), que cita Ralph Johnson",
+    "url": "https://martinfowler.com/ieeeSoftware/whoNeedsArchitect.pdf"
+  },
+  {
+    "texto": "Nosso objetivo é tornar as implantações eventos previsíveis e rotineiros, que possam ser feitos sob demanda.",
+    "autor": "Jez Humble",
+    "contexto": "Leia 'What is Continuous Delivery?', de Jez Humble",
+    "url": "https://continuousdelivery.com/"
+  },
+  {
+    "texto": "A distinção útil não é entre ter ou não ter dívida, mas entre dívida prudente e dívida imprudente.",
+    "autor": "Martin Fowler",
+    "contexto": "Leia 'Technical Debt Quadrant', de Martin Fowler",
+    "url": "https://martinfowler.com/bliki/TechnicalDebtQuadrant.html"
+  },
+  {
+    "texto": "Testes (incluindo a automação de testes) e qualidade devem pertencer ao time inteiro.",
+    "autor": "Lisa Crispin",
+    "contexto": "Leia 'Testing, terminology and misperceptions', de Lisa Crispin",
+    "url": "https://lisacrispin.com/2025/01/15/testing-terminology-and-misperceptions/"
+  },
+  {
+    "texto": "Precisamos entender a variedade de ferramentas disponíveis e seus trade-offs. Para isso, temos de ir além das palavras da moda.",
+    "autor": "Martin Kleppmann",
+    "contexto": "Veja o site do livro 'Designing Data-Intensive Applications', de Martin Kleppmann",
+    "url": "https://dataintensive.net/"
+  },
+  {
+    "texto": "Errar as fronteiras dos serviços pode sair caro: mais mudanças entre serviços, componentes acoplados demais e, no geral, algo pior do que ter um único sistema monolítico.",
+    "autor": "Sam Newman",
+    "contexto": "Leia 'Microservices For Greenfield?', de Sam Newman",
+    "url": "https://samnewman.io/blog/2015/04/07/microservices-for-greenfield/"
+  },
+  {
+    "texto": "Profissionais de segurança e risco precisam eliminar o “centro macio” e tornar a segurança onipresente em todo o ecossistema digital do negócio, não só no perímetro.",
+    "autor": "John Kindervag",
+    "contexto": "Veja o resumo de 'No More Chewy Centers', relatório de John Kindervag na Forrester (texto completo é pago)",
+    "url": "https://www.forrester.com/report/No-More-Chewy-Centers-The-Zero-Trust-Model-Of-Information-Security/RES56682"
+  },
+  {
+    "texto": "Observabilidade é o poder de fazer perguntas novas ao seu sistema sem ter de publicar código novo nem coletar dados novos para isso.",
+    "autor": "Charity Majors",
+    "contexto": "Leia 'Observability: A Manifesto', de Charity Majors (Honeycomb)",
+    "url": "https://www.honeycomb.io/blog/observability-a-manifesto"
+  },
+  {
+    "texto": "Quando um sistema entra em produção, de certa forma, ele se torna a sua própria especificação.",
+    "autor": "Michael Feathers",
+    "contexto": "Leia 'Characterization Testing', de Michael Feathers",
+    "url": "https://michaelfeathers.silvrback.com/characterization-testing"
+  },
+  {
+    "texto": "O desenvolvimento guiado por testes é uma forma de administrar o medo durante a programação.",
+    "autor": "Kent Beck",
+    "contexto": "Leia o prefácio de 'Test-Driven Development: By Example', de Kent Beck (amostra na InformIT)",
+    "url": "https://www.informit.com/store/test-driven-development-by-example-9780321146533"
+  },
+  {
+    "texto": "Se alguém diz que, para ir rápido, é preciso sacrificar a estabilidade, ou, para ser estável, sacrificar a velocidade, isso não é verdade. Não vejo isso em lugar nenhum nos dados.",
+    "autor": "Nicole Forsgren",
+    "contexto": "Leia a transcrição de 'The Key to High Performance', palestra de Nicole Forsgren (IT Revolution)",
+    "url": "https://itrevolution.com/wp-content/uploads/2022/06/The-Key-to-High-Performance.pdf"
+  },
+  {
+    "texto": "Organizações que projetam sistemas são limitadas a produzir designs que são cópias de suas estruturas de comunicação.",
+    "autor": "Melvin Conway",
+    "contexto": "Leia 'How Do Committees Invent?', artigo original de Melvin Conway (1968)",
+    "url": "https://www.melconway.com/Home/Committees_Paper.html"
+  },
+  {
+    "texto": "Devemos esquecer as pequenas eficiências, digamos, 97% do tempo: a otimização prematura é a raiz de todo mal. Mas não devemos deixar passar nossas oportunidades nesses 3% críticos.",
+    "autor": "Donald Knuth",
+    "contexto": "Leia 'Structured Programming with go to Statements', de Donald Knuth (1974), p. 268",
+    "url": "https://web.archive.org/web/20130731202547/http://pplab.snu.ac.kr/courses/adv_pl05/papers/p261-knuth.pdf"
+  },
+  {
+    "texto": "A simplicidade é uma grande virtude, mas exige trabalho duro para ser alcançada e educação para ser apreciada. E, para piorar, a complexidade vende melhor.",
+    "autor": "Edsger Dijkstra",
+    "contexto": "Leia 'On the nature of Computing Science' (EWD896), de Edsger Dijkstra",
+    "url": "https://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD896.html"
+  },
+  {
+    "texto": "A primeira lei da arquitetura de software é que tudo em arquitetura de software é um trade-off. Na minha humilde opinião, é isso que a torna tão difícil.",
+    "autor": "Mark Richards",
+    "contexto": "Leia a transcrição do InfoQ Podcast com Mark Richards e Neal Ford (2021)",
+    "url": "https://www.infoq.com/podcasts/software-architecture-hard-parts/"
+  },
+  {
+    "texto": "Quase todas as histórias de sucesso com microsserviços começaram com um monólito que ficou grande demais e foi dividido.",
+    "autor": "Martin Fowler",
+    "contexto": "Leia 'MonolithFirst', de Martin Fowler",
+    "url": "https://martinfowler.com/bliki/MonolithFirst.html"
+  },
+  {
+    "texto": "Use o modelo como espinha dorsal de uma linguagem. Comprometa o time a exercitar essa linguagem, sem trégua, em toda a comunicação do time e no código.",
+    "autor": "Eric Evans",
+    "contexto": "Leia a 'Domain-Driven Design Reference', de Eric Evans (padrão Ubiquitous Language)",
+    "url": "https://www.domainlanguage.com/wp-content/uploads/2016/05/DDD_Reference_2015-03.pdf"
+  },
+  {
+    "texto": "Não existe delete. Não é possível entrar na máquina do tempo e dizer que um evento nunca aconteceu.",
+    "autor": "Greg Young",
+    "contexto": "Leia 'CQRS Documents', de Greg Young (seção 'There is no Delete')",
+    "url": "https://cqrs.wordpress.com/wp-content/uploads/2010/11/cqrs_documents.pdf"
+  },
+  {
+    "texto": "Quase todo mundo, ao construir sua primeira aplicação distribuída, faz estas oito suposições. Todas se mostram falsas a longo prazo e causam grandes problemas e aprendizados dolorosos.",
+    "autor": "L. Peter Deutsch",
+    "contexto": "Leia 'The Eight Fallacies of Distributed Computing', de Peter Deutsch",
+    "url": "https://nighthacks.com/jag/res/Fallacies.html"
+  },
+  {
+    "texto": "Num mundo cheio de mensagens reenviadas, a idempotência é uma propriedade essencial para sistemas confiáveis.",
+    "autor": "Pat Helland",
+    "contexto": "Leia 'Idempotence Is Not a Medical Condition', de Pat Helland (ACM Queue, 2012)",
+    "url": "https://queue.acm.org/detail.cfm?id=2187821"
+  },
+  {
+    "texto": "Num sistema que não pode contar com transações distribuídas, a gestão da incerteza precisa ser implementada na lógica de negócio.",
+    "autor": "Pat Helland",
+    "contexto": "Leia 'Life beyond Distributed Transactions: an Apostate's Opinion', de Pat Helland (CIDR 2007)",
+    "url": "https://www.cidrdb.org/cidr2007/papers/cidr07p15.pdf"
+  },
+  {
+    "texto": "Não dá para entender a fundo bancos de dados, replicação, controle de versão ou quase qualquer sistema de software sem entender logs; ainda assim, a maioria dos engenheiros não os conhece.",
+    "autor": "Jay Kreps",
+    "contexto": "Leia 'The Log', ensaio de Jay Kreps no blog de engenharia do LinkedIn (2013)",
+    "url": "https://www.linkedin.com/blog/engineering/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying"
+  },
+  {
+    "texto": "O Kafka não é, de fato, uma fila de mensagens no sentido tradicional. Em arquitetura, está muito mais perto de um sistema de arquivos distribuído ou de um banco de dados.",
+    "autor": "Jay Kreps",
+    "contexto": "Leia 'It's Okay To Store Data In Kafka', de Jay Kreps (Confluent, 2017)",
+    "url": "https://www.confluent.io/blog/okay-store-data-apache-kafka/"
+  },
+  {
+    "texto": "Versionar nomes de interface só gerencia a mudança em benefício do dono da API: uma visão míope, em que o desejo de controle do dono ignora a necessidade de continuidade do cliente.",
+    "autor": "Roy Fielding",
+    "contexto": "Leia a entrevista 'Roy Fielding on Versioning, Hypermedia, and REST' (InfoQ, 2014)",
+    "url": "https://www.infoq.com/articles/roy-fielding-on-versioning/"
+  },
+  {
+    "texto": "Aplicações interessantes raramente vivem isoladas.",
+    "autor": "Gregor Hohpe e Bobby Woolf",
+    "contexto": "Leia a introdução de 'Enterprise Integration Patterns', de Hohpe e Woolf",
+    "url": "https://www.enterpriseintegrationpatterns.com/patterns/messaging/Introduction.html"
+  },
+  {
+    "texto": "Antes de tudo, um arquiteto de software é um programador, e continua sendo. Nunca caia na mentira de que arquitetos se afastam do código para cuidar de questões de nível mais alto.",
+    "autor": "Robert C. Martin",
+    "contexto": "Leia o capítulo 15, 'What Is Architecture?', de 'Clean Architecture', de Robert C. Martin",
+    "url": "https://www.oreilly.com/library/view/clean-architecture-a/9780134494272/ch15.xhtml"
+  },
+  {
+    "texto": "Módulos de alto nível não devem depender de módulos de baixo nível; ambos devem depender de abstrações. Abstrações não devem depender de detalhes; detalhes devem depender de abstrações.",
+    "autor": "Robert C. Martin",
+    "contexto": "Leia 'The Dependency Inversion Principle', artigo de Robert C. Martin (C++ Report, 1996)",
+    "url": "https://web.archive.org/web/20110714224327/http://www.objectmentor.com/resources/articles/dip.pdf"
+  },
+  {
+    "texto": "Precisamos tirar o foco de “diagramas” e passar a pensar em “visões de um modelo”.",
+    "autor": "Simon Brown",
+    "contexto": "Leia 'Diagrams as code 2.0', de Simon Brown (DEV Community)",
+    "url": "https://dev.to/simonbrown/diagrams-as-code-2-0-82k"
+  },
+  {
+    "texto": "Quando sentir necessidade de escrever um comentário, primeiro tente refatorar o código para que qualquer comentário se torne supérfluo.",
+    "autor": "Kent Beck e Martin Fowler",
+    "contexto": "Leia 'Comments', no capítulo de code smells de 'Refactoring', de Fowler e Beck (InformIT)",
+    "url": "https://www.informit.com/articles/article.aspx?p=2952392&seqNum=24"
+  },
+  {
+    "texto": "Colocar código em produção deve ser tão confiável, robusto, rápido e banal quanto possível, porque esse é o compasso em que o valor chega à sua organização.",
+    "autor": "Charity Majors",
+    "contexto": "Leia 'Friday Deploy Freezes Are Exactly Like Murdering Puppies', de Charity Majors",
+    "url": "https://charity.wtf/p/friday-deploy-freezes-are-exactly-like-murdering-puppies"
+  },
+  {
+    "texto": "Nenhum código é a melhor forma de escrever aplicações seguras e confiáveis. Não escreva nada; não implante em lugar nenhum.",
+    "autor": "Kelsey Hightower",
+    "contexto": "Veja o repositório 'No Code', de Kelsey Hightower, no GitHub",
+    "url": "https://github.com/kelseyhightower/nocode"
+  },
+  {
+    "texto": "Renomeamos tudo três vezes e nada melhorou: os serviços de infraestrutura viraram uma plataforma, e a operação passou a se chamar SRE.",
+    "autor": "Gregor Hohpe",
+    "contexto": "Leia 'We renamed everything thrice. Still, nothing improved.', de Gregor Hohpe",
+    "url": "https://architectelevator.com/transformation/root-cause-renaming-no-effect/"
+  },
+  {
+    "texto": "O mais importante é ter uma arquitetura fracamente acoplada, tanto no nível dos times quanto no nível da tecnologia.",
+    "autor": "Nicole Forsgren",
+    "contexto": "Leia a transcrição de 'The Key to High Performance', palestra de Nicole Forsgren (IT Revolution)",
+    "url": "https://itrevolution.com/wp-content/uploads/2022/06/The-Key-to-High-Performance.pdf"
+  },
+  {
+    "texto": "Entender como as coisas dão certo é o que nos leva a compreender mais a fundo como elas dão errado.",
+    "autor": "Nora Jones",
+    "contexto": "Leia 'Chaos Engineering Traps', de Nora Jones",
+    "url": "https://medium.com/@njones_18523/chaos-engineering-traps-e3486c526059"
+  },
+  {
+    "texto": "Seu celular, na melhor das hipóteses, vai ser uns 99,95% confiável. Então por que fazer seu serviço com seis, sete, oito noves de confiabilidade? Simplesmente não faz sentido.",
+    "autor": "Liz Fong-Jones",
+    "contexto": "Leia a entrevista de Liz Fong-Jones 'Services Don't Have to Be Eight-9s Reliable' (Kongcast)",
+    "url": "https://konghq.com/blog/enterprise/service-reliability"
+  },
+  {
+    "texto": "Monitoramento ruidoso leva a métricas que ninguém olha ou, pior, a alertas falsos que causam um caso grave de fadiga de alertas.",
+    "autor": "Cindy Sridharan",
+    "contexto": "Leia 'Monitoring in the time of Cloud Native', de Cindy Sridharan",
+    "url": "https://copyconstruct.medium.com/monitoring-in-the-time-of-cloud-native-c87c7a5bfa3e"
+  },
+  {
+    "texto": "Sistemas complexos falham de formas complexas, e não existe teste no mundo que permita prever cada vetor capaz de contribuir para uma falha.",
+    "autor": "Cindy Sridharan",
+    "contexto": "Leia 'Logs and Metrics', de Cindy Sridharan",
+    "url": "https://copyconstruct.medium.com/logs-and-metrics-6d34d3026e38"
+  },
+  {
+    "texto": "Qualquer sistema do mundo real é uma série complicada de interconexões. A segurança precisa permear o sistema: seus componentes e suas conexões.",
+    "autor": "Bruce Schneier",
+    "contexto": "Leia o prefácio de 'Secrets and Lies', de Bruce Schneier",
+    "url": "https://www.schneier.com/books/secrets-and-lies-pref/"
+  },
+  {
+    "texto": "Qualquer um, do amador mais despreparado ao melhor criptógrafo, consegue criar um algoritmo que ele mesmo não consegue quebrar.",
+    "autor": "Bruce Schneier",
+    "contexto": "Leia 'Memo to the Amateur Cipher Designer', na Crypto-Gram de Bruce Schneier (1998)",
+    "url": "https://www.schneier.com/crypto-gram/archives/1998/1015.html"
+  },
+  {
+    "texto": "Em sistemas complexos, a falha é inevitável e acontece o tempo todo. O que importa é como nos preparamos para ela.",
+    "autor": "Kelly Shortridge",
+    "contexto": "Leia o resumo de 'Security Chaos Engineering' escrito por Kelly Shortridge",
+    "url": "https://kellyshortridge.com/blog/posts/security-chaos-engineering-sustaining-software-systems-resilience-cliff-notes/"
+  },
+  {
+    "texto": "Gerenciadores de senha não precisam ser perfeitos; só precisam ser melhores do que não ter nenhum.",
+    "autor": "Troy Hunt",
+    "contexto": "Leia 'Passwords Evolved: Authentication Guidance for the Modern Era', de Troy Hunt",
+    "url": "https://www.troyhunt.com/passwords-evolved-authentication-guidance-for-the-modern-era/"
+  },
+  {
+    "texto": "O stack 2.0 pode falhar de formas pouco intuitivas e constrangedoras ou, pior, “falhar em silêncio”, por exemplo adotando sem alarde vieses dos dados de treinamento.",
+    "autor": "Andrej Karpathy",
+    "contexto": "Leia 'Software 2.0', de Andrej Karpathy",
+    "url": "https://karpathy.medium.com/software-2-0-a64152b37c35"
+  },
+  {
+    "texto": "Grandes modelos de linguagem pré-treinados armazenam conhecimento factual nos parâmetros, mas sua capacidade de acessar e manipular esse conhecimento com precisão ainda é limitada.",
+    "autor": "Patrick Lewis et al.",
+    "contexto": "Leia o paper original de RAG, de Lewis et al. (2020)",
+    "url": "https://arxiv.org/abs/2005.11401"
+  },
+  {
+    "texto": "LLMs amplificam a experiência que você já tem.",
+    "autor": "Simon Willison",
+    "contexto": "Leia 'Here's how I use LLMs to help me write code', de Simon Willison",
+    "url": "https://simonwillison.net/2025/Mar/11/using-llms-for-code/"
+  },
+  {
+    "texto": "LLMs são ferramentas para usuários avançados: motosserras disfarçadas de facas de cozinha. Parecem enganosamente simples de usar.",
+    "autor": "Simon Willison",
+    "contexto": "Leia 'Things we learned about LLMs in 2024', de Simon Willison",
+    "url": "https://simonwillison.net/2024/Dec/31/llms-in-2024/"
+  },
+  {
+    "texto": "Lock-in não é uma simples questão de verdadeiro ou falso: evitar ficar preso a um aspecto muitas vezes prende você a outro.",
+    "autor": "Gregor Hohpe",
+    "contexto": "Leia 'Don't get locked up into avoiding lock-in', de Gregor Hohpe",
+    "url": "https://martinfowler.com/articles/oss-lockin.html"
+  },
+  {
+    "texto": "Apesar dos enormes avanços da tecnologia, a velocidade da luz é um limite fundamental: a latência de rede, sobretudo entre regiões, sempre será uma restrição.",
+    "autor": "Adrian Cockcroft",
+    "contexto": "Leia 'Cloud Native Computing', de Adrian Cockcroft",
+    "url": "https://adrianco.medium.com/cloud-native-computing-5f0f41a982bf"
+  },
+  {
+    "texto": "Os clientes querem se concentrar na lógica própria da aplicação e nas necessidades do negócio, não no trabalho pesado e indiferenciado de provisionar e escalar servidores.",
+    "autor": "Werner Vogels",
+    "contexto": "Leia 'The Easiest Way to Compute in the Cloud – AWS Lambda', de Werner Vogels (2014)",
+    "url": "https://www.allthingsdistributed.com/2014/11/aws-lambda.html"
+  },
+  {
+    "texto": "Lembre-se: frugalidade é maximizar valor, não apenas minimizar gastos.",
+    "autor": "Werner Vogels",
+    "contexto": "Leia 'The Laws of Frugal Architecture', de Werner Vogels",
+    "url": "https://thefrugalarchitect.com/laws/"
+  },
+  {
+    "texto": "Quando você fala da fatura da AWS, está falando da arquitetura da AWS. Toda arquitetura é, no fundo, sobre custo, e todo custo de cloud é, no fundo, sobre arquitetura.",
+    "autor": "Corey Quinn",
+    "contexto": "Leia 'The Key to Unlock the AWS Billing Puzzle is Architecture', de Corey Quinn",
+    "url": "https://www.lastweekinaws.com/blog/the-key-to-unlock-the-aws-billing-puzzle-is-architecture/"
+  },
+  {
+    "texto": "Bancos de documentos às vezes são chamados de schemaless, mas isso engana: o código que lê os dados costuma supor alguma estrutura. Há um schema implícito, que o banco não impõe.",
+    "autor": "Martin Kleppmann",
+    "contexto": "Leia 'Designing Data-Intensive Applications', de Martin Kleppmann (capítulo 2)",
+    "url": "https://dataintensive.net/"
+  },
+  {
+    "texto": "Acho que as pessoas estão começando a entender que o termo 'não relacional' é um equívoco: estamos só olhando para uma forma diferente de modelar os dados.",
+    "autor": "Rick Houlihan",
+    "contexto": "Leia o episódio 35 do Serverless Chats, com Rick Houlihan, sobre modelagem NoSQL no DynamoDB",
+    "url": "https://www.serverlesschats.com/35/"
+  },
+  {
+    "texto": "A partir de certo nível de complexidade, deixar a solução fixa no código pode ser a opção menos ruim.",
+    "autor": "Mike Hadlow",
+    "contexto": "Leia 'The Configuration Complexity Clock', de Mike Hadlow",
+    "url": "https://mikehadlow.blogspot.com/2012/05/configuration-complexity-clock.html"
+  },
+  {
+    "texto": "Quero evitar usar o OWASP Top 10 como requisitos. É só um documento de conscientização, feito para ensinar e ajudar as pessoas a começar em segurança web.",
+    "autor": "Jim Manico",
+    "contexto": "Leia a transcrição de 'Security Education with Jim Manico' (podcast The Secure Developer, ep. 26)",
+    "url": "https://snyk.io/podcasts/the-secure-developer/security-education-with-jim-manico/"
+  },
+  {
+    "texto": "Eu deveria conseguir explicar SQL injection uma vez, em cinco minutos, e nunca mais tocar no assunto. Não deveria ter de ensinar isso de novo ao time a cada seis meses. Algo está errado aí.",
+    "autor": "Jim Manico",
+    "contexto": "Leia a transcrição de 'Security Education with Jim Manico' (podcast The Secure Developer, ep. 26)",
+    "url": "https://snyk.io/podcasts/the-secure-developer/security-education-with-jim-manico/"
+  },
+  {
+    "texto": "Os padrões do OpenID Connect levam autenticação e autorização para outra camada, a de identidade, e permitem que as aplicações as terceirizem para um módulo externo com interface padrão.",
+    "autor": "Nat Sakimura",
+    "contexto": "Leia 'OpenID Connect is here! – An Identity Layer on the internet', de Nat Sakimura",
+    "url": "https://nat.sakimura.org/2014/02/26/openid-connect-is-here/"
+  },
+  {
+    "texto": "Quero histórico limpo, mas isso significa (a) limpo e (b) histórico. Rebase no seu próprio trabalho é limpeza; no código dos outros, nunca: é destruir o histórico.",
+    "autor": "Linus Torvalds",
+    "contexto": "Leia o e-mail de Linus Torvalds sobre rebase (lista dri-devel, março de 2009)",
+    "url": "https://yarchive.net/comp/linux/git_rebase.html"
+  },
+  {
+    "texto": "Os desenvolvedores colaboram numa única branch, chamada trunk, e resistem a criar branches de longa duração. Assim evitam o inferno do merge, não quebram o build e vivem felizes para sempre.",
+    "autor": "Paul Hammant",
+    "contexto": "Veja a introdução de trunkbaseddevelopment.com, site de Paul Hammant",
+    "url": "https://trunkbaseddevelopment.com/"
+  },
+  {
+    "texto": "Merge ou rebase, qual é melhor? Espero que você perceba que não é tão simples: o Git permite fazer muita coisa com o histórico, mas cada time e cada projeto é diferente.",
+    "autor": "Scott Chacon e Ben Straub",
+    "contexto": "Leia 'Rebase vs. Merge' no Pro Git, de Scott Chacon e Ben Straub",
+    "url": "https://git-scm.com/book/en/v2/Git-Branching-Rebasing"
+  },
+  {
+    "texto": "Kubernetes The Hard Way é otimizado para o aprendizado: significa pegar o caminho longo para garantir que você entenda cada tarefa necessária para subir um cluster Kubernetes.",
+    "autor": "Kelsey Hightower",
+    "contexto": "Veja 'Kubernetes The Hard Way', de Kelsey Hightower",
+    "url": "https://github.com/kelseyhightower/kubernetes-the-hard-way"
+  },
+  {
+    "texto": "Não me entenda mal: adoro o docker-compose e o uso na maior parte do que faço localmente com Docker. É ótimo. Mas cada trabalho pede a ferramenta certa.",
+    "autor": "Bret Fisher",
+    "contexto": "Leia a resposta de Bret Fisher sobre docker-compose ou Swarm em produção (AMA no GitHub)",
+    "url": "https://github.com/BretFisher/ama/discussions/146"
+  },
+  {
+    "texto": "Se WASM+WASI existissem em 2008, não teríamos precisado criar o Docker. Esse é o tamanho da importância disso. WebAssembly no servidor é o futuro da computação.",
+    "autor": "Solomon Hykes",
+    "contexto": "Veja o post de Solomon Hykes no X sobre WebAssembly (março de 2019)",
+    "url": "https://x.com/solomonstre/status/1111004913222324225"
+  },
+  {
+    "texto": "Faça .JAR, não .WAR!",
+    "autor": "Josh Long",
+    "contexto": "Veja o post de Josh Long no X",
+    "url": "https://x.com/starbuxman/status/1000092702950723584"
+  },
+  {
+    "texto": "Threads virtuais não são threads mais rápidas: não executam código mais depressa que as threads de plataforma. Existem para dar escala (mais vazão), não velocidade (menos latência).",
+    "autor": "Ron Pressler e Alan Bateman",
+    "contexto": "Leia a JEP 444 (Virtual Threads), de Ron Pressler e Alan Bateman",
+    "url": "https://openjdk.org/jeps/444"
+  },
+  {
+    "texto": "A programação orientada a objetos dá o melhor de si quando define e defende fronteiras.",
+    "autor": "Brian Goetz",
+    "contexto": "Leia 'Data Oriented Programming in Java', de Brian Goetz",
+    "url": "https://www.infoq.com/articles/data-oriented-programming-java/"
+  },
+  {
+    "texto": "Qualquer tolo consegue escrever código que um computador entenda. Bons programadores escrevem código que humanos conseguem entender.",
+    "autor": "Martin Fowler",
+    "contexto": "Veja 'Refactoring', de Martin Fowler (a frase está na 1ª edição, de 1999)",
+    "url": "https://martinfowler.com/books/refactoring.html"
+  },
+  {
+    "texto": "O Gradle é tão flexível quanto você precisa, mas também dá a capacidade de impor padrões.",
+    "autor": "Hans Dockter",
+    "contexto": "Leia a entrevista de Hans Dockter ao blog da Skills Matter (2013) sobre a criação e a proposta do Gradle",
+    "url": "https://skillsmatterblog.wordpress.com/2013/10/21/exclusive-interview-with-hans-dockter/"
+  },
+  {
+    "texto": "O Maven nasceu do desejo muito prático de fazer vários projetos da Apache funcionarem do mesmo jeito, para que os desenvolvedores pudessem transitar livremente entre eles.",
+    "autor": "Jason van Zyl",
+    "contexto": "Leia 'Philosophy of Maven', texto de Jason van Zyl (2005) na documentação oficial do Maven",
+    "url": "https://maven.apache.org/background/philosophy-of-maven.html"
+  },
+  {
+    "texto": "Foi por isso que comecei a trabalhar no IntelliJ IDEA: eu estava cansado de depender das IDEs Java fracas que existiam.",
+    "autor": "Sergey Dmitriev",
+    "contexto": "Leia 'Language Oriented Programming: The Next Programming Paradigm', de Sergey Dmitriev (JetBrains, 2004)",
+    "url": "https://resources.jetbrains.com/storage/products/mps/docs/Language_Oriented_Programming.pdf"
+  },
+  {
+    "texto": "Eu vi o mesmo problema de novo: como você compartilha suas APIs? Elas funcionam ou não? Estão bem documentadas? O time está alinhado em relação à API?",
+    "autor": "Abhinav Asthana",
+    "contexto": "Ouça (ou leia a transcrição) o Stack Overflow Podcast com Abhinav Asthana sobre a história do Postman (2025)",
+    "url": "https://stackoverflow.blog/2025/12/04/postman-s-journey-and-unlocking-the-power-of-apis/"
+  },
+  {
+    "texto": "Padrões às vezes ganham má fama por restringirem demais. Mas o importante é que eles criam valor real, porque as pessoas concordam que usá-los é melhor do que não usá-los.",
+    "autor": "Erik Wilde",
+    "contexto": "Leia a entrevista de Erik Wilde na série 'OpenAPI Community Heroes', da OpenAPI Initiative (2025)",
+    "url": "https://www.openapis.org/blog/2025/02/20/openapi-community-heroes-erik-wilde"
+  },
+  {
+    "texto": "Há muitos bancos de dados que deixam você armazenar JSON, o que é muito diferente de um banco de dados JSON.",
+    "autor": "Eliot Horowitz",
+    "contexto": "Ouça (ou leia a transcrição) o episódio 7 do podcast Open Source Underdogs, com Eliot Horowitz, cofundador do MongoDB (2018)",
+    "url": "https://opensourceunderdogs.com/episode-7-mongodb-cross-platform-document-database-with-eliot-horowitz/"
+  },
+  {
+    "texto": "O PostgreSQL chamou minha atenção pela maturidade do otimizador e pela aderência ao bom senso e aos padrões.",
+    "autor": "Simon Riggs",
+    "contexto": "Leia a entrevista de Simon Riggs na série 'PostgreSQL Person of the Week' (2020)",
+    "url": "https://postgresql.life/post/simon_riggs/"
+  },
+  {
+    "texto": "Os lakehouses são o que você teria se precisasse redesenhar os data warehouses no mundo moderno, agora que existe armazenamento barato e altamente confiável.",
+    "autor": "Matei Zaharia e coautores",
+    "contexto": "Leia 'What Is a Lakehouse?', de Ben Lorica, Michael Armbrust, Reynold Xin, Matei Zaharia e Ali Ghodsi (Databricks, 2020)",
+    "url": "https://www.databricks.com/blog/2020/01/30/what-is-a-data-lakehouse.html"
+  },
+  {
+    "texto": "O texto gerado por um modelo de linguagem não está ancorado em intenção comunicativa, em nenhum modelo do mundo, nem em nenhum modelo do estado mental de quem lê.",
+    "autor": "Emily M. Bender, Timnit Gebru e coautoras",
+    "contexto": "Leia 'On the Dangers of Stochastic Parrots', de Bender, Gebru, McMillan-Major e Shmitchell (FAccT 2021)",
+    "url": "https://dl.acm.org/doi/10.1145/3442188.3445922"
+  },
+  {
+    "texto": "O Cursor deve parecer uma extensão da sua vontade. No momento em que você pensa numa mudança, o modelo precisa de uma intenção mínima para executá-la na hora.",
+    "autor": "Aman Sanger",
+    "contexto": "Leia 'More problems', de Aman Sanger (blog do Cursor, 2024), sobre os próximos desafios da programação com IA",
+    "url": "https://cursor.com/blog/problems-2024"
+  },
+  {
+    "texto": "Extensões são muito legais, mas também podem prejudicar você. Decidimos rodar as extensões num processo separado, para que o núcleo do VS Code seja menos afetado por elas.",
+    "autor": "Erich Gamma",
+    "contexto": "Leia a reportagem do The Register sobre a palestra de Erich Gamma no VS Code Day 2021, sobre a história do VS Code",
+    "url": "https://www.theregister.com/2021/01/28/erich_gamma_on_vs_code/"
+  },
+  {
+    "texto": "O código é lido com muito mais frequência do que é escrito.",
+    "autor": "Guido van Rossum",
+    "contexto": "Leia a PEP 8, o guia de estilo do Python, de Guido van Rossum, Barry Warsaw e Alyssa Coghlan",
+    "url": "https://peps.python.org/pep-0008/"
+  },
+  {
+    "texto": "Fico feliz por ter escolhido funções de primeira classe ao estilo Scheme e protótipos ao estilo Self como ingredientes principais.",
+    "autor": "Brendan Eich",
+    "contexto": "Leia 'Popularity', post de Brendan Eich (2008) sobre como o JavaScript nasceu na Netscape",
+    "url": "https://brendaneich.com/2008/04/popularity/"
+  },
+  {
+    "texto": "O problema central que eu queria resolver era manter a documentação atualizada. Manter a documentação coerente com o código real é um desafio de verdade.",
+    "autor": "Arnaud Roques",
+    "contexto": "Leia 'A coffee with Arnaud Roques (creator of PlantUML)', entrevista de Jordi Cabot no Modeling Languages (2016)",
+    "url": "https://modeling-languages.com/interview-plantuml/"
+  },
+  {
+    "texto": "Entre editor e terminal, só o editor de código teve melhorias de produto significativas nos últimos 40 anos. Comparado ao VS Code, usar o terminal é como voltar aos anos 1970.",
+    "autor": "Zach Lloyd",
+    "contexto": "Leia 'Introducing Warp: The Terminal for the 21st Century', de Zach Lloyd (2022)",
+    "url": "https://www.warp.dev/blog/introducing-warp"
+  },
+  {
+    "texto": "Nosso processo é o antiprocesso: qual o mínimo de sobrecarga que toleramos para manter alta a qualidade do código enquanto construímos funcionalidades o mais rápido possível?",
+    "autor": "Zach Holman",
+    "contexto": "Veja 'How GitHub Uses GitHub to Build GitHub', palestra de Zach Holman (2011), com slides e vídeo",
+    "url": "https://zachholman.com/talk/how-github-uses-github-to-build-github/"
+  },
+  {
+    "texto": "O MariaDB não era 100% compatível com o MySQL, já que qualquer mudança em um fork torna as coisas incompatíveis de alguma forma.",
+    "autor": "Monty Widenius",
+    "contexto": "Leia 'The concepts of forking', de Monty Widenius (2026), sobre manter o MariaDB compatível com o MySQL",
+    "url": "https://monty-says.blogspot.com/2026/01/the-concepts-of-forking.html"
+  },
+  {
+    "texto": "Quando você recebe uma mensagem da Internet, não pode presumir que o remetente estava em são juízo, nem que ela segue algum esquema, implícito ou explícito.",
+    "autor": "Tim Bray",
+    "contexto": "Leia 'Message Processing Styles', de Tim Bray (2016), sobre processar mensagens em sistemas distribuídos",
+    "url": "https://www.tbray.org/ongoing/When/201x/2016/10/23/Message-Processing"
+  },
+  {
+    "texto": "Não existe um único avanço, em tecnologia ou em técnica de gestão, que por si só prometa sequer uma melhoria de uma ordem de grandeza em produtividade, confiabilidade ou simplicidade.",
+    "autor": "Fred Brooks",
+    "contexto": "Leia 'No Silver Bullet: Essence and Accidents of Software Engineering', de Fred Brooks (relatório técnico da UNC, 1986)",
+    "url": "https://www.cs.unc.edu/techreports/86-020.pdf"
+  },
+  {
+    "texto": "Numa simplificação escandalosa, enunciamos a Lei de Brooks: adicionar mão de obra a um projeto de software atrasado o atrasa ainda mais.",
+    "autor": "Fred Brooks",
+    "contexto": "Conheça 'The Mythical Man-Month', de Fred Brooks (edição de aniversário, Addison-Wesley)",
+    "url": "https://www.informit.com/store/mythical-man-month-essays-on-software-engineering-anniversary-9780201835953"
+  },
+  {
+    "texto": "Com testes, podemos mudar o comportamento do código de forma rápida e verificável. Sem eles, não sabemos de verdade se o código está ficando melhor ou pior.",
+    "autor": "Michael Feathers",
+    "contexto": "Conheça 'Working Effectively with Legacy Code', de Michael Feathers (Prentice Hall, 2004)",
+    "url": "https://www.informit.com/store/working-effectively-with-legacy-code-9780131177055"
+  },
+  {
+    "texto": "REST é design de software na escala de décadas: cada detalhe existe para promover a longevidade do software e sua evolução independente.",
+    "autor": "Roy Fielding",
+    "contexto": "Leia 'REST APIs must be hypertext-driven', de Roy Fielding (2008), e a resposta dele nos comentários",
+    "url": "https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven"
+  },
+  {
+    "texto": "O trade-off número 1 ao migrar para uma arquitetura de microsserviços é a complexidade.",
+    "autor": "Christian Posta",
+    "contexto": "Leia 'Istio as an Example of When Not to Do Microservices', de Christian Posta (2020)",
+    "url": "https://blog.christianposta.com/istio-as-an-example-of-when-not-to-do-microservices/"
+  },
+  {
+    "texto": "A primeira regra dos sistemas distribuídos é não distribuir seu sistema até ter um motivo observável para isso.",
+    "autor": "Tyler Treat",
+    "contexto": "Leia 'Service-Disoriented Architecture', de Tyler Treat (2015), sobre os riscos de adotar microsserviços cedo demais",
+    "url": "https://bravenewgeek.com/service-disoriented-architecture/"
+  },
+  {
+    "texto": "O orçamento de erro nasce da observação de que 100% é a meta de confiabilidade errada para basicamente tudo (marca-passos e freios ABS são exceções notáveis).",
+    "autor": "Benjamin Treynor Sloss",
+    "contexto": "Leia a introdução do livro 'Site Reliability Engineering', do Google, escrita por Benjamin Treynor Sloss",
+    "url": "https://sre.google/sre-book/introduction/"
+  },
+  {
+    "texto": "Uma arquitetura evolutiva dá suporte a mudanças incrementais e guiadas em múltiplas dimensões.",
+    "autor": "Neal Ford, Rebecca Parsons e Patrick Kua",
+    "contexto": "Leia sobre 'Building Evolutionary Architectures', de Neal Ford, Rebecca Parsons e Patrick Kua, no site de Neal Ford",
+    "url": "https://nealford.com/books/buildingevolutionaryarchitectures.html"
+  },
+  {
+    "texto": "Uma das coisas mais difíceis de acompanhar ao longo da vida de um projeto é a motivação por trás de certas decisões.",
+    "autor": "Michael Nygard",
+    "contexto": "Leia 'Documenting Architecture Decisions', o post original de Michael Nygard sobre ADRs (2011)",
+    "url": "https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions"
+  },
+  {
+    "texto": "Pontos de integração são o assassino número um de sistemas. Todo socket, processo, pipe ou chamada de procedimento remoto pode travar, e vai travar.",
+    "autor": "Michael Nygard",
+    "contexto": "Conheça 'Release It!' (2ª ed.), de Michael Nygard; o trecho do capítulo 'Stability Antipatterns' é gratuito no site da editora",
+    "url": "https://pragprog.com/titles/mnee2/release-it-second-edition/"
+  },
+  {
+    "texto": "Simplicidade é o caminho mais curto até uma solução.",
+    "autor": "Ward Cunningham",
+    "contexto": "Leia 'The Simplest Thing that Could Possibly Work', conversa de Bill Venners com Ward Cunningham (Artima, 2004)",
+    "url": "https://www.artima.com/articles/the-simplest-thing-that-could-possibly-work"
+  },
+  {
+    "texto": "Um consumidor precisa ser idempotente: processar a mesma mensagem várias vezes deve ter o mesmo resultado que processá-la uma vez.",
+    "autor": "Chris Richardson",
+    "contexto": "Veja o padrão Idempotent Consumer, de Chris Richardson, em microservices.io",
+    "url": "https://microservices.io/patterns/communication-style/idempotent-consumer.html"
+  },
+  {
+    "texto": "Uma saga não tem rollback automático: o desenvolvedor precisa projetar transações de compensação que desfaçam explicitamente as mudanças feitas antes.",
+    "autor": "Chris Richardson",
+    "contexto": "Veja o padrão Saga, de Chris Richardson, em microservices.io",
+    "url": "https://microservices.io/patterns/data/saga.html"
+  },
+  {
+    "texto": "Quando os serviços têm baixo acoplamento, a mudança em um serviço não deveria exigir mudança em outro.",
+    "autor": "Sam Newman",
+    "contexto": "Conheça 'Building Microservices', de Sam Newman",
+    "url": "https://samnewman.io/books/building_microservices/"
+  },
+  {
+    "texto": "Se dói, faça com mais frequência e antecipe a dor.",
+    "autor": "Jez Humble e David Farley",
+    "contexto": "Conheça o livro 'Continuous Delivery', de Jez Humble e David Farley",
+    "url": "https://www.informit.com/store/continuous-delivery-reliable-software-releases-through-9780321601919"
+  },
+  {
+    "texto": "Princípios são como regras: ou você os cumpre ou não. Propriedades definem um centro para onde caminhar; o código só está mais perto ou mais longe dele.",
+    "autor": "Dan North",
+    "contexto": "Leia 'CUPID — for joyful coding', de Dan North, alternativa aos princípios SOLID",
+    "url": "https://dannorth.net/blog/cupid-for-joyful-coding/"
+  },
+  {
+    "texto": "Simples e fácil não são sinônimos. Fácil é familiar; simples é sem partes entrelaçadas.",
+    "autor": "Rich Hickey",
+    "contexto": "Leia a transcrição de 'Simple Made Easy', palestra de Rich Hickey (Strange Loop 2011)",
+    "url": "https://github.com/matthiasn/talk-transcripts/blob/master/Hickey_Rich/SimpleMadeEasy.md"
+  },
+  {
+    "texto": "A arquitetura é importante, mas as influências arquiteturais vêm e vão. Dê mais ênfase ao modelo de domínio, que tem mais valor de negócio e será mais duradouro.",
+    "autor": "Vaughn Vernon",
+    "contexto": "Conheça 'Implementing Domain-Driven Design', de Vaughn Vernon",
+    "url": "https://www.oreilly.com/library/view/implementing-domain-driven-design/9780133039900/"
+  },
+  {
+    "texto": "Não pensamos em dados como URLs de recursos, chaves secundárias ou tabelas de junção; pensamos neles como um grafo de objetos.",
+    "autor": "Lee Byron",
+    "contexto": "Leia 'GraphQL: A data query language', anúncio de Lee Byron no blog de engenharia do Facebook",
+    "url": "https://engineering.fb.com/2015/09/14/core-infra/graphql-a-data-query-language/"
+  },
+  {
+    "texto": "Chamadas remotas custam mais que chamadas dentro do processo; por isso, APIs remotas precisam ter granularidade mais grossa, o que costuma deixá-las mais desajeitadas de usar.",
+    "autor": "James Lewis e Martin Fowler",
+    "contexto": "Leia 'Microservices', de James Lewis e Martin Fowler",
+    "url": "https://martinfowler.com/articles/microservices.html"
+  },
+  {
+    "texto": "Boa programação e boa escrita têm a ver com clareza e economia de expressão. Não dá para escrever bom código nem boa prosa sem entender o que você quer dizer.",
+    "autor": "Joshua Bloch",
+    "contexto": "Leia a entrevista 'More Effective Java', com Joshua Bloch, no site da Oracle",
+    "url": "https://www.oracle.com/technical-resources/articles/javase/bloch-effective-08-qa.html"
+  },
+  {
+    "texto": "Quando um teste integrado falha, quem sabe o que quebrou? Testes integrados provavelmente fazem mais mal do que bem.",
+    "autor": "J.B. Rainsberger",
+    "contexto": "Assista 'Integrated Tests Are A Scam', palestra de J.B. Rainsberger",
+    "url": "https://vimeo.com/80533536"
+  },
+  {
+    "texto": "TDD morreu. Viva os testes.",
+    "autor": "David Heinemeier Hansson",
+    "contexto": "Leia 'TDD is dead. Long live testing.', post de DHH (2014)",
+    "url": "https://dhh.dk/2014/tdd-is-dead-long-live-testing.html"
+  },
+  {
+    "texto": "Desempenho é uma funcionalidade.",
+    "autor": "Jeff Atwood",
+    "contexto": "Leia 'Performance is a Feature', de Jeff Atwood (Coding Horror)",
+    "url": "https://blog.codinghorror.com/performance-is-a-feature/"
+  },
+  {
+    "texto": "Não estamos desenhando páginas; estamos desenhando sistemas de componentes.",
+    "autor": "Stephen Hay",
+    "contexto": "Leia 'Atomic Design', de Brad Frost, que abre com esta frase de Stephen Hay",
+    "url": "https://bradfrost.com/blog/post/atomic-web-design/"
+  },
+  {
+    "texto": "Concorrência não é paralelismo.",
+    "autor": "Rob Pike",
+    "contexto": "Leia, no blog do Go, sobre a palestra 'Concurrency is not parallelism', de Rob Pike",
+    "url": "https://go.dev/blog/waza-talk"
+  },
+  {
+    "texto": "Um sistema distribuído é aquele em que a falha de um computador que você nem sabia que existia pode tornar o seu próprio computador inutilizável.",
+    "autor": "Leslie Lamport",
+    "contexto": "Leia o e-mail de 1987 em que Leslie Lamport deu essa definição",
+    "url": "https://lamport.azurewebsites.net/pubs/distributed-system.txt"
+  },
+  {
+    "texto": "O problema das linguagens orientadas a objetos é o ambiente implícito que elas carregam: você queria uma banana, mas recebeu um gorila segurando a banana e a floresta inteira junto.",
+    "autor": "Joe Armstrong",
+    "contexto": "Veja os destaques de 'Coders at Work', de Peter Seibel, com a entrevista de Joe Armstrong",
+    "url": "https://codersatwork.com/"
+  },
+  {
+    "texto": "Há duas formas de projetar software: fazê-lo tão simples que obviamente não haja deficiências, ou tão complicado que não haja deficiências óbvias. A primeira é muito mais difícil.",
+    "autor": "Tony Hoare",
+    "contexto": "Leia 'The Emperor's Old Clothes', palestra do Prêmio Turing de Tony Hoare",
+    "url": "https://dl.acm.org/doi/10.1145/358549.358561"
+  },
+  {
+    "texto": "A estrutura dos times precisa corresponder à arquitetura de software necessária, ou corre o risco de produzir designs não intencionais.",
+    "autor": "Matthew Skelton e Manuel Pais",
+    "contexto": "Conheça 'Team Topologies', de Matthew Skelton e Manuel Pais",
+    "url": "https://teamtopologies.com/book"
+  },
+  {
+    "texto": "Configuração é tudo que tende a variar entre deploys. Guarde configuração no ambiente.",
+    "autor": "Adam Wiggins",
+    "contexto": "Leia o fator III (Configuração) do Twelve-Factor App",
+    "url": "https://12factor.net/config"
+  },
+  {
+    "texto": "Design é, na verdade, um ato de comunicação, o que significa entender profundamente a pessoa com quem o designer está se comunicando.",
+    "autor": "Don Norman",
+    "contexto": "Conheça 'The Design of Everyday Things', de Don Norman",
+    "url": "https://jnd.org/books/the-design-of-everyday-things-revised-and-expanded-edition/"
+  },
+  {
+    "texto": "A Infraestrutura como Código deveria acabar com os servidores floco de neve. Não acabou.",
+    "autor": "Kief Morris",
+    "contexto": "Leia 'The Snowflakes as Code antipattern', de Kief Morris",
+    "url": "https://infrastructure-as-code.com/posts/snowflakes-as-code.html"
+  },
+  {
+    "texto": "O princípio de design fundamental por trás da utilidade e do crescimento da Web é a universalidade. Quando você cria um link, pode ligar a qualquer coisa.",
+    "autor": "Tim Berners-Lee",
+    "contexto": "Leia 'Long Live the Web', de Tim Berners-Lee, na Scientific American",
+    "url": "https://www.scientificamerican.com/article/long-live-the-web/"
+  },
+  {
+    "texto": "Programadores ruins se preocupam com o código. Bons programadores se preocupam com estruturas de dados e seus relacionamentos.",
+    "autor": "Linus Torvalds",
+    "contexto": "Leia a mensagem original de Linus Torvalds na lista do Git (2006), no LWN",
+    "url": "https://lwn.net/Articles/193245/"
+  },
+  {
+    "texto": "Quando a abstração está errada, o caminho mais rápido para a frente é voltar atrás. Isso não é recuo; é avançar numa direção melhor.",
+    "autor": "Sandi Metz",
+    "contexto": "Leia 'The Wrong Abstraction', de Sandi Metz",
+    "url": "https://sandimetz.com/blog/2016/1/20/the-wrong-abstraction"
+  },
+  {
+    "texto": "A duplicação é muito mais barata do que a abstração errada.",
+    "autor": "Sandi Metz",
+    "contexto": "Leia 'The Wrong Abstraction', de Sandi Metz",
+    "url": "https://sandimetz.com/blog/2016/1/20/the-wrong-abstraction"
+  },
+  {
+    "texto": "Contêineres não vão consertar a sua cultura quebrada.",
+    "autor": "Bridget Kromhout",
+    "contexto": "Leia 'Containers Will Not Fix Your Broken Culture', de Bridget Kromhout, na ACM Queue",
+    "url": "https://queue.acm.org/detail.cfm?id=3185224"
+  },
+  {
+    "texto": "O objetivo da arquitetura de software é minimizar os recursos humanos necessários para construir e manter o sistema exigido.",
+    "autor": "Robert C. Martin",
+    "contexto": "Conheça 'Clean Architecture', de Robert C. Martin",
+    "url": "https://www.oreilly.com/library/view/clean-architecture-a/9780134494272/"
+  },
+  {
+    "texto": "Todo mundo sabe que depurar é duas vezes mais difícil do que escrever o programa. Então, se você for o mais esperto possível ao escrevê-lo, como vai conseguir depurá-lo?",
+    "autor": "Brian Kernighan",
+    "contexto": "Conheça 'The Elements of Programming Style', de Kernighan e Plauger",
+    "url": "https://www.amazon.com/Elements-Programming-Style-2nd/dp/0070342075"
+  },
+  {
+    "texto": "Propomos, em vez disso, começar com uma lista de decisões de design difíceis ou que provavelmente vão mudar. Cada módulo é então projetado para esconder essa decisão dos outros.",
+    "autor": "David L. Parnas",
+    "contexto": "Leia 'On the Criteria To Be Used in Decomposing Systems into Modules', de David Parnas (Communications of the ACM, 1972)",
+    "url": "https://wstomv.win.tue.nl/edu/2ip30/references/criteria_for_modularization.pdf"
+  },
+  {
+    "texto": "Projetar um sistema computacional é muito diferente de projetar um algoritmo: a interface externa (o requisito) é menos bem definida, mais complexa e mais sujeita a mudanças.",
+    "autor": "Butler W. Lampson",
+    "contexto": "Leia 'Hints for Computer System Design', de Butler Lampson (1983), no site da Microsoft Research",
+    "url": "https://www.microsoft.com/en-us/research/publication/hints-for-computer-system-design/"
+  },
+  {
+    "texto": "Reescrever o código do zero é o pior erro estratégico que uma empresa de software pode cometer.",
+    "autor": "Joel Spolsky",
+    "contexto": "Leia 'Things You Should Never Do, Part I', de Joel Spolsky (2000), sobre a reescrita do Netscape",
+    "url": "https://www.joelonsoftware.com/2000/04/06/things-you-should-never-do-part-i/"
+  }
+]

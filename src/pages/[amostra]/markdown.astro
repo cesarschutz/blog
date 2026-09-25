@@ -8,6 +8,7 @@ import Base from "../../layouts/Base.astro";
 import Sumario from "../../components/Sumario.astro";
 import { Content, getHeadings } from "../../amostra/recursos.md";
 import { url } from "../../lib/url";
+import { secoesDoSumario } from "../../lib/posts";
 import "../../styles/prosa.css";
 import "../../styles/artigo.css";
 
@@ -15,7 +16,7 @@ export function getStaticPaths() {
   return import.meta.env.DEV ? [{ params: { amostra: "amostra" } }] : [];
 }
 
-const secoes = getHeadings().filter((h) => h.depth === 2);
+const secoes = secoesDoSumario(getHeadings());
 ---
 
 <Base titulo="Amostra dos recursos de Markdown">

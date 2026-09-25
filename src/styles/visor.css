@@ -1,0 +1,187 @@
+/*
+ * Visor (D33): as imagens do artigo, a apresentação em tela cheia e o livro ampliado (LivroAmpliado)
+ * abrem num diálogo sobre a página escurecida (--veu), com o botão de fechar no alto à direita, as
+ * setas nas laterais (quando há mais de uma imagem) e o contador embaixo. Esc e um clique fora
+ * fecham. A página por trás não rola enquanto ele está aberto. Sem animação com
+ * prefers-reduced-motion.
+ */
+
+.visor {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  max-width: none;
+  height: 100vh;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--veu-tinta);
+  overflow: hidden;
+}
+
+.visor[open] {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  animation: visor-entra 0.22s ease-out;
+}
+
+.visor::backdrop {
+  background: color-mix(in oklab, var(--veu) 88%, transparent);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  animation: visor-entra 0.22s ease-out;
+}
+
+:root:has(.visor[open]) {
+  overflow: hidden;
+}
+
+@keyframes visor-entra {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Uma trilha só, de altura definida: a imagem cabe inteira nela (max-height: 100%). */
+.visor-quadro {
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
+  min-height: 0;
+  margin: 0;
+  padding: 68px 76px 6px;
+}
+
+.visor-quadro img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 30px 80px -24px rgb(0 0 0 / 0.7);
+  animation: visor-cresce 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Os diagramas antigos têm fundo branco embutido: ficam num quadro claro, como no texto. */
+.visor-quadro img[src$=".svg"] {
+  padding: 14px;
+  background: var(--quadro);
+}
+
+@keyframes visor-cresce {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+.visor-botao {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 1px solid color-mix(in oklab, var(--veu-tinta) 24%, transparent);
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--veu) 55%, transparent);
+  color: var(--veu-tinta);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.visor-botao:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--veu-tinta) 18%, transparent);
+}
+
+.visor-botao:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.visor-botao[hidden] {
+  display: none;
+}
+
+.visor-botao:focus-visible {
+  outline: 2px solid var(--veu-tinta);
+  outline-offset: 3px;
+}
+
+.visor-botao svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.visor-fechar {
+  top: 14px;
+  right: 14px;
+}
+
+.visor-seta {
+  top: 50%;
+  translate: 0 -50%;
+}
+
+.visor-seta.anterior {
+  left: 14px;
+}
+
+.visor-seta.anterior svg {
+  scale: -1 1;
+}
+
+.visor-seta.proximo {
+  right: 14px;
+}
+
+.visor-posicao {
+  margin: 0;
+  padding: 10px var(--pad) calc(16px + env(safe-area-inset-bottom, 0px));
+  font-family: var(--font-ui);
+  font-size: 14px;
+  text-align: center;
+  color: color-mix(in oklab, var(--veu-tinta) 78%, transparent);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.visor-posicao:empty {
+  padding-block: 0 calc(12px + env(safe-area-inset-bottom, 0px));
+}
+
+/* Celular: a imagem ganha a largura toda e as setas descem para os cantos de baixo. */
+@media (max-width: 640px) {
+  .visor-quadro {
+    padding: 66px 10px 6px;
+  }
+
+  .visor-seta {
+    top: auto;
+    bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+    translate: none;
+  }
+
+  .visor-posicao {
+    padding-block: 18px calc(20px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visor[open],
+  .visor::backdrop,
+  .visor-quadro img {
+    animation: none;
+  }
+
+  .visor-botao {
+    transition: none;
+  }
+}

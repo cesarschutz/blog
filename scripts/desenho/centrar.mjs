@@ -2,7 +2,10 @@
 /**
  * Centraliza os recortes de uma ilustração no desenho (sem mexer no desenho): mede no navegador a
  * caixa do conteúdo (traços e textos, sem as anotações) e reescreve na raiz do SVG data-medio,
- * data-quadrado e data-og centrados nela, com folga, e data-segura igual à caixa. No recorte largo,
+ * data-quadrado e data-og centrados nela, e data-segura igual à caixa. Desde a D33, os recortes são
+ * justos: o desenho ocupa até 86% da largura e 82% da altura do médio (destaque, cards e topo no
+ * celular) e 90% do quadrado (miniatura da lista); antes, um mínimo de 900 e 670 deixava o desenho
+ * pequeno no painel. No recorte largo,
  * a posição na horizontal fica (o protagonista à direita, as anotações à esquerda) e a altura é
  * centrada no desenho com as anotações. Precisa do `npm run dev` no ar.
  *
@@ -59,9 +62,9 @@ for (const [slug, caixa] of medidas) {
   }
   const [cx, cy] = [(caixa.x1 + caixa.x2) / 2, (caixa.y1 + caixa.y2) / 2];
   const [w, h] = [caixa.x2 - caixa.x1, caixa.y2 - caixa.y1];
-  // Tamanho mínimo de referência e folga de 12% em volta do conteúdo.
-  const medioL = Math.max(900, w * 1.12, h * 1.12 * 1.5);
-  const quad = Math.max(670, w * 1.08, h * 1.08);
+  // Recortes justos (D33): o desenho grande no painel, com um respiro em volta.
+  const medioL = Math.max(w / 0.86, (h / 0.82) * 1.5);
+  const quad = Math.max(w, h) / 0.9;
   const ogL = Math.max(740, w * 1.1);
   const ogA = Math.max(883, h * 1.2);
   const r = (v) => Math.round(v);

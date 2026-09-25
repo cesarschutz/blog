@@ -1,6 +1,7 @@
 ---
 /**
- * Busca (briefing §3): abre com ⌘K, Ctrl+K, "/" ou pelas tags (data-busca-tag); aceita #tag;
+ * Busca (briefing §3): abre com ⌘K, Ctrl+K ou "/"; aceita #tag (as tags do site levam às páginas
+ * delas desde a D33, e não mais à busca);
  * link compartilhável /?q=termo. O motor (Pagefind, D2) e o índice só são baixados quando a busca
  * abre. O índice sai no build (`pagefind --site dist`, no postbuild), então no `npm run dev` a busca
  * avisa que não há índice. Marca o tempo até o primeiro resultado (performance "busca:aberta" e
@@ -138,13 +139,9 @@
   document.addEventListener("click", (e) => {
     const alvo = e.target as HTMLElement;
     const botao = alvo.closest<HTMLElement>("[data-busca-abrir]");
-    const tag = alvo.closest<HTMLElement>("[data-busca-tag]");
     if (botao) {
       e.preventDefault();
       abrir();
-    } else if (tag && !(e as MouseEvent).metaKey && !(e as MouseEvent).ctrlKey) {
-      e.preventDefault();
-      abrir(`#${tag.dataset.buscaTag!.replace(/\s+/g, "-")}`);
     }
   });
 

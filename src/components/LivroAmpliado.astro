@@ -1,0 +1,264 @@
+---
+/**
+ * O livro ampliado (D33): clicar no livro aberto (na gaveta da home e no topo das páginas de categoria
+ * e de série) abre o mesmo livro 3D, grande, sobre a página escurecida (o visor, visor.css), com o
+ * nome e o volume embaixo e, fora da página dele, o link "Ver o livro". Arrastar (ou ← e →) gira o
+ * livro entre a lombada e a capa. Fecha no botão, com Esc ou com um clique fora.
+ *
+ * Quem abre: um elemento com `data-ampliar-livro` (com `data-largura`, `data-nome`, `data-dados` e
+ * `data-href`, e as cores do livro no style) em volta de um `.livro-3d-caixa`, e o botão de lupa
+ * `[data-ampliar]` que vai junto (ver Gaveta e LivroEmPe). O livro é uma cópia; as medidas são
+ * refeitas para o tamanho da tela (src/lib/livro-3d.ts).
+ */
+import { ICONES } from "../lib/icones";
+import "../styles/visor.css";
+---
+
+<dialog class="visor visor-livro" data-livro-ampliado aria-label="Livro ampliado">
+  <div class="palco-ampliado" data-palco-ampliado></div>
+  <div class="legenda-livro">
+    <p><strong data-nome></strong> <span data-dados></span></p>
+    <a class="ir-livro" data-ir href="#"
+      >Ver o livro<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} /></a
+    >
+    <p class="dica-giro" aria-hidden="true">Arraste para girar o livro</p>
+  </div>
+  <button type="button" class="visor-botao visor-fechar" data-fechar aria-label="Fechar">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.fechar} />
+  </button>
+</dialog>
+
+<script>
+  import { tocarAbrir, tocarFechar } from "../scripts/som";
+
+  const dialogo = document.querySelector<HTMLDialogElement>("[data-livro-ampliado]");
+  if (dialogo && !dialogo.dataset.ligado) {
+    dialogo.dataset.ligado = "1";
+    const palco = dialogo.querySelector<HTMLElement>("[data-palco-ampliado]")!;
+    const nome = dialogo.querySelector<HTMLElement>("[data-nome]")!;
+    const dados = dialogo.querySelector<HTMLElement>("[data-dados]")!;
+    const ir = dialogo.querySelector<HTMLAnchorElement>("[data-ir]")!;
+    const reduzir = matchMedia("(prefers-reduced-motion: reduce)");
+    let origem: HTMLElement | null = null;
+    let livro: HTMLElement | null = null;
+    let m = { u: 0, bh: 0, cw: 0, sw: 0 };
+    let giro = 52;
+
+    // Deslocamento que deixa o que se vê do livro no centro, para qualquer giro (livro-3d.ts).
+    function girar(graus: number) {
+      giro = Math.min(84, Math.max(6, graus));
+      const rad = (giro * Math.PI) / 180;
+      const visivel = m.sw * Math.cos(rad) + m.cw * Math.sin(rad);
+      palco.style.setProperty("--x1", `${(m.cw - visivel) / 2 - m.sw + m.sw * Math.cos(rad)}px`);
+      livro?.style.setProperty("--giro", `-${giro}deg`);
+    }
+
+    function abrir(raiz: HTMLElement) {
+      const caixa = raiz.querySelector<HTMLElement>(".livro-3d-caixa");
+      if (!caixa) return;
+      origem = raiz;
+      // As cores e a altura da lombada vêm do elemento de origem; o nome de transição, não.
+      palco.removeAttribute("style");
+      for (const prop of Array.from(raiz.style)) {
+        if (prop.startsWith("--")) palco.style.setProperty(prop, raiz.style.getPropertyValue(prop));
+      }
+      const largura = Number(raiz.dataset.largura);
+      // A maior altura que cabe: 70% da tela, com o livro inteiro na largura.
+      const alturaMax = Math.min(innerHeight * 0.7, 640);
+      const larguraMax = innerWidth - 48;
+      let altura = alturaMax;
+      const cabe = (h: number) => (480 * (h / 720)) * 1.05 <= larguraMax;
+      while (altura > 200 && !cabe(altura)) altura -= 10;
+      const u = altura / 720;
+      m = { u, bh: altura, cw: Math.round(480 * u), sw: Math.round(largura * u) };
+      for (const [k, v] of Object.entries(m)) palco.style.setProperty(`--${k}`, `${v}px`);
+      palco.style.setProperty("--x0", `${(m.cw - m.sw) / 2}px`);
+
+      const copia = caixa.cloneNode(true) as HTMLElement;
+      copia.removeAttribute("style");
+      copia.querySelectorAll(".fechando").forEach((e) => e.classList.remove("fechando"));
+      livro = copia.querySelector<HTMLElement>(".livro-3d");
+      livro?.classList.add("virado");
+      palco.replaceChildren(copia);
+      girar(52);
+
+      nome.textContent = raiz.dataset.nome ?? "";
+      dados.textContent = raiz.dataset.dados ?? "";
+      const destino = raiz.dataset.href ?? "";
+      ir.hidden = !destino || new URL(destino, location.href).pathname === location.pathname;
+      ir.href = destino || "#";
+
+      dialogo!.showModal();
+      tocarAbrir();
+      // Abre como estava e gira um pouco para o leitor, mostrando melhor a lombada.
+      if (!reduzir.matches) setTimeout(() => girar(38), 60);
+      else girar(38);
+    }
+
+    dialogo.addEventListener("close", () => {
+      tocarFechar();
+      palco.replaceChildren();
+      origem?.querySelector<HTMLElement>("[data-ampliar]")?.focus({ preventScroll: true });
+      origem = livro = null;
+    });
+    dialogo.querySelector("[data-fechar]")!.addEventListener("click", () => dialogo.close());
+    // Clique fora do livro e da legenda fecha (mas não o clique que termina um arraste).
+    let arrastou = false;
+    dialogo.addEventListener("click", (e) => {
+      const alvo = e.target as HTMLElement;
+      if (arrastou) {
+        arrastou = false;
+        return;
+      }
+      if (alvo === dialogo || alvo === palco) dialogo.close();
+    });
+    dialogo.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") girar(giro + 8);
+      else if (e.key === "ArrowRight") girar(giro - 8);
+      else return;
+      e.preventDefault();
+    });
+
+    // Arrastar gira: para a direita, a capa vem para a frente; para a esquerda, a lombada.
+    let inicio: { x: number; giro: number } | null = null;
+    palco.addEventListener("pointerdown", (e) => {
+      arrastou = false;
+      if (!livro || !(e.target as HTMLElement).closest(".livro-3d-caixa")) return;
+      inicio = { x: e.clientX, giro };
+      palco.setPointerCapture(e.pointerId);
+      palco.classList.add("arrastando");
+    });
+    palco.addEventListener("pointermove", (e) => {
+      if (!inicio) return;
+      if (Math.abs(e.clientX - inicio.x) > 4) arrastou = true;
+      girar(inicio.giro - (e.clientX - inicio.x) * 0.35);
+    });
+    const soltar = () => {
+      inicio = null;
+      palco.classList.remove("arrastando");
+    };
+    palco.addEventListener("pointerup", soltar);
+    palco.addEventListener("pointercancel", soltar);
+
+    // Quem abre: o livro (clique) ou a lupa (clique e teclado).
+    document.addEventListener("click", (e) => {
+      const alvo = e.target as HTMLElement;
+      const raiz = alvo.closest<HTMLElement>("[data-ampliar-livro]");
+      if (!raiz || dialogo.open) return;
+      if (alvo.closest("[data-ampliar]") || alvo.closest(".livro-3d-caixa")) {
+        e.preventDefault();
+        abrir(raiz);
+      }
+    });
+  }
+</script>
+
+<style>
+  .visor-livro {
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .palco-ampliado {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 0;
+    padding: 64px 24px 12px;
+    touch-action: none;
+    cursor: grab;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .palco-ampliado.arrastando {
+    cursor: grabbing;
+  }
+
+  .palco-ampliado.arrastando :global(.livro-3d) {
+    transition: none;
+  }
+
+  /* A sombra do livro no chão. */
+  .palco-ampliado::after {
+    content: "";
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    width: min(420px, 70vw);
+    height: 36px;
+    translate: -50% 0;
+    background: radial-gradient(closest-side, rgb(0 0 0 / 0.55), transparent);
+    filter: blur(6px);
+    pointer-events: none;
+  }
+
+  .palco-ampliado :global(.livro-3d-caixa) {
+    z-index: 1;
+    animation: livro-sobe 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  @keyframes livro-sobe {
+    from {
+      opacity: 0;
+      transform: translateY(18px) scale(0.96);
+    }
+  }
+
+  .legenda-livro {
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    padding: 10px var(--pad) calc(18px + env(safe-area-inset-bottom, 0px));
+    font-family: var(--font-ui);
+    text-align: center;
+  }
+
+  .legenda-livro p {
+    margin: 0;
+  }
+
+  .legenda-livro strong {
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    font-size: 20px;
+  }
+
+  [data-dados] {
+    margin-left: 8px;
+    font-size: 14.5px;
+    color: color-mix(in oklab, var(--veu-tinta) 72%, transparent);
+  }
+
+  .ir-livro {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14.5px;
+    color: var(--veu-tinta);
+  }
+
+  .ir-livro[hidden] {
+    display: none;
+  }
+
+  .ir-livro svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .dica-giro {
+    font-size: 12.5px;
+    color: color-mix(in oklab, var(--veu-tinta) 55%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .palco-ampliado :global(.livro-3d-caixa) {
+      animation: none;
+    }
+  }
+</style>

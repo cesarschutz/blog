@@ -100,7 +100,7 @@ const TAGS_NO_PAINEL = 10;
       {
         tags.slice(0, TAGS_NO_PAINEL).map((t) => (
           <li>
-            <a class="pilula" href={urlTag(t.nome)} data-busca-tag={t.nome}>
+            <a class="pilula" href={urlTag(t.nome)}>
               {t.nome}
             </a>
           </li>
@@ -115,6 +115,20 @@ const TAGS_NO_PAINEL = 10;
     ><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.rss} />Assinar via RSS</a
   >
 </aside>
+
+<script>
+  // Som dos livros (D33): um toque de madeira ao passar o mouse; a nota sobe de um livro ao outro.
+  import { tocarToque } from "../scripts/som";
+
+  for (const grupo of document.querySelectorAll<HTMLElement>(".pilha")) {
+    const livros = [...grupo.querySelectorAll<HTMLElement>("a")];
+    livros.forEach((livro, i) =>
+      livro.addEventListener("pointerenter", (e) => {
+        if (e.pointerType === "mouse") tocarToque(i / Math.max(1, livros.length - 1));
+      }),
+    );
+  }
+</script>
 
 <style>
   .painel-home {
@@ -174,9 +188,9 @@ const TAGS_NO_PAINEL = 10;
         rgb(255 255 255 / 0.02) 62%,
         rgb(0 0 0 / 0.16) 100%
       ),
-      linear-gradient(90deg, var(--livro-cor) var(--ponta), var(--livro-papel) var(--ponta));
+      linear-gradient(90deg, var(--cima) var(--ponta), var(--baixo) var(--ponta));
     box-shadow: 0 1px 0 rgb(0 0 0 / 0.18);
-    color: var(--livro-destaque);
+    color: var(--baixo-tinta);
     font-family: var(--font-livro);
     text-decoration: none;
     transition: transform 0.25s cubic-bezier(0.2, 0.75, 0.2, 1);
@@ -185,13 +199,13 @@ const TAGS_NO_PAINEL = 10;
 
   /* O ícone em pé, sem giro, com 5 de margem nas laterais e 4 em cima e embaixo; traço de 0,9 e 0,6. */
   .ponta {
-    --lombada-cor: var(--livro-cor);
+    --lombada-cor: var(--cima);
     --traco-lombada: 0.9px;
     flex: none;
     width: var(--ponta);
     height: 100%;
     padding: calc(4 * var(--p)) calc(5 * var(--p));
-    color: var(--livro-tinta);
+    color: var(--cima-tinta);
   }
 
   /* Nesse tamanho, só os dois traços principais: a hachura (cz-w3) vira ruído. */
@@ -235,12 +249,12 @@ const TAGS_NO_PAINEL = 10;
         rgb(255 255 255 / 0.02) 62%,
         rgb(0 0 0 / 0.16) 100%
       ),
-      linear-gradient(90deg, var(--livro-destaque) calc(0.28 * var(--e)), var(--livro-papel) calc(0.28 * var(--e)));
-    color: var(--livro-tinta-papel);
+      linear-gradient(90deg, var(--revista-destaque) calc(0.28 * var(--e)), var(--revista-papel) calc(0.28 * var(--e)));
+    color: var(--revista-tinta);
   }
 
   .emblema {
-    --serie-papel: var(--livro-papel);
+    --serie-papel: var(--revista-papel);
     --traco-lombada: 0.9px;
     flex: none;
     width: calc(1.05 * var(--e));
@@ -263,12 +277,12 @@ const TAGS_NO_PAINEL = 10;
     font-family: var(--font-livro-italico);
     font-variation-settings: "opsz" 13;
     font-weight: 500;
-    color: var(--livro-destaque);
+    color: var(--revista-destaque);
   }
 
   .de-serie .conta {
     font-weight: 800;
-    color: var(--livro-destaque);
+    color: var(--revista-destaque);
   }
 
   /* Livro retirado da pilha (está aberto no topo da página): fica só o contorno do lugar vazio. */

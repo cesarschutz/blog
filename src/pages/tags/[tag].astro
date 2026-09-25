@@ -1,9 +1,13 @@
 ---
-/** Uma tag (/tags/<Nome>/, com o nome cru na URL, como no blog atual: D7). */
+/**
+ * Uma tag (/tags/<Nome>/, com o nome cru na URL, como no blog atual: D7), D33: o topo com a estante
+ * de filtro (os livros por onde a tag passa, com o número de artigos dela em cada um) e as tags que
+ * mais aparecem junto com ela; embaixo, os artigos no formato da home, com Lista / Cards
+ * (ListaFiltrada).
+ */
 import Base from "../../layouts/Base.astro";
-import CabecalhoPagina from "../../components/CabecalhoPagina.astro";
-import ItemLista from "../../components/ItemLista.astro";
-import { getTags, type Grupo } from "../../lib/posts";
+import ListaFiltrada from "../../components/ListaFiltrada.astro";
+import { getTags, urlTag, type Grupo } from "../../lib/posts";
 import { url } from "../../lib/url";
 
 export async function getStaticPaths() {
@@ -16,14 +20,65 @@ interface Props {
 }
 
 const { grupo } = Astro.props;
-const quantos = grupo.posts.length === 1 ? "1 artigo marcado" : `${grupo.posts.length} artigos marcados`;
+const n = grupo.posts.length;
+const livros = new Set(grupo.posts.map((p) => p.livro)).size;
+const descricao = `${n === 1 ? "1 artigo marcado" : `${n} artigos marcados`} com ${grupo.nome}, em ${livros} ${livros === 1 ? "livro" : "livros"}.`;
+// As tags que mais aparecem nos mesmos artigos (até 6), para seguir por assunto.
+const vizinhas = new Map<string, number>();
+for (const p of grupo.posts) for (const t of p.tags) if (t !== grupo.nome) vizinhas.set(t, (vizinhas.get(t) ?? 0) + 1);
+const junto = [...vizinhas]
+  .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "pt-BR"))
+  .slice(0, 6)
+  .map(([nome]) => nome);
 ---
 
 <Base titulo={`#${grupo.nome}`} descricao={`Artigos marcados com ${grupo.nome}.`} atual="tags">
   <div class="wrap">
-    <CabecalhoPagina titulo={`#${grupo.nome}`} descricao={`${quantos} com ${grupo.nome}.`} trilha={{ nome: "Tags", href: url("/tags/") }} />
-    <ol class="lista-artigos folha">
-      {grupo.posts.map((p) => <ItemLista post={p} nivel="h2" />)}
-    </ol>
+    <ListaFiltrada posts={grupo.posts} titulo={`#${grupo.nome}`} descricao={descricao} trilha={{ nome: "Tags", href: url("/tags/") }}>
+      {
+        junto.length > 0 && (
+          <div class="junto">
+            <span>Aparece junto com</span>
+            <ul>
+              {junto.map((t) => (
+                <li>
+                  <a class="pilula" href={urlTag(t)}>
+                    #{t}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </ListaFiltrada>
   </div>
 </Base>
+
+<style>
+  .junto {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    margin-top: 18px;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+
+  .junto ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .junto .pilula {
+    min-height: 30px;
+    padding: 3px 11px;
+    font-size: 13.5px;
+  }
+</style>

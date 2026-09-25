@@ -10,6 +10,10 @@ abertas. O que for aprovado sai daqui e fica no histórico do git e em `docs/dec
 painel lateral com as pilhas de livros (D28), a página de categoria (D29) e os livros no padrão da
 coleção de `docs/capas` (D30), o cabeçalho fixo com Categorias e Séries e as páginas de livros
 (D31), e as categorias em "edição de estudo" com a série como revista em `/series/java/` (D32).
+Por último, a lista de ajustes da D33: marca "cs", cabeçalho e rodapé do blog atual, menu de
+aparência com som, post-it das frases, topo do artigo como no antigo (título inteiro, descrição, foto),
+sumário em trilho, texto mais largo, "Todos os artigos" e tags com a estante de filtro, livro ampliado,
+livros invertidos no escuro, ilustrações maiores e os bugs da apresentação e do visor corrigidos.
 Tudo isso **aguarda a aprovação do Cesar** (antes e depois mostrados a ele). A virada do
 domínio (`docs/virada.md`) só acontece com o OK dele; nada foi commitado nem publicado.
 
@@ -57,16 +61,32 @@ domínio (`docs/virada.md`) só acontece com o OK dele; nada foi commitado nem p
   `docs/capas`; a série como revista técnica, com a tarja do guia; a página da série em
   `/series/java/` (`/java/` redireciona).
 
+- **Lista de ajustes da D33:** marca "cs" (cabeçalho, rodapé, abertura e ícone do navegador),
+  GitHub e LinkedIn no cabeçalho, menu de aparência (claro, escuro, sistema e som), rodapé do blog
+  atual, abertura com o texto do antigo e o post-it das frases, Lista / Cards com ícones, "26 artigos
+  publicados", calendário e relógio em todas as datas, topo do artigo como no antigo (título inteiro,
+  descrição, foto e nome) com a marca d'água do livro, sumário em trilho, texto em 760px, aviso de IA
+  sem "Saiba mais", cartão "Do livro", Sobre removida, "Todos os artigos" e tags com a estante de
+  filtro, livro ampliado, som dos livros, livros invertidos no escuro com a lombada do livro grande
+  igual à da estante, ilustrações com recortes justos, apresentação e visor de imagens consertados.
+  Depois, no mesmo dia: a abertura refeita como cena (estante e post-it juntos), a frase sorteada a
+  cada visita, as 132 frases revisadas contra a fonte (127 ficaram, todas com origem), os chips de
+  categoria levando à página da categoria e o som do painel funcionando também depois de navegar.
+
 ## Próximos passos
 
-1. Aprovação do ajuste visual (D26 a D32) e retoques; depois, medir o Lighthouse de novo (a
+1. Aprovação do ajuste visual (D26 a D33) e retoques; depois, medir o Lighthouse de novo (a
    fonte da interface soma 45,7 KB, e ele não foi medido depois do ajuste).
-2. Pensar com o Cesar a tela de tag (categoria, D29, e séries, D31, estão prontas).
+2. A página Sobre: o Cesar escreve depois (D33). Até lá, `/about/` leva à home.
 3. Decidir com o Cesar o contraste de dois livros (D32): o texto claro na cor da Carreira (3,39:1) e
    o laranja da série sobre o papel (4,11:1) ficam abaixo de 4,5:1, exatamente como nas referências.
 4. Revisão geral do Cesar; com o OK dele, primeiro commit e a virada (`docs/virada.md`).
 
 ## Perguntas abertas para o Cesar
+
+- **Foto do autor (D33):** vem do GitHub, como no blog atual (`github.com/cesarschutz.png`). Servir
+  do próprio site é melhor para desempenho e privacidade, mas é preciso baixar a imagem uma vez: com o
+  OK do Cesar, ela vai para `public/`.
 
 1. O blog atual vai receber posts durante o projeto? A migração parte do commit `0184562` (conferido
    hoje: ainda é o último).

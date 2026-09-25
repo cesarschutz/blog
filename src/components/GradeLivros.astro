@@ -20,7 +20,7 @@ const Nome = nivel;
 const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.volume).padStart(2, "0")}`);
 ---
 
-<ul class:list={["grade-livros", { "um-livro": livros.length === 1 }]}>
+<ul class:list={["grade-livros", { "um-livro": livros.length === 1 }]} data-grade-livros>
   {
     livros.map((l) => (
       <li>
@@ -41,6 +41,20 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.vo
     ))
   }
 </ul>
+
+<script>
+  // Som dos livros (D33): um toque de madeira ao passar o mouse; a nota sobe de um livro ao outro.
+  import { tocarToque } from "../scripts/som";
+
+  for (const grupo of document.querySelectorAll<HTMLElement>("[data-grade-livros]")) {
+    const livros = [...grupo.querySelectorAll<HTMLElement>("a")];
+    livros.forEach((livro, i) =>
+      livro.addEventListener("pointerenter", (e) => {
+        if (e.pointerType === "mouse") tocarToque(i / Math.max(1, livros.length - 1));
+      }),
+    );
+  }
+</script>
 
 <style>
   .grade-livros {
@@ -141,7 +155,7 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.vo
     }
 
     .cartao-livro:hover :global(.livro-3d.virado) {
-      --giro: -50deg;
+      --giro: -40deg;
     }
   }
 
@@ -156,7 +170,7 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.vo
     }
 
     .cartao-livro:hover :global(.livro-3d.virado) {
-      --giro: -62deg;
+      --giro: -52deg;
     }
   }
 </style>

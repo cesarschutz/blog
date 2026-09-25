@@ -4,6 +4,8 @@
  * de imagens e a apresentação (setas, contador e tela cheia). Sem JS o artigo continua inteiro: as
  * notas abrem por âncora, a apresentação rola de lado e o PDF baixa.
  */
+import { ICONES } from "../lib/icones";
+
 const reduzir = matchMedia("(prefers-reduced-motion: reduce)");
 const rolagem = (): ScrollBehavior => (reduzir.matches ? "auto" : "smooth");
 
@@ -14,12 +16,22 @@ const barra = document.querySelector<HTMLElement>("[data-barra-leitura]");
 const progresso = document.querySelector<HTMLElement>("[data-progresso-sumario]");
 const progressoFeito = progresso?.querySelector<HTMLElement>(".feito");
 const progressoTexto = progresso?.querySelector<HTMLElement>(".lido");
+const progressoFalta = progresso?.querySelector<HTMLElement>(".falta");
+const minutosDoArtigo = Number(progresso?.dataset.minutos ?? 0);
 if (progresso) progresso.hidden = false;
 const voltar = document.querySelector<HTMLButtonElement>("[data-voltar-topo]");
 const secoes = [...document.querySelectorAll<HTMLAnchorElement>("[data-secao]")].flatMap((link) => {
   const titulo = document.getElementById(link.dataset.secao!);
   return titulo ? [{ link, titulo }] : [];
 });
+// Subseções (h3) do sumário lateral, cada uma com o link da seção dela (D33).
+const subsecoes = [...document.querySelectorAll<HTMLAnchorElement>("[data-subsecao]")].flatMap((link) => {
+  const titulo = document.getElementById(link.dataset.subsecao!);
+  const daSecao = link.closest(".secao")?.querySelector<HTMLAnchorElement>(":scope > a");
+  return titulo && daSecao ? [{ link, titulo, daSecao }] : [];
+});
+const trilho = document.querySelector<HTMLElement>("[data-trilho]");
+let secaoAnterior: HTMLAnchorElement | undefined;
 
 let agendado = false;
 function aoRolar() {
@@ -32,14 +44,44 @@ function aoRolar() {
       progressoFeito.style.transform = `scaleX(${lido.toFixed(4)})`;
       progressoTexto.textContent = `${Math.round(lido * 100)}% lido`;
     }
+    if (progressoFalta && minutosDoArtigo) {
+      const resto = Math.max(1, Math.ceil(minutosDoArtigo * (1 - lido)));
+      progressoFalta.textContent = lido > 0.995 ? "chegou ao fim" : `faltam ${resto} min`;
+    }
   }
   voltar?.classList.toggle("visivel", scrollY > innerHeight);
-  let atual: HTMLAnchorElement | undefined;
-  for (const { link, titulo } of secoes) if (titulo.getBoundingClientRect().top < 140) atual = link;
-  for (const { link } of secoes) {
+  marcarSumario();
+}
+
+// No sumário lateral: a seção atual, as já lidas (o trilho fica azul até a atual), a subseção atual
+// dentro dela e, se a lista rola, a atual sempre à vista.
+function marcarSumario() {
+  let iAtual = -1;
+  secoes.forEach(({ titulo }, i) => {
+    if (titulo.getBoundingClientRect().top < 140) iAtual = i;
+  });
+  const atual = secoes[iAtual]?.link;
+  secoes.forEach(({ link }, i) => {
     if (link === atual) link.setAttribute("aria-current", "true");
     else link.removeAttribute("aria-current");
+    link.parentElement?.classList.toggle("lida", i < iAtual);
+  });
+  let subAtual: HTMLAnchorElement | undefined;
+  for (const { link, titulo, daSecao } of subsecoes) {
+    if (daSecao === atual && titulo.getBoundingClientRect().top < 140) subAtual = link;
   }
+  for (const { link } of subsecoes) {
+    if (link === subAtual) link.setAttribute("aria-current", "true");
+    else link.removeAttribute("aria-current");
+  }
+  if (trilho && atual && atual !== secaoAnterior && trilho.scrollHeight > trilho.clientHeight) {
+    const caixa = trilho.getBoundingClientRect();
+    const item = atual.getBoundingClientRect();
+    if (item.top < caixa.top + 32 || item.bottom > caixa.bottom - 32) {
+      trilho.scrollTo({ top: trilho.scrollTop + item.top - caixa.top - caixa.height / 3, behavior: rolagem() });
+    }
+  }
+  secaoAnterior = atual;
 }
 addEventListener(
   "scroll",
@@ -89,14 +131,17 @@ let imagens: Imagem[] = [];
 let indice = 0;
 let aoFechar: ((indice: number) => void) | undefined;
 
+// O visor (visor.css, D33): a página escurece, a imagem fica no meio, o botão de fechar no alto à
+// direita, as setas nas laterais (na galeria) e o contador embaixo.
 function criarVisor(): HTMLDialogElement {
   const dialogo = document.createElement("dialog");
   dialogo.className = "visor";
+  const svg = (icone: string) => `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${icone}</svg>`;
   dialogo.innerHTML = `<figure class="visor-quadro"><img alt=""></figure>
-    <div class="visor-barra"><span class="posicao" aria-live="polite"></span>
-    <button type="button" class="botao" data-visor="anterior">Anterior</button>
-    <button type="button" class="botao" data-visor="proximo">Próximo</button>
-    <button type="button" class="botao" data-visor="fechar">Fechar</button></div>`;
+    <p class="visor-posicao" aria-live="polite"></p>
+    <button type="button" class="visor-botao visor-seta anterior" data-visor="anterior" aria-label="Anterior">${svg(ICONES.seta)}</button>
+    <button type="button" class="visor-botao visor-seta proximo" data-visor="proximo" aria-label="Próximo">${svg(ICONES.seta)}</button>
+    <button type="button" class="visor-botao visor-fechar" data-visor="fechar" aria-label="Fechar">${svg(ICONES.fechar)}</button>`;
   dialogo.addEventListener("click", (e) => {
     const alvo = e.target as HTMLElement;
     const acao = alvo.closest<HTMLElement>("[data-visor]")?.dataset.visor;
@@ -122,7 +167,7 @@ function mostrar(novo: number) {
   img.src = imagens[indice].src;
   img.alt = imagens[indice].alt;
   const galeria = imagens.length > 1;
-  visor!.querySelector(".posicao")!.textContent = galeria ? `${indice + 1} de ${imagens.length}` : "";
+  visor!.querySelector(".visor-posicao")!.textContent = galeria ? `${indice + 1} de ${imagens.length}` : "";
   const [anterior, proximo] = visor!.querySelectorAll<HTMLButtonElement>('[data-visor="anterior"], [data-visor="proximo"]');
   anterior.hidden = proximo.hidden = !galeria;
   anterior.disabled = indice === 0;

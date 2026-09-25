@@ -1,10 +1,10 @@
 ---
 /**
  * Página do artigo (briefing §5.3), em folhas (D26): o topo (desenho e título) numa folha e o corpo
- * em outra, com o texto em até 680px; em telas ≥ 1300px, o sumário vai para a direita, numa folha
- * própria e fixa. As notas laterais vão para a margem direita da folha do corpo (≥ 1180px) quando o
- * sumário não está ao lado; com ele, abrem no lugar. Avisos, notas e a apresentação saem do Markdown
- * (src/plugins); as interações ficam em src/scripts/artigo.ts.
+ * em outra, com o texto em até 760px (D33); em telas ≥ 1300px, o sumário vai para a esquerda, numa
+ * folha própria e fixa, com o post-it das frases embaixo. As notas laterais vão para a margem direita
+ * da folha do corpo quando ela tem espaço (artigo.css); senão, abrem no lugar. Avisos, notas e a
+ * apresentação saem do Markdown (src/plugins); as interações ficam em src/scripts/artigo.ts.
  */
 import { render } from "astro:content";
 import Base from "../../layouts/Base.astro";
@@ -15,12 +15,13 @@ import RodapeArtigo from "../../components/RodapeArtigo.astro";
 import VoltarTopo from "../../components/VoltarTopo.astro";
 import Comentarios from "../../components/Comentarios.astro";
 import { COMENTARIOS_LIGADOS } from "../../data/site";
-import { getPosts, getVizinhos, resumir, type Post } from "../../lib/posts";
+import { getPosts, getVizinhos, resumir, secoesDoSumario, type Post } from "../../lib/posts";
 import { dataIso, dataPorExtenso, descricaoCurta, semMd } from "../../lib/formato";
 import { url } from "../../lib/url";
 import { palavraDaTag } from "../../lib/busca/tipos";
 import "../../styles/prosa.css";
 import "../../styles/artigo.css";
+import "../../styles/visor.css";
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -34,7 +35,7 @@ interface Props {
 const { post } = Astro.props;
 const resumo = resumir(post);
 const { Content, headings, remarkPluginFrontmatter } = await render(post);
-const secoes = headings.filter((h) => h.depth === 2);
+const secoes = secoesDoSumario(headings);
 const temSumario = secoes.length >= 3;
 const { anterior, proximo, naSerie } = await getVizinhos(post.id);
 const endereco = new URL(Astro.url.pathname, Astro.site).href;
@@ -71,7 +72,7 @@ const jsonLd = {
   <article class="artigo wrap" data-artigo data-pagefind-body style={`--cor:${resumo.cor}`}>
     <TopoArtigo post={resumo} />
     <div class:list={["artigo-grade", { "com-sumario": temSumario }]}>
-      {temSumario && <Sumario secoes={secoes} variante="lateral" />}
+      {temSumario && <Sumario secoes={secoes} variante="lateral" minutos={resumo.minutos} chave={post.id} />}
       <div class="folha artigo-folha">
         <div class="artigo-corpo">
           <div class="prose" data-corpo>

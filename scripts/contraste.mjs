@@ -103,6 +103,22 @@ for (const s of SERIES) {
   conferir(livro, `${s.nome}: tinta do papel / papel`, TINTA_PAPEL, PAPEL, 4.5, false);
 }
 
+// Revista no tema escuro (D33): papel escuro com a tinta clara e o laranja clareado.
+for (const s of SERIES) {
+  const papelEscuro = misturar(TINTA_PAPEL, PAPEL, 10);
+  conferir(livro, `${s.nome} no escuro: tinta clara / papel escuro`, PAPEL, papelEscuro, 4.5, false);
+  conferir(livro, `${s.nome} no escuro: destaque / papel escuro`, misturar(s.destaque, PAPEL, 30), papelEscuro, 4.5, false);
+}
+
+// Post-it das frases e visor (D33): texto de verdade, com o mínimo de 4,5:1 (falha o script).
+for (const [tema, p] of Object.entries({ claro, escuro })) {
+  const grupo = `Post-it e visor, tema ${tema} (4,5:1)`;
+  conferir(grupo, "tinta do post-it / post-it", p["postit-tinta"], p.postit, 4.5, true);
+  conferir(grupo, "texto do visor / véu (88%) sobre o fundo", p["veu-tinta"], misturar(p.paper, p.veu, 88), 4.5, true);
+  conferir(grupo, "contador do visor (78%) / véu", misturar(p["veu-tinta"], misturar(p.paper, p.veu, 88), 22), misturar(p.paper, p.veu, 88), 4.5, true);
+  conferir(grupo, "letras da marca / capa da marca", p["marca-letra"], p.marca, 4.5, true);
+}
+
 // ---------- relatório ----------
 let grupoAtual = "";
 for (const l of linhas) {

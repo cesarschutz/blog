@@ -1,0 +1,406 @@
+---
+/**
+ * Post-it das frases de autores (D33): um bloquinho de post-it amarelo apagado, colado meio torto,
+ * com a frase em Newsreader itálico (a letra das frases dos livros) e o nome do autor levando à fonte.
+ * A cada visita, a frase é sorteada (pedido do Cesar): o script busca /frases.json ao carregar e
+ * escolhe uma ao acaso, sem repetir a última mostrada (guardada no navegador) nem as já vistas na
+ * sessão. Enquanto sorteia, o texto fica invisível e aparece num fade curto; se a lista não chegar,
+ * fica a frase do HTML (fraseDaPagina), que é também a de quem está sem JS. "outra frase", riscado à
+ * mão no pé do papel, arranca a folha de cima (ela sai voando e revela a de baixo, com outra frase).
+ * Com prefers-reduced-motion, a troca é direta. Se houver dois na página (o do sumário e o do fim do
+ * artigo), os dois mostram a mesma frase.
+ */
+import "@fontsource-variable/newsreader/opsz-italic.css";
+import { fraseDaPagina, tamanhoDaFrase } from "../lib/frases";
+import { ICONES } from "../lib/icones";
+import { url } from "../lib/url";
+
+interface Props {
+  /** Slug do artigo; sem ele, a frase da home. */
+  chave?: string;
+  /** Giro do papel, em graus. */
+  giro?: number;
+  class?: string;
+}
+
+const { chave, giro = -2.2, class: classe } = Astro.props;
+const { frase, indice } = fraseDaPagina(chave);
+---
+
+<figure
+  class:list={["postit", classe]}
+  data-postit
+  data-fonte={url("/frases.json")}
+  data-indice={indice}
+  style={`--giro:${giro}deg`}
+>
+  <div class="papel" data-papel data-tamanho={tamanhoDaFrase(frase.texto)}>
+    <blockquote><p data-texto>{frase.texto}</p></blockquote>
+    <figcaption>
+      <a href={frase.url} title={frase.contexto} data-autor
+        >{frase.autor}<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.externo} /></a
+      >
+    </figcaption>
+    <button type="button" class="outra" data-outra hidden>
+      <span>outra frase</span>
+      <svg class="rabisco" viewBox="0 0 104 12" aria-hidden="true" focusable="false">
+        <path d="M2 7.2c8.5-3.1 15.8 2.4 25.4-.5 9.1-2.8 17.6-3.4 27.3-.2 9.2 3 18.4 2.1 27.8-1.3 6.6-2.4 12.4-2 19.5.4"></path>
+      </svg>
+      <svg class="seta" viewBox="0 0 24 14" aria-hidden="true" focusable="false">
+        <path d="M2.5 7.6c5.6-.5 11.2-.4 16.6.1M14.4 2.8c1.9 1.7 3.6 3.2 5.3 4.8-1.8 1.6-3.7 3.1-5.7 4.6"></path>
+      </svg>
+    </button>
+  </div>
+</figure>
+<script is:inline>
+  document.currentScript.previousElementSibling.setAttribute("data-sorteando", "");
+</script>
+
+<script>
+  import { tocarPapel } from "../scripts/som";
+  import { tamanhoDaFrase } from "../lib/tamanho-da-frase";
+
+  type Linha = [texto: string, autor: string, contexto: string, url: string];
+  const CHAVE = "cs-frases-vistas";
+  const ULTIMA = "cs-frase-ultima";
+  const postits = [...document.querySelectorAll<HTMLElement>("[data-postit]")];
+  const semMovimento = matchMedia("(prefers-reduced-motion: reduce)");
+  let lista: Promise<Linha[]> | undefined;
+  let atual = Number(postits[0]?.dataset.indice ?? 0);
+
+  const vistas = (): number[] => {
+    try {
+      return JSON.parse(sessionStorage.getItem(CHAVE) ?? "[]");
+    } catch {
+      return [];
+    }
+  };
+  const guardar = (v: number[]) => {
+    try {
+      sessionStorage.setItem(CHAVE, JSON.stringify(v.slice(-80)));
+    } catch {
+      // sem armazenamento: só não evita repetir entre páginas
+    }
+  };
+
+  const ultima = (): number | undefined => {
+    try {
+      const v = localStorage.getItem(ULTIMA);
+      return v === null ? undefined : Number(v);
+    } catch {
+      return undefined;
+    }
+  };
+  const marcarUltima = (i: number) => {
+    try {
+      localStorage.setItem(ULTIMA, String(i));
+    } catch {
+      // sem armazenamento: a próxima visita pode repetir, sem outro efeito
+    }
+  };
+
+  function sortear(total: number): number {
+    const ja = new Set([...vistas(), atual, ultima()]);
+    const livres = Array.from({ length: total }, (_, i) => i).filter((i) => !ja.has(i));
+    const opcoes = livres.length ? livres : Array.from({ length: total }, (_, i) => i).filter((i) => i !== atual);
+    return opcoes[Math.floor(Math.random() * opcoes.length)];
+  }
+
+  function escrever(postit: HTMLElement, [texto, autor, contexto, endereco]: Linha) {
+    const papel = postit.querySelector<HTMLElement>("[data-papel]")!;
+    const link = papel.querySelector<HTMLAnchorElement>("[data-autor]")!;
+    papel.querySelector("[data-texto]")!.textContent = texto;
+    papel.dataset.tamanho = tamanhoDaFrase(texto);
+    link.firstChild!.textContent = autor;
+    link.href = endereco;
+    link.title = contexto;
+  }
+
+  const buscar = (fonte: string) => (lista ??= fetch(fonte).then((r) => r.json() as Promise<Linha[]>));
+
+  async function outra(origem: HTMLElement) {
+    let frases: Linha[];
+    try {
+      frases = await buscar(origem.dataset.fonte!);
+    } catch {
+      lista = undefined;
+      return;
+    }
+    atual = sortear(frases.length);
+    guardar([...vistas(), atual]);
+    marcarUltima(atual);
+    tocarPapel();
+    for (const postit of postits) {
+      // A folha de cima sai voando (uma cópia dela); a de baixo já tem a frase nova.
+      if (!semMovimento.matches) {
+        const papel = postit.querySelector<HTMLElement>("[data-papel]")!;
+        const folha = papel.cloneNode(true) as HTMLElement;
+        folha.removeAttribute("data-papel");
+        folha.classList.add("arrancada");
+        folha.setAttribute("aria-hidden", "true");
+        folha.querySelectorAll("a, button").forEach((e) => e.setAttribute("tabindex", "-1"));
+        postit.append(folha);
+        folha.addEventListener("animationend", () => folha.remove(), { once: true });
+      }
+      escrever(postit, frases[atual]);
+    }
+  }
+
+  for (const postit of postits) {
+    const botao = postit.querySelector<HTMLButtonElement>("[data-outra]")!;
+    botao.addEventListener("click", () => outra(postit));
+    botao.hidden = false;
+  }
+
+  // A frase da visita: sorteada ao carregar. Se a lista demorar, aparece a do HTML.
+  if (postits.length) {
+    const revelar = () => postits.forEach((p) => p.removeAttribute("data-sorteando"));
+    const limite = setTimeout(revelar, 1500);
+    buscar(postits[0].dataset.fonte!)
+      .then((frases) => {
+        atual = sortear(frases.length);
+        for (const postit of postits) escrever(postit, frases[atual]);
+      })
+      .catch(() => {
+        lista = undefined;
+      })
+      .finally(() => {
+        clearTimeout(limite);
+        guardar([...vistas(), atual]);
+        marcarUltima(atual);
+        revelar();
+      });
+  }
+</script>
+
+<style>
+  .postit {
+    --largura-postit: 206px;
+    position: relative;
+    width: var(--largura-postit);
+    margin: 0;
+    rotate: var(--giro);
+    perspective: 700px;
+  }
+
+  /*
+   * O papel: amarelo apagado com o grão dos livros, a sombra das folhas de baixo do bloquinho (as
+   * bordas deslocadas) e a sombra de um papel que descola um pouco embaixo.
+   */
+  .papel,
+  .arrancada {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    aspect-ratio: 1 / 1;
+    padding: 20px 18px 14px 20px;
+    background:
+      linear-gradient(172deg, transparent 62%, rgb(80 60 0 / 0.07)),
+      var(--grao) 0 0 / 180px 180px,
+      var(--postit);
+    color: var(--postit-tinta);
+    box-shadow:
+      1px 1.5px 0 -0.5px color-mix(in oklab, var(--postit), black 10%),
+      2.5px 3.5px 0 -1px color-mix(in oklab, var(--postit), black 16%),
+      0 16px 18px -14px rgb(40 30 0 / 0.5),
+      0 2px 4px rgb(40 30 0 / 0.08);
+  }
+
+  blockquote {
+    margin: 0;
+  }
+
+  /* Enquanto a frase da visita é sorteada, o papel fica sem texto; depois, o texto aparece. */
+  .papel > :is(blockquote, figcaption) {
+    transition: opacity 0.25s;
+  }
+
+  .postit[data-sorteando] .papel > :is(blockquote, figcaption) {
+    opacity: 0;
+  }
+
+  p {
+    margin: 0;
+    font-family: var(--font-livro-italico, "Newsreader Variable"), Georgia, serif;
+    font-style: italic;
+    font-weight: 430;
+    font-variation-settings: "opsz" 18;
+    line-height: 1.3;
+    text-wrap: pretty;
+  }
+
+  [data-tamanho="curta"] p {
+    font-size: 19.5px;
+  }
+
+  [data-tamanho="media"] p {
+    font-size: 16.5px;
+  }
+
+  [data-tamanho="longa"] p {
+    font-size: 14.6px;
+    line-height: 1.26;
+  }
+
+  [data-tamanho="muito-longa"] p {
+    font-size: 13.6px;
+    line-height: 1.24;
+  }
+
+  figcaption {
+    margin-top: 8px;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 12.5px;
+    line-height: 1.3;
+  }
+
+  figcaption::before {
+    content: "— ";
+  }
+
+  figcaption a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  figcaption a:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  figcaption svg {
+    width: 11px;
+    height: 11px;
+    margin-left: 3px;
+    vertical-align: -0.05em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.7;
+  }
+
+  /* "outra frase", escrito e riscado à mão no pé do papel. */
+  .outra {
+    position: relative;
+    align-self: flex-end;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: auto;
+    padding: 4px 2px 7px 6px;
+    border: 0;
+    background: none;
+    color: var(--postit-tinta);
+    font-family: var(--font-livro-italico, "Newsreader Variable"), Georgia, serif;
+    font-style: italic;
+    font-variation-settings: "opsz" 18;
+    font-size: 15.5px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .outra[hidden] {
+    display: none;
+  }
+
+  .outra svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .rabisco {
+    position: absolute;
+    left: 4px;
+    right: 22px;
+    bottom: 0;
+    width: calc(100% - 26px);
+    height: 8px;
+    stroke-dasharray: 110;
+    stroke-dashoffset: 0;
+  }
+
+  .seta {
+    width: 22px;
+    height: 13px;
+    transition: translate 0.25s;
+  }
+
+  .outra:hover .rabisco,
+  .outra:focus-visible .rabisco {
+    animation: riscar 0.5s ease-out;
+  }
+
+  .outra:hover .seta,
+  .outra:focus-visible .seta {
+    translate: 3px 0;
+  }
+
+  .outra:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  @keyframes riscar {
+    from {
+      stroke-dashoffset: 110;
+    }
+  }
+
+  /* A folha arrancada: descola de baixo para cima e sai voando para o alto. */
+  .arrancada {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transform-origin: 50% 0;
+    animation: arrancar 0.62s cubic-bezier(0.45, 0, 0.7, 0.4) forwards;
+  }
+
+  @keyframes arrancar {
+    30% {
+      transform: rotateX(-28deg) translateY(-2px);
+    }
+
+    100% {
+      transform: translate(46px, -110px) rotate(16deg) rotateX(-40deg);
+      opacity: 0;
+    }
+  }
+
+  :global(:root[data-theme="dark"]) .papel {
+    box-shadow:
+      1px 1.5px 0 -0.5px color-mix(in oklab, var(--postit), black 18%),
+      2.5px 3.5px 0 -1px color-mix(in oklab, var(--postit), black 26%),
+      0 18px 20px -14px rgb(0 0 0 / 0.8);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme="light"])) .papel {
+      box-shadow:
+        1px 1.5px 0 -0.5px color-mix(in oklab, var(--postit), black 18%),
+        2.5px 3.5px 0 -1px color-mix(in oklab, var(--postit), black 26%),
+        0 18px 20px -14px rgb(0 0 0 / 0.8);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .papel > :is(blockquote, figcaption) {
+      transition: none;
+    }
+
+    .outra:hover .rabisco,
+    .outra:focus-visible .rabisco {
+      animation: none;
+    }
+
+    .seta {
+      transition: none;
+    }
+  }
+</style>

@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -70 1200 930" data-largo="80 173 1100 468" data-medio="282 71 900 600" data-quadrado="397 36 670 670" data-og="362 -70 740 883" data-segura="430 248 604 246"
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -70 1200 930" data-largo="80 173 1100 468" data-medio="381 137 702 468" data-quadrado="396 35 671 671" data-og="362 -70 740 883" data-segura="430 248 604 246"
   aria-label="Três serviços ligados por setas e uma etiqueta de bagagem com o traceparent, o mesmo ID que acompanha a operação por todos eles.">
   <g class="tinta">
     <path d="M440 380 H570 A10 10 0 0 1 580 390 V470 A10 10 0 0 1 570 480 H440 A10 10 0 0 1 430 470 V390 A10 10 0 0 1 440 380 Z" transform="translate(14 14)" class="hachura"/>

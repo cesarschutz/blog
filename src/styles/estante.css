@@ -26,7 +26,7 @@
   display: flex;
   align-items: flex-end;
   gap: calc(6 * var(--u));
-  padding: calc(34 * var(--u) + 14px) calc(16 * var(--u)) 0;
+  padding: calc(12 * var(--u) + 8px) calc(16 * var(--u)) 0;
 }
 
 .lombada {
@@ -133,6 +133,48 @@
   --u: min(0.42px, 100cqw / var(--natural));
 }
 
+/*
+ * ---------- estante de filtro (arquivo e tags, D33) ----------
+ * Menor (teto de 0,3px por unidade), sem o livro inclinado. Com um livro escolhido, os outros
+ * apagam e ele sai um pouco da prateleira.
+ */
+.estante-filtro {
+  width: calc(var(--natural) * 0.3px);
+}
+
+.estante-filtro .prateleira-livros,
+.estante-filtro .prateleira-livros + .tabua {
+  --u: min(0.3px, 100cqw / var(--natural));
+}
+
+.estante-filtro .lombada {
+  transition:
+    transform 0.38s cubic-bezier(0.2, 0.75, 0.2, 1),
+    opacity 0.25s,
+    filter 0.25s;
+}
+
+.estante-filtro.filtrando .lombada:not([aria-current="true"]) {
+  opacity: 0.4;
+  filter: saturate(0.5);
+}
+
+.estante-filtro .lombada[aria-current="true"] {
+  transform: translateY(-10px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .estante-filtro .lombada {
+    transition: none;
+  }
+
+  .estante-filtro .lombada[aria-current="true"] {
+    transform: none;
+    outline: 2px solid var(--acento);
+    outline-offset: 3px;
+  }
+}
+
 /* ---------- gaveta: livro aberto e sumário ---------- */
 
 .gaveta {
@@ -168,6 +210,12 @@
     margin-top: 20px;
     padding: 28px 0 8px;
   }
+}
+
+/* O livro da gaveta com a lupa no canto (o livro ampliado, D33). */
+.livro-na-gaveta {
+  position: relative;
+  justify-self: center;
 }
 
 .sumario-livro {
@@ -254,10 +302,11 @@
   padding-top: 2px;
 }
 
+/* Com o título inteiro (D33), o item pode quebrar: o pontilhado e a data ficam na última linha. */
 .indice-livro a {
   display: grid;
   grid-template-columns: minmax(0, max-content) minmax(18px, 1fr) auto;
-  align-items: baseline;
+  align-items: last baseline;
   gap: 10px;
   padding: 7px 0;
   color: var(--ink);
