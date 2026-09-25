@@ -39,8 +39,8 @@ const classe = livro.revista ? "emblema-lombada" : "icone-lombada";
     </span>
   ) : (
     <span class="titulo-lombada" aria-hidden="true">
-      {livro.linhas.map((linha, i) => (i === 0 ? linha : [<br />, linha]))}
+      {livro.linhas.map((linha, i) => (i === 0 ? linha : [" ", <br />, linha]))}
     </span>
   )
 }
-{total > 0 && <span class="numero-lombada" aria-hidden="true">{total}</span>}
+{total > 0 && [" ", <span class="numero-lombada" aria-hidden="true">{total}</span>]}

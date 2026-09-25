@@ -41,6 +41,8 @@ interface Props {
   modificado?: Date;
   /** Dados estruturados (BlogPosting nos posts, WebSite na home). */
   jsonLd?: Record<string, unknown>;
+  /** Fora dos buscadores e sem canonical (a 404, que responde em qualquer endereço). */
+  semIndice?: boolean;
 }
 
 const NOME = "Cesar Schutz";
@@ -53,6 +55,7 @@ const {
   publicado,
   modificado,
   jsonLd,
+  semIndice = false,
 } = Astro.props;
 const tituloDaAba = titulo ? `${titulo} · ${NOME}` : `${NOME} · Arquitetura e engenharia de software`;
 const canonico = new URL(Astro.url.pathname, Astro.site);
@@ -109,8 +112,8 @@ const preVisualizacao = process.env.PREVIEW === "true";
     <style is:inline set:html={`${cssDosTokens()}:root{--grao:${GRAO_CSS}}`}></style>
     <title>{tituloDaAba}</title>
     <meta name="description" content={descricao} />
-    <link rel="canonical" href={canonico} />
-    {preVisualizacao && <meta name="robots" content="noindex, nofollow" />}
+    {!semIndice && <link rel="canonical" href={canonico} />}
+    {preVisualizacao ? <meta name="robots" content="noindex, nofollow" /> : semIndice && <meta name="robots" content="noindex" />}
     <meta name="theme-color" content={claro.paper} media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content={escuro.paper} media="(prefers-color-scheme: dark)" />
     <link rel="icon" href={url("/favicon.svg")} type="image/svg+xml" />
@@ -124,7 +127,7 @@ const preVisualizacao = process.env.PREVIEW === "true";
     <meta property="og:locale" content="pt_BR" />
     <meta property="og:title" content={titulo ?? NOME} />
     <meta property="og:description" content={descricao} />
-    <meta property="og:url" content={canonico} />
+    {!semIndice && <meta property="og:url" content={canonico} />}
     <meta property="og:image" content={imagemAbsoluta} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />

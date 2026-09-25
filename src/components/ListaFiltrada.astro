@@ -77,7 +77,7 @@ const nivelDoItem = porAno ? "h3" : "h2";
         </ol>
         <ul class="cartoes-modo">
           {g.posts.map((p) => (
-            <Cartao post={p} />
+            <Cartao post={p} nivel={nivelDoItem} />
           ))}
         </ul>
       </section>
@@ -98,8 +98,7 @@ const nivelDoItem = porAno ? "h3" : "h2";
     const limpar = lista.querySelector<HTMLButtonElement>("[data-limpar]")!;
     const total = Number(status.dataset.total);
     const plural = (n: number) => `${n} ${n === 1 ? "artigo" : "artigos"}`;
-    // O nome do livro vem do rótulo da lombada ("Mostrar só o livro X (N artigos)").
-    const nome = (a: HTMLAnchorElement) => a.getAttribute("aria-label")!.replace(/^Mostrar só (o livro|a série) | \(.*\)$/g, "");
+    const nome = (a: HTMLAnchorElement) => a.dataset.nome!;
     let atual = "";
 
     function aplicar(id: string) {

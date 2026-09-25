@@ -183,3 +183,9 @@
 .prose .expressive-code {
   margin: 0 0 1.4em;
 }
+
+/* O Copiar do Expressive Code usa o foco do site (o dele era o anel padrão do navegador). */
+.expressive-code .copy button:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 2px;
+}

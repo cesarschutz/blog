@@ -26,6 +26,8 @@ interface Props {
 
 const { posts, titulo, nivel = "h2", subtitulo, pagina } = Astro.props;
 const Titulo = nivel;
+// Os títulos dos artigos ficam um nível abaixo do título da seção (h1 nas páginas 2 em diante).
+const nivelDoItem = nivel === "h1" ? "h2" : "h3";
 ---
 
 <section class="recentes" aria-labelledby="recentes-titulo">
@@ -37,10 +39,10 @@ const Titulo = nivel;
     <SeletorModo />
   </div>
   <ol class="lista-modo lista-artigos folha">
-    {posts.map((p) => <ItemLista post={p} />)}
+    {posts.map((p) => <ItemLista post={p} nivel={nivelDoItem} />)}
   </ol>
   <ul class="cartoes-modo">
-    {posts.map((p) => <Cartao post={p} />)}
+    {posts.map((p) => <Cartao post={p} nivel={nivelDoItem} />)}
   </ul>
   {pagina && <Paginacao {...pagina} />}
 </section>

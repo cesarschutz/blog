@@ -13,9 +13,12 @@ import type { Resumo } from "../lib/posts";
 
 interface Props {
   post: Resumo;
+  /** Nível do título: um abaixo do título da seção (h2 quando a página tem só o h1 em cima). */
+  nivel?: "h2" | "h3";
 }
 
-const { post } = Astro.props;
+const { post, nivel = "h3" } = Astro.props;
+const Titulo = nivel;
 ---
 
 <li class="cartao folha" data-livro={post.livro}>
@@ -28,7 +31,7 @@ const { post } = Astro.props;
   }
   <div class="corpo-cartao">
     <MetaItem post={post} />
-    <h3><a href={post.url} set:html={tituloComQuebras(post.tituloCompleto)} /></h3>
+    <Titulo class="titulo-cartao"><a href={post.url} set:html={tituloComQuebras(post.tituloCompleto)} /></Titulo>
     <p class="descricao" set:html={mdEmLinha(post.descricao)} />
     {
       post.tags.length > 0 && (
@@ -71,28 +74,28 @@ const { post } = Astro.props;
     padding: 18px 20px 20px;
   }
 
-  h3 {
+  .titulo-cartao {
     margin: 8px 0 0;
     font-size: 21px;
     line-height: 1.2;
     text-wrap: pretty;
   }
 
-  h3 a {
+  .titulo-cartao a {
     color: var(--ink);
     text-decoration: none;
     transition: color 0.15s;
   }
 
   /* O link do título cobre o card inteiro; o chip da categoria fica por cima (MetaItem). */
-  h3 a::after {
+  .titulo-cartao a::after {
     content: "";
     position: absolute;
     inset: 0;
     z-index: 1;
   }
 
-  .cartao:hover h3 a {
+  .cartao:hover .titulo-cartao a {
     color: var(--acento);
   }
 

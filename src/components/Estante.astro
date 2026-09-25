@@ -26,11 +26,12 @@ const series = livros.filter((l) => l.serie);
 const comAparador = !filtro || (categorias.length > 0 && series.length > 0);
 const estilo = (l: Livro) => `${coresDoLivroCss(l)};--w:${l.emPe.largura};--h:${l.emPe.altura}`;
 const natural = larguraDaEstante(livros, comAparador);
+// O rótulo começa pelo que está escrito na lombada (nome e número), para quem usa comando de voz (WCAG 2.5.3).
 const rotulo = (l: Livro) => {
   const n = l.posts.length;
-  if (filtro) return `Mostrar só ${l.serie ? "a série" : "o livro"} ${l.nome} (${n} ${n === 1 ? "artigo" : "artigos"})`;
-  if (l.serie) return `Série ${l.nome}, ${n} ${n === 1 ? "parte" : "partes"}`;
-  return n === 0 ? `Livro ${l.nome}, ainda sem artigos` : `Livro ${l.nome}, ${n} ${n === 1 ? "artigo" : "artigos"}`;
+  if (filtro) return `${l.nome}, ${n} ${n === 1 ? "artigo" : "artigos"}: mostrar só ${l.serie ? "esta série" : "este livro"}`;
+  if (l.serie) return `${l.nome}, ${n} ${n === 1 ? "parte" : "partes"}`;
+  return n === 0 ? `${l.nome}, ainda sem artigos` : `${l.nome}, ${n} ${n === 1 ? "artigo" : "artigos"}`;
 };
 ---
 
@@ -52,6 +53,7 @@ const rotulo = (l: Livro) => {
           href={l.href}
           data-livro={l.id}
           data-filtro={filtro ? l.id : undefined}
+          data-nome={filtro ? l.nome : undefined}
           aria-label={rotulo(l)}
           style={estilo(l)}
         >
@@ -67,6 +69,7 @@ const rotulo = (l: Livro) => {
           href={l.href}
           data-livro={l.id}
           data-filtro={filtro ? l.id : undefined}
+          data-nome={filtro ? l.nome : undefined}
           aria-label={rotulo(l)}
           style={estilo(l)}
         >

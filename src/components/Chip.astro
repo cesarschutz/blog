@@ -26,6 +26,11 @@ const Tag = href ? "a" : "span";
     text-decoration: none;
   }
 
+  /* Alvo de toque de 24px (WCAG 2.5.8): no celular, o chip fica em cima do link que cobre o card. */
+  a.chip {
+    min-height: 24px;
+  }
+
   a.chip:hover {
     text-decoration: underline;
     text-decoration-thickness: 1px;

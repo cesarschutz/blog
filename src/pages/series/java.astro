@@ -29,7 +29,7 @@ const livro = (await montarLivros()).find((l) => l.id === "serie-java")!;
   atual="series"
 >
   <ComPainel atual={livro.id}>
-  <div class="java" style={`--cor:${java.destaque}`}>
+  <div class="java" style={`--cor:${java.destaque};--cor-texto:${java.destaqueTexto ?? java.destaque}`}>
     <TopoLivro
       livro={livro}
       descricao="Uma leitura por versão LTS: o que as versões intermediárias trouxeram desde a LTS anterior, em qual versão cada recurso chegou, com exemplos de código, diagramas e fontes oficiais."
@@ -83,8 +83,10 @@ const livro = (await montarLivros()).find((l) => l.id === "serie-java")!;
     padding-top: 32px;
   }
 
+  /* Texto pequeno no laranja da série usa a variante escura (D35); o grande fica na cor da capa. */
   .java {
     --destaque: color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro));
+    --destaque-texto: color-mix(in oklab, var(--cor-texto), #fff var(--branco-no-escuro));
   }
 
   .numeros {
@@ -128,7 +130,7 @@ const livro = (await montarLivros()).find((l) => l.id === "serie-java")!;
     font-family: var(--font-ui);
     font-weight: 500;
     font-size: 14px;
-    color: var(--destaque);
+    color: var(--destaque-texto);
   }
 
   .guia-titulo {

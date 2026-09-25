@@ -46,7 +46,7 @@ const estilo = (l: Livro) =>
   ].join(";");
 const rotulo = (l: Livro) => {
   const n = l.posts.length;
-  if (l.serie) return `Série ${l.nome}, ${n} ${n === 1 ? "parte" : "partes"}`;
+  if (l.serie) return `${l.nome}, ${n} ${n === 1 ? "parte" : "partes"}`;
   return n === 0 ? `${l.nome}, ainda sem artigos` : `${l.nome}, ${n} ${n === 1 ? "artigo" : "artigos"}`;
 };
 const TAGS_NO_PAINEL = 10;
@@ -77,9 +77,10 @@ const TAGS_NO_PAINEL = 10;
                     </span>
                   ) : (
                     <span class="nome" aria-hidden="true">
-                      {l.linhas.map((linha, i) => (i === 0 ? linha : [<br />, linha]))}
+                      {l.linhas.map((linha, i) => (i === 0 ? linha : [" ", <br />, linha]))}
                     </span>
                   )}
+                  {l.posts.length > 0 && " "}
                   {l.posts.length > 0 && (
                     <span class="conta" aria-hidden="true">
                       {l.posts.length}
@@ -290,7 +291,7 @@ const TAGS_NO_PAINEL = 10;
   .de-serie.retirado {
     background: transparent;
     box-shadow: inset 0 0 0 1px var(--rule);
-    color: var(--ink-3);
+    color: var(--ink-2);
   }
 
   .retirado :is(.ponta, .emblema) {
