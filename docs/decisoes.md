@@ -326,7 +326,8 @@ nada muda.
 - **Alternativa descartada:** o dourado, que dá 1,7:1 no tema claro.
 
 ## D24 · Tema: escolha guardada com a chave do blog atual
-- **Data:** 23/09/2026 · **Status:** aplicada (Fase 1)
+- **Data:** 23/09/2026 · **Status:** aplicada (Fase 1); revista na D33: o site sempre abre no tema do
+  sistema, e a escolha vale só na visita (`sessionStorage`)
 - **Decisão:**
   - A escolha fica em `localStorage["cs-theme"]`, com `light` ou `dark`. Sem valor, o tema segue o sistema.
   - É a mesma chave do blog atual, no mesmo domínio, então quem já escolheu não perde a escolha na troca.
@@ -678,6 +679,11 @@ nada muda.
   e aparece num fade curto. Sem JavaScript, fica a frase do HTML (na home, a primeira do arquivo; em
   cada artigo, uma escolhida pelo nome dele). Quatro tamanhos de letra pelo tamanho da frase, para o
   papel ficar quase quadrado.
+- **Tema sempre do sistema** (pedido do Cesar, 25/09/2026): o site abre sempre no tema do sistema. A
+  escolha do menu de aparência passou de `localStorage` para `sessionStorage` (`cs-theme`): vale de
+  página em página enquanto a aba está aberta e some ao fechar. O script do `<head>` apaga a escolha
+  antiga guardada para sempre (inclusive a do blog atual, que usa a mesma chave). O som dos livros
+  continua guardado (`cs-som`).
 - **Revisão das frases:** as 132 frases do blog atual foram conferidas uma a uma contra a fonte
   (quatro revisores em paralelo). Só 7 estavam certas; a maioria era **inventada ou atribuída sem
   base** (frases que o autor nunca escreveu, links 404, livros sem a frase). Cada uma foi trocada pela

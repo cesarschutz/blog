@@ -114,9 +114,9 @@ camada visual: estrutura, conteúdo, rotas e comportamento seguem as seções 5 
 
 - `--well` não veio do protótipo: é a superfície com 4% de tinta, para código em linha, cabeçalho
   de tabela e o fundo dos blocos de código, que ficam sobre a folha.
-- Tema: segue o sistema. A escolha fica guardada no navegador, com script anti-piscada no
-  `<head>`: o botão com ícone no cabeçalho alterna claro e escuro, e o rodapé mantém a alternância
-  discreta (claro, escuro, sistema).
+- Tema: o site **sempre abre no tema do sistema** (D33). O menu de aparência do cabeçalho troca
+  para claro, escuro ou sistema, e a escolha vale só naquela visita (de página em página, até fechar a
+  aba), com script anti-piscada no `<head>`.
 - **Categorias = livros de uma coleção numerada, no estilo "edição de estudo"; séries = revistas
   técnicas** (D30, D32). A regra visual de capas, lombadas, estante, livros e séries novos está em
   **`docs/capas/CAPAS.md`**, com as imagens de referência em `docs/capas/referencia/`. Os dados de

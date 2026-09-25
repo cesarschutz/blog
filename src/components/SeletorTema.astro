@@ -1,9 +1,10 @@
 ---
 /**
  * Menu de aparência do cabeçalho (D33): o botão mostra a escolha (sol, lua ou tela) e abre um menu
- * com Claro, Escuro e Sistema, e o som dos livros (ligado ou desligado). A escolha fica no navegador
- * (`cs-theme`, a mesma chave do blog atual; `cs-som`) e é aplicada antes da primeira pintura pelo
- * script do <head> (Base.astro). Sem JS, o botão some e o tema segue o sistema.
+ * com Claro, Escuro e Sistema, e o som dos livros (ligado ou desligado). O site sempre abre no tema
+ * do sistema: a escolha de tema vale só nesta visita (`cs-theme`, em sessionStorage); a do som fica
+ * guardada (`cs-som`). O script do <head> (Base.astro) aplica o tema antes da primeira pintura. Sem
+ * JS, o botão some e o tema segue o sistema.
  */
 import { ICONES } from "../lib/icones";
 

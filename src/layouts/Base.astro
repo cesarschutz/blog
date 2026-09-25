@@ -67,12 +67,15 @@ const preVisualizacao = process.env.PREVIEW === "true";
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <script is:inline>
-      // Antes da primeira pintura: tema escolhido (sem escolha, segue o sistema), modo Lista/Cards da
-      // home e, na primeira visita da sessão, o livro inclinado em pé para tombar (Gaveta.astro).
+      // Antes da primeira pintura: tema escolhido nesta visita (o site sempre abre no tema do
+      // sistema, D33), modo Lista/Cards da home e, na primeira visita da sessão, o livro inclinado em
+      // pé para tombar (Gaveta.astro). A escolha de tema antiga, guardada para sempre (também pelo
+      // blog atual, com a mesma chave), é apagada.
       try {
         var raiz = document.documentElement;
-        var tema = localStorage.getItem("cs-theme");
+        var tema = sessionStorage.getItem("cs-theme");
         if (tema === "light" || tema === "dark") raiz.dataset.theme = tema;
+        localStorage.removeItem("cs-theme");
         if (localStorage.getItem("cs-post-view") === "cards") raiz.dataset.postView = "cards";
         if (sessionStorage.getItem("estante-tombou") !== "1" && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
           raiz.dataset.tombar = "";
