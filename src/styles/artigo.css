@@ -32,6 +32,11 @@
   .artigo-grade.com-sumario {
     grid-template-columns: 240px minmax(0, 1fr);
   }
+
+  /* Com o sumário lateral, o "Do livro" fica embaixo dele e sai do fim do artigo (D39). */
+  .artigo-grade.com-sumario .fim-do-artigo {
+    display: none;
+  }
 }
 
 /*

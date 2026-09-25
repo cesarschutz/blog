@@ -2,7 +2,7 @@
 /**
  * Página do artigo (briefing §5.3), em folhas (D26): o topo (desenho e título) numa folha e o corpo
  * em outra, com o texto em até 760px (D33); em telas ≥ 1300px, o sumário vai para a esquerda, numa
- * folha própria e fixa; o post-it das frases fica no fim, antes do aviso de IA (D38). As notas laterais vão para a margem direita
+ * folha própria e fixa, com o "Do livro" compacto embaixo (D39); o post-it das frases fica no fim, antes do aviso de IA (D38). As notas laterais vão para a margem direita
  * da folha do corpo quando ela tem espaço (artigo.css); senão, abrem no lugar. Avisos, notas e a
  * apresentação saem do Markdown (src/plugins); as interações ficam em src/scripts/artigo.ts.
  */
@@ -18,6 +18,7 @@ import { AUTOR, COMENTARIOS_LIGADOS } from "../../data/site";
 import { getPosts, getVizinhos, resumir, secoesDoSumario, type Post } from "../../lib/posts";
 import { dataIso, dataPorExtenso, descricaoCurta, semMd } from "../../lib/formato";
 import { url } from "../../lib/url";
+import { montarLivros } from "../../lib/estante";
 import { palavraDaTag } from "../../lib/busca/tipos";
 import "../../styles/prosa.css";
 import "../../styles/artigo.css";
@@ -38,6 +39,11 @@ const { Content, headings, remarkPluginFrontmatter } = await render(post);
 const secoes = secoesDoSumario(headings);
 const temSumario = secoes.length >= 3;
 const { anterior, proximo, naSerie } = await getVizinhos(post.id);
+// O livro do artigo (a categoria ou a série), para o "Do livro" embaixo do sumário lateral (D39).
+const livros = await montarLivros();
+const livroDoPost = resumo.serie
+  ? livros.find((l) => l.id === `serie-${resumo.serie!.chave}`)
+  : livros.find((l) => resumo.categoria && l.slug === resumo.categoria.slug);
 const endereco = new URL(Astro.url.pathname, Astro.site).href;
 const modificado = post.data.updated ?? post.data.published;
 
@@ -91,7 +97,7 @@ const jsonLd = {
   <article class="artigo wrap" data-artigo data-pagefind-body style={`--cor:${resumo.cor}`}>
     <TopoArtigo post={resumo} />
     <div class:list={["artigo-grade", { "com-sumario": temSumario }]}>
-      {temSumario && <Sumario secoes={secoes} variante="lateral" minutos={resumo.minutos} />}
+      {temSumario && <Sumario secoes={secoes} variante="lateral" minutos={resumo.minutos} livro={livroDoPost} />}
       <div class="folha artigo-folha">
         <div class="artigo-corpo">
           <div class="prose" data-corpo>

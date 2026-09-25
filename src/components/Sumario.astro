@@ -11,7 +11,11 @@
  *
  * "recolhivel": no início do texto, nas telas menores.
  */
+import Capa from "./Capa.astro";
+import { ICONES } from "../lib/icones";
+import { coresDoLivroCss, type Livro } from "../lib/estante";
 import type { SecaoDoSumario } from "../lib/posts";
+import "../styles/livro.css";
 import { tituloComQuebras } from "../lib/formato";
 
 interface Props {
@@ -19,16 +23,18 @@ interface Props {
   variante: "lateral" | "recolhivel";
   /** Tempo de leitura do artigo, para o "faltam N min". */
   minutos?: number;
+  /** O livro do artigo: o "Do livro" compacto embaixo do sumário lateral (D39). */
+  livro?: Livro;
 }
 
-const { secoes, variante, minutos = 0 } = Astro.props;
+const { secoes, variante, minutos = 0, livro } = Astro.props;
 // "3. Bloqueio pessimista" → "Bloqueio pessimista": o sumário não mostra número (D36).
 const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
 ---
 
 {
   variante === "lateral" ? (
-    <aside class="lateral" data-pagefind-ignore>
+    <aside class="lateral" data-pagefind-ignore style={livro ? coresDoLivroCss(livro) : undefined}>
       <div class="folha folha-sumario">
         <nav aria-label="Neste artigo" data-trilho>
           <p class="titulo">Neste artigo</p>
@@ -62,6 +68,23 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
           </p>
         </div>
       </div>
+      {
+        livro && (
+          <a class="folha do-livro" href={livro.href}>
+            <span class="capa-mini" style={coresDoLivroCss(livro)}>
+              <Capa livro={livro} desenho="adiado" />
+            </span>
+            <span class="sobre">
+              <span class="rotulo">{livro.serie ? "Da série" : "Do livro"}</span>
+              <span class="nome-livro">{livro.nome}</span>
+              <span class="ver">
+                {livro.serie ? "Ver a série" : "Ver o livro"}
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
+              </span>
+            </span>
+          </a>
+        )
+      }
     </aside>
   ) : (
     <details class="recolhivel" data-pagefind-ignore>
@@ -80,7 +103,14 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
 }
 
 <style>
+  /*
+   * A cor do livro do post (D39) no trilho, no ponto atual e na barra de porcentagem: o destaque do
+   * livro (a cor escurecida até ter contraste sobre o papel) e, no escuro, com o branco dos desenhos
+   * (--branco-no-escuro). Passa de 3:1 sobre a folha nos dois temas (npm run contraste).
+   */
   .lateral {
+    --cor-ui: color-mix(in oklab, var(--livro-destaque, var(--acento)), #fff var(--branco-no-escuro, 0%));
+    --cor-trilho: color-mix(in oklab, var(--cor-ui) 60%, var(--rule));
     display: none;
   }
 
@@ -127,7 +157,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
   }
 
   .secao.lida::before {
-    background: color-mix(in oklab, var(--acento) 55%, var(--rule));
+    background: var(--cor-trilho);
   }
 
   /* Nomes longos quebram nos pontos (tituloComQuebras) e, em último caso, onde der: nunca rolam. */
@@ -164,8 +194,8 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
   }
 
   .secao.lida .marco {
-    border-color: color-mix(in oklab, var(--acento) 55%, var(--rule));
-    background: color-mix(in oklab, var(--acento) 12%, var(--paper-hi));
+    border-color: var(--cor-trilho);
+    background: color-mix(in oklab, var(--cor-ui) 12%, var(--paper-hi));
   }
 
   .secao > a[aria-current="true"] {
@@ -174,9 +204,9 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
   }
 
   .secao > a[aria-current="true"] .marco {
-    border-color: var(--acento);
-    background: var(--acento);
-    box-shadow: 0 0 0 4px color-mix(in oklab, var(--acento) 16%, transparent);
+    border-color: var(--cor-ui);
+    background: var(--cor-ui);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--cor-ui) 16%, transparent);
   }
 
   /* Subseções: só as da seção atual, em corpo menor, com a atual em azul-tinta. */
@@ -230,7 +260,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
   .feito {
     display: block;
     height: 100%;
-    background: var(--acento);
+    background: var(--cor-ui);
     transform: scaleX(0);
     transform-origin: left;
   }
@@ -243,6 +273,74 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     font-family: var(--font-codigo);
     font-size: 12px;
     color: var(--ink-3);
+  }
+
+  /* ---------- "Do livro" compacto (D39) ---------- */
+
+  .do-livro {
+    display: flex;
+    flex: none;
+    gap: 14px;
+    align-items: center;
+    padding: 14px 16px;
+    color: var(--ink);
+    text-decoration: none;
+    transition: box-shadow 0.2s;
+  }
+
+  .capa-mini {
+    flex: none;
+    width: 46px;
+  }
+
+  .sobre {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    font-family: var(--font-ui);
+  }
+
+  .rotulo {
+    font-size: 12.5px;
+    color: var(--ink-2);
+  }
+
+  .nome-livro {
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    font-size: 15px;
+    line-height: 1.25;
+  }
+
+  .ver {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 2px;
+    font-size: 13.5px;
+    color: var(--acento);
+  }
+
+  .ver svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  @media (hover: hover) {
+    .do-livro:hover {
+      box-shadow: var(--sombra-folha-alta);
+    }
+
+    .do-livro:hover .ver {
+      text-decoration: underline;
+      text-underline-offset: 0.18em;
+    }
   }
 
   /* ---------- recolhível ---------- */

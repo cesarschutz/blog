@@ -398,7 +398,7 @@ mexer na página. O site não tem som.
 - **Fio (`rule`, #E2E0D8):** bordas das folhas e divisórias.
 - **Poço (`well`, #F5F5F4):** código e cabeçalho de tabela, a folha com 4% de tinta.
 - **Azul-tinta (`primary`, #2549B8; #93AEFF no escuro):** a única cor de interação. Links de texto,
-  item ativo do menu, botão "Ler artigo", seletor Lista/Cards, item atual do sumário e da paginação e
+  item ativo do menu, botão "Ler artigo", seletor Lista/Cards, item atual da paginação e
   foco. A navegação do cabeçalho e do rodapé, as pílulas e os botões secundários ficam na tinta e só
   ganham o azul ao passar o mouse. Não serve de decoração.
 - **Avisos:** Nota, Dica (também a linha adicionada no diff), Importante, Atenção e Cuidado (também
@@ -470,7 +470,9 @@ pequeno da série. Hoje isso vale para as lombadas, em pé e deitadas (`corTexto
 Conteúdo de até 1320px, com margem lateral de 16 a 32px (`clamp`). O cabeçalho é fixo, e toda
 âncora ou peça `sticky` desconta `--altura-topo` (60px; 104px no celular). No artigo, a coluna de
 texto tem até 760px e, a partir de 1300px, o sumário fica à esquerda numa folha própria e fixa,
-com a barra "NN% lido" embaixo. A home é paginada de 12 em 12. A estante tem 6px entre os livros.
+com a barra "NN% lido" embaixo; o fio das seções lidas, o ponto atual e a barra usam **a cor do
+livro do post** (o destaque do livro; no escuro, com 42% de branco), e embaixo da folha do sumário
+fica o **"Do livro" compacto** (capa pequena, nome e "Ver o livro", D39). A home é paginada de 12 em 12. A estante tem 6px entre os livros.
 Nada pode rolar para o lado em 390px nem em 320px. O sumário nunca rola para o lado. Toda área que
 rola por dentro (sumário, código, tabelas, gaveta, busca, painel) usa a **barra fina** do site, na
 tinta do tema com 24% (40% ao passar o mouse), por `scrollbar-width`, `scrollbar-color` e

@@ -115,6 +115,15 @@ for (const s of SERIES) {
   conferir(pequeno, `${s.nome}: destaque da lombada / papel`, s.destaqueTexto ?? s.destaque, PAPEL, 4.5, true);
 }
 
+// Sumário na cor do livro (D39): o trilho, o ponto atual e a barra de porcentagem usam o destaque do
+// livro (com o branco dos desenhos no escuro) sobre a folha. Elemento gráfico: 3:1 (falha o script).
+for (const [tema, p] of Object.entries({ claro, escuro })) {
+  const grupo = `Sumário na cor do livro, tema ${tema} (3:1)`;
+  const naFolha = (cor) => (tema === "escuro" ? misturar(cor, "#FFFFFF", BRANCO_NO_ESCURO) : cor);
+  for (const c of CATEGORIAS) conferir(grupo, c.nome, naFolha(c.cores.destaque), p["paper-hi"], 3, true);
+  for (const s of SERIES) conferir(grupo, s.nome, naFolha(s.destaque), p["paper-hi"], 3, true);
+}
+
 // Post-it das frases e visor (D33): texto de verdade, com o mínimo de 4,5:1 (falha o script).
 for (const [tema, p] of Object.entries({ claro, escuro })) {
   const grupo = `Post-it e visor, tema ${tema} (4,5:1)`;

@@ -308,10 +308,11 @@ Referência: aba "Artigo" do protótipo.
 - **Barra de progresso de leitura**: faixa de 3px no topo, na cor da categoria.
 - **Sumário**: em telas ≥ 1300px, à esquerda do texto, numa folha própria e fixa; recolhível no
   início do texto nas menores. Só aparece com 3 ou mais seções. No lateral (D33), um trilho: um ponto
-  em cada seção, sem número (D36; o "3. " do título sai do nome, nas duas variantes), as lidas e a atual pintadas em azul-tinta, as
+  em cada seção, sem número (D36; o "3. " do título sai do nome, nas duas variantes), o fio das lidas, o ponto atual e a barra de porcentagem na cor do livro do post (D39), as
   subseções da atual abertas, e a atual sempre à vista. Embaixo, a barra fina com "19% lido" e o tempo
   que falta (em fonte de código), que soma à barra do topo; só com JS. O post-it das frases saiu
-  daqui (D38): fica no fim do artigo.
+  daqui (D38): fica no fim do artigo. Embaixo da folha do sumário, o **"Do livro" compacto** (D39):
+  a capa pequena, o nome e "Ver o livro"; com ele, o cartão do fim do artigo some no desktop.
 - **Notas laterais**: notas de rodapé do Markdown viram notas na margem direita da folha do corpo
   quando ela tem espaço (a folha, e não a tela, decide, D33) e abrem no lugar, ao tocar no número,
   nas outras.
@@ -336,7 +337,8 @@ Referência: aba "Artigo" do protótipo.
   "Artigo escrito com apoio de IA, revisado pelo autor, com o código testado. Ainda assim pode
   conter imprecisões: confirme nas fontes citadas e na documentação oficial antes de aplicar."
   (sem o "Saiba mais" desde a D33); o cartão **"Do livro"** (o livro 3D da categoria ou a revista da
-  série, que leva à página do livro); depois a navegação **Artigo anterior / Próximo artigo** (ou anterior/próxima dentro da
+  série, que leva à página do livro; no desktop com o sumário lateral, ele fica embaixo do sumário,
+  D39); depois a navegação **Artigo anterior / Próximo artigo** (ou anterior/próxima dentro da
   série), com o título inteiro. Sem bloco de "artigos relacionados".
 - Botão "voltar ao topo" depois de uma tela de rolagem. Comentários (Giscus) e estatísticas
   (GoatCounter) continuam opcionais e desligados.
