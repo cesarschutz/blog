@@ -444,12 +444,6 @@
     "url": "https://www.databricks.com/blog/2020/01/30/what-is-a-data-lakehouse.html"
   },
   {
-    "texto": "O texto gerado por um modelo de linguagem não está ancorado em intenção comunicativa, em nenhum modelo do mundo, nem em nenhum modelo do estado mental de quem lê.",
-    "autor": "Emily M. Bender, Timnit Gebru e coautoras",
-    "contexto": "Leia 'On the Dangers of Stochastic Parrots', de Bender, Gebru, McMillan-Major e Shmitchell (FAccT 2021)",
-    "url": "https://dl.acm.org/doi/10.1145/3442188.3445922"
-  },
-  {
     "texto": "O Cursor deve parecer uma extensão da sua vontade. No momento em que você pensa numa mudança, o modelo precisa de uma intenção mínima para executá-la na hora.",
     "autor": "Aman Sanger",
     "contexto": "Leia 'More problems', de Aman Sanger (blog do Cursor, 2024), sobre os próximos desafios da programação com IA",
@@ -670,12 +664,6 @@
     "autor": "Joe Armstrong",
     "contexto": "Veja os destaques de 'Coders at Work', de Peter Seibel, com a entrevista de Joe Armstrong",
     "url": "https://codersatwork.com/"
-  },
-  {
-    "texto": "Há duas formas de projetar software: fazê-lo tão simples que obviamente não haja deficiências, ou tão complicado que não haja deficiências óbvias. A primeira é muito mais difícil.",
-    "autor": "Tony Hoare",
-    "contexto": "Leia 'The Emperor's Old Clothes', palestra do Prêmio Turing de Tony Hoare",
-    "url": "https://dl.acm.org/doi/10.1145/358549.358561"
   },
   {
     "texto": "A estrutura dos times precisa corresponder à arquitetura de software necessária, ou corre o risco de produzir designs não intencionais.",

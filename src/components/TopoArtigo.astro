@@ -56,7 +56,7 @@ const marcaDagua = post.serie
     <p class="lede" set:html={mdEmLinha(post.descricao)} />
     <div class="assinatura" data-pagefind-ignore>
       <span class="autor">
-        <img class="foto" src={AUTOR.foto} alt="" width="32" height="32" decoding="async" referrerpolicy="no-referrer" />
+        <img class="foto" src={url(AUTOR.foto)} alt="" width="32" height="32" decoding="async" />
         {AUTOR.nome}
       </span>
       <DataLeitura data={post.publicado} atualizado={post.atualizado} minutos={post.minutos} longo />

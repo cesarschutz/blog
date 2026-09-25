@@ -20,12 +20,13 @@ export const COMENTARIOS_LIGADOS = Object.values(COMENTARIOS).every(Boolean);
 
 /**
  * O autor (D33): nome e cargo, a foto do topo dos artigos e os perfis do cabeçalho e do rodapé, como
- * no blog atual. A foto vem do GitHub, como lá (96 px, o dobro do tamanho em que aparece).
+ * no blog atual. A foto é a do GitHub, baixada para o próprio site (public/autor.webp, 96 px, o triplo
+ * do tamanho em que aparece): sem pedir nada a outro domínio a cada artigo (D33).
  */
 export const AUTOR = {
   nome: "Cesar Schutz",
   cargo: "Arquiteto de soluções",
-  foto: "https://github.com/cesarschutz.png?size=96",
+  foto: "/autor.webp",
   github: "https://github.com/cesarschutz",
   linkedin: "https://www.linkedin.com/in/cesar-schutz-10341a21/",
 };

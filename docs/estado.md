@@ -70,7 +70,7 @@ domínio (`docs/virada.md`) só acontece com o OK dele; nada foi commitado nem p
   filtro, livro ampliado, som dos livros, livros invertidos no escuro com a lombada do livro grande
   igual à da estante, ilustrações com recortes justos, apresentação e visor de imagens consertados.
   Depois, no mesmo dia: a abertura refeita como cena (estante e post-it juntos), a frase sorteada a
-  cada visita, as 132 frases revisadas contra a fonte (127 ficaram, todas com origem), os chips de
+  cada visita, as 132 frases revisadas contra a fonte (125 ficaram, todas com origem), os chips de
   categoria levando à página da categoria e o som do painel funcionando também depois de navegar.
 
 ## Próximos passos
@@ -83,10 +83,6 @@ domínio (`docs/virada.md`) só acontece com o OK dele; nada foi commitado nem p
 4. Revisão geral do Cesar; com o OK dele, primeiro commit e a virada (`docs/virada.md`).
 
 ## Perguntas abertas para o Cesar
-
-- **Foto do autor (D33):** vem do GitHub, como no blog atual (`github.com/cesarschutz.png`). Servir
-  do próprio site é melhor para desempenho e privacidade, mas é preciso baixar a imagem uma vez: com o
-  OK do Cesar, ela vai para `public/`.
 
 1. O blog atual vai receber posts durante o projeto? A migração parte do commit `0184562` (conferido
    hoje: ainda é o último).

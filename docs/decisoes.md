@@ -650,7 +650,8 @@ nada muda.
 - **Data e tempo de leitura** com o calendário e o relógio do blog atual em todo lugar
   (`DataLeitura.astro`: lista, cards, destaque, topo do artigo, arquivo).
 - **Artigo:** o topo como no blog atual: o título inteiro (não mais dividido em título e subtítulo), a
-  descrição, e a assinatura com a foto (a do GitHub, como no blog atual), o nome, a data e o tempo; e,
+  descrição, e a assinatura com a foto (a do GitHub, baixada para `public/autor.webp` com o OK do
+  Cesar, para não pedir nada a outro domínio a cada artigo), o nome, a data e o tempo; e,
   no canto, a **marca d'água** com o desenho da capa do livro do artigo (a xícara, na série). Coluna de
   texto de 680 para **760px**; as notas laterais só vão para a margem quando a folha tem espaço
   (consulta de contêiner). O **sumário** virou um trilho: número da seção num marco (ponto nas sem
@@ -682,9 +683,12 @@ nada muda.
   base** (frases que o autor nunca escreveu, links 404, livros sem a frase). Cada uma foi trocada pela
   citação real do mesmo autor, traduzida com fidelidade e com o link para onde ela está (117); 8 saíram
   (sem origem, falas fracas, um ditado anônimo e duas repetidas) e entraram 3 novas (Parnas, Lampson e
-  Spolsky): **127 frases**, a primeira a de Ralph Johnson citada por Fowler em "Who Needs an
-  Architect?". Links: 119 respondem 200 a robôs; os 8 da ACM, O'Reilly e Last Week in AWS bloqueiam
-  robôs, mas abrem no navegador (conferido). A regra para frase nova ficou no `CLAUDE.md`.
+  Spolsky): 127 frases, a primeira a de Ralph Johnson citada por Fowler em "Who Needs an
+  Architect?". Links: 119 respondem 200 a robôs; os da ACM Queue, O'Reilly e Last Week in AWS
+  bloqueiam robôs, mas abrem no navegador (conferido). Depois, a pedido do Cesar, saíram as duas com
+  link para o dl.acm.org (Bender e Gebru, "Stochastic Parrots"; Tony Hoare, "The Emperor's Old
+  Clothes"), que abre atrás de uma verificação do Cloudflare: **125 frases**. A regra para frase nova
+  ficou no `CLAUDE.md`.
 - **Livro ampliado** (`LivroAmpliado.astro`, `visor.css`): clicar no livro aberto da gaveta ou do topo
   da página do livro (ou na lupa do canto) abre o livro grande sobre a página escurecida, com o nome e
   o volume, "Ver o livro" (fora da página dele), botão de fechar, Esc e clique fora; arrastar ou ←/→
