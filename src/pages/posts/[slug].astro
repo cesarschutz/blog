@@ -72,7 +72,7 @@ const jsonLd = {
   <article class="artigo wrap" data-artigo data-pagefind-body style={`--cor:${resumo.cor}`}>
     <TopoArtigo post={resumo} />
     <div class:list={["artigo-grade", { "com-sumario": temSumario }]}>
-      {temSumario && <Sumario secoes={secoes} variante="lateral" minutos={resumo.minutos} chave={post.id} />}
+      {temSumario && <Sumario secoes={secoes} variante="lateral" minutos={resumo.minutos} chave={post.id} temas={[...resumo.tags, resumo.livro]} />}
       <div class="folha artigo-folha">
         <div class="artigo-corpo">
           <div class="prose" data-corpo>

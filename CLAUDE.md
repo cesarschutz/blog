@@ -84,8 +84,10 @@ As frases de autores (`src/data/frases.json`, post-it da home e dos artigos, D33
 atual, e a revisão de 24/09/2026 mostrou que a maioria era **inventada ou atribuída sem base**. Por
 isso, frase nova só entra com a **fonte primária aberta e conferida** (o post, o livro, o paper, a
 palestra ou a entrevista do próprio autor): texto traduzido com fidelidade, sem acréscimos, autor
-certo, `url` para onde ela está e `contexto` dizendo o que o link mostra. Na dúvida, não entra. A
-primeira do arquivo é a da home (sai no HTML sem JavaScript): uma frase sobre o assunto do blog.
+certo, `url` para onde ela está, `contexto` dizendo o que o link mostra e `temas` (as tags e o livro,
+como `livro-dados` ou `serie-java`, a que ela se aplica, ou `geral`): cada artigo só sorteia entre as
+frases do assunto dele (D37). Na dúvida, não entra. A primeira do arquivo é a da home (sai no HTML sem
+JavaScript): uma frase sobre o assunto do blog.
 
 ## URLs que não podem quebrar
 

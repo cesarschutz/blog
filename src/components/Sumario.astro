@@ -21,9 +21,11 @@ interface Props {
   minutos?: number;
   /** Slug do artigo, para a frase do post-it. */
   chave?: string;
+  /** Tags e livro do artigo, para o post-it sortear entre as frases do assunto (D37). */
+  temas?: string[];
 }
 
-const { secoes, variante, minutos = 0, chave } = Astro.props;
+const { secoes, variante, minutos = 0, chave, temas } = Astro.props;
 // "3. Bloqueio pessimista" → "Bloqueio pessimista": o sumário não mostra número (D36).
 const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
 ---
@@ -66,7 +68,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
           </p>
         </div>
       </div>
-      <PostIt chave={chave} giro={-2} class="postit-sumario" />
+      <PostIt chave={chave} temas={temas} giro={-2} class="postit-sumario" />
     </aside>
   ) : (
     <details class="recolhivel" data-pagefind-ignore>

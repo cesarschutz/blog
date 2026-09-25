@@ -11,20 +11,23 @@
  * artigo), os dois mostram a mesma frase.
  */
 import "@fontsource-variable/newsreader/opsz-italic.css";
-import { fraseDaPagina, tamanhoDaFrase } from "../lib/frases";
+import { conjuntoDoArtigo, fraseDaPagina, tamanhoDaFrase } from "../lib/frases";
 import { ICONES } from "../lib/icones";
 import { url } from "../lib/url";
 
 interface Props {
   /** Slug do artigo; sem ele, a frase da home. */
   chave?: string;
+  /** Tags e livro do artigo: o sorteio fica entre as frases do assunto dele (D37). */
+  temas?: string[];
   /** Giro do papel, em graus. */
   giro?: number;
   class?: string;
 }
 
-const { chave, giro = -2.2, class: classe } = Astro.props;
-const { frase, indice } = fraseDaPagina(chave);
+const { chave, temas, giro = -2.2, class: classe } = Astro.props;
+const conjunto = temas ? conjuntoDoArtigo(temas) : undefined;
+const { frase, indice } = fraseDaPagina(chave, conjunto);
 ---
 
 <figure
@@ -32,6 +35,7 @@ const { frase, indice } = fraseDaPagina(chave);
   data-postit
   data-fonte={url("/frases.json")}
   data-indice={indice}
+  data-conjunto={conjunto?.join(",")}
   style={`--giro:${giro}deg`}
 >
   <div class="papel" data-papel data-tamanho={tamanhoDaFrase(frase.texto)}>
@@ -99,11 +103,14 @@ const { frase, indice } = fraseDaPagina(chave);
     }
   };
 
+  // No artigo, só as frases do assunto dele (data-conjunto, D37); na home, todas.
+  const conjunto = postits[0]?.dataset.conjunto?.split(",").map(Number);
   function sortear(total: number): number {
+    const todas = conjunto ?? Array.from({ length: total }, (_, i) => i);
     const ja = new Set([...vistas(), atual, ultima()]);
-    const livres = Array.from({ length: total }, (_, i) => i).filter((i) => !ja.has(i));
-    const opcoes = livres.length ? livres : Array.from({ length: total }, (_, i) => i).filter((i) => i !== atual);
-    return opcoes[Math.floor(Math.random() * opcoes.length)];
+    const livres = todas.filter((i) => !ja.has(i));
+    const opcoes = livres.length ? livres : todas.filter((i) => i !== atual);
+    return opcoes.length ? opcoes[Math.floor(Math.random() * opcoes.length)] : atual;
   }
 
   function escrever(postit: HTMLElement, [texto, autor, contexto, endereco]: Linha) {
@@ -179,6 +186,7 @@ const { frase, indice } = fraseDaPagina(chave);
     position: relative;
     width: var(--largura-postit);
     margin: 0;
+    container-type: inline-size;
     rotate: var(--giro);
     perspective: 700px;
   }
@@ -192,7 +200,8 @@ const { frase, indice } = fraseDaPagina(chave);
     position: relative;
     display: flex;
     flex-direction: column;
-    aspect-ratio: 1 / 1;
+    /* 4:5 cabe a frase mais longa das 125: a altura não muda quando a frase troca (D37). */
+    aspect-ratio: 4 / 5;
     padding: 20px 18px 14px 20px;
     background:
       linear-gradient(172deg, transparent 62%, rgb(80 60 0 / 0.07)),
@@ -229,21 +238,22 @@ const { frase, indice } = fraseDaPagina(chave);
     text-wrap: pretty;
   }
 
+  /* Os corpos valem no papel de 206px e acompanham a largura dele (184 a 212px), em cqi (D37). */
   [data-tamanho="curta"] p {
-    font-size: 19.5px;
+    font-size: 9.47cqi;
   }
 
   [data-tamanho="media"] p {
-    font-size: 16.5px;
+    font-size: 8.01cqi;
   }
 
   [data-tamanho="longa"] p {
-    font-size: 14.6px;
+    font-size: 7.09cqi;
     line-height: 1.26;
   }
 
   [data-tamanho="muito-longa"] p {
-    font-size: 13.6px;
+    font-size: 6.6cqi;
     line-height: 1.24;
   }
 

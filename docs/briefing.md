@@ -198,7 +198,9 @@ Referência: aba "Home" do protótipo.
   de cada artigo).
 - **Post-it das frases** (D33): frase em itálico, autor com link para a fonte, **sorteada a cada
   visita** (sem repetir a última vista), e "outra frase" riscado à mão, que arranca a folha e mostra
-  outra ao acaso. As frases foram revisadas uma a uma contra a fonte (125, todas com a origem).
+  outra ao acaso. As frases foram revisadas uma a uma contra a fonte (125, todas com a origem). Nos
+  artigos, o sorteio fica entre as frases do assunto do post, pelos `temas` de cada frase (D37); o
+  papel tem a altura fixa (4:5) e a letra acompanha a largura dele, para a troca não mexer na página.
 - **Estante** (D30, pela regra de `docs/capas/CAPAS.md`):
   - Um livro por categoria, na ordem dos volumes, com as alturas e larguras de `livros.json`. A
     lombada tem o ícone do livro (girado) no bloco de cor de cima e, no papel de baixo, o título na

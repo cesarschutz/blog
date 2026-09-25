@@ -95,7 +95,7 @@ const rotulos = naSerie
         </a>
       )
     }
-    <PostIt chave={post.slug} giro={2.2} class="postit-fim" />
+    <PostIt chave={post.slug} temas={[...post.tags, post.livro]} giro={2.2} class="postit-fim" />
   </div>
 </footer>
 
