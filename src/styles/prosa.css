@@ -189,3 +189,13 @@
   outline: 2px solid var(--acento);
   outline-offset: 2px;
 }
+
+/*
+ * Bloco de código fora da tela não é desenhado (D37): o java-25 tem 36 blocos e quase 8 mil elementos.
+ * A altura enquanto isso vem do número de linhas (--linhas, do plugin em src/lib/codigo.ts: 14px com
+ * entrelinha 1,65 e ~72px de barra e respiro); depois de desenhado, o navegador lembra a real (auto).
+ */
+.prose .expressive-code .frame {
+  content-visibility: auto;
+  contain-intrinsic-size: auto calc(var(--linhas, 10) * 23.1px + 72px);
+}

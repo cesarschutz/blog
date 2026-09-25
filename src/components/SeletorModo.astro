@@ -3,7 +3,9 @@
  * Seletor Lista / Cards (D27, D33), com os ícones do blog atual. O modo fica no navegador
  * (`cs-post-view`, a mesma chave do blog atual) e é aplicado pelo script do <head> (Base.astro) em
  * `data-post-view` no <html>, sem piscar; as listas mostram uma forma ou a outra pelo CSS
- * (.lista-artigos-modo e .cartoes-modo, em base.css). Sem JS, fica a lista e o seletor some.
+ * (.lista-artigos-modo e .cartoes-modo, em base.css). Os cards vêm num <template> (D37): viram DOM
+ * na página (script logo depois dele) se o modo já for Cards, ou aqui, na primeira troca para Cards.
+ * Sem JS, fica a lista e o seletor some.
  */
 import { ICONES } from "../lib/icones";
 ---
@@ -29,6 +31,11 @@ import { ICONES } from "../lib/icones";
   for (const seletor of seletores) {
     seletor.querySelectorAll<HTMLButtonElement>("button").forEach((b) =>
       b.addEventListener("click", () => {
+        if (b.dataset.valor === "cards") {
+          const moldes = document.querySelectorAll<HTMLTemplateElement>("template[data-cartoes]");
+          moldes.forEach((t) => t.replaceWith(t.content));
+          if (moldes.length) dispatchEvent(new Event("cartoes:prontos"));
+        }
         raiz.dataset.postView = b.dataset.valor!;
         try {
           localStorage.setItem(CHAVE, b.dataset.valor!);

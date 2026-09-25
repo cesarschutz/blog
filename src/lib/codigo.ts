@@ -178,3 +178,25 @@ export function pluginLinguagem(): ExpressiveCodePlugin {
     },
   };
 }
+
+/**
+ * Número de linhas do bloco em `--linhas` na moldura (D37): o CSS (prosa.css) estima com ele a altura
+ * do bloco que ainda não foi desenhado (`content-visibility: auto`), para a página não pular. No
+ * java-25 (36 blocos), o layout completo com CPU 4× cai de 57 para 20 ms.
+ */
+export function pluginAlturaEstimada(): ExpressiveCodePlugin {
+  const classes = (no: NoHast) => (no.properties?.className as string[] | undefined) ?? [];
+  const achar = (no: NoHast): NoHast | undefined =>
+    no.tagName === "figure" && classes(no).includes("frame") ? no : no.children?.map(achar).find(Boolean);
+  return {
+    name: "altura-estimada",
+    hooks: {
+      postprocessRenderedBlock: ({ codeBlock, renderData }) => {
+        const moldura = achar(renderData.blockAst as NoHast);
+        if (!moldura) return;
+        const estilo = moldura.properties!.style ? `${moldura.properties!.style};` : "";
+        moldura.properties!.style = `${estilo}--linhas:${codeBlock.getLines().length}`;
+      },
+    },
+  };
+}

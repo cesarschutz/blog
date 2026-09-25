@@ -28,8 +28,10 @@ export function temaNaTela(): "light" | "dark" {
 }
 
 // A barra do navegador acompanha a escolha; em "sistema", volta às cores por media query.
+// Só lê o estilo com uma escolha feita: ao abrir no tema do sistema (o normal, D33), a leitura
+// forçava um recálculo de estilo da página inteira (53 ms com CPU 4× no java-25, D37).
 function pintarBarra(valor: Escolha) {
-  const fundo = getComputedStyle(raiz).getPropertyValue("--paper").trim();
+  const fundo = valor ? getComputedStyle(raiz).getPropertyValue("--paper").trim() : "";
   metas.forEach((meta, i) => (meta.content = valor ? fundo : originais[i]));
 }
 

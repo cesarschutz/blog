@@ -14,7 +14,7 @@ import { rehypeTabela } from "./src/plugins/rehype-tabela.mjs";
 import { rehypeAvisos } from "./src/plugins/rehype-avisos.mjs";
 import { rehypeNotasLaterais } from "./src/plugins/rehype-notas-laterais.mjs";
 import { rehypeApresentacao } from "./src/plugins/rehype-apresentacao.mjs";
-import { marcacoes, pluginCopiarSemRemovidas, pluginLinguagem, temasDeCodigo } from "./src/lib/codigo.ts";
+import { marcacoes, pluginAlturaEstimada, pluginCopiarSemRemovidas, pluginLinguagem, temasDeCodigo } from "./src/lib/codigo.ts";
 import { ABSORBED } from "./src/data/java.ts";
 import { NOMES_ANTIGOS } from "./src/data/taxonomia.ts";
 
@@ -81,7 +81,7 @@ export default defineConfig({
       themeCssRoot: ":root",
       themeCssSelector: (tema) => (tema.type === "dark" ? "[data-theme='dark']" : "[data-theme='light']"),
       defaultLocale: "pt-BR",
-      plugins: [pluginLineNumbers(), pluginCollapsibleSections(), pluginCopiarSemRemovidas(), pluginLinguagem()],
+      plugins: [pluginLineNumbers(), pluginCollapsibleSections(), pluginCopiarSemRemovidas(), pluginLinguagem(), pluginAlturaEstimada()],
       defaultProps: { showLineNumbers: false },
       minSyntaxHighlightingColorContrast: 5.5,
       styleOverrides: {

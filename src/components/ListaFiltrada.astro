@@ -75,11 +75,17 @@ const nivelDoItem = porAno ? "h3" : "h2";
             <ItemLista post={p} nivel={nivelDoItem} />
           ))}
         </ol>
-        <ul class="cartoes-modo">
-          {g.posts.map((p) => (
-            <Cartao post={p} nivel={nivelDoItem} />
-          ))}
-        </ul>
+        <template data-cartoes>
+          <ul class="cartoes-modo">
+            {g.posts.map((p) => (
+              <Cartao post={p} nivel={nivelDoItem} />
+            ))}
+          </ul>
+        </template>
+        <script is:inline>
+          // Cards num <template> (D37): só viram DOM se o leitor escolheu Cards (o <head> já marcou).
+          document.documentElement.dataset.postView === "cards" && document.currentScript.previousElementSibling.replaceWith(document.currentScript.previousElementSibling.content);
+        </script>
       </section>
     ))
   }
@@ -92,7 +98,8 @@ const nivelDoItem = porAno ? "h3" : "h2";
   const estante = document.querySelector<HTMLElement>("[data-estante-filtro]");
   if (lista && estante) {
     const livros = [...estante.querySelectorAll<HTMLAnchorElement>("[data-filtro]")];
-    const itens = [...lista.querySelectorAll<HTMLElement>("[data-livro]")];
+    // Os cards podem entrar depois (template, D37): a lista de itens é lida a cada filtro.
+    const itens = () => [...lista.querySelectorAll<HTMLElement>("[data-livro]")];
     const grupos = [...lista.querySelectorAll<HTMLElement>("[data-grupo]")];
     const status = lista.querySelector<HTMLElement>("[data-status]")!;
     const limpar = lista.querySelector<HTMLButtonElement>("[data-limpar]")!;
@@ -103,7 +110,7 @@ const nivelDoItem = porAno ? "h3" : "h2";
 
     function aplicar(id: string) {
       atual = id;
-      for (const item of itens) item.hidden = Boolean(id) && item.dataset.livro !== id;
+      for (const item of itens()) item.hidden = Boolean(id) && item.dataset.livro !== id;
       for (const grupo of grupos) {
         const n = grupo.querySelectorAll(".lista-modo > [data-livro]:not([hidden])").length;
         grupo.hidden = n === 0;
@@ -116,7 +123,7 @@ const nivelDoItem = porAno ? "h3" : "h2";
       }
       estante!.classList.toggle("filtrando", Boolean(id));
       const escolhido = livros.find((l) => l.dataset.filtro === id);
-      const n = itens.filter((i) => !i.hidden && i.matches(".lista-modo > *")).length;
+      const n = itens().filter((i) => !i.hidden && i.matches(".lista-modo > *")).length;
       status.textContent = escolhido ? `${plural(n)} em ${nome(escolhido)}` : plural(total);
       limpar.hidden = !escolhido;
       const endereco = new URL(location.href);
@@ -136,6 +143,7 @@ const nivelDoItem = porAno ? "h3" : "h2";
       });
     });
     limpar.addEventListener("click", () => aplicar(""));
+    addEventListener("cartoes:prontos", () => aplicar(atual));
 
     const pedido = new URL(location.href).searchParams.get("livro");
     const inicial = pedido && livros.find((l) => l.dataset.filtro!.replace(/^(livro|serie)-/, "") === pedido);

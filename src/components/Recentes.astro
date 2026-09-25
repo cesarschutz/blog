@@ -41,9 +41,15 @@ const nivelDoItem = nivel === "h1" ? "h2" : "h3";
   <ol class="lista-modo lista-artigos folha">
     {posts.map((p) => <ItemLista post={p} nivel={nivelDoItem} />)}
   </ol>
-  <ul class="cartoes-modo">
-    {posts.map((p) => <Cartao post={p} nivel={nivelDoItem} />)}
-  </ul>
+  <template data-cartoes>
+    <ul class="cartoes-modo">
+      {posts.map((p) => <Cartao post={p} nivel={nivelDoItem} />)}
+    </ul>
+  </template>
+  <script is:inline>
+    // Cards num <template> (D37): só viram DOM se o leitor escolheu Cards (o <head> já marcou).
+    document.documentElement.dataset.postView === "cards" && document.currentScript.previousElementSibling.replaceWith(document.currentScript.previousElementSibling.content);
+  </script>
   {pagina && <Paginacao {...pagina} />}
 </section>
 
