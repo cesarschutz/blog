@@ -968,7 +968,7 @@ nada muda.
      fica escurecido.
   5. **Capas com profundidade** (grade de categorias e séries, "Do livro" e topo da página do livro):
      a capa acompanha o mouse (até 11° em Y e 7° em X) com uma luz radial suave; no hover, entreabre
-     -28° com três camadas de página (-6°, -12°, -18°); no toque, entreabre no primeiro e abre o link
+     -28° com três camadas de página (-6°, -12°, -18°; depois, -40° em proporção, ver os ajustes); no toque, entreabre no primeiro e abre o link
      no segundo. No livro ampliado, arrastar gira com embalo (Draggable + InertiaPlugin) e, ao soltar,
      o livro volta a 18° com `elastic`.
 - **Ajustes aprovados pelo Cesar depois dos lotes (25/09/2026):** a página do livro aberto ganha

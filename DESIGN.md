@@ -609,7 +609,8 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   - **Capas com profundidade** (grade de categorias e séries, "Do livro", topo da página do livro e
     destaque de Séries, `capa-viva.ts`): com o mouse em cima, o livro vira para 8° e acompanha o
     cursor (até 11° em Y e 7° em X), com uma luz radial suave que anda por `transform`; a capa
-    entreabre -28°, com três camadas de página a -6°, -12° e -18°. No toque, o primeiro toque
+    entreabre -40°, com três camadas de página a -8,6°, -17,1° e -25,7° (a proporção dos -28°, -6°,
+    -12° e -18° do protótipo, aberta mais para as páginas aparecerem). No toque, o primeiro toque
     entreabre e o segundo abre o link. No livro ampliado, arrastar gira com embalo (Draggable +
     InertiaPlugin) e, ao soltar, o livro volta a 18° com `elastic.out(1, 0.6)`.
 - **Lousa de passos** (D39): com a rolagem só na tela de 1024px ou mais e sem movimento reduzido

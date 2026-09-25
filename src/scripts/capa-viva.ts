@@ -1,9 +1,8 @@
 /**
  * Capas com profundidade (D40, ideia 5): na grade de categorias e séries, no "Do livro" e no topo da
  * página do livro, o livro 3D acompanha o mouse (até 11° em Y e 7° em X, em volta de 8° com o mouse em
- * cima; em repouso, 18°), com uma luz suave que segue o cursor, e a capa entreabre (-28°) mostrando
- * três camadas de página
- * (-6°, -12°, -18°). O foco do teclado entreabre também. No toque, o primeiro toque entreabre e o
+ * cima; em repouso, 18°), com uma luz suave que segue o cursor, e a capa entreabre (-40°) mostrando
+ * três camadas de página (-8,6°, -17,1°, -25,7°). O foco do teclado entreabre também. No toque, o primeiro toque entreabre e o
  * segundo segue o link (ou abre o livro ampliado, no topo da página do livro).
  *
  * Só transformações e opacidade: a luz é um brilho maior que a capa, que anda por `transform`.
@@ -15,6 +14,11 @@ import { GIRO } from "../lib/livro-3d";
 // Com o mouse em cima, o livro vira 10° para o leitor (a 8° da frente, como no protótipo): assim as
 // camadas de página aparecem na borda quando a capa entreabre.
 const COM_MOUSE = GIRO - 10;
+
+// A capa entreabre a -40° (D40, aprovado depois dos -28° do protótipo), e as três camadas de página
+// acompanham na mesma proporção dos -6°, -12° e -18° de lá.
+const ENTREABRE = -40;
+const CAMADAS = [-6, -12, -18].map((g) => (g * ENTREABRE) / -28);
 
 function ligar(gsap: GSAP, area: HTMLElement) {
   const livro = area.querySelector<HTMLElement>(".livro-3d");
@@ -38,9 +42,9 @@ function ligar(gsap: GSAP, area: HTMLElement) {
   const entreabrir = (sim: boolean) => {
     if (sim === entreaberta) return;
     entreaberta = sim;
-    gsap.to(capa, { rotationY: sim ? -28 : 0, duration: sim ? 0.7 : 0.6, ease: sim ? "power3.out" : "power3.inOut", overwrite: "auto" });
+    gsap.to(capa, { rotationY: sim ? ENTREABRE : 0, duration: sim ? 0.7 : 0.6, ease: sim ? "power3.out" : "power3.inOut", overwrite: "auto" });
     folhas.forEach((f, i) =>
-      gsap.to(f, { rotationY: sim ? -(6 + i * 6) : 0, duration: 0.7 + i * 0.08, ease: "power3.out", overwrite: "auto" }),
+      gsap.to(f, { rotationY: sim ? CAMADAS[i] : 0, duration: 0.7 + i * 0.08, ease: "power3.out", overwrite: "auto" }),
     );
     gsap.to(luz, { opacity: sim ? 0.9 : 0, duration: 0.4, overwrite: "auto" });
   };
