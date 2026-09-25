@@ -799,3 +799,19 @@ nada muda.
   sem rede).
 - **Conferência do blog no navegador (pedido do Cesar em 25/09/2026):** visual, console e performance
   sempre pelo MCP `chrome-devtools`, nunca pelo `claude-in-chrome` (regra no `CLAUDE.md`).
+- **Registro de produto do Impeccable (`/impeccable init`, 25/09/2026):** `PRODUCT.md` na raiz, com as
+  respostas do Cesar. Leitor principal: devs que chegam pesquisando um tema, e o próprio Cesar (o blog
+  como caderno do estudo). Sucesso: o leitor entender o assunto e manter a constância de estudo (sem
+  meta de audiência). Diferenciais: rigor com fontes, código e SQL testados, explicação visual, série
+  Java por LTS, organização em livros e transparência sobre IA. O `PRODUCT.md` não decide nada novo:
+  se divergir do briefing ou do `DESIGN.md`, valem eles. Os títulos das seções ficam em inglês porque
+  o Impeccable os lê pelo nome. Em `.impeccable/config.json`, `"buildPath": "code"`: trabalho visual
+  novo vai direto ao código seguindo o `DESIGN.md`, sem gerar imagem antes.
+- **Código e SQL testados antes de publicar (Cesar, 25/09/2026):** mais forte que o "código que
+  compila" de antes, e alinhado ao aviso de IA de cada post ("com o código testado"). Mudado: skill
+  `post` (checklist, "Nos dois modos") e `docs/briefing.md` §8.2.
+- **Pasta `.impeccable/` no git (Cesar, 25/09/2026):** o `config.json` é versionado, para o
+  `buildPath` valer em outro computador. No `.gitignore`, a pasta toda fica fora, menos os registros
+  do projeto (`config.json`, `design.json`, `surfaces/` e `live/config.json`). Cache e pendências do
+  hook, `config.local.json` (de cada máquina), `build/`, `mocks/`, `review/`, as sessões do modo live
+  e a pasta `.impeccable-live/` continuam fora.

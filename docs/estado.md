@@ -25,6 +25,9 @@ domínio (`docs/virada.md`) só acontece com o OK dele; nada foi commitado nem p
 e web quality lidas e instaladas, MCPs `astro-docs` e `chrome-devtools`, `npm run setup` com hook no
 início da sessão, revisão em lote em `.claude/revisao-posts.md` (26 posts pendentes). Junto: o livro
 inclinado não tomba mais e as lombadas da Carreira e da série usam a variante de texto pequeno.
+Depois, também em 25/09/2026: plugin `frontend-design` desinstalado, conferência do blog só pelo
+MCP `chrome-devtools`, `PRODUCT.md` do Impeccable (`/impeccable init`, fluxo "direto no código") e a
+regra de código e SQL testados antes de publicar (skill `post`).
 
 ## Como ver
 

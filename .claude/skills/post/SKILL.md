@@ -66,7 +66,9 @@ Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
 - **Nos dois modos:** nenhuma afirmação técnica sem fonte confiável conferida (documentação oficial,
   especificação, RFC, JEP, release notes; blog de terceiro só como apoio). Nada inventado: versões,
   números, benchmarks, citações e APIs só entram se verificados. Abra cada link e confirme que ele diz
-  o que o texto afirma. `## Fontes` é sempre a última seção. Código que compila e faz sentido.
+  o que o texto afirma. `## Fontes` é sempre a última seção. **Código e SQL testados antes de
+  publicar** (rodados, não só "que compila"), porque o aviso de IA do post promete "com o código
+  testado". O que não der para rodar aqui vai ao Cesar como pendência, dizendo o quê e por quê.
 - **URL antiga:** se o post já existiu em outra URL do blog, mantenha a URL ou crie o
   redirecionamento em `redirecionamentos` do `astro.config.mjs`. Nunca mude um título de seção de
   post já publicado, porque as âncoras dependem dele (D7). Depois, `npm run links`.

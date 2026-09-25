@@ -437,7 +437,8 @@ com a rolagem. Use no máximo de vez em quando; o Cesar pode removê-la.
 - **Veracidade**: nenhuma afirmação técnica sem fonte confiável e conferida (documentação
   oficial, especificações, JEPs, RFCs, release notes). Nada inventado: versões, números,
   benchmarks, citações e APIs só se verificados. Se não der para confirmar, diga isso no
-  texto ou tire. Código que compila e faz sentido; exemplo grande linka o código completo.
+  texto ou tire. Código e SQL testados (rodados) antes de publicar, e que façam sentido
+  (25/09/2026, D35); exemplo grande linka o código completo.
   Links conferidos. **`## Fontes`** no fim, sempre.
 - **Estrutura**: introdução com o problema concreto em 2 ou 3 frases; seções `##` claras;
   pelo menos **uma lousa** quando houver fluxo, sequência, antes/depois ou linha do tempo

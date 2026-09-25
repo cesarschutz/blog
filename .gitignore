@@ -34,8 +34,16 @@ bench/
 # posts trazidos pelo Cesar para adaptar (skill post, D35)
 entrada/
 
-# Impeccable: o motor fica em ~/.impeccable (D35); cache e ajustes locais do hook
+# Impeccable: o motor fica em ~/.impeccable (D35). Da pasta .impeccable/ só vão para o git os
+# registros do projeto: config.json (buildPath), design.json (anexo do DESIGN.md), surfaces/ (briefs)
+# e live/config.json. Fica fora o resto: cache e pendências do hook, config.local.json (de cada
+# máquina), build/, mocks/, review/ e as sessões e o cache do modo live.
 .claude/skills/impeccable/scripts/bin/
-.impeccable/hook.cache.json
-.impeccable/hook.pending.json
-.impeccable/config.local.json
+.impeccable/*
+!.impeccable/config.json
+!.impeccable/design.json
+!.impeccable/surfaces/
+!.impeccable/live/
+.impeccable/live/*
+!.impeccable/live/config.json
+.impeccable-live/

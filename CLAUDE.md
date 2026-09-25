@@ -153,6 +153,9 @@ Medição da busca (D2): `scripts/bench-busca/` (construir, conferir, medir), co
 
 ```
 DESIGN.md                sistema visual (fonte de verdade do visual, formato DESIGN.md do Google)
+PRODUCT.md               registro de produto do Impeccable (leitor, propósito, diferenciais); o
+                         briefing vence em caso de divergência
+.impeccable/config.json  ajustes do Impeccable ("buildPath": "code")
 entrada/                 posts trazidos para adaptar (fora do git)
 docs/briefing.md         decisões de produto e design (fonte da verdade)
 docs/estado.md           painel: fase, pronto, próximos passos, perguntas
