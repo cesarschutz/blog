@@ -147,8 +147,9 @@ interface NoHast {
 }
 
 /**
- * Nome da linguagem à direita da barra do bloco (briefing §5.3 e protótipo). Blocos sem título
- * ganham a barra só com o nome; terminal e texto puro ficam como estão.
+ * Nome da linguagem à direita da barra do bloco (briefing §5.3 e protótipo), como uma etiqueta
+ * separada do título, que fica à esquerda (D39). Blocos sem título ganham a barra só com a etiqueta;
+ * terminal e texto puro ficam como estão.
  */
 export function pluginLinguagem(): ExpressiveCodePlugin {
   const classes = (no: NoHast) => (no.properties?.className as string[] | undefined) ?? [];
@@ -157,8 +158,9 @@ export function pluginLinguagem(): ExpressiveCodePlugin {
   return {
     name: "linguagem",
     baseStyles: `
-      .header .linguagem { margin-inline-start: auto; align-self: center; padding-inline: 0.9rem; font-family: var(--ec-codeFontFml);
-        font-size: 0.8rem; color: var(--ec-frm-edTabBarFg, currentColor); opacity: 0.85; }
+      .header .linguagem { flex: none; margin-inline: auto 0.75rem; align-self: center; padding: 0.05rem 0.55rem;
+        border: 1px solid color-mix(in oklab, currentColor 28%, transparent); border-radius: 999px;
+        font-family: var(--ec-uiFontFml); font-size: 0.75rem; line-height: 1.5; color: var(--ec-frm-edTabBarFg, currentColor); }
       .frame.sem-titulo .header::before { content: none; }
     `,
     hooks: {
@@ -170,8 +172,10 @@ export function pluginLinguagem(): ExpressiveCodePlugin {
         const cabecalho = achar(moldura, (no) => no.tagName === "figcaption");
         if (!cabecalho) return;
         if (!classes(moldura).includes("has-title")) moldura.properties!.className = [...classes(moldura), "has-title", "sem-titulo"];
+        // O espaço antes da etiqueta separa o título da linguagem também no texto (leitor de tela, sem CSS).
         cabecalho.children = [
           ...(cabecalho.children ?? []),
+          { type: "text", value: " " },
           { type: "element", tagName: "span", properties: { className: ["linguagem"] }, children: [{ type: "text", value: LINGUAGENS[id] ?? id }] },
         ];
       },

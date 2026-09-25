@@ -64,7 +64,11 @@
   margin-bottom: 0;
 }
 
-/* Imagens: os diagramas antigos têm fundo branco embutido e ficam num quadro claro (briefing §8.1). */
+/*
+ * Imagens: os diagramas antigos têm fundo branco embutido e ficam num quadro (briefing §8.1). No tema
+ * escuro, o quadro e o diagrama viram a versão escura (D39): a luz se inverte e o matiz volta ao
+ * lugar (hue-rotate), para o diagrama não ser um bloco branco na página escura.
+ */
 .prose img {
   display: block;
   max-width: 100%;
@@ -78,6 +82,18 @@
   background: var(--quadro);
   border: 1px solid var(--rule);
   border-radius: var(--raio-painel);
+}
+
+:root[data-theme="dark"] .prose img[src$=".svg"] {
+  border-color: transparent;
+  filter: invert(0.9) hue-rotate(180deg);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .prose img[src$=".svg"] {
+    border-color: transparent;
+    filter: invert(0.9) hue-rotate(180deg);
+  }
 }
 
 /* Tabelas: rolam na horizontal no celular (rehype-tabela). */
@@ -108,6 +124,15 @@
   background: var(--well);
   font-weight: 650;
   white-space: nowrap;
+}
+
+/*
+ * Código nas células (D39): quebra só nos pontos (<wbr> do rehype-tabela), nunca no meio do nome; o
+ * que não couber faz a tabela rolar para o lado.
+ */
+.prose td code {
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .prose tr:last-child td {

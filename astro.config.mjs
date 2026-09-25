@@ -92,6 +92,9 @@ export default defineConfig({
         codeLineHeight: "1.65",
         uiFontFamily: "var(--font-ui)",
         uiFontSize: "14px",
+        // Barra de rolagem fina e na tinta do tema (D39), como as outras áreas que rolam por dentro.
+        scrollbarThumbColor: "color-mix(in oklab, var(--ink) 24%, transparent)",
+        scrollbarThumbHoverColor: "color-mix(in oklab, var(--ink) 40%, transparent)",
         frames: {
           shadowColor: "transparent",
           editorActiveTabIndicatorTopColor: "transparent",

@@ -28,10 +28,13 @@ export function mdEmLinha(texto: string): string {
 
 /**
  * Título em HTML com um ponto de quebra (`<wbr>`) depois do ponto de um identificador
- * ("AopUtils.getTargetClass()"): na coluna estreita, quebra ali e não no meio da palavra.
+ * ("AopUtils.getTargetClass()"): na coluna estreita, quebra ali e não no meio da palavra. O
+ * travessão fica preso à palavra seguinte (D39), para nunca sobrar sozinho numa linha.
  */
 export function tituloComQuebras(texto: string): string {
-  return escapar(texto).replace(/(?<=\.)(?=[A-Za-z])/g, "<wbr>");
+  return escapar(texto)
+    .replace(/(?<=\.)(?=[A-Za-z])/g, "<wbr>")
+    .replace(/ — /g, " —&nbsp;");
 }
 
 /** Descrição sem marcação, para meta tags, RSS e JSON-LD. */

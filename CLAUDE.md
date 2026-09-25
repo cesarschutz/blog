@@ -243,7 +243,9 @@ src/lousas/<slug>/       desenhos das lousas de cada post .mdx
   Rode tudo do projeto com o Node 24: `fnm exec --using=24 npm run dev` (vale para npm, npx e node).
 - Mudou a configuração ou o tema do Expressive Code? `npm run build -- --force`: o cache de conteúdo
   guarda o HTML dos posts apontando para o CSS antigo do EC, e os blocos de código perdem o estilo (D26).
-  O dev tem o mesmo problema: reinicie-o (`astro dev stop` e suba de novo).
+  O dev tem o mesmo problema, e reiniciar não basta: pare o dev, apague `.astro/data-store.json` e
+  suba de novo (o sintoma é o código sem moldura, com título e linguagem grudados, "Sem AOPJava",
+  porque o HTML guardado aponta para um `ec.*.css` que não existe mais).
 - Suba o dev com `npm run dev -- --host 127.0.0.1`. Sem isso ele escuta só em `localhost` (IPv6), e o
   endereço <http://127.0.0.1:4322> que o Cesar usa não abre.
 - O cabeçalho é fixo (D31): peça nova com `position: sticky` ou âncora que role até o topo precisa

@@ -12,6 +12,7 @@
  * "recolhivel": no início do texto, nas telas menores.
  */
 import type { SecaoDoSumario } from "../lib/posts";
+import { tituloComQuebras } from "../lib/formato";
 
 interface Props {
   secoes: SecaoDoSumario[];
@@ -37,15 +38,13 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
                 <li class="secao">
                   <a href={`#${s.slug}`} data-secao={s.slug}>
                     <span class="marco" aria-hidden="true" />
-                    <span class="nome">{semNumero(s.text)}</span>
+                    <span class="nome" set:html={tituloComQuebras(semNumero(s.text))} />
                   </a>
                   {s.sub.length > 0 && (
                     <ol class="subsecoes">
                       {s.sub.map((sub) => (
                         <li>
-                          <a href={`#${sub.slug}`} data-subsecao={sub.slug}>
-                            {sub.text}
-                          </a>
+                          <a href={`#${sub.slug}`} data-subsecao={sub.slug} set:html={tituloComQuebras(sub.text)} />
                         </li>
                       ))}
                     </ol>
@@ -71,7 +70,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
         <ol>
           {secoes.map((s) => (
             <li>
-              <a href={`#${s.slug}`}>{semNumero(s.text)}</a>
+              <a href={`#${s.slug}`} set:html={tituloComQuebras(semNumero(s.text))} />
             </li>
           ))}
         </ol>
@@ -131,8 +130,10 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     background: color-mix(in oklab, var(--acento) 55%, var(--rule));
   }
 
+  /* Nomes longos quebram nos pontos (tituloComQuebras) e, em último caso, onde der: nunca rolam. */
   .secao a {
     display: block;
+    overflow-wrap: break-word;
     padding: 5px 0;
     color: var(--ink-2);
     font-size: 14px;
@@ -287,8 +288,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
 
     .folha-sumario nav {
       min-height: 0;
-      overflow-y: auto;
-      scrollbar-width: thin;
+      overflow: hidden auto;
       margin-right: -8px;
       padding-right: 8px;
     }

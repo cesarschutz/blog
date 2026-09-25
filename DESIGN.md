@@ -453,7 +453,12 @@ pequeno da série. Hoje isso vale para as lombadas, em pé e deitadas (`corTexto
 - **Títulos que acompanham a tela** usam `clamp`, e os valores do meio não entram na rampa: o h1 das
   páginas de lista e da 404 vai de 34 a 52px; o do artigo, até os 50px de
   `headline-artigo`; o título de cada artigo na lista, de 21 a 25px (D27).
-- **Código:** JetBrains Mono, pelo Expressive Code.
+- **Código:** JetBrains Mono, pelo Expressive Code. Na barra do bloco, o título à esquerda e a
+  linguagem numa etiqueta (pílula fina, IBM Plex Sans) à direita (D39).
+- **Quebras (D39):** títulos com `text-wrap: balance`, o travessão preso à palavra seguinte e, no
+  celular, o h1 do artigo encolhe com a tela (até 24px) para o pedaço mais longo caber sem quebrar
+  no meio. Código em linha (texto, tabelas, sumário) quebra depois dos pontos (`<wbr>`), nunca no
+  meio do nome; nas tabelas, o que não couber faz a tabela rolar.
 - **Livros:** Bitter (600, 700 e 800) e Newsreader itálico, só nas capas, nas lombadas e nos
   títulos da lateral. A caixa alta com espaçamento largo ("VOLUME 01", "CESAR SCHUTZ",
   "BLOG.CESARSCHUTZ.COM.BR") existe só aqui, como tipografia de livro.
@@ -466,7 +471,10 @@ Conteúdo de até 1320px, com margem lateral de 16 a 32px (`clamp`). O cabeçalh
 âncora ou peça `sticky` desconta `--altura-topo` (60px; 104px no celular). No artigo, a coluna de
 texto tem até 760px e, a partir de 1300px, o sumário fica à esquerda numa folha própria e fixa,
 com a barra "NN% lido" embaixo. A home é paginada de 12 em 12. A estante tem 6px entre os livros.
-Nada pode rolar para o lado em 390px nem em 320px.
+Nada pode rolar para o lado em 390px nem em 320px. O sumário nunca rola para o lado. Toda área que
+rola por dentro (sumário, código, tabelas, gaveta, busca, painel) usa a **barra fina** do site, na
+tinta do tema com 24% (40% ao passar o mouse), por `scrollbar-width`, `scrollbar-color` e
+`::-webkit-scrollbar` (`base.css`, D39).
 
 ## Elevation & Depth
 
@@ -498,6 +506,9 @@ têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm can
 - **Chip de categoria:** quadradinho na cor do livro e nome tingido (34% de tinta no claro, 50% de
   branco no escuro). Leva à página da categoria.
 - **Botão "Ler artigo":** pílula azul-tinta com seta, texto em `on-primary`.
+- **Diagramas antigos** (SVG com fundo branco, `public/posts/`): num quadro claro no tema claro e,
+  no escuro, na versão escura feita por filtro (luz invertida e matiz de volta, D39), nunca um bloco
+  branco na página escura.
 - **Aviso de conteúdo feito com ajuda de IA:** no fim do artigo, antes do cartão "Do livro", num bloco
   levemente tingido (a cor de Atenção) com o ícone de Nota, sem "Saiba mais" (D33, D37).
 

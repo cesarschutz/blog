@@ -189,6 +189,16 @@ const marcaDagua = post.serie
     text-wrap: balance;
   }
 
+  /*
+   * No celular, o título encolhe com a tela: com o travessão preso à palavra seguinte (D39), o pedaço
+   * mais longo ("— desembrulhando") precisa caber numa linha sem quebrar no meio da palavra.
+   */
+  @media (max-width: 640px) {
+    h1 {
+      font-size: clamp(24px, 7.6vw, 32px);
+    }
+  }
+
   .lede {
     max-width: 66ch;
     margin: 16px 0 0;
