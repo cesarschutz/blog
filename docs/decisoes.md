@@ -738,7 +738,14 @@ nada muda.
   `BASE_PATH` só existe para uma eventual pré-visualização); o Pages foi ligado com build por
   workflow; o projeto subiu para a `main` (o `deploy.yml`, que já existia, publica a cada push); o
   domínio foi configurado no Pages. O DNS já estava pronto no registro.br (`blog` CNAME
-  `cesarschutz.github.io`). O HTTPS obrigatório é ligado assim que o GitHub emite o certificado.
+  `cesarschutz.github.io`). O certificado saiu logo depois do primeiro deploy e o HTTPS obrigatório
+  foi ligado.
+- **Como o push sai desta máquina:** pelo remoto SSH (`git@github.com:cesarschutz/blog.git`). Pelo
+  HTTPS, com o token do `gh`, o GitHub recusa: o token não tem o escopo `workflow`, exigido para
+  enviar `.github/workflows/deploy.yml`.
+- **Primeiro deploy (25/09/2026):** build e publicação passaram no Actions, com as imagens de
+  compartilhamento geradas pelo Chrome do runner e o índice do Pagefind; home, posts, `/og/`,
+  `/pagefind/` e `/frases.json` respondendo em `https://blog.cesarschutz.com.br`.
 - **Consequência:** todo push na `main` publica o site. A assinatura das capas, "BLOG.CESARSCHUTZ.COM.BR"
   (D30), que era pergunta aberta, agora bate com o endereço.
 - **Em aberto:** o blog antigo continua em `cesarschutz.com.br` com os mesmos artigos, o que é

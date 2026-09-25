@@ -192,6 +192,9 @@ src/lousas/<slug>/       desenhos das lousas de cada post .mdx
   "mim e" + `<strong>` vira "mim ea". Mantenha o elemento na mesma linha das palavras vizinhas.
 - Antes de commitar (quando pedido): `git status --untracked-files=all`, e nada com " 2" no nome.
 - Deploy preso na fila: cancelar e reexecutar o workflow (o `gh` está instalado nesta máquina).
+- Push sempre pelo remoto SSH (`origin` = `git@github.com:cesarschutz/blog.git`): pelo HTTPS com o
+  token do `gh`, o GitHub recusa qualquer push que mexa em `.github/workflows/` (falta o escopo
+  `workflow`). E lembre: push na `main` publica o site (D34).
 - O shell do Claude é bash, e o fnm só está configurado no zsh: aqui, `node` é o 25 do Homebrew.
   Rode tudo do projeto com o Node 24: `fnm exec --using=24 npm run dev` (vale para npm, npx e node).
 - Mudou a configuração ou o tema do Expressive Code? `npm run build -- --force`: o cache de conteúdo
