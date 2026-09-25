@@ -934,3 +934,43 @@ nada muda.
 - **Motivo:** o livro que muda de cor com o tema deixava de ser o mesmo objeto; a lombada desenhada
   de dois jeitos também; o contorno azul e o lugar vazio chamavam mais atenção que o livro; o livro
   aberto em três quartos escondia a capa; o som e o painel de aparência eram peso sem uso.
+
+## D40 · Livros em movimento, com GSAP
+- **Data:** 25/09/2026 · **Status:** aprovada pelo Cesar; em execução, um lote por ideia, sem push.
+- **Pedido do Cesar:** animar os livros com GSAP, tendo como guia de movimento, tempos e ângulos o
+  protótipo `docs/prototipos/livros-em-movimento.html` (peças reais do blog; não é código para
+  copiar), a partir do acabamento da D39 (cor fixa, lombada única, 18°, livro escurecido). Esta
+  decisão é a aprovação pedida pela D35 para trocar animações existentes por GSAP; cada lote leva
+  um trace de performance no celular com CPU 4×.
+- **Regras gerais:** GSAP só nos componentes que usam, baixado sob demanda um pouco antes do uso (ao
+  passar o mouse, tocar, receber o foco ou com a página ociosa); só transformações e opacidade, nada
+  de `filter` no elemento 3D; com `prefers-reduced-motion`, tudo direto no estado final; o foco do
+  teclado faz o mesmo que o mouse, e Esc fecha o que abriu.
+- **As cinco ideias:**
+  1. **A estante responde ao mouse** (home e estante de filtro): o livro sob o mouse sobe 16px; os
+     vizinhos até 120px sobem até 5px e inclinam até 2,4° para longe do mouse (`quickTo`: y em 0,45s,
+     rotação em 0,6s, `power3.out`); ao sair, tudo volta com `elastic.out(1, 0.45)` em 1,1s; embaixo,
+     uma legenda com o nome e a contagem. Só com mouse (`hover: hover`).
+  2. **A estante em repouso** (só a home): depois de 3s sem mouse, toque, tecla ou rolagem, com a
+     estante ao menos metade visível e a aba ativa, uma faixa de luz suave atravessa as lombadas em
+     3,6s (a cada ~9s) e, a cada 4 a 7s, um livro sorteado sobe 10px, inclina 1,2°, espera 0,6s e
+     volta com `elastic`. Qualquer interação para tudo. Desligada com movimento reduzido.
+  3. **Tirar da estante e abrir** (a gaveta da home): o livro sobe 40px e o lugar fica escurecido; um
+     livro 3D sai da posição da lombada e vai para a gaveta girando até 18° (1,05s, `power3.inOut`);
+     a capa abre (-165°) enquanto o livro desliza e gira até 4°; na página da direita, os artigos
+     mais recentes (até 6, com `stagger` de 0,05s), "Ver todos os N artigos" e "Ver o livro"; o verso
+     da capa leva a assinatura do blog. Fechar ("Guardar o livro", Esc ou clique no lugar escurecido)
+     faz o caminho de volta 1,5× mais rápido; outro livro fecha o atual e abre o novo; no celular, o
+     livro aberto cabe na largura da tela.
+  4. **A pilha lateral** (páginas de livro): ao passar o mouse, o livro sai 14px da pilha e volta com
+     `elastic`; o clique continua levando à página do livro, com a View Transition nativa (lombada da
+     pilha → capa do topo); na chegada, o livro atual é puxado 46px, volta a 10px com `back.out` e
+     fica escurecido.
+  5. **Capas com profundidade** (grade de categorias e séries, "Do livro" e topo da página do livro):
+     a capa acompanha o mouse (até 11° em Y e 7° em X) com uma luz radial suave; no hover, entreabre
+     -28° com três camadas de página (-6°, -12°, -18°); no toque, entreabre no primeiro e abre o link
+     no segundo. No livro ampliado, arrastar gira com embalo (Draggable + InertiaPlugin) e, ao soltar,
+     o livro volta a 18° com `elastic`.
+- **Consequência técnica:** o `Livro3D` passa a ser o livro inteiro, como no protótipo (contracapa,
+  lombada, bordas das páginas, página de dentro e capa com verso), para a capa poder abrir e
+  entreabrir. Continua sendo o único componente de livro 3D.

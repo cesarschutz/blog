@@ -49,6 +49,38 @@
 }
 
 /*
+ * Com o GSAP no ar (estante-viva.ts, D40), é ele que move as lombadas: o CSS deixa de animar o
+ * transform, e a legenda embaixo diz o nome e a contagem do livro sob o mouse.
+ */
+.prateleira-livros.viva .lombada {
+  transition:
+    opacity 0.25s,
+    filter 0.25s;
+}
+
+.legenda-estante {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .legenda-estante {
+    display: block;
+    min-height: 1.6em;
+    margin: 12px 0 0;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    line-height: 1.6;
+    text-align: center;
+    color: var(--ink-2);
+  }
+
+  .legenda-estante b {
+    font-weight: 600;
+    color: var(--ink);
+  }
+}
+
+/*
  * O último livro da coleção fica inclinado 6°, girando pelo canto de baixo do lado direito, com o
  * topo apoiado no alto do aparador.
  */

@@ -6,6 +6,8 @@
  *
  * - "estante" (a home): com JS, a lombada abre o livro na gaveta (Gaveta.astro); o último livro da
  *   coleção fica inclinado, apoiado no alto do aparador.
+ * Com mouse, a estante responde a ele (D40, src/scripts/estante-viva.ts), com a legenda embaixo.
+ *
  * - "filtro" (o arquivo e as tags, D33): menor, sem o livro inclinado, só com os livros que têm
  *   artigos na página; com JS, cada lombada filtra a lista (ListaFiltrada.astro). O número da lombada
  *   é o que a página tem daquele livro.
@@ -35,6 +37,13 @@ const rotulo = (l: Livro) => {
   if (l.serie) return `${l.nome}, ${n} ${n === 1 ? "parte" : "partes"}`;
   return n === 0 ? `${l.nome}, ainda sem artigos` : `${l.nome}, ${n} ${n === 1 ? "artigo" : "artigos"}`;
 };
+// A contagem da legenda embaixo da estante (D40).
+const conta = (l: Livro) => {
+  const n = l.posts.length;
+  if (n === 0) return "ainda sem artigos";
+  if (l.serie && !filtro) return `${n} ${n === 1 ? "edição" : "edições"}`;
+  return `${n} ${n === 1 ? "artigo" : "artigos"}`;
+};
 ---
 
 <div
@@ -60,6 +69,8 @@ const rotulo = (l: Livro) => {
           data-filtro={filtro ? l.id : undefined}
           data-nome={filtro ? l.nome : undefined}
           aria-label={rotulo(l)}
+          data-titulo={l.nome}
+          data-conta={conta(l)}
           style={estilo(l)}
         >
           <MioloLombada livro={l} />
@@ -78,6 +89,8 @@ const rotulo = (l: Livro) => {
           data-filtro={filtro ? l.id : undefined}
           data-nome={filtro ? l.nome : undefined}
           aria-label={rotulo(l)}
+          data-titulo={l.nome}
+          data-conta={conta(l)}
           style={estilo(l)}
         >
           <MioloLombada livro={l} />
@@ -86,4 +99,11 @@ const rotulo = (l: Livro) => {
     }
   </div>
   <div class="tabua" aria-hidden="true"></div>
+  <p class="legenda-estante" aria-hidden="true" data-legenda-estante></p>
 </div>
+
+<script>
+  import { estanteViva } from "../scripts/estante-viva";
+
+  for (const prateleira of document.querySelectorAll<HTMLElement>(".estante .prateleira-livros")) estanteViva(prateleira);
+</script>

@@ -582,6 +582,14 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   depois, no MCP `chrome-devtools`) e o ganho concreto medido, mostrados ao Cesar. A troca só entra
   com a aprovação dele.
 
+- **Livros em movimento (D40), com GSAP carregado sob demanda** (`src/scripts/gsap.ts`: baixado ao
+  passar o mouse, tocar, receber o foco ou com a página ociosa). Só transformações e opacidade, nunca
+  `filter` no livro 3D; o foco do teclado faz o mesmo que o mouse; Esc fecha; com movimento reduzido,
+  tudo no estado final.
+  - **Estante que responde ao mouse** (home e filtro, só com mouse): o livro sob o mouse sobe 16px; os
+    vizinhos até 120px sobem até 5px e inclinam até 2,4° para longe dele (`quickTo`, y 0,45s, rotação
+    0,6s, `power3.out`); ao sair, `elastic.out(1, 0.45)` em 1,1s. Embaixo, a legenda com o nome e a
+    contagem (`estante-viva.ts`).
 - **Lousa de passos** (D39): com a rolagem só na tela de 1024px ou mais e sem movimento reduzido
   (passos a 40% da tela, o atual inteiro e os outros esmaecidos); fora disso, passo a passo com
   "◀ 2 de 5 ▶", pontos e deslizar.
