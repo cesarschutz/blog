@@ -103,15 +103,9 @@ for (const s of SERIES) {
   conferir(livro, `${s.nome}: tinta do papel / papel`, TINTA_PAPEL, PAPEL, 4.5, false);
 }
 
-// Revista no tema escuro (D33): papel escuro com a tinta clara e o laranja clareado.
-for (const s of SERIES) {
-  const papelEscuro = misturar(TINTA_PAPEL, PAPEL, 10);
-  conferir(livro, `${s.nome} no escuro: tinta clara / papel escuro`, PAPEL, papelEscuro, 4.5, false);
-  conferir(livro, `${s.nome} no escuro: destaque / papel escuro`, misturar(s.destaque, PAPEL, 30), papelEscuro, 4.5, false);
-}
-
 // Texto pequeno nas lombadas (D35): onde a cor do livro fica abaixo de 4,5:1, a lombada usa a
 // variante (corTexto, destaqueTexto em docs/capas/livros.json). Texto de verdade: falha o script.
+// Desde a D39 os livros não mudam com o tema: estes pares valem para o claro e para o escuro.
 const pequeno = "Texto pequeno nas lombadas (4,5:1)";
 for (const c of CATEGORIAS) {
   conferir(pequeno, `${c.nome}: tinta / cor da lombada`, c.cores.tinta, c.cores.corTexto ?? c.cores.cor, 4.5, true);

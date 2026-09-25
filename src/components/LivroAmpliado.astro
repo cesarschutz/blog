@@ -30,6 +30,7 @@ import "../styles/visor.css";
 
 <script>
   import { tocarAbrir, tocarFechar } from "../scripts/som";
+  import { GIRO } from "../lib/livro-3d";
 
   const dialogo = document.querySelector<HTMLDialogElement>("[data-livro-ampliado]");
   if (dialogo && !dialogo.dataset.ligado) {
@@ -38,11 +39,10 @@ import "../styles/visor.css";
     const nome = dialogo.querySelector<HTMLElement>("[data-nome]")!;
     const dados = dialogo.querySelector<HTMLElement>("[data-dados]")!;
     const ir = dialogo.querySelector<HTMLAnchorElement>("[data-ir]")!;
-    const reduzir = matchMedia("(prefers-reduced-motion: reduce)");
     let origem: HTMLElement | null = null;
     let livro: HTMLElement | null = null;
     let m = { u: 0, bh: 0, cw: 0, sw: 0 };
-    let giro = 52;
+    let giro = GIRO;
 
     // Deslocamento que deixa o que se vê do livro no centro, para qualquer giro (livro-3d.ts).
     function girar(graus: number) {
@@ -80,7 +80,7 @@ import "../styles/visor.css";
       livro = copia.querySelector<HTMLElement>(".livro-3d");
       livro?.classList.add("virado");
       palco.replaceChildren(copia);
-      girar(52);
+      girar(GIRO);
 
       nome.textContent = raiz.dataset.nome ?? "";
       dados.textContent = raiz.dataset.dados ?? "";
@@ -90,9 +90,7 @@ import "../styles/visor.css";
 
       dialogo!.showModal();
       tocarAbrir();
-      // Abre como estava e gira um pouco para o leitor, mostrando melhor a lombada.
-      if (!reduzir.matches) setTimeout(() => girar(38), 60);
-      else girar(38);
+      // Abre quase de frente, como o livro de origem (D39); arrastar gira o livro.
     }
 
     dialogo.addEventListener("close", () => {

@@ -66,12 +66,12 @@ Desenhos, ícones e emblemas ficam em `docs/capas/desenhos/`, `icones/` e `serie
 abre na gaveta (`/livros/<slug>.svg`). O número das lombadas, da capa da revista e da página do livro
 é o total de artigos, contado pelos posts (some quando é zero); o "VOLUME 01" da capa é a posição na
 coleção. Categoria ou série nova = pela seção "Livros novos" do `CAPAS.md`, com o OK do Cesar. Os
-componentes são `Capa`, `MioloLombada` (em pé), `PainelHome` (deitada), `Estante` (também no modo
+componentes são `Capa`, `MioloLombada` (a lombada, em pé e, girada, deitada no `PainelHome`), `Estante` (também no modo
 "filtro" do arquivo e das tags), `Gaveta`, `Livro3D`, `LivroEmPe`, `TopoLivro` e `GradeLivros`:
 altere esses, sem criar outros em paralelo (`LivroAmpliado` só copia o livro 3D aberto para o visor).
 As peças usam os **papéis de cor** de `livro.css` (`--cima`, `--baixo`, `--revista-*`), nunca as
-cores cruas `--livro-*`: é isso que inverte os livros no tema escuro (D33: papel em cima, a cor do
-livro embaixo). Para conferir, `/amostra/livros/` (só no dev).
+cores cruas `--livro-*`. Os livros **não mudam com o tema** (D39): a categoria sempre com o papel em
+cima e a cor do livro embaixo, a série sempre clara. Para conferir, `/amostra/livros/` (só no dev).
 
 A **marca** (D33) é o livro "cs": `Marca.astro` com o traçado de `src/lib/marca.ts`. Esse arquivo, o
 `favicon.svg`, o `favicon.ico` e o `apple-touch-icon.png` saem de `node scripts/marca.mjs` (usa o

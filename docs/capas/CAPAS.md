@@ -10,6 +10,11 @@ As imagens em `referencia/` são o alvo visual:
 - `lateral.png`: as lombadas deitadas na lateral do site (Séries e Categorias), em tamanho real e ampliadas.
 - `serie.png`: a capa e a lombada da série Atualizações do Java.
 
+**No site (D39):** as categorias usam os papéis de cor invertidos em relação às referências, sempre,
+nos dois temas: o **papel em cima** (com o título, o ícone e a linha do topo no `destaque`) e a **cor
+do livro embaixo** (com a frase, o desenho, o título da lombada e o número na `tinta`). As medidas
+não mudam. A série continua como na referência, sempre papel claro. Nada disso muda com o tema.
+
 ## Arquivos
 
 - `livros.json`: dados de cada livro e da série. O campo `artigos` é só um exemplo, porque no site o número vem da contagem real de posts.
@@ -69,12 +74,15 @@ A ordem, de cima para baixo, é: ícone, título e número. O ícone e o número
 - **Livro inclinado:** o último livro da coleção fica inclinado 6°, girando pelo canto de baixo do lado direito, com o topo apoiado no alto do aparador.
 - **Aparador:** uma barra de 12 × 470px (gradiente `#6f7775`, `#9aa19f`, `#7a8280`) com base de 48 × 9px. Ele separa as categorias das séries, que vêm depois dele.
 
-## Lombada de categoria deitada (lateral, tamanho real)
+## Lombada deitada (lateral)
 
-- **Medidas:** comprimento, espessura e deslocamento em `livros.json`. O volume 1 fica embaixo da pilha, cada livro levemente deslocado, com uma prateleira embaixo (5px em `#b5bab4` e 2px em `#9ba19b`).
-- **Ponta de cor:** a ponta esquerda, com 1,32 vez a espessura, tem a cor do livro. O ícone fica em pé, sem giro, na `tinta`, com 5px de margem nas laterais e 4px em cima e embaixo. Nesse tamanho, as espessuras de traço são 0,9 e 0,6px.
-- **Corpo:** o resto do livro é o papel. O título começa 9px depois da ponta, em Bitter 800 com 0,43 da espessura (títulos de duas linhas usam 0,33 da espessura, com entrelinha 1,05), no `destaque`. O número fica alinhado à direita, 10px antes do fim, em Bitter 700 com 0,4 da espessura, no `destaque`.
-- **Volume:** gradiente vertical `rgba(0,0,0,.14) 0%, rgba(255,255,255,.08) 38%, rgba(255,255,255,.02) 62%, rgba(0,0,0,.16) 100%`, mais o grão.
+Desde a D39, é **a mesma lombada em pé** (`MioloLombada` dentro de `.lombada-visual`), com as mesmas
+proporções, ícone, tipografia e contagem, girada 90° para a esquerda: o ícone fica na ponta
+esquerda e o título e o número correm na horizontal. A escala da pilha faz o livro mais longo caber
+na largura da lateral (teto de 0,42px por unidade, o da estante). O volume 1 fica embaixo, cada livro
+deslocado pelo `deslocamento` de `livros.json` (em unidades da lombada em pé), com uma prateleira
+embaixo na cor da estante. Os campos `comprimento` e `espessura` de `lombadaDeitada` não são mais
+usados. O livro da página atual continua na pilha, escurecido.
 
 ## Séries: revista técnica
 
@@ -95,10 +103,7 @@ As séries têm formato de revista, para nunca serem confundidas com as categori
 - **Base:** papel, fina (80px de largura na estante), com a faixa de 14px no destaque no topo.
 - **Conteúdo:** o emblema girado 90°, o título na vertical em Bitter 800 26px, com o complemento em Newsreader itálico no destaque, e o número no pé em Bitter 800 26px, no destaque.
 
-**Lombada deitada:**
-
-- **Base:** papel com uma barra no destaque na ponta esquerda, com 0,28 da espessura.
-- **Conteúdo:** o emblema em pé, o título em Bitter 800 com 0,42 da espessura e o complemento em itálico no destaque, separados por 0,24em. O número fica à direita, no destaque.
+**Lombada deitada:** a lombada em pé girada, como nas categorias (D39).
 
 ## Livros novos
 

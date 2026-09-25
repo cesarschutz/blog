@@ -27,71 +27,32 @@
 }
 
 /*
- * ---------- papéis das cores (D33) ----------
- * As peças dos livros não usam as cores cruas (--livro-*), e sim estes papéis. No claro, como na
- * regra: em cima a cor do livro (o bloco da capa e da lombada, a ponta da lombada deitada), embaixo
- * o papel. No escuro, inverte (pedido do Cesar): o papel em cima, com o título e o ícone na cor do
- * livro, e a cor do livro embaixo, com o texto e o desenho na tinta dela. A revista (série), toda de
- * papel, vira papel escuro com a tinta clara; a faixa e os destaques continuam no laranja, mais claro.
+ * ---------- papéis das cores (D39) ----------
+ * As peças dos livros não usam as cores cruas (--livro-*), e sim estes papéis, e **não mudam com o
+ * tema** (D39, no lugar da inversão da D33): a categoria tem sempre o papel em cima, com o título e o
+ * ícone na cor do livro, e a cor do livro embaixo, com o texto e o desenho na tinta dela; a revista
+ * (série) é sempre papel claro, com a faixa e os destaques no laranja.
  */
 :is(.lombada-visual, .capa, .deitado) {
-  --cima: var(--livro-cor);
-  --cima-tinta: var(--livro-tinta);
-  --baixo: var(--livro-papel);
-  --baixo-tinta: var(--livro-destaque);
-  --baixo-texto: var(--livro-tinta-papel);
-  --revista-papel: var(--livro-papel);
-  --revista-tinta: var(--livro-tinta-papel);
-  --revista-destaque: var(--livro-destaque);
-}
-
-:root[data-theme="dark"] :is(.lombada-visual, .capa, .deitado) {
   --cima: var(--livro-papel);
   --cima-tinta: var(--livro-destaque);
   --baixo: var(--livro-cor);
   --baixo-tinta: var(--livro-tinta);
   --baixo-texto: var(--livro-tinta);
-  --revista-papel: color-mix(in oklab, var(--livro-tinta-papel), var(--livro-papel) 10%);
-  --revista-tinta: var(--livro-papel);
-  --revista-destaque: color-mix(in oklab, var(--livro-destaque), var(--livro-papel) 30%);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) :is(.lombada-visual, .capa, .deitado) {
-    --cima: var(--livro-papel);
-    --cima-tinta: var(--livro-destaque);
-    --baixo: var(--livro-cor);
-    --baixo-tinta: var(--livro-tinta);
-    --baixo-texto: var(--livro-tinta);
-    --revista-papel: color-mix(in oklab, var(--livro-tinta-papel), var(--livro-papel) 10%);
-    --revista-tinta: var(--livro-papel);
-    --revista-destaque: color-mix(in oklab, var(--livro-destaque), var(--livro-papel) 30%);
-  }
+  --revista-papel: var(--livro-papel);
+  --revista-tinta: var(--livro-tinta-papel);
+  --revista-destaque: var(--livro-destaque);
 }
 
 /*
  * Texto pequeno nas lombadas (D35): onde a cor do livro não passa de 4,5:1 com texto pequeno, as
- * lombadas (em pé e deitadas) usam a variante de docs/capas/livros.json. No claro, o destaque da
- * série vira texto pequeno sobre o papel; no escuro, a cor da Carreira fica por trás do título e do
- * número. As capas e os títulos grandes continuam na cor principal (exceção decidida pelo Cesar).
+ * lombadas (em pé e deitadas) usam a variante de docs/capas/livros.json: a cor da Carreira fica por
+ * trás do título e do número, e o destaque da série vira texto pequeno sobre o papel. As capas e os
+ * títulos grandes continuam na cor principal (exceção decidida pelo Cesar).
  */
 :is(.lombada-visual, .deitado) {
-  --baixo-tinta: var(--livro-destaque-texto);
-  --revista-destaque-texto: var(--livro-destaque-texto);
-}
-
-:root[data-theme="dark"] :is(.lombada-visual, .deitado) {
   --baixo: var(--livro-cor-texto);
-  --baixo-tinta: var(--livro-tinta);
-  --revista-destaque-texto: var(--revista-destaque);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) :is(.lombada-visual, .deitado) {
-    --baixo: var(--livro-cor-texto);
-    --baixo-tinta: var(--livro-tinta);
-    --revista-destaque-texto: var(--revista-destaque);
-  }
+  --revista-destaque-texto: var(--livro-destaque-texto);
 }
 
 /* ---------- traço dos desenhos e dos ícones ---------- */
@@ -568,11 +529,12 @@
  * Série (revista): papel, fina, com a faixa de 14 no destaque no topo; o emblema girado, o título
  * na vertical (a palavra principal e o complemento em itálico no destaque) e o número no pé.
  */
-/* :root na frente para vencer os papéis do tema escuro (mesma especificidade, e vem depois). */
+/* :root na frente para vencer os papéis gerais (mesma especificidade). */
 :root .lombada-visual.de-serie {
   --papel-h: calc(100% - 14 * var(--u));
   --cima: var(--revista-destaque);
   --baixo: var(--revista-papel);
+  --baixo-tinta: var(--revista-destaque-texto);
 }
 
 .emblema-lombada {
@@ -622,7 +584,7 @@
 }
 
 .livro-3d {
-  --giro: -52deg;
+  --giro: -72deg;
   position: absolute;
   top: 0;
   left: 0;

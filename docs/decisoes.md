@@ -880,3 +880,55 @@ nada muda.
   mais claro da tela no escuro; som ligado por padrão não combina com um blog de leitura; a mesma
   lombada fazia três coisas diferentes; o "#tag" da lista parecia link e não era; no celular, o
   cabeçalho de 104px ocupava 12% da tela e a abertura, a primeira tela inteira.
+
+## D39 · Acabamento de design: livros de cor fixa, lombada única, tema direto, sem som
+- **Data:** 25/09/2026 · **Status:** aprovada pelo Cesar; em execução, um commit por lote, sem push.
+  Os itens 2 (post-it), 6 (lousa de passos) e 9 (largura do texto e marca d'água) só entram depois
+  do OK dele às propostas em screenshots.
+- **Substitui**, no que houver em contrário: a D27, a D29, a D33, a D38 e o lote 4 da D37 (frases por
+  tema). O `DESIGN.md` foi atualizado junto.
+- **Pedido do Cesar (1 a 10) e da revisão de designer (A a G):**
+  1. **Livros com cor fixa, sem depender do tema.** Categorias sempre com o papel em cima e a cor do
+     livro embaixo (o que antes era só o escuro); a série sempre clara (o que antes era só o claro).
+     Vale para lombadas, pilha, livro 3D, capas da grade, gaveta e livro ampliado. Os papéis
+     `--cima`/`--baixo` de `livro.css` deixam de ter versão escura; o contraste das lombadas é o
+     mesmo nos dois temas (`npm run contraste`).
+  2. **Post-it só na home, discreto:** sai dos posts; na home, menor, preso por um alfinete desenhado
+     e levemente inclinado, sem encostar nos livros; no celular, abaixo do texto de apresentação.
+     Frase sorteada entre todas a cada visita, sem piscar e sem pesar no LCP; sai a lógica de frases
+     por tema e por post (lote 4 da D37). *Aguarda o OK às duas propostas.*
+  3. **Livro escolhido escurecido, sem contorno azul:** o lugar do livro que foi para a gaveta mostra
+     o próprio livro escurecido (como os não escolhidos do filtro), e o livro da página atual aparece
+     escurecido na pilha, em vez do lugar vazio. O contorno azul da lombada escolhida no filtro (D38)
+     sai; o foco pelo teclado (`:focus-visible`) continua, mais discreto.
+  4. **Uma lombada só:** a pilha lateral usa a mesma lombada da estante (`MioloLombada` dentro de
+     `.lombada-visual`), com as mesmas proporções, ícone, tipografia e contagem, só que deitada
+     (girada 90° para a esquerda). A lombada deitada própria do `PainelHome` saiu.
+  5. **Livro grande quase de frente:** o livro 3D aberto (gaveta, topo da categoria e da série, livro
+     ampliado) gira 72° a partir da lombada (`GIRO` em `lib/livro-3d.ts`): a capa fica a 18° da frente
+     e a lombada vira uma faixa. "Arrastar para girar" continua.
+  6. **Lousa de passos:** no desktop (≥ 1024px), lousa fixa ao lado e os passos mais próximos (uns
+     40% da tela entre eles), todos visíveis, o ativo inteiro e os outros esmaecidos; no celular,
+     tablet e com movimento reduzido, passo a passo com a lousa em cima, o texto embaixo e
+     "◀ 2/5 ▶" com pontos e deslizar. *Aguarda o OK às duas versões.*
+  7. **"Neste artigo" na cor do livro:** a linha que preenche, o ponto ativo e a barra de porcentagem
+     na cor do livro do post; abaixo do painel, em tela larga, um "Do livro" compacto (capa pequena,
+     nome e "Ver o livro"), que sai do fim do artigo no desktop e continua lá no celular.
+  8. **Sem rolagem feia:** o sumário não rola para o lado (quebra depois dos pontos) e todas as áreas
+     com rolagem interna usam uma barra fina nas cores do tema.
+  9. **Texto mais largo e marca d'água em outro lugar:** coluna de uns 70 a 72 caracteres, menos
+     espaço lateral no cartão, código, tabelas, diagramas e lousas na largura do cartão; no celular,
+     o corpo do artigo sem cartão; a marca d'água sai do topo do artigo. *Aguarda o OK à proposta.*
+  10. **Tema e som:** o site abre no tema do sistema; o botão alterna direto entre claro e escuro
+      (sol ou lua), sem painel; a escolha vale até fechar o site (`sessionStorage`); trocar o tema não
+      mexe na posição da página; o som sai por completo (`som.ts`, a opção do menu e as referências).
+  - A. Título do bloco de código à esquerda e a linguagem como etiqueta à direita.
+  - B. Código nas tabelas quebra depois dos pontos, nunca no meio do nome.
+  - C. Diagramas antigos com fundo branco num quadro neutro que funciona nos dois temas.
+  - D. Títulos com `text-wrap: balance` e o travessão preso à palavra seguinte.
+  - E. No celular, topo e corpo do post sem a margem interna dupla (junto com o item 9).
+  - F. Página Séries: um destaque largo da série, com capa, descrição, edições e "Começar pelo guia".
+  - G. Página Tags: cada tag com a contagem e os artigos mais recentes, agrupadas pela cor do livro.
+- **Motivo:** o livro que muda de cor com o tema deixava de ser o mesmo objeto; a lombada desenhada
+  de dois jeitos também; o contorno azul e o lugar vazio chamavam mais atenção que o livro; o livro
+  aberto em três quartos escondia a capa; o som e o painel de aparência eram peso sem uso.

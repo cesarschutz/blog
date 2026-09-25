@@ -422,8 +422,9 @@ desenhos** dos posts da categoria:
 | 08 | Carreira | #9a7650 | clara | #7f5b36 |
 
 A tinta e o destaque saem sempre de `coresDoLivro()` (`docs/capas/cores.js`), nunca de um valor
-fixo. No tema escuro, o destaque dos desenhos leva 42% de branco, e os livros invertem os papéis de
-cor (`--cima`, `--baixo`, D33): o papel fica em cima e a cor do livro embaixo. **Cor só por token**:
+fixo. No tema escuro, o destaque dos desenhos leva 42% de branco. **Os livros não mudam com o tema**
+(D39): pelos papéis de cor (`--cima`, `--baixo`), a categoria tem sempre o papel em cima e a cor do
+livro embaixo, e a série (revista) é sempre papel claro. **Cor só por token**:
 nenhum hex solto em componente ou SVG.
 
 **Lousa, mistura:** `lousa-mistura` não é cor de texto, só entra na mistura do destaque da lousa
@@ -504,12 +505,19 @@ têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm can
 Todos seguem o mesmo padrão de coleção (capa e lombada iguais para todos, mudando só cor, título,
 frase e desenho; medidas em `docs/capas/CAPAS.md`):
 
-- **Capa:** no alto, o **bloco na cor do livro** com "VOLUME 0N", "CESAR SCHUTZ" e o **título
-  grande** (Bitter 800, até 108px). Embaixo, **papel claro só com a frase do livro** (Newsreader
-  itálico) e o **desenho do instrumento de ofício, o maior possível**, no destaque. **Sem lista de
+- **Capa:** no alto, o **papel** com "VOLUME 0N", "CESAR SCHUTZ" e o **título grande** (Bitter 800,
+  até 108px) no destaque. Embaixo, **a cor do livro só com a frase** (Newsreader itálico) e o
+  **desenho do instrumento de ofício, o maior possível**, na tinta (D39; a referência de
+  `docs/capas` tem os papéis ao contrário, com as mesmas medidas). **Sem lista de
   temas.** No pé, a assinatura **BLOG.CESARSCHUTZ.COM.BR**.
-- **Lombada:** ícone no bloco de cor, título na vertical e número de artigos no papel, com a divisão
-  à mesma altura em todos, formando uma linha contínua na estante.
+- **Lombada:** ícone no papel de cima, título na vertical e número de artigos na cor do livro, com a
+  divisão à mesma altura em todos, formando uma linha contínua na estante. **É uma lombada só em
+  todo lugar** (D39): a pilha lateral usa a mesma, girada 90°.
+- **Livro escolhido:** o livro que foi para a gaveta, o da página atual na pilha e os não escolhidos
+  do filtro aparecem **escurecidos** (opacidade 0,4 e metade da saturação), nunca como lugar vazio e
+  nunca com contorno azul. O foco do teclado é um anel fino e discreto.
+- **Livro aberto grande** (gaveta, topo da categoria e da série, livro ampliado): **quase de frente**,
+  a 72° da lombada (a capa a 18° da frente e a lombada numa faixa, `GIRO` em `lib/livro-3d.ts`).
 - O número nas lombadas é o total de artigos, contado pelos posts (some quando é zero). O
   "VOLUME 0N" é a posição na coleção.
 

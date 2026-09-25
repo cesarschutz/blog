@@ -218,9 +218,9 @@ Referência: aba "Home" do protótipo.
   - Ao passar o mouse, a lombada sobe alguns pixels.
   - Na home, a lombada abre a gaveta; a capa aberta dentro dela leva à página do livro, e a lupa
     amplia (D38). Nas outras páginas, a lombada leva ao livro.
-  - **Abrir um livro**: a lombada sai e deixa o espaço vazio na prateleira; abaixo da estante
-    abre uma gaveta com o livro girando da lombada até ficar em **três quartos**, com a lombada e a
-    capa à vista (como na página do livro), e, ao lado, o **sumário
+  - **Abrir um livro**: o lugar dele na prateleira mostra o próprio livro escurecido (D39); abaixo
+    da estante abre uma gaveta com o livro girando da lombada até ficar **quase de frente** (72°,
+    só uma faixa da lombada à vista, D39), como na página do livro, e, ao lado, o **sumário
     em lista com filtro** (ignora acentos; agrupado por ano; nas séries, em ordem de leitura
     com "Parte N"). **Trocar de livro** fecha o atual (gira de volta e volta para a
     prateleira) antes de abrir o próximo; cliques rápidos terminam a animação e abrem o
@@ -244,11 +244,9 @@ Referência: aba "Home" do protótipo.
   as páginas da home, no lugar da antiga nuvem de tags no pé. Inspirado na barra lateral do blog
   atual, numa folha que **fica parada enquanto a lista rola** (como no antigo; em tela baixa, rola por
   dentro):
-  - **Séries** e **Categorias** como **pilhas de livros deitados** (D30, D32, `CAPAS.md`): a lombada
-    em pé rotacionada, com a ponta curta na cor do livro (com o ícone) e o corpo em papel, com o título
-    e o número no destaque; a série é papel com uma barra no destaque na ponta, a xícara e
-    "Atualizações *do Java*". Comprimento, espessura e deslocamento de `livros.json`; o volume 1 embaixo; todos
-    retos; a pilha sobre uma prateleira da cor da estante. A pilha escala com a largura da lateral.
+  - **Séries** e **Categorias** como **pilhas de livros deitados** (D30, D32, `CAPAS.md`): a mesma
+    lombada da estante, girada 90° (D39), com o ícone na ponta esquerda, o título e o número; o
+    deslocamento de `livros.json`; o volume 1 embaixo; todos retos; a pilha sobre uma prateleira da cor da estante. A pilha escala com a largura da lateral.
     Ao passar o mouse, o livro sai 8px da pilha (sem movimento com `prefers-reduced-motion`).
   - **Tags**: as 10 mais usadas em pílulas (o clique leva à página da tag, D33) e "Todas as
     tags →".
@@ -268,12 +266,13 @@ componentes novos.
 agrupado por ano, sem a coluna de datas. No topo, numa folha, uma **estante de filtro** com os livros
 que têm artigos na página (e o número deles): clicar num livro mostra só os artigos dele
 (`?livro=<slug>` na URL). Para não confundir com a lombada que leva ao livro (D38): o rótulo "Filtrar
-por livro" acima da estante, a lombada escolhida com o contorno azul-tinta, "Limpar filtro" e as
+por livro" acima da estante, a lombada escolhida um pouco acima da prateleira e as outras
+escurecidas (sem contorno azul, D39), "Limpar filtro" e as
 lombadas como botões com `aria-pressed`; sem JavaScript, a estante de filtro não aparece. A tag
 mostra também as tags que aparecem junto com ela.
 
 **Categorias** (`/categories/`, D31) e **Séries** (`/series/`, D31): os livros lado a lado, grandes,
-abertos em três quartos como o livro do topo da página de cada um, cada um num cartão (folha) com o
+abertos quase de frente como o livro do topo da página de cada um, cada um num cartão (folha) com o
 livro num painel tingido pela cor dele, "Volume 0N" (ou "Série"), o nome, o subtítulo e a contagem.
 Ao passar o mouse, o cartão sobe e o livro gira um pouco para o leitor; ao clicar, o livro voa até o
 topo da página dele. Em Categorias, os oito volumes; em Séries, só o livro da série do Java.
@@ -284,10 +283,10 @@ depois, o guia e as versões, como antes.
 
 **Categoria** (`/categories/<Nome>/`, D29):
 - O painel lateral da home à esquerda (parado enquanto a página rola; depois do conteúdo no celular).
-  O livro desta categoria saiu da pilha: no lugar fica só o contorno, como o lugar vazio da estante.
+  O livro desta categoria continua na pilha, escurecido (D39).
 - Todo livro tem página, mesmo sem artigos ("Este livro ainda não tem artigos.").
 - No topo, uma folha com o **livro aberto** num painel tingido pela cor da categoria: o mesmo livro
-  3D da gaveta, em três quartos, com a capa da coleção (D30). Ao lado: "Categorias" (trilha), o
+  3D da gaveta, quase de frente (D39), com a capa da coleção (D30). Ao lado: "Categorias" (trilha), o
   nome grande (Besley 800, do tamanho que couber numa linha), o subtítulo do livro, a contagem com o
   quadradinho da cor e as 6 tags mais usadas na categoria.
 - Embaixo, "Artigos" com a contagem e a alternância Lista / Cards, no mesmo formato da home (D27),

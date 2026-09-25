@@ -1,23 +1,20 @@
 ---
 /**
  * Painel ao lado dos artigos (D28), inspirado na barra lateral do blog atual: séries, categorias,
- * tags e RSS. Séries e categorias são os livros deitados e empilhados, pela regra de
- * docs/capas/CAPAS.md (D30, D32): na categoria, a ponta curta na cor do livro com o ícone e o corpo em
- * papel, com o título e o número no destaque; na série (revista), papel com uma barra no destaque na
- * ponta, o emblema, o título com o complemento em itálico e o número. Comprimento,
- * espessura e deslocamento de cada livro vêm de docs/capas/livros.json, no tamanho real da lateral;
- * a pilha escala com a largura (container query). O volume 1 fica embaixo. O número é o total de
+ * tags e RSS. Séries e categorias são os livros deitados e empilhados: a mesma lombada da estante
+ * (MioloLombada, com as mesmas proporções, ícone, tipografia e contagem), só que deitada (D39). A
+ * pilha escala com a largura (container query), e o volume 1 fica embaixo. O número é o total de
  * artigos e some quando não há nenhum. Ao passar o mouse, o livro sai um pouco da pilha. Na tela
  * larga, o painel fica parado enquanto a lista rola (o `sticky` está em ComPainel.astro).
  *
  * Transição (D29): o livro em pé do topo da página do livro tem `view-transition-name` igual ao id
  * do livro; o script do <head> (Base.astro) dá o mesmo nome, em `data-vt`, só ao livro da pilha que
  * leva à página nova ou que veio da anterior, e o navegador leva um ao outro. Na página do próprio
- * livro (`atual`), ele saiu da pilha: fica só o contorno do lugar, sem nome.
+ * livro (`atual`), ele continua na pilha, escurecido, sem nome (D39).
  */
 import { ICONES } from "../lib/icones";
 import { coresDoLivroCss, type Livro } from "../lib/estante";
-import { iconeDoLivro } from "../lib/livros-svg";
+import MioloLombada from "./MioloLombada.astro";
 import { urlTag, type Grupo } from "../lib/posts";
 import { url } from "../lib/url";
 import "../styles/livro.css";
@@ -35,15 +32,9 @@ const pilhas = [
   { titulo: "Séries", livros: livros.filter((l) => l.serie) },
   { titulo: "Categorias", livros: livros.filter((l) => !l.serie).sort((a, b) => (b.volume ?? 0) - (a.volume ?? 0)) },
 ].filter((p) => p.livros.length > 0);
-// Onde a pilha começa, no tamanho real (as categorias um pouco mais para dentro, como na referência).
-const INICIO = { categoria: 24, serie: 20 };
+// O deslocamento de cada livro na pilha (livros.json), em unidades da lombada em pé.
 const estilo = (l: Livro) =>
-  [
-    coresDoLivroCss(l),
-    `--comprimento:${l.deitada.comprimento}`,
-    `--espessura:${l.deitada.espessura}`,
-    `--recuo:${(l.serie ? INICIO.serie : INICIO.categoria) + l.deitada.deslocamento}`,
-  ].join(";");
+  [coresDoLivroCss(l), `--w:${l.emPe.largura}`, `--h:${l.emPe.altura}`, `--recuo:${10 + l.deitada.deslocamento}`].join(";");
 const rotulo = (l: Livro) => {
   const n = l.posts.length;
   if (l.serie) return `${l.nome}, ${n} ${n === 1 ? "parte" : "partes"}`;
@@ -62,30 +53,16 @@ const TAGS_NO_PAINEL = 10;
             {p.livros.map((l) => (
               <li>
                 <a
-                  class:list={["deitado", { "de-serie": l.serie, "duas-linhas": l.linhas.length > 1, retirado: l.id === atual }]}
+                  class:list={["deitado", { retirado: l.id === atual }]}
                   href={l.href}
                   aria-label={rotulo(l)}
                   aria-current={l.id === atual ? "page" : undefined}
                   data-vt={l.id === atual ? undefined : l.id}
                   style={estilo(l)}
                 >
-                  {l.slug && <span class="ponta" aria-hidden="true" set:html={iconeDoLivro(l.slug)} />}
-                  {l.revista && <span class="emblema" aria-hidden="true" set:html={iconeDoLivro(l.revista.emblema)} />}
-                  {l.revista ? (
-                    <span class="nome" aria-hidden="true">
-                      {l.revista.tituloPrincipal} <em>{l.revista.complemento}</em>
-                    </span>
-                  ) : (
-                    <span class="nome" aria-hidden="true">
-                      {l.linhas.map((linha, i) => (i === 0 ? linha : [" ", <br />, linha]))}
-                    </span>
-                  )}
-                  {l.posts.length > 0 && " "}
-                  {l.posts.length > 0 && (
-                    <span class="conta" aria-hidden="true">
-                      {l.posts.length}
-                    </span>
-                  )}
+                  <span class:list={["lombada-visual", { "de-serie": l.serie }]}>
+                    <MioloLombada livro={l} />
+                  </span>
                 </a>
               </li>
             ))}
@@ -133,7 +110,7 @@ const TAGS_NO_PAINEL = 10;
 
 <style>
   .painel-home {
-    padding: 22px 22px 18px;
+    padding: 22px 18px 18px;
   }
 
   .bloco + .bloco {
@@ -153,15 +130,16 @@ const TAGS_NO_PAINEL = 10;
   /* ---------- pilha de livros deitados ---------- */
 
   /*
-   * As medidas de livros.json são do tamanho real numa pilha de 238px de largura (a lateral do site);
-   * --p é quanto vale 1px da referência na largura que a pilha tem de fato.
+   * A lombada em pé da estante (livro.css), girada 90° para a esquerda: o ícone fica na ponta
+   * esquerda e o título e o número passam a correr na horizontal. --u (px por unidade) faz o livro
+   * mais longo com o recuo caber na largura da pilha, com o teto da estante da home (0,42px).
    */
   .pilha {
     container-type: inline-size;
   }
 
   .pilha ol {
-    --p: calc(100cqw / 238);
+    --u: min(0.42px, 100cqw / 680);
     display: flex;
     flex-direction: column;
     margin: 0;
@@ -169,145 +147,51 @@ const TAGS_NO_PAINEL = 10;
     list-style: none;
   }
 
-  /* Categoria: a ponta curta na cor do livro, com o ícone; o corpo em papel. */
   .deitado {
-    --e: calc(var(--espessura) * var(--p));
-    font-variant-numeric: lining-nums;
-    --ponta: calc(1.32 * var(--e));
     position: relative;
-    display: flex;
-    align-items: center;
-    width: calc(var(--comprimento) * var(--p));
-    height: var(--e);
-    margin-left: calc(var(--recuo) * var(--p));
-    border-radius: 2px 3px 3px 2px;
-    background:
-      var(--grao) 0 0 / 180px 180px,
-      linear-gradient(
-        rgb(0 0 0 / 0.14) 0%,
-        rgb(255 255 255 / 0.08) 38%,
-        rgb(255 255 255 / 0.02) 62%,
-        rgb(0 0 0 / 0.16) 100%
-      ),
-      linear-gradient(90deg, var(--cima) var(--ponta), var(--baixo) var(--ponta));
-    box-shadow: 0 1px 0 rgb(0 0 0 / 0.18);
-    color: var(--baixo-tinta);
-    font-family: var(--font-livro);
+    display: block;
+    width: calc(var(--h) * var(--u));
+    height: calc(var(--w) * var(--u));
+    margin-left: calc(var(--recuo) * var(--u));
+    border-radius: max(1.5px, calc(3 * var(--u)));
     text-decoration: none;
-    transition: transform 0.25s cubic-bezier(0.2, 0.75, 0.2, 1);
+    transition:
+      transform 0.25s cubic-bezier(0.2, 0.75, 0.2, 1),
+      opacity 0.25s,
+      filter 0.25s;
     view-transition-class: livro;
   }
 
-  /* O ícone em pé, sem giro, com 5 de margem nas laterais e 4 em cima e embaixo; traço de 0,9 e 0,6. */
-  .ponta {
-    --lombada-cor: var(--cima);
-    --traco-lombada: 0.9px;
-    flex: none;
-    width: var(--ponta);
-    height: 100%;
-    padding: calc(4 * var(--p)) calc(5 * var(--p));
-    color: var(--cima-tinta);
+  .deitado > .lombada-visual {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: calc(var(--w) * var(--u));
+    height: calc(var(--h) * var(--u));
+    transform-origin: 0 0;
+    rotate: -90deg;
+    /* Girada, a sombra da lombada cai para baixo, como a de um livro deitado. */
+    box-shadow: -1px 0 0 rgb(0 0 0 / 0.18);
   }
 
-  /* Nesse tamanho, só os dois traços principais: a hachura (cz-w3) vira ruído. */
-  .ponta :global(.cz-w3) {
-    display: none;
+  /* Foco só para quem navega pelo teclado, discreto (D39). */
+  .deitado:focus-visible {
+    outline: 1.5px solid color-mix(in oklab, var(--acento), transparent 35%);
+    outline-offset: 3px;
   }
 
-  .nome {
-    flex: 0 1 auto;
-    min-width: 0;
-    margin-left: calc(9 * var(--p));
-    font-weight: 800;
-    font-size: calc(0.43 * var(--e));
-    line-height: 1;
-    letter-spacing: -0.005em;
-    white-space: nowrap;
-  }
-
-  .duas-linhas .nome {
-    font-size: calc(0.33 * var(--e));
-    line-height: 1.05;
-  }
-
-  .conta {
-    flex: none;
-    margin: 0 calc(10 * var(--p)) 0 auto;
-    padding-left: calc(8 * var(--p));
-    font-weight: 700;
-    font-size: calc(0.4 * var(--e));
-    line-height: 1;
-    font-variant-numeric: lining-nums;
-  }
-
-  /* Série (revista): papel com uma barra no destaque na ponta, o emblema e o título com o complemento. */
-  .de-serie {
-    background:
-      var(--grao) 0 0 / 180px 180px,
-      linear-gradient(
-        rgb(0 0 0 / 0.14) 0%,
-        rgb(255 255 255 / 0.08) 38%,
-        rgb(255 255 255 / 0.02) 62%,
-        rgb(0 0 0 / 0.16) 100%
-      ),
-      linear-gradient(90deg, var(--revista-destaque) calc(0.28 * var(--e)), var(--revista-papel) calc(0.28 * var(--e)));
-    color: var(--revista-tinta);
-  }
-
-  .emblema {
-    --serie-papel: var(--revista-papel);
-    --traco-lombada: 0.9px;
-    flex: none;
-    width: calc(1.05 * var(--e));
-    height: 100%;
-    margin-left: calc(0.28 * var(--e) + 6 * var(--p));
-    padding: calc(3 * var(--p)) 0;
-  }
-
-  .emblema :global(.cz-w3) {
-    display: none;
-  }
-
-  .de-serie .nome {
-    margin-left: calc(7 * var(--p));
-    font-size: calc(0.42 * var(--e));
-  }
-
-  /* Separados pelo espaço (0,24em na Bitter, como na regra). */
-  .de-serie .nome em {
-    font-family: var(--font-livro-italico);
-    font-variation-settings: "opsz" 13;
-    font-weight: 500;
-    color: var(--revista-destaque-texto);
-  }
-
-  .de-serie .conta {
-    font-weight: 800;
-    color: var(--revista-destaque-texto);
-  }
-
-  /* Livro retirado da pilha (está aberto no topo da página): fica só o contorno do lugar vazio. */
-  .retirado,
-  .de-serie.retirado {
-    background: transparent;
-    box-shadow: inset 0 0 0 1px var(--rule);
-    color: var(--ink-2);
-  }
-
-  .retirado :is(.ponta, .emblema) {
-    opacity: 0;
-  }
-
-  .retirado :is(.nome em, .conta) {
-    color: inherit;
+  /* O livro da página atual continua na pilha, escurecido, como os não escolhidos do filtro (D39). */
+  .retirado {
+    opacity: 0.4;
+    filter: saturate(0.5);
   }
 
   /* A prateleira sob a pilha: 5 na cor da estante e 2 de borda. */
   .tampo {
-    height: max(4px, calc(5 * var(--p, 1px)));
+    height: max(4px, calc(12 * var(--u, 0.4px)));
     border-bottom: 2px solid var(--tabua-borda);
     background: var(--tabua);
-    --p: calc(100cqw / 238);
+    --u: min(0.42px, 100cqw / 680);
   }
 
   @media (hover: hover) {
