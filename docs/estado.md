@@ -92,6 +92,17 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
   conferida, Fontes).
 - **Sumário sem números (D36, 25/09/2026):** só um ponto no trilho de cada seção, em todos os posts.
 
+## Em andamento: auditoria de acabamento (D37, D38)
+
+Relatório da fase 1 em `.impeccable/review/auditoria/relatorio.md` (fora do git). Lotes aprovados,
+um commit cada, sem push: 1 quebras visíveis, 2 acessibilidade, 3 busca, 5 DOM e peso, 4 post-it por
+tema, 6 SEO, 8 DESIGN.md e textos; por último, o lote das mudanças da D38 (post-it no fim do artigo,
+som desligado, lombada que leva ao livro, tags como links, cabeçalho que se esconde no celular,
+abertura mais curta, um botão de compartilhar). O lote 7 (densidade do topo do post e da lista no
+celular) ficou de fora.
+
+- [x] Lote 1 · [ ] Lote 2 · [ ] Lote 3 · [ ] Lote 5 · [ ] Lote 4 · [ ] Lote 6 · [ ] Lote 8 · [ ] D38
+
 ## Próximos passos
 
 1. Aprovação do ajuste visual (D26 a D33) e retoques; depois, medir o Lighthouse de novo (a

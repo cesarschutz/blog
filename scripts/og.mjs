@@ -48,6 +48,8 @@ let bytes = 0;
 for (const nome of nomes) {
   await pagina.goto(`${base}/og/${nome}/`, { waitUntil: "load" });
   await pagina.evaluate(() => document.fonts.ready);
+  // O cartão encolhe o título que não cabe depois de carregar as fontes (CartaoCompartilhamento).
+  await pagina.waitForSelector("[data-ajustado]", { timeout: 5000 });
   const foto = await pagina.screenshot({ clip: { x: 0, y: 0, width: 1200, height: 630 } });
   const png = await sharp(foto).png({ compressionLevel: 9, palette: true, quality: 92 }).toBuffer();
   await sharp(png).toFile(join(pastaOg, `${nome}.png`));

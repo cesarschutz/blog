@@ -12,6 +12,7 @@ import PostIt from "./PostIt.astro";
 import { ICONES } from "../lib/icones";
 import { montarLivros } from "../lib/estante";
 import { urlTag, type Resumo } from "../lib/posts";
+import { tituloComQuebras } from "../lib/formato";
 import type { Serie } from "../data/series";
 
 interface Props {
@@ -104,7 +105,7 @@ const rotulos = naSerie
       {anterior ? (
         <a href={anterior.url} rel="prev">
           <span class="dir">{rotulos.anterior}</span>
-          <span class="nome">{anterior.tituloCompleto}</span>
+          <span class="nome" set:html={tituloComQuebras(anterior.tituloCompleto)} />
         </a>
       ) : (
         <span />
@@ -112,7 +113,7 @@ const rotulos = naSerie
       {proximo && (
         <a href={proximo.url} rel="next" class="proximo">
           <span class="dir">{rotulos.proximo}</span>
-          <span class="nome">{proximo.tituloCompleto}</span>
+          <span class="nome" set:html={tituloComQuebras(proximo.tituloCompleto)} />
         </a>
       )}
     </nav>
@@ -235,9 +236,11 @@ const rotulos = naSerie
     transform: translateY(-4px) rotate(-1deg);
   }
 
+  /* A coluna encolhe e o nome quebra com hífen: "Desenvolvimento" não cabe inteiro ao lado do livro em 375px. */
   .sobre-livro {
     display: grid;
     gap: 3px;
+    min-width: 0;
     font-family: var(--font-ui);
   }
 
@@ -251,6 +254,8 @@ const rotulos = naSerie
     font-weight: 700;
     font-size: 21px;
     line-height: 1.2;
+    hyphens: auto;
+    overflow-wrap: break-word;
   }
 
   .dados-livro {

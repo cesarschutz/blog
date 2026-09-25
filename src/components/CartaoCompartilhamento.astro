@@ -9,6 +9,8 @@ import Chip from "./Chip.astro";
 import Estante from "./Estante.astro";
 import Ilustracao from "./Ilustracao.astro";
 import { temIlustracao } from "../lib/ilustracoes";
+import { claro } from "../styles/tokens";
+import { tituloComQuebras } from "../lib/formato";
 import type { Livro } from "../lib/estante";
 
 interface Props {
@@ -22,17 +24,17 @@ interface Props {
   livros?: Livro[];
 }
 
-const { titulo, subtitulo, rotulo, cor = "#56605E", slug, livros } = Astro.props;
+const { titulo, subtitulo, rotulo, cor = claro["ink-2"], slug, livros } = Astro.props;
 const comDesenho = Boolean(slug && temIlustracao(slug));
 const comArte = comDesenho || Boolean(livros);
-// Título longo encolhe para caber na altura sem cortar.
+// Ponto de partida pelo tamanho do título; o script abaixo ainda encolhe o que não couber.
 const corpoDoTitulo = titulo.length > 60 ? 54 : titulo.length > 42 ? 62 : titulo.length > 28 ? 70 : 77;
 ---
 
-<div class:list={["cartao-og", { "com-arte": comArte }]}>
+<div class:list={["cartao-og", { "com-arte": comArte }]} data-cartao-og>
   <div class="texto">
     <span class="blog">Cesar Schutz</span>
-    <span class="titulo" style={`font-size:${corpoDoTitulo}px`}>{titulo}</span>
+    <span class="titulo" style={`font-size:${corpoDoTitulo}px`} set:html={tituloComQuebras(titulo)} />
     {subtitulo && <span class="subtitulo">{subtitulo}</span>}
     {
       rotulo && (
@@ -57,6 +59,29 @@ const corpoDoTitulo = titulo.length > 60 ? 54 : titulo.length > 42 ? 62 : titulo
     )
   }
 </div>
+
+<script is:inline>
+  // Com as fontes carregadas, o título encolhe até caber: nenhuma palavra passa para o painel e ele
+  // não encosta no nome do blog. scripts/og.mjs espera o data-ajustado para fotografar.
+  (function () {
+    var cartao = document.querySelector("[data-cartao-og]");
+    var texto = cartao.querySelector(".texto");
+    var blog = cartao.querySelector(".blog");
+    var titulo = cartao.querySelector(".titulo");
+    function naoCabe() {
+      var folga = titulo.getBoundingClientRect().top - blog.getBoundingClientRect().bottom;
+      return titulo.scrollWidth > titulo.clientWidth + 1 || texto.scrollHeight > texto.clientHeight + 1 || folga < 36;
+    }
+    document.fonts.ready.then(function () {
+      var corpo = parseFloat(titulo.style.fontSize);
+      while (naoCabe() && corpo > 40) {
+        corpo -= 2;
+        titulo.style.fontSize = corpo + "px";
+      }
+      cartao.setAttribute("data-ajustado", "");
+    });
+  })();
+</script>
 
 <style>
   .cartao-og {

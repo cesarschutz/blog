@@ -7,7 +7,7 @@
  */
 import Ilustracao from "./Ilustracao.astro";
 import MetaItem from "./MetaItem.astro";
-import { mdEmLinha } from "../lib/formato";
+import { mdEmLinha, tituloComQuebras } from "../lib/formato";
 import { temIlustracao } from "../lib/ilustracoes";
 import type { Resumo } from "../lib/posts";
 
@@ -28,7 +28,7 @@ const { post } = Astro.props;
   }
   <div class="corpo-cartao">
     <MetaItem post={post} />
-    <h3><a href={post.url}>{post.tituloCompleto}</a></h3>
+    <h3><a href={post.url} set:html={tituloComQuebras(post.tituloCompleto)} /></h3>
     <p class="descricao" set:html={mdEmLinha(post.descricao)} />
     {
       post.tags.length > 0 && (

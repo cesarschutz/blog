@@ -13,7 +13,7 @@ import Ilustracao from "./Ilustracao.astro";
 import { AUTOR } from "../data/site";
 import { temIlustracao } from "../lib/ilustracoes";
 import { desenhoDaCapa, iconeDoLivro, temDesenho } from "../lib/livros-svg";
-import { mdEmLinha } from "../lib/formato";
+import { mdEmLinha, tituloComQuebras } from "../lib/formato";
 import { url } from "../lib/url";
 import type { Resumo } from "../lib/posts";
 
@@ -23,8 +23,6 @@ interface Props {
 
 const { post } = Astro.props;
 const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "Artigos", href: url("/archive/") };
-// Identificador no título ("AopUtils.getTargetClass()"): no celular, quebra de preferência depois do ponto.
-const partesDoTitulo = post.tituloCompleto.split(/(?<=\.)(?=[A-Za-z])/);
 const marcaDagua = post.serie
   ? iconeDoLivro(post.serie.emblema)
   : post.categoria && temDesenho(post.categoria.slug)
@@ -52,7 +50,7 @@ const marcaDagua = post.serie
       <span aria-hidden="true">›</span>
       <Chip cor={post.cor} nome={post.rotulo} href={post.urlRotulo} />
     </nav>
-    <h1 data-pagefind-meta="title" tabindex="-1">{partesDoTitulo.map((parte, i) => (i ? [<wbr />, parte] : parte))}</h1>
+    <h1 data-pagefind-meta="title" tabindex="-1" set:html={tituloComQuebras(post.tituloCompleto)} />
     <p class="lede" set:html={mdEmLinha(post.descricao)} />
     <div class="assinatura" data-pagefind-ignore>
       <span class="autor">

@@ -180,8 +180,9 @@
 <style>
   /* Uma folha sobre a página (D26), com a interface em IBM Plex Sans e os títulos em Besley. */
   .busca {
+    --altura-busca: min(620px, calc(100vh - 64px));
     width: min(640px, calc(100vw - 32px));
-    max-height: min(620px, calc(100vh - 64px));
+    max-height: var(--altura-busca);
     margin: 64px auto auto;
     padding: 0;
     border: 1px solid var(--rule);
@@ -196,10 +197,11 @@
     background: rgb(20 26 28 / 0.45);
   }
 
+  /* Desconta a borda do diálogo: sem isso ele rola 2px e aparece uma segunda barra ao lado da lista. */
   .caixa {
     display: flex;
     flex-direction: column;
-    max-height: inherit;
+    max-height: calc(var(--altura-busca) - 2px);
   }
 
   .campo {

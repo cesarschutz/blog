@@ -833,3 +833,39 @@ nada muda.
 - **Motivo:** o Cesar preferiu o trilho sem números.
 - **Mudado:** `src/components/Sumario.astro` e `docs/briefing.md` (§5.3, Sumário). Substitui o
   "número de cada seção num marco" da D33.
+
+## D37 · Auditoria de acabamento das páginas e dos componentes
+- **Data:** 25/09/2026 · **Status:** aprovada pelo Cesar; em execução, um commit por lote.
+- **Pedido do Cesar:** acabamento profissional nas páginas e nos componentes (não no conteúdo dos
+  posts), com um relatório antes de mexer. O relatório (fase 1) ficou em
+  `.impeccable/review/auditoria/relatorio.md` (fora do git), com screenshots, traces e Lighthouse.
+- **Lotes aprovados, nesta ordem:** 1 quebras visíveis (rolagem lateral do "Do livro", as quatro
+  imagens de compartilhamento quebradas, `<wbr>` nos títulos das listas, barra dupla da busca);
+  2 acessibilidade (nome das lombadas, dois contrastes, h1→h3 da `/2/`, 404 sem canonical e com
+  `noindex`, alvos de toque, foco do Copiar); 3 busca (cortar os resultados sem relação e mostrar
+  "nada encontrado"); 5 DOM e peso (cards num `<template>`, `content-visibility` nos blocos de
+  código); 4 post-it por tema (campo `temas` nas frases, sorteio só entre as do assunto do post) e
+  altura do papel reservada; 6 SEO e metadados; 8 DESIGN.md e textos da interface, com o ícone do
+  aviso de IA passando de Atenção para Nota (muda o briefing §5.3).
+- **Fora:** o lote 7 (topo do post mais baixo e miniatura menor no celular), que mexia na
+  densidade da D27 e da D33.
+- **D36:** commitada à parte antes dos lotes.
+
+## D38 · Post-it no fim do artigo, lombada que leva ao livro, tags como links e cabeçalho que se esconde
+- **Data:** 25/09/2026 · **Status:** aprovada pelo Cesar; implementar num lote próprio, depois dos
+  lotes da D37.
+- **Pedido do Cesar (a partir das "decisões para reconsiderar" da auditoria):**
+  - **Post-it (muda a D33):** o texto aparece desde o início, sem ficar invisível enquanto a frase é
+    sorteada; o som dos livros passa a vir **desligado** por padrão; nos posts, o post-it sai da
+    lateral (embaixo do sumário) e vai para o **fim do artigo, antes do aviso de IA**, fechando a
+    leitura com a frase; no tema escuro, o papel fica mais apagado.
+  - **Lombada (muda a D29 e a D33):** a lombada **sempre leva à página do livro**, em todo lugar; na
+    home, a gaveta abre pela capa.
+  - **Tags da lista (muda a D27):** as tags da lista e dos cards viram links para a página da tag.
+  - **Celular (muda a D31 e a D33):** o cabeçalho some ao rolar para baixo e volta ao rolar para
+    cima; a abertura da home fica mais curta; os quatro botões de compartilhar viram um só, com o
+    compartilhamento nativo do sistema.
+- **Motivo:** o post-it invisível atrasava o LCP da home e, fixo ao lado do texto, era o elemento
+  mais claro da tela no escuro; som ligado por padrão não combina com um blog de leitura; a mesma
+  lombada fazia três coisas diferentes; o "#tag" da lista parecia link e não era; no celular, o
+  cabeçalho de 104px ocupava 12% da tela e a abertura, a primeira tela inteira.

@@ -182,8 +182,10 @@ const nivelDoItem = porAno ? "h3" : "h2";
     color: var(--ink-2);
   }
 
+  /* A coluna declarada deixa a estante encolher (max-width: 100%); a implícita crescia até a largura natural dela e a página rolava para o lado em 320px. */
   .lado-estante {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     justify-items: end;
     gap: 10px;
     min-width: 0;

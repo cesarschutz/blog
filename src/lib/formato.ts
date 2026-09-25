@@ -26,6 +26,14 @@ export function mdEmLinha(texto: string): string {
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
 }
 
+/**
+ * Título em HTML com um ponto de quebra (`<wbr>`) depois do ponto de um identificador
+ * ("AopUtils.getTargetClass()"): na coluna estreita, quebra ali e não no meio da palavra.
+ */
+export function tituloComQuebras(texto: string): string {
+  return escapar(texto).replace(/(?<=\.)(?=[A-Za-z])/g, "<wbr>");
+}
+
 /** Descrição sem marcação, para meta tags, RSS e JSON-LD. */
 export function semMd(texto: string): string {
   return texto.replace(/`([^`]+)`/g, "$1").replace(/\*\*([^*]+)\*\*/g, "$1");
