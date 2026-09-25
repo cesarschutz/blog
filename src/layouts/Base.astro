@@ -24,7 +24,7 @@ import { url } from "../lib/url";
 import Cabecalho from "../components/Cabecalho.astro";
 import Rodape from "../components/Rodape.astro";
 import Busca from "../components/Busca.astro";
-import { ESTATISTICAS } from "../data/site";
+import { ESTATISTICAS, TEXTOS } from "../data/site";
 import DefinicoesDesenho from "../components/DefinicoesDesenho.astro";
 
 interface Props {
@@ -50,7 +50,7 @@ interface Props {
 const NOME = "Cesar Schutz";
 const {
   titulo,
-  descricao = "Cesar Schutz, arquiteto de soluções. Artigos sobre arquitetura de software, Java e sistemas de pagamento, revisados por mim e com código testado.",
+  descricao = TEXTOS.descricao,
   atual,
   tipo = "website",
   imagem = "/og/default.png",

@@ -85,7 +85,7 @@
   margin: 0 0 1.4em;
   overflow-x: auto;
   border: 1px solid var(--rule);
-  border-radius: 8px;
+  border-radius: var(--raio-painel);
 }
 
 .prose table {
@@ -118,7 +118,7 @@
 .prose details {
   margin: 0 0 1.3em;
   border: 1px solid var(--rule);
-  border-radius: 8px;
+  border-radius: var(--raio-painel);
   background: var(--paper-hi);
 }
 

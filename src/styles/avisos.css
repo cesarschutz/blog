@@ -11,7 +11,7 @@
   margin: 0 0 1.4em;
   padding: 14px 18px 14px 14px;
   border: 1px solid color-mix(in oklab, var(--cor) 34%, var(--rule));
-  border-radius: 8px;
+  border-radius: var(--raio-painel);
   background: color-mix(in oklab, var(--cor) 7%, var(--paper-hi));
   font-size: 17px;
   line-height: 1.6;

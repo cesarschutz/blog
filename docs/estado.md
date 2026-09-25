@@ -101,7 +101,7 @@ som desligado, lombada que leva ao livro, tags como links, cabeçalho que se esc
 abertura mais curta, um botão de compartilhar). O lote 7 (densidade do topo do post e da lista no
 celular) ficou de fora.
 
-- [x] Lote 1 · [x] Lote 2 · [x] Lote 3 · [x] Lote 5 · [x] Lote 4 · [~] Lote 6 (técnico; textos com o 8) · [ ] Lote 8 · [ ] D38
+- [x] Lote 1 · [x] Lote 2 · [x] Lote 3 · [x] Lote 5 · [x] Lote 4 · [x] Lote 6 · [x] Lote 8 · [ ] D38
 
 ## Próximos passos
 

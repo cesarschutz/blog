@@ -865,6 +865,13 @@ nada muda.
   - **Celular (muda a D31 e a D33):** o cabeçalho some ao rolar para baixo e volta ao rolar para
     cima; a abertura da home fica mais curta; os quatro botões de compartilhar viram um só, com o
     compartilhamento nativo do sistema.
+- **Definido depois, com o Cesar (25/09/2026):** na home, a lombada continua abrindo a gaveta, e a
+  capa aberta dentro dela leva à página do livro; nas outras páginas, a lombada leva ao livro. A
+  abertura mais curta é, até 640px, sem a marca grande (ela já está no cabeçalho).
+- **Textos aprovados no lote 8 da D37:** descrição padrão do blog e da imagem de compartilhamento
+  padrão a partir da frase do rodapé (D33); na gaveta, "Neste livro" no lugar de "Sumário"; no filtro,
+  "Escolha um livro"; o livro vazio numa folha, com saídas; "N artigos · o último em AAAA"; descrição
+  própria das páginas 2 e 3.
 - **Motivo:** o post-it invisível atrasava o LCP da home e, fixo ao lado do texto, era o elemento
   mais claro da tela no escuro; som ligado por padrão não combina com um blog de leitura; a mesma
   lombada fazia três coisas diferentes; o "#tag" da lista parecia link e não era; no celular, o

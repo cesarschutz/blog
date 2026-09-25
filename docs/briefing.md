@@ -321,8 +321,8 @@ Referência: aba "Artigo" do protótipo.
   com ←/→) e botão **Baixar PDF**.
 - **Fontes**: sempre a última seção.
 - **Rodapé do post**, nesta ordem: tags; "Compartilhar" (copiar link, LinkedIn, WhatsApp e o
-  compartilhar nativo do celular quando existir); **aviso sobre IA** num bloco com ícone de
-  atenção, com o texto atual:
+  compartilhar nativo do celular quando existir); **aviso sobre IA** num bloco com o ícone de
+  nota (era o de atenção até a D37, que fechava a leitura como um alarme), com o texto atual:
   "Artigo escrito com apoio de IA, revisado pelo autor, com o código testado. Ainda assim pode
   conter imprecisões: confirme nas fontes citadas e na documentação oficial antes de aplicar."
   (sem o "Saiba mais" desde a D33); o cartão **"Do livro"** (o livro 3D da categoria ou a revista da

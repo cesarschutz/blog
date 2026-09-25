@@ -58,7 +58,7 @@ function linhas(l: Livro): Linha[] {
         </div>
         <div class="sumario-livro">
           <div class="topo-sumario">
-            <h2 id={`sumario-${l.id}`} tabindex="-1">{l.serie ? "Ordem de leitura" : "Sumário"}</h2>
+            <h2 id={`sumario-${l.id}`} tabindex="-1">{l.serie ? "Ordem de leitura" : "Neste livro"}</h2>
             <span class="meta-sumario">{l.posts.length > 0 ? `${l.nome}, ${l.contagem}` : l.nome}</span>
             <button type="button" class="botao fechar-livro" data-fechar-livro>Fechar livro</button>
           </div>

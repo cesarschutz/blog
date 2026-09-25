@@ -183,7 +183,7 @@ const OPCOES = [
     width: 236px;
     padding: 6px;
     border: 1px solid var(--rule);
-    border-radius: 12px;
+    border-radius: var(--raio-folha);
     background: var(--paper-hi);
     box-shadow: var(--sombra-folha-alta);
     font-family: var(--font-ui);
@@ -208,7 +208,7 @@ const OPCOES = [
     min-height: 38px;
     padding: 6px 10px;
     border: 0;
-    border-radius: 8px;
+    border-radius: var(--raio-painel);
     background: none;
     color: var(--ink);
     font: inherit;
@@ -284,7 +284,7 @@ const OPCOES = [
     height: 14px;
     border-radius: 50%;
     background: var(--paper-hi);
-    box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+    box-shadow: 0 1px 2px color-mix(in oklab, var(--veu) 25%, transparent);
     transition: translate 0.2s;
   }
 

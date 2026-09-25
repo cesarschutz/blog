@@ -36,4 +36,9 @@ export const TEXTOS = {
   apresentacao:
     "Publico aqui o que ando estudando — lançamento do Java, código, arquitetura, IA, o que me despertar interesse. Quando o estudo rende algo que vale guardar, vira artigo.",
   rodape: "O que eu estudo virando artigo — arquitetura, código, Java, IA e o que mais aparecer.",
+  /** Descrição do blog (meta description padrão, RSS, WebSite), a partir da frase do rodapé (D37). */
+  descricao:
+    "O que eu estudo virando artigo — arquitetura, código, Java, IA e o que mais aparecer. Blog de Cesar Schutz, arquiteto de soluções.",
+  /** Título da imagem de compartilhamento padrão (D37). */
+  tituloDaImagem: "Arquitetura, código, Java e IA",
 };

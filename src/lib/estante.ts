@@ -45,7 +45,7 @@ export interface Livro {
   emPe: { altura: number; largura: number };
   deitada: { comprimento: number; espessura: number; deslocamento: number };
   posts: Resumo[];
-  /** "7 artigos, 2026", "5 artigos, de 2025 a 2026", "7 edições" (série) ou "Ainda sem artigos". */
+  /** "7 artigos · o último em 2026", "5 artigos · de 2025 a 2026", "7 edições" (série) ou "Ainda sem artigos". */
   contagem: string;
 }
 
@@ -55,7 +55,9 @@ function contagem(posts: Resumo[], serie: boolean): string {
   const anos = posts.map((p) => p.publicado.getUTCFullYear());
   const [min, max] = [Math.min(...anos), Math.max(...anos)];
   const quantos = `${posts.length} ${posts.length === 1 ? "artigo" : "artigos"}`;
-  return min === max ? `${quantos}, ${max}` : `${quantos}, de ${min} a ${max}`;
+  // "7 artigos, 2026" não dizia o que o ano era (D37).
+  if (min !== max) return `${quantos} · de ${min} a ${max}`;
+  return posts.length === 1 ? `${quantos} · de ${max}` : `${quantos} · o último em ${max}`;
 }
 
 let cache: Promise<Livro[]> | undefined;

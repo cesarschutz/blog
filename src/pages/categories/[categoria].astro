@@ -8,6 +8,7 @@
  */
 import Base from "../../layouts/Base.astro";
 import { paginaDeColecao } from "../../lib/seo";
+import { url } from "../../lib/url";
 import ComPainel from "../../components/ComPainel.astro";
 import TopoLivro from "../../components/TopoLivro.astro";
 import Recentes from "../../components/Recentes.astro";
@@ -42,7 +43,13 @@ const livro = (await montarLivros()).find((l) => !l.serie && l.nome === categori
         posts.length > 0 ? (
           <Recentes posts={posts} titulo="Artigos" subtitulo={`${posts.length} ${posts.length === 1 ? "artigo" : "artigos"}`} />
         ) : (
-          <p class="vazio">Este livro ainda não tem artigos.</p>
+          <div class="folha vazio">
+            <p>Este livro ainda não tem artigos.</p>
+            <p class="saidas">
+              <a href={url("/categories/")}>Veja os outros livros</a>
+              <a href={url("/rss.xml")}>Assinar via RSS</a>
+            </p>
+          </div>
         )
       }
     </div>
@@ -58,10 +65,23 @@ const livro = (await montarLivros()).find((l) => !l.serie && l.nome === categori
     margin-top: 40px;
   }
 
+  /* Livro sem artigos (IA, Carreira): numa folha, com saída para os outros livros e o RSS (D37). */
   .vazio {
-    margin: 0;
+    padding: 24px 28px;
     font-family: var(--font-ui);
     font-size: 16px;
     color: var(--ink-2);
+  }
+
+  .vazio p {
+    margin: 0;
+  }
+
+  .vazio .saidas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    margin-top: 10px;
+    font-size: 15px;
   }
 </style>

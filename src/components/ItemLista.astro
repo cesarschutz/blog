@@ -103,8 +103,9 @@ const comMiniatura = temIlustracao(post.slug);
     font-size: clamp(21px, 1.8vw, 25px);
   }
 
+  /* Linha de até ~70 caracteres; com 92ch, a lista larga chegava a 110 (D37). */
   .descricao {
-    max-width: 92ch;
+    max-width: 68ch;
     margin: 8px 0 0;
     font-family: var(--font-ui);
     font-size: 15.5px;

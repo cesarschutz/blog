@@ -376,6 +376,13 @@ const TAGS_NO_PAINEL = 10;
     color: var(--ink-2);
   }
 
+  /* Abaixo de 1100px o painel vem depois da lista, logo antes do rodapé, que já tem o RSS (D37). */
+  @media (max-width: 1099.98px) {
+    .rss {
+      display: none;
+    }
+  }
+
   .mais svg,
   .rss svg {
     width: 15px;

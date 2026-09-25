@@ -204,7 +204,7 @@ const { frase, indice } = fraseDaPagina(chave, conjunto);
     aspect-ratio: 4 / 5;
     padding: 20px 18px 14px 20px;
     background:
-      linear-gradient(172deg, transparent 62%, rgb(80 60 0 / 0.07)),
+      linear-gradient(172deg, transparent 62%, color-mix(in oklab, var(--postit-tinta) 7%, transparent)),
       var(--grao) 0 0 / 180px 180px,
       var(--postit);
     color: var(--postit-tinta);
@@ -358,7 +358,7 @@ const { frase, indice } = fraseDaPagina(chave, conjunto);
   .outra:focus-visible {
     outline: 2px solid var(--acento);
     outline-offset: 2px;
-    border-radius: 4px;
+    border-radius: 2px;
   }
 
   @keyframes riscar {

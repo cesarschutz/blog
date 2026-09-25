@@ -8,6 +8,7 @@ import Imagem from "../../layouts/Imagem.astro";
 import CartaoCompartilhamento from "../../components/CartaoCompartilhamento.astro";
 import { getPosts, resumir, type Resumo } from "../../lib/posts";
 import { montarLivros } from "../../lib/estante";
+import { TEXTOS } from "../../data/site";
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -30,7 +31,7 @@ const livros = resumo ? undefined : await montarLivros();
     resumo ? (
       <CartaoCompartilhamento titulo={resumo.titulo} subtitulo={resumo.subtitulo} rotulo={resumo.rotulo} cor={resumo.cor} slug={resumo.slug} />
     ) : (
-      <CartaoCompartilhamento titulo="Arquitetura de software, Java e sistemas de pagamento" livros={livros} />
+      <CartaoCompartilhamento titulo={TEXTOS.tituloDaImagem} livros={livros} />
     )
   }
 </Imagem>

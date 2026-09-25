@@ -12,6 +12,7 @@ import { getContainerRenderer } from "@astrojs/mdx/container-renderer";
 import { getPosts, resumir, type Post } from "../lib/posts";
 import { semMd } from "../lib/formato";
 import { url } from "../lib/url";
+import { TEXTOS } from "../data/site";
 
 const COM_TEXTO_COMPLETO = 10;
 
@@ -46,7 +47,7 @@ export async function GET(contexto: APIContext) {
   );
   return rss({
     title: "Cesar Schutz",
-    description: "Artigos de Cesar Schutz, arquiteto de soluções, sobre arquitetura de software, Java e sistemas de pagamento.",
+    description: TEXTOS.descricao,
     site: origem,
     items: posts.map((post, i) => {
       const resumo = resumir(post);

@@ -85,7 +85,7 @@ export default defineConfig({
       defaultProps: { showLineNumbers: false },
       minSyntaxHighlightingColorContrast: 5.5,
       styleOverrides: {
-        borderRadius: "8px",
+        borderRadius: "10px",
         borderColor: "var(--rule)",
         codeFontFamily: "var(--font-codigo)",
         codeFontSize: "14px",

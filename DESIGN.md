@@ -157,6 +157,7 @@ typography:
     letterSpacing: -0.01em
 rounded:
   none: 0px
+  marcador: 2px
   capa-lombada: 1px
   capa-aberta: 3px
   painel: 10px
@@ -394,11 +395,13 @@ visita (D33). Nos dois temas, as cores vêm dos tokens.
   metadados e legendas; **tinta 3 (#868D8A)** só para texto grande ou decorativo, e só sobre a folha.
 - **Fio (`rule`, #E2E0D8):** bordas das folhas e divisórias.
 - **Poço (`well`, #F5F5F4):** código e cabeçalho de tabela, a folha com 4% de tinta.
-- **Azul-tinta (`primary`, #2549B8; #93AEFF no escuro):** a única cor de interação. Links, item ativo
-  do menu, botão "Ler artigo", seletor Lista/Cards, item atual do sumário e foco. Não serve de
-  decoração.
+- **Azul-tinta (`primary`, #2549B8; #93AEFF no escuro):** a única cor de interação. Links de texto,
+  item ativo do menu, botão "Ler artigo", seletor Lista/Cards, item atual do sumário e da paginação e
+  foco. A navegação do cabeçalho e do rodapé, as pílulas e os botões secundários ficam na tinta e só
+  ganham o azul ao passar o mouse. Não serve de decoração.
 - **Avisos:** Nota, Dica (também a linha adicionada no diff), Importante, Atenção e Cuidado (também
-  a linha removida), sempre como texto e fio sobre a folha, nunca como caixa colorida inteira.
+  a linha removida): fio fino na cor do aviso e fundo só levemente tingido (briefing §5.3), nunca a
+  caixa pintada da cor inteira.
 - **Lousa:** sempre o contrário da página. No tema claro é vidro escuro (#15191C) com caneta clara;
   no escuro, quadro branco suavizado (#CFD5D1, nunca branco puro) com caneta escura.
 - **Marca, post-it e véu** (D33): o livro "cs", o post-it das frases e o fundo do visor de imagens.
@@ -444,6 +447,9 @@ pequeno da série. Hoje isso vale para as lombadas, em pé e deitadas (`corTexto
   760px, com números em estilo antigo (`oldstyle-nums`).
 - **Interface:** IBM Plex Sans 400, 500 e 600, em menu, busca, datas, tempo de leitura, categoria,
   tags, botões, trilha, sumário e legendas. Rótulos em caixa normal, sem caixa alta.
+- **Títulos que acompanham a tela** usam `clamp`, e os valores do meio não entram na rampa: o h1 das
+  páginas de lista e da 404 vai de 34 a 52px; o do artigo, até os 50px de
+  `headline-artigo`; o título de cada artigo na lista, de 21 a 25px (D27).
 - **Código:** JetBrains Mono, pelo Expressive Code.
 - **Livros:** Bitter (600, 700 e 800) e Newsreader itálico, só nas capas, nas lombadas e nos
   títulos da lateral. A caixa alta com espaçamento largo ("VOLUME 01", "CESAR SCHUTZ",
@@ -473,7 +479,10 @@ caixas e desenhos dentro de uma folha **não** levam sombra.
 
 ## Shapes
 
-Folhas com raio de 14px e painéis e caixas dentro delas com 10px. Um painel encostado na borda da
+Folhas com raio de 14px e painéis e caixas dentro delas com 10px (aviso, tabela, `<details>`, nota
+lateral, bloco de código, resultado da busca, item do menu de aparência); o menu de aparência, que
+flutua como uma folha, usa 14px. Marcadores e detalhes em linha (código em linha, `kbd`, quadradinho
+do chip, destaque da busca, foco do post-it) ficam entre 2 e 4px. Um painel encostado na borda da
 folha herda o canto dela. A pílula (botão "Ler artigo", tags) é totalmente arredondada. As capas
 têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm cantos quase retos.
 
@@ -487,7 +496,8 @@ têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm can
 - **Chip de categoria:** quadradinho na cor do livro e nome tingido (34% de tinta no claro, 50% de
   branco no escuro). Leva à página da categoria.
 - **Botão "Ler artigo":** pílula azul-tinta com seta, texto em `on-primary`.
-- **Aviso de conteúdo feito com ajuda de IA:** texto curto no topo do artigo, sem "Saiba mais".
+- **Aviso de conteúdo feito com ajuda de IA:** no fim do artigo, antes do cartão "Do livro", num bloco
+  levemente tingido (a cor de Atenção) com o ícone de Nota, sem "Saiba mais" (D33, D37).
 
 ### Livros das categorias: "edição de estudo"
 

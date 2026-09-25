@@ -40,6 +40,7 @@ const jsonLd = {
   "@type": "WebSite",
   name: "Cesar Schutz",
   url: new URL(url("/"), Astro.site).href,
+  description: TEXTOS.descricao,
   inLanguage: "pt-BR",
   author: { "@type": "Person", name: "Cesar Schutz", jobTitle: "Arquiteto de soluções" },
 };
@@ -47,6 +48,7 @@ const jsonLd = {
 
 <Base
   titulo={primeira ? undefined : `Artigos — página ${page.currentPage}`}
+  descricao={primeira ? undefined : `Artigos do blog de Cesar Schutz, do mais recente ao mais antigo: página ${page.currentPage} de ${page.lastPage}.`}
   jsonLd={primeira ? jsonLd : undefined}
 >
   {
