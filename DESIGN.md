@@ -537,9 +537,22 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
 
 ### Movimento
 
+**Que ferramenta anima o quê (regra do site todo, 25/09/2026):**
+
+- **CSS** para estados simples: hover, foco, aparecer e sumir.
+- **View Transitions** para as transições entre páginas: as nativas do navegador, entre documentos
+  (`@view-transition` em `base.css`, D29), sem biblioteca e sem o `<ClientRouter />` do Astro, para
+  a página continuar funcionando sem JavaScript.
+- **GSAP** para sequências, animações ligadas à rolagem e objetos interativos (abrir, fechar e girar
+  os livros, por exemplo), carregado só nos componentes que usam, nunca no pacote de todas as
+  páginas.
+- **Trocar uma animação que já existe por GSAP** exige, antes, um trace de performance (antes e
+  depois, no MCP `chrome-devtools`) e o ganho concreto medido, mostrados ao Cesar. A troca só entra
+  com a aprovação dele.
+
 - **Diagrama que avança com a rolagem só em posts que explicam um fluxo** (passo a passo, linha do
-  tempo, antes e depois). Em outros casos, desenho parado. Animações novas usam GSAP em SVG,
-  carregado só no post que as usa. Com play/pause quando não seguem a rolagem.
+  tempo, antes e depois). Em outros casos, desenho parado. Animações novas desse tipo usam GSAP em
+  SVG, carregado só no post que as usa. Com play/pause quando não seguem a rolagem.
 - **Frase em destaque** (palavras que acendem com a rolagem): recurso raro dos posts, usado só de
   vez em quando.
 - **Na home, só coisas discretas:** um livro que sobe ao passar o mouse, a gaveta que abre o livro

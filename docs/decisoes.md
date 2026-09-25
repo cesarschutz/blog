@@ -815,3 +815,9 @@ nada muda.
   do projeto (`config.json`, `design.json`, `surfaces/` e `live/config.json`). Cache e pendências do
   hook, `config.local.json` (de cada máquina), `build/`, `mocks/`, `review/`, as sessões do modo live
   e a pasta `.impeccable-live/` continuam fora.
+- **Ferramenta de cada animação (Cesar, 25/09/2026, no `DESIGN.md`, "Movimento"):** CSS para estados
+  simples (hover, foco, aparecer e sumir); View Transitions para trocar de página; GSAP para sequências,
+  rolagem e objetos interativos (abrir, fechar e girar os livros), carregado só nos componentes que
+  usam. Trocar uma animação existente por GSAP só com trace de performance, ganho concreto e aprovação
+  do Cesar. Nas transições entre páginas, o Cesar escolheu manter as **nativas entre documentos**
+  (D29), e não o `<ClientRouter />` do Astro, que poria JavaScript em toda página.

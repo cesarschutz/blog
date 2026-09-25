@@ -27,7 +27,8 @@ início da sessão, revisão em lote em `.claude/revisao-posts.md` (26 posts pen
 inclinado não tomba mais e as lombadas da Carreira e da série usam a variante de texto pequeno.
 Depois, também em 25/09/2026: plugin `frontend-design` desinstalado, conferência do blog só pelo
 MCP `chrome-devtools`, `PRODUCT.md` do Impeccable (`/impeccable init`, fluxo "direto no código") e a
-regra de código e SQL testados antes de publicar (skill `post`).
+regra de código e SQL testados antes de publicar (skill `post`) e a regra de qual ferramenta
+anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
 
 ## Como ver
 
