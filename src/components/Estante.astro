@@ -105,5 +105,8 @@ const conta = (l: Livro) => {
 <script>
   import { estanteViva } from "../scripts/estante-viva";
 
-  for (const prateleira of document.querySelectorAll<HTMLElement>(".estante .prateleira-livros")) estanteViva(prateleira);
+  for (const prateleira of document.querySelectorAll<HTMLElement>(".estante .prateleira-livros")) {
+    // O repouso (a luz e as espiadinhas, D40) só na estante da home.
+    estanteViva(prateleira, { emRepouso: prateleira.closest("[data-estante]") !== null });
+  }
 </script>

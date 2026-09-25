@@ -590,6 +590,11 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
     vizinhos até 120px sobem até 5px e inclinam até 2,4° para longe dele (`quickTo`, y 0,45s, rotação
     0,6s, `power3.out`); ao sair, `elastic.out(1, 0.45)` em 1,1s. Embaixo, a legenda com o nome e a
     contagem (`estante-viva.ts`).
+  - **Estante em repouso** (só a home): depois de 3s sem mouse, toque, tecla ou rolagem, com a estante
+    ao menos metade visível e a aba ativa, uma luz suave (`soft-light`) passa pelas lombadas em 3,6s,
+    a cada ~9s (uma faixa dentro de cada lombada, para não acender o fundo entre os livros), e a cada 4
+    a 7s um livro sorteado sobe 10px, inclina 1,2°, espera 0,6s e volta com `elastic`. Qualquer
+    interação para tudo e devolve os livros ao lugar. Desligada com movimento reduzido.
 - **Lousa de passos** (D39): com a rolagem só na tela de 1024px ou mais e sem movimento reduzido
   (passos a 40% da tela, o atual inteiro e os outros esmaecidos); fora disso, passo a passo com
   "◀ 2 de 5 ▶", pontos e deslizar.
