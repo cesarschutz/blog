@@ -10,7 +10,7 @@
  *
  * Uso: npm run contraste. Lê os tokens e os cadastros direto dos .ts (Node 24).
  */
-import { claro, escuro, misturar, BRANCO_NO_ESCURO, CHIP, LOUSA, MARCA_TEXTO, PAINEL } from "../src/styles/tokens.ts";
+import { claro, escuro, misturar, BRANCO_NO_ESCURO, CHIP, LOUSA, MARCA_TEXTO, PAINEL, SUMARIO_MARCA } from "../src/styles/tokens.ts";
 import { CATEGORIAS } from "../src/data/taxonomia.ts";
 import { SERIES } from "../src/data/series.ts";
 import { PAPEL, TINTA_PAPEL } from "../docs/capas/cores.js";
@@ -141,6 +141,16 @@ for (const [tema, p] of Object.entries({ claro, escuro })) {
     conferir(grupo, `--caneta (notas e traços) / --${papel}`, p.caneta, p[papel], 4.5, true);
   }
   conferir(grupo, "--caneta (anotação no código) / --well", p.caneta, p.well, 4.5, true);
+}
+
+// A seção atual do sumário (C2, D49): o nome em --ink sobre o marca-texto na cor do livro (clareada e
+// mais forte no escuro), com a transparência por cima da folha; a folha do celular também é --paper-hi.
+for (const [tema, p] of Object.entries({ claro, escuro })) {
+  const { branco, forca } = SUMARIO_MARCA[tema];
+  const grupo = `Seção atual do sumário, tema ${tema} (4,5:1)`;
+  for (const [nome, cor] of CORES) {
+    conferir(grupo, `--ink no marca-texto de ${nome} / --paper-hi`, p.ink, sobre(p["paper-hi"], misturar(cor, "#FFFFFF", branco), forca / 100), 4.5, true);
+  }
 }
 
 

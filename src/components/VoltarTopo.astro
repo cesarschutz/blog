@@ -1,7 +1,9 @@
 ---
 /**
- * Botão "voltar ao topo" (briefing §5.3): aparece depois de uma tela de rolagem. Começa escondido;
- * src/scripts/artigo.ts o liga. Sem JS, não aparece (o Home do teclado continua valendo).
+ * Botão "voltar ao topo" (briefing §5.3; em todas as páginas longas desde a D49): aparece depois de
+ * uma tela de rolagem, no canto de baixo, e leva ao topo (suave, sem movimento reduzido), com o foco
+ * no título da página. Numa página curta, nunca aparece. Começa escondido: sem JS, não aparece (o
+ * Home do teclado continua valendo).
  */
 import { ICONES } from "../lib/icones";
 ---
@@ -9,6 +11,38 @@ import { ICONES } from "../lib/icones";
 <button type="button" class="voltar-topo" aria-label="Voltar ao topo" hidden data-voltar-topo>
   <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.subir} />
 </button>
+
+<script>
+  const botao = document.querySelector<HTMLButtonElement>("[data-voltar-topo]");
+  if (botao) {
+    const reduzir = matchMedia("(prefers-reduced-motion: reduce)");
+    let agendado = false;
+    const atualizar = () => {
+      agendado = false;
+      botao.classList.toggle("visivel", scrollY > innerHeight);
+    };
+    addEventListener(
+      "scroll",
+      () => {
+        if (agendado) return;
+        agendado = true;
+        requestAnimationFrame(atualizar);
+      },
+      { passive: true },
+    );
+    botao.hidden = false;
+    atualizar();
+    botao.addEventListener("click", () => {
+      scrollTo({ top: 0, behavior: reduzir.matches ? "auto" : "smooth" });
+      // O foco volta ao título da página (ou ao conteúdo), para o teclado recomeçar do alto.
+      const alvo = document.querySelector<HTMLElement>("main h1") ?? document.querySelector<HTMLElement>("main");
+      if (alvo) {
+        if (!alvo.hasAttribute("tabindex")) alvo.setAttribute("tabindex", "-1");
+        alvo.focus({ preventScroll: true });
+      }
+    });
+  }
+</script>
 
 <style>
   .voltar-topo {

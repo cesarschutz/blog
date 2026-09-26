@@ -24,6 +24,7 @@ import { url } from "../lib/url";
 import Cabecalho from "../components/Cabecalho.astro";
 import Rodape from "../components/Rodape.astro";
 import Busca from "../components/Busca.astro";
+import VoltarTopo from "../components/VoltarTopo.astro";
 import { ESTATISTICAS, TEXTOS } from "../data/site";
 import DefinicoesDesenho from "../components/DefinicoesDesenho.astro";
 
@@ -47,6 +48,8 @@ interface Props {
   semIndice?: boolean;
   /** A abertura do site (D47, Abertura.astro): só a home, na primeira visita da sessão. */
   abertura?: boolean;
+  /** Artigo com sumário: a seção atual pode ocupar o lugar da marca no cabeçalho (C2, D49). */
+  sumario?: boolean;
 }
 
 const NOME = "Cesar Schutz";
@@ -62,6 +65,7 @@ const {
   jsonLd,
   semIndice = false,
   abertura = false,
+  sumario = false,
 } = Astro.props;
 const tituloDaAba = titulo ? `${titulo} · ${NOME}` : `${NOME} · Arquitetura e engenharia de software`;
 const canonico = new URL(Astro.url.pathname, Astro.site);
@@ -197,11 +201,12 @@ const preVisualizacao = process.env.PREVIEW === "true";
   <body>
     <a class="pular" href="#conteudo">Pular para o conteúdo</a>
     <DefinicoesDesenho />
-    <Cabecalho atual={atual} />
+    <Cabecalho atual={atual} sumario={sumario} />
     <main id="conteudo">
       <slot />
     </main>
     <Rodape />
+    <VoltarTopo />
     <Busca />
   </body>
 </html>

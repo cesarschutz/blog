@@ -13,7 +13,6 @@ import BarraLeitura from "../../components/BarraLeitura.astro";
 import TopoArtigo from "../../components/TopoArtigo.astro";
 import Sumario from "../../components/Sumario.astro";
 import RodapeArtigo from "../../components/RodapeArtigo.astro";
-import VoltarTopo from "../../components/VoltarTopo.astro";
 import Comentarios from "../../components/Comentarios.astro";
 import MarcaDagua from "../../components/MarcaDagua.astro";
 import { AUTOR, COMENTARIOS_LIGADOS } from "../../data/site";
@@ -95,6 +94,7 @@ const jsonLd = {
   publicado={post.data.published}
   modificado={post.data.updated}
   jsonLd={jsonLd}
+  sumario={temSumario}
 >
   {remarkPluginFrontmatter?.temMatematica && <link slot="head" rel="stylesheet" href={url("/katex/katex.min.css")} />}
   {remarkPluginFrontmatter?.caneta?.escrita && <style slot="head" set:html={fonteDaCaneta} />}
@@ -133,7 +133,7 @@ const jsonLd = {
       </div>
     </div>
   </article>
-  <VoltarTopo />
+  {temSumario && <Sumario secoes={secoes} variante="folha" livro={livroDoPost} cor={resumo.cor} />}
 </Base>
 
 <script>

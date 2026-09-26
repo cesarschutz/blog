@@ -1,7 +1,8 @@
 /**
- * Interações do artigo (briefing §5.3): barra de leitura (no topo e embaixo do sumário), voltar ao
- * topo, seção atual no sumário lateral, notas laterais que abrem no lugar nas telas menores, visor
- * de imagens e a apresentação (setas, contador e tela cheia). Sem JS o artigo continua inteiro: as
+ * Interações do artigo (briefing §5.3): barra de leitura (no topo e embaixo do sumário), o sumário
+ * que acompanha a leitura (C2, D49: o fio escrito por seção, a seção atual com o marca-texto, os
+ * vistos e, sem a lateral, a seção no cabeçalho com a folha do sumário), notas laterais que abrem no
+ * lugar nas telas menores, visor de imagens e a apresentação (setas, contador e tela cheia). Sem JS o artigo continua inteiro: as
  * notas abrem por âncora, a apresentação rola de lado e o PDF baixa.
  */
 import { ICONES } from "../lib/icones";
@@ -9,8 +10,9 @@ import { ICONES } from "../lib/icones";
 const reduzir = matchMedia("(prefers-reduced-motion: reduce)");
 const rolagem = (): ScrollBehavior => (reduzir.matches ? "auto" : "smooth");
 
-// ---------- barra de leitura, voltar ao topo e seção atual ----------
+// ---------- barra de leitura e o sumário que acompanha (C2, D49) ----------
 
+const raiz = document.documentElement;
 const artigo = document.querySelector<HTMLElement>("[data-artigo]");
 const barra = document.querySelector<HTMLElement>("[data-barra-leitura]");
 const progresso = document.querySelector<HTMLElement>("[data-progresso-sumario]");
@@ -19,10 +21,11 @@ const progressoTexto = progresso?.querySelector<HTMLElement>(".lido");
 const progressoFalta = progresso?.querySelector<HTMLElement>(".falta");
 const minutosDoArtigo = Number(progresso?.dataset.minutos ?? 0);
 if (progresso) progresso.hidden = false;
-const voltar = document.querySelector<HTMLButtonElement>("[data-voltar-topo]");
 const secoes = [...document.querySelectorAll<HTMLAnchorElement>("[data-secao]")].flatMap((link) => {
   const titulo = document.getElementById(link.dataset.secao!);
-  return titulo ? [{ link, titulo }] : [];
+  const naFolha = document.querySelector<HTMLAnchorElement>(`[data-secao-folha="${CSS.escape(link.dataset.secao!)}"]`);
+  const nome = link.querySelector(".rotulo")?.textContent?.trim() ?? link.textContent!.trim();
+  return titulo ? [{ link, titulo, naFolha, nome }] : [];
 });
 // Subseções (h3) do sumário lateral, cada uma com o link da seção dela (D33).
 const subsecoes = [...document.querySelectorAll<HTMLAnchorElement>("[data-subsecao]")].flatMap((link) => {
@@ -31,7 +34,80 @@ const subsecoes = [...document.querySelectorAll<HTMLAnchorElement>("[data-subsec
   return titulo && daSecao ? [{ link, titulo, daSecao }] : [];
 });
 const trilho = document.querySelector<HTMLElement>("[data-trilho]");
-let secaoAnterior: HTMLAnchorElement | undefined;
+/** A linha em que uma seção vira a atual: o título dela passou de 140px do alto da janela. */
+const LINHA = 140;
+let atual = -2; // -2: ainda não marcado; -1: antes da primeira seção
+const lidas = new Set<number>();
+
+// O fio do trilho, escrito à caneta (só na lateral): um traço quase reto que passa pelos pontos, com o
+// tremor pequeno de uma linha feita à mão (semente fixa: sempre o mesmo desenho).
+const listaTrilho = document.querySelector<HTMLElement>("[data-lista-trilho]");
+const fioBase = listaTrilho?.querySelector<SVGPathElement>(".fio-base");
+const fioTinta = listaTrilho?.querySelector<SVGPathElement>(".fio-tinta");
+let pontosY: number[] = [];
+let tabelaDoFio: [number, number][] = [];
+let comprimentoDoFio = 0;
+
+function desenharFio() {
+  if (!listaTrilho || !fioBase || !fioTinta || !listaTrilho.offsetParent || !secoes.length) return;
+  const caixa = listaTrilho.getBoundingClientRect();
+  const marcos = secoes.map(({ link }) => link.querySelector(".marco")!.getBoundingClientRect());
+  pontosY = marcos.map((m) => m.top - caixa.top + m.height / 2);
+  const x = marcos[0].left - caixa.left + marcos[0].width / 2;
+  let semente = 7;
+  const acaso = () => (semente = (semente * 16807) % 2147483647) / 2147483647 - 0.5;
+  const [y0, y1] = [pontosY[0], pontosY.at(-1)!];
+  let d = `M${x} ${y0.toFixed(1)}`;
+  for (let y = y0 + 22; y < y1; y += 22) d += ` L${(x + acaso() * 1.3).toFixed(2)} ${y.toFixed(1)}`;
+  d += ` L${x} ${y1.toFixed(1)}`;
+  fioBase.setAttribute("d", d);
+  fioTinta.setAttribute("d", d);
+  comprimentoDoFio = fioTinta.getTotalLength();
+  tabelaDoFio = [];
+  for (let l = 0; l <= comprimentoDoFio; l += 2) tabelaDoFio.push([fioTinta.getPointAtLength(l).y, l]);
+  // Com o desenho novo, a tinta vai direto ao lugar (sem escorrer do começo do fio).
+  fioTinta.style.transition = "none";
+  fioTinta.style.strokeDasharray = `${comprimentoDoFio}`;
+  moverTinta();
+  void fioTinta.getBoundingClientRect();
+  fioTinta.style.transition = "";
+}
+
+let ultimaLeitura = { i: -1, f: 0 };
+
+// A tinta do fio anda até onde a leitura chegou dentro da seção (a transição do CSS a faz seguir).
+function moverTinta() {
+  if (!fioTinta || !pontosY.length) return;
+  const { i, f } = ultimaLeitura;
+  let y = pontosY[0];
+  if (i >= 0) y = i + 1 < pontosY.length ? pontosY[i] + f * (pontosY[i + 1] - pontosY[i]) : pontosY[i];
+  fioTinta.style.strokeDashoffset = `${comprimentoDoFio - comprimentoAte(y)}`;
+}
+
+function comprimentoAte(y: number) {
+  let r = 0;
+  for (const [py, l] of tabelaDoFio) {
+    if (py <= y) r = l;
+    else break;
+  }
+  return r;
+}
+
+/** A seção atual e quanto dela já foi lido (de 0 a 1): do título dela passar da linha ao do próximo passar. */
+function leitura() {
+  const topos = secoes.map(({ titulo }) => titulo.getBoundingClientRect().top);
+  let i = -1;
+  topos.forEach((t, k) => {
+    if (t < LINHA) i = k;
+  });
+  let f = 0;
+  if (i >= 0 && artigo) {
+    const inicio = topos[i] - LINHA;
+    const fim = i + 1 < topos.length ? topos[i + 1] - LINHA : artigo.getBoundingClientRect().bottom - innerHeight;
+    f = Math.min(1, Math.max(0, -inicio / Math.max(fim - inicio, 1)));
+  }
+  return { i, f };
+}
 
 let agendado = false;
 function aoRolar() {
@@ -50,59 +126,163 @@ function aoRolar() {
       progressoFalta.textContent = lido > 0.995 ? "chegou ao fim" : `faltam ${resto} min`;
     }
   }
-  voltar?.classList.toggle("visivel", scrollY > innerHeight);
-  marcarSumario();
+  if (!secoes.length) return;
+  ultimaLeitura = leitura();
+  if (ultimaLeitura.i !== atual) marcarSumario(atual, ultimaLeitura.i);
+  moverTinta();
 }
 
-// No sumário lateral: a seção atual, as já lidas (o trilho fica azul até a atual), a subseção atual
-// dentro dela e, se a lista rola, a atual sempre à vista.
-function marcarSumario() {
-  let iAtual = -1;
-  secoes.forEach(({ titulo }, i) => {
-    if (titulo.getBoundingClientRect().top < 140) iAtual = i;
+// A seção atual (aria-current, com o marca-texto), as que ficaram para trás (com o visto, que fica
+// mesmo voltando a rolagem), a subseção atual dentro dela e, se a lista rola, a atual sempre à vista.
+function marcarSumario(de: number, para: number) {
+  atual = para;
+  for (let k = 0; k < para; k++) lidas.add(k);
+  secoes.forEach(({ link, naFolha }, k) => {
+    for (const a of [link, naFolha]) {
+      if (!a) continue;
+      if (k === para) a.setAttribute("aria-current", "true");
+      else a.removeAttribute("aria-current");
+      a.parentElement?.classList.toggle("lida", lidas.has(k));
+    }
   });
-  const atual = secoes[iAtual]?.link;
-  secoes.forEach(({ link }, i) => {
-    if (link === atual) link.setAttribute("aria-current", "true");
-    else link.removeAttribute("aria-current");
-    link.parentElement?.classList.toggle("lida", i < iAtual);
-  });
+  // As subseções da atual abrem (CSS): o fio precisa passar pelos pontos nos lugares novos.
+  desenharFio();
+  const link = secoes[para]?.link;
+  if (trilho && link && trilho.scrollHeight > trilho.clientHeight) {
+    const caixa = trilho.getBoundingClientRect();
+    const item = link.getBoundingClientRect();
+    if (item.top < caixa.top + 32 || item.bottom > caixa.bottom - 32) {
+      trilho.scrollTo({ top: trilho.scrollTop + item.top - caixa.top - caixa.height / 3, behavior: rolagem() });
+    }
+  }
+  trocarCabecalho(de, para);
+}
+
+function marcarSubsecao() {
+  const daAtual = secoes[atual]?.link;
   let subAtual: HTMLAnchorElement | undefined;
   for (const { link, titulo, daSecao } of subsecoes) {
-    if (daSecao === atual && titulo.getBoundingClientRect().top < 140) subAtual = link;
+    if (daSecao === daAtual && titulo.getBoundingClientRect().top < LINHA) subAtual = link;
   }
   for (const { link } of subsecoes) {
     if (link === subAtual) link.setAttribute("aria-current", "true");
     else link.removeAttribute("aria-current");
   }
-  if (trilho && atual && atual !== secaoAnterior && trilho.scrollHeight > trilho.clientHeight) {
-    const caixa = trilho.getBoundingClientRect();
-    const item = atual.getBoundingClientRect();
-    if (item.top < caixa.top + 32 || item.bottom > caixa.bottom - 32) {
-      trilho.scrollTo({ top: trilho.scrollTop + item.top - caixa.top - caixa.height / 3, behavior: rolagem() });
-    }
-  }
-  secaoAnterior = atual;
 }
+
+// ---------- a seção atual no cabeçalho, sem a lateral (C2, D49) ----------
+
+const marcaDoTopo = document.querySelector<HTMLElement>("[data-lugar-marca] > .marca");
+const botaoSecao = document.querySelector<HTMLButtonElement>("[data-abrir-sumario]");
+const vagas = [...document.querySelectorAll<HTMLElement>("[data-vaga]")];
+let vagaAtiva = 0;
+if (botaoSecao && marcaDoTopo && secoes.length) {
+  botaoSecao.hidden = false;
+  marcaDoTopo.dataset.pos = "meio";
+}
+
+/** Põe o elemento numa posição: "meio" (à vista), "cima" ou "baixo" (fora); de uma vez ou deslizando. */
+function posicionar(el: HTMLElement, pos: "meio" | "cima" | "baixo", deUmaVez: boolean) {
+  if (!deUmaVez) {
+    el.dataset.pos = pos;
+    return;
+  }
+  el.style.transition = "none";
+  el.dataset.pos = pos;
+  void el.offsetWidth;
+  el.style.transition = "";
+}
+
+// A seção nova entra por baixo ao descer e por cima ao subir; a marca volta antes da primeira seção.
+function trocarCabecalho(de: number, para: number) {
+  if (!botaoSecao || !marcaDoTopo) return;
+  const deUmaVez = de === -2 || reduzir.matches;
+  const desce = para > de;
+  const sai = de >= 0 ? vagas[vagaAtiva] : marcaDoTopo;
+  let entra: HTMLElement = marcaDoTopo;
+  if (para >= 0) {
+    if (de >= 0) vagaAtiva = 1 - vagaAtiva;
+    entra = vagas[vagaAtiva];
+    entra.querySelector(".num")!.textContent = `${para + 1} de ${secoes.length}`;
+    entra.querySelector(".nome")!.textContent = secoes[para].nome;
+  }
+  botaoSecao.tabIndex = para >= 0 ? 0 : -1;
+  botaoSecao.setAttribute("aria-label", para >= 0 ? `Seção ${para + 1} de ${secoes.length}: ${secoes[para].nome}. Abrir o sumário` : "Abrir o sumário");
+  if (sai === entra) return;
+  posicionar(entra, desce ? "baixo" : "cima", true);
+  posicionar(sai, desce ? "cima" : "baixo", deUmaVez);
+  posicionar(entra, "meio", deUmaVez);
+}
+
+// ---------- a folha do sumário (C2, D49) ----------
+
+const folha = document.querySelector<HTMLElement>("[data-folha-sumario]");
+const veuDaFolha = document.querySelector<HTMLElement>("[data-veu-sumario]");
+const lateralVisivel = matchMedia("(min-width: 1300px)");
+const folhaAberta = () => botaoSecao?.getAttribute("aria-expanded") === "true";
+
+function abrirFolha(pelaTecla: boolean) {
+  if (!botaoSecao || !folha) return;
+  // O menu do celular e a folha não ficam abertos juntos.
+  if (raiz.hasAttribute("data-menu-aberto")) document.querySelector<HTMLButtonElement>("[data-botao-menu]")?.click();
+  botaoSecao.setAttribute("aria-expanded", "true");
+  raiz.dataset.sumarioAberto = "";
+  const alvo = folha.querySelector<HTMLAnchorElement>('[aria-current="true"]') ?? folha.querySelector<HTMLAnchorElement>("a");
+  if (pelaTecla) alvo?.focus({ preventScroll: true });
+}
+
+function fecharFolha(devolverFoco: boolean) {
+  if (!botaoSecao || !folhaAberta()) return;
+  botaoSecao.setAttribute("aria-expanded", "false");
+  delete raiz.dataset.sumarioAberto;
+  if (devolverFoco) botaoSecao.focus({ preventScroll: true });
+}
+
+if (botaoSecao && folha) {
+  botaoSecao.addEventListener("click", (e) => (folhaAberta() ? fecharFolha(false) : abrirFolha(e.detail === 0)));
+  veuDaFolha?.addEventListener("click", () => fecharFolha(false));
+  folha.addEventListener("click", (e) => (e.target as HTMLElement).closest("a") && fecharFolha(false));
+  folha.addEventListener("focusout", (e) => {
+    const para = e.relatedTarget as Node | null;
+    if (folhaAberta() && para && !folha.contains(para) && para !== botaoSecao) fecharFolha(false);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && folhaAberta()) fecharFolha(true);
+  });
+  lateralVisivel.addEventListener("change", () => fecharFolha(false));
+  addEventListener("pageshow", () => fecharFolha(false));
+}
+
 addEventListener(
   "scroll",
   () => {
     if (agendado) return;
     agendado = true;
-    requestAnimationFrame(aoRolar);
+    requestAnimationFrame(() => {
+      aoRolar();
+      marcarSubsecao();
+    });
   },
   { passive: true },
 );
-addEventListener("resize", aoRolar);
+let larguraAntes = innerWidth;
+addEventListener("resize", () => {
+  if (innerWidth !== larguraAntes) desenharFio();
+  larguraAntes = innerWidth;
+  aoRolar();
+});
+lateralVisivel.addEventListener("change", () => {
+  desenharFio();
+  aoRolar();
+});
+if (listaTrilho) new ResizeObserver(() => desenharFio()).observe(listaTrilho);
+document.fonts?.ready.then(() => {
+  desenharFio();
+  aoRolar();
+});
+desenharFio();
 aoRolar();
-
-if (voltar) {
-  voltar.hidden = false;
-  voltar.addEventListener("click", () => {
-    scrollTo({ top: 0, behavior: rolagem() });
-    document.querySelector<HTMLElement>("h1")?.focus({ preventScroll: true });
-  });
-}
+marcarSubsecao();
 
 // ---------- notas laterais ----------
 

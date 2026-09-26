@@ -7,6 +7,11 @@
  * --altura-cabecalho e o quanto as outras peças fixas e as âncoras descontam, em --altura-topo
  * (base.css). No celular (até 860px, D46), fica sempre à vista, numa linha só: a marca, a busca (só o
  * ícone), o tema e o botão do menu, que abre as seções numa folha que desce do cabeçalho.
+ *
+ * Nos artigos com sumário (C2, D49), nas telas sem a lateral (até 1299px), o nome da seção atual toma
+ * o lugar da marca depois que a leitura chega à primeira seção: a seção nova entra por baixo ao descer
+ * e por cima ao subir, e o toque abre o sumário numa folha (Sumario.astro, variante "folha"). O
+ * script que acompanha a leitura é o do artigo (src/scripts/artigo.ts).
  */
 import Marca from "./Marca.astro";
 import SeletorTema from "./SeletorTema.astro";
@@ -16,9 +21,12 @@ import { url } from "../lib/url";
 
 interface Props {
   atual?: "artigos" | "categorias" | "series" | "tags";
+  /** Artigo com sumário: o nome da seção atual pode ocupar o lugar da marca (C2, D49). */
+  sumario?: boolean;
 }
 
-const { atual } = Astro.props;
+const { atual, sumario = false } = Astro.props;
+const seta = '<path d="M3.5 5.5 7 9l3.5-3.5"/>';
 // As seções; a nota só aparece no menu do celular (D46).
 const ITENS = [
   { chave: "artigos", nome: "Artigos", nota: "Todos, do mais novo ao mais antigo", href: url("/archive/") },
@@ -30,7 +38,17 @@ const ITENS = [
 
 <div class="topo-fixo">
 <header class="cabecalho wrap">
-  <Marca />
+  <div class="lugar-marca" data-lugar-marca>
+    <Marca />
+    {
+      sumario && (
+        <button type="button" class="secao-atual" aria-expanded="false" aria-controls="folha-sumario" tabindex="-1" hidden data-abrir-sumario>
+          <span class="vaga" data-vaga data-pos="baixo"><span class="num" /><span class="nome" /><svg viewBox="0 0 14 14" aria-hidden="true" focusable="false" set:html={seta} /></span>
+          <span class="vaga" data-vaga data-pos="baixo"><span class="num" /><span class="nome" /><svg viewBox="0 0 14 14" aria-hidden="true" focusable="false" set:html={seta} /></span>
+        </button>
+      )
+    }
+  </div>
   <nav class="menu" id="menu-principal" aria-label="Principal">
     {
       ITENS.map((item, i) => (
@@ -156,8 +174,131 @@ const ITENS = [
     padding-bottom: 10px;
   }
 
-  .cabecalho > :global(.marca) {
+  /*
+   * O lugar da marca: nos artigos com sumário (C2, D49), a marca e o nome da seção atual se revezam
+   * nele, deslizando na direção da leitura (artigo.ts põe o data-pos: "meio" é o que está à vista).
+   */
+  .lugar-marca {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    min-width: 0;
+    min-height: 40px;
     margin-right: auto;
+    /* Só corta na vertical (a seção desliza); o livro da marca pode abrir para os lados. */
+    overflow-x: visible;
+    overflow-y: clip;
+  }
+
+  .lugar-marca > :global(.marca),
+  .vaga {
+    transition:
+      translate 0.35s cubic-bezier(0.55, 0, 1, 0.45),
+      opacity 0.35s cubic-bezier(0.55, 0, 1, 0.45),
+      visibility 0s linear 0.35s;
+  }
+
+  .lugar-marca > :global(.marca[data-pos="meio"]),
+  .vaga[data-pos="meio"] {
+    visibility: visible;
+    transition:
+      translate 0.35s cubic-bezier(0.215, 0.61, 0.355, 1) 0.08s,
+      opacity 0.35s cubic-bezier(0.215, 0.61, 0.355, 1) 0.08s,
+      visibility 0s;
+  }
+
+  .lugar-marca > :global(.marca[data-pos="cima"]),
+  .vaga[data-pos="cima"] {
+    translate: 0 -100%;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .lugar-marca > :global(.marca[data-pos="baixo"]),
+  .vaga[data-pos="baixo"] {
+    translate: 0 100%;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .secao-atual {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ink);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .secao-atual[hidden] {
+    display: none;
+  }
+
+  .vaga {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .vaga .num {
+    flex: none;
+    font-family: var(--font-ui);
+    font-size: 12.5px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--ink-2);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .vaga .nome {
+    min-width: 0;
+    overflow: hidden;
+    font-family: var(--font-titulo);
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.2;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .vaga svg {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: var(--ink-2);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: rotate 0.25s;
+  }
+
+  .secao-atual[aria-expanded="true"] svg {
+    rotate: 180deg;
+  }
+
+  .secao-atual:focus-visible {
+    outline-offset: -2px;
+  }
+
+  /* Com a lateral (≥ 1300px), o sumário já está à vista: a marca fica sempre. */
+  @media (min-width: 1300px) {
+    .secao-atual {
+      display: none;
+    }
+
+    .lugar-marca > :global(.marca) {
+      translate: none !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
   }
 
   .menu {
@@ -498,15 +639,22 @@ const ITENS = [
     .menu a,
     .menu-perfis,
     .veu-menu,
-    .tracos span {
+    .tracos span,
+    .lugar-marca > :global(.marca),
+    .vaga,
+    .vaga svg {
       transition: none !important;
     }
   }
 
   /* Telefones de 320px: a marca encolhe um pouco para a linha caber. */
   @media (max-width: 400px) {
-    .cabecalho > :global(.marca) {
+    .lugar-marca > :global(.marca) {
       font-size: 18px;
+    }
+
+    .vaga .nome {
+      font-size: 15.5px;
     }
   }
 </style>

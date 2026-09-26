@@ -2,16 +2,22 @@
 /**
  * Sumário do artigo (briefing §5.3), só com 3 seções ou mais.
  *
- * "lateral" (D26, D33): em telas ≥ 1300px, à esquerda do texto, numa folha própria e fixa. As seções
- * ficam num trilho, com um ponto em cada uma e sem número (D36): o "3. " de um título numerado sai
- * também do nome, nas duas variantes. O script (src/scripts/artigo.ts) pinta o trilho até a
- * seção atual, marca as já lidas e a atual (em azul-tinta), abre as subseções da atual e mantém a
- * atual à vista quando a lista rola. Embaixo, a barra de quanto já foi lido, com "NN% lido" e o tempo
- * que falta; só com JS. Embaixo, o livro do artigo, grande e de lado, como o da gaveta da home (D46):
- * gira um pouco ao passar o mouse, a lupa abre o livro ampliado e o link leva à página dele. Sem
- * seções (menos de 3), a coluna tem só o livro.
+ * "lateral" (D26, D33, D49): em telas ≥ 1300px, à esquerda do texto, numa folha própria e fixa. As
+ * seções ficam num trilho, com um ponto em cada uma e sem número (D36): o "3. " de um título
+ * numerado sai também do nome, nas três variantes. O sumário acompanha a leitura como o índice de um
+ * caderno (C2, D49): o fio é escrito à caneta, na cor do livro, conforme a leitura anda dentro da
+ * seção; a seção atual ganha o marca-texto na cor do livro; a que ficou para trás ganha um visto. O
+ * script (src/scripts/artigo.ts) desenha o fio, abre as subseções da atual e mantém a atual à vista
+ * quando a lista rola. Embaixo, a barra de quanto já foi lido, com "NN% lido" e o tempo que falta; só
+ * com JS. Embaixo, o livro do artigo, grande e de lado, como o da gaveta da home (D46): gira um pouco
+ * ao passar o mouse, a lupa abre o livro ampliado e o link leva à página dele. Sem seções (menos de
+ * 3), a coluna tem só o livro.
  *
  * "recolhivel": no início do texto, nas telas menores.
+ *
+ * "folha" (C2, D49): nas telas sem a lateral, o nome da seção atual toma o lugar da marca no
+ * cabeçalho (Cabecalho.astro) e, tocado, abre esta folha, que desce do cabeçalho como o menu (D46),
+ * com os mesmos vistos.
  */
 import LivroAmpliado from "./LivroAmpliado.astro";
 import LivroEmPe from "./LivroEmPe.astro";
@@ -23,14 +29,16 @@ import { tituloComQuebras } from "../lib/formato";
 
 interface Props {
   secoes: SecaoDoSumario[];
-  variante: "lateral" | "recolhivel";
+  variante: "lateral" | "recolhivel" | "folha";
   /** Tempo de leitura do artigo, para o "faltam N min". */
   minutos?: number;
-  /** O livro do artigo, grande, embaixo do sumário lateral (D46). */
+  /** O livro do artigo, grande, embaixo do sumário lateral (D46); na folha, dá a cor dela. */
   livro?: Livro;
+  /** A cor do artigo (a da categoria ou da série), para a folha, que fica fora do artigo. */
+  cor?: string;
 }
 
-const { secoes, variante, minutos = 0, livro } = Astro.props;
+const { secoes, variante, minutos = 0, livro, cor } = Astro.props;
 // "3. Bloqueio pessimista" → "Bloqueio pessimista": o sumário não mostra número (D36).
 const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
 ---
@@ -42,13 +50,15 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
       <div class="folha folha-sumario">
         <nav aria-label="Neste artigo" data-trilho>
           <p class="titulo">Neste artigo</p>
+          <div class="lista-trilho" data-lista-trilho>
+          <svg class="fio" aria-hidden="true" focusable="false"><path class="fio-base" /><path class="fio-tinta" /></svg>
           <ol class="trilho">
             {secoes.map((s) => {
               return (
                 <li class="secao">
                   <a href={`#${s.slug}`} data-secao={s.slug}>
-                    <span class="marco" aria-hidden="true" />
-                    <span class="nome" set:html={tituloComQuebras(semNumero(s.text))} />
+                    <svg class="marco" viewBox="0 0 14 14" aria-hidden="true" focusable="false"><circle class="bolinha" cx="7" cy="7" r="3.4" /><path class="visto" pathLength="1" d="M2.6 7.6 5.7 10.5 11.6 3.3" /></svg>
+                    <span class="nome"><span class="rotulo" set:html={tituloComQuebras(semNumero(s.text))} /></span>
                   </a>
                   {s.sub.length > 0 && (
                     <ol class="subsecoes">
@@ -63,6 +73,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
               );
             })}
           </ol>
+          </div>
         </nav>
         <div class="progresso" aria-hidden="true" hidden data-progresso-sumario data-minutos={minutos}>
           <span class="barra"><span class="feito"></span></span>
@@ -91,6 +102,29 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
         )
       }
     </aside>
+  ) : variante === "folha" ? (
+    <div class="veu-sumario" data-veu-sumario aria-hidden="true" />
+    <div
+      class="folha folha-celular"
+      id="folha-sumario"
+      role="dialog"
+      aria-label="Neste artigo"
+      style={`${cor ? `--cor:${cor};` : ""}${livro ? coresDoLivroCss(livro) : ""}`}
+      data-folha-sumario
+      data-pagefind-ignore
+    >
+      <p class="titulo">Neste artigo</p>
+      <ol class="trilho">
+        {secoes.map((s, i) => (
+          <li class="secao" style={`--i:${i}`}>
+            <a href={`#${s.slug}`} data-secao-folha={s.slug}>
+              <svg class="marco" viewBox="0 0 14 14" aria-hidden="true" focusable="false"><circle class="bolinha" cx="7" cy="7" r="3.4" /><path class="visto" pathLength="1" d="M2.6 7.6 5.7 10.5 11.6 3.3" /></svg>
+              <span class="nome"><span class="rotulo" set:html={tituloComQuebras(semNumero(s.text))} /></span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
   ) : (
     <details class="recolhivel" data-pagefind-ignore>
       <summary>Neste artigo</summary>
@@ -114,9 +148,13 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
    * livro (a cor escurecida até ter contraste sobre o papel) e, no escuro, com o branco dos desenhos
    * (--branco-no-escuro). Passa de 3:1 sobre a folha nos dois temas (npm run contraste).
    */
+  .lateral,
+  .folha-celular {
+    --cor-ui: color-mix(in oklab, var(--livro-destaque, var(--cor, var(--acento))), #fff var(--branco-no-escuro, 0%));
+    --marca-sumario: color-mix(in oklab, color-mix(in oklab, var(--cor, var(--acento)), #fff var(--sumario-marca-branco)) var(--sumario-marca-forca), transparent);
+  }
+
   .lateral {
-    --cor-ui: color-mix(in oklab, var(--livro-destaque, var(--acento)), #fff var(--branco-no-escuro, 0%));
-    --cor-trilho: color-mix(in oklab, var(--cor-ui) 60%, var(--rule));
     display: none;
   }
 
@@ -137,33 +175,46 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     font-family: var(--font-ui);
   }
 
-  .secao {
+  /*
+   * O fio do trilho (C2, D49): um traço à mão que passa pelos pontos, com a tinta na cor do livro
+   * escrita até onde a leitura chegou dentro da seção (artigo.ts desenha o caminho e move a tinta; a
+   * transição do stroke-dashoffset faz a caneta seguir a rolagem com um leve atraso).
+   */
+  .lista-trilho {
     --marco: 22px;
     position: relative;
-    padding-left: calc(var(--marco) + 11px);
   }
 
-  /* O fio do trilho, de um marco ao outro; já lido, em azul-tinta. */
-  .secao::before {
-    content: "";
+  .fio {
     position: absolute;
     top: 0;
-    bottom: 0;
-    left: calc(var(--marco) / 2 - 0.75px);
-    width: 1.5px;
-    background: var(--rule);
+    left: 0;
+    width: var(--marco);
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
   }
 
-  .secao:first-child::before {
-    top: 14px;
+  .fio path {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
-  .secao:last-child::before {
-    bottom: calc(100% - 14px);
+  .fio-base {
+    stroke: var(--rule);
+    stroke-width: 1.5;
   }
 
-  .secao.lida::before {
-    background: var(--cor-trilho);
+  .fio-tinta {
+    stroke: var(--cor-ui);
+    stroke-width: 2;
+    transition: stroke-dashoffset 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .secao {
+    position: relative;
+    padding-left: calc(var(--marco) + 11px);
   }
 
   /* Nomes longos quebram nos pontos (tituloComQuebras) e, em último caso, onde der: nunca rolam. */
@@ -181,27 +232,62 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     color: var(--ink);
   }
 
-  /* Um ponto no trilho em cada seção, sem número (D36). */
+  /*
+   * O ponto de cada seção, sem número (D36). Na seção atual, cheio na cor do livro; na que ficou para
+   * trás, uma clareira no fio com o visto escrito dentro (C2, D49): fica, mesmo voltando a rolagem,
+   * como as marcações do caderno.
+   */
   .marco {
     position: absolute;
     z-index: 1;
-    top: 10px;
-    left: calc(var(--marco) / 2 - 4.5px);
-    width: 9px;
-    height: 9px;
-    border: 1.5px solid var(--rule);
-    border-radius: 50%;
-    background: var(--paper-hi);
-    transition:
-      background 0.2s,
-      border-color 0.2s,
-      color 0.2s,
-      box-shadow 0.2s;
+    top: 8px;
+    left: calc(var(--marco) / 2 - 7px);
+    width: 14px;
+    height: 14px;
+    overflow: visible;
   }
 
-  .secao.lida .marco {
-    border-color: var(--cor-trilho);
-    background: color-mix(in oklab, var(--cor-ui) 12%, var(--paper-hi));
+  .bolinha {
+    r: 3.4px;
+    fill: var(--paper-hi);
+    stroke: var(--ink-3);
+    stroke-width: 1.2;
+    transition:
+      r 0.2s,
+      fill 0.2s,
+      stroke 0.2s;
+  }
+
+  .visto {
+    fill: none;
+    stroke: var(--cor-ui);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    transition:
+      stroke-dashoffset 0.42s ease-in-out 0.15s,
+      opacity 0.2s;
+  }
+
+  .secao > a[aria-current="true"] .bolinha {
+    fill: var(--cor-ui);
+    stroke: var(--cor-ui);
+  }
+
+  .secao.lida > a:not([aria-current]) .bolinha {
+    r: 6.4px;
+    fill: var(--paper-hi);
+    stroke: transparent;
+  }
+
+  .secao.lida .visto {
+    stroke-dashoffset: 0;
+  }
+
+  .secao > a[aria-current="true"] .visto {
+    opacity: 0;
   }
 
   .secao > a[aria-current="true"] {
@@ -209,10 +295,24 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     font-weight: 600;
   }
 
-  .secao > a[aria-current="true"] .marco {
-    border-color: var(--cor-ui);
-    background: var(--cor-ui);
-    box-shadow: 0 0 0 4px color-mix(in oklab, var(--cor-ui) 16%, transparent);
+  /*
+   * A seção atual ganha o marca-texto na cor do livro (C2, D49; os tons de SUMARIO_MARCA em tokens.ts,
+   * conferidos pelo npm run contraste): a pintura estica da esquerda para a direita e, ao sair, recolhe.
+   */
+  .rotulo {
+    padding: 0 2px;
+    background-image: linear-gradient(transparent 16%, var(--marca-sumario) 16%, var(--marca-sumario) 92%, transparent 92%);
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-size: 0% 100%;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    transition: background-size 0.2s ease-in;
+  }
+
+  [aria-current="true"] > .nome > .rotulo {
+    background-size: 100% 100%;
+    transition: background-size 0.55s cubic-bezier(0.45, 0, 0.55, 1);
   }
 
   /* Subseções: só as da seção atual, em corpo menor, com a atual em azul-tinta. */
@@ -425,8 +525,101 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     }
   }
 
+  /*
+   * ---------- a folha do sumário (C2, D49) ----------
+   * Nas telas sem a lateral: desce do cabeçalho como o menu do celular (D46), recortada de cima para
+   * baixo, com os itens chegando em sequência; um véu escurece a página por baixo (Cabecalho.astro).
+   */
+  .folha-celular {
+    position: fixed;
+    z-index: 29;
+    top: calc(env(safe-area-inset-top, 0px) + var(--altura-cabecalho) + 8px);
+    right: clamp(12px, 3vw, 24px);
+    left: clamp(12px, 3vw, 24px);
+    max-width: 520px;
+    max-height: calc(100dvh - var(--altura-cabecalho) - 32px);
+    padding: 18px 18px 14px;
+    overflow: auto;
+    scrollbar-width: thin;
+    clip-path: inset(0 0 100% 0 round 14px);
+    visibility: hidden;
+    transition:
+      clip-path 0.34s cubic-bezier(0.6, 0, 0.8, 0.4),
+      visibility 0s linear 0.34s;
+  }
+
+  .veu-sumario {
+    position: fixed;
+    inset: 0;
+    z-index: 28;
+    background: rgb(20 22 24 / 0.32);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.3s,
+      visibility 0s linear 0.3s;
+  }
+
+  :global(:root[data-sumario-aberto]) .veu-sumario {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.35s;
+  }
+
+  :global(:root[data-sumario-aberto]) .folha-celular {
+    clip-path: inset(0 0 0 0 round 14px);
+    visibility: visible;
+    transition: clip-path 0.46s cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  .folha-celular .trilho > li {
+    opacity: 0;
+    translate: 0 8px;
+    transition:
+      opacity 0.2s,
+      translate 0.2s;
+  }
+
+  :global(:root[data-sumario-aberto]) .folha-celular .trilho > li {
+    opacity: 1;
+    translate: 0 0;
+    transition:
+      opacity 0.3s calc(0.12s + var(--i, 0) * 0.05s),
+      translate 0.3s cubic-bezier(0.2, 0.75, 0.2, 1) calc(0.12s + var(--i, 0) * 0.05s);
+  }
+
+  .folha-celular .secao {
+    --marco: 22px;
+  }
+
+  .folha-celular .secao a {
+    padding: 7px 0;
+    font-size: 15.5px;
+  }
+
+  .folha-celular .marco {
+    top: 11px;
+  }
+
+  @media (min-width: 1300px) {
+    .folha-celular,
+    .veu-sumario {
+      display: none;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .marco {
+    .bolinha,
+    .visto,
+    .rotulo,
+    [aria-current="true"] > .nome > .rotulo,
+    .fio-tinta,
+    .folha-celular,
+    .veu-sumario,
+    :global(:root[data-sumario-aberto]) .folha-celular,
+    :global(:root[data-sumario-aberto]) .veu-sumario,
+    .folha-celular .trilho > li,
+    :global(:root[data-sumario-aberto]) .folha-celular .trilho > li {
       transition: none;
     }
   }
