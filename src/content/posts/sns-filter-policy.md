@@ -8,15 +8,15 @@ category: Arquitetura de Software
 draft: false
 ---
 
-Quando um tópico SNS tem várias filas SQS assinando (o chamado *fan-out*), **cada fila recebe, por padrão, todas as mensagens publicadas no tópico**. Se o consumidor só se interessa por um tipo de evento, ele precisa receber, ler e descartar o resto, pagando por isso. A **filter policy** resolve esse problema: é uma regra em JSON configurada na **assinatura** que faz o próprio SNS decidir quais mensagens entrega àquela fila. O que não passa no filtro não é enviado à fila.
+Quando um tópico SNS tem várias filas SQS assinando (o chamado *fan-out*), :marca[**cada fila recebe, por padrão, todas as mensagens publicadas no tópico**]. Se o consumidor só se interessa por um tipo de evento, ele precisa receber, ler e descartar o resto, pagando por isso. A **filter policy** resolve esse problema: é uma regra em JSON configurada na **assinatura** que faz o próprio SNS decidir quais mensagens entrega àquela fila. O que não passa no filtro não é enviado à fila.
 
 Neste post: como marcar a mensagem com **MessageAttributes** no produtor, como escrever e aplicar a filter policy, como o SNS avalia a regra, a diferença entre filtrar por atributo e pelo corpo da mensagem, e os limites e cuidados.
 
 ## Os termos em uma frase
 
 - **Tópico**: o canal onde o produtor publica. **Assinatura** (*subscription*): o vínculo entre o tópico e um destino, como uma fila SQS.
-- **MessageAttributes**: metadados opcionais enviados **junto com a mensagem, mas fora do corpo**. Cada atributo tem nome, tipo (`String`, `String.Array`, `Number` ou `Binary`) e valor.
-- **Filter policy**: JSON guardado na assinatura que diz quais mensagens ela aceita. Assinatura sem filter policy recebe tudo.
+- **MessageAttributes**: metadados opcionais enviados :marca[**junto com a mensagem, mas fora do corpo**]. Cada atributo tem nome, tipo (`String`, `String.Array`, `Number` ou `Binary`) e valor.
+- **Filter policy**: JSON guardado na assinatura que diz quais mensagens ela aceita. :marca[Assinatura sem filter policy recebe tudo.]
 
 ## Como funciona na prática
 
@@ -30,7 +30,7 @@ snsTemplate.convertAndSend(
 );
 ```
 
-Cuidado com a variante `send(topicArn, message)`: ela não converte o payload e publica o `toString()` do objeto, então só use com payload já em `String`.
+Cuidado com a variante `send(topicArn, message)`: :marca[ela não converte o payload e publica o `toString()` do objeto], então só use com payload já em `String`.
 
 Sem Spring, o equivalente é preencher `MessageAttributes` na chamada `Publish` da API do SNS, com `DataType` `String` e `StringValue` `OrderCreatedEvent`.
 
@@ -49,16 +49,16 @@ aws sns set-subscription-attributes \
   --attribute-value '{"eventType": ["OrderCreatedEvent"]}'
 ```
 
-Resultado: essa fila só recebe mensagens com `eventType = OrderCreatedEvent`. Os outros tipos publicados no mesmo tópico não são entregues a ela. O filtro vale **por assinatura**: no diagrama abaixo, cada fila tem o seu, e uma mensagem que não casa com nenhum deles não chega a fila nenhuma.
+Resultado: essa fila só recebe mensagens com `eventType = OrderCreatedEvent`. Os outros tipos publicados no mesmo tópico não são entregues a ela. :marca[O filtro vale **por assinatura**]: no diagrama abaixo, cada fila tem o seu, e uma mensagem que não casa com nenhum deles não chega a fila nenhuma.
 
 ![Produtor publica três tipos de evento; o SNS entrega OrderCreatedEvent só à fila A, OrderCancelledEvent só à fila B, e OrderShippedEvent a nenhuma](/posts/sns-filter-policy/filter-policy-fanout.svg)
 
 ## Como o SNS avalia a regra
 
-- **Chaves diferentes = E (AND)**: a mensagem precisa satisfazer todas as chaves da policy.
-- **Valores no mesmo array = OU (OR)**: basta casar com um deles.
-- **Atributo ausente reprova**: se a policy exige `eventType` e a mensagem não tem esse atributo, ela não é entregue (a exceção é `"exists": false`, que casa justamente com a ausência). Atributos da mensagem que a policy não cita são ignorados.
-- **Comparação de strings diferencia maiúsculas de minúsculas**, a menos que você use `equals-ignore-case`.
+- **Chaves diferentes = E (AND)**: :marca[a mensagem precisa satisfazer todas as chaves da policy].
+- **Valores no mesmo array = OU (OR)**: :marca[basta casar com um deles].
+- :marca[**Atributo ausente reprova**]: se a policy exige `eventType` e a mensagem não tem esse atributo, ela não é entregue (a exceção é `"exists": false`, que casa justamente com a ausência). Atributos da mensagem que a policy não cita são ignorados.
+- :sublinhado[**Comparação de strings diferencia maiúsculas de minúsculas**], a menos que você use `equals-ignore-case`.
 
 Além da igualdade exata, a policy aceita operadores. Os mais úteis:
 
@@ -86,8 +86,10 @@ Um exemplo combinando AND, OR e operadores: aceita pedidos criados **ou** cancel
 
 O atributo `FilterPolicyScope` da assinatura define onde o SNS procura os campos:
 
+:::termos
 - **`MessageAttributes`** (padrão): a policy é comparada com os atributos da mensagem. Não aceita policy aninhada, compara só atributos `String`, `String.Array` e `Number`, e **ignora atributos `Binary`**.
 - **`MessageBody`**: a policy é comparada com os campos do corpo, que precisa ser um objeto JSON válido. Aceita policy aninhada, espelhando a estrutura do JSON.
+:::
 
 Por exemplo, para um corpo `{"order": {"status": "CREATED", "total": 250}}`, esta policy aninhada aceita a mensagem:
 
@@ -100,23 +102,23 @@ Por exemplo, para um corpo `{"order": {"status": "CREATED", "total": 250}}`, est
 }
 ```
 
-Filtrar pelo corpo é útil quando você não controla o produtor e ele não publica atributos. Mesmo assim, o filtro por atributo continua sendo o caminho padrão por dois motivos: **é gratuito**, enquanto o filtro pelo corpo é cobrado por GB de payload analisado (contando tanto as mensagens entregues quanto as filtradas), e não acopla a regra ao formato do payload.
+Filtrar pelo corpo é útil quando você não controla o produtor e ele não publica atributos. Mesmo assim, o filtro por atributo continua sendo o caminho padrão por dois motivos: :marca[**é gratuito**], enquanto o filtro pelo corpo é cobrado por GB de payload analisado (contando tanto as mensagens entregues quanto as filtradas), e não acopla a regra ao formato do payload.
 
 ## Por que isso importa
 
 - **Sem filter policy**: todas as mensagens do tópico chegam à fila, e o consumidor recebe e descarta o que não é dele.
 - **Com filter policy**: só o que interessa chega. São menos requisições ao SQS (que cobra por requisição: envio, recebimento e exclusão contam), menos transferência de dados do SNS para o SQS (cobrada por volume entregue) e menos processamento desperdiçado no consumidor.
-- **O filtro fica na assinatura, não no produtor**: o produtor não precisa saber quem consome. É o desacoplamento clássico do *pub/sub* (publicação e assinatura), só que com entrega seletiva.
+- :marca[**O filtro fica na assinatura, não no produtor**]: o produtor não precisa saber quem consome. É o desacoplamento clássico do *pub/sub* (publicação e assinatura), só que com entrega seletiva.
 
 MessageAttributes também servem para outras coisas além de filtro, como propagar o ID de rastreamento entre serviços; veja [W3C Trace Context](/posts/w3c-trace-context/).
 
 ## Limites e cuidados
 
-- **Tamanho da policy**: no máximo **5 chaves** e **150 combinações**. As combinações são o produto da quantidade de valores de cada chave: chaves com 3, 1 e 2 valores dão 3 × 1 × 2 = 6. A policy pode ter até 256 KB.
+- **Tamanho da policy**: no máximo :circulo[**5 chaves**] e **150 combinações**. As combinações são o produto da quantidade de valores de cada chave: chaves com 3, 1 e 2 valores dão 3 × 1 × 2 = 6. A policy pode ter até 256 KB.
 - **Quantidade de policies**: por padrão, até **200 por tópico** e **10.000 por conta**, ajustáveis pelo Service Quotas.
-- **Mudança não é instantânea**: criar ou alterar uma filter policy leva **até 15 minutos** para valer por completo (consistência eventual). Não conclua que o filtro falhou logo após o deploy.
-- **Raw message delivery**: com *raw message delivery* ligado (a fila recebe a mensagem sem o envelope JSON do SNS), a assinatura SQS aceita **no máximo 10 atributos**; mensagens com mais que isso são descartadas. Atenção com frameworks: o Spring Cloud AWS também envia como atributos os headers `id` e `timestamp` que toda `Message` do Spring recebe automaticamente.
-- **Um filtro errado descarta mensagens em silêncio**: um nome de atributo digitado errado faz a mensagem simplesmente não ser entregue. Monitore a métrica `NumberOfNotificationsFilteredOut` do CloudWatch (e as variantes `-NoMessageAttributes` e `-InvalidAttributes`) para perceber quando o filtro barra mais do que deveria.
+- **Mudança não é instantânea**: criar ou alterar uma filter policy :marca[leva **até 15 minutos** para valer por completo] (consistência eventual). Não conclua que o filtro falhou logo após o deploy.
+- **Raw message delivery**: com *raw message delivery* ligado (a fila recebe a mensagem sem o envelope JSON do SNS), a assinatura SQS aceita :marca[**no máximo 10 atributos**]; mensagens com mais que isso são descartadas. Atenção com frameworks: o Spring Cloud AWS também envia como atributos os headers `id` e `timestamp` que toda `Message` do Spring recebe automaticamente.
+- :marca[**Um filtro errado descarta mensagens em silêncio**]: um nome de atributo digitado errado faz a mensagem simplesmente não ser entregue. Monitore a métrica `NumberOfNotificationsFilteredOut` do CloudWatch (e as variantes `-NoMessageAttributes` e `-InvalidAttributes`) para perceber quando o filtro barra mais do que deveria.
 
 ## Fontes
 
