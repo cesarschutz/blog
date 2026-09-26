@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A caneta do caderno · catálogo de marcações</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@700;800&family=Caveat:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --f-titulo: "Besley", Georgia, serif; --f-texto: "Literata", Georgia, serif; --f-mao: "Caveat", "Segoe Print", cursive;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; --f-codigo: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --fundo: #E9E8E2; --tinta: #1A2124; --tinta-2: #57605E; --linha: #D8D6CE; --acento: #2549B8;
+  /* cor da caneta escolhida (JS troca) */
+  --cc: #1F4FB5; --ce: #8FA8FF;
+}
+:root { box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: inherit; }
+body { margin: 0; background: var(--fundo); color: var(--tinta); font: 16px/1.6 var(--f-ui); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--acento); outline-offset: 3px; border-radius: 4px; }
+
+.topo { max-width: 1180px; margin: 0 auto; padding: 36px 24px 10px; }
+.topo h1 { font: 800 clamp(30px, 4.6vw, 48px)/1.05 var(--f-titulo); margin: 0 0 12px; }
+.topo p { max-width: 72ch; margin: 0 0 8px; color: var(--tinta-2); font-size: 16.5px; }
+.cabeca { position: sticky; top: 0; z-index: 5; background: color-mix(in oklab, var(--fundo) 92%, transparent); backdrop-filter: blur(6px); border-bottom: 1px solid var(--linha); }
+.cabeca .dentro { max-width: 1180px; margin: 0 auto; padding: 10px 24px; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+.cabeca b { font-weight: 600; font-size: 14px; }
+.botao { border: 1px solid var(--linha); background: #fff; border-radius: 999px; padding: 6px 12px; font: 500 13.5px/1 var(--f-ui); cursor: pointer; display: inline-flex; align-items: center; gap: 7px; }
+.botao i { width: 11px; height: 11px; border-radius: 50%; background: var(--c); }
+.botao[aria-pressed="true"] { background: var(--tinta); color: #fff; border-color: var(--tinta); }
+
+main { max-width: 1180px; margin: 0 auto; padding: 18px 24px 80px; }
+h2.secao { font: 800 28px/1.15 var(--f-titulo); margin: 42px 0 6px; }
+p.secao { margin: 0 0 18px; color: var(--tinta-2); max-width: 72ch; }
+.exemplo { display: grid; grid-template-columns: 250px 1fr; gap: 18px; padding: 16px 0; border-top: 1px solid var(--linha); align-items: start; }
+.exemplo .sobre h3 { font: 700 17px/1.25 var(--f-ui); margin: 0 0 4px; }
+.exemplo .sobre p { margin: 0; font-size: 14px; color: var(--tinta-2); }
+.exemplo .sobre .tag { display: inline-block; margin-top: 8px; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: #fff; border: 1px solid var(--linha); }
+.pares { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* os dois temas lado a lado */
+.painel { border-radius: 12px; padding: 16px 22px 16px 34px; border: 1px solid var(--r); background: var(--ph); color: var(--i); font: 16px/1.85 var(--f-texto); position: relative; }
+.painel::before { content: attr(data-rotulo); position: absolute; top: 6px; right: 10px; font: 500 11px var(--f-ui); color: var(--i3); }
+.painel.claro { --ph: #FFFFFE; --i: #1A2124; --i2: #57605E; --i3: #8a918e; --r: #E2E0D8; --well: #F2F1EC; --caneta: var(--cc); }
+.painel.escuro { --ph: #1A2124; --i: #E7E9E4; --i2: #A9B0AC; --i3: #7E8683; --r: #2A3235; --well: #262D30; --caneta: var(--ce); }
+.painel p { margin: 0 0 8px; }
+.painel p:last-child { margin-bottom: 0; }
+.painel code { font: 13.5px var(--f-codigo); background: var(--well); padding: 1px 6px; border-radius: 5px; }
+.painel ul { margin: 0; padding-left: 18px; }
+.painel .alto { padding-top: 16px; }
+
+/* ---- marcações (todas estáticas: já vêm feitas) ---- */
+.m { position: relative; white-space: nowrap; }
+.m svg { position: absolute; overflow: visible; pointer-events: none; }
+.m path, .margem path, .chaveia path, .num path, .ck path { fill: none; stroke: var(--caneta); stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.m.sub svg { left: -2px; bottom: -4px; width: calc(100% + 4px); height: 8px; }
+.m.dup svg { left: -3px; bottom: -7px; width: calc(100% + 6px); height: 10px; }
+.m.circ svg { left: -11px; top: -8px; width: calc(100% + 22px); height: calc(100% + 16px); }
+.m.caixa svg { left: -6px; top: -3px; width: calc(100% + 12px); height: calc(100% + 6px); }
+.m.risca svg { left: -3px; top: 45%; width: calc(100% + 6px); height: 8px; }
+.m.risca .corr { position: absolute; left: 50%; bottom: 72%; translate: -30% 0; font: 600 21px/1 var(--f-mao); color: var(--caneta); transform: rotate(-4deg); }
+.m.nota .n { position: absolute; left: 70%; bottom: 88%; font: 500 19px/1 var(--f-mao); color: var(--caneta); white-space: nowrap; transform: rotate(-3deg); }
+.m.nota .n svg { position: absolute; left: -18px; top: 8px; width: 20px; height: 20px; }
+.margem { position: relative; }
+.margem > svg { position: absolute; overflow: visible; }
+.margem.colchete > svg { left: -22px; top: 3px; width: 11px; height: calc(100% - 6px); }
+.margem.aster > svg { left: -25px; top: 5px; width: 15px; height: 15px; }
+.ck { list-style: none; padding: 0 !important; }
+.ck li, .num li { position: relative; }
+.ck li svg, .num li svg { position: absolute; left: -24px; top: 6px; width: 16px; height: 16px; overflow: visible; }
+.num { list-style: none; padding: 0 !important; }
+.num li .d { position: absolute; left: -24px; top: 4px; width: 18px; text-align: center; font: 600 16px/1 var(--f-mao); color: var(--caneta); }
+.num li svg { left: -26px; top: 1px; width: 22px; height: 22px; }
+.chaveia { position: relative; display: grid; grid-template-columns: auto auto; align-items: stretch; justify-content: start; gap: 6px; }
+.chaveia svg { width: 12px; height: auto; align-self: stretch; overflow: visible; }
+.chaveia .lado { display: flex; align-items: center; gap: 6px; font: 500 19px/1 var(--f-mao); color: var(--caneta); }
+
+/* ---- traços novos ---- */
+.m.liga svg { left: 0; top: -13px; width: 100%; height: 14px; }
+.m.liga { white-space: normal; }
+.sinal { font: 600 22px/1 var(--f-mao); color: var(--caneta); margin: 0 3px; position: relative; top: -3px; }
+.margem.excl > .g, .margem.perg > .g { position: absolute; left: -25px; top: -2px; font: 600 26px/1 var(--f-mao); color: var(--caneta); }
+.nota-mao { display: block; font: 500 19px/1.2 var(--f-mao); color: var(--caneta); margin-top: 2px; transform: rotate(-1.5deg); transform-origin: left; }
+.margem.def { padding: 2px 4px; }
+.margem.def > svg { left: -10px; top: -6px; width: calc(100% + 20px); height: calc(100% + 12px); }
+.painel pre { position: relative; overflow: visible; font: 13px/1.7 var(--f-codigo); background: var(--well); border-radius: 8px; padding: 10px 12px 10px 26px; margin: 0; }
+.painel pre .m .n { font-size: 17px; left: 105%; bottom: auto; top: -2px; }
+.painel pre .m.circ svg { left: -7px; top: -5px; width: calc(100% + 14px); height: calc(100% + 10px); }
+.painel pre .bloco { position: relative; display: block; }
+.painel pre .bloco > svg { position: absolute; left: -16px; top: 3px; width: 8px; height: calc(100% - 6px); overflow: visible; }
+.painel pre .bloco > .n { position: absolute; right: 4px; top: 50%; translate: 0 -50%; font: 500 17px/1 var(--f-mao); color: var(--caneta); transform: rotate(-2deg); }
+.painel pre .bloco > svg path { fill: none; stroke: var(--caneta); stroke-width: 2; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.pessoal { display: flex; gap: 6px; align-items: flex-start; margin-top: 4px; font: 500 19px/1.2 var(--f-mao); color: var(--caneta); }
+.pessoal svg { width: 18px; height: 18px; flex: none; margin-top: 2px; overflow: visible; }
+.pessoal path { fill: none; stroke: var(--caneta); stroke-width: 1.8; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+
+/* ---- marca-texto: variações ---- */
+.mt-amarelo { background: linear-gradient(transparent 18%, var(--am) 18%, var(--am) 94%, transparent 94%); padding: 0 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.claro .mt-amarelo { --am: #FFE27A; }
+.escuro .mt-amarelo { --am: rgba(255, 214, 90, .30); }
+.mt-faixa { background: linear-gradient(transparent 64%, color-mix(in oklab, var(--caneta) 34%, transparent) 64%, color-mix(in oklab, var(--caneta) 34%, transparent) 94%, transparent 94%); padding: 0 1px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.mt-hachura { background: repeating-linear-gradient(-45deg, color-mix(in oklab, var(--caneta) 45%, transparent) 0 1.2px, transparent 1.2px 5px) 0 58% / 100% 42% no-repeat; padding: 0 1px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.mt-cor { background: linear-gradient(transparent 20%, color-mix(in oklab, var(--caneta) 22%, transparent) 20%, color-mix(in oklab, var(--caneta) 22%, transparent) 94%, transparent 94%); padding: 0 2px; }
+
+.nota-fim { margin-top: 40px; padding: 18px 22px; background: #fff; border: 1px solid var(--linha); border-radius: 12px; font-size: 15px; color: var(--tinta-2); }
+@media (max-width: 860px) {
+  .exemplo { grid-template-columns: 1fr; gap: 10px; }
+  .pares { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<header class="topo">
+  <h1>A caneta do caderno</h1>
+  <p>O marca-texto amarelo e todos os traços estão aprovados. Todas as marcações aqui já vêm feitas, sem animação, como se você tivesse riscado o texto com uma caneta antes de publicar. Cada exemplo aparece nos dois temas lado a lado.</p>
+  <p>A caneta escolhida é o azul. A caneta nunca pinta o texto: o texto marcado continua na cor normal, e só os riscos e as notas ficam azuis, para não confundir com os links. A barra abaixo ainda deixa comparar com as outras cores.</p>
+</header>
+<div class="cabeca"><div class="dentro" role="group" aria-label="Cor da caneta"><b>Cor da caneta:</b></div></div>
+
+<main>
+  <h2 class="secao">1. O marca-texto</h2>
+  <p class="secao">Quatro jeitos de destacar uma frase inteira, e a opção de não ter marca-texto. O ponto é destacar sem esconder o texto, nos dois temas.</p>
+  <div data-lista="marca"></div>
+
+  <h2 class="secao">2. Os traços</h2>
+  <p class="secao">Os três que você aprovou e mais nove, cada um com um papel. Nenhum post usaria todos: o guia define quando usar cada um.</p>
+  <div data-lista="tracos"></div>
+
+  <h2 class="secao">3. Mais oito, para variar com sentido</h2>
+  <p class="secao">Cada um cobre um tipo de destaque que os doze ainda não cobrem. A variedade vem do conteúdo: cada post usa os que o texto pede.</p>
+  <div data-lista="novos"></div>
+
+  <div class="nota-fim">Dica: fique com poucos tipos. Um caderno de verdade costuma ter três ou quatro gestos que se repetem, e é essa repetição que faz o leitor entender o sistema sem explicação.</div>
+</main>
+
+<script>
+const CANETAS = [
+  ["azul", "Azul de caneta (escolhida)", "#1F4FB5", "#8FA8FF"],
+  ["vermelho", "Vermelho de revisão", "#C8412E", "#F0937E"],
+  ["livro-seg", "Cor do livro: Segurança", "#606a37", "#B8C08E"],
+  ["livro-ia", "Cor do livro: IA", "#6e2f45", "#D99AB0"],
+  ["livro-arq", "Cor do livro: Arquitetura", "#2d4b46", "#8DB9B0"],
+  ["grafite", "Grafite", "#5E6468", "#A9AEB1"],
+];
+const barra = document.querySelector(".cabeca .dentro");
+CANETAS.forEach(([id, nome, c, e], i) => {
+  const b = document.createElement("button");
+  b.className = "botao"; b.type = "button"; b.style.setProperty("--c", c);
+  b.innerHTML = `<i></i>${nome}`; b.setAttribute("aria-pressed", i === 0);
+  b.onclick = () => {
+    barra.querySelectorAll(".botao").forEach((x) => x.setAttribute("aria-pressed", x === b));
+    document.documentElement.style.setProperty("--cc", c); document.documentElement.style.setProperty("--ce", e);
+  };
+  barra.appendChild(b);
+});
+
+/* traços desenhados à mão (caminhos levemente irregulares) */
+const T = {
+  sub: '<svg viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M1 6.5 C 18 3.5, 36 8, 55 5.5 S 86 4, 99 6"/></svg>',
+  dup: '<svg viewBox="0 0 100 12" preserveAspectRatio="none"><path d="M1 3.5 C 30 2.5, 65 4.5, 99 3"/><path d="M4 9 C 35 8, 62 10, 97 8.5"/></svg>',
+  circ: '<svg viewBox="0 0 100 44" preserveAspectRatio="none"><path d="M10 25 C 5 10, 38 3, 68 5 C 94 7, 99 27, 80 35 C 55 43, 12 40, 6 26 C 4 17, 16 9, 30 7"/></svg>',
+  caixa: '<svg viewBox="0 0 100 40" preserveAspectRatio="none"><path d="M3 5 C 30 3, 70 4, 97 4.5 C 98.5 15, 98 28, 97 37 C 70 38.5, 30 38, 3.5 37 C 2 27, 2.5 14, 4 3"/></svg>',
+  risca: '<svg viewBox="0 0 100 8" preserveAspectRatio="none"><path d="M1 5.5 C 30 3.5, 70 4.5, 99 2.5"/></svg>',
+  seta: '<svg viewBox="0 0 20 20"><path d="M17 2 C 9 3, 4 8, 3 16"/><path d="M1 12 L 3 16.5 L 7 14"/></svg>',
+  colchete: '<svg viewBox="0 0 12 100" preserveAspectRatio="none"><path d="M10 2 C 4 2, 3 5, 3.5 12 L 4 88 C 4 95, 5 98, 10 98"/></svg>',
+  aster: '<svg viewBox="0 0 16 16"><path d="M8 1.5 L 8 14.5"/><path d="M2.3 4.8 L 13.7 11.2"/><path d="M13.7 4.8 L 2.3 11.2"/></svg>',
+  ok: '<svg viewBox="0 0 16 16"><path d="M2 8.5 L 6 12.5 L 14 3"/></svg>',
+  nao: '<svg viewBox="0 0 16 16"><path d="M3 3 L 13 13"/><path d="M13 3 L 3 13"/></svg>',
+  roda: '<svg viewBox="0 0 22 22"><path d="M11 2 C 5 2, 2 6, 2.5 11.5 C 3 17, 7 20, 12 19.5 C 17 19, 20 15, 19.5 10 C 19 5, 15 2.5, 9.5 3"/></svg>',
+  chave: '<svg viewBox="0 0 12 100" preserveAspectRatio="none"><path d="M2 2 C 7 2, 7 6, 7 14 L 7 42 C 7 47, 8 49, 11 50 C 8 51, 7 53, 7 58 L 7 86 C 7 94, 7 98, 2 98"/></svg>',
+};
+const m = (tipo, texto) => `<span class="m ${tipo}">${texto}${T[tipo]}</span>`;
+
+const MARCA = [
+  ["Marca-texto amarelo", "O clássico, sempre amarelo, em qualquer livro. No escuro vira um âmbar suave. Escolhido: só onde for realmente muito importante.", "Escolhido",
+    `<p>Um JWT assinado garante integridade e autenticidade, <span class="mt-amarelo">não sigilo: quem tem o token lê o payload</span>.</p>`],
+  ["Faixa baixa na cor da caneta", "Pinta só a metade de baixo da linha, como marca-texto passado com pressa. O texto fica limpo por cima.", "Segue a caneta",
+    `<p>Um JWT assinado garante integridade e autenticidade, <span class="mt-faixa">não sigilo: quem tem o token lê o payload</span>.</p>`],
+  ["Hachura", "Riscos diagonais atrás das palavras, o mesmo gesto da hachura dos desenhos do blog. É o mais seu, e o mais incomum.", "Segue a caneta",
+    `<p>Um JWT assinado garante integridade e autenticidade, <span class="mt-hachura">não sigilo: quem tem o token lê o payload</span>.</p>`],
+  ["Fundo inteiro na cor", "Como está hoje no site, para comparar. É o que esconde o texto em algumas cores.", "Como está hoje",
+    `<p>Um JWT assinado garante integridade e autenticidade, <span class="mt-cor">não sigilo: quem tem o token lê o payload</span>.</p>`],
+  ["Sem marca-texto: sublinhado duplo", "No lugar do marca-texto, dois riscos embaixo. Destaca a ideia principal sem pintar nada.", "Alternativa",
+    `<p>Um JWT assinado garante integridade e autenticidade, ${m("dup", "não sigilo")}: quem tem o token lê o payload.</p>`],
+];
+
+const TRACOS = [
+  ["Sublinhado ondulado", "A palavra exata que muda o sentido.", "Você aprovou",
+    `<p>O parâmetro <code>alg</code> é o ${m("sub", "único obrigatório")} do header.</p>`],
+  ["Círculo", "O número ou nome que costuma ser confundido.", "Você aprovou",
+    `<p>O ECDSA usa as curvas P-256, P-384 e ${m("circ", "P-521")}.</p>`],
+  ["Colchete na margem", "O parágrafo que resume uma seção.", "Você aprovou",
+    `<p class="margem colchete">${T.colchete}<b>O payload não é criptografado.</b> Ele só está codificado em Base64URL: qualquer pessoa com o token lê o conteúdo.</p>`],
+  ["Sublinhado duplo", "A ideia mais importante da seção. Pode substituir o marca-texto.", "Novo",
+    `<p>Depois de verificar a assinatura, ${m("dup", "confira as claims")}: um token autêntico pode ter expirado.</p>`],
+  ["Caixa à mão", "Nomes de campos, parâmetros e comandos. Substitui a pintura do termo nas listas.", "Novo",
+    `<ul><li>${m("caixa", "<code>alg</code>")} algoritmo da assinatura.</li><li>${m("caixa", "<code>kid</code>")} qual chave assinou.</li></ul>`],
+  ["Nota na margem", "Um comentário curto, com a letra da caneta e uma seta. O que você diria em voz alta ao ler.", "Novo",
+    `<p class="alto">O payload está apenas ${m("nota", `codificado<span class="n">${T.seta}não é cifrado!</span>`)} em Base64URL.</p>`],
+  ["Riscado com correção", "O erro comum riscado e o certo escrito por cima.", "Novo",
+    `<p class="alto">A maior curva do ECDSA é a ${m("risca", `P-512<span class="corr">P-521</span>`)}, um erro comum.</p>`],
+  ["Asterisco na margem", "Um ponto que vale reler, sem ser o resumo da seção.", "Novo",
+    `<p class="margem aster">${T.aster}Com HMAC, todo serviço que valida o token também poderia emitir tokens.</p>`],
+  ["Certo e errado", "Listas de práticas: o que fazer e o que evitar.", "Novo",
+    `<ul class="ck"><li>${T.ok}Fixe no servidor a lista de algoritmos aceitos.</li><li>${T.ok}Valide <code>exp</code>, <code>iss</code> e <code>aud</code>.</li><li>${T.nao}Confiar no <code>alg</code> que vem no token.</li></ul>`],
+  ["Números circulados", "Passos em ordem, quando a ordem importa.", "Novo",
+    `<ul class="num"><li>${T.roda}<span class="d">1</span>Decodifique o header.</li><li>${T.roda}<span class="d">2</span>Verifique a assinatura.</li><li>${T.roda}<span class="d">3</span>Valide as claims.</li></ul>`],
+  ["Chave agrupando", "Junta itens de uma lista com um comentário ao lado.", "Novo",
+    `<div class="chaveia"><ul><li><code>jku</code> URL das chaves</li><li><code>jwk</code> a chave embutida</li><li><code>x5u</code> URL do certificado</li></ul><div class="lado">${T.chave}não confie cegamente</div></div>`],
+  ["Riscado simples", "Algo que não vale mais, sem correção.", "Novo",
+    `<p>O valor ${m("risca", "<code>none</code>")} em <code>alg</code> nunca deve ser aceito.</p>`],
+];
+
+T.liga = '<svg viewBox="0 0 100 14" preserveAspectRatio="none"><path d="M2 13 C 10 2, 85 1, 97 11"/><path d="M92 8.5 L 97.5 11.5 L 95 6"/></svg>';
+T.linhas = '<svg viewBox="0 0 8 100" preserveAspectRatio="none"><path d="M4 2 C 5 30, 3 70, 4 98"/></svg>';
+T.def = '<svg viewBox="0 0 100 40" preserveAspectRatio="none"><path d="M2 3 C 30 1.5, 70 2.5, 98 2 C 99 14, 98.5 27, 98 38 C 70 39, 30 38.5, 2.5 38 C 1.5 27, 1 14, 2.5 2"/></svg>';
+T.pessoal = '<svg viewBox="0 0 18 18"><path d="M2 3 C 3 10, 7 13, 15 13"/><path d="M11 9.5 L 15.5 13 L 11 16"/></svg>';
+const NOVOS = [
+  ["Seta ligando", "Causa e consequência dentro da mesma frase.", "Novo",
+    `<p class="alto">${m("liga", "Está só codificado em Base64URL, então qualquer pessoa lê")} o conteúdo do payload.</p>`],
+  ["Exclamação na margem", "Armadilha: o erro que derruba produção.", "Novo",
+    `<p class="margem excl"><span class="g">!</span>Um validador que confia no <code>alg</code> do token aceita um token sem assinatura.</p>`],
+  ["Interrogação com nota", "A pergunta que o leitor faria, respondida logo depois.", "Novo",
+    `<p class="margem perg"><span class="g">?</span>As datas usam segundos desde 1970, com uma pequena tolerância de relógio.<span class="nota-mao">e se o relógio do servidor atrasar?</span></p>`],
+  ["Sinal entre termos", "Dois conceitos que parecem iguais e não são.", "Novo",
+    `<p>O payload está codificado<span class="sinal">≠</span>criptografado: a diferença é quem consegue ler.</p>`],
+  ["Anotação no código", "Um valor dentro de um bloco de código, explicado ao lado.", "Novo",
+    `<pre>{
+  "iat": 1789563600,
+  "exp": ${m("circ", `1789564500<span class="n">15 min depois</span>`)}
+}</pre>`],
+  ["Linhas marcadas no código", "Um trecho do código que importa, com o motivo ao lado.", "Novo",
+    `<pre>SELECT id FROM cobranca
+<span class="bloco">${T.linhas}WHERE chave = :chave
+  AND status = 'PROCESSANDO'<span class="n">o banco decide</span></span>FOR UPDATE;</pre>`],
+  ["Caixa numa definição", "A definição formal de um conceito, para achar de novo.", "Novo",
+    `<p class="margem def">${T.def}Um <b>JWT</b> é um conjunto de afirmações em JSON, protegido por assinatura ou por criptografia.</p>`],
+  ["Comentário do autor", "Uma opinião sua, na primeira pessoa. Só entra com uma frase que você escreveu ou aprovou.", "Novo · só com a sua frase",
+    `<p>Depois da assinatura, valide as claims: <code>exp</code>, <code>iss</code> e <code>aud</code>.</p><div class="pessoal">${T.pessoal}aqui entra uma frase escrita por você</div>`],
+];
+function render(alvo, lista) {
+  document.querySelector(`[data-lista="${alvo}"]`).innerHTML = lista.map(([t, d, tag, html]) => `
+    <section class="exemplo"><div class="sobre"><h3>${t}</h3><p>${d}</p><span class="tag">${tag}</span></div>
+    <div class="pares"><div class="painel claro" data-rotulo="claro">${html}</div><div class="painel escuro" data-rotulo="escuro">${html}</div></div></section>`).join("");
+}
+render("marca", MARCA);
+render("tracos", TRACOS);
+render("novos", NOVOS);
+</script>
+</body>
+</html>
