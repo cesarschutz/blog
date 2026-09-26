@@ -8,19 +8,19 @@ category: Dados
 draft: false
 ---
 
-Quando duas requisições leem a mesma linha, calculam um valor novo e gravam, uma delas pode apagar o trabalho da outra sem erro nenhum. Este post mostra as duas formas clássicas de impedir isso, o **bloqueio otimista** (detectar o conflito) e o **bloqueio pessimista** (evitar o conflito), com SQL testado no PostgreSQL e o equivalente em Spring Data JPA. Depois, o terceiro caminho que muitas vezes dispensa ambos (o UPDATE condicional), o papel dos níveis de isolamento, um critério de escolha e as perguntas que eu faço antes de decidir.
+Quando duas requisições leem a mesma linha, calculam um valor novo e gravam, :marca[uma delas pode apagar o trabalho da outra sem erro nenhum]. Este post mostra as duas formas clássicas de impedir isso, o **bloqueio otimista** (detectar o conflito) e o **bloqueio pessimista** (evitar o conflito), com SQL testado no PostgreSQL e o equivalente em Spring Data JPA. Depois, o terceiro caminho que muitas vezes dispensa ambos (o UPDATE condicional), o papel dos níveis de isolamento, um critério de escolha e as perguntas que eu faço antes de decidir.
 
 > O tema aparece de raspão no artigo sobre [chave de idempotência](/posts/cobranca-duplicada-no-retry/), como alternativa à restrição única. Aqui ele ganha o espaço que merece.
 
 ## 1. O problema que os dois resolvem
 
-Os dois existem para o mesmo defeito, que tem nome: **lost update**, a atualização perdida.
+Os dois existem para o mesmo defeito, que tem nome: :marca[**lost update**, a atualização perdida].
 
-Dois clientes leem a mesma linha, cada um calcula um valor novo a partir do que leu, e os dois gravam. A segunda gravação sobrescreve a primeira, e a primeira desaparece sem erro nenhum. O saldo fica errado e o log está limpo. Aparece em contador de estoque, em saldo, em qualquer campo calculado a partir do valor lido.
+Dois clientes leem a mesma linha, cada um calcula um valor novo a partir do que leu, e os dois gravam. :marca[A segunda gravação sobrescreve a primeira, e a primeira desaparece sem erro nenhum.] O saldo fica errado e o log está limpo. Aparece em contador de estoque, em saldo, em qualquer campo calculado a partir do valor lido.
 
-É a mesma família do problema da [cobrança duplicada no retry](/posts/cobranca-duplicada-no-retry/): ler, decidir e gravar como operações separadas, com uma janela no meio. Lá, a solução foi uma restrição única, que funciona quando a decisão cabe numa chave. Aqui o caso é outro: a decisão depende do **valor lido**, e não existe chave que expresse isso.
+É a mesma família do problema da [cobrança duplicada no retry](/posts/cobranca-duplicada-no-retry/): ler, decidir e gravar como operações separadas, com uma janela no meio. Lá, a solução foi uma restrição única, que funciona quando a decisão cabe numa chave. Aqui o caso é outro: :marca[a decisão depende do **valor lido**, e não existe chave que expresse isso].
 
-A diferença entre os dois bloqueios cabe numa frase, e é assim que o catálogo de padrões do Martin Fowler os descreve: **bloqueio otimista é detecção de conflito; bloqueio pessimista é prevenção de conflito.**
+A diferença entre os dois bloqueios cabe numa frase, e é assim que o catálogo de padrões do Martin Fowler os descreve: :marca[**bloqueio otimista é detecção de conflito; bloqueio pessimista é prevenção de conflito.**]
 
 **Uma boa analogia é o controle de versão**, que você usa todo dia. Duas pessoas precisam mexer no mesmo arquivo.
 
@@ -30,17 +30,17 @@ No jeito pessimista, o de sistemas mais antigos no modelo "trava, modifica, dest
 
 **A frase carrega três consequências**, que valem mais do que ela:
 
-- **Onde o custo cai.** No otimista, o caso normal é de graça: ninguém espera por ninguém, e só se paga quando o conflito de fato acontece. No pessimista, o custo é cobrado sempre: mesmo quando ninguém mais ia mexer naquela linha, o segundo espera do mesmo jeito. Um cobra por conflito; o outro cobra por acesso.
-- **Quem lida com a falha.** **Detecção produz erro, e erro precisa de dono: alguém relê, refaz e tenta outra vez. Prevenção produz espera.** Por isso o pessimista parece mais simples no código: no caso normal, não há caminho de exceção para escrever. O preço aparece no comportamento sob carga.
-- **O que acontece com o trabalho já feito.** No otimista, a segunda pessoa trabalhou e pode ter que jogar tudo fora. No pessimista, ela nem começou: ficou parada. **Quando o trabalho é caro ou demorado, jogar fora dói; quando é barato, esperar dói mais.**
+- **Onde o custo cai.** No otimista, o caso normal é de graça: ninguém espera por ninguém, e só se paga quando o conflito de fato acontece. No pessimista, o custo é cobrado sempre: mesmo quando ninguém mais ia mexer naquela linha, o segundo espera do mesmo jeito. :marca[Um cobra por conflito; o outro cobra por acesso.]
+- **Quem lida com a falha.** :marca[**Detecção produz erro, e erro precisa de dono: alguém relê, refaz e tenta outra vez. Prevenção produz espera.**] Por isso o pessimista parece mais simples no código: no caso normal, não há caminho de exceção para escrever. O preço aparece no comportamento sob carga.
+- **O que acontece com o trabalho já feito.** No otimista, a segunda pessoa trabalhou e pode ter que jogar tudo fora. No pessimista, ela nem começou: ficou parada. :marca[**Quando o trabalho é caro ou demorado, jogar fora dói; quando é barato, esperar dói mais.**]
 
-A aposta de cada um está no próprio nome. O otimista aposta que conflito é raro; se estiver certo, você ganha concorrência de graça. O pessimista aposta que conflito é provável; se estiver certo, você evita um monte de trabalho perdido. **Escolher entre os dois é uma aposta sobre a frequência de conflito na sua carga**, e isso se mede, não se escolhe por gosto.
+A aposta de cada um está no próprio nome. O otimista aposta que conflito é raro; se estiver certo, você ganha concorrência de graça. O pessimista aposta que conflito é provável; se estiver certo, você evita um monte de trabalho perdido. :marca[**Escolher entre os dois é uma aposta sobre a frequência de conflito na sua carga**], e isso se mede, não se escolhe por gosto.
 
 ## 2. Bloqueio otimista
 
 A aposta é que conflito é raro. Ninguém trava nada; todo mundo lê e trabalha à vontade. Na hora de gravar, a escrita carrega a pergunta junto: *o dado ainda está como eu li?*
 
-A forma de fazer essa pergunta é uma **coluna de versão**, um número inteiro que muda a cada gravação. Todo UPDATE incrementa a versão e filtra pela versão que foi lida. Se outra transação gravou antes, o filtro não encontra a linha e o banco devolve zero linhas afetadas. Zero linhas afetadas é a detecção do conflito.
+A forma de fazer essa pergunta é uma **coluna de versão**, um número inteiro que muda a cada gravação. Todo UPDATE incrementa a versão e filtra pela versão que foi lida. Se outra transação gravou antes, o filtro não encontra a linha e o banco devolve zero linhas afetadas. :marca[Zero linhas afetadas é a detecção do conflito.]
 
 ![Diagrama: bloqueio otimista. A e B leem a linha com version 1; A grava primeiro e a versão vira 2; o UPDATE de B filtra por version 1, afeta zero linhas e B precisa reler e tentar de novo](/posts/bloqueio-otimista-e-pessimista/bloqueio-otimista.svg)
 
@@ -57,7 +57,7 @@ UPDATE conta
 -- UPDATE 0 -> alguém mudou a linha nesse meio-tempo
 ```
 
-O ponto essencial: **a verificação e a escrita são o mesmo comando**. Não existe janela entre uma e outra, e é por isso que funciona sem travar nada.
+O ponto essencial: :marca[**a verificação e a escrita são o mesmo comando**]. Não existe janela entre uma e outra, e é por isso que funciona sem travar nada.
 
 Dá para usar uma coluna `updated_at` no lugar da versão, mas um número inteiro é mais claro e não depende da precisão do relógio. A própria documentação do Hibernate diz que timestamp é uma forma menos confiável de bloqueio otimista do que número de versão.
 
@@ -99,15 +99,15 @@ public void debitar(Long contaId, BigDecimal valor) {
 }
 ```
 
-Dois detalhes que sempre dão errado. Primeiro, o retry precisa **reler** o dado: retentar com a entidade velha em mãos falha de novo, sempre. A documentação do Spring Framework fixa a ordem dos dois interceptadores, retry por fora e transação por dentro, então cada tentativa abre uma transação nova e faz um `findById` novo. Segundo, precisa de teto: três tentativas no total, não um laço infinito. Num teste com Spring Boot 4.1, forçando uma gravação concorrente na primeira tentativa, a segunda releu o saldo já alterado e gravou normalmente.
+Dois detalhes que sempre dão errado. Primeiro, :marca[o retry precisa **reler** o dado]: retentar com a entidade velha em mãos falha de novo, sempre. A documentação do Spring Framework fixa a ordem dos dois interceptadores, retry por fora e transação por dentro, então cada tentativa abre uma transação nova e faz um `findById` novo. Segundo, precisa de teto: três tentativas no total, não um laço infinito. Num teste com Spring Boot 4.1, forçando uma gravação concorrente na primeira tentativa, a segunda releu o saldo já alterado e gravou normalmente.
 
 > O projeto Spring Retry, de onde vinha o `@Retryable` com `retryFor` e `@Backoff`, foi arquivado em julho de 2026 e substituído pelos recursos de resiliência do Spring Framework 7. Em Spring Boot 3, ele ainda é o caminho.
 
 **O que costuma passar batido**
 
-- **A versão funciona entre requisições diferentes**, separadas por minutos. Das duas técnicas de banco deste post, é a única que resolve o caso do usuário que abriu um formulário às 10h e salvou às 10h15: a transação no banco durou milissegundos, mas a versão lida às 10h continua sendo o critério. Basta a tela devolver a versão junto com os dados. É o padrão que o Fowler chama de *Optimistic Offline Lock*; "offline" porque a proteção atravessa várias requisições, fora de uma única transação do banco. Em HTTP, a mesma ideia é o `ETag` com `If-Match`, que a RFC 9110 descreve justamente como proteção contra o lost update; no CouchDB, é o campo `_rev`, que recusa com 409 a gravação feita sobre uma revisão antiga.
-- **Retry automático não serve para edição humana.** Retentar às cegas só faz sentido quando a aplicação sabe recalcular a partir do dado novo: um débito, um contador, um status. Quando quem editou foi uma pessoa, a resposta certa para o conflito é devolver o erro com o estado atual (`409 Conflict`, ou `412 Precondition Failed` quando a versão veio num `If-Match`) e deixar que ela decida o que fazer com as duas versões. Sobrescrever em silêncio é exatamente o lost update que a versão existia para impedir.
-- **UPDATE em massa passa por fora do `@Version`.** Um `update` em JPQL (com `@Modifying`) ou em SQL nativo não checa nem incrementa a versão: quem escreve o comando precisa incluir o `version = version + 1` e, se a decisão depende do valor lido, o filtro pela versão, como no SQL puro acima. A proteção só é automática para entidades gerenciadas que passam pelo `save`.
+- :marca[**A versão funciona entre requisições diferentes**], separadas por minutos. Das duas técnicas de banco deste post, é a única que resolve o caso do usuário que abriu um formulário às 10h e salvou às 10h15: a transação no banco durou milissegundos, mas a versão lida às 10h continua sendo o critério. Basta a tela devolver a versão junto com os dados. É o padrão que o Fowler chama de *Optimistic Offline Lock*; "offline" porque a proteção atravessa várias requisições, fora de uma única transação do banco. Em HTTP, a mesma ideia é o `ETag` com `If-Match`, que a RFC 9110 descreve justamente como proteção contra o lost update; no CouchDB, é o campo `_rev`, que recusa com 409 a gravação feita sobre uma revisão antiga.
+- :marca[**Retry automático não serve para edição humana.**] Retentar às cegas só faz sentido quando a aplicação sabe recalcular a partir do dado novo: um débito, um contador, um status. Quando quem editou foi uma pessoa, a resposta certa para o conflito é devolver o erro com o estado atual (`409 Conflict`, ou `412 Precondition Failed` quando a versão veio num `If-Match`) e deixar que ela decida o que fazer com as duas versões. Sobrescrever em silêncio é exatamente o lost update que a versão existia para impedir.
+- :marca[**UPDATE em massa passa por fora do `@Version`.**] Um `update` em JPQL (com `@Modifying`) ou em SQL nativo não checa nem incrementa a versão: quem escreve o comando precisa incluir o `version = version + 1` e, se a decisão depende do valor lido, o filtro pela versão, como no SQL puro acima. A proteção só é automática para entidades gerenciadas que passam pelo `save`.
 
 ## 3. Bloqueio pessimista
 
@@ -132,12 +132,12 @@ UPDATE conta SET saldo = saldo - 10 WHERE id = 1;
 COMMIT;               -- a trava só sai aqui
 ```
 
-Quem pedir a mesma linha com `FOR UPDATE` nesse meio-tempo fica esperando. Quando a primeira transação faz COMMIT, a segunda recebe a trava e lê a versão **já atualizada** da linha, e não a que existia quando começou a esperar. É isso que impede o lost update.
+Quem pedir a mesma linha com `FOR UPDATE` nesse meio-tempo fica esperando. Quando a primeira transação faz COMMIT, a segunda recebe a trava e :marca[lê a versão **já atualizada** da linha], e não a que existia quando começou a esperar. É isso que impede o lost update.
 
 Três variações que vale conhecer no PostgreSQL:
 
 - `FOR UPDATE NOWAIT`: em vez de esperar, falha na hora se a linha estiver travada (`could not obtain lock on row in relation "conta"`). Bom quando esperar é pior que desistir.
-- `FOR UPDATE SKIP LOCKED`: pula as linhas travadas e devolve as outras. É assim que se implementa fila de trabalho em tabela, e a documentação do PostgreSQL cita exatamente esse uso: vários *workers* pegam itens diferentes sem disputar o mesmo, sem *broker* de mensagens. O relay do outbox em [Efeito externo sem registro local](/posts/efeito-externo-sem-registro-local/) funciona assim.
+- `FOR UPDATE SKIP LOCKED`: pula as linhas travadas e devolve as outras. :marca[É assim que se implementa fila de trabalho em tabela], e a documentação do PostgreSQL cita exatamente esse uso: vários *workers* pegam itens diferentes sem disputar o mesmo, sem *broker* de mensagens. O relay do outbox em [Efeito externo sem registro local](/posts/efeito-externo-sem-registro-local/) funciona assim.
 - `lock_timeout`: parâmetro de configuração que limita quanto tempo um comando espera por uma trava (por exemplo, `SET LOCAL lock_timeout = '3s'` vale só para a transação atual; estourado, o erro é `canceling statement due to lock timeout`). O padrão é `0`, que desliga o limite: sem configurar, a espera é indefinida.
 
 **Em Spring Data JPA**
@@ -154,17 +154,17 @@ public interface ContaRepository extends JpaRepository<Conta, Long> {
 
 Três cuidados com esse código:
 
-- **O SQL gerado não é exatamente `FOR UPDATE`.** No PostgreSQL, o Hibernate traduz `PESSIMISTIC_WRITE` para `FOR NO KEY UPDATE`, uma trava um pouco mais fraca: bloqueia UPDATEs, DELETEs e outros `FOR UPDATE` ou `FOR NO KEY UPDATE` na linha, mas deixa passar o `FOR KEY SHARE`, a trava mais leve de todas. Para o lost update, o efeito é o mesmo.
-- **O timeout depende da versão do Hibernate.** A dica `jakarta.persistence.lock.timeout` (em milissegundos) só funciona no PostgreSQL em versões recentes do Hibernate 7, que executam `SET LOCAL lock_timeout` antes da consulta. Em testes contra o PostgreSQL 17, ela funcionou no Hibernate 7.2.24, 7.3.13 e 7.4.5 (os de Spring Boot 4.0.8 e 4.1.1): a espera parou em 3 segundos com erro de trava (no Spring Boot 4.1, `CannotAcquireLockException`). No Hibernate 6.6 (Spring Boot 3.5) e em 7.1.8, 7.2.0 e 7.3.0, foi ignorada sem aviso, e a espera continuou indefinida. Confirme na sua versão com um teste, ou defina `lock_timeout` direto no banco, que vale para qualquer versão.
+- **O SQL gerado não é exatamente `FOR UPDATE`.** No PostgreSQL, :marca[o Hibernate traduz `PESSIMISTIC_WRITE` para `FOR NO KEY UPDATE`], uma trava um pouco mais fraca: bloqueia UPDATEs, DELETEs e outros `FOR UPDATE` ou `FOR NO KEY UPDATE` na linha, mas deixa passar o `FOR KEY SHARE`, a trava mais leve de todas. Para o lost update, o efeito é o mesmo.
+- **O timeout depende da versão do Hibernate.** A dica `jakarta.persistence.lock.timeout` (em milissegundos) só funciona no PostgreSQL em versões recentes do Hibernate 7, que executam `SET LOCAL lock_timeout` antes da consulta. Em testes contra o PostgreSQL 17, ela funcionou no Hibernate 7.2.24, 7.3.13 e 7.4.5 (os de Spring Boot 4.0.8 e 4.1.1): a espera parou em 3 segundos com erro de trava (no Spring Boot 4.1, `CannotAcquireLockException`). No Hibernate 6.6 (Spring Boot 3.5) e em 7.1.8, 7.2.0 e 7.3.0, :sublinhado[foi ignorada sem aviso], e a espera continuou indefinida. Confirme na sua versão com um teste, ou defina `lock_timeout` direto no banco, que vale para qualquer versão.
 - **A trava precisa de uma transação em volta.** O método de serviço que chama esse repositório deve ser `@Transactional`. Sem transação, a JPA recusa a consulta com trava (`TransactionRequiredException`, que o Spring entrega como `InvalidDataAccessApiUsageException`). E a trava só faz sentido se a leitura e a gravação estiverem na mesma transação, porque ela é liberada no fim dela.
 
-**O que costuma passar batido:** a trava dura até o commit. Se dentro da transação você chamar o adquirente e ele levar 800 ms, a linha fica travada por 800 ms e todo mundo que quiser aquela linha entra na fila atrás. **Não chame serviço externo com uma trava na mão.** Como separar a chamada externa da gravação local sem perder nenhuma das duas é o tema do post [Efeito externo sem registro local](/posts/efeito-externo-sem-registro-local/).
+**O que costuma passar batido:** a trava dura até o commit. Se dentro da transação você chamar o adquirente e ele levar 800 ms, a linha fica travada por 800 ms e todo mundo que quiser aquela linha entra na fila atrás. :marca[**Não chame serviço externo com uma trava na mão.**] Como separar a chamada externa da gravação local sem perder nenhuma das duas é o tema do post [Efeito externo sem registro local](/posts/efeito-externo-sem-registro-local/).
 
 ### Deadlock: o risco que vem junto
 
 Duas transações travam as mesmas linhas em ordem invertida e ficam esperando uma pela outra para sempre. O PostgreSQL detecta o ciclo (a checagem roda depois de `deadlock_timeout`, 1 segundo por padrão) e aborta uma das duas com `deadlock detected`; a outra segue. Para a aplicação, é mais um erro que precisa de dono, igual ao conflito do otimista.
 
-A prevenção é simples e quase nunca feita: **travar sempre na mesma ordem**. Quando a transação precisa de mais de uma linha, peça todas de uma vez, ordenadas:
+A prevenção é simples e quase nunca feita: :marca[**travar sempre na mesma ordem**]. Quando a transação precisa de mais de uma linha, peça todas de uma vez, ordenadas:
 
 ```sql
 SELECT id, saldo
@@ -196,15 +196,15 @@ RETURNING saldo;
 -- UPDATE 0 -> saldo insuficiente
 ```
 
-Aqui não há leitura prévia na aplicação, então não há janela e não há lost update. O UPDATE trava a linha por conta própria enquanto grava. Se dois débitos chegam juntos, o segundo espera o primeiro terminar e, no nível de isolamento padrão do PostgreSQL, **reavalia o `WHERE` sobre o saldo já atualizado**. Num teste com saldo 15 e dois débitos simultâneos de 10, um afetou uma linha e o outro afetou zero, e o saldo terminou em 5. O `RETURNING` devolve o saldo novo no mesmo comando, sem outra consulta.
+Aqui não há leitura prévia na aplicação, então não há janela e não há lost update. O UPDATE trava a linha por conta própria enquanto grava. Se dois débitos chegam juntos, o segundo espera o primeiro terminar e, no nível de isolamento padrão do PostgreSQL, :marca[**reavalia o `WHERE` sobre o saldo já atualizado**]. Num teste com saldo 15 e dois débitos simultâneos de 10, um afetou uma linha e o outro afetou zero, e o saldo terminou em 5. O `RETURNING` devolve o saldo novo no mesmo comando, sem outra consulta.
 
-Essa é a primeira pergunta a fazer antes de escolher entre otimista e pessimista: **dá para escrever isso como um único comando?** Se der, nenhum dos dois é necessário. No post sobre [arquitetura de ledger](/posts/arquitetura-de-ledger/), a mesma ideia aparece como *balance locking*: condicionar a escrita ao saldo em vez de à versão.
+Essa é a primeira pergunta a fazer antes de escolher entre otimista e pessimista: :marca[**dá para escrever isso como um único comando?**] Se der, nenhum dos dois é necessário. No post sobre [arquitetura de ledger](/posts/arquitetura-de-ledger/), a mesma ideia aparece como *balance locking*: condicionar a escrita ao saldo em vez de à versão.
 
 ## 5. E os níveis de isolamento?
 
-A outra forma de tratar concorrência é no nível da transação inteira, em vez de linha a linha. O PostgreSQL usa READ COMMITTED por padrão, e nele o padrão "leu na aplicação, calculou, gravou" **não** está protegido: cada comando enxerga o que já foi confirmado, e a segunda gravação simplesmente passa por cima da primeira. Daí a necessidade de bloqueio explícito.
+A outra forma de tratar concorrência é no nível da transação inteira, em vez de linha a linha. O PostgreSQL usa READ COMMITTED por padrão, e nele o padrão "leu na aplicação, calculou, gravou" :sublinhado[**não**] está protegido: cada comando enxerga o que já foi confirmado, e a segunda gravação simplesmente passa por cima da primeira. Daí a necessidade de bloqueio explícito.
 
-Em REPEATABLE READ e SERIALIZABLE, o PostgreSQL impede o lost update por conta própria: quando a transação tenta gravar uma linha que outra transação alterou e confirmou depois do início dela, o comando é abortado com `could not serialize access due to concurrent update`. Repare no que isso é: **bloqueio otimista feito pelo banco**, com a mesma consequência. Detecção produz erro, e o erro continua precisando de dono: alguém relê e tenta de novo. Subir o isolamento muda quem detecta o conflito, não elimina o tratamento dele.
+Em REPEATABLE READ e SERIALIZABLE, o PostgreSQL impede o lost update por conta própria: quando a transação tenta gravar uma linha que outra transação alterou e confirmou depois do início dela, o comando é abortado com `could not serialize access due to concurrent update`. Repare no que isso é: :marca[**bloqueio otimista feito pelo banco**], com a mesma consequência. Detecção produz erro, e o erro continua precisando de dono: alguém relê e tenta de novo. Subir o isolamento muda quem detecta o conflito, não elimina o tratamento dele.
 
 O SERIALIZABLE vai além: pega anomalias que nenhuma trava de linha pega, como duas transações que leem um conjunto de linhas e cada uma grava numa linha diferente com base no que leu (*write skew*). O preço é mais abortos sob disputa e mais trabalho do banco para rastrear as dependências. E, como a trava, o isolamento vive dentro de uma transação: não protege o formulário aberto às 10h e salvo às 10h15.
 
@@ -219,15 +219,15 @@ O SERIALIZABLE vai além: pega anomalias que nenhuma trava de linha pega, como d
 | **Funciona entre requisições?** | sim, com a versão indo e voltando | não com trava de banco, que só vive dentro da transação |
 | **Onde encaixa** | conflito raro, leitura pesada, edição por tela | conflito frequente, operação crítica, transação curta |
 
-Na descrição do Fowler, o pessimista limita a concorrência do sistema, enquanto o otimista deixa várias pessoas trabalharem nos mesmos dados ao mesmo tempo. Na prática, isso leva a uma regra que funciona bem: comece otimista, que é mais simples e não cria filas. A pergunta certa não é "quando usar o otimista", e sim **"quando o otimista sozinho não basta"**.
+Na descrição do Fowler, o pessimista limita a concorrência do sistema, enquanto o otimista deixa várias pessoas trabalharem nos mesmos dados ao mesmo tempo. Na prática, isso leva a uma regra que funciona bem: comece otimista, que é mais simples e não cria filas. A pergunta certa não é "quando usar o otimista", e sim :marca[**"quando o otimista sozinho não basta"**].
 
 O critério prático que eu uso é a taxa de disputa pela mesma linha. Cadastro de cliente, limite, parâmetro de produto, qualquer coisa que uma pessoa edita numa tela: otimista. Saldo de uma única conta em dia de pico, contador de uso de limite, qualquer linha que o sistema atualiza por conta própria muitas vezes por segundo: pessimista ou, melhor ainda, um único UPDATE condicional.
 
 ### Quando nenhum dos dois basta: a linha quente
 
-Existe um caso em que a escolha não resolve: a **linha quente**, uma única linha que todo mundo grava. Um contador global, o saldo da conta que recebe todos os créditos do dia, o estoque do produto em promoção. O otimista vira avalanche de retentativas, porque quase toda gravação encontra a versão mudada. O pessimista e o UPDATE condicional funcionam, mas serializam: cada gravação espera a anterior confirmar, e a vazão daquela linha fica limitada pela duração de uma transação. Não há trava que resolva isso, porque o problema não é a concorrência, é o modelo.
+Existe um caso em que a escolha não resolve: a **linha quente**, uma única linha que todo mundo grava. Um contador global, o saldo da conta que recebe todos os créditos do dia, o estoque do produto em promoção. O otimista vira avalanche de retentativas, porque quase toda gravação encontra a versão mudada. O pessimista e o UPDATE condicional funcionam, mas serializam: cada gravação espera a anterior confirmar, e a vazão daquela linha fica limitada pela duração de uma transação. Não há trava que resolva isso, porque :marca[o problema não é a concorrência, é o modelo].
 
-A saída é mudar o que se grava. Em vez de atualizar o saldo, **acrescente lançamentos** (uma linha por crédito, só INSERT, sem disputa) e calcule ou materialize o saldo em outro momento, que é o desenho de [ledger](/posts/arquitetura-de-ledger/). Contadores podem ser divididos em várias linhas (*sharded counters*) somadas na leitura. E quando a ordem importa, uma fila que serializa as gravações de propósito, em lote, costuma render mais do que centenas de transações disputando a mesma linha.
+A saída é mudar o que se grava. Em vez de atualizar o saldo, :marca[**acrescente lançamentos**] (uma linha por crédito, só INSERT, sem disputa) e calcule ou materialize o saldo em outro momento, que é o desenho de [ledger](/posts/arquitetura-de-ledger/). Contadores podem ser divididos em várias linhas (*sharded counters*) somadas na leitura. E quando a ordem importa, uma fila que serializa as gravações de propósito, em lote, costuma render mais do que centenas de transações disputando a mesma linha.
 
 ## 7. Cinco perguntas antes de decidir
 
