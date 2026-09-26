@@ -630,6 +630,11 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
     viram o topo do post (0,6s, `cubic-bezier(0.65, 0, 0.35, 1)`); o desenho cobre a caixa enquanto
     troca de recorte, o título cresce preso ao canto de cima, à esquerda. Voltar faz o inverso. Os
     cartões sem par trocam na hora.
+  - **O desenho se desenha** (destaque da home e topo do post): ao entrar na tela, os traços aparecem
+    em sequência com DrawSVG (1,1s cada, `power1.inOut`, sequência de até ~1,2s); depois a cor, a
+    hachura (0,6s) e os textos (0,4s). Tracejados só por opacidade. Chegando pela transição do
+    cartão, o desenho já vem pronto. Nos cartões, o mouse (ou o foco) refaz o traço em 0,5s, uma vez
+    por cartão por visita.
 - **Lousa de passos** (D39): com a rolagem só na tela de 1024px ou mais e sem movimento reduzido
   (passos a 40% da tela, o atual inteiro e os outros esmaecidos); fora disso, passo a passo com
   "◀ 2 de 5 ▶", pontos e deslizar.

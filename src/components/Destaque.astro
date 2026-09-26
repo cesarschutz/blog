@@ -24,7 +24,7 @@ const { post } = Astro.props;
   <article class:list={["cartao-destaque", "folha", { "com-ilustracao": temIlustracao(post.slug) }]}>
     {
       temIlustracao(post.slug) && (
-        <a class="ilustracao-destaque painel" href={post.url} tabindex="-1" aria-hidden="true" style={`--cor:${post.cor};${transicaoPost(post.slug, "desenho")}`}>
+        <a class="ilustracao-destaque painel" data-desenhar href={post.url} tabindex="-1" aria-hidden="true" style={`--cor:${post.cor};${transicaoPost(post.slug, "desenho")}`}>
           <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} tamanho="cartao" decorativa inteira />
         </a>
       )
@@ -166,3 +166,9 @@ const { post } = Astro.props;
     }
   }
 </style>
+
+<script>
+  import { desenharAoEntrar } from "../scripts/desenho-vivo";
+
+  desenharAoEntrar();
+</script>

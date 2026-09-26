@@ -1009,3 +1009,11 @@ nada muda.
      navegador leva um ao outro em 0,6s; voltar pelo botão do navegador faz o caminho inverso. O nome
      fica no título (bloco), não no link, porque um elemento em linha partido em linhas cancelaria a
      transição. Os cartões sem par na outra página trocam na hora (`:only-child`), como o resto.
+  3. **O desenho se desenha** (`desenho-vivo.ts`, DrawSVG): no destaque da home e no topo do post,
+     quando o desenho entra na tela (30% dele), os traços aparecem uma vez, em sequência (1,1s cada,
+     sequência de no máximo ~1,2s), e depois vêm a cor, a hachura e os textos; os tracejados
+     (`.fantasma`) aparecem por opacidade. Até o script preparar a sequência, o CSS esconde o desenho
+     (só com JS, na tela e sem movimento reduzido; no máximo 2,5s, depois aparece inteiro). Quem chega
+     ao post pela transição do cartão (lote 2) já traz o desenho pronto e ele não se redesenha
+     (`data-chegada`, posto pelo `pagereveal` no `<head>`). Nos cartões das listas, passar o mouse ou
+     focar refaz o traço em 0,5s, uma vez por cartão por visita. Na impressão, sempre inteiro.

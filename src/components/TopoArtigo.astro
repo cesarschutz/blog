@@ -27,7 +27,7 @@ const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "
 <div class="folha topo-folha">
   {
     temIlustracao(post.slug) && (
-      <figure class="ilustracao-topo painel" data-pagefind-ignore style={`--cor:${post.cor};${transicaoPost(post.slug, "desenho")}`}>
+      <figure class="ilustracao-topo painel" data-pagefind-ignore data-desenhar style={`--cor:${post.cor};${transicaoPost(post.slug, "desenho")}`}>
         <div class="largo">
           <Ilustracao slug={post.slug} recorte="largo" cor={post.cor} anotacoes />
         </div>
@@ -189,3 +189,9 @@ const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "
     }
   }
 </style>
+
+<script>
+  import { desenharAoEntrar } from "../scripts/desenho-vivo";
+
+  desenharAoEntrar();
+</script>

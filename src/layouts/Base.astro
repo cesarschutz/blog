@@ -76,6 +76,7 @@ const preVisualizacao = process.env.PREVIEW === "true";
       // Antes da primeira pintura: tema escolhido nesta visita (o site sempre abre no tema do
       // sistema, D33) e modo Lista/Cards da home. A escolha de tema antiga, guardada para sempre
       // (também pelo blog atual, com a mesma chave), é apagada, e as do som e das frases, que saíram (D39), também. O livro inclinado não tomba mais (D35).
+      document.documentElement.dataset.js = "";
       try {
         var raiz = document.documentElement;
         var tema = sessionStorage.getItem("cs-theme");
@@ -108,6 +109,8 @@ const preVisualizacao = process.env.PREVIEW === "true";
           if (e.viewTransition && e.activation && e.activation.entry) nomear(e.activation.entry.url);
         });
         addEventListener("pagereveal", function (e) {
+          // Chegou por transição (D41): o desenho do topo veio pronto do cartão e não se desenha de novo.
+          if (e.viewTransition) document.documentElement.dataset.chegada = "transicao";
           if (e.viewTransition && window.navigation && navigation.activation && navigation.activation.from) {
             nomear(navigation.activation.from.url);
           }
