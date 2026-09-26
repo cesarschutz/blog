@@ -14,7 +14,7 @@ posts em 26/09/2026. Post da série Java também segue a skill `serie-java`.
 | `arquitetura-de-ledger` | Arquitetura de Software | 2026-05-28 | pendente | pendente | |
 | `atomicboolean-parada-graciosa` | Desenvolvimento de Software | 2026-05-19 | pendente | pendente | |
 | `bloqueio-otimista-e-pessimista` | Dados | 2026-09-13 | pendente | pendente | |
-| `cobranca-duplicada-no-retry` | Arquitetura de Software | 2026-09-10 | pendente | piloto da D48: proposta em 26/09/2026, aguardando o OK | |
+| `cobranca-duplicada-no-retry` | Arquitetura de Software | 2026-09-10 | pendente | 12, aplicadas em 26/09/2026 (piloto da D48) | |
 | `cronjob-vs-endpoint-sqs` | Arquitetura de Software | 2026-09-23 | pendente | pendente | |
 | `data-lake-vs-data-warehouse` | Dados | 2026-03-31 | pendente | pendente | |
 | `efeito-externo-sem-registro-local` | Arquitetura de Software | 2026-09-11 | pendente | pendente | |
@@ -26,7 +26,7 @@ posts em 26/09/2026. Post da série Java também segue a skill `serie-java`.
 | `java-25` | série Java | 2025-07-02 | pendente | pendente | |
 | `java-29` | série Java | 2026-09-16 | pendente | pendente | |
 | `java-8` | série Java | 2025-07-02 | pendente | pendente | |
-| `jwt-estrutura-e-campos` | Segurança | 2026-04-12 | pendente | piloto da D48: proposta em 26/09/2026, aguardando o OK | |
+| `jwt-estrutura-e-campos` | Segurança | 2026-04-12 | pendente | 12, aplicadas em 26/09/2026 (piloto da D48) | |
 | `kubernetes-cronjob-concorrencia` | DevOps | 2026-05-19 | pendente | pendente | |
 | `logging-estruturado-spring-boot` | SRE | 2026-05-19 | pendente | pendente | |
 | `overhead-vs-overkill` | Arquitetura de Software | 2026-05-16 | pendente | pendente | |

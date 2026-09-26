@@ -37,7 +37,7 @@ Decodificando as duas primeiras partes (basta Base64URL, sem chave nenhuma; o JS
 { "alg": "ES256", "kid": "chave-2026-09", "typ": "JWT" }
 ```
 
-```json title="payload"
+```json title="payload" anotar="1789564500|15 min depois"
 {
   "iss": "https://auth.minhaempresa.com",
   "sub": "usuario-4821",
@@ -54,7 +54,8 @@ A terceira parte são os 64 bytes da assinatura ECDSA, também em Base64URL. Len
 
 O header descreve o token e diz como ele foi protegido. Os parâmetros abaixo são definidos na RFC 7515, §4.1:
 
-- **`alg`** (*Algorithm*): algoritmo usado na assinatura (ex.: `RS256`, `HS256`, `ES256`). É o único **obrigatório**.
+:::caixas
+- **`alg`** (*Algorithm*): algoritmo usado na assinatura (ex.: `RS256`, `HS256`, `ES256`). É o :ondulado[único **obrigatório**].
 - **`typ`** (*Type*): tipo do objeto. Opcional; quando presente, a RFC 7519 recomenda o valor `JWT`. Para tipos novos de JWT, a RFC 8725 recomenda tipagem explícita, como `at+jwt` para access tokens OAuth (RFC 9068), o que evita que um tipo de token seja aceito no lugar de outro.
 - **`cty`** (*Content Type*): tipo do conteúdo. No JWT só é usado quando o payload é outro JWT (*nested JWT*, por exemplo um token assinado e depois criptografado); nesse caso o valor deve ser `JWT`. Fora disso, a RFC 7519 não recomenda usá-lo.
 - **`kid`** (*Key ID*): identificador da chave que assinou o token. Quem valida usa o `kid` para escolher a chave certa dentro de um **JWKS** (*JWK Set*, o documento JSON em que o emissor publica suas chaves públicas), o que permite trocar de chave sem quebrar os tokens em circulação.
@@ -62,13 +63,15 @@ O header descreve o token e diz como ele foi protegido. Os parâmetros abaixo s�
 - **`jwk`** (*JSON Web Key*): a própria chave pública, embutida no header. Uso raro; nunca aceite uma chave só porque veio dentro do token (ver [cuidados de segurança](#cuidados-de-segurança)).
 - **`x5u`**, **`x5c`**, **`x5t`** e **`x5t#S256`**: o equivalente para certificados X.509. São, respectivamente, a URL do certificado, a cadeia de certificados embutida e os *thumbprints* (hash SHA-1 e SHA-256) do certificado.
 - **`crit`** (*Critical*): lista de parâmetros de **extensão** presentes no header que o validador é obrigado a entender. Se não entender algum deles, deve rejeitar o token. A lista não pode ficar vazia nem repetir os parâmetros padrão acima.
+:::
 
 ## Payload (Claims)
 
 O payload é o conteúdo do token: um objeto JSON cujos campos se chamam **claims**, ou seja, afirmações sobre alguém ou alguma coisa (em geral, o usuário). A RFC 7519 divide os nomes de claims em três categorias.
 
-**Registered claims (RFC 7519, §4.1).** Nomes padronizados e registrados na IANA. Nenhum é obrigatório pela RFC; cada aplicação define quais exige.
+**Registered claims (RFC 7519, §4.1).** Nomes padronizados e registrados na IANA. :ondulado[Nenhum é obrigatório pela RFC]; cada aplicação define quais exige.
 
+:::caixas
 - **`iss`** (*Issuer*): quem emitiu o token (ex.: `https://auth.minhaempresa.com`).
 - **`sub`** (*Subject*): de quem o token fala, normalmente o ID do usuário. Precisa ser único no contexto do emissor ou globalmente.
 - **`aud`** (*Audience*): para quem o token se destina. Pode ser uma string ou uma lista. Se a claim estiver presente e quem processa o token não se identificar com nenhum dos valores, o token **deve** ser rejeitado.
@@ -76,8 +79,9 @@ O payload é o conteúdo do token: um objeto JSON cujos campos se chamam **claim
 - **`nbf`** (*Not Before*): instante antes do qual o token não pode ser aceito.
 - **`iat`** (*Issued At*): instante de emissão; serve para calcular a idade do token.
 - **`jti`** (*JWT ID*): identificador único do token. A RFC cita o uso contra *replay* (reaproveitamento do mesmo token); na prática também serve de chave para uma lista de tokens revogados.
+:::
 
-As datas (`exp`, `nbf`, `iat`) são do tipo *NumericDate*: segundos desde 1970-01-01T00:00:00Z, o mesmo que um timestamp Unix. Na validação de `exp` e `nbf`, a RFC permite uma pequena tolerância, "normalmente não mais que alguns minutos", para compensar diferença de relógio entre máquinas.
+As datas (`exp`, `nbf`, `iat`) são do tipo *NumericDate*: :nota[segundos]{texto="não milissegundos!"} desde 1970-01-01T00:00:00Z, o mesmo que um timestamp Unix. Na validação de `exp` e `nbf`, a RFC permite uma pequena tolerância, "normalmente não mais que alguns minutos", para compensar diferença de relógio entre máquinas.
 
 **Public claims (RFC 7519, §4.2).** Nomes criados fora da RFC, mas sem risco de colisão: ou registrados no [registro de claims JWT da IANA](https://www.iana.org/assignments/jwt/jwt.xhtml), ou formados a partir de um espaço de nomes que você controla, como uma URL do seu domínio (`https://minhaempresa.com/roles`). O registro da IANA inclui, por exemplo, as claims de usuário do **OpenID Connect** (`name`, `email`, `email_verified`, `preferred_username`, `picture`…) e `scope` e `client_id`, registradas pela RFC 8693 (OAuth 2.0 Token Exchange).
 
@@ -94,23 +98,29 @@ A assinatura é calculada sobre o texto `base64url(header) + "." + base64url(pay
 | `HS256` / `HS384` / `HS512` | HMAC com SHA-2 | Segredo compartilhado (simétrica) |
 | `RS256` / `RS384` / `RS512` | RSA com RSASSA-PKCS1-v1_5 e SHA-2 | Par de chaves RSA (assimétrica) |
 | `PS256` / `PS384` / `PS512` | RSA com RSASSA-PSS e SHA-2 (esquema de padding mais novo que o PKCS1-v1_5) | Par de chaves RSA (assimétrica) |
-| `ES256` / `ES384` / `ES512` | ECDSA com as curvas P-256, P-384 e **P-521** (não P-512) | Par de chaves de curva elíptica (assimétrica) |
+| `ES256` / `ES384` / `ES512` | ECDSA com as curvas P-256, P-384 e :circulo[**P-521**] (não P-512) | Par de chaves de curva elíptica (assimétrica) |
 | `none` | Nenhuma assinatura (*Unsecured JWS*) | — |
 
+:::asterisco
 A diferença prática entre os grupos está em quem consegue gerar tokens. Com **HMAC**, o mesmo segredo assina e valida: todo serviço que valida também poderia emitir tokens. Com **RSA** ou **ECDSA**, só o emissor tem a chave privada; os serviços validam com a chave pública, que pode ser publicada num JWKS. Por isso, quando o token é consumido por vários serviços, os algoritmos assimétricos costumam ser a escolha. Das opções, a RFC 7518 exige das implementações apenas `HS256` e recomenda `RS256` e `ES256`.
+:::
 
 ## Cuidados de segurança
 
+:::colchete
 **O payload não é criptografado.** Ele só está codificado em Base64URL, como o exemplo acima mostrou: qualquer pessoa com o token lê o conteúdo. Um JWS garante **integridade e autenticidade**, não sigilo. Não coloque no payload nada que não possa ser lido por quem intercepta ou recebe o token. Se precisar de sigilo, use **JWE (RFC 7516)**, que criptografa o conteúdo.
+:::
 
+:::exclamacao
 **Fixe os algoritmos aceitos no servidor.** Dois ataques clássicos exploram validadores que confiam no `alg` do próprio token (RFC 8725, §2.1):
+:::
 
 - trocar o `alg` por `none` e remover a assinatura; bibliotecas vulneráveis "validavam" o token sem verificar nada;
 - trocar `RS256` por `HS256`; a biblioteca passa a verificar um HMAC usando a **chave pública** RSA como segredo, e a chave pública é conhecida de todos.
 
-A defesa é configurar no validador a lista de algoritmos aceitos e rejeitar qualquer outro, independentemente do que o token declara. A RFC 8725 (§3.1) também pede que cada chave seja usada com um único algoritmo, e a RFC 7518 proíbe aceitar `none` por padrão.
+A defesa é :marca[configurar no validador a lista de algoritmos aceitos e rejeitar qualquer outro], independentemente do que o token declara. A RFC 8725 (§3.1) também pede que cada chave seja usada com um único algoritmo, e a RFC 7518 proíbe aceitar `none` por padrão.
 
-**Assinatura válida não basta: valide as claims.** Um token autêntico pode ter expirado ou ter sido emitido para outro serviço. Depois de verificar a assinatura, confira:
+**Assinatura válida :ondulado[não basta]: valide as claims.** Um token autêntico pode ter expirado ou ter sido emitido para outro serviço. Depois de verificar a assinatura, confira:
 
 - `exp` e `nbf`, com uma tolerância pequena de relógio;
 - `iss`: o emissor é o esperado, e a chave que assinou pertence a ele (RFC 8725, §3.8);

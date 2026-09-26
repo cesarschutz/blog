@@ -1200,8 +1200,9 @@ nada muda.
 
 
 ## D48 · A caneta do caderno: marcações estáticas, azuis e com 20 tipos
-- **Data:** 26/09/2026 · **Status:** aplicada **só local, com commit e sem push** (pedido do Cesar).
-  Substitui a parte do caderno marcado da D41 (a marca "cs" e o desenho do destaque da D41 continuam).
+- **Data:** 26/09/2026 · **Status:** aprovada e **publicada** em 26/09/2026 (o Cesar aprovou a
+  proposta dos pilotos e pediu o push e a publicação ao terminar). Substitui a parte do caderno
+  marcado da D41 (a marca "cs" e o desenho do destaque da D41 continuam).
 - **Pedido do Cesar:** refazer o caderno marcado a partir de `docs/prototipos/caneta-do-caderno.html`,
   o catálogo com todas as marcações nos dois temas, já com a caneta azul escolhida.
 - **Decisão:**
@@ -1234,8 +1235,21 @@ nada muda.
   10. **Guia vivo:** `docs/marcacoes.md` reescrito, com a seção "Ajustes do Cesar", onde entra, com a
       data, todo ajuste que ele pedir nas marcações.
   11. **As marcações da D41 saíram dos 27 posts** (texto idêntico, conferido pelo Markdown antes e
-      depois). Os pilotos (JWT e chave de idempotência) recebem a caneta nova depois do OK à
-      proposta; os outros, na revisão pelo `.claude/revisao-posts.md` (coluna "Caneta").
+      depois). Os outros 25 recebem a caneta na revisão pelo `.claude/revisao-posts.md` (coluna
+      "Caneta").
+  12. **Pilotos** (26/09/2026, pela skill `caneta`, proposta aprovada pelo Cesar sem ajustes): o JWT e a
+      chave de idempotência com 12 marcações cada (tabelas em `docs/marcacoes.md`, "Exemplos"),
+      texto idêntico ao de antes. Testados pelo `chrome-devtools` em 320, 390, 768, 1280 e 1600px, nos
+      dois temas: sem rolagem lateral, sem marca cortada, sem nota cobrindo a linha de cima, notas do
+      código visíveis; console sem erros. Antes e depois em `.impeccable/review/caneta/` (fora do git).
+  13. **Ajustes que os testes pediram:** no celular, a folha do artigo passa 12px do texto de cada lado
+      (a borda cortava o sublinhado de uma palavra que abria a linha); a nota acima da palavra abre
+      1,3em e desce 0,25em (a ponta inclinada chegava perto das letras de cima) e, quando passaria da
+      margem direita, termina sobre a palavra em vez de ir para depois dela; o círculo tem folga
+      proporcional ao trecho e, acima de 12 caracteres, se cruza no alto (cortava o "4" de
+      `422 Unprocessable Content`); a seta ligando fica mais perto do próprio trecho (parecia sublinhar
+      a linha de cima); o círculo no código quase não abre espaço dos lados (a vírgula se afastava do
+      número).
 - **Motivo:** o Cesar escolheu o catálogo; a cor do livro no marca-texto escondia o texto em algumas
   cores, a animação chamava atenção demais, e as marcações da D41 (de 12 a 30 por post) eram
   densas demais para destacar o que importa.

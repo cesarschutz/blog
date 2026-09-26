@@ -122,8 +122,13 @@ Detalhes de cada tipo:
   recuo. **Certo e errado** e **números** ficam no recuo da própria lista. Nunca cortam nem criam
   rolagem lateral.
 - **Notas acima da palavra** (nota na margem, riscado com correção) abrem espaço na própria linha,
-  sem cobrir a de cima. Quando não cabem (celular, ≤ 640px, ou a nota passaria da margem direita),
-  vão logo depois da palavra, na mesma letra.
+  sem cobrir a de cima. Se a nota passaria da margem direita, ela fica acima, mas terminando sobre a
+  palavra (a seta vira para o outro lado); se ainda assim não couber, e sempre no celular (≤ 640px),
+  vai logo depois da palavra, na mesma letra.
+- **Círculo em trecho longo** (mais de 12 caracteres, como `422 Unprocessable Content`): o build usa
+  sozinho um círculo que se cruza no alto, para a volta do traço não cortar as primeiras letras.
+- **Traços na borda do texto:** no celular, a folha passa 12px do texto de cada lado, para o círculo,
+  a caixa e os sublinhados de uma palavra que abre a linha não serem cortados.
 - **Notas no código** não são cortadas pela rolagem do bloco: embaixo da linha, ficam paradas na
   esquerda do bloco.
 - Os traços (SVG) são decorativos (`aria-hidden`); as notas escritas são texto de verdade, lido pelo
@@ -141,9 +146,46 @@ P-512"). Só depois do OK do Cesar as marcações entram no Markdown. Na revisã
 
 ## Exemplos
 
-Os pilotos da D48 são o JWT (`jwt-estrutura-e-campos`) e a chave de idempotência
-(`cobranca-duplicada-no-retry`); as marcações aprovadas deles ficam como referência aqui depois do
-OK do Cesar.
+Os pilotos da D48, aprovados pelo Cesar e aplicados em 26/09/2026 (12 marcações cada), são a
+referência de como marcar.
+
+**JWT (`jwt-estrutura-e-campos`):** o post é uma referência de campos, então as caixas pesam mais.
+
+| Trecho | Tipo | Motivo |
+|---|---|---|
+| lista de parâmetros do header (`alg`…`crit`) | caixas | a lista que o leitor consulta de novo |
+| "único **obrigatório**" (`alg`) | ondulado | responde "o que é obrigatório?" da introdução |
+| `1789564500` no payload | anotação no código: "15 min depois" | liga o `exp` aos 15 minutos do texto |
+| "Nenhum é obrigatório pela RFC" | ondulado | o contrário do que muita gente supõe |
+| lista das claims (`iss`…`jti`) | caixas | idem |
+| "segundos" (NumericDate) | nota: "não milissegundos!" | o erro clássico ao comparar datas |
+| **P-521** na tabela | círculo | todo mundo escreve P-512 |
+| parágrafo do HMAC | asterisco | quem valida também pode emitir |
+| "O payload não é criptografado…" | colchete | resume o maior mal-entendido |
+| "Fixe os algoritmos aceitos…" | exclamação | os ataques `alg: none` e RS→HS |
+| "configurar no validador a lista de algoritmos aceitos e rejeitar qualquer outro" | marca-texto | a regra essencial do post |
+| "não basta" | ondulado | assinatura válida não é token válido |
+
+**Chave de idempotência (`cobranca-duplicada-no-retry`):** o post é um raciocínio, então a caneta segue
+o argumento (premissa, erro, solução, limites).
+
+| Trecho | Tipo | Motivo |
+|---|---|---|
+| "Um timeout não diz se a operação aconteceu." | marca-texto | a premissa do post |
+| "POST não é" | ondulado | por isso a cobrança precisa de proteção |
+| "**onde**" | ondulado | o erro está no lugar da verificação |
+| "tabela vazia e as duas cobram" | seta ligando | a causa e a consequência da corrida |
+| "Isso dificilmente aparece em teste local…" | exclamação | passa no teste e quebra no pico |
+| "verificar e gravar passam a ser a mesma operação" | marca-texto | por que a solução funciona |
+| linhas 3 e 4 do `INSERT` | linhas no código: "1 linha: a primeira; 0: repetição" | é ali que a janela some |
+| `422 Unprocessable Content` | círculo | é confundido com o 409 |
+| "mesma transação" | nota: "conexões presas!" | o custo de chamar o adquirente dentro da transação |
+| "seja sucesso ou falha" | ondulado | o erro também fica guardado |
+| "o que chegou a ser gravado" | duplo | o limite da chave |
+| "consulta, depois grava" | riscado | a abordagem que não vale mais |
+
+Ficaram sem marca, de propósito: a frase em destaque e as lousas (já chamam atenção), a definição de
+idempotência (longa demais para um traço sem quebra) e o "(não P-512)" do JWT (o texto já corrige).
 
 ## Ajustes do Cesar
 

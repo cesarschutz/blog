@@ -150,19 +150,20 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
   agora com a linha do tempo de arrastar), artigo com a coluna da esquerda desde o topo, texto na
   largura da folha e o livro grande embaixo do sumário.
 
-- **Caneta do caderno (D48, 26/09/2026), só local, com commit e sem push:** marcações estáticas, caneta
+- **Caneta do caderno (D48, 26/09/2026), publicada:** marcações estáticas, caneta
   azul fixa que não pinta o texto, marca-texto amarelo, os 20 tipos do catálogo
   `docs/prototipos/caneta-do-caderno.html` em diretivas e nos blocos de código, Caveat só nos posts
   com nota, limites cobrados no build, `npm run contraste` com a caneta e o amarelo, catálogo em
   `/amostra/caneta/`, skill `caneta` (a última etapa da skill `post`) e o guia vivo
   `docs/marcacoes.md` com "Ajustes do Cesar". As marcações da D41 saíram dos 27 posts (texto
-  idêntico). Os pilotos (JWT e chave de idempotência) aguardam o OK do Cesar à proposta.
+  idêntico). Os pilotos (JWT e chave de idempotência) têm 12 marcações cada, pela proposta aprovada,
+  testados em 320, 390, 768, 1280 e 1600px nos dois temas; antes e depois em
+  `.impeccable/review/caneta/index.html` (fora do git).
 
 ## Próximos passos
 
-00. **Caneta (D48):** o OK do Cesar à proposta dos pilotos (JWT e chave de idempotência); depois,
-    aplicar, testar nos cinco tamanhos e nos dois temas e mostrar o antes e depois. Os outros 25 posts
-    recebem a caneta na revisão (`.claude/revisao-posts.md`, coluna "Caneta"). Push só quando ele pedir.
+00. **Caneta (D48):** os outros 25 posts recebem a caneta na revisão (`.claude/revisao-posts.md`,
+    coluna "Caneta"), pela skill `caneta`, com a proposta aprovada pelo Cesar antes de aplicar.
 
 0. A D42 a D45 foram publicadas junto com a D46 (26/09/2026). Pendente de resposta: as cores da capa na gaveta (a referência dele tinha a cor do livro em cima;
    hoje, pela D39, o papel fica em cima) e se o título em duas partes vale também na gaveta e no
