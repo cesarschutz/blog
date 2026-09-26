@@ -8,9 +8,9 @@ category: SRE
 draft: false
 ---
 
-Quando uma operação passa por vários serviços, cada um grava seus próprios logs. Sem um identificador comum, reconstruir o que aconteceu com **uma** operação vira garimpo: buscar por horário, por ID de cliente, torcer para os relógios baterem. E se cada ferramenta de tracing usa um header próprio, o ID se perde na primeira fronteira entre fornecedores.
+Quando uma operação passa por vários serviços, cada um grava seus próprios logs. Sem um identificador comum, :marca[reconstruir o que aconteceu com **uma** operação vira garimpo]: buscar por horário, por ID de cliente, torcer para os relógios baterem. E se cada ferramenta de tracing usa um header próprio, o ID se perde na primeira fronteira entre fornecedores.
 
-O **W3C Trace Context** resolve isso. É uma recomendação do W3C que padroniza como o contexto de rastreamento (quem é a operação e de onde veio a chamada) é propagado entre serviços, de forma que qualquer ferramenta entenda. O campo central é o `traceparent`: com o valor dele em mãos, uma única busca na ferramenta de observabilidade mostra tudo o que aconteceu com a operação, do serviço que a originou até o último consumidor.
+O **W3C Trace Context** resolve isso. É uma recomendação do W3C que padroniza como o contexto de rastreamento (quem é a operação e de onde veio a chamada) é propagado entre serviços, de forma que qualquer ferramenta entenda. O campo central é o `traceparent`: com o valor dele em mãos, :marca[uma única busca na ferramenta de observabilidade mostra tudo o que aconteceu com a operação], do serviço que a originou até o último consumidor.
 
 Este post mostra a anatomia do `traceparent` e do `tracestate`, os valores que a especificação considera inválidos, a granularidade certa para jobs em lote e como o ID atravessa um fluxo assíncrono com outbox pattern e SNS.
 
@@ -19,7 +19,7 @@ Este post mostra a anatomia do `traceparent` e do `tracestate`, os valores que a
 Dois termos antes de começar:
 
 - **Trace**: a operação inteira, com todos os passos em todos os serviços.
-- **Span**: um passo dentro do trace (uma requisição recebida, uma consulta, uma publicação de mensagem). Um serviço pode gerar vários spans no mesmo trace.
+- **Span**: um passo dentro do trace (uma requisição recebida, uma consulta, uma publicação de mensagem). :marca[Um serviço pode gerar vários spans no mesmo trace.]
 
 O `traceparent` carrega dois IDs que importam para a correlação:
 
@@ -45,11 +45,11 @@ O valor tem quatro campos separados por hífen, sempre em hexadecimal minúsculo
 | `parent-id` | 16 caracteres (8 bytes) | `00f067aa0ba902b7` | ID do span de quem chamou |
 | `trace-flags` | 2 caracteres (8 bits) | `01` | flags; hoje só o bit `sampled` é definido |
 
-No total são 55 caracteres. A recomendação é enviar o nome do header em minúsculas (`traceparent`), e quem recebe precisa aceitá-lo em qualquer caixa.
+No total são :circulo[55 caracteres]. A recomendação é enviar o nome do header em minúsculas (`traceparent`), e quem recebe precisa aceitá-lo em qualquer caixa.
 
-**As flags são bits, não um número.** O único bit definido é o menos significativo, `sampled` (amostrado): ligado, indica que quem chamou pode ter gravado os dados do trace; desligado (`00`), que não gravou. Como é um campo de bits, a leitura correta usa máscara (`flags & 0x01`), não comparação com `01`. Os demais bits são reservados e devem ir zerados.
+:marca[**As flags são bits, não um número.**] O único bit definido é o menos significativo, `sampled` (amostrado): ligado, indica que quem chamou pode ter gravado os dados do trace; desligado (`00`), que não gravou. Como é um campo de bits, a leitura correta usa máscara (`flags & 0x01`), não comparação com `01`. Os demais bits são reservados e devem ir zerados.
 
-A cada salto, o serviço repassa o `trace-id` intacto e normalmente troca o `parent-id` pelo ID do próprio span. É isso que permite montar a árvore de chamadas: o `trace-id` agrupa, o `parent-id` encadeia.
+A cada salto, o serviço repassa o `trace-id` intacto e normalmente troca o `parent-id` pelo ID do próprio span. É isso que permite montar a árvore de chamadas: :marca[o `trace-id` agrupa, o `parent-id` encadeia].
 
 ### Valores inválidos
 
@@ -60,7 +60,7 @@ A especificação define quando o `traceparent` não vale:
 - **`parent-id` só com zeros** (`0000000000000000`): inválido.
 - **Caracteres fora do hexadecimal minúsculo** (letras maiúsculas, por exemplo) ou tamanho errado: inválido.
 
-Diante de um valor inválido, o serviço deve ignorar o `traceparent` recebido: começa um trace novo e descarta o `tracestate`. Na prática, não gere esses valores à mão. Use a biblioteca de tracing (o OpenTelemetry já usa o W3C Trace Context como propagador padrão). A especificação recomenda que o `trace-id` seja aleatório e globalmente único, e proíbe usar dados do usuário (como o IP) como semente.
+Diante de um valor inválido, o serviço deve ignorar o `traceparent` recebido: começa um trace novo e descarta o `tracestate`. Na prática, :marca[não gere esses valores à mão]. Use a biblioteca de tracing (o OpenTelemetry já usa o W3C Trace Context como propagador padrão). A especificação recomenda que o `trace-id` seja aleatório e globalmente único, e proíbe usar dados do usuário (como o IP) como semente.
 
 ## O tracestate
 
@@ -70,21 +70,21 @@ A especificação define um segundo header, o `tracestate`, para informações e
 rojo=00f067aa0ba902b7,congo=t61rcWkgMzE
 ```
 
-Ele sempre acompanha o `traceparent`: um `tracestate` recebido sem `traceparent` é descartado, e se o `traceparent` for inválido o `tracestate` nem é lido. Para correlacionar logs, o `traceparent` sozinho basta. O `tracestate` só importa quando mais de uma ferramenta de tracing participa do mesmo fluxo.
+Ele sempre acompanha o `traceparent`: um `tracestate` recebido sem `traceparent` é descartado, e se o `traceparent` for inválido o `tracestate` nem é lido. :marca[Para correlacionar logs, o `traceparent` sozinho basta.] O `tracestate` só importa quando mais de uma ferramenta de tracing participa do mesmo fluxo.
 
-Os dois campos existem apenas para correlação: a especificação proíbe colocar neles dados pessoais ou sensíveis.
+Os dois campos existem apenas para correlação: :marca[a especificação proíbe colocar neles dados pessoais ou sensíveis].
 
 ## Fora do HTTP: o traceparent em mensagens
 
-A especificação define o formato para headers HTTP. Outros protocolos têm especificações de extensão, e em mensageria o caminho usual é levar o mesmo valor como metadado da mensagem. No SNS, isso é um **MessageAttribute** (metadado enviado junto com a mensagem, fora do corpo; veja o post sobre [SNS MessageAttributes e Filter Policy](/posts/sns-filter-policy/)).
+A especificação define o formato para headers HTTP. Outros protocolos têm especificações de extensão, e :marca[em mensageria o caminho usual é levar o mesmo valor como metadado da mensagem]. No SNS, isso é um **MessageAttribute** (metadado enviado junto com a mensagem, fora do corpo; veja o post sobre [SNS MessageAttributes e Filter Policy](/posts/sns-filter-policy/)).
 
-As convenções semânticas de mensageria do OpenTelemetry chamam isso de **contexto de criação da mensagem**: o produtor cria o contexto e ele deve ser propagado com a mensagem até os consumidores. Sem isso, os traces do consumidor não se ligam diretamente aos do produtor.
+As convenções semânticas de mensageria do OpenTelemetry chamam isso de **contexto de criação da mensagem**: o produtor cria o contexto e ele deve ser propagado com a mensagem até os consumidores. :marca[Sem isso, os traces do consumidor não se ligam diretamente aos do produtor.]
 
 ## Granularidade importa: por lote, não por execução
 
-Um job que processa 50 lotes poderia usar o mesmo trace-id para todos (um trace por execução do job). Mas isso mistura os logs de todos os lotes: se o lote #47 falhar no consumidor, não dá para isolá-lo. A abordagem recomendada é gerar um **trace-id por lote** (por evento de outbox). Cada evento gravado na tabela de outbox tem seu próprio `traceparent`, que viaja com a mensagem até o consumidor.
+Um job que processa 50 lotes poderia usar o mesmo trace-id para todos (um trace por execução do job). Mas isso mistura os logs de todos os lotes: se o lote #47 falhar no consumidor, não dá para isolá-lo. A abordagem recomendada é :marca[gerar um **trace-id por lote**] (por evento de outbox). Cada evento gravado na tabela de outbox tem seu próprio `traceparent`, que viaja com a mensagem até o consumidor.
 
-Para correlacionar todos os lotes de uma mesma execução ("quantos lotes rodaram na execução das 02h?"), use um **job-run-id** separado no MDC (o contexto de log por thread do SLF4J/Logback), sem misturar com o trace-id do evento. São duas perguntas diferentes, respondidas por dois IDs diferentes. Se a ferramenta for o OpenTelemetry, dá para registrar também essa relação entre traces com **span links**, que associam um span a um ou mais spans, inclusive de outros traces, indicando relação de causa.
+Para correlacionar todos os lotes de uma mesma execução ("quantos lotes rodaram na execução das 02h?"), use um **job-run-id** separado no MDC (o contexto de log por thread do SLF4J/Logback), sem misturar com o trace-id do evento. :marca[São duas perguntas diferentes, respondidas por dois IDs diferentes.] Se a ferramenta for o OpenTelemetry, dá para registrar também essa relação entre traces com **span links**, que associam um span a um ou mais spans, inclusive de outros traces, indicando relação de causa.
 
 ## Como o outbox pattern usa na prática
 
@@ -95,14 +95,14 @@ O **outbox pattern** grava o evento numa tabela do próprio banco (a tabela outb
 1. O job produtor inicia um trace novo **por lote** e grava o `traceparent` junto do evento na tabela de outbox.
 2. O relay lê o evento e o `traceparent` da tabela.
 3. O relay publica no SNS com `PublishBatch` (até 10 mensagens por chamada), levando o `traceparent` como `MessageAttribute` de cada mensagem.
-4. O SNS entrega na fila SQS. O consumidor lê o atributo, continua o mesmo trace e coloca o trace-id e o span-id no MDC. Todos os logs dele saem com esses campos.
+4. O SNS entrega na fila SQS. O consumidor lê o atributo, :marca[continua o mesmo trace e coloca o trace-id e o span-id no MDC]. Todos os logs dele saem com esses campos.
 
-Com isso, a ferramenta de observabilidade monta a linha do tempo produtor → mensageria → consumidor com uma busca só pelo trace-id. Para os campos do MDC aparecerem como campos pesquisáveis no log, emita logs estruturados (veja [Logging estruturado em Spring Boot](/posts/logging-estruturado-spring-boot/)). O mesmo `trace_id` também pode ligar um [wide event](/posts/wide-events-canonical-log-lines/) ao trace distribuído.
+Com isso, a ferramenta de observabilidade monta a linha do tempo produtor → mensageria → consumidor :marca[com uma busca só pelo trace-id]. Para os campos do MDC aparecerem como campos pesquisáveis no log, emita logs estruturados (veja [Logging estruturado em Spring Boot](/posts/logging-estruturado-spring-boot/)). O mesmo `trace_id` também pode ligar um [wide event](/posts/wide-events-canonical-log-lines/) ao trace distribuído.
 
 Cuidados nesse fluxo:
 
-- **Raw message delivery**: com a entrega bruta desligada (o padrão), a mensagem chega ao SQS dentro do envelope JSON do SNS, e os atributos vêm no campo `MessageAttributes` desse JSON. Com ela ligada, os atributos chegam como atributos da própria mensagem SQS, mas o limite é de 10: mensagens com mais atributos que isso são descartadas.
-- **Nomes no MDC**: o agente Java do OpenTelemetry já injeta `trace_id`, `span_id` e `trace_flags` no MDC do Logback e do Log4j. Se você preencher o MDC à mão, use os mesmos nomes em todos os serviços, ou a busca não junta os logs.
+- **Raw message delivery**: com a entrega bruta desligada (o padrão), a mensagem chega ao SQS dentro do envelope JSON do SNS, e os atributos vêm no campo `MessageAttributes` desse JSON. Com ela ligada, os atributos chegam como atributos da própria mensagem SQS, mas :marca[o limite é de 10]: mensagens com mais atributos que isso são descartadas.
+- **Nomes no MDC**: o agente Java do OpenTelemetry já injeta `trace_id`, `span_id` e `trace_flags` no MDC do Logback e do Log4j. Se você preencher o MDC à mão, :marca[use os mesmos nomes em todos os serviços], ou a busca não junta os logs.
 
 ## Fontes
 
