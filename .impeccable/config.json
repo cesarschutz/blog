@@ -12,6 +12,15 @@
         ],
         "createdAt": "2026-09-26T20:41:26.218Z",
         "reason": "D26 e DESIGN.md: #F1F0EB é o papel da página do blog (neutral, Folhas claras), decidido pelo Cesar; a página de revisão (fora do git) usa a paleta do próprio blog"
+      },
+      {
+        "rule": "layout-transition",
+        "value": "*",
+        "files": [
+          "src/styles/contador.css"
+        ],
+        "createdAt": "2026-09-26T23:24:45.562Z",
+        "reason": "Cesar aprovou o E2.4 (D49): a coluna das dezenas do contador fecha a largura junto quando o número perde um algarismo (27 → 6); é uma caixa de 1ch numa linha de status, animada só nessa troca, e transform não empurra o texto ao lado"
       }
     ]
   }
