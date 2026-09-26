@@ -1003,3 +1003,9 @@ nada muda.
      animação; quem sai some ao fim do próprio tween, perto do clique, para não contar como CLS. Os
      artigos e grupos fora do filtro passam a usar `data-fora` (o `hidden` tem `!important`, e o Flip
      não conseguiria mostrá-los enquanto somem).
+  2. **Do cartão ao artigo** (View Transitions nativas, sem JavaScript e sem `ClientRouter`): o
+     desenho e o título do cartão (lista, cards e destaque) têm o mesmo `view-transition-name` que o
+     topo do post (`transicaoPost`, em `src/lib/formato.ts`: `desenho-<slug>` e `titulo-<slug>`), e o
+     navegador leva um ao outro em 0,6s; voltar pelo botão do navegador faz o caminho inverso. O nome
+     fica no título (bloco), não no link, porque um elemento em linha partido em linhas cancelaria a
+     transição. Os cartões sem par na outra página trocam na hora (`:only-child`), como o resto.

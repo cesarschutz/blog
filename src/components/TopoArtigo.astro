@@ -12,7 +12,7 @@ import DataLeitura from "./DataLeitura.astro";
 import Ilustracao from "./Ilustracao.astro";
 import { AUTOR } from "../data/site";
 import { temIlustracao } from "../lib/ilustracoes";
-import { mdEmLinha, tituloComQuebras } from "../lib/formato";
+import { mdEmLinha, tituloComQuebras, transicaoPost } from "../lib/formato";
 import { url } from "../lib/url";
 import type { Resumo } from "../lib/posts";
 
@@ -27,7 +27,7 @@ const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "
 <div class="folha topo-folha">
   {
     temIlustracao(post.slug) && (
-      <figure class="ilustracao-topo painel" data-pagefind-ignore style={`--cor:${post.cor}`}>
+      <figure class="ilustracao-topo painel" data-pagefind-ignore style={`--cor:${post.cor};${transicaoPost(post.slug, "desenho")}`}>
         <div class="largo">
           <Ilustracao slug={post.slug} recorte="largo" cor={post.cor} anotacoes />
         </div>
@@ -43,7 +43,7 @@ const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "
       <span aria-hidden="true">›</span>
       <Chip cor={post.cor} nome={post.rotulo} href={post.urlRotulo} />
     </nav>
-    <h1 data-pagefind-meta="title" tabindex="-1" set:html={tituloComQuebras(post.tituloCompleto)} />
+    <h1 data-pagefind-meta="title" tabindex="-1" style={transicaoPost(post.slug, "titulo")} set:html={tituloComQuebras(post.tituloCompleto)} />
     <p class="lede" set:html={mdEmLinha(post.descricao)} />
     <div class="assinatura" data-pagefind-ignore>
       <span class="autor">

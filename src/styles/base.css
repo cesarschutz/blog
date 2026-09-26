@@ -421,6 +421,51 @@ kbd {
   animation-duration: 0.7s;
 }
 
+/*
+ * Do cartão ao artigo (D41): o desenho e o título do cartão (lista, cards e destaque) têm o mesmo
+ * nome que o topo do post (`transicaoPost`), e o navegador leva um ao outro; voltar faz o caminho
+ * inverso. O desenho troca de recorte no caminho (as duas imagens cobrem a caixa, cruzando); o
+ * título cresce preso ao canto de cima, à esquerda, sem esticar.
+ */
+::view-transition-group(.desenho-post),
+::view-transition-group(.titulo-post) {
+  animation-duration: 0.6s;
+  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+::view-transition-old(.desenho-post),
+::view-transition-new(.desenho-post) {
+  height: 100%;
+  object-fit: cover;
+  animation-duration: 0.6s;
+}
+
+::view-transition-old(.titulo-post),
+::view-transition-new(.titulo-post) {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: left top;
+  animation-duration: 0.6s;
+}
+
+/* Os cartões sem par na outra página (todos os outros da lista) trocam na hora, como o resto. */
+::view-transition-old(.desenho-post):only-child,
+::view-transition-old(.titulo-post):only-child {
+  animation: none;
+  opacity: 0;
+}
+
+::view-transition-new(.desenho-post):only-child,
+::view-transition-new(.titulo-post):only-child {
+  animation: none;
+}
+
+::view-transition-group(.desenho-post):has(:only-child),
+::view-transition-group(.titulo-post):has(:only-child) {
+  animation: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   @view-transition {
     navigation: none;

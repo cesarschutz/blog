@@ -626,6 +626,10 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
     crescem de 0,94 e aparecem (0,4s, depois de 0,2s). Só o que está perto da tela anima.
   - **A área da lista nunca encolhe no meio da animação** (o painel e a página pulariam): guarda a
     altura do começo e fica com a nova no fim, sem animar a altura.
+  - **Do cartão ao artigo** (View Transitions nativas, sem JS): o desenho e o título do cartão
+    viram o topo do post (0,6s, `cubic-bezier(0.65, 0, 0.35, 1)`); o desenho cobre a caixa enquanto
+    troca de recorte, o título cresce preso ao canto de cima, à esquerda. Voltar faz o inverso. Os
+    cartões sem par trocam na hora.
 - **Lousa de passos** (D39): com a rolagem só na tela de 1024px ou mais e sem movimento reduzido
   (passos a 40% da tela, o atual inteiro e os outros esmaecidos); fora disso, passo a passo com
   "◀ 2 de 5 ▶", pontos e deslizar.

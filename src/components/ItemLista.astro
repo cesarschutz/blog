@@ -8,7 +8,7 @@
  */
 import Ilustracao from "./Ilustracao.astro";
 import MetaItem from "./MetaItem.astro";
-import { mdEmLinha, tituloComQuebras } from "../lib/formato";
+import { mdEmLinha, tituloComQuebras, transicaoPost } from "../lib/formato";
 import { temIlustracao } from "../lib/ilustracoes";
 import { urlTag, type Resumo } from "../lib/posts";
 
@@ -26,7 +26,7 @@ const comMiniatura = temIlustracao(post.slug);
 <li class:list={["item", "completo", { "com-miniatura": comMiniatura }]} data-livro={post.livro}>
   <div class="texto">
     <MetaItem post={post} />
-    <Titulo class="titulo">
+    <Titulo class="titulo" style={transicaoPost(post.slug, "titulo")}>
       <a href={post.url} set:html={tituloComQuebras(post.tituloCompleto)} />
     </Titulo>
     <p class="descricao" set:html={mdEmLinha(post.descricao)} />
@@ -39,7 +39,7 @@ const comMiniatura = temIlustracao(post.slug);
     )}
   </div>
   {comMiniatura && (
-    <div class="miniatura painel" aria-hidden="true" style={`--cor:${post.cor}`}>
+    <div class="miniatura painel" aria-hidden="true" style={`--cor:${post.cor};${transicaoPost(post.slug, "desenho")}`}>
       <Ilustracao slug={post.slug} recorte="quadrado" cor={post.cor} tamanho="miniatura" decorativa />
     </div>
   )}
