@@ -9,11 +9,11 @@ draft: false
 
 > **Última atualização:** 16/09/2026. Cobre o Java 26 (lançado em 17/03/2026) e o Java 27 (lançado em 15/09/2026). O Java 28 ainda está em desenvolvimento, e o conteúdo do Java 29 ainda não foi definido.
 
-A série "Atualizações do Java" acompanha só as versões LTS. Entre uma LTS e outra saem versões intermediárias a cada seis meses, e cada uma pode trazer recursos novos, promover um preview a final ou remover algo antigo. Este post junta o que já saiu desde o Java 25 e diz **em qual versão cada coisa chegou** e em qual status ela está hoje. Ele será atualizado quando o Java 28 e o Java 29 saírem.
+A série "Atualizações do Java" acompanha só as versões LTS. Entre uma LTS e outra saem versões intermediárias a cada seis meses, e cada uma pode trazer recursos novos, promover um preview a final ou remover algo antigo. :marca[Este post junta o que já saiu desde o Java 25 e diz **em qual versão cada coisa chegou**] e em qual status ela está hoje. Ele será atualizado quando o Java 28 e o Java 29 saírem.
 
-O Java 26 chegou à disponibilidade geral (GA, a versão final para produção) em 17 de março de 2026 ([JDK 26](https://openjdk.org/projects/jdk/26/)), e o Java 27, em 15 de setembro de 2026 ([JDK 27](https://openjdk.org/projects/jdk/27/)). A próxima LTS prevista é o **Java 29, em setembro de 2027**.
+O Java 26 chegou à disponibilidade geral (GA, a versão final para produção) em 17 de março de 2026 ([JDK 26](https://openjdk.org/projects/jdk/26/)), e o Java 27, em 15 de setembro de 2026 ([JDK 27](https://openjdk.org/projects/jdk/27/)). :marca[A próxima LTS prevista é o **Java 29, em setembro de 2027**.]
 
-Essa previsão vem do [Oracle Java SE Support Roadmap](https://www.oracle.com/java/technologies/java-se-support-roadmap.html) (atualizado em 15/09/2026). Ele classifica o 26, o 27 e o 28 como não LTS e avisa que essa classificação e as datas ainda podem mudar. Nesse roadmap, cada versão não LTS tem Premier Support só até a seguinte sair: setembro de 2026 para o 26 e março de 2027 para o 27. Para o Java 25, a Oracle informa Premier Support até setembro de 2030; para o Java 29, prevê até setembro de 2032. Outros fornecedores de builds do OpenJDK publicam seus próprios prazos. Na data desta atualização, o OpenJDK ainda não tinha publicado a página do projeto JDK 29.
+Essa previsão vem do [Oracle Java SE Support Roadmap](https://www.oracle.com/java/technologies/java-se-support-roadmap.html) (atualizado em 15/09/2026). Ele classifica o 26, o 27 e o 28 como não LTS e :marca[avisa que essa classificação e as datas ainda podem mudar]. Nesse roadmap, cada versão não LTS tem Premier Support só até a seguinte sair: setembro de 2026 para o 26 e março de 2027 para o 27. Para o Java 25, a Oracle informa Premier Support até setembro de 2030; para o Java 29, prevê até setembro de 2032. Outros fornecedores de builds do OpenJDK publicam seus próprios prazos. Na data desta atualização, o OpenJDK ainda não tinha publicado a página do projeto JDK 29.
 
 O post é para quem está no **Java 25** e quer acompanhar o que muda até o 29. O ponto de partida é o [post do Java 25](/posts/java-25/); quem vem do Java 21 deve ler os dois. Para a visão geral de ciclo de releases, distribuições e estratégia de migração, veja o [guia de atualizações do Java](/posts/guia-atualizacoes-java/).
 
@@ -43,9 +43,9 @@ Os recursos em preview e incubadora (Structured Concurrency, primitivos em patte
 
 Uma virtual thread não tem thread do sistema operacional própria: ela é executada em cima de uma **carrier thread**, uma thread de plataforma de um pool compartilhado pela JVM. Quando a virtual thread bloqueia, a JVM a "desmonta" da carrier, que fica livre para executar outra virtual thread. Se ela não pode ser desmontada, fica **presa (pinned)** e ocupa a carrier durante toda a espera. O Java 24 resolveu esse problema para `synchronized` (veja [`synchronized` não prende mais virtual threads](/posts/java-25/#synchronized-não-prende-mais-virtual-threads), no post do Java 25), mas ainda havia outros casos.
 
-**O problema.** Até o Java 25, uma virtual thread que precisava de uma classe que outra thread ainda estava inicializando (rodando o bloco `static`, por exemplo) ficava presa à carrier enquanto esperava. No pior caso, todas as carriers ficavam presas nessa espera enquanto o inicializador dependia de uma virtual thread para terminar, e a aplicação inteira travava.
+**O problema.** Até o Java 25, uma virtual thread que precisava de uma classe que outra thread ainda estava inicializando (rodando o bloco `static`, por exemplo) ficava presa à carrier enquanto esperava. No pior caso, todas as carriers ficavam presas nessa espera enquanto o inicializador dependia de uma virtual thread para terminar, e :marca[a aplicação inteira travava].
 
-**O que mudou.** Segundo as [notas de release do Java 26](https://www.oracle.com/java/technologies/javase/26-relnote-issues.html), na maioria dos casos a virtual thread agora é desmontada durante essa espera e libera a carrier. A mudança não é uma JEP e não exige nenhuma alteração no código: basta rodar no Java 26 ou posterior.
+**O que mudou.** Segundo as [notas de release do Java 26](https://www.oracle.com/java/technologies/javase/26-relnote-issues.html), na maioria dos casos a virtual thread agora é desmontada durante essa espera e libera a carrier. A mudança não é uma JEP e não exige nenhuma alteração no código: :marca[basta rodar no Java 26 ou posterior].
 
 ## APIs da biblioteca padrão
 
@@ -53,9 +53,9 @@ Uma virtual thread não tem thread do sistema operacional própria: ela é execu
 
 **Chegou em:** Java 26 (final, [JEP 517](https://openjdk.org/jeps/517))
 
-**O problema.** O `java.net.http.HttpClient` ([JEP 321](https://openjdk.org/jeps/321), Java 11, [HTTP Client no post do Java 11](/posts/java-11/#http-client)) falava HTTP/1.1 e HTTP/2. O HTTP/3, padronizado pela IETF em 2022, troca o TCP pelo QUIC, um protocolo de transporte que roda sobre UDP. A JEP cita as vantagens: handshakes (a negociação inicial da conexão) potencialmente mais rápidos, menos problemas de congestionamento, como o head-of-line blocking (quando um pacote perdido atrasa todas as requisições da conexão), e transporte mais confiável em redes que perdem muitos pacotes.
+**O problema.** O `java.net.http.HttpClient` ([JEP 321](https://openjdk.org/jeps/321), Java 11, [HTTP Client no post do Java 11](/posts/java-11/#http-client)) falava HTTP/1.1 e HTTP/2. O HTTP/3, padronizado pela IETF em 2022, :marca[troca o TCP pelo QUIC, um protocolo de transporte que roda sobre UDP]. A JEP cita as vantagens: handshakes (a negociação inicial da conexão) potencialmente mais rápidos, menos problemas de congestionamento, como o head-of-line blocking (quando um pacote perdido atrasa todas as requisições da conexão), e transporte mais confiável em redes que perdem muitos pacotes.
 
-**O que mudou.** O HTTP/3 é **opt-in**: o padrão continua sendo HTTP/2. Você escolhe `HttpClient.Version.HTTP_3` no cliente ou em cada requisição. Por padrão, se o servidor não fala HTTP/3, o cliente volta para HTTP/2 ou HTTP/1.1 sem erro (a exceção é o modo `HTTP_3_URI_ONLY`, na tabela abaixo). Como não dá para saber de antemão se o servidor fala HTTP/3, a JEP descreve quatro estratégias de descoberta:
+**O que mudou.** :marca[O HTTP/3 é **opt-in**: o padrão continua sendo HTTP/2.] Você escolhe `HttpClient.Version.HTTP_3` no cliente ou em cada requisição. Por padrão, se o servidor não fala HTTP/3, o cliente volta para HTTP/2 ou HTTP/1.1 sem erro (a exceção é o modo `HTTP_3_URI_ONLY`, na tabela abaixo). Como não dá para saber de antemão se o servidor fala HTTP/3, a JEP descreve quatro estratégias de descoberta:
 
 | Configuração | Comportamento |
 | --- | --- |
@@ -102,7 +102,7 @@ public class ClienteHttp3 {
 
 No Temurin 26.0.2, com acesso à internet em 16/09/2026, esse programa imprimiu `HTTP_2` e depois `HTTP_3`.
 
-**Quando usar e cuidados.** Vale testar o HTTP/3 com servidores e CDNs que já o oferecem, principalmente em redes com perda de pacotes. Limitações da primeira versão, segundo a JEP: só funciona com o provider TLS padrão (SunJSSE), não há API pública de QUIC nem servidor HTTP/3, e o `java.net.URL` continua só em HTTP/1.1.
+**Quando usar e cuidados.** Vale testar o HTTP/3 com servidores e CDNs que já o oferecem, principalmente em redes com perda de pacotes. Limitações da primeira versão, segundo a JEP: só funciona com o provider TLS padrão (SunJSSE), não há API pública de QUIC nem servidor HTTP/3, e :marca[o `java.net.URL` continua só em HTTP/1.1].
 
 ### APIs menores sem JEP
 
@@ -110,9 +110,9 @@ Nem toda mudança de API passa por uma JEP. As notas de release registram vária
 
 **Java 26** ([notas de release](https://www.oracle.com/java/technologies/javase/26-relnote-issues.html)):
 
-- `Process` implementa `AutoCloseable` (e `Closeable`): fechar o processo garante que ele terminou e libera streams e recursos, então dá para usá-lo em `try`-with-resources.
+- :marca[`Process` implementa `AutoCloseable`] (e `Closeable`): fechar o processo garante que ele terminou e libera streams e recursos, então dá para usá-lo em `try`-with-resources.
 - `Comparator` ganhou os métodos default `min(T, T)` e `max(T, T)`.
-- `UUID.ofEpochMillis(long)` cria UUIDs versão 7, que começam pelo timestamp, em milissegundos, e por isso ficam ordenados pelo instante de criação.
+- :marca[`UUID.ofEpochMillis(long)` cria UUIDs versão 7], que começam pelo timestamp, em milissegundos, e por isso ficam ordenados pelo instante de criação.
 - `Instant.plusSaturating(Duration)` soma sem estourar: no limite, devolve `Instant.MIN` ou `Instant.MAX`. `Duration` ganhou as constantes `MIN` e `MAX`.
 - `HttpRequest.BodyPublishers.ofFileChannel(channel, offset, length)` envia só um trecho de um arquivo, útil para upload em partes.
 - `java.nio.ByteOrder` virou `enum` e pode ser usado em `switch`.
@@ -158,15 +158,15 @@ public class ApisMenores {
 
 O G1 divide o heap em regiões e, para não varrer o heap inteiro a cada coleta, anota numa **card table** quais trechos da memória guardam referências para objetos de outras regiões. Quem mantém essa tabela são as **write barriers**: pequenos trechos de código que a JVM injeta na aplicação e que rodam a cada atribuição de referência, como `pedido.cliente = c`. Em segundo plano, threads de otimização do G1 processam a mesma tabela.
 
-**O problema.** Até o Java 25, a aplicação e as threads de otimização mexiam na mesma card table e precisavam se sincronizar. Essa sincronização deixava as write barriers longas e lentas, e elas rodam o tempo todo.
+**O problema.** Até o Java 25, a aplicação e as threads de otimização mexiam na mesma card table e precisavam se sincronizar. :marca[Essa sincronização deixava as write barriers longas e lentas], e elas rodam o tempo todo.
 
-**O que mudou.** A JEP 522 cria uma **segunda card table**. A aplicação escreve numa tabela sem sincronizar, as threads de otimização trabalham na outra, e o G1 troca as duas de forma atômica quando precisa.
+**O que mudou.** :marca[A JEP 522 cria uma **segunda card table**.] A aplicação escreve numa tabela sem sincronizar, as threads de otimização trabalham na outra, e o G1 troca as duas de forma atômica quando precisa.
 
 ![Comparação entre o G1 até o Java 25, com aplicação e threads de otimização disputando uma única card table sincronizada, e o G1 do Java 26, com duas card tables: a aplicação escreve numa, as threads de otimização processam a outra e o G1 troca as duas de forma atômica](/posts/java-29/g1-duas-card-tables.svg)
 
 No diagrama, à esquerda está o modelo antigo, com uma tabela disputada pelos dois lados; à direita, o novo, em que cada lado tem a sua tabela e as setas laranja indicam a troca.
 
-**Resultado e custo.** A JEP relata ganhos de throughput (trabalho feito por unidade de tempo) de 5% a 15% em aplicações que modificam muitos campos de referência, e de até 5% nas demais. No x64, as write barriers caíram de cerca de 50 instruções para 12. O custo é memória nativa: cada card table ocupa 0,2% da capacidade do heap, ou cerca de 2 MB por GB. Não há flag nova: basta usar o G1 no Java 26 ou posterior.
+**Resultado e custo.** A JEP relata :marca[ganhos de throughput (trabalho feito por unidade de tempo) de 5% a 15%] em aplicações que modificam muitos campos de referência, e de até 5% nas demais. No x64, as write barriers caíram de cerca de 50 instruções para 12. O custo é memória nativa: cada card table ocupa 0,2% da capacidade do heap, ou cerca de 2 MB por GB. Não há flag nova: basta usar o G1 no Java 26 ou posterior.
 
 ![Dois padrões da JVM que mudam no Java 27: sem flag explícita, o coletor passa a ser sempre G1 (antes era Serial em máquinas com 1 CPU ou menos de 1792 MB), e o cabeçalho de objeto passa de 96 para 64 bits](/posts/java-29/jvm-padroes-java-27.svg)
 
@@ -176,11 +176,11 @@ O Java 27 muda dois padrões da JVM, resumidos no diagrama e detalhados nas duas
 
 **Chegou em:** Java 27 (final, [JEP 523](https://openjdk.org/jeps/523))
 
-**O problema.** Desde o Java 9 ([JEP 248](https://openjdk.org/jeps/248), veja [G1 como coletor padrão no post do Java 11](/posts/java-11/#g1-como-coletor-padrão)), o G1 era o padrão apenas em máquinas "server". Com 1 CPU ou menos de 1792 MB de memória física, a JVM escolhia o Serial, um coletor mais simples, que usa uma única thread. Assim, a mesma aplicação podia rodar com coletores diferentes conforme a máquina.
+**O problema.** Desde o Java 9 ([JEP 248](https://openjdk.org/jeps/248), veja [G1 como coletor padrão no post do Java 11](/posts/java-11/#g1-como-coletor-padrão)), o G1 era o padrão apenas em máquinas "server". Com 1 CPU ou menos de 1792 MB de memória física, a JVM escolhia o Serial, um coletor mais simples, que usa uma única thread. Assim, :marca[a mesma aplicação podia rodar com coletores diferentes conforme a máquina].
 
-**O que mudou.** A JEP 523 afirma que o G1 ficou competitivo com o Serial em qualquer tamanho de heap, em parte graças à JEP 522. Por isso, sem um coletor na linha de comando, a JVM agora escolhe **sempre o G1**. O Serial continua disponível com `-XX:+UseSerialGC`.
+**O que mudou.** A JEP 523 afirma que o G1 ficou competitivo com o Serial em qualquer tamanho de heap, em parte graças à JEP 522. Por isso, sem um coletor na linha de comando, :marca[a JVM agora escolhe **sempre o G1**]. O Serial continua disponível com `-XX:+UseSerialGC`.
 
-**Cuidados.** Na prática, isso atinge principalmente containers com limites baixos, porque a JVM considera os limites do container ao contar CPUs e memória (veja [JVM ciente de contêineres no post do Java 11](/posts/java-11/#jvm-ciente-de-contêineres)). Se o limite é 1 CPU ou menos de 1792 MB e ninguém escolheu o coletor, o Java 27 passa a rodar G1. As flags `AlwaysActAsServerClassMachine` e `NeverActAsServerClassMachine`, que influenciavam essa escolha, foram depreciadas no Java 26 ([notas de release do 26](https://www.oracle.com/java/technologies/javase/26-relnote-issues.html)).
+**Cuidados.** Na prática, :marca[isso atinge principalmente containers com limites baixos], porque a JVM considera os limites do container ao contar CPUs e memória (veja [JVM ciente de contêineres no post do Java 11](/posts/java-11/#jvm-ciente-de-contêineres)). Se o limite é 1 CPU ou menos de 1792 MB e ninguém escolheu o coletor, o Java 27 passa a rodar G1. As flags `AlwaysActAsServerClassMachine` e `NeverActAsServerClassMachine`, que influenciavam essa escolha, foram depreciadas no Java 26 ([notas de release do 26](https://www.oracle.com/java/technologies/javase/26-relnote-issues.html)).
 
 ### Compact object headers ligados por padrão
 
@@ -188,7 +188,7 @@ O Java 27 muda dois padrões da JVM, resumidos no diagrama e detalhados nas duas
 
 Cada objeto Java carrega um cabeçalho com dados que a JVM usa internamente, como o hash, a idade do objeto para o GC e um ponteiro para a classe. Em arquiteturas de 64 bits, esse cabeçalho ocupava 96 bits; com compact object headers, ocupa 64. Como a maioria dos objetos é pequena (a [JEP 450](https://openjdk.org/jeps/450) cita tamanhos médios de 32 a 64 bytes), o cabeçalho sozinho podia ocupar mais de 20% dos dados vivos, e os 32 bits economizados em cada objeto fazem diferença.
 
-**O que mudou.** No Java 25 o recurso já era de produto, mas era preciso pedir com `-XX:+UseCompactObjectHeaders` (veja [Compact object headers no post do Java 25](/posts/java-25/#compact-object-headers)). No 27, esse é o layout padrão. A JEP 534 cita os experimentos que motivaram a mudança, entre eles um cenário em que o SPECjbb2015 usou 22% menos heap e 8% menos CPU, o uso em centenas de serviços em produção na Amazon e a adoção como padrão no SapMachine, a distribuição da SAP.
+**O que mudou.** No Java 25 o recurso já era de produto, mas era preciso pedir com `-XX:+UseCompactObjectHeaders` (veja [Compact object headers no post do Java 25](/posts/java-25/#compact-object-headers)). :marca[No 27, esse é o layout padrão.] A JEP 534 cita os experimentos que motivaram a mudança, entre eles um cenário em que o SPECjbb2015 usou 22% menos heap e 8% menos CPU, o uso em centenas de serviços em produção na Amazon e a adoção como padrão no SapMachine, a distribuição da SAP.
 
 **Cuidados.** Para voltar ao layout antigo, use `-XX:-UseCompactObjectHeaders`. As [notas do Java 27](https://jdk.java.net/27/release-notes) avisam que essa flag deve ser depreciada e removida no futuro. O JDK traz arquivos CDS (Class Data Sharing, com metadados de classes já processados para acelerar o startup) separados para cada modo, então desligar o recurso não faz perder esse ganho.
 
@@ -198,9 +198,9 @@ Cada objeto Java carrega um cabeçalho com dados que a JVM usa internamente, com
 
 O cache AOT (ahead-of-time, "antes da execução") do Project Leyden ([JEP 483](https://openjdk.org/jeps/483), Java 24, e [JEP 514](https://openjdk.org/jeps/514), Java 25) melhora startup e warmup. Numa **execução de treino**, a JVM observa a aplicação e grava num arquivo as classes já carregadas e ligadas, além de objetos Java prontos. Nas execuções seguintes, ela reaproveita esse arquivo em vez de refazer o trabalho. O funcionamento está no [post do Java 25](/posts/java-25/#cache-aot-inicialização-e-warmup-mais-rápidos-projeto-leyden).
 
-**O problema.** Até o Java 25, os objetos Java do cache ficavam num formato ligado ao layout de memória dos coletores Serial, Parallel e G1, incompatível com o ZGC. Era preciso escolher entre a latência baixa do ZGC e o startup rápido do cache.
+**O problema.** Até o Java 25, os objetos Java do cache ficavam num formato ligado ao layout de memória dos coletores Serial, Parallel e G1, incompatível com o ZGC. :marca[Era preciso escolher entre a latência baixa do ZGC e o startup rápido do cache.]
 
-**O que mudou.** A JEP 516 cria um formato **independente de GC**, chamado streamable: as referências entre objetos viram índices lógicos, e uma thread em segundo plano recria os objetos no heap enquanto a aplicação sobe. O formato antigo, mapeável, continua existindo: nele, os objetos são mapeados direto na memória do heap. A JVM escolhe o formato na hora de gravar o cache. Se o treino usou ZGC, `-XX:-UseCompressedOops` ou heap acima de 32 GB, grava no formato streamable; com compressed oops ligado e heap de até 32 GB, grava no formato mapeável. O formato streamable pode ser forçado com `-XX:+AOTStreamableObjects`.
+**O que mudou.** :marca[A JEP 516 cria um formato **independente de GC**], chamado streamable: as referências entre objetos viram índices lógicos, e uma thread em segundo plano recria os objetos no heap enquanto a aplicação sobe. O formato antigo, mapeável, continua existindo: nele, os objetos são mapeados direto na memória do heap. A JVM escolhe o formato na hora de gravar o cache. Se o treino usou ZGC, `-XX:-UseCompressedOops` ou heap acima de 32 GB, grava no formato streamable; com compressed oops ligado e heap de até 32 GB, grava no formato mapeável. O formato streamable pode ser forçado com `-XX:+AOTStreamableObjects`.
 
 ```bash title="aot-com-zgc.sh"
 # Treino e criação do cache em um passo (fluxo da JEP 514, Java 25)
@@ -210,7 +210,7 @@ java -XX:+UseZGC -XX:AOTCacheOutput=app.aot -jar app.jar
 java -XX:+UseZGC -XX:AOTCache=app.aot -jar app.jar
 ```
 
-Por padrão, se o cache não puder ser usado, a JVM emite um aviso e segue sem ele. Com `-XX:AOTMode=on`, ela aborta a inicialização, o que é útil para garantir em produção que o cache está sendo aproveitado ([JEP 483](https://openjdk.org/jeps/483)). No Java 27, `-XX:AOTMode=required` passou a ser um alias de `on` e é a forma recomendada, porque `on` deve ser depreciado e removido ([notas do 27](https://jdk.java.net/27/release-notes)). O Java 26 não conhece o valor `required`: a JVM não inicia com essa flag.
+Por padrão, se o cache não puder ser usado, a JVM emite um aviso e segue sem ele. Com `-XX:AOTMode=on`, ela aborta a inicialização, o que é útil para garantir em produção que o cache está sendo aproveitado ([JEP 483](https://openjdk.org/jeps/483)). No Java 27, `-XX:AOTMode=required` passou a ser um alias de `on` e é a forma recomendada, porque `on` deve ser depreciado e removido ([notas do 27](https://jdk.java.net/27/release-notes)). :marca[O Java 26 não conhece o valor `required`]: a JVM não inicia com essa flag.
 
 ### Outros ajustes de GC e runtime
 
@@ -229,9 +229,9 @@ Por padrão, se o cache não puder ser usado, a JVM emite um aviso e segue sem e
 
 **Chegou em:** Java 27 (final, [JEP 536](https://openjdk.org/jeps/536))
 
-**O problema.** O JDK Flight Recorder (JFR) é o gravador de eventos de diagnóstico embutido na JVM. Toda gravação guarda os argumentos da linha de comando, as variáveis de ambiente e as system properties iniciais. É útil para diagnóstico, mas senhas passadas por `-D`, tokens em variáveis de ambiente e argumentos como `--dbpassword` iam parar, sem nenhuma proteção, no arquivo `.jfr` que depois é compartilhado ou anexado a um chamado.
+**O problema.** O JDK Flight Recorder (JFR) é o gravador de eventos de diagnóstico embutido na JVM. Toda gravação guarda os argumentos da linha de comando, as variáveis de ambiente e as system properties iniciais. É útil para diagnóstico, mas senhas passadas por `-D`, tokens em variáveis de ambiente e argumentos como `--dbpassword` :marca[iam parar, sem nenhuma proteção, no arquivo `.jfr`] que depois é compartilhado ou anexado a um chamado.
 
-**O que mudou.** A partir do Java 27, o JFR **mascara por padrão**, ainda dentro do processo e antes de escrever o arquivo, os valores que batem com uma lista de filtros. Para chaves, a lista inclui padrões como `*password*`, `*secret*`, `*token*`, `*auth*` e `*api*key*`. Para argumentos, cobre formas como `-*password *`, que pega a opção e o valor seguinte. O valor mascarado aparece como `[REDACTED]`. Dá para acrescentar filtros próprios, carregá-los de arquivo ou desligar os padrões:
+**O que mudou.** A partir do Java 27, :marca[o JFR **mascara por padrão**], ainda dentro do processo e antes de escrever o arquivo, os valores que batem com uma lista de filtros. Para chaves, a lista inclui padrões como `*password*`, `*secret*`, `*token*`, `*auth*` e `*api*key*`. Para argumentos, cobre formas como `-*password *`, que pega a opção e o valor seguinte. O valor mascarado aparece como `[REDACTED]`. Dá para acrescentar filtros próprios, carregá-los de arquivo ou desligar os padrões:
 
 ```bash title="jfr-mascaramento.sh"
 # Padrão no Java 27: segredos óbvios já saem como [REDACTED]
@@ -252,7 +252,7 @@ jfr print --events InitialSystemProperty,JVMInformation,InitialEnvironmentVariab
 java -XX:FlightRecorderOptions:redact-key=none,redact-argument=none -jar app.jar
 ```
 
-**Cuidados.** Sem o `+`, os filtros informados substituem a lista padrão em vez de complementá-la ([JEP 536](https://openjdk.org/jeps/536); o `+` e o `none` também aparecem nas [notas do Java 27](https://jdk.java.net/27/release-notes)). Os filtros padrão reconhecem nomes comuns, como `password` e `token`; um segredo com nome próprio da aplicação só é mascarado se você acrescentar um filtro para ele. No mesmo release, o evento `jdk.SystemProcess` deixou de registrar os argumentos de linha de comando de outros processos da máquina.
+**Cuidados.** :sublinhado[Sem o `+`], os filtros informados substituem a lista padrão em vez de complementá-la ([JEP 536](https://openjdk.org/jeps/536); o `+` e o `none` também aparecem nas [notas do Java 27](https://jdk.java.net/27/release-notes)). Os filtros padrão reconhecem nomes comuns, como `password` e `token`; um segredo com nome próprio da aplicação só é mascarado se você acrescentar um filtro para ele. No mesmo release, o evento `jdk.SystemProcess` deixou de registrar os argumentos de linha de comando de outros processos da máquina.
 
 ### Diagnóstico e ferramentas menores
 
@@ -267,9 +267,9 @@ java -XX:FlightRecorderOptions:redact-key=none,redact-argument=none -jar app.jar
 
 Este recurso usa o ML-KEM, algoritmo resistente a computação quântica que entrou no Java 24 (veja [ML-KEM e ML-DSA no post do Java 25](/posts/java-25/#criptografia-resistente-a-computação-quântica-ml-kem-e-ml-dsa)).
 
-**O problema.** Um atacante pode gravar tráfego cifrado hoje e decifrá-lo quando existirem computadores quânticos capazes de quebrar RSA e ECDH. É o ataque conhecido como "harvest now, decrypt later". A IETF definiu esquemas **híbridos** para o TLS 1.3, que combinam um algoritmo resistente a ataques quânticos (ML-KEM) com um tradicional (ECDHE). O resultado continua seguro enquanto pelo menos um dos dois resistir.
+**O problema.** Um atacante pode gravar tráfego cifrado hoje e decifrá-lo quando existirem computadores quânticos capazes de quebrar RSA e ECDH. É o ataque conhecido como "harvest now, decrypt later". A IETF definiu esquemas **híbridos** para o TLS 1.3, que combinam um algoritmo resistente a ataques quânticos (ML-KEM) com um tradicional (ECDHE). :marca[O resultado continua seguro enquanto pelo menos um dos dois resistir.]
 
-**O que mudou.** No TLS, os **named groups** são os algoritmos de troca de chaves que cliente e servidor negociam no início da conexão (o handshake). O JDK implementa três named groups híbridos: `X25519MLKEM768`, `SecP256r1MLKEM768` e `SecP384r1MLKEM1024`. O `X25519MLKEM768` vai para o **topo da lista padrão**, então quem usa `javax.net.ssl` sem escolher grupos passa a oferecê-lo sem mudar código. Os outros dois só são usados se forem configurados. A lista padrão completa fica assim: `X25519MLKEM768, x25519, secp256r1, secp384r1, secp521r1, x448, ffdhe2048, ffdhe3072, ffdhe4096`. Para restringir ou reordenar, use a propriedade `jdk.tls.namedGroups` ou `SSLParameters.setNamedGroups`:
+**O que mudou.** No TLS, os **named groups** são os algoritmos de troca de chaves que cliente e servidor negociam no início da conexão (o handshake). O JDK implementa três named groups híbridos: `X25519MLKEM768`, `SecP256r1MLKEM768` e `SecP384r1MLKEM1024`. :marca[O `X25519MLKEM768` vai para o **topo da lista padrão**], então quem usa `javax.net.ssl` sem escolher grupos passa a oferecê-lo sem mudar código. Os outros dois só são usados se forem configurados. A lista padrão completa fica assim: `X25519MLKEM768, x25519, secp256r1, secp384r1, secp521r1, x448, ffdhe2048, ffdhe3072, ffdhe4096`. Para restringir ou reordenar, use a propriedade `jdk.tls.namedGroups` ou `SSLParameters.setNamedGroups`:
 
 ```java title="TlsHibrido.java"
 import javax.net.ssl.SSLContext;
@@ -309,9 +309,9 @@ public class TlsHibrido {
 
 **Chegou em:** Java 26 (final, [JEP 500](https://openjdk.org/jeps/500))
 
-**O problema.** Desde o JDK 5, `Field.setAccessible(true)` seguido de `Field.set(...)` altera até campos `final`. Com isso, nem a JVM nem quem lê o código podem confiar que um `final` de instância nunca muda. Para a JVM, isso bloqueia otimizações como o **constant folding**, em que o compilador JIT troca a leitura do campo pelo próprio valor (é o que dá desempenho às [Lazy Constants](#lazy-constants)).
+**O problema.** Desde o JDK 5, `Field.setAccessible(true)` seguido de `Field.set(...)` altera até campos `final`. Com isso, :marca[nem a JVM nem quem lê o código podem confiar que um `final` de instância nunca muda]. Para a JVM, isso bloqueia otimizações como o **constant folding**, em que o compilador JIT troca a leitura do campo pelo próprio valor (é o que dá desempenho às [Lazy Constants](#lazy-constants)).
 
-**O que mudou.** No Java 26, alterar um campo `final` por reflexão ainda funciona, mas gera um **aviso**, no máximo um por módulo. A JEP prevê que uma versão futura passe a **lançar exceção** por padrão. O comportamento é controlado por `--illegal-final-field-mutation=allow|warn|debug|deny` (`warn` é o padrão no 26), e a permissão é dada explicitamente com `--enable-final-field-mutation=ALL-UNNAMED` ou com uma lista de módulos. `--add-opens`, a opção usada desde o [encapsulamento forte do Java 16 e 17](/posts/java-17/#encapsulamento-forte-dos-internos-do-jdk) para liberar reflexão profunda, não basta para evitar o aviso.
+**O que mudou.** No Java 26, alterar um campo `final` por reflexão :marca[ainda funciona, mas gera um **aviso**], no máximo um por módulo. A JEP prevê que uma versão futura passe a **lançar exceção** por padrão. O comportamento é controlado por `--illegal-final-field-mutation=allow|warn|debug|deny` (`warn` é o padrão no 26), e a permissão é dada explicitamente com `--enable-final-field-mutation=ALL-UNNAMED` ou com uma lista de módulos. `--add-opens`, a opção usada desde o [encapsulamento forte do Java 16 e 17](/posts/java-17/#encapsulamento-forte-dos-internos-do-jdk) para liberar reflexão profunda, não basta para evitar o aviso.
 
 ```java title="FinalMutavel.java" {16}
 import java.lang.reflect.Field;
@@ -345,7 +345,7 @@ WARNING: Mutating final fields will be blocked in a future release unless final 
 1
 ```
 
-**Cuidados.** Com `--illegal-final-field-mutation=deny`, o mesmo código lança `IllegalAccessException`. A JEP recomenda rodar os testes com `deny` desde já para achar quem faz isso, e em geral o culpado é uma biblioteca, não a aplicação. Outra forma de encontrar é o evento JFR `jdk.FinalFieldMutation`. Para bibliotecas de serialização, a JEP recomenda `sun.reflect.ReflectionFactory` em vez de reflexão profunda.
+**Cuidados.** Com `--illegal-final-field-mutation=deny`, o mesmo código lança `IllegalAccessException`. :marca[A JEP recomenda rodar os testes com `deny` desde já] para achar quem faz isso, e em geral o culpado é uma biblioteca, não a aplicação. Outra forma de encontrar é o evento JFR `jdk.FinalFieldMutation`. Para bibliotecas de serialização, a JEP recomenda `sun.reflect.ReflectionFactory` em vez de reflexão profunda.
 
 ### Applet API removida
 
@@ -566,7 +566,7 @@ No Java 25, a API se chamava Stable Values (veja [Stable Values no post do Java 
 
 **O problema.** Um campo `final` precisa ser atribuído no construtor ou no inicializador estático, ou seja, cedo. Se o valor é caro de montar (um logger que lê configuração, uma conexão, um cache), a aplicação paga esse custo na subida, mesmo que nunca use o valor. As saídas de sempre têm seus problemas: o padrão da classe holder só serve para campos `static`, o double-checked locking exige `volatile` e é fácil de errar, e o `ConcurrentHashMap.computeIfAbsent` impede que a JVM trate o valor como constante.
 
-**Como funciona.** Um `java.lang.LazyConstant<T>` nasce vazio, com uma função de cálculo. O primeiro `get()` executa a função e guarda o resultado. A função roda **no máximo uma vez**, mesmo com várias threads chamando `get()` ao mesmo tempo, e depois disso o conteúdo não muda. Segundo a JEP, o conteúdo fica num campo com a anotação interna `@Stable`; se a lazy constant estiver num campo `final`, a JVM pode aplicar constant folding (explicado na seção da [JEP 500](#mutação-de-campos-final-por-reflexão-passa-a-emitir-aviso)) como faria com um `final` comum. Existem também versões preguiçosas das coleções: `List.ofLazy`, `Map.ofLazy` e, a partir do Java 27, `Set.ofLazy`.
+**Como funciona.** Um `java.lang.LazyConstant<T>` nasce vazio, com uma função de cálculo. O primeiro `get()` executa a função e guarda o resultado. :marca[A função roda **no máximo uma vez**], mesmo com várias threads chamando `get()` ao mesmo tempo, e depois disso o conteúdo não muda. Segundo a JEP, o conteúdo fica num campo com a anotação interna `@Stable`; se a lazy constant estiver num campo `final`, a JVM pode aplicar constant folding (explicado na seção da [JEP 500](#mutação-de-campos-final-por-reflexão-passa-a-emitir-aviso)) como faria com um `final` comum. Existem também versões preguiçosas das coleções: `List.ofLazy`, `Map.ofLazy` e, a partir do Java 27, `Set.ofLazy`.
 
 ![Diagrama do ciclo de vida de uma LazyConstant (criada, primeiro get, inicializada) e comparação entre campo final, LazyConstant e campo não final em número de atribuições, momento do cálculo, constant folding e escrita concorrente](/posts/java-29/lazy-constant.svg)
 
@@ -701,7 +701,7 @@ Para rodar: `java --enable-preview --source 27 ChavesPem.java`. O código é o m
 
 O `default` é obrigatório no `switch` porque o `decode` pode devolver outros tipos, como `KeyPair`, `X509Certificate` ou `PEM`. Mesmo um `switch` que liste todos os tipos públicos precisaria dele: a lista de subtipos de `BinaryEncodable` não é exaustiva, o que, segundo o [Javadoc de `BinaryEncodable`](https://github.com/openjdk/jdk/blob/jdk-27-ga/src/java.base/share/classes/java/security/BinaryEncodable.java), permite ampliá-la no futuro sem quebrar código existente.
 
-**O que mudou no caminho.** No Java 26, `PEMRecord` virou `PEM`, os métodos `encryptKey` de `EncryptedPrivateKeyInfo` viraram `encrypt`, e encoder e decoder passaram a cifrar e decifrar `KeyPair` e `PKCS8EncodedKeySpec`. No Java 27, `DEREncodable` virou `BinaryEncodable`, `PEM` deixou de ser record e virou classe comum, `PEMDecoder.withFactory` virou `withFactoriesOf`, e entrou a exceção não verificada `javax.crypto.CryptoException`. A [JEP 542](https://openjdk.org/jeps/542), já concluída para o Java 28, finaliza a API **sem outras mudanças**. Ou seja: o código escrito para o 27 deve funcionar no 28 sem `--enable-preview`, e é a partir dali que vale trocar o parsing manual de PEM pela API em código de produção.
+**O que mudou no caminho.** No Java 26, `PEMRecord` virou `PEM`, os métodos `encryptKey` de `EncryptedPrivateKeyInfo` viraram `encrypt`, e encoder e decoder passaram a cifrar e decifrar `KeyPair` e `PKCS8EncodedKeySpec`. No Java 27, `DEREncodable` virou `BinaryEncodable`, `PEM` deixou de ser record e virou classe comum, `PEMDecoder.withFactory` virou `withFactoriesOf`, e entrou a exceção não verificada `javax.crypto.CryptoException`. A [JEP 542](https://openjdk.org/jeps/542), já concluída para o Java 28, finaliza a API **sem outras mudanças**. Ou seja: o código escrito para o 27 deve funcionar no 28 sem `--enable-preview`, e :marca[é a partir dali que vale trocar o parsing manual de PEM pela API em código de produção].
 
 ### Vector API
 
