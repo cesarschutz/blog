@@ -1273,8 +1273,8 @@ nada muda.
   cor do livro, vermelha ou grafite (comparadas no catálogo; ficou o azul); a Caveat variável.
 
 ## D49 · As ideias de movimento revistas: sumário, estante, livros, cabeçalho, listas e artigo
-- **Data:** 26/09/2026 · **Status:** aprovada pelo Cesar (item a item, abaixo) e **em andamento**;
-  publicar na `main` no fim, a pedido dele.
+- **Data:** 26/09/2026 · **Status:** aprovada pelo Cesar (item a item, abaixo), **feita e publicada
+  na `main`** em 26/09/2026, a pedido dele (um commit por item, do C2 ao E4; o C3 ficou de fora).
 - **Pedido do Cesar:** aplicar os protótipos revistos em `docs/prototipos/ideias/ja feitas ou
   reprovadas/`, na ordem, a partir do C2, com as observações dele em cada um, e no fim listar o que
   foi feito.
@@ -1420,4 +1420,10 @@ nada muda.
      opacidade (deslocada, passava do fim da janela e a barra de rolagem piscava). Nada disso usa
      GSAP (a rasura e a ondinha são traçados de comprimento 1 com animação de CSS; o marcador, uma
      transição que só muda de destino). Com movimento reduzido, tudo aparece pronto.
+- **Conferido:** `npm run check` sem erros, `npm run contraste` sem falhas (com a tinta do link),
+  `npm run build -- --force` e `npm run links` (86 páginas, nenhum link quebrado) e 100 combinações
+  de página (home, arquivo filtrado, categorias, categoria, série, tag, dois artigos, página 2 e 404),
+  largura (320, 390, 768, 1280 e 1600px) e tema (claro e escuro) no preview, sem rolagem lateral e
+  sem erro no console. Cada item também foi conferido quadro a quadro no Chrome (MCP), no celular
+  e com movimento reduzido.
 - **Motivo:** o Cesar revisou os protótipos um a um e escolheu o que entra.

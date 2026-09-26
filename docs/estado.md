@@ -160,6 +160,20 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
   testados em 320, 390, 768, 1280 e 1600px nos dois temas; antes e depois em
   `.impeccable/review/caneta/index.html` (fora do git).
 
+- **As ideias de movimento revistas (D49, 26/09/2026), publicada:** os protótipos de
+  `docs/prototipos/ideias/ja feitas ou reprovadas/`, na ordem, um commit cada, com as observações do
+  Cesar: C2 (o sumário que acompanha a leitura e o voltar ao topo em toda página longa); D1 (a estante
+  de verdade: o livro tomba pela cabeça, sai da prateleira e o vizinho tomba; dá para puxá-lo com o
+  mouse); D2 (o livro ampliado que abre, com as páginas de dentro); D3 (a pilha com peso: o livro
+  aberto volta para a pilha antes de o outro ser puxado); E1 (o traço de caneta que desliza no menu, a
+  tecla ⌘K que afunda, o sol e a lua animados e o sinal do RSS); E2 (a pílula que escorre, o colchete
+  na lista, o círculo na paginação e no GitHub e LinkedIn, o contador que rola no filtro); E3 (a tinta
+  do link, o "Copiado" no código e no link, a etiqueta da linguagem corrigida nos blocos sem título, a
+  seta e a orelha de anterior e próximo, o voltar ao topo que assenta); E4 (a 404 com a estante, a
+  rasura e a sugestão; o marcador e a ondinha da busca; os minutos que rolam). O C3 (o código que
+  responde) ficou de fora, a pedido do Cesar. Conferido: check, contraste, build, links e 100
+  combinações de página, largura e tema, sem rolagem lateral nem erro no console.
+
 ## Próximos passos
 
 00. **Caneta (D48):** os outros 25 posts recebem a caneta na revisão (`.claude/revisao-posts.md`,
