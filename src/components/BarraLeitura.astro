@@ -1,7 +1,10 @@
 ---
 /**
- * Barra de progresso da leitura (briefing §5.3): faixa de 3px no topo, na cor da categoria (no
- * escuro, clareada como os chips). Quem a move é src/scripts/artigo.ts; sem JS, fica vazia.
+ * Barra de progresso da leitura (briefing §5.3, D45): um traço de 2px sobre o fio embaixo do cabeçalho,
+ * na cor da categoria (no escuro, clareada como os chips), escrito por uma caneta pequena que vai na
+ * ponta dele. Quando o cabeçalho se esconde (celular, D38), o traço sobe junto para o alto da tela.
+ * Quem move é src/scripts/artigo.ts (a variável --lido, de 0 a 1, e a classe "escrevendo", que mostra
+ * a caneta depois do início); sem JS, fica vazia.
  */
 interface Props {
   cor: string;
@@ -10,19 +13,84 @@ interface Props {
 const { cor } = Astro.props;
 ---
 
-<div class="barra-leitura" style={`--cor-barra:${cor}`} aria-hidden="true" data-barra-leitura></div>
+<div class="barra-leitura" style={`--cor-barra:${cor}`} aria-hidden="true" data-barra-leitura>
+  <div class="traco"></div>
+  <svg class="caneta" viewBox="0 0 24 24" focusable="false">
+    <path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1.4 1.4 0 0 1 0 2l-9.2 9.2Z" />
+    <path class="anel" d="m15.6 5.8 2.6 2.6" />
+    <path class="ponta" d="M8.2 13.2 10.8 15.8 4 20Z" />
+  </svg>
+</div>
 
 <style>
   .barra-leitura {
     position: fixed;
-    top: 0;
+    /* Sobre o fio do cabeçalho; com ele escondido, no alto da tela. */
+    top: max(env(safe-area-inset-top, 0px), calc(env(safe-area-inset-top, 0px) + var(--altura-topo) - 2px));
     left: 0;
     right: 0;
     z-index: 40;
-    height: 3px;
-    background: color-mix(in oklab, var(--cor-barra), #fff var(--branco-no-escuro));
-    transform: scaleX(0);
-    transform-origin: 0 50%;
+    height: 2px;
+    container-type: inline-size;
     pointer-events: none;
+    transition: top 0.25s cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  .traco {
+    position: absolute;
+    inset: 0;
+    background: color-mix(in oklab, var(--cor-barra), #fff var(--branco-no-escuro));
+    transform: scaleX(var(--lido, 0));
+    transform-origin: 0 50%;
+  }
+
+  /* A ponta da caneta (4, 20 no desenho de 24) encosta no fim do traço. */
+  .caneta {
+    position: absolute;
+    top: -17.3px;
+    left: -3.7px;
+    width: 22px;
+    height: 22px;
+    overflow: visible;
+    opacity: 0;
+    transform: translateX(calc(var(--lido, 0) * 100cqw));
+    transition: opacity 0.2s;
+  }
+
+  .escrevendo .caneta {
+    opacity: 1;
+  }
+
+  .corpo {
+    fill: var(--paper-hi);
+    stroke: var(--ink);
+    stroke-width: 1.3;
+    stroke-linejoin: round;
+  }
+
+  .anel {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.3;
+  }
+
+  .ponta {
+    fill: color-mix(in oklab, var(--cor-barra), #fff var(--branco-no-escuro));
+    stroke: var(--ink);
+    stroke-width: 1.1;
+    stroke-linejoin: round;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .barra-leitura,
+    .caneta {
+      transition: none;
+    }
+  }
+
+  @media print {
+    .barra-leitura {
+      display: none;
+    }
   }
 </style>

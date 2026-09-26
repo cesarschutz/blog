@@ -39,7 +39,8 @@ function aoRolar() {
   if (artigo && barra) {
     const caixa = artigo.getBoundingClientRect();
     const lido = Math.min(1, Math.max(0, -caixa.top / Math.max(caixa.height - innerHeight, 1)));
-    barra.style.transform = `scaleX(${lido.toFixed(4)})`;
+    barra.style.setProperty("--lido", lido.toFixed(4));
+    barra.classList.toggle("escrevendo", lido > 0.002);
     if (progressoFeito && progressoTexto) {
       progressoFeito.style.transform = `scaleX(${lido.toFixed(4)})`;
       progressoTexto.textContent = `${Math.round(lido * 100)}% lido`;

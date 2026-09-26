@@ -143,6 +143,8 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
 - **Ajustes da home (D44, 26/09/2026), só local, sem commit:** sem o brilho da estante, tema que
   fecha ao voltar ao claro, home sem o painel lateral, títulos em duas partes (lista, cards, destaque
   e artigo), a busca que nasce do campo e o fio embaixo do cabeçalho. Conferido no dev e no preview.
+- **Caneta da leitura (D45, 26/09/2026), só local, sem commit:** o progresso do post passou para o fio
+  do cabeçalho, escrito por uma caneta. Conferido nos dois temas e no celular (cabeçalho escondido).
 
 ## Próximos passos
 

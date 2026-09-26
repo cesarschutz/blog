@@ -1106,3 +1106,19 @@ nada muda.
      `box-shadow` por dentro, sem mudar a altura do cabeçalho); depois de rolar, soma-se a sombra
      suave que já existia.
 - **Movimento reduzido:** o tema e a busca abrem e fecham direto; o resto não anima.
+
+## D45 · A caneta que escreve o progresso da leitura
+- **Data:** 26/09/2026 · **Status:** aplicada, sem push.
+- **Pedido do Cesar:** a linha de progresso do post, que ficava no alto da tela, passa para baixo do
+  cabeçalho (onde está a busca), com uma caneta indo fazendo a linha.
+- **Decisão:** o traço (2px, na cor da categoria, clareado no escuro) corre exatamente sobre o fio do
+  cabeçalho da D44, e uma caneta de 22px vai na ponta dele, com a ponta encostada no fim do traço
+  (corpo em `--paper-hi` com contorno `--ink`, ponta na cor da categoria). A caneta só aparece depois
+  que a leitura começa. O script põe `--lido` (0 a 1) e a classe `escrevendo`; a caneta anda por
+  `translateX` em `cqw` (a barra é um contêiner), sem mexer no layout. Com o cabeçalho escondido no
+  celular (D38), o traço sobe para o alto da tela (e a caneta, que fica acima dele, sai de vista até o
+  cabeçalho voltar). Primeiro a caneta tinha 16px: parecia um risco, e foi para 22px.
+- **Por quê:** o fio do cabeçalho vira o caderno onde a leitura é escrita, na linguagem do caderno
+  marcado (D41), sem uma faixa solta no topo da tela.
+- **Movimento reduzido:** o traço e a caneta seguem a rolagem (não são animação); só as transições
+  curtas saem.

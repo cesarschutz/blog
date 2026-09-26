@@ -314,7 +314,10 @@ Referência: aba "Artigo" do protótipo.
   tamanho do título (no topo do artigo, 0,56), nunca abaixo de 17px (maior que o resumo). O texto
   continua o original (o travessão fica escondido para leitor de tela e busca). Na navegação
   (anterior / próximo), na gaveta e na busca, o título segue inteiro, numa linha.
-- **Barra de progresso de leitura**: faixa de 3px no topo, na cor da categoria.
+- **Barra de progresso de leitura** (D45): um traço de 2px sobre o fio embaixo do cabeçalho, na cor
+  da categoria, escrito por uma **caneta** pequena (22px, corpo na cor do papel, ponta na cor da
+  categoria) que vai na ponta dele; a caneta aparece depois que a leitura começa. Com o cabeçalho
+  escondido (celular), o traço sobe para o alto da tela.
 - **Sumário**: em telas ≥ 1300px, à esquerda do texto, numa folha própria e fixa; recolhível no
   início do texto nas menores. Só aparece com 3 ou mais seções. No lateral (D33), um trilho: um ponto
   em cada seção, sem número (D36; o "3. " do título sai do nome, nas duas variantes), o fio das lidas, o ponto atual e a barra de porcentagem na cor do livro do post (D39), as

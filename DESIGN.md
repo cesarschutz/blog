@@ -648,6 +648,9 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   ao contrário). View Transition do próprio documento (tipos "tema" e "tema-fecha", `trocarTema` em
   `tema.ts`); a página inteira vira de uma vez (os livros perdem o nome de transição durante a troca).
   O ícone só troca, sem animar. A faixa de luz da estante em repouso saiu (D44).
+- **Caneta da leitura** (D45, `BarraLeitura.astro`): o traço do progresso corre sobre o fio do
+  cabeçalho e a caneta acompanha a ponta, ligada à rolagem (sem animação própria; só a caneta aparece
+  por opacidade, 0,2s). No celular, o traço acompanha o cabeçalho que some e volta (`top`, 0,25s).
 - **A busca nasce do campo** (D44, `Busca.astro`, GSAP com Flip sob demanda): com clique, ⌘K,
   Ctrl+K ou "/", a janela cresce a partir do campo do cabeçalho (no celular, do ícone) em 0,5s
   (`power3.out`), o conteúdo aparece depois de 0,2s e o véu escurece junto (`@starting-style`). Os
