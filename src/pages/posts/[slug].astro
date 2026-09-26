@@ -25,6 +25,8 @@ import { palavraDaTag } from "../../lib/busca/tipos";
 import "../../styles/prosa.css";
 import "../../styles/artigo.css";
 import "../../styles/visor.css";
+import "../../styles/caneta.css";
+import { fonteDaCaneta } from "../../lib/caneta";
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -95,8 +97,9 @@ const jsonLd = {
   jsonLd={jsonLd}
 >
   {remarkPluginFrontmatter?.temMatematica && <link slot="head" rel="stylesheet" href={url("/katex/katex.min.css")} />}
+  {remarkPluginFrontmatter?.caneta?.escrita && <style slot="head" set:html={fonteDaCaneta} />}
   <BarraLeitura cor={resumo.cor} />
-  <article class="artigo wrap" data-artigo data-pagefind-body style={`--cor:${resumo.cor};--caneta-livro:${livroDoPost?.cores.destaque ?? resumo.cor}`}>
+  <article class="artigo wrap" data-artigo data-pagefind-body style={`--cor:${resumo.cor}`}>
     <div class:list={["artigo-grade", { "com-lateral": temSumario || livroDoPost }]}>
       {(temSumario || livroDoPost) && (
         <Sumario secoes={temSumario ? secoes : []} variante="lateral" minutos={resumo.minutos} livro={livroDoPost} />
@@ -135,9 +138,9 @@ const jsonLd = {
 
 <script>
   import "../../scripts/artigo.ts";
-  import { cadernoMarcado } from "../../scripts/caderno";
+  import { canetaNoLugar } from "../../scripts/caneta";
 
-  cadernoMarcado();
+  canetaNoLugar();
 </script>
 
 <style>

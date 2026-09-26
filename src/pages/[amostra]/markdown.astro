@@ -11,6 +11,7 @@ import { url } from "../../lib/url";
 import { secoesDoSumario } from "../../lib/posts";
 import "../../styles/prosa.css";
 import "../../styles/artigo.css";
+import "../../styles/caneta.css";
 
 export function getStaticPaths() {
   return import.meta.env.DEV ? [{ params: { amostra: "amostra" } }] : [];
@@ -39,9 +40,9 @@ const secoes = secoesDoSumario(getHeadings());
 
 <script>
   import "../../scripts/artigo.ts";
-  import { cadernoMarcado } from "../../scripts/caderno";
+  import { canetaNoLugar } from "../../scripts/caneta";
 
-  cadernoMarcado();
+  canetaNoLugar();
 </script>
 
 <style>

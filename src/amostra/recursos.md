@@ -92,25 +92,12 @@ Porque o lock expira. Se a cobrança demorar mais que o prazo do lock, a segunda
 
 </details>
 
-## Caderno marcado
+## Caneta
 
-As cinco marcações à caneta (D41, docs/marcacoes.md). A forma mais comum é o JWT assinado:
-:marca[três partes separadas por ponto, `header.payload.signature`], cada uma em Base64URL.
+Os 20 tipos da caneta do caderno (D48) ficam no catálogo, em `/amostra/caneta/`. Aqui, só um
+marca-texto e um círculo: :marca[o texto marcado continua na cor normal].
 
-:::termos
-- `alg`: o algoritmo da assinatura, como `RS256`.
-- `typ`: o tipo do objeto; quando presente, `JWT`.
-- `kid`: a chave que assinou o token.
-:::
-
-Com ECDSA, as curvas são P-256, P-384 e :circulo[P-521], e não P-512.
-
-Assinatura válida :sublinhado[não basta]: depois dela, confira `exp`, `iss` e `aud`.
-
-:::colchete
-**O payload não é criptografado.** Ele só está em Base64URL: quem tem o token lê o conteúdo. Um JWS
-garante integridade e autenticidade, não sigilo.
-:::
+Com ECDSA, as curvas são P-256, P-384 e :circulo[P-521].
 
 Às 03:00 o job roda (o ":00" continua no texto: diretiva desconhecida volta a ser texto).
 

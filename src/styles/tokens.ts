@@ -35,6 +35,7 @@ export const TOKENS = [
   "marca-letra",
   "veu",
   "veu-tinta",
+  "caneta",
 ] as const;
 
 export type Token = (typeof TOKENS)[number];
@@ -73,6 +74,9 @@ export const claro: Paleta = {
   // Véu do visor de imagens e do livro ampliado (D33): escurece a página por trás, nos dois temas.
   veu: "#0C0F11",
   "veu-tinta": "#EEF1EE",
+  // A caneta do caderno (D48): azul de caneta, igual em todos os livros. Só nos traços e nas notas à
+  // mão; o texto marcado fica na cor normal, para não confundir com os links (--acento).
+  caneta: "#1F4FB5",
 };
 
 export const escuro: Paleta = {
@@ -105,6 +109,7 @@ export const escuro: Paleta = {
   "marca-letra": "#F2EDE2",
   veu: "#050708",
   "veu-tinta": "#EEF1EE",
+  caneta: "#8FA8FF",
 };
 
 /**
@@ -127,12 +132,10 @@ export const PAINEL = { claro: 11, escuro: 20 };
 export const CHIP = { claro: { tinta: 34, branco: 0 }, escuro: { tinta: 0, branco: 50 } };
 
 /**
- * Marca-texto do caderno marcado (D41): a cor do livro com essa porcentagem de branco, a essa força
- * (a transparência sobre a folha). No escuro, clareada e mais forte, para aparecer bem, até onde o
- * texto por cima ainda passa de 4,5:1 em todos os livros, também no termo de código (o SRE, dourado,
- * é o limite: 4,60:1; `npm run contraste` confere).
+ * Marca-texto do caderno (D48): o amarelo clássico, igual em todos os livros. No escuro, o mesmo
+ * amarelo transparente sobre a folha (um âmbar suave). `npm run contraste` confere o texto por cima.
  */
-export const MARCA_TEXTO = { claro: { branco: 0, forca: 32 }, escuro: { branco: 60, forca: 36 } };
+export const MARCA_TEXTO = { claro: { cor: "#FFE27A", alfa: 1 }, escuro: { cor: "#FFD65A", alfa: 0.3 } };
 
 /**
  * O que a lousa tem de diferente em cada tema, além das cores: quanto da mistura entra no destaque,
@@ -196,6 +199,9 @@ export function misturar(a: string, b: string, p: number): string {
   return deOklab(x.map((v, i) => v * (1 - p / 100) + y[i] * (p / 100)));
 }
 
+const rgba = (hex: string, alfa: number) =>
+  alfa === 1 ? hex : `rgb(${[1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(" ")} / ${alfa})`;
+
 /**
  * Variáveis CSS dos dois temas. Sem `data-theme` no `<html>`, o tema segue o sistema.
  * `--branco-no-escuro` permite escrever uma vez só: color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro)).
@@ -207,7 +213,7 @@ export function cssDosTokens(): string {
     `--lousa-hachura:${l.hachura};--lousa-borda-largura:${l.borda};--lousa-reflexo:${l.reflexo};`;
   const proporcoes = (t: "claro" | "escuro") =>
     `--painel-mistura:${PAINEL[t]}%;--chip-tinta:${CHIP[t].tinta}%;--chip-branco:${CHIP[t].branco}%;` +
-    `--marca-texto-branco:${MARCA_TEXTO[t].branco}%;--marca-texto-forca:${MARCA_TEXTO[t].forca}%;`;
+    `--marca-texto:${rgba(MARCA_TEXTO[t].cor, MARCA_TEXTO[t].alfa)};`;
   const temaEscuro = `${variaveis(escuro)}${lousa(LOUSA.escuro)}${proporcoes("escuro")}--branco-no-escuro:${BRANCO_NO_ESCURO}%;color-scheme:dark;`;
   return (
     `:root{${variaveis(claro)}${lousa(LOUSA.claro)}${proporcoes("claro")}--branco-no-escuro:0%;color-scheme:light;}` +

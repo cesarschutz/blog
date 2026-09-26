@@ -11,12 +11,12 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import remarkDirective from "remark-directive";
 import { remarkTemMatematica } from "./src/plugins/remark-tem-matematica.mjs";
-import { rehypeMarcacoes, remarkMarcacoes } from "./src/plugins/marcacoes.mjs";
+import { remarkMarcacoes } from "./src/plugins/marcacoes.mjs";
 import { rehypeTabela } from "./src/plugins/rehype-tabela.mjs";
 import { rehypeAvisos } from "./src/plugins/rehype-avisos.mjs";
 import { rehypeNotasLaterais } from "./src/plugins/rehype-notas-laterais.mjs";
 import { rehypeApresentacao } from "./src/plugins/rehype-apresentacao.mjs";
-import { marcacoes, pluginAlturaEstimada, pluginCopiarSemRemovidas, pluginLinguagem, temasDeCodigo } from "./src/lib/codigo.ts";
+import { marcacoes, pluginAlturaEstimada, pluginCaneta, pluginCopiarSemRemovidas, pluginLinguagem, temasDeCodigo } from "./src/lib/codigo.ts";
 import { ABSORBED } from "./src/data/java.ts";
 import { NOMES_ANTIGOS } from "./src/data/taxonomia.ts";
 
@@ -83,7 +83,7 @@ export default defineConfig({
       themeCssRoot: ":root",
       themeCssSelector: (tema) => (tema.type === "dark" ? "[data-theme='dark']" : "[data-theme='light']"),
       defaultLocale: "pt-BR",
-      plugins: [pluginLineNumbers(), pluginCollapsibleSections(), pluginCopiarSemRemovidas(), pluginLinguagem(), pluginAlturaEstimada()],
+      plugins: [pluginLineNumbers(), pluginCollapsibleSections(), pluginCopiarSemRemovidas(), pluginLinguagem(), pluginAlturaEstimada(), pluginCaneta()],
       defaultProps: { showLineNumbers: false },
       minSyntaxHighlightingColorContrast: 5.5,
       styleOverrides: {
@@ -121,7 +121,7 @@ export default defineConfig({
   markdown: {
     processor: unified({
       remarkPlugins: [remarkMath, remarkTemMatematica, remarkDirective, remarkMarcacoes],
-      rehypePlugins: [rehypeKatex, rehypeMarcacoes, rehypeTabela, rehypeAvisos, rehypeNotasLaterais, [rehypeApresentacao, { base: comBase("/") }]],
+      rehypePlugins: [rehypeKatex, rehypeTabela, rehypeAvisos, rehypeNotasLaterais, [rehypeApresentacao, { base: comBase("/") }]],
     }),
   },
 });

@@ -204,3 +204,113 @@ export function pluginAlturaEstimada(): ExpressiveCodePlugin {
     },
   };
 }
+
+/*
+ * A caneta nos blocos de código (D48; guia em docs/marcacoes.md, visual em src/styles/caneta.css):
+ *   anotar="1789564500|15 min depois"   o valor circulado, com a nota à mão ao lado
+ *   linhas="2-3|o banco decide"          um traço à mão nas linhas 2 a 3, com o motivo
+ * A nota fica na mesma linha quando cabe (linha curta) e embaixo dela quando não cabe; no celular,
+ * sempre embaixo, parada na esquerda do bloco, para a rolagem lateral do código não cortá-la. O Copiar
+ * leva só o código (ele usa o texto original, não o desenhado).
+ */
+const CABE_NA_LINHA = 58;
+const CANETA = {
+  circulo: ["0 0 100 44", ["M10 25 C 5 10, 38 3, 68 5 C 94 7, 99 27, 80 35 C 55 43, 12 40, 6 26 C 4 17, 16 9, 30 7"]],
+  seta: ["0 0 20 12", ["M19 6.5 C 13 5.5, 8 6.5, 2 6", "M6 2 L 1.5 6 L 6 10"]],
+  barra: ["0 0 8 100", ["M4 2 C 5 30, 3 70, 4 98"]],
+} as const;
+
+function tracoDaCaneta(nome: keyof typeof CANETA, classe: string): NoHast {
+  const [viewBox, caminhos] = CANETA[nome];
+  return {
+    type: "element",
+    tagName: "svg",
+    properties: { className: ["caneta-svg", classe], viewBox, preserveAspectRatio: "none", ariaHidden: "true", focusable: "false" },
+    children: caminhos.map((d) => ({ type: "element", tagName: "path", properties: { d }, children: [] })),
+  };
+}
+
+const lidoNoCodigo = (value: string): NoHast => ({
+  type: "element",
+  tagName: "span",
+  properties: { className: ["caneta-sr"] },
+  children: [{ type: "text", value }],
+});
+
+function notaNoCodigo(texto: string, abaixo: boolean): NoHast {
+  return {
+    type: "element",
+    tagName: "span",
+    properties: { className: ["caneta-escrita", "caneta-nota-codigo", ...(abaixo ? ["abaixo"] : [])] },
+    children: [tracoDaCaneta("seta", "caneta-seta-codigo"), lidoNoCodigo(" (nota: "), { type: "text", value: texto }, lidoNoCodigo(")")],
+  };
+}
+
+export function pluginCaneta(): ExpressiveCodePlugin {
+  const classes = (no: NoHast) => (no.properties?.className as string[] | undefined) ?? [];
+  const linhasDoBloco = (no: NoHast, lista: NoHast[] = []) => {
+    if (no.tagName === "div" && classes(no).includes("ec-line")) lista.push(no);
+    else no.children?.forEach((filho) => linhasDoBloco(filho, lista));
+    return lista;
+  };
+  const codigoDaLinha = (linha: NoHast) => linha.children?.find((c) => c.tagName === "div" && classes(c).includes("code"));
+  const erro = (mensagem: string) => {
+    throw new Error(`Caneta no código (docs/marcacoes.md): ${mensagem}`);
+  };
+
+  /** Envolve a primeira ocorrência de `valor` num nó de texto da linha com o círculo. */
+  function circular(no: NoHast, valor: string): boolean {
+    const filhos = no.children ?? [];
+    for (let i = 0; i < filhos.length; i++) {
+      const filho = filhos[i];
+      if (filho.type === "text" && filho.value?.includes(valor)) {
+        const [antes, ...resto] = filho.value.split(valor);
+        const circulo: NoHast = {
+          type: "element",
+          tagName: "span",
+          properties: { className: ["caneta-codigo-circulo"] },
+          children: [{ type: "text", value: valor }, tracoDaCaneta("circulo", "caneta-traco")],
+        };
+        const novos = [antes ? { type: "text", value: antes } : null, circulo, resto.join(valor) ? { type: "text", value: resto.join(valor) } : null];
+        filhos.splice(i, 1, ...(novos.filter(Boolean) as NoHast[]));
+        return true;
+      }
+      if (circular(filho, valor)) return true;
+    }
+    return false;
+  }
+
+  return {
+    name: "caneta",
+    hooks: {
+      postprocessRenderedBlock: ({ codeBlock, renderData }) => {
+        const anotar = codeBlock.metaOptions.getStrings("anotar");
+        const trechos = codeBlock.metaOptions.getStrings("linhas");
+        if (!anotar.length && !trechos.length) return;
+        const textos = codeBlock.getLines().map((l) => l.text);
+        const linhas = linhasDoBloco(renderData.blockAst as NoHast);
+
+        for (const pedido of anotar) {
+          const [valor, nota] = pedido.split("|").map((s) => s.trim());
+          const i = textos.findIndex((texto) => texto.includes(valor));
+          if (i < 0) erro(`anotar="${pedido}": "${valor}" não aparece no bloco`);
+          const codigo = codigoDaLinha(linhas[i]);
+          if (!codigo || !circular(codigo, valor)) erro(`anotar="${pedido}": "${valor}" está partido entre cores do código; circule um trecho menor`);
+          codigo!.children!.push(notaNoCodigo(nota, textos[i].trimEnd().length + nota.length > CABE_NA_LINHA));
+        }
+
+        for (const pedido of trechos) {
+          const [faixa, nota] = pedido.split("|").map((s) => s.trim());
+          const [de, ate = de] = faixa.split("-").map(Number);
+          if (!(de >= 1 && ate >= de && ate <= linhas.length)) erro(`linhas="${pedido}": o bloco tem ${linhas.length} linhas`);
+          const primeira = linhas[de - 1];
+          primeira.properties!.className = [...classes(primeira), "caneta-linhas-inicio"];
+          const estilo = primeira.properties!.style ? `${primeira.properties!.style};` : "";
+          primeira.properties!.style = `${estilo}--caneta-n:${ate - de + 1}`;
+          codigoDaLinha(primeira)!.children!.unshift(tracoDaCaneta("barra", "caneta-linhas-barra"));
+          codigoDaLinha(linhas[ate - 1])!.children!.push(notaNoCodigo(nota, textos[ate - 1].trimEnd().length + nota.length > CABE_NA_LINHA));
+        }
+      },
+    },
+  };
+}

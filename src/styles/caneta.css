@@ -1,0 +1,521 @@
+/*
+ * A caneta do caderno (D48): as marcações à caneta dos artigos, todas estáticas, como se o texto
+ * tivesse sido riscado antes de publicar. O guia (os 20 tipos e os limites) está em
+ * docs/marcacoes.md; o Markdown, em src/plugins/marcacoes.mjs; as anotações nos blocos de código, em
+ * src/lib/codigo.ts; o lugar das notas acima da palavra, em src/scripts/caneta.ts.
+ *
+ * A caneta nunca pinta o texto (os links também são azuis): o texto marcado fica na cor normal, e só
+ * os traços e as notas à mão usam --caneta. O marca-texto é o amarelo clássico (--marca-texto). As
+ * notas usam a Caveat, que só baixa nos posts com nota escrita ([slug].astro).
+ *
+ * Margem: as marcas de margem (colchete, asterisco, exclamação, interrogação) ficam no respiro da
+ * folha quando ele tem pelo menos 30px (tela ≥ 940px, --margem-folha); abaixo disso, o parágrafo
+ * marcado recua e a marca fica no recuo, sem cortar e sem rolagem lateral.
+ */
+
+.prose {
+  --caneta-mao: "Caveat", "Segoe Print", "Bradley Hand", cursive;
+  --caneta-recuo: 1.6rem;
+}
+
+/* ---------- comum ---------- */
+
+/*
+ * Só para leitor de tela: o traço é decorativo e o sentido dele vira palavra. Dentro do código, o
+ * Expressive Code reinicia os estilos das peças do bloco: o seletor precisa ser mais longo que o dele.
+ */
+.caneta-sr,
+.expressive-code .ec-line .code .caneta-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.prose .caneta-svg {
+  position: absolute;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.prose .caneta-svg path {
+  fill: none;
+  stroke: var(--caneta);
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* A letra à mão: texto de verdade, nunca com aparência de link. */
+.prose .caneta-escrita {
+  font-family: var(--caneta-mao);
+  font-weight: 600;
+  font-style: normal;
+  color: var(--caneta);
+  text-decoration: none;
+  letter-spacing: 0;
+}
+
+/* ---------- 1. marca-texto ---------- */
+
+.prose mark.caneta-marca {
+  padding: 0 2px;
+  color: var(--ink);
+  background-color: transparent;
+  background-image: linear-gradient(transparent 18%, var(--marca-texto) 18%, var(--marca-texto) 94%, transparent 94%);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* O código dentro do trecho fica sem o fundo próprio: o amarelo passa por ele. */
+.prose .caneta-marca code {
+  background-color: transparent;
+}
+
+/* ---------- traços em volta da palavra ---------- */
+
+.prose .caneta {
+  position: relative;
+  white-space: nowrap;
+}
+
+.prose .caneta-ondulado > .caneta-svg {
+  left: -2px;
+  bottom: -0.3em;
+  width: calc(100% + 4px);
+  height: 0.45em;
+}
+
+.prose .caneta-duplo > .caneta-svg {
+  left: -3px;
+  bottom: -0.38em;
+  width: calc(100% + 6px);
+  height: 0.55em;
+}
+
+.prose .caneta-circulo {
+  margin-inline: 0.15em;
+}
+
+.prose .caneta-circulo > .caneta-svg {
+  left: -0.45em;
+  top: -0.32em;
+  width: calc(100% + 0.9em);
+  height: calc(100% + 0.64em);
+}
+
+.prose .caneta-caixa {
+  margin-inline: 0.3em;
+}
+
+.prose .caneta-caixa > .caneta-svg {
+  left: -0.3em;
+  top: -0.14em;
+  width: calc(100% + 0.6em);
+  height: calc(100% + 0.28em);
+}
+
+/* Riscado: o traço passa no meio das letras. */
+.prose .caneta-riscado > s {
+  position: relative;
+  text-decoration: none;
+}
+
+.prose .caneta-riscado > s > .caneta-svg {
+  left: -3px;
+  top: calc(50% - 0.18em);
+  width: calc(100% + 6px);
+  height: 0.36em;
+}
+
+/* Seta ligando: um arco por cima do trecho, no respiro que ele abre acima da própria linha. */
+.prose .caneta-liga {
+  display: inline-block;
+  padding-top: 0.45em;
+}
+
+.prose .caneta-liga > .caneta-svg {
+  left: 0;
+  top: 0.02em;
+  width: 100%;
+  height: 0.7em;
+}
+
+/* Sinal entre dois termos (≠). */
+.prose .caneta-sinal {
+  position: relative;
+  display: inline-block;
+  width: 1.05em;
+  height: 1em;
+  margin: 0 0.2em;
+  vertical-align: -0.18em;
+}
+
+.prose .caneta-sinal > .caneta-svg {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/*
+ * Nota na margem e riscado com correção: a nota fica acima da palavra, num respiro que a própria
+ * palavra abre na linha dela (inline-block com padding), sem cobrir a linha de cima. Quando não cabe
+ * (celular, ou a nota passaria da margem direita: caneta.ts), ela vai logo depois da palavra.
+ */
+.prose :is(.caneta-nota, .caneta-riscado.com-correcao) {
+  display: inline-block;
+  padding-top: 1em;
+  line-height: inherit;
+}
+
+.prose .caneta-nota-texto,
+.prose .caneta-correcao {
+  position: absolute;
+  top: 0;
+  font-size: 1.2em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.prose .caneta-nota-texto {
+  left: 62%;
+  padding-left: 1.05em;
+  transform: rotate(-2deg);
+  transform-origin: left bottom;
+}
+
+.prose .caneta-nota-texto > .caneta-seta {
+  left: -0.05em;
+  top: 0.35em;
+  width: 0.95em;
+  height: 0.95em;
+}
+
+.prose .caneta-correcao {
+  font-size: 1.3em;
+  left: 50%;
+  translate: -45% 0;
+  transform: rotate(-4deg);
+}
+
+.prose :is(.caneta-nota, .caneta-riscado.com-correcao)[data-lugar="depois"] {
+  display: inline;
+  padding-top: 0;
+  white-space: normal;
+}
+
+.prose :is(.caneta-nota, .caneta-riscado.com-correcao)[data-lugar="depois"] :is(.caneta-nota-texto, .caneta-correcao) {
+  position: static;
+  margin-inline: 0.3em 0.15em;
+  padding-left: 0;
+  white-space: normal;
+  translate: none;
+  transform: none;
+}
+
+.prose .caneta-nota[data-lugar="depois"] .caneta-seta {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .prose :is(.caneta-nota, .caneta-riscado.com-correcao) {
+    display: inline;
+    padding-top: 0;
+    white-space: normal;
+  }
+
+  .prose :is(.caneta-nota-texto, .caneta-correcao) {
+    position: static;
+    margin-inline: 0.3em 0.15em;
+    padding-left: 0;
+    white-space: normal;
+    translate: none;
+    transform: none;
+  }
+
+  .prose .caneta-nota .caneta-seta {
+    display: none;
+  }
+}
+
+/* ---------- na margem do parágrafo ---------- */
+
+.prose .caneta-margem {
+  position: relative;
+  padding-left: var(--caneta-recuo);
+}
+
+.prose .caneta-margem > .caneta-sinal-margem {
+  left: 0.15rem;
+}
+
+@media (min-width: 940px) {
+  .prose .caneta-margem {
+    padding-left: 0;
+  }
+
+  .prose .caneta-margem > .caneta-sinal-margem {
+    left: -1.45rem;
+  }
+}
+
+/* A margem do parágrafo sai do bloco (colapsa): a altura já é só a do texto. */
+.prose .caneta-colchete > .caneta-sinal-margem {
+  top: 0.3em;
+  width: 0.6em;
+  height: calc(100% - 0.5em);
+}
+
+.prose .caneta-asterisco > .caneta-sinal-margem {
+  top: 0.4em;
+  width: 0.8em;
+  height: 0.8em;
+}
+
+.prose :is(.caneta-exclamacao, .caneta-pergunta) > .caneta-sinal-margem {
+  top: 0.2em;
+  width: 0.6em;
+  height: 1.2em;
+}
+
+.prose .caneta-pergunta > p:first-of-type {
+  margin-bottom: 0.25em;
+}
+
+.prose .caneta-pergunta-nota {
+  margin: 0 0 1.15em;
+  font-size: 1.2em;
+  line-height: 1.2;
+  transform: rotate(-1.2deg);
+  transform-origin: left;
+}
+
+/* Comentário do autor: a frase dele, à mão, com a seta que sai do parágrafo de cima. */
+.prose .caneta-comentario {
+  position: relative;
+  display: flex;
+  gap: 0.45em;
+  align-items: flex-start;
+  margin: -0.55em 0 1.15em;
+}
+
+.prose .caneta-comentario > .caneta-svg {
+  position: static;
+  flex: none;
+  width: 1em;
+  height: 1em;
+  margin-top: 0.1em;
+}
+
+.prose .caneta-comentario > p {
+  margin: 0;
+  font-size: 1.2em;
+  line-height: 1.25;
+}
+
+/* ---------- listas ---------- */
+
+.prose .caneta-caixa-codigo {
+  position: relative;
+  white-space: nowrap;
+}
+
+.prose :is(.caneta-certo-errado, .caneta-passos) {
+  padding-left: 1.9em;
+  list-style: none;
+}
+
+.prose :is(.caneta-certo-errado, .caneta-passos) > li {
+  position: relative;
+}
+
+.prose .caneta-sinal-item {
+  left: -1.5em;
+  top: 0.42em;
+  width: 0.85em;
+  height: 0.85em;
+}
+
+.prose .caneta-numero {
+  position: absolute;
+  left: -1.75em;
+  top: 0.18em;
+  width: 1.3em;
+  height: 1.3em;
+}
+
+.prose .caneta-numero > .caneta-svg {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.prose .caneta-numero > span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font: 600 1.05em/1 var(--caneta-mao);
+  color: var(--caneta);
+}
+
+/* Chave agrupando: a chave do lado da lista e o comentário ao lado dela; no celular, embaixo. */
+.prose .caneta-chave {
+  display: grid;
+  grid-template-columns: minmax(0, max-content) auto;
+  align-items: stretch;
+  column-gap: 0.5em;
+  margin: 0 0 1.15em;
+}
+
+.prose .caneta-chave > .caneta-lista {
+  margin: 0;
+}
+
+.prose .caneta-chave-lado {
+  display: flex;
+  gap: 0.45em;
+  align-items: center;
+}
+
+.prose .caneta-chave-lado > .caneta-svg {
+  position: static;
+  flex: none;
+  align-self: stretch;
+  width: 0.6em;
+  height: auto;
+}
+
+.prose .caneta-chave-texto {
+  max-width: 9em;
+  font-size: 1.2em;
+  line-height: 1.1;
+}
+
+@media (max-width: 640px) {
+  .prose .caneta-chave {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "lista chave" "nota nota";
+  }
+
+  .prose .caneta-chave-lado {
+    display: contents;
+  }
+
+  .prose .caneta-chave-lado > .caneta-svg {
+    grid-area: chave;
+  }
+
+  .prose .caneta-chave-texto {
+    grid-area: nota;
+    justify-self: end;
+    max-width: none;
+    padding-right: 0.2em;
+    margin-top: 0.2em;
+  }
+}
+
+/* ---------- nos blocos de código (src/lib/codigo.ts) ---------- */
+
+.expressive-code .caneta-codigo-circulo {
+  position: relative;
+  margin-inline: 0.5em;
+}
+
+.expressive-code .caneta-codigo-circulo > .caneta-svg {
+  left: -0.8em;
+  top: -0.3em;
+  width: calc(100% + 1.6em);
+  height: calc(100% + 0.6em);
+}
+
+.expressive-code .caneta-nota-codigo {
+  position: relative;
+  margin-left: 1.6em;
+  padding-left: 1.3em;
+  font-size: 1.3em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.expressive-code .caneta-nota-codigo > .caneta-seta-codigo {
+  left: 0;
+  top: 0.28em;
+  width: 1em;
+  height: 0.6em;
+}
+
+/* Abaixo da linha: parado na esquerda do bloco, mesmo com o código rolado para o lado. */
+.expressive-code .caneta-nota-codigo.abaixo {
+  position: sticky;
+  left: 0.2em;
+  display: block;
+  width: max-content;
+  max-width: min(22rem, 78vw);
+  margin: 0.1em 0 0.3em;
+  padding-left: 0;
+  white-space: normal;
+}
+
+.expressive-code .caneta-nota-codigo.abaixo > .caneta-seta-codigo {
+  display: none;
+}
+
+.expressive-code .caneta-nota-codigo.abaixo::before {
+  content: "↑ ";
+}
+
+@media (max-width: 640px) {
+  .expressive-code .caneta-nota-codigo {
+    position: sticky;
+    left: 0.2em;
+    display: block;
+    width: max-content;
+    max-width: min(22rem, 78vw);
+    margin: 0.1em 0 0.3em;
+    padding-left: 0;
+    white-space: normal;
+  }
+
+  .expressive-code .caneta-nota-codigo > .caneta-seta-codigo {
+    display: none;
+  }
+
+  .expressive-code .caneta-nota-codigo::before {
+    content: "↑ ";
+  }
+}
+
+/* Linhas marcadas: um traço à mão no respiro da esquerda, da primeira à última linha do trecho. */
+.expressive-code .ec-line.caneta-linhas-inicio .code {
+  position: relative;
+}
+
+.expressive-code .caneta-linhas-barra {
+  left: 0.35rem;
+  top: 0.2lh;
+  width: 0.5em;
+  height: calc(var(--caneta-n, 1) * 1lh - 0.4lh);
+}
+
+/* ---------- alto contraste e impressão ---------- */
+
+@media (forced-colors: active) {
+  .prose .caneta-svg path {
+    stroke: CanvasText;
+  }
+
+  .prose .caneta-riscado > s {
+    text-decoration: line-through;
+  }
+}
+
+@media print {
+  .prose mark.caneta-marca {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}

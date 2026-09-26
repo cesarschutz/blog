@@ -1,0 +1,45 @@
+---
+/**
+ * Catálogo da caneta do caderno (D48, src/amostra/caneta.md): os 20 tipos na grade do artigo, para
+ * conferir nos dois temas e em todas as larguras. Só no `npm run dev` (/amostra/caneta/).
+ */
+import Base from "../../layouts/Base.astro";
+import { Content } from "../../amostra/caneta.md";
+import { fonteDaCaneta } from "../../lib/caneta";
+import "../../styles/prosa.css";
+import "../../styles/artigo.css";
+import "../../styles/caneta.css";
+
+export function getStaticPaths() {
+  return import.meta.env.DEV ? [{ params: { amostra: "amostra" } }] : [];
+}
+---
+
+<Base titulo="Catálogo da caneta">
+  <style slot="head" set:html={fonteDaCaneta} />
+  <article class="artigo wrap" data-artigo>
+    <h1 class="titulo">Catálogo da caneta</h1>
+    <div class="artigo-grade">
+      <div class="artigo-principal">
+        <div class="folha artigo-folha">
+          <div class="artigo-corpo">
+            <div class="prose" data-corpo><Content /></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+</Base>
+
+<script>
+  import { canetaNoLugar } from "../../scripts/caneta";
+
+  canetaNoLugar();
+</script>
+
+<style>
+  .titulo {
+    margin: 36px 0 24px;
+    font-size: clamp(34px, 5vw, 52px);
+  }
+</style>

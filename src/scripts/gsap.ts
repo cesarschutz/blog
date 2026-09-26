@@ -48,16 +48,6 @@ export function carregarTraco() {
   return traco;
 }
 
-/** O GSAP com ScrollTrigger e DrawSVG (o caderno marcado, D41). */
-let rolagem: Promise<{ gsap: GSAP; ScrollTrigger: typeof import("gsap/ScrollTrigger").ScrollTrigger }> | undefined;
-export function carregarRolagem() {
-  rolagem ??= Promise.all([carregarTraco(), import("gsap/ScrollTrigger")]).then(([gsap, { ScrollTrigger }]) => {
-    gsap.registerPlugin(ScrollTrigger);
-    return { gsap, ScrollTrigger };
-  });
-  return rolagem;
-}
-
 /**
  * Começa o download antes do uso: no primeiro mouse, toque ou foco em `alvo`, ou quando a página
  * fica ociosa (no máximo em 4s).
