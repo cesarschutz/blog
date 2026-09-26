@@ -224,3 +224,22 @@
   content-visibility: auto;
   contain-intrinsic-size: auto calc(var(--linhas, 10) * 23.1px + 72px);
 }
+
+/* O ícone do Copiar é um SVG (D41, copiar.ts), para o retângulo da frente virar um visto. */
+.expressive-code .copy button.com-icone::after {
+  display: none;
+}
+
+.expressive-code .copy .icone-copiar {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0.4rem;
+  fill: none;
+  stroke: var(--ec-frm-inlBtnFg);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}

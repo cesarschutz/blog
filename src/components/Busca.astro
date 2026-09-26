@@ -142,7 +142,13 @@
   // (no celular, só o ícone). Sem o GSAP ainda, ou com movimento reduzido, abre e fecha direto.
   let flip: Awaited<ReturnType<typeof carregarFlip>> | null = null;
   const botoes = [...document.querySelectorAll<HTMLElement>("[data-busca-abrir]")];
-  if (!movimentoReduzido.matches) botoes.forEach((b) => adiantar(b, () => carregarFlip().then((f) => (flip = f))));
+  const trazerFlip = () => carregarFlip().then((f) => (flip = f));
+  // A busca está em todas as páginas: o Flip vem só quando o leitor chega perto (mouse, toque, foco
+  // no campo ou ao apertar ⌘ ou Ctrl), nunca com a página ociosa.
+  if (!movimentoReduzido.matches) {
+    botoes.forEach((b) => adiantar(b, trazerFlip, { ocioso: false }));
+    addEventListener("keydown", (e) => (e.key === "Meta" || e.key === "Control") && trazerFlip(), { passive: true });
+  }
   const botaoAVista = () => botoes.find((b) => b.getBoundingClientRect().width > 0);
   const conteudo = () => [...dialogo.querySelectorAll<HTMLElement>(".campo, .estado, .resultados")];
 

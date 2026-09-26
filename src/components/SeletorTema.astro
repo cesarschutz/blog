@@ -28,10 +28,16 @@ import { ICONES } from "../lib/icones";
     const astro = botao.querySelector<SVGPathElement>(".astro")!;
     const raios = botao.querySelector<SVGGElement>(".raios")!;
     let gsap: Awaited<ReturnType<typeof carregarMorph>> | null = null;
-    if (!movimentoReduzido.matches) adiantar(botao, () => carregarMorph().then((g) => (gsap = g)));
+    const trazer = () => carregarMorph().then((g) => (gsap = g));
+    if (!movimentoReduzido.matches) adiantar(botao, trazer, { ocioso: false });
 
     const pintarIcone = (animar: boolean) => {
       const escuro = temaNaTela() === "dark";
+      // No primeiro toque, o MorphSVG pode ainda estar chegando: o ícone vira quando ele chegar.
+      if (animar && !gsap && !movimentoReduzido.matches) {
+        trazer().then(() => pintarIcone(true), () => pintarIcone(false));
+        return;
+      }
       if (animar && gsap && !movimentoReduzido.matches) {
         gsap.to(astro, { morphSVG: escuro ? SOL : LUA, duration: 0.45, ease: "power2.inOut" });
         // No fim, o CSS (pelo data-tela) assume o mesmo estado.

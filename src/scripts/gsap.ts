@@ -70,11 +70,13 @@ export function carregarRolagem() {
 
 /**
  * Começa o download antes do uso: no primeiro mouse, toque ou foco em `alvo`, ou quando a página
- * fica ociosa (no máximo em 4s).
+ * fica ociosa (no máximo em 4s; com `ocioso: false`, só pelo mouse, toque ou foco).
  */
-export function adiantar(alvo: Element, carregar: () => Promise<unknown> = carregarGsap) {
+export function adiantar(alvo: Element, carregar: () => Promise<unknown> = carregarGsap, { ocioso = true } = {}) {
   const ja = () => void carregar();
   for (const evento of ["pointerenter", "pointerdown", "focusin"]) alvo.addEventListener(evento, ja, { once: true, passive: true });
+  // Peças que estão em todas as páginas (o botão de tema, o Copiar) não baixam nada com a página ociosa.
+  if (!ocioso) return;
   if ("requestIdleCallback" in window) requestIdleCallback(ja, { timeout: 4000 });
   else setTimeout(ja, 2500);
 }

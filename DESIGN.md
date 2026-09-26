@@ -642,6 +642,13 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   - **Tema em círculo**: a lua vira sol (e o contrário) com MorphSVG em 0,45s; o tema novo se
     espalha em círculo a partir do botão (View Transition do documento, tipo "tema", `clip-path`,
     0,6s, `cubic-bezier(0.65, 0, 0.35, 1)`). Sem suporte, troca direta; a página não sai do lugar.
+  - **Copiar**: o retângulo da frente vira um visto (MorphSVG, 0,35s, `back.out(2)`) por 1,6s, com o
+    "Copiado" do Expressive Code.
+  - **Marca "cs"** (só CSS): no hover ou foco, a capa entreabre 38° sobre as páginas (0,5s) e a fita
+    balança até 14° com `elastic.out(1.2, 0.3)` (0,9s) e volta com `elastic.out(1, 0.3)` (1s), as
+    curvas do GSAP em `linear()`.
+  - Peças presentes em todas as páginas (tema, busca, Copiar) não baixam o GSAP com a página ociosa,
+    só quando o leitor chega perto delas.
 - **Lousa de passos** (D39): com a rolagem só na tela de 1024px ou mais e sem movimento reduzido
   (passos a 40% da tela, o atual inteiro e os outros esmaecidos); fora disso, passo a passo com
   "◀ 2 de 5 ▶", pontos e deslizar.

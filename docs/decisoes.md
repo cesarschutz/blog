@@ -1032,3 +1032,16 @@ nada muda.
      transição (livros, desenhos, títulos) saem (`.trocando-tema`), para a página virar inteira de uma
      vez. Sem View Transitions com tipos, ou com movimento reduzido, a troca é direta. A página não sai
      do lugar (conferido: `scrollY` igual antes e depois).
+  7. **Detalhes que respondem:** o Copiar dos blocos de código ganha um ícone em SVG (dois
+     retângulos, no lugar da máscara do Expressive Code), e o da frente vira um visto (MorphSVG, 0,35s,
+     `back.out(2)`) por 1,6s, junto com o "Copiado" do próprio Expressive Code (que fica 1,5s e some em
+     0,2s: não dá para mudar sem reescrever o botão dele); só quando a cópia deu certo. A marca "cs"
+     vira um livro de duas camadas (páginas e fita atrás, capa na frente, do mesmo traçado): ao passar
+     o mouse ou focar, a capa entreabre 38° e a fita balança até 14° com `elastic`. Isso é **só CSS**
+     (regra do `DESIGN.md`: estado de hover é CSS), com as curvas `elastic.out` do GSAP amostradas em
+     `linear()`, para o cabeçalho de todas as páginas não baixar o GSAP.
+- **Download sob demanda, ajustado (D41):** peças que estão em todas as páginas (botão de tema,
+  busca e Copiar) só baixam o GSAP quando o leitor chega perto (mouse, toque, foco; na busca, também
+  ao apertar ⌘ ou Ctrl), nunca com a página ociosa (`adiantar(..., { ocioso: false })`). No primeiro
+  toque no tema, o ícone vira quando o MorphSVG chega; a primeira busca aberta por ⌘K sem ter
+  passado o mouse no campo pode abrir sem a animação.

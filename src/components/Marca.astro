@@ -5,6 +5,10 @@
  * estante, onde ela é o h1. O ícone do navegador é o mesmo livro sobre um quadrado de papel. O
  * traçado do livro e do "blog" vem de src/lib/marca.ts, e os ícones de public/, todos gerados por
  * scripts/marca.mjs.
+ *
+ * O livro abre (D41): ao passar o mouse ou focar o link, a capa entreabre 38° sobre as páginas e a fita
+ * balança com um `elastic` (a curva do GSAP, `elastic.out`, em `linear()`), só com CSS. Para isso o
+ * livro são duas camadas do mesmo traçado: atrás, as páginas e a fita; na frente, a capa sem a fita.
  */
 import { BLOG_DESCENDENTE, BLOG_SVG, BLOG_VIEWBOX, MARCA_SVG, MARCA_VIEWBOX } from "../lib/marca";
 import { url } from "../lib/url";
@@ -24,7 +28,10 @@ const Elemento = semLink ? "span" : "a";
   href={semLink ? undefined : url("/")}
   style={`--descendente:${BLOG_DESCENDENTE}`}
 >
-  <svg class="marca-livro" viewBox={MARCA_VIEWBOX} aria-hidden="true" focusable="false" set:html={MARCA_SVG} />
+  <span class="marca-livro-3d" aria-hidden="true">
+    <svg class="marca-livro marca-miolo" viewBox={MARCA_VIEWBOX} focusable="false" set:html={`<rect class="marca-pagina" x="3" y="1.2" width="36" height="49.6" rx="2"/>${MARCA_SVG}`} />
+    <svg class="marca-livro marca-capa-3d" viewBox={MARCA_VIEWBOX} focusable="false" set:html={MARCA_SVG} />
+  </span>
   <span class="marca-texto"
     ><span class="marca-nome">Cesar Schutz</span>
     <svg class="marca-blog" viewBox={BLOG_VIEWBOX} role="img" aria-label="blog" set:html={BLOG_SVG} /></span
@@ -50,12 +57,41 @@ const Elemento = semLink ? "span" : "a";
   }
 
   /* O livro fica centrado nas maiúsculas; a fita pende abaixo da linha. */
-  .marca-livro {
+  .marca-livro-3d {
+    display: inline-grid;
     flex: none;
+    perspective: 12em;
+    translate: 0 0.1em;
+  }
+
+  .marca-livro {
+    grid-area: 1 / 1;
     width: auto;
     height: 1.46em;
     overflow: visible;
-    translate: 0 0.1em;
+  }
+
+  /* Atrás, só as páginas e a fita; na frente, a capa, presa pela lombada (à esquerda). */
+  .marca-miolo :global(:is(.marca-capa, .marca-dobra, .marca-letras)),
+  .marca-capa-3d :global(.marca-fita) {
+    display: none;
+  }
+
+  .marca-miolo :global(.marca-pagina) {
+    fill: var(--paper-hi);
+    stroke: var(--rule);
+    stroke-width: 1px;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .marca-capa-3d {
+    transform-origin: 0 50%;
+    transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+
+  a.marca:is(:hover, :focus-visible) .marca-capa-3d {
+    transform: rotateY(-38deg);
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .marca-livro :global(.marca-capa) {
@@ -86,11 +122,14 @@ const Elemento = semLink ? "span" : "a";
     fill: var(--marca-letra);
   }
 
+  /* A fita volta balançando (elastic.out(1, 0.3), 1s) e, com o mouse, vai balançando até 14°
+     (elastic.out(1.2, 0.3), 0,9s): as curvas do GSAP amostradas em linear(). */
   .marca-livro :global(.marca-fita) {
     fill: var(--marca-fita);
     transform-box: fill-box;
     transform-origin: 50% 0;
-    transition: rotate 0.4s cubic-bezier(0.2, 0.75, 0.2, 1);
+    transition: rotate 1s
+      linear(0, 0.272, 0.646, 1, 1.25, 1.364, 1.354, 1.257, 1.125, 1, 0.912, 0.871, 0.875, 0.909, 0.956, 1, 1.031, 1.046, 1.044, 1.032, 1.016, 1, 0.989, 0.984, 0.984, 0.989, 0.994, 1, 1.004, 1.006, 1.006, 1.004, 1.002, 1, 0.999, 0.998, 0.998, 0.999, 0.999, 1, 1);
   }
 
   /* "blog" em traçado, com a linha de base na do nome (a perna do g desce, como na letra). */
@@ -107,8 +146,10 @@ const Elemento = semLink ? "span" : "a";
     color: var(--ink);
   }
 
-  a.marca:hover .marca-livro :global(.marca-fita) {
-    rotate: 9deg;
+  a.marca:is(:hover, :focus-visible) .marca-livro :global(.marca-fita) {
+    rotate: 14deg;
+    transition: rotate 0.9s
+      linear(0, 0.551, 1.053, 1.394, 1.537, 1.504, 1.354, 1.159, 0.981, 0.861, 0.81, 0.822, 0.875, 0.944, 1.007, 1.049, 1.067, 1.063, 1.044, 1.02, 0.998, 0.983, 0.976, 0.978, 0.984, 0.993, 1.001, 1.006, 1.008, 1.008, 1.006, 1.002, 1, 0.998, 0.997, 0.997, 0.998, 0.999, 1, 1.001, 1);
   }
 
   .marca-grande {
@@ -117,10 +158,13 @@ const Elemento = semLink ? "span" : "a";
     letter-spacing: -0.015em;
   }
 
-  .marca-grande .marca-livro {
-    height: 1.3em;
+  .marca-grande .marca-livro-3d {
     translate: 0 0.08em;
     filter: drop-shadow(0 0.06em 0.08em rgb(0 0 0 / 0.18));
+  }
+
+  .marca-grande .marca-livro {
+    height: 1.3em;
   }
 
   .marca-grande .marca-blog {
@@ -129,12 +173,17 @@ const Elemento = semLink ? "span" : "a";
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .marca-livro :global(.marca-fita) {
+    .marca-livro :global(.marca-fita),
+    .marca-capa-3d {
       transition: none;
     }
 
-    a.marca:hover .marca-livro :global(.marca-fita) {
+    a.marca:is(:hover, :focus-visible) .marca-livro :global(.marca-fita) {
       rotate: none;
+    }
+
+    a.marca:is(:hover, :focus-visible) .marca-capa-3d {
+      transform: none;
     }
   }
 </style>
