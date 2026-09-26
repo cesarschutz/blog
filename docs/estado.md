@@ -136,6 +136,10 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
   novo se espalha em círculo a partir do botão (View Transition do documento) e a troca Lista / Cards
   esmaece uma forma e traz a outra subindo 8px. Conferido no dev (desktop e 390px, os dois temas,
   cliques rápidos), `astro check` sem erros e console limpo. Aguarda o Cesar ver.
+- **A gaveta volta ao sumário (D43, 26/09/2026), só local, sem commit:** o livro sai da estante (o
+  lugar fica vazio) e voa fechado até a gaveta, ao lado do sumário de antes da D40 (filtro e lista
+  por ano). Conferido no dev: voo medido quadro a quadro, troca de livro, clique durante o fechamento,
+  a mesma lombada guardando, celular (390px) e mudança de largura com o livro aberto.
 
 ## Próximos passos
 

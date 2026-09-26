@@ -210,17 +210,17 @@ Referência: aba "Home" do protótipo.
   - O último livro da coleção fica inclinado 6°, apoiado no alto do aparador, **parado** (D35: ele
     tombava na primeira visita da sessão, e isso saiu porque na home nenhum livro cai).
   - Ao passar o mouse, a lombada sobe alguns pixels.
-  - Na home, a lombada abre a gaveta; a capa aberta dentro dela leva à página do livro, e a lupa
-    amplia (D38). Nas outras páginas, a lombada leva ao livro.
-  - **Abrir um livro** (D40, "tirar da estante e abrir"): o livro sobe e o lugar dele fica
-    escurecido; um livro 3D sai da posição da lombada e vem para a gaveta, abaixo da estante,
-    girando até 18°; a capa abre e o livro desliza para centralizar as duas páginas: no verso da
-    capa, a assinatura do blog; na página da direita, os **artigos mais recentes** (6 por página;
-    com mais, "Próximas ▸" vira a folha e mostra os seguintes, e "◂ Anteriores" volta), com
-    "Ver todos os N artigos" (o arquivo filtrado pelo livro) e "Ver o livro". **Guardar o livro**,
-    Esc ou um clique no lugar escurecido fazem o caminho de volta, 1,5× mais rápido; **trocar de
-    livro** fecha o atual antes de abrir o próximo. No celular, o livro aberto cabe na largura da
-    tela. O sumário com filtro da gaveta antiga saiu (a lista inteira fica na página do livro).
+  - Na home, a lombada abre a gaveta; dentro dela, clicar no livro (ou na lupa) o amplia, e o botão
+    "Ver o livro" leva à página do livro (D43, no lugar da capa como link da D38). Nas outras
+    páginas, a lombada leva ao livro.
+  - **Tirar um livro da estante** (D43, no lugar do livro que abria da D40): o livro sai da
+    estante (o lugar dele fica **vazio**), sobe e vem para a gaveta, abaixo da estante, girando da
+    lombada até **38°** da frente (mais de lado que no resto do site), **fechado**. Ao lado volta o
+    sumário de antes da D40, **sem o filtro**: "Neste livro" ("Ordem de leitura" nas séries), o nome
+    e a contagem, os botões **Ver o livro** ("Ver a série"; o principal, com seta) e **Fechar livro**,
+    e os artigos por ano, com o pontilhado e a data. **Fechar livro**, Esc ou um clique no lugar vazio fazem o caminho de volta, 1,5× mais
+    rápido; **trocar de livro** fecha o atual antes de abrir o próximo. No celular, o sumário vai
+    para baixo do livro.
   - No celular, as lombadas diminuem para caber todas na largura.
 - **Destaque** (só na primeira página): o post mais recente, com a ilustração (o painel acompanha a
   altura do texto; até 960px, vai para cima), categoria, data e tempo de leitura com os ícones, o

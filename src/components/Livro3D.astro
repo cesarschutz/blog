@@ -3,8 +3,9 @@
  * O livro 3D inteiro (D30, D40): contracapa, lombada (a mesma da estante, MioloLombada), bordas das
  * páginas, a página de dentro e a capa, com o verso, presa pela lombada para poder abrir. O livro
  * gira em volta do centro: com `rotateY(90deg)` mostra a lombada de frente; parado, fica a 18° da
- * frente (`--giro`, GIRO em src/lib/livro-3d.ts), com só uma faixa da lombada à vista. A capa abre
- * pelo GSAP (a gaveta da home, D40) e entreabre com as camadas de página (`folhas`, a ideia 5).
+ * frente (`--giro`, GIRO em src/lib/livro-3d.ts), com só uma faixa da lombada à vista. A capa
+ * entreabre com as camadas de página (`folhas`, D40, ideia 5); na gaveta da home, o livro fica
+ * fechado (D43).
  *
  * As medidas vêm de src/lib/livro-3d.ts: --cw (largura da capa), --bh (altura), --sw (espessura, a
  * largura da lombada na mesma escala) e --u (px por unidade da referência, para a lombada). As cores,

@@ -122,12 +122,11 @@
 }
 
 /*
- * Livro que foi para a gaveta: o lugar dele mostra o próprio livro escurecido, como os não escolhidos
- * da estante de filtro (D39). O inclinado continua inclinado.
+ * Livro que foi para a gaveta (D43): saiu da estante, e o lugar dele fica vazio (o espaço continua, os
+ * vizinhos não se mexem). Continua clicável e focável: clicar no lugar vazio guarda o livro.
  */
 .lombada.retirado {
-  opacity: 0.4;
-  filter: saturate(0.5);
+  opacity: 0;
 }
 
 @media (hover: hover) {
@@ -240,18 +239,12 @@
   }
 }
 
-/* ---------- gaveta: o livro que sai da estante e abre (Gaveta.astro, D40) ---------- */
+/* ---------- gaveta: o livro que sai da estante e o sumário (Gaveta.astro, D43) ---------- */
 
-/* O livro voa por cima da folha da abertura, da lombada até a gaveta. */
-.palco-gaveta {
-  position: relative;
-}
-
-/* O espaço do livro aberto, abaixo da estante, separado por um fio. */
+/* A gaveta abre dentro da folha da abertura (D26), separada da estante por um fio. */
 .gaveta {
-  position: relative;
-  height: calc(var(--altura-livro, 360px) + 92px);
-  margin-top: 26px;
+  margin-top: 28px;
+  padding: 40px 0 12px;
   border-top: 1px solid var(--rule);
 }
 
@@ -259,228 +252,131 @@
   display: none;
 }
 
-.guardar {
-  position: absolute;
-  right: 0;
-  bottom: 8px;
-}
-
-.livro-voando {
-  position: absolute;
-  z-index: 6;
-  top: 0;
-  left: 0;
-  width: var(--cw);
-  height: var(--bh);
-  will-change: transform;
-}
-
-/* A página da direita: o papel do livro, com os artigos mais recentes, sempre nas cores do livro. */
-.pagina-aberta {
-  --corpo-pagina: max(11px, calc(var(--cw) * 0.052));
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  padding: 9% 8% 7% 11%;
-  font-family: var(--font-texto);
-  font-size: var(--corpo-pagina);
-  line-height: 1.3;
-  color: var(--livro-tinta-papel);
-}
-
-.pagina-aberta > p {
-  margin: 0;
-}
-
-.titulo-pagina {
-  font-family: var(--font-titulo);
-  font-weight: 700;
-  font-size: 1.5em;
-  line-height: 1.1;
-  color: var(--livro-destaque-texto);
-}
-
-.sub-pagina {
-  margin-top: 0.2em !important;
-  font-family: var(--font-ui);
-  font-size: 0.9em;
-  opacity: 0.7;
-}
-
-.itens-pagina {
+.livro-aberto {
   display: grid;
-  gap: 0.55em;
-  margin: 1em 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.itens-pagina li {
-  display: flex;
-  gap: 0.5em;
-  align-items: baseline;
-}
-
-.itens-pagina a {
-  display: -webkit-box;
-  flex: 1;
-  overflow: hidden;
-  color: inherit;
-  text-decoration: none;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-
-.itens-pagina a:hover,
-.itens-pagina a:focus-visible {
-  color: var(--livro-destaque-texto);
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
-}
-
-.itens-pagina small {
-  flex: none;
-  font-family: var(--font-ui);
-  font-size: 0.82em;
-  opacity: 0.65;
-}
-
-.vazio-pagina {
-  margin-top: 1em !important;
-  font-style: italic;
-  opacity: 0.75;
-}
-
-/* Os links do pé da página, na cor do livro (passa de 4,5:1 sobre o papel, npm run contraste). */
-.links-pagina {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3em 1em;
-  margin-top: auto !important;
-  padding-top: 0.8em;
-  font-family: var(--font-ui);
-  font-weight: 600;
-  font-size: 0.95em;
-}
-
-.links-pagina a {
-  color: var(--livro-destaque-texto);
-  text-underline-offset: 0.15em;
-}
-
-.pagina-aberta a:focus-visible {
-  outline: 1.5px solid var(--livro-destaque-texto);
-  outline-offset: 2px;
-}
-
-/* "◂ Anteriores" e "Próximas ▸": botões de texto na cor do livro, acima dos links. */
-.virar-pagina {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.5em;
-  margin-top: auto !important;
-  padding-top: 0.6em;
-}
-
-.virar-pagina + .links-pagina {
-  margin-top: 0 !important;
-}
-
-.virar-pagina button {
-  margin: 0 0 0 auto;
-  padding: 0.2em 0;
-  border: 0;
-  background: none;
-  color: var(--livro-destaque-texto);
-  font-family: var(--font-ui);
-  font-weight: 600;
-  font-size: 0.95em;
-  cursor: pointer;
-}
-
-.virar-pagina button[data-anteriores] {
-  margin: 0 auto 0 0;
-}
-
-.virar-pagina button[hidden] {
-  display: none;
-}
-
-.virar-pagina button:hover {
-  text-decoration: underline;
-  text-underline-offset: 0.15em;
-}
-
-.virar-pagina button:focus-visible {
-  outline: 1.5px solid var(--livro-destaque-texto);
-  outline-offset: 2px;
-}
-
-/* A folha que vira: presa pela lombada, como a capa; a frente copia a página, o verso é papel. */
-.livro-3d .folha-virando {
-  top: 4px;
-  width: calc(var(--cw) - 6px);
-  height: calc(var(--bh) - 8px);
-  transform: translateZ(calc(var(--sw) / 2 - 0.4px));
-  transform-origin: 0 50%;
-  transform-style: preserve-3d;
-  backface-visibility: visible;
-}
-
-.folha-virando > .frente-folha,
-.folha-virando > .verso-folha {
-  position: absolute;
-  inset: 0;
-  border-radius: 0 3px 3px 0;
-  background: color-mix(in oklab, var(--livro-papel), white 55%);
-  color: var(--livro-tinta-papel);
-  backface-visibility: hidden;
-  box-shadow: inset 10px 0 18px -14px rgb(0 0 0 / 0.35);
-}
-
-.folha-virando > .verso-folha {
-  border-radius: 3px 0 0 3px;
-  transform: rotateY(180deg);
-  box-shadow: inset -10px 0 18px -14px rgb(0 0 0 / 0.35);
-}
-
-/*
- * No livro pequeno (celular), a página cabe inteira: cada título numa linha só, itens mais juntos
- * e os dois links lado a lado.
- */
-@media (max-width: 760px) {
-  .pagina-aberta {
-    padding: 8% 7% 6% 9%;
-  }
-
-  .itens-pagina {
-    gap: 0.4em;
-    margin-top: 0.7em;
-  }
-
-  .itens-pagina a {
-    -webkit-line-clamp: 1;
-  }
-
-  .titulo-pagina {
-    font-size: 1.35em;
-  }
-
-  .sub-pagina {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  .links-pagina {
-    padding-top: 0.5em;
-  }
+  grid-template-columns: var(--cw) minmax(0, 1fr);
+  gap: 56px;
+  align-items: start;
 }
 
 @media (max-width: 760px) {
   .gaveta {
-    height: calc(var(--altura-livro, 270px) + 84px);
-    margin-top: 18px;
+    margin-top: 20px;
+    padding: 28px 0 8px;
   }
+
+  .livro-aberto {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+}
+
+/* O livro da gaveta com a lupa no canto (o livro ampliado, D33). É ele que voa da lombada até aqui. */
+.livro-na-gaveta {
+  position: relative;
+  justify-self: center;
+}
+
+.topo-sumario {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 18px;
+  margin-bottom: 14px;
+}
+
+.topo-sumario h2 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.topo-sumario .meta-sumario {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+/* "Ver o livro" (o caminho principal) e "Fechar livro", à direita do título; no celular, embaixo. */
+.acoes-livro {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-left: auto;
+}
+
+@media (max-width: 760px) {
+  .acoes-livro {
+    margin: 4px 0 0;
+  }
+}
+
+.indice-livro {
+  max-height: 300px;
+  margin: 0;
+  padding: 0 10px 0 0;
+  overflow: auto;
+  list-style: none;
+  scrollbar-width: thin;
+}
+
+@media (max-width: 760px) {
+  .indice-livro {
+    max-height: 380px;
+  }
+}
+
+.indice-livro .ano {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 14px 0 4px;
+  background: var(--paper-hi);
+  font-family: var(--font-titulo);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--ink-2);
+  font-variant-numeric: lining-nums;
+}
+
+.indice-livro .ano:first-child {
+  padding-top: 2px;
+}
+
+/* Com o título inteiro (D33), o item pode quebrar: o pontilhado e a data ficam na última linha. */
+.indice-livro a {
+  display: grid;
+  grid-template-columns: minmax(0, max-content) minmax(18px, 1fr) auto;
+  align-items: last baseline;
+  gap: 10px;
+  padding: 7px 0;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.indice-livro .pontilhado {
+  border-bottom: 1px dotted var(--ink-3);
+  opacity: 0.8;
+  transform: translateY(-0.28em);
+}
+
+.indice-livro .dia {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.indice-livro .parte {
+  margin-right: 8px;
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+.indice-livro a:hover .titulo-item {
+  color: var(--acento);
+}
+
+.sem-artigos {
+  margin: 8px 0 0;
+  color: var(--ink-2);
 }

@@ -1048,3 +1048,33 @@ nada muda.
 - **Por quê:** as duas trocas eram secas. As versões escolhidas são curtas e só mexem em cor e
   opacidade, sem biblioteca: o navegador sem View Transitions com tipos troca o tema direto.
 - **Movimento reduzido:** as duas trocas ficam diretas, como antes.
+
+## D43 · A gaveta volta ao sumário, e o livro sai da estante
+- **Data:** 26/09/2026 · **Status:** aplicada, sem push.
+- **Pedido do Cesar:** na home, ao tirar o livro da estante, ele deve **sair** (o lugar fica vazio),
+  e não aparecer escurecido; e o livro não abre mais: a gaveta volta a ser como antes da D40 (livro
+  fechado à esquerda e, à direita, "Neste livro" com o filtro e a lista por ano).
+- **Decisão:** substitui a ideia 3 da D40 (o livro que abria, a página com os 6 mais recentes,
+  "Próximas ▸", a assinatura no verso e "Guardar o livro").
+  1. O voo continua com GSAP: o livro 3D começa sobre a lombada (lombada de frente, mesma altura),
+     sobe 40px e vem para a gaveta girando até 38° da frente (1,05s, `power3.inOut`), fechado; ao
+     pousar, o sumário aparece subindo 8px. Fechar faz o caminho de volta 1,5× mais rápido.
+     **Ajuste do Cesar, com imagem de referência:** primeiro ficou a 18° (o `GIRO` do site, D39);
+     ele pediu "mais de lado", como antes da D39, e a gaveta passou a 38° (o antigo 52° a partir da
+     lombada). Só na gaveta: o topo da categoria e o livro ampliado continuam a 18°, e o ampliado
+     não herda o giro da gaveta.
+  2. O livro que voa é o próprio livro da gaveta, já no lugar final, levado por transformações (não
+     há mais cópia absoluta sobre a folha). O ponto de partida desconta a subida do hover da estante,
+     para o livro voltar exatamente ao lugar.
+  3. A lombada retirada fica com opacidade 0: o espaço continua, os vizinhos não se mexem, e ela
+     segue clicável (clicar no lugar vazio guarda o livro).
+  4. O sumário e a lupa do livro ampliado (D33) são os de antes da D40 (commit `33e5fa0^`), sem a
+     gaveta sanfonada: o sumário entra pelo GSAP.
+  5. **Ajuste do Cesar (26/09/2026):** clicar no livro da gaveta não leva mais à categoria: abre o
+     livro ampliado, como a lupa (a capa deixou de ser link; substitui a D38 na gaveta). O filtro
+     "Filtrar neste livro" saiu; na linha do título ficam **Ver o livro** ("Ver a série", botão
+     principal com seta, leva à página do livro) e **Fechar livro**. No celular, os botões vão para a
+     linha de baixo, alinhados com o título.
+- **Mantido:** o `Livro3D` inteiro (usado também pela capa viva e pelo livro ampliado); a página
+  dele (slot "pagina") e o verso da capa só não aparecem mais na gaveta.
+- **Movimento reduzido:** o livro aparece direto na gaveta e o lugar fica vazio, sem voo.

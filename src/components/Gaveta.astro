@@ -1,23 +1,24 @@
 ---
 /**
- * A gaveta da estante (briefing §5.1, D40, ideia 3): tirar o livro da estante e abrir. No clique ou
- * toque numa lombada, o livro sobe e o lugar dele fica escurecido; um livro 3D sai da posição exata da
- * lombada, com a lombada de frente, e vem para a gaveta girando até 18°; a capa abre (-165°) enquanto
- * o livro desliza para centralizar as duas páginas e gira até 4°; na página da direita aparecem os
- * artigos mais recentes (6 por página), com "Ver todos os N artigos" e "Ver o livro"; com mais de 6,
- * "Próximas ▸" vira a folha (com a mesma animação da capa) e mostra os 6 seguintes, e "◂ Anteriores"
- * volta. Tudo funciona pelo teclado. O verso da capa leva a
- * assinatura do blog. "Guardar o livro", Esc ou um clique no lugar escurecido fazem o caminho de
- * volta, 1,5× mais rápido; outro livro fecha o atual e abre o novo. No celular, o livro aberto cabe na
- * largura da tela. Com movimento reduzido, tudo direto no estado final.
+ * A gaveta da estante (briefing §5.1, D43): tirar o livro da estante. No clique ou toque numa lombada,
+ * o livro sai da prateleira (o lugar dele fica vazio), sobe e vem para a gaveta girando da lombada até
+ * os 38° (fechado, com a lombada bem à vista). Ao lado aparece o sumário, como antes da D40: "Neste
+ * livro" (ou "Ordem de leitura", nas séries) e os artigos por ano, com "Ver o livro" (a página do
+ * livro) e "Fechar livro". Clicar no livro, ou na lupa, abre o livro ampliado (D33, D43). "Fechar
+ * livro", Esc ou a mesma lombada fazem o caminho de volta, 1,5× mais rápido, e o livro volta ao
+ * lugar; outro livro fecha o atual e abre o novo. Com movimento reduzido, tudo direto no estado final.
  *
- * Cada livro vem pronto num <template>; o script só monta. O desenho da capa só é buscado quando o
- * livro abre (/livros/<slug>.svg) e entra inline. Sem JS, a lombada leva à página do livro.
+ * O livro que voa é o próprio livro da gaveta, já no lugar final: o GSAP o põe em cima da lombada e o
+ * traz de volta ao lugar dele (só transformações). Cada livro vem pronto num <template>; o script só
+ * monta. O desenho da capa só é buscado quando o livro abre (/livros/<slug>.svg) e entra inline. Sem
+ * JS, a lombada leva à página do livro.
  */
 import Livro3D from "./Livro3D.astro";
-import { coresDoLivroCss, type Livro } from "../lib/estante";
+import LivroAmpliado from "./LivroAmpliado.astro";
+import { ICONES } from "../lib/icones";
+import { coresDoLivroCss, dadosDoLivro, type Livro } from "../lib/estante";
 import { diaEMes } from "../lib/formato";
-import { url } from "../lib/url";
+import type { Resumo } from "../lib/posts";
 import "../styles/estante.css";
 
 interface Props {
@@ -25,74 +26,88 @@ interface Props {
 }
 
 const { livros } = Astro.props;
-/** Quantos artigos cabem na página da direita. */
-const NA_PAGINA = 6;
-const recentes = (l: Livro) => [...l.posts].sort((a, b) => b.publicado.getTime() - a.publicado.getTime());
-const quantos = (l: Livro) => {
-  const n = l.posts.length;
-  if (l.serie) return `${n} ${n === 1 ? "edição" : "edições"}`;
-  return `${n} ${n === 1 ? "artigo" : "artigos"}`;
-};
+
+type Linha = { tipo: "ano"; ano: number } | { tipo: "post"; post: Resumo; parte?: number };
+function linhas(l: Livro): Linha[] {
+  if (l.serie) return l.posts.map((post, i) => ({ tipo: "post", post, parte: i + 1 }));
+  const saida: Linha[] = [];
+  let ano: number | undefined;
+  for (const post of l.posts) {
+    const a = post.publicado.getUTCFullYear();
+    if (a !== ano) saida.push({ tipo: "ano", ano: (ano = a) });
+    saida.push({ tipo: "post", post });
+  }
+  return saida;
+}
 ---
 
-<div class="gaveta" id="gaveta" data-gaveta hidden>
-  <h2 class="sr" tabindex="-1" data-titulo-gaveta></h2>
-  <button type="button" class="botao guardar" data-guardar>Guardar o livro</button>
-</div>
+<div class="gaveta" id="gaveta" data-gaveta hidden></div>
+<LivroAmpliado />
 
 {
   livros.map((l) => (
     <template data-modelo={l.id}>
-      <div class="livro-voando" data-largura={l.emPe.largura} style={`${coresDoLivroCss(l)};--h:${l.emPe.altura}`}>
-        <Livro3D livro={l} desenho="adiado">
-          <div slot="pagina" class="pagina-aberta">
-            <p class="titulo-pagina">{l.serie ? "Nesta série" : "Neste livro"}</p>
-            <p class="sub-pagina">{l.posts.length > 0 ? `${l.nome} · ${quantos(l)}` : l.nome}</p>
-            {l.posts.length > 0 ? (
-              <ol class="itens-pagina">
-                {recentes(l).map((p, i) => (
-                  <li data-pag={Math.floor(i / NA_PAGINA)} hidden={i >= NA_PAGINA}>
-                    <a href={p.url}>{p.titulo}</a>
-                    <small>{diaEMes(p.publicado)}</small>
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <p class="vazio-pagina">Este livro ainda não tem artigos. O primeiro está a caminho.</p>
-            )}
-            {l.posts.length > NA_PAGINA && (
-              <p class="virar-pagina">
-                <button type="button" data-anteriores hidden aria-label="Página anterior do livro">
-                  ◂ Anteriores
-                </button>
-                <button type="button" data-proximas aria-label="Próxima página do livro">
-                  Próximas ▸
-                </button>
-              </p>
-            )}
-            <p class="links-pagina">
-              {l.posts.length > 0 && <a href={url(`/archive/?livro=${l.id}`)}>{l.serie ? "Ver todas as" : "Ver todos os"} {quantos(l)}</a>}
-              <a href={l.href}>{l.serie ? "Ver a série" : "Ver o livro"}</a>
-            </p>
+      <div
+        class="livro-aberto"
+        data-largura={l.emPe.largura}
+        data-ampliar-livro
+        data-nome={l.nome}
+        data-dados={dadosDoLivro(l)}
+        data-href={l.href}
+        style={`${coresDoLivroCss(l)};--h:${l.emPe.altura}`}
+      >
+        <div class="livro-na-gaveta">
+          {/* O livro e a lupa abrem o livro ampliado (D43); a lupa serve ao teclado. */}
+          <Livro3D livro={l} desenho="adiado" />
+          <button type="button" class="lupa" data-ampliar aria-label={`Ampliar o livro ${l.nome}`} title="Ampliar"
+            ><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.ampliar} /></button
+          >
+        </div>
+        <div class="sumario-livro">
+          <div class="topo-sumario">
+            <h2 id={`sumario-${l.id}`} tabindex="-1">{l.serie ? "Ordem de leitura" : "Neste livro"}</h2>
+            <span class="meta-sumario">{l.posts.length > 0 ? `${l.nome}, ${l.contagem}` : l.nome}</span>
+            <div class="acoes-livro">
+              <a class="botao-primario" href={l.href}
+                >{l.serie ? "Ver a série" : "Ver o livro"}<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} /></a
+              >
+              <button type="button" class="botao" data-fechar-livro>Fechar livro</button>
+            </div>
           </div>
-        </Livro3D>
+          {l.posts.length === 0 && <p class="sem-artigos">Este livro ainda não tem artigos.</p>}
+          <ul class="indice-livro" aria-labelledby={`sumario-${l.id}`} hidden={l.posts.length === 0}>
+            {linhas(l).map((linha) =>
+              linha.tipo === "ano" ? (
+                <li class="ano" aria-hidden="true">{linha.ano}</li>
+              ) : (
+                <li>
+                  <a href={linha.post.url}>
+                    <span class="titulo-item">{linha.parte && <span class="parte">Parte {linha.parte}</span>}{linha.post.tituloCompleto}</span>
+                    <span class="pontilhado" aria-hidden="true" />
+                    <span class="dia">{diaEMes(linha.post.publicado)}</span>
+                  </a>
+                </li>
+              ),
+            )}
+          </ul>
+        </div>
       </div>
     </template>
   ))
 }
 
 <script>
-  import { carregarGsap, movimentoReduzido, type GSAP } from "../scripts/gsap";
   import { medidasDoLivro3D } from "../lib/livro-3d";
+  import { carregarGsap, movimentoReduzido, type GSAP } from "../scripts/gsap";
 
   const gaveta = document.querySelector<HTMLElement>("[data-gaveta]");
   const estante = document.querySelector<HTMLElement>("[data-estante]");
-  const palco = gaveta?.closest<HTMLElement>(".folha");
-  if (gaveta && estante && palco) {
+  if (gaveta && estante) {
     const lombadas = [...estante.querySelectorAll<HTMLElement>("[data-livro]")];
-    const titulo = gaveta.querySelector<HTMLElement>("[data-titulo-gaveta]")!;
-    const guardar = gaveta.querySelector<HTMLButtonElement>("[data-guardar]")!;
-    palco.classList.add("palco-gaveta");
+    const pequeno = matchMedia("(max-width: 760px)");
+    // Na gaveta, o livro fica mais de lado que no resto do site (D43): a 38° da frente, com a lombada
+    // bem à vista, como antes da D39.
+    const GIRO = 38;
 
     // O desenho da capa (ou o emblema da revista) só vem quando o livro abre (D30, D32).
     const desenhos = new Map<string, Promise<string>>();
@@ -109,189 +124,108 @@ const quantos = (l: Livro) => {
       }
     }
 
-    // Altura do livro: 360px, ou o que couber com as duas páginas abertas na largura do palco.
-    const alturaDoLivro = () => {
-      const largura = palco.clientWidth - 40;
-      return Math.round(Math.min(360, (largura / 2) * 1.5));
-    };
-
-    type Aberto = { id: string; lombada: HTMLElement; clone: HTMLElement; tl: gsap.core.Timeline; folhas: HTMLElement[] };
-    let aberto: Aberto | null = null;
-    let ocupado = false;
-    let pendente: string | null = null;
-
     function montar(id: string) {
       const modelo = document.querySelector<HTMLTemplateElement>(`template[data-modelo="${id}"]`)!;
-      const clone = modelo.content.firstElementChild!.cloneNode(true) as HTMLElement;
-      const altura = alturaDoLivro();
-      const m = medidasDoLivro3D(Number(clone.dataset.largura), altura);
-      for (const [k, v] of Object.entries(m)) clone.style.setProperty(`--${k}`, `${v}px`);
-      const icone = clone.querySelector<HTMLElement>("[data-icone-de]");
+      const no = modelo.content.firstElementChild!.cloneNode(true) as HTMLElement;
+      const m = medidasDoLivro3D(Number(no.dataset.largura), pequeno.matches ? 270 : 360);
+      for (const [k, v] of Object.entries(m)) no.style.setProperty(`--${k}`, `${v}px`);
+      const icone = no.querySelector<HTMLElement>("[data-icone-de]");
       if (icone) icone.innerHTML = estante!.querySelector(`[data-livro="${id}"] :is(.icone-lombada, .emblema-lombada)`)?.innerHTML ?? "";
-      palco!.append(clone);
-      trazerDesenho(clone);
-      return { clone, m };
+      gaveta!.replaceChildren(no);
+      gaveta!.hidden = false;
+      trazerDesenho(no);
+      return no;
     }
+
+    type Aberto = { id: string; lombada: HTMLElement; tl: gsap.core.Timeline };
+    let aberto: Aberto | null = null;
+    let ocupado = false;
+    let pendente: { id: string; foco: boolean } | null = null;
 
     function abrir(gsap: GSAP, id: string, foco: boolean) {
       const lombada = lombadas.find((l) => l.dataset.livro === id)!;
-      gaveta!.hidden = false;
-      const { clone, m } = montar(id);
-      gaveta!.style.setProperty("--altura-livro", `${m.bh}px`);
-      titulo.textContent = `${lombada.dataset.titulo}, aberto na gaveta`;
-      lombada.setAttribute("aria-expanded", "true");
-
-      const livro = clone.querySelector<HTMLElement>(".livro-3d")!;
-      const capa = clone.querySelector<HTMLElement>(".face-capa")!;
-      const itens = clone.querySelectorAll(".pagina-aberta > *, .itens-pagina li:not([hidden])");
-      const p = palco!.getBoundingClientRect();
+      // A posição da lombada em repouso: sem o quanto a estante viva a subiu com o mouse em cima (D40),
+      // para o livro voltar exatamente ao lugar.
       const l = lombada.getBoundingClientRect();
-      const g = gaveta!.getBoundingClientRect();
-      // De onde sai: a lombada, com a mesma altura. Para onde vai: o meio da gaveta.
-      const s0 = l.height / m.bh;
-      const x0 = l.left - p.left + l.width / 2 - m.cw / 2;
-      const y0 = l.top - p.top + l.height / 2 - m.bh / 2;
-      const meio = p.width / 2 - m.cw * 0.02;
-      const ym = g.top - p.top + 18;
+      const subida = Number(gsap.getProperty(lombada, "y")) || 0;
+      const no = montar(id);
+      lombada.setAttribute("aria-expanded", "true");
+      const voo = no.querySelector<HTMLElement>(".livro-na-gaveta")!;
+      const livro = no.querySelector<HTMLElement>(".livro-3d")!;
+      const sumario = no.querySelector<HTMLElement>(".sumario-livro")!;
+      const lupa = no.querySelector<HTMLElement>(".lupa")!;
+      const caixa = no.querySelector<HTMLElement>(".livro-3d-caixa")!.getBoundingClientRect();
+      // De onde sai: a lombada, com a mesma altura, centrada nela (o livro gira em volta do centro).
+      const s0 = l.height / caixa.height;
+      const dx = l.left + l.width / 2 - (caixa.left + caixa.width / 2);
+      const dy = l.top - subida + l.height / 2 - (caixa.top + caixa.height / 2);
 
-      gsap.set(clone, { x: x0, y: y0, scale: s0, transformOrigin: "50% 50%" });
-      gsap.set(livro, { rotationY: 90 });
-      gsap.set(capa, { rotationY: 0 });
-      const tl = gsap.timeline({ defaults: { ease: "power3.inOut" }, onComplete: () => foco && clone.querySelector<HTMLElement>(".pagina-aberta a")?.focus() });
+      const tl = gsap.timeline({
+        defaults: { ease: "power3.inOut" },
+        onComplete: () => foco && no.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true }),
+      });
+      lombada.classList.add("retirado");
       if (movimentoReduzido.matches) {
-        lombada.classList.add("retirado");
-        tl.set(clone, { x: meio, y: ym, scale: 1 }).set(livro, { rotationY: 4 }).set(capa, { rotationY: -165 });
+        tl.set(livro, { rotationY: GIRO });
       } else {
-        tl.to(clone, { y: y0 - 40, duration: 0.45, ease: "power2.out" }, 0)
-          .add(() => lombada.classList.add("retirado"), 0.3)
-          .to(clone, { x: meio - m.cw * 0.45, y: ym, scale: 1, duration: 1.05 }, 0.38)
-          .to(livro, { rotationY: 18, duration: 1.05 }, 0.38)
-          .to(capa, { rotationY: -165, duration: 1.05 }, "+=0.12")
-          .to(clone, { x: meio, duration: 1.05 }, "<")
-          .to(livro, { rotationY: 4, duration: 1.05 }, "<")
-          .from(itens, { opacity: 0, y: 6, stagger: 0.05, duration: 0.35, ease: "power2.out" }, "-=0.4");
+        gsap.set(voo, { x: dx, y: dy, scale: s0, transformOrigin: "50% 50%", zIndex: 6 });
+        gsap.set(livro, { rotationY: 90 });
+        gsap.set([sumario, lupa], { opacity: 0 });
+        tl.to(voo, { y: dy - 40, duration: 0.45, ease: "power2.out" }, 0)
+          .to(voo, { x: 0, y: 0, scale: 1, duration: 1.05 }, 0.38)
+          .to(livro, { rotationY: GIRO, duration: 1.05 }, 0.38)
+          .set(voo, { zIndex: "auto" })
+          .fromTo(sumario, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }, "-=0.35")
+          .to(lupa, { opacity: 1, duration: 0.25, ease: "none" }, "<");
       }
-      aberto = { id, lombada, clone, tl, folhas: [] };
-      ligarPaginas(gsap, aberto);
+      aberto = { id, lombada, tl };
 
-      // A gaveta à vista: rola até ela, se o livro aberto ficar fora da tela.
-      const fim = g.top + m.bh + 80;
+      // A gaveta à vista: rola até o livro, se ele ficar fora da tela.
+      const r = no.getBoundingClientRect();
+      const fim = r.top + Math.min(r.height, caixa.height + 120);
       if (fim > innerHeight) scrollBy({ top: fim - innerHeight + 24, behavior: movimentoReduzido.matches ? "auto" : "smooth" });
       return tl;
     }
 
     function fechar(depois?: () => void, devolverFoco = false) {
       if (!aberto) return depois?.();
-      const { lombada, clone, tl, folhas } = aberto;
+      const { lombada, tl } = aberto;
       aberto = null;
-      // As folhas viradas somem antes da capa fechar.
-      for (const f of folhas) f.remove();
       ocupado = true;
       tl.eventCallback("onComplete", null);
-      tl.eventCallback("onReverseComplete", () => {
-        clone.remove();
+      const terminar = () => {
+        gaveta!.replaceChildren();
+        gaveta!.hidden = true;
         lombada.classList.remove("retirado");
         lombada.setAttribute("aria-expanded", "false");
-        gaveta!.hidden = true;
         ocupado = false;
         if (devolverFoco) lombada.focus();
-        depois?.();
-      });
+        if (depois) return depois();
+        // Um livro escolhido enquanto este voltava para a estante.
+        if (pendente) {
+          const p = pendente;
+          pendente = null;
+          escolher(p.id, p.foco);
+        }
+      };
       // Sem movimento, fecha na hora; com, faz o caminho de volta 1,5× mais rápido.
-      if (movimentoReduzido.matches) tl.progress(0).eventCallback("onReverseComplete")?.();
-      else tl.timeScale(1.5).reverse();
+      if (movimentoReduzido.matches) terminar();
+      else tl.eventCallback("onReverseComplete", terminar).timeScale(1.5).reverse();
     }
 
     async function escolher(id: string, foco: boolean) {
-      if (ocupado) return void (pendente = id);
+      if (ocupado) return void (pendente = { id, foco });
       if (aberto?.id === id) return fechar(undefined, foco);
       const gsap = await carregarGsap();
       fechar(() => {
         ocupado = true;
-        const tl = abrir(gsap, id, foco);
-        tl.then(() => {
+        abrir(gsap, id, foco).then(() => {
           ocupado = false;
           if (pendente) {
             const p = pendente;
             pendente = null;
-            if (p !== aberto?.id) escolher(p, false);
+            if (p.id !== aberto?.id) escolher(p.id, p.foco);
           }
-        });
-      });
-    }
-
-    // ---------- virar a página (mais de 6 artigos) ----------
-    // "Próximas ▸" põe por cima da página uma folha com o que ela mostra e a vira para a esquerda, com a
-    // mesma animação da capa, revelando os 6 seguintes; "◂ Anteriores" desvira a última folha.
-    const NA_PAGINA = 6;
-    function ligarPaginas(gsap: GSAP, livroAberto: Aberto) {
-      const pagina = livroAberto.clone.querySelector<HTMLElement>(".pagina-aberta");
-      const proximas = pagina?.querySelector<HTMLButtonElement>("[data-proximas]");
-      const anteriores = pagina?.querySelector<HTMLButtonElement>("[data-anteriores]");
-      if (!pagina || !proximas || !anteriores) return;
-      const itens = [...pagina.querySelectorAll<HTMLElement>(".itens-pagina li")];
-      const total = Math.ceil(itens.length / NA_PAGINA);
-      const livro = livroAberto.clone.querySelector<HTMLElement>(".livro-3d")!;
-      const folhaDaPagina = livroAberto.clone.querySelector<HTMLElement>(".livro-3d .pagina")!;
-      let atual = 0;
-      let virando = false;
-
-      const mostrar = (n: number) => {
-        atual = n;
-        for (const li of itens) li.hidden = Number(li.dataset.pag) !== n;
-        anteriores.hidden = n === 0;
-        proximas.hidden = n >= total - 1;
-      };
-      const focar = (teclado: boolean) => teclado && pagina.querySelector<HTMLElement>(".itens-pagina li:not([hidden]) a")?.focus();
-      const novos = () => pagina.querySelectorAll(".itens-pagina li:not([hidden])");
-
-      proximas.addEventListener("click", (e) => {
-        if (virando || atual >= total - 1) return;
-        const teclado = e.detail === 0;
-        if (movimentoReduzido.matches) {
-          mostrar(atual + 1);
-          return focar(teclado);
-        }
-        virando = true;
-        // A folha: a frente é uma cópia do que a página mostra agora; o verso, papel.
-        const folha = document.createElement("div");
-        folha.className = "f folha-virando";
-        folha.setAttribute("aria-hidden", "true");
-        const frente = folhaDaPagina.cloneNode(true) as HTMLElement;
-        frente.className = "frente-folha";
-        frente.inert = true;
-        const verso = document.createElement("div");
-        verso.className = "verso-folha";
-        folha.append(frente, verso);
-        livro.append(folha);
-        livroAberto.folhas.push(folha);
-        mostrar(atual + 1);
-        gsap
-          .timeline({ defaults: { ease: "power3.inOut" }, onComplete: () => ((virando = false), focar(teclado)) })
-          .to(folha, { rotationY: -160, duration: 1.05 })
-          .from(novos(), { opacity: 0, y: 6, stagger: 0.05, duration: 0.35, ease: "power2.out" }, "-=0.4");
-      });
-
-      anteriores.addEventListener("click", (e) => {
-        if (virando || atual === 0) return;
-        const teclado = e.detail === 0;
-        const folha = livroAberto.folhas.pop();
-        if (!folha || movimentoReduzido.matches) {
-          folha?.remove();
-          mostrar(atual - 1);
-          return focar(teclado);
-        }
-        virando = true;
-        gsap.to(folha, {
-          rotationY: 0,
-          duration: 1.05 / 1.5,
-          ease: "power3.inOut",
-          onComplete: () => {
-            mostrar(atual - 1);
-            folha.remove();
-            virando = false;
-            focar(teclado);
-          },
         });
       });
     }
@@ -306,22 +240,20 @@ const quantos = (l: Livro) => {
         escolher(l.dataset.livro!, e.detail === 0);
       });
     }
-    guardar.addEventListener("click", (e) => fechar(undefined, e.detail === 0));
+    gaveta.addEventListener("click", (e) => {
+      if ((e.target as HTMLElement).closest("[data-fechar-livro]")) fechar(undefined, e.detail === 0);
+    });
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && aberto && !document.querySelector("dialog[open]")) fechar(undefined, true);
     });
-    // Mudou a largura com o livro aberto: remonta no estado final, no tamanho novo.
-    let largura = palco.clientWidth;
-    new ResizeObserver(() => {
-      if (palco.clientWidth === largura) return;
-      largura = palco.clientWidth;
+    // Passou do celular para a tela larga (ou o contrário) com o livro aberto: remonta no tamanho novo,
+    // no estado final.
+    pequeno.addEventListener("change", () => {
       if (!aberto || ocupado) return;
-      const { id, clone, tl } = aberto;
-      tl.kill();
-      clone.remove();
-      aberto.lombada.classList.remove("retirado");
+      const { id } = aberto;
+      aberto.tl.kill();
       aberto = null;
       carregarGsap().then((gsap) => abrir(gsap, id, false).progress(1));
-    }).observe(palco);
+    });
   }
 </script>

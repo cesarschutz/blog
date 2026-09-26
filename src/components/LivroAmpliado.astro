@@ -116,6 +116,8 @@ import "../styles/visor.css";
       const copia = caixa.cloneNode(true) as HTMLElement;
       copia.removeAttribute("style");
       livro = copia.querySelector<HTMLElement>(".livro-3d");
+      // O giro da origem (o GSAP da gaveta o deixa no style) não vem junto: aqui manda o --giro.
+      livro?.style.removeProperty("transform");
       palco.replaceChildren(copia);
       girar(GIRO);
 
@@ -182,12 +184,11 @@ import "../styles/visor.css";
     // O GSAP com o arrasto vem um pouco antes: ao passar o mouse, tocar ou focar a lupa.
     for (const lupa of document.querySelectorAll("[data-ampliar]")) adiantar(lupa, carregarArrastar);
 
-    // Quem abre: o livro (clique) ou a lupa (clique e teclado). Na gaveta, a capa é um link para a
-    // página do livro (D38) e só a lupa amplia.
+    // Quem abre: o livro (clique) ou a lupa (clique e teclado), também na gaveta da home (D43).
     document.addEventListener("click", (e) => {
       const alvo = e.target as HTMLElement;
       const raiz = alvo.closest<HTMLElement>("[data-ampliar-livro]");
-      if (!raiz || dialogo.open || alvo.closest(".capa-link")) return;
+      if (!raiz || dialogo.open) return;
       if (alvo.closest("[data-ampliar]") || alvo.closest(".livro-3d-caixa")) {
         e.preventDefault();
         abrir(raiz);

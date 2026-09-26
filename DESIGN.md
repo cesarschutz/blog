@@ -526,11 +526,12 @@ frase e desenho; medidas em `docs/capas/CAPAS.md`):
   divisão à mesma altura em todos, formando uma linha contínua na estante. **É uma lombada só em
   todo lugar** (D39): a pilha lateral usa a mesma, girada 90° e, só ali, 12% mais grossa, para o
   título chegar a uns 11 ou 12px (D40).
-- **Livro escolhido:** o livro que foi para a gaveta, o da página atual na pilha e os não escolhidos
-  do filtro aparecem **escurecidos** (opacidade 0,4 e metade da saturação), nunca como lugar vazio e
-  nunca com contorno azul. O foco do teclado é um anel fino e discreto.
-- **Livro aberto grande** (gaveta, topo da categoria e da série, livro ampliado): **quase de frente**,
+- **Livro escolhido:** o da página atual na pilha e os não escolhidos do filtro aparecem
+  **escurecidos** (opacidade 0,4 e metade da saturação), nunca com contorno azul. A exceção é o livro
+  que foi para a gaveta da home (D43): ele sai da estante, e o lugar dele fica **vazio**. O foco do teclado é um anel fino e discreto.
+- **Livro aberto grande** (topo da categoria e da série, livro ampliado): **quase de frente**,
   a 72° da lombada (a capa a 18° da frente e a lombada numa faixa, `GIRO` em `lib/livro-3d.ts`).
+  Na gaveta da home, mais de lado: a 38° da frente (D43).
 - O número nas lombadas é o total de artigos, contado pelos posts (some quando é zero). O
   "VOLUME 0N" é a posição na coleção.
 
@@ -596,15 +597,13 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
     a cada ~9s (uma faixa dentro de cada lombada, para não acender o fundo entre os livros), e a cada 4
     a 7s um livro sorteado sobe 10px, inclina 1,2°, espera 0,6s e volta com `elastic`. Qualquer
     interação para tudo e devolve os livros ao lugar. Desligada com movimento reduzido.
-  - **Tirar da estante e abrir** (a gaveta da home, `Gaveta.astro`): no clique ou toque, o livro
-    sobe 40px (0,45s) e o lugar fica escurecido; o livro 3D sai da posição exata da lombada, com a
-    lombada de frente, e vai para a gaveta girando até 18° (1,05s, `power3.inOut`); a capa abre
-    (-165°) enquanto o livro desliza para centralizar as páginas e gira até 4°; os artigos aparecem
-    em sequência (`stagger` 0,05s), 6 por página. Com mais de 6, "Próximas ▸" vira uma folha com a
-    mesma animação da capa (-160°, 1,05s) e mostra os 6 seguintes, e "◂ Anteriores" desvira (1,5×
-    mais rápido); o foco vai para o primeiro artigo quando o comando vem do teclado. No celular, cada
-    título ocupa uma linha, para a página caber. Fechar faz o caminho de volta 1,5× mais rápido. O livro 3D é o
-    inteiro (`Livro3D`: contracapa, lombada, bordas, página e capa com verso).
+  - **Tirar da estante** (a gaveta da home, `Gaveta.astro`, D43): no clique ou toque, o livro 3D
+    aparece exatamente sobre a lombada (lombada de frente, mesma altura), e o lugar na estante fica
+    vazio; ele sobe 40px (0,45s) e vem para a gaveta girando até **38°** da frente (1,05s,
+    `power3.inOut`), **fechado**: na gaveta, o livro fica mais de lado que no resto do site, com a
+    lombada bem à vista. Ao pousar, o sumário ao lado aparece subindo 8px (0,35s) e a lupa, por opacidade.
+    O livro que voa é o próprio livro da gaveta, levado por transformações da lombada até o lugar
+    dele. Fechar faz o caminho de volta 1,5× mais rápido, e o livro volta à estante.
   - **Pilha lateral**: ao passar o mouse (ou com o foco), o livro sai 14px da pilha (0,35s,
     `power3.out`) e volta com `elastic.out(1, 0.55)`. O clique leva à página do livro pela View
     Transition nativa (a lombada da pilha vira o livro do topo). Na chegada (ou quando a pilha
@@ -641,8 +640,8 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   SVG, carregado só no post que as usa. Com play/pause quando não seguem a rolagem.
 - **Frase em destaque** (palavras que acendem com a rolagem): recurso raro dos posts, usado só de
   vez em quando.
-- **Na home, só coisas discretas:** um livro que sobe ao passar o mouse, a gaveta que abre o livro
-  clicado (a capa aberta leva à página do livro, D38).
+- **Na home, só coisas discretas:** um livro que sobe ao passar o mouse, a gaveta com o livro
+  tirado da estante (clicar nele o amplia; "Ver o livro" leva à página dele, D43).
 - **Cabeçalho no celular** (até 860px, D38): some ao rolar para baixo e volta ao rolar para cima,
   subindo por `translate` (a página não muda de altura); com o foco nele ou o menu aberto, fica. **Nenhum livro cai** (o tombo do livro
   inclinado saiu na D35) e **nenhum texto muda de cor**. Sem animação de entrada nas seções.
