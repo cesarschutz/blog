@@ -1,0 +1,600 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>O resto do site em movimento · ideias de animação</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:ital,wght@0,400..900;1,400..900&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #F1F0EB; --paper-hi: #FFFFFE; --well: #F5F5F4;
+  --ink: #1A2124; --ink-2: #57605E; --ink-3: #868D8A; --rule: #E2E0D8;
+  --acento: #2549B8; --sobre-acento: #fff; --branco-no-escuro: 0%;
+  --sombra: 0 1px 0 rgba(26,33,36,.04), 0 10px 30px -18px rgba(26,33,36,.28);
+  --f-titulo: "Besley", Georgia, serif; --f-texto: "Literata", Georgia, serif;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; --f-codigo: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #111618; --paper-hi: #1A2124; --well: #21282A; --ink: #E7E9E4; --ink-2: #A9B0AC; --ink-3: #7E8683; --rule: #2A3235;
+  --acento: #9DB0FF; --sobre-acento: #10151A; --branco-no-escuro: 22%; --sombra: 0 1px 0 rgba(0,0,0,.2), 0 14px 34px -18px rgba(0,0,0,.7); color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #111618; --paper-hi: #1A2124; --well: #21282A; --ink: #E7E9E4; --ink-2: #A9B0AC; --ink-3: #7E8683; --rule: #2A3235;
+  --acento: #9DB0FF; --sobre-acento: #10151A; --branco-no-escuro: 22%; --sombra: 0 1px 0 rgba(0,0,0,.2), 0 14px 34px -18px rgba(0,0,0,.7); color-scheme: dark; }
+:root { box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: inherit; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.6 var(--f-texto); -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--acento); outline-offset: 3px; border-radius: 4px; }
+.defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+.topo { max-width: 1120px; margin: 0 auto; padding: 28px 24px 8px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.marca { display: flex; align-items: center; gap: 10px; font: 700 20px/1 var(--f-titulo); }
+.marca i { font: italic 400 14px var(--f-titulo); color: var(--ink-3); }
+.tema { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--rule); background: var(--paper-hi); cursor: pointer; display: grid; place-items: center; }
+.tema svg { width: 18px; height: 18px; }
+.abertura { max-width: 1120px; margin: 0 auto; padding: 36px 24px 12px; }
+.abertura h1 { font: 800 clamp(34px, 5.4vw, 58px)/1.02 var(--f-titulo); margin: 0 0 16px; max-width: 16ch; text-wrap: balance; }
+.abertura p { max-width: 62ch; margin: 0; color: var(--ink-2); font-size: 18px; }
+main { max-width: 1120px; margin: 0 auto; padding: 24px 24px 80px; display: grid; gap: 28px; }
+.folha { background: var(--paper-hi); border: 1px solid var(--rule); border-radius: 14px; box-shadow: var(--sombra); overflow: hidden; }
+.folha-texto { padding: 28px 32px 8px; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 8px 40px; align-items: start; }
+.folha-texto .qual { grid-column: 1 / -1; font: 500 13px/1 var(--f-ui); color: var(--ink-3); margin: 0 0 2px; }
+.folha-texto h2 { font: 700 clamp(24px, 3vw, 32px)/1.1 var(--f-titulo); margin: 0 0 10px; }
+.folha-texto p { margin: 0 0 12px; color: var(--ink-2); max-width: 56ch; }
+.ficha { margin: 4px 0 16px; display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font: 14px/1.45 var(--f-ui); color: var(--ink-2); }
+.ficha dt { color: var(--ink); font-weight: 600; }
+.ficha dd { margin: 0; }
+.palco { position: relative; padding: 14px 32px 34px; }
+.botao { border: 1px solid var(--rule); background: var(--paper-hi); border-radius: 999px; padding: 7px 14px; font: 500 14px/1 var(--f-ui); cursor: pointer; }
+.botao[aria-pressed="true"] { background: var(--acento); color: var(--sobre-acento); border-color: var(--acento); }
+
+/* ilustração (mesmas regras do blog) */
+.ilustracao { --traco: 3.6; --cor-desenho: color-mix(in oklab, var(--cor, var(--ink-2)), #fff var(--branco-no-escuro)); --superficie: var(--fig-bg, var(--paper)); display: block; width: 100%; height: 100%; }
+.ilustracao .tinta { filter: url(#tremor); }
+.ilustracao .tinta :is(path, rect, circle, ellipse, line, polyline, polygon) { stroke: var(--ink); stroke-width: var(--traco); stroke-linecap: round; stroke-linejoin: round; }
+.ilustracao .linha { fill: none; }
+.ilustracao .papel { fill: var(--superficie); }
+.ilustracao .tinta .cor { fill: color-mix(in oklab, var(--cor-desenho) 78%, var(--superficie)); stroke: none; }
+.ilustracao .tinta .hachura { fill: url(#hachura); stroke: none; opacity: .75; }
+.ilustracao .tinta .fantasma { fill: none; stroke-width: calc(var(--traco) * .8); stroke-dasharray: 24 8 4 8 4 8; }
+.ilustracao .tinta .carimbo { fill: none; stroke: var(--cor-desenho); }
+.ilustracao text { fill: var(--ink); }
+.ilustracao .codigo { font-family: var(--f-codigo); font-size: 25px; }
+.ilustracao .rotulo { font-family: var(--f-texto); font-style: italic; font-size: 26px; }
+.ilustracao .valor { font-family: var(--f-titulo); font-weight: 700; font-size: 40px; }
+.ilustracao .numero { font-family: var(--f-titulo); font-weight: 800; font-size: 96px; }
+.ilustracao .carimbo-texto { font-family: var(--f-titulo); font-weight: 800; font-size: 30px; letter-spacing: .06em; fill: var(--cor-desenho); }
+.ilustracao .anotacao { display: none; }
+.traco-hachura { stroke: var(--ink); stroke-width: 1; }
+.fundo-ilus { background: color-mix(in oklab, var(--cor) 10%, var(--paper-hi)); }
+
+/* ---------- 1: lista e cards ---------- */
+.controles { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.chips, .modo { display: flex; flex-wrap: wrap; gap: 6px; }
+.grade { position: relative; display: grid; gap: 16px; }
+.grade.cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grade.lista { grid-template-columns: 1fr; gap: 0; }
+.item { border: 1px solid var(--rule); border-radius: 12px; background: var(--paper-hi); overflow: hidden; display: grid; }
+.grade.cards .item { grid-template-rows: auto 1fr; }
+.grade.lista .item { grid-template-columns: 132px 1fr; border-radius: 0; border-width: 0 0 1px; background: none; align-items: center; gap: 18px; padding: 12px 0; }
+.item .thumb { aspect-ratio: 16 / 10; }
+.grade.lista .item .thumb { border-radius: 8px; overflow: hidden; aspect-ratio: 16 / 10; }
+.item .corpo { padding: 14px 16px 16px; }
+.grade.lista .item .corpo { padding: 0; }
+.meta { font: 13px/1.4 var(--f-ui); color: var(--ink-2); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.meta .livro { display: inline-flex; align-items: center; gap: 6px; color: var(--ink); font-weight: 500; }
+.meta .livro i { width: 8px; height: 8px; border-radius: 2px; background: var(--cor); }
+.item h3 { font: 700 19px/1.2 var(--f-titulo); margin: 6px 0 6px; text-wrap: balance; }
+.item p { margin: 0; font-size: 14.5px; line-height: 1.5; color: var(--ink-2); }
+.grade.lista .item p { display: none; }
+
+/* ---------- 2: do cartão ao artigo ---------- */
+.trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.trio .item { cursor: pointer; }
+.artigo2 { position: absolute; inset: 14px 32px 34px; background: var(--paper-hi); border: 1px solid var(--rule); border-radius: 14px; overflow: hidden; display: none; z-index: 3; }
+.artigo2.aberto { display: block; }
+.artigo2 .alvo-thumb { height: 230px; }
+.artigo2 .cab { padding: 22px 28px; }
+.artigo2 .migalha { font: 13px var(--f-ui); color: var(--ink-2); }
+.artigo2 .alvo-titulo h3 { font: 800 clamp(24px, 3.2vw, 36px)/1.08 var(--f-titulo); margin: 8px 0 10px; }
+.artigo2 .texto { display: grid; gap: 10px; margin-top: 16px; }
+.artigo2 .texto span { height: 11px; border-radius: 6px; background: var(--well); }
+.artigo2 .voltar { position: absolute; top: 14px; right: 14px; z-index: 2; }
+.trio-palco { min-height: 470px; }
+
+/* ---------- 3: desenho ---------- */
+.destaque3 { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 24px; align-items: center; border: 1px solid var(--rule); border-radius: 14px; padding: 12px; background: var(--paper-hi); }
+.destaque3 .thumb { aspect-ratio: 1100 / 468; border-radius: 10px; overflow: hidden; }
+.destaque3 h3 { font: 800 clamp(22px, 2.8vw, 32px)/1.1 var(--f-titulo); margin: 8px 0 10px; }
+.destaque3 p { margin: 0 0 14px; color: var(--ink-2); font-size: 15px; }
+.mini3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
+.mini3 .item { cursor: default; }
+
+/* ---------- 4: busca ---------- */
+.busca-palco { min-height: 420px; }
+.falso-topo { display: flex; justify-content: flex-end; gap: 12px; align-items: center; padding: 10px 14px; border: 1px solid var(--rule); border-radius: 12px; background: var(--paper); }
+.falso-topo nav { font: 14px var(--f-ui); color: var(--ink-2); display: flex; gap: 16px; margin-right: auto; }
+.campo { display: flex; align-items: center; gap: 8px; width: 210px; height: 36px; padding: 0 12px; border: 1px solid var(--rule); border-radius: 999px; background: var(--paper-hi); font: 14px var(--f-ui); color: var(--ink-3); cursor: pointer; }
+.campo kbd { margin-left: auto; font: 11px var(--f-ui); border: 1px solid var(--rule); border-radius: 5px; padding: 1px 5px; }
+.dialogo { position: absolute; left: max(24px, calc(50% - 310px)); top: 64px; width: min(620px, calc(100% - 48px)); background: var(--paper-hi); border: 1px solid var(--rule); border-radius: 16px; box-shadow: 0 24px 60px -24px rgba(0,0,0,.45); display: none; overflow: hidden; z-index: 5; }
+.dialogo.aberto { display: block; }
+.dialogo .entrada { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--rule); }
+.dialogo input { border: 0; outline: 0; background: none; flex: 1; font: 17px var(--f-ui); }
+.dialogo ul { list-style: none; margin: 0; padding: 8px; max-height: 280px; overflow: auto; scrollbar-width: thin; }
+.dialogo li { padding: 10px 12px; border-radius: 10px; display: grid; gap: 2px; }
+.dialogo li:first-child { background: var(--well); }
+.dialogo li b { font: 600 15px/1.3 var(--f-titulo); }
+.dialogo li small { font: 12.5px var(--f-ui); color: var(--ink-2); }
+.dialogo .nada { padding: 18px; font: 14px var(--f-ui); color: var(--ink-2); }
+mark { color: inherit; background: linear-gradient(transparent 55%, color-mix(in oklab, #F2D25C 70%, transparent) 55%) no-repeat 0 0 / 0% 100%; padding: 0 1px; }
+.veu4 { position: absolute; inset: 0; background: rgba(10,14,16,.35); opacity: 0; pointer-events: none; z-index: 4; border-radius: 0 0 14px 14px; }
+
+/* ---------- 5: o caderno marcado ---------- */
+.leitura { --marca: color-mix(in oklab, var(--cor-livro) 32%, transparent); --caneta: var(--cor-livro); max-width: 64ch; margin: 0 auto; font-size: 17.5px; line-height: 1.75; padding-left: 26px; }
+:root[data-theme="dark"] .leitura { --marca: color-mix(in oklab, color-mix(in oklab, var(--cor-livro) 55%, #fff) 42%, transparent); --caneta: color-mix(in oklab, var(--cor-livro) 50%, #fff); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .leitura { --marca: color-mix(in oklab, color-mix(in oklab, var(--cor-livro) 55%, #fff) 42%, transparent); --caneta: color-mix(in oklab, var(--cor-livro) 50%, #fff); } }
+.leitura p { margin: 0 0 14px; }
+.leitura code { font: 14.5px var(--f-codigo); background: var(--well); padding: 1px 6px; border-radius: 5px; }
+.leitura .mt { background: linear-gradient(transparent 52%, var(--marca) 52%, var(--marca) 92%, transparent 92%) no-repeat 0 0 / 0% 100%; padding: 0 2px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.leitura .sub, .leitura .circ { position: relative; white-space: nowrap; }
+.leitura .sub svg { position: absolute; left: -2px; right: -2px; bottom: -5px; width: calc(100% + 4px); height: 9px; overflow: visible; }
+.leitura .circ svg { position: absolute; left: -12px; top: -9px; width: calc(100% + 24px); height: calc(100% + 18px); overflow: visible; }
+.leitura .colchete { position: absolute; left: -24px; top: 2px; width: 12px; height: calc(100% - 4px); overflow: visible; }
+.leitura :is(.sub, .circ, .margem) path { fill: none; stroke: var(--caneta); stroke-width: 2.2; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.leitura .margem { position: relative; }
+.leitura .rotulo-lista { margin-bottom: 6px; }
+.leitura .termos { list-style: none; padding: 0; margin: 0 0 16px; display: grid; gap: 6px; }
+.leitura .termos li { display: flex; gap: 12px; align-items: baseline; }
+.leitura .termo { flex: none; min-width: 3.4em; text-align: center; font-weight: 500; background: linear-gradient(var(--marca), var(--marca)) no-repeat 0 0 / 0% 100%, var(--well); }
+/* ---------- 6: tema ---------- */
+.janela { position: relative; height: 260px; border-radius: 12px; overflow: hidden; border: 1px solid var(--rule); }
+.cena6 { position: absolute; inset: 0; padding: 18px 22px; }
+.cena6.claro { --p: #F1F0EB; --ph: #FFFFFE; --i: #1A2124; --i2: #57605E; --r: #E2E0D8; background: var(--p); color: var(--i); }
+.cena6.escuro { --p: #111618; --ph: #1A2124; --i: #E7E9E4; --i2: #A9B0AC; --r: #2A3235; background: var(--p); color: var(--i); }
+.cena6 .t6 { display: flex; align-items: center; justify-content: space-between; font: 700 17px var(--f-titulo); }
+.cena6 .b6 { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--r); background: var(--ph); display: grid; place-items: center; cursor: pointer; color: var(--i); }
+.cena6 .b6 svg { width: 18px; height: 18px; overflow: visible; }
+.cena6 .f6 { margin-top: 18px; background: var(--ph); border: 1px solid var(--r); border-radius: 12px; padding: 16px 18px; }
+.cena6 .f6 b { font: 800 22px/1.15 var(--f-titulo); display: block; margin-bottom: 8px; }
+.cena6 .f6 span { display: block; height: 9px; border-radius: 5px; background: var(--r); margin-top: 8px; }
+.cena6.escuro { clip-path: circle(0 at 100% 0); }
+
+/* ---------- 7: detalhes ---------- */
+.detalhes { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 24px; align-items: center; }
+.codigo7 { border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; background: var(--well); }
+.codigo7 .c-cab { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border-bottom: 1px solid var(--rule); font: 13px var(--f-ui); color: var(--ink-2); }
+.codigo7 .c-cab em { font-style: normal; font: 12px var(--f-ui); border: 1px solid var(--rule); border-radius: 5px; padding: 1px 6px; margin-left: 8px; }
+.copiar { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--rule); background: var(--paper-hi); border-radius: 8px; padding: 5px 10px; font: 500 13px var(--f-ui); cursor: pointer; }
+.copiar svg { width: 15px; height: 15px; overflow: visible; }
+.codigo7 pre { margin: 0; padding: 14px 16px; font: 13.5px/1.6 var(--f-codigo); overflow-x: auto; }
+.logo7 { display: grid; justify-items: center; gap: 10px; }
+.logo7 .area { perspective: 500px; padding: 18px 26px; cursor: pointer; display: flex; align-items: center; gap: 12px; font: 700 24px var(--f-titulo); }
+.logo7 .l7 { position: relative; width: 36px; height: 46px; transform-style: preserve-3d; }
+.logo7 .l7 .pag { position: absolute; inset: 2px 0 2px 2px; background: #F6F1E6; border-radius: 0 3px 3px 0; }
+.logo7 .l7 .cap { position: absolute; inset: 0; background: #2D4B46; color: #F2EDE2; border-radius: 2px 4px 4px 2px; display: grid; place-items: center; font: 700 16px var(--f-titulo); transform-origin: 0 50%; backface-visibility: hidden; }
+.logo7 .l7 .fita { position: absolute; left: 9px; top: 40px; width: 6px; height: 14px; background: #C24D1C; clip-path: polygon(0 0,100% 0,100% 100%,50% 78%,0 100%); transform-origin: 50% 0; }
+.logo7 small { font: 500 13px var(--f-ui); color: var(--ink-3); }
+
+footer { max-width: 1120px; margin: 0 auto; padding: 0 24px 48px; font: 14px/1.5 var(--f-ui); color: var(--ink-3); }
+@media (max-width: 860px) {
+  .folha-texto { grid-template-columns: 1fr; padding: 22px 20px 4px; }
+  .palco { padding: 12px 14px 26px; }
+  .grade.cards, .trio, .mini3 { grid-template-columns: 1fr 1fr; }
+  .trio .item:nth-child(3), .mini3 .item:nth-child(3) { display: none; }
+  .grade.lista .item { grid-template-columns: 96px 1fr; gap: 12px; }
+  .destaque3, .detalhes { grid-template-columns: 1fr; }
+  .artigo2 { inset: 12px 14px 26px; }
+  .falso-topo nav { display: none; }
+}
+@media (max-width: 520px) { .grade.cards { grid-template-columns: 1fr; } .campo { width: 100%; } }
+</style>
+</head>
+<body>
+<svg class="defs" aria-hidden="true" focusable="false"><defs>
+  <filter id="tremor" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="7" result="ruido"></feTurbulence><feDisplacementMap in="SourceGraphic" in2="ruido" scale="4" xChannelSelector="R" yChannelSelector="G"></feDisplacementMap></filter>
+  <pattern id="hachura" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" class="traco-hachura"></line></pattern>
+</defs></svg>
+
+<header class="topo">
+  <div class="marca">Cesar Schutz <i>blog</i></div>
+  <button class="tema" type="button" aria-label="Alternar tema claro e escuro"></button>
+</header>
+<section class="abertura">
+  <h1>O resto do site em movimento</h1>
+  <p>Sete ideias para além dos livros, com os posts, desenhos e cores de verdade. A regra de todas: o movimento responde a algo que você fez, ou acontece uma vez só, no lugar certo. Nada de cada cartão surgindo ao rolar a página.</p>
+</section>
+
+<main>
+  <article class="folha">
+    <div class="folha-texto"><p class="qual">Ideia 1</p>
+      <div><h2>Lista, cards e filtro que se reorganizam</h2><p>Trocar entre lista e cards, ou filtrar por livro, hoje é um salto. Aqui cada artigo desliza da posição antiga para a nova, e os que saem do filtro encolhem e somem. Você vê o que mudou em vez de reencontrar tudo.</p></div>
+      <div><dl class="ficha"><dt>Onde</dt><dd>Home, arquivo, tags e páginas de livro.</dd><dt>Como</dt><dd>Plugin Flip do GSAP.</dd><dt>Peso</dt><dd>Leve, só no clique.</dd></dl></div>
+    </div>
+    <div class="palco">
+      <div class="controles"><div class="chips" data-chips></div><div class="modo"><button class="botao" data-modo="lista" aria-pressed="false">Lista</button><button class="botao" data-modo="cards" aria-pressed="true">Cards</button></div></div>
+      <div class="grade cards" data-grade></div>
+    </div>
+  </article>
+
+  <article class="folha">
+    <div class="folha-texto"><p class="qual">Ideia 2</p>
+      <div><h2>Do cartão ao artigo</h2><p>Ao clicar num cartão, o desenho e o título dele crescem e viram o topo do artigo, em vez de a página simplesmente trocar. Ao voltar, fazem o caminho inverso até o cartão.</p></div>
+      <div><dl class="ficha"><dt>Onde</dt><dd>De qualquer lista para o post, e de volta.</dd><dt>Como</dt><dd>No site, View Transitions nativas, sem JavaScript. Aqui foi simulado numa página só.</dd><dt>Peso</dt><dd>Zero no site.</dd></dl></div>
+    </div>
+    <div class="palco trio-palco"><div class="trio" data-trio></div>
+      <div class="artigo2" data-artigo2><button class="botao voltar" type="button">Voltar</button><div class="alvo-thumb"></div><div class="cab"><div class="migalha">Artigos › <span data-livro2></span></div><div class="alvo-titulo"></div><div class="meta" data-meta2></div><div class="texto"><span style="width:94%"></span><span style="width:88%"></span><span style="width:91%"></span><span style="width:70%"></span></div></div></div>
+    </div>
+  </article>
+
+  <article class="folha">
+    <div class="folha-texto"><p class="qual">Ideia 3</p>
+      <div><h2>O desenho se desenha</h2><p>O post em destaque da home tem o desenho feito à caneta na tela, traço por traço, e depois as cores e a hachura entram. Acontece uma vez, quando o destaque aparece. Nos cartões menores, o traço se refaz ao passar o mouse: veja se gosta ou se fica demais.</p></div>
+      <div><dl class="ficha"><dt>Onde</dt><dd>Destaque da home e topo do post.</dd><dt>Como</dt><dd>Plugin DrawSVG, sobre os desenhos que já existem.</dd><dt>Peso</dt><dd>Leve.</dd></dl></div>
+    </div>
+    <div class="palco">
+      <div class="destaque3" data-destaque3></div>
+      <div class="mini3" data-mini3></div>
+    </div>
+  </article>
+
+  <article class="folha">
+    <div class="folha-texto"><p class="qual">Ideia 4</p>
+      <div><h2>A busca nasce do campo</h2><p>Clique no campo de busca ou aperte ⌘K. A janela cresce a partir do próprio campo, os resultados entram em sequência, e o termo buscado é marcado como com um marca-texto. Esc fecha de volta para o campo.</p></div>
+      <div><dl class="ficha"><dt>Onde</dt><dd>Busca do cabeçalho.</dd><dt>Como</dt><dd>Flip para a janela e uma animação curta no destaque.</dd><dt>Peso</dt><dd>Leve.</dd></dl></div>
+    </div>
+    <div class="palco busca-palco" data-busca>
+      <div class="falso-topo"><nav><span>Artigos</span><span>Categorias</span><span>Séries</span><span>Tags</span></nav><button class="campo" type="button"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Buscar<kbd>⌘K</kbd></button></div>
+      <div class="veu4"></div>
+      <div class="dialogo" role="dialog" aria-label="Buscar nos artigos"><div class="entrada"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" placeholder="Buscar nos artigos" aria-label="Termo da busca"></div><ul></ul></div>
+    </div>
+  </article>
+
+  <article class="folha">
+    <div class="folha-texto"><p class="qual">Ideia 5</p>
+      <div><h2>O caderno marcado</h2><p>Ao longo do artigo inteiro, o que mais importa ganha uma marcação à caneta na cor do livro, feita uma vez quando o trecho chega na tela. São cinco jeitos de marcar, cada um com um papel, para não virar decoração. O exemplo é o post do JWT, no verde do livro Segurança.</p></div>
+      <div><dl class="ficha"><dt>Marca-texto</dt><dd>A ideia principal de uma seção.</dd><dt>Sublinhado</dt><dd>A palavra exata que muda o sentido.</dd><dt>Só o termo</dt><dd>Listas de definição: marca o campo, não o texto.</dd><dt>Círculo</dt><dd>O número ou nome que costuma ser confundido.</dd><dt>Colchete</dt><dd>O parágrafo que resume uma seção.</dd></dl></div>
+    </div>
+    <div class="palco"><div class="leitura" data-leitura style="--cor-livro:#606a37">
+      <p>Um <b>JWT</b> assinado tem três partes separadas por ponto, <code>header.payload.signature</code>, codificadas em Base64URL.</p>
+      <p>O parâmetro <code>alg</code> diz qual algoritmo assinou o token, e é o <span class="sub">único obrigatório<svg viewBox="0 0 100 10" preserveAspectRatio="none" aria-hidden="true"><path d="M1 6.5 C 18 3.5, 36 8, 55 5.5 S 86 4, 99 6"/></svg></span> do header.</p>
+      <p class="rotulo-lista"><b>Registered claims.</b> Nenhuma é obrigatória pela RFC; cada aplicação define quais exige.</p>
+      <ul class="termos">
+        <li><code class="termo">iss</code> quem emitiu o token.</li>
+        <li><code class="termo">sub</code> de quem o token fala, normalmente o ID do usuário.</li>
+        <li><code class="termo">aud</code> para quem o token se destina.</li>
+        <li><code class="termo">exp</code> a partir desse instante, o token não pode mais ser aceito.</li>
+        <li><code class="termo">jti</code> identificador único, usado contra <i>replay</i>.</li>
+      </ul>
+      <p>O ECDSA usa as curvas P-256, P-384 e <span class="circ">P-521<svg viewBox="0 0 100 44" preserveAspectRatio="none" aria-hidden="true"><path d="M10 25 C 5 10, 38 3, 68 5 C 94 7, 99 27, 80 35 C 55 43, 12 40, 6 26 C 4 17, 16 9, 30 7"/></svg></span>, e não P-512.</p>
+      <p class="margem"><svg class="colchete" viewBox="0 0 12 100" preserveAspectRatio="none" aria-hidden="true"><path d="M10 2 C 4 2, 3 5, 3.5 12 L 4 88 C 4 95, 5 98, 10 98"/></svg><b>O payload não é criptografado.</b> Ele só está codificado em Base64URL: <span class="mt">qualquer pessoa com o token lê o conteúdo</span>. Um JWS garante integridade e autenticidade, não sigilo.</p>
+      <p style="text-align:right;margin:16px 0 0"><button class="botao" type="button" data-repetir5>Marcar de novo</button></p>
+    </div></div>
+  </article>
+
+  <article class="folha">
+    <div class="folha-texto"><p class="qual">Ideia 6</p>
+      <div><h2>Tema que se revela em círculo</h2><p>O botão vira sol ou lua, com o desenho se transformando de um no outro, e o tema novo se espalha em círculo a partir do botão. Só as cores mudam: a página não sai do lugar, o que resolve o pulo que acontece hoje.</p></div>
+      <div><dl class="ficha"><dt>Onde</dt><dd>Botão de tema do cabeçalho.</dd><dt>Como</dt><dd>No site, View Transitions nativas com um círculo que cresce; o ícone com MorphSVG.</dd><dt>Peso</dt><dd>Leve.</dd></dl></div>
+    </div>
+    <div class="palco"><div class="janela" data-janela></div></div>
+  </article>
+
+  <article class="folha">
+    <div class="folha-texto"><p class="qual">Ideia 7</p>
+      <div><h2>Detalhes que respondem</h2><p>Coisas pequenas que confirmam o que você fez. O "Copiar" dos blocos de código vira um visto e diz "Copiado". A marca "cs" é um livro: ao passar o mouse, a capa entreabre e a fita balança.</p></div>
+      <div><dl class="ficha"><dt>Onde</dt><dd>Blocos de código e marca do cabeçalho.</dd><dt>Como</dt><dd>MorphSVG no ícone, 3D leve na marca.</dd><dt>Peso</dt><dd>Mínimo.</dd></dl></div>
+    </div>
+    <div class="palco"><div class="detalhes">
+      <div class="codigo7"><div class="c-cab"><span>Registrar a tentativa<em>SQL</em></span><button class="copiar" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path class="c-tras" d="M5 15V6a1 1 0 0 1 1-1h9"/><path class="c-frente" d="M9 9h10v10H9z"/></svg><span>Copiar</span></button></div>
+<pre>INSERT INTO cobranca (idempotency_key, pedido_id, valor_centavos, status)
+VALUES ('5b0e7a52-…', 123, 25000, 'PROCESSANDO')
+ON CONFLICT (idempotency_key) DO NOTHING
+RETURNING id;</pre></div>
+      <div class="logo7"><div class="area" tabindex="0" aria-label="Marca do blog"><div class="l7"><div class="pag"></div><div class="cap">cs</div><div class="fita"></div></div>Cesar Schutz</div><small>Passe o mouse na marca</small></div>
+    </div></div>
+  </article>
+</main>
+<footer>Protótipo para discussão. Posts, desenhos e cores vêm do blog; o código é só demonstração.</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/Flip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/DrawSVGPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/MorphSVGPlugin.min.js"></script>
+<script>
+gsap.registerPlugin(Flip, ScrollTrigger, DrawSVGPlugin, MorphSVGPlugin);
+const ILUS = {"jackson-filtros-mascarando-cartao": {"corpo": "<g class=\"tinta\">\n    <path d=\"M660 180 H900 V600 H660 Z\" transform=\"translate(14 14)\" class=\"hachura\"/>\n    <path d=\"M660 180 H900 V600 H660 Z\" class=\"papel\"/>\n    <path d=\"M690 230 H860 M690 266 H830 M690 302 H870 M690 338 H812 M690 374 H850 M690 410 H826 M690 446 H866 M690 482 H800 M690 518 H846 M690 554 H820\" class=\"linha\"/>\n    <path d=\"M368 516 C 330 540 316 552 300 566\" class=\"fantasma\"/>\n    <g transform=\"rotate(-8 290 590)\"><rect x=\"220\" y=\"560\" width=\"140\" height=\"60\" rx=\"8\" class=\"fantasma\"/><\/g>\n    <g transform=\"rotate(-5 560 396)\">\n      <rect x=\"360\" y=\"270\" width=\"400\" height=\"252\" rx=\"22\" transform=\"translate(14 14)\" class=\"hachura\"/>\n      <rect x=\"360\" y=\"270\" width=\"400\" height=\"252\" rx=\"22\" transform=\"translate(7 6)\" class=\"cor\"/>\n      <rect x=\"360\" y=\"270\" width=\"400\" height=\"252\" rx=\"22\" class=\"papel\"/>\n      <rect x=\"400\" y=\"316\" width=\"64\" height=\"48\" rx=\"8\" class=\"linha\"/>\n      <path d=\"M400 340 H464 M432 316 V364\" class=\"linha\"/>\n      <rect x=\"508\" y=\"418\" width=\"98\" height=\"30\" rx=\"3\" transform=\"translate(4 3)\" class=\"cor\"/>\n      <rect x=\"508\" y=\"418\" width=\"98\" height=\"30\" rx=\"3\" class=\"linha\"/>\n    <\/g>\n    <g transform=\"rotate(-8 290 590)\"><path d=\"M234 590 H350\" class=\"linha\"/><\/g>\n  <\/g>\n  <g transform=\"rotate(-5 560 396)\">\n    <text x=\"400\" y=\"442\" class=\"codigo\">5502 09<\/text>\n    <text x=\"616\" y=\"442\" class=\"codigo\">7890<\/text>\n    <text x=\"400\" y=\"494\" class=\"codigo\">CESAR<\/text>\n  <\/g>\n  <g transform=\"rotate(-8 290 590)\"><text x=\"240\" y=\"598\" class=\"codigo\">cvv 123<\/text><\/g>\n  <g class=\"anotacao\">\n    <path d=\"M500 250 C 480 226 452 214 420 214\" class=\"chamada\"/>\n    <text x=\"150\" y=\"208\" class=\"nota\">o número vai mascarado<\/text>\n    <text x=\"150\" y=\"234\" class=\"nota-pequena\">550209******7890 no log<\/text>\n    <path d=\"M922 300 C 950 300 966 310 976 326\" class=\"chamada\"/>\n    <text x=\"930\" y=\"360\" class=\"nota\">o log<\/text>\n    <text x=\"930\" y=\"386\" class=\"nota-pequena\">só pelo logMapper<\/text>\n  <\/g>", "largo": "80 171 1100 468", "medio": "154 131 822 548", "quadrado": "178 17 775 775", "alt": "Um cartão com o número 5502 09, uma fita cobrindo os dígitos do meio e 7890, apoiado na folha do log; o CVV fica de fora, numa etiqueta tracejada e riscada."}, "cronjob-vs-endpoint-sqs": {"corpo": "<g class=\"tinta\">\n    <path d=\"M450 350 H580 A10 10 0 0 1 590 360 V450 A10 10 0 0 1 580 460 H450 A10 10 0 0 1 440 450 V360 A10 10 0 0 1 450 350 Z\" transform=\"translate(14 14)\" class=\"hachura\"/>\n    <path d=\"M450 350 H580 A10 10 0 0 1 590 360 V450 A10 10 0 0 1 580 460 H450 A10 10 0 0 1 440 450 V360 A10 10 0 0 1 450 350 Z\" class=\"papel\"/>\n    <path d=\"M462 400 H568 M462 425 H540\" class=\"linha\"/>\n    <path d=\"M592 382 C650 360 690 300 732 280\" class=\"linha\"/>\n    <path d=\"M720 272 L734 280 L722 292\" class=\"linha\"/>\n    <path d=\"M880 262 A70 70 0 1 1 740 262 A70 70 0 1 1 880 262 Z\" transform=\"translate(12 12)\" class=\"hachura\"/>\n    <path d=\"M880 262 A70 70 0 1 1 740 262 A70 70 0 1 1 880 262 Z\" transform=\"translate(7 6)\" class=\"cor\"/>\n    <path d=\"M880 262 A70 70 0 1 1 740 262 A70 70 0 1 1 880 262 Z\" class=\"linha\"/>\n    <path d=\"M810 262 V214 M810 262 L848 280\" class=\"linha\"/>\n    <path d=\"M592 430 C640 450 680 490 722 500\" class=\"linha\"/>\n    <path d=\"M710 492 L724 500 L712 512\" class=\"linha\"/>\n    <path d=\"M765 470 H965 A35 35 0 0 1 1000 505 V505 A35 35 0 0 1 965 540 H765 A35 35 0 0 1 730 505 V505 A35 35 0 0 1 765 470 Z\" transform=\"translate(14 14)\" class=\"hachura\"/>\n    <path d=\"M765 470 H965 A35 35 0 0 1 1000 505 V505 A35 35 0 0 1 965 540 H765 A35 35 0 0 1 730 505 V505 A35 35 0 0 1 765 470 Z\" class=\"papel\"/>\n    <path d=\"M773 484 H819 A3 3 0 0 1 822 487 V517 A3 3 0 0 1 819 520 H773 A3 3 0 0 1 770 517 V487 A3 3 0 0 1 773 484 Z\" class=\"papel\"/><path d=\"M770 486 L796 503.8 L822 486\" class=\"linha\"/>\n    <path d=\"M835 484 H881 A3 3 0 0 1 884 487 V517 A3 3 0 0 1 881 520 H835 A3 3 0 0 1 832 517 V487 A3 3 0 0 1 835 484 Z\" class=\"papel\"/><path d=\"M832 486 L858 503.8 L884 486\" class=\"linha\"/>\n    <path d=\"M897 484 H943 A3 3 0 0 1 946 487 V517 A3 3 0 0 1 943 520 H897 A3 3 0 0 1 894 517 V487 A3 3 0 0 1 897 484 Z\" class=\"papel\"/><path d=\"M894 486 L920 503.8 L946 486\" class=\"linha\"/>\n  <\/g>\n  <text x=\"515\" y=\"385\" text-anchor=\"middle\" class=\"rotulo\">app<\/text>\n  <text x=\"900\" y=\"262\" class=\"codigo\">CronJob<\/text>\n  <text x=\"865\" y=\"572\" text-anchor=\"middle\" class=\"codigo\">SQS<\/text>\n  <g class=\"anotacao\">\n    <text x=\"100\" y=\"330\" class=\"nota\">A: CronJob com o perfil batch<\/text>\n    <text x=\"100\" y=\"358\" class=\"nota-pequena\">a mesma imagem, agendada<\/text>\n    <text x=\"100\" y=\"470\" class=\"nota\">B: endpoint que enfileira<\/text>\n    <text x=\"100\" y=\"498\" class=\"nota-pequena\">e a própria API consome<\/text>\n  <\/g>", "largo": "80 152 1100 468", "medio": "372 149 710 473", "quadrado": "408 67 638 638", "alt": "A mesma aplicação com dois caminhos: um relógio, o CronJob, e uma fila de envelopes, o SQS; o relógio está em destaque."}, "java-29": {"corpo": "<g class=\"tinta\">\n    <g transform=\"translate(590 330)\">\n      <path d=\"M75 -48 C58 -80 92 -100 75 -132\" class=\"linha\"/>\n      <path d=\"M155 -48 C138 -80 172 -100 155 -136\" class=\"linha\"/>\n      \n      <path d=\"M0 0 H240 V120 A60 60 0 0 1 180 180 H60 A60 60 0 0 1 0 120 Z\" class=\"fantasma\"/>\n      <path d=\"M240 28 H282 A52 52 0 0 1 282 132 H240\" class=\"fantasma\"/>\n      <path d=\"M-25 222 H265\" class=\"linha\"/>\n    <\/g>\n    <g transform=\"rotate(-12 905 565)\"><rect x=\"780\" y=\"538\" width=\"250\" height=\"54\" rx=\"6\" class=\"fantasma\"/><\/g>\n  <\/g>\n  <g transform=\"translate(590 330)\"><text x=\"120\" y=\"58\" text-anchor=\"middle\" class=\"codigo\">JAVA<\/text>\n      <text x=\"120\" y=\"150\" text-anchor=\"middle\" class=\"numero\">29<\/text><\/g>\n  <g transform=\"rotate(-12 905 565)\"><text x=\"905\" y=\"576\" text-anchor=\"middle\" class=\"carimbo-texto\" transform=\"translate(905 565) scale(0.8) translate(-905 -565)\">PRÓXIMA LTS<\/text><\/g>\n  <g class=\"anotacao\">\n      <text x=\"110\" y=\"386\" class=\"nota\">desde o Java 25<\/text>\n      <path d=\"M118 430 H372\" class=\"chamada\"/>\n      <path d=\"M362 422 L372 430 L362 438\" class=\"chamada\"/>\n      <circle cx=\"181.5\" cy=\"430\" r=\"6\" class=\"chamada\"/>\n      <text x=\"181.5\" y=\"466\" text-anchor=\"middle\" class=\"nota-pequena\">26<\/text>\n      <circle cx=\"245\" cy=\"430\" r=\"6\" class=\"chamada\"/>\n      <text x=\"245\" y=\"466\" text-anchor=\"middle\" class=\"nota-pequena\">27<\/text>\n      <circle cx=\"308.5\" cy=\"430\" r=\"6\" class=\"chamada\"/>\n      <text x=\"308.5\" y=\"466\" text-anchor=\"middle\" class=\"nota-pequena\">28?<\/text>\n      <text x=\"110\" y=\"518\" class=\"nota-pequena\">previsto para set/2027<\/text>\n    <\/g>", "largo": "80 172 1100 468", "medio": "412 148 775 516", "quadrado": "539 146 520 520", "alt": "Uma caneca em linha tracejada com JAVA 29 e o carimbo tracejado de próxima LTS: a versão ainda não saiu."}, "bloqueio-otimista-e-pessimista": {"corpo": "<g class=\"tinta\">\n    <path d=\"M565 380 V318 A45 45 0 0 1 655 318 V338\" class=\"linha\"/>\n    <path d=\"M538 380 H682 A18 18 0 0 1 700 398 V532 A18 18 0 0 1 682 550 H538 A18 18 0 0 1 520 532 V398 A18 18 0 0 1 538 380 Z\" transform=\"translate(14 14)\" class=\"hachura\"/>\n    <path d=\"M538 380 H682 A18 18 0 0 1 700 398 V532 A18 18 0 0 1 682 550 H538 A18 18 0 0 1 520 532 V398 A18 18 0 0 1 538 380 Z\" transform=\"translate(7 6)\" class=\"cor\"/>\n    <path d=\"M538 380 H682 A18 18 0 0 1 700 398 V532 A18 18 0 0 1 682 550 H538 A18 18 0 0 1 520 532 V398 A18 18 0 0 1 538 380 Z\" class=\"linha\"/>\n    <path d=\"M623 450 A13 13 0 1 1 597 450 A13 13 0 1 1 623 450 Z M610 463 V495\" class=\"linha\"/>\n    <path d=\"M610 550 V566\" class=\"linha\"/>\n    <path d=\"M560 566 H722 V614 H560 L545 590 Z\" transform=\"translate(7 7)\" class=\"hachura\"/>\n    <path d=\"M560 566 H722 V614 H560 L545 590 Z\" class=\"papel\"/>\n    <path d=\"M568 590 A5 5 0 1 1 558 590 A5 5 0 1 1 568 590 Z\" class=\"linha\"/>\n    <path d=\"M845 380 V325 A45 45 0 0 1 935 325 V380\" class=\"linha\"/>\n    <path d=\"M818 380 H962 A18 18 0 0 1 980 398 V532 A18 18 0 0 1 962 550 H818 A18 18 0 0 1 800 532 V398 A18 18 0 0 1 818 380 Z\" transform=\"translate(14 14)\" class=\"hachura\"/>\n    <path d=\"M818 380 H962 A18 18 0 0 1 980 398 V532 A18 18 0 0 1 962 550 H818 A18 18 0 0 1 800 532 V398 A18 18 0 0 1 818 380 Z\" class=\"papel\"/>\n    <path d=\"M903 450 A13 13 0 1 1 877 450 A13 13 0 1 1 903 450 Z M890 463 V495\" class=\"linha\"/>\n  <\/g>\n  <text x=\"648\" y=\"599\" text-anchor=\"middle\" class=\"codigo\">version 2<\/text>\n  <g class=\"anotacao\">\n    <text x=\"100\" y=\"290\" class=\"nota\">otimista: não trava<\/text>\n    <text x=\"100\" y=\"318\" class=\"nota-pequena\">confere a versão ao gravar<\/text>\n    <path d=\"M345 300 C420 300 480 330 515 372\" class=\"chamada\"/>\n    <text x=\"890\" y=\"600\" text-anchor=\"middle\" class=\"nota\">pessimista: trava a linha<\/text>\n  <\/g>", "largo": "80 207 1100 468", "medio": "439 235 637 424", "quadrado": "494 184 527 527", "alt": "Dois cadeados: à esquerda, um aberto com a etiqueta version 2, o bloqueio otimista; à direita, um fechado, o pessimista."}, "cobranca-duplicada-no-retry": {"corpo": "<g class=\"tinta\">\n    <g transform=\"rotate(-8 505 370)\"><path d=\"M380 180 H630 V560 L619.6 574 L609.2 560 L598.8 574 L588.3 560 L577.9 574 L567.5 560 L557.1 574 L546.7 560 L536.2 574 L525.8 560 L515.4 574 L505.0 560 L494.6 574 L484.2 560 L473.8 574 L463.3 560 L452.9 574 L442.5 560 L432.1 574 L421.7 560 L411.2 574 L400.8 560 L390.4 574 L380.0 560 Z\" class=\"fantasma\"/><\/g>\n    <g transform=\"rotate(4 595 405)\"><path d=\"M470 215 H720 V595 L709.6 609 L699.2 595 L688.8 609 L678.3 595 L667.9 609 L657.5 595 L647.1 609 L636.7 595 L626.2 609 L615.8 595 L605.4 609 L595.0 595 L584.6 609 L574.2 595 L563.8 609 L553.3 595 L542.9 609 L532.5 595 L522.1 609 L511.7 595 L501.2 609 L490.8 595 L480.4 609 L470.0 595 Z\" transform=\"translate(14 14)\" class=\"hachura\"/><\/g>\n    <g transform=\"rotate(4 595 405)\">\n      <path d=\"M470 215 H720 V595 L709.6 609 L699.2 595 L688.8 609 L678.3 595 L667.9 609 L657.5 595 L647.1 609 L636.7 595 L626.2 609 L615.8 595 L605.4 609 L595.0 595 L584.6 609 L574.2 595 L563.8 609 L553.3 595 L542.9 609 L532.5 595 L522.1 609 L511.7 595 L501.2 609 L490.8 595 L480.4 609 L470.0 595 Z\" class=\"papel\"/>\n      <path d=\"M498 296 H668 M498 320 H628 M498 344 H648 M498 446 H618\" class=\"linha\"/>\n      <g transform=\"rotate(-12 620 520)\"><rect x=\"548\" y=\"494\" width=\"144\" height=\"54\" rx=\"6\" class=\"carimbo\"/><\/g>\n    <\/g>\n    <path d=\"M875 286 C905 320 925 385 915 428\" class=\"linha\"/>\n    <g transform=\"translate(905 380) rotate(14)\">\n      <path d=\"M0 20 L24 0 H170 V90 H24 L0 70 Z\" transform=\"translate(7 6)\" class=\"cor\"/>\n      <path d=\"M0 20 L24 0 H170 V90 H24 L0 70 Z\" class=\"linha\"/>\n      <circle cx=\"22\" cy=\"45\" r=\"8\" class=\"linha\"/>\n    <\/g>\n    <g transform=\"translate(852 262) rotate(128)\"><path d=\"M50 0 A50 50 0 1 1 -50 0 A50 50 0 1 1 50 0 Z M6 0 A16 16 0 1 0 -26 0 A16 16 0 1 0 6 0 Z M46 -14 H62 V-9 H280 V30 H262 V20 H244 V38 H226 V24 H210 V9 H62 V14 H46 Z\" fill-rule=\"evenodd\" class=\"hachura\"/><\/g>\n    <g transform=\"translate(840 250) rotate(128)\">\n      <path d=\"M50 0 A50 50 0 1 1 -50 0 A50 50 0 1 1 50 0 Z M6 0 A16 16 0 1 0 -26 0 A16 16 0 1 0 6 0 Z M46 -14 H62 V-9 H280 V30 H262 V20 H244 V38 H226 V24 H210 V9 H62 V14 H46 Z\" fill-rule=\"evenodd\" class=\"papel\"/>\n      <path d=\"M72 0 H200\" class=\"linha\"/>\n    <\/g>\n  <\/g>\n  <g transform=\"rotate(4 595 405)\">\n    <text x=\"498\" y=\"266\" class=\"rotulo\">Comprovante<\/text>\n    <text x=\"498\" y=\"416\" class=\"valor\">R$ 250,00<\/text>\n    <g transform=\"rotate(-12 620 520)\"><text x=\"620\" y=\"532\" text-anchor=\"middle\" class=\"carimbo-texto\">PAGO<\/text><\/g>\n  <\/g>\n  <g transform=\"translate(905 380) rotate(14)\"><text x=\"44\" y=\"55\" class=\"codigo\">abc-123<\/text><\/g>\n  <g class=\"anotacao\">\n    <path d=\"M962 502 C 972 520 966 534 952 546\" class=\"chamada\"/>\n    <text x=\"880\" y=\"572\" class=\"nota\">chave de idempotência<\/text>\n    <text x=\"880\" y=\"598\" class=\"nota-pequena\">a mesma nas duas tentativas<\/text>\n    <path d=\"M370 352 C 352 356 344 362 338 372\" class=\"chamada\"/>\n    <text x=\"126\" y=\"398\" class=\"nota\">a segunda cobrança<\/text>\n    <text x=\"126\" y=\"424\" class=\"nota-pequena\">nunca acontece<\/text>\n  <\/g>", "largo": "80 164 1100 468", "medio": "288 113 856 570", "quadrado": "315 -3 802 802", "alt": "Uma chave com a etiqueta abc-123 sobre o comprovante pago de R$ 250,00; atrás dele, a segunda cobrança aparece em linha tracejada, porque nunca acontece."}, "w3c-trace-context": {"corpo": "<g class=\"tinta\">\n    <path d=\"M440 380 H570 A10 10 0 0 1 580 390 V470 A10 10 0 0 1 570 480 H440 A10 10 0 0 1 430 470 V390 A10 10 0 0 1 440 380 Z\" transform=\"translate(14 14)\" class=\"hachura\"/>\n    <path d=\"M440 380 H570 A10 10 0 0 1 580 390 V470 A10 10 0 0 1 570 480 H440 A10 10 0 0 1 430 470 V390 A10 10 0 0 1 440 380 Z\" class=\"papel\"/>\n    <path d=\"M660 380 H790 A10 10 0 0 1 800 390 V470 A10 10 0 0 1 790 480 H660 A10 10 0 0 1 650 470 V390 A10 10 0 0 1 660 380 Z\" transform=\"translate(14 14)\" class=\"hachura\"/>\n    <path d=\"M660 380 H790 A10 10 0 0 1 800 390 V470 A10 10 0 0 1 790 480 H660 A10 10 0 0 1 650 470 V390 A10 10 0 0 1 660 380 Z\" class=\"papel\"/>\n    <path d=\"M880 380 H1010 A10 10 0 0 1 1020 390 V470 A10 10 0 0 1 1010 480 H880 A10 10 0 0 1 870 470 V390 A10 10 0 0 1 880 380 Z\" transform=\"translate(14 14)\" class=\"hachura\"/>\n    <path d=\"M880 380 H1010 A10 10 0 0 1 1020 390 V470 A10 10 0 0 1 1010 480 H880 A10 10 0 0 1 870 470 V390 A10 10 0 0 1 880 380 Z\" class=\"papel\"/>\n    <path d=\"M582 430 L646 430 M636.3 435.3 L646 430 L636.3 424.7\" class=\"linha\"/>\n    <path d=\"M802 430 L866 430 M856.3 435.3 L866 430 L856.3 424.7\" class=\"linha\"/>\n    <path d=\"M592 280 C566 300 600 370 614 424\" class=\"linha\"/>\n    <path d=\"M852 280 C880 300 846 380 834 424\" class=\"linha\"/>\n    <path d=\"M612 248 H852 V312 H612 L592 280 Z\" transform=\"translate(8 8)\" class=\"hachura\"/>\n    <path d=\"M612 248 H852 V312 H612 L592 280 Z\" transform=\"translate(6 5)\" class=\"cor\"/>\n    <path d=\"M612 248 H852 V312 H612 L592 280 Z\" class=\"linha\"/>\n    <path d=\"M614 280 A6 6 0 1 1 602 280 A6 6 0 1 1 614 280 Z\" class=\"linha\"/>\n  <\/g>\n  <text x=\"736\" y=\"274\" text-anchor=\"middle\" class=\"codigo\">traceparent<\/text>\n  <text x=\"736\" y=\"302\" text-anchor=\"middle\" class=\"codigo\">00-4bf92f35…-01<\/text>\n  <text x=\"505\" y=\"438\" text-anchor=\"middle\" class=\"rotulo\">api<\/text>\n  <text x=\"725\" y=\"438\" text-anchor=\"middle\" class=\"rotulo\">fila<\/text>\n  <text x=\"945\" y=\"438\" text-anchor=\"middle\" class=\"rotulo\">worker<\/text>\n  <g class=\"anotacao\">\n    <text x=\"100\" y=\"330\" class=\"nota\">o mesmo trace-id<\/text>\n    <text x=\"100\" y=\"358\" class=\"nota-pequena\">passa de serviço em serviço<\/text>\n    <text x=\"725\" y=\"560\" text-anchor=\"middle\" class=\"nota-pequena\">também dentro das mensagens<\/text>\n  <\/g>", "largo": "80 173 1100 468", "medio": "381 137 702 468", "quadrado": "396 35 671 671", "alt": "Três serviços ligados por setas e uma etiqueta de bagagem com o traceparent, o mesmo ID que acompanha a operação por todos eles."}};
+const reduzido = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const LIVRO = {
+  arq: { nome: "Arquitetura de Software", cor: "#2d4b46" }, dev: { nome: "Desenvolvimento de Software", cor: "#7a4430" },
+  dados: { nome: "Dados", cor: "#5f4662" }, sre: { nome: "SRE", cor: "#836100" }, java: { nome: "Atualizações do Java", cor: "#c24d1c" },
+};
+const POSTS = [
+  { slug: "jackson-filtros-mascarando-cartao", livro: "dev", titulo: "Filtros de serialização no Jackson — mascarando número de cartão nos logs", data: "25 set", min: 12, desc: "Como usar @JsonFilter, PropertyFilter e um mixin em Object para mascarar o número do cartão só no mapper de log." },
+  { slug: "cronjob-vs-endpoint-sqs", livro: "arq", titulo: "CronJob ou endpoint + fila — onde rodar o batch de uma API Spring Boot no Kubernetes", data: "23 set", min: 40, desc: "CronJob com a mesma imagem ou endpoint que enfileira no SQS? Onze critérios comparados." },
+  { slug: "java-29", livro: "java", titulo: "Java 29 (próxima LTS) — o que o Java 26 e o 27 já trouxeram", data: "16 set", min: 46, desc: "As JEPs do Java 26 e do 27, o que ainda está em preview e o que conferir na migração." },
+  { slug: "bloqueio-otimista-e-pessimista", livro: "dados", titulo: "Bloqueio otimista e pessimista — como funcionam e quando usar cada um", data: "13 set", min: 19, desc: "Coluna de versão ou trava da linha, com SQL testado no PostgreSQL." },
+  { slug: "cobranca-duplicada-no-retry", livro: "arq", titulo: "Chave de idempotência — como impedir a cobrança duplicada no retry", data: "10 set", min: 11, desc: "Por que consultar antes de gravar não basta, e como resolver com chave, restrição única e resposta guardada." },
+  { slug: "w3c-trace-context", livro: "sre", titulo: "W3C Trace Context — correlacionando logs entre microsserviços", data: "20 mai", min: 7, desc: "O traceparent e o tracestate levando o mesmo ID por todos os serviços de uma operação." },
+];
+const MAIS = ["AOP no Spring — JDK Dynamic Proxy, CGLIB e aspects customizados", "AopUtils.getTargetClass() — desembrulhando os proxies do Spring", "AtomicBoolean — o sinalizador thread-safe da parada graciosa", "Gradle — quando usar implementation, api e compileOnly", "Virtual threads no Java 21 — pinning e CLOSE_WAIT", "Arquitetura de ledger — partidas dobradas, saldos e conciliação", "SNS MessageAttributes e Filter Policy", "Overhead vs overkill — o custo de toda escolha", "JWT — a estrutura e o significado de cada campo", "Kubernetes CronJob — concorrência, retries e tempo máximo", "SIGTERM e SIGKILL — o ciclo de término de um pod", "Logging estruturado em Spring Boot", "Wide events e canonical log lines", "Data lake vs data warehouse — e onde entra o lakehouse", "Efeito externo sem registro local — a cobrança passou e o banco não gravou", "Java 21 (LTS) — virtual threads e pattern matching", "Java 25 (LTS) — arquivos-fonte compactos e Scoped Values"];
+
+/* tema da página */
+const bt = document.querySelector(".tema");
+const SOL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>';
+const LUA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>';
+const escuro = () => document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+const pinta = () => (bt.innerHTML = escuro() ? SOL : LUA);
+bt.onclick = () => { document.documentElement.dataset.theme = escuro() ? "light" : "dark"; pinta(); };
+pinta();
+
+/* peças */
+function ilus(slug, recorte, cor) {
+  const d = ILUS[slug];
+  return `<svg class="ilustracao" viewBox="${d[recorte]}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="${d.alt.replace(/"/g, "&quot;")}" style="--cor:${cor}">${d.corpo}</svg>`;
+}
+function itemHTML(p, extra = "") {
+  const l = LIVRO[p.livro];
+  return `<article class="item" data-livro="${p.livro}" data-slug="${p.slug}" data-flip-id="${extra}${p.slug}" style="--cor:${l.cor}">
+    <div class="thumb fundo-ilus" data-flip-id="${extra}t-${p.slug}">${ilus(p.slug, "medio", l.cor)}</div>
+    <div class="corpo"><div class="meta"><span class="livro"><i></i>${l.nome}</span><span>${p.data} 2026</span><span>${p.min} min</span></div>
+    <h3 data-flip-id="${extra}h-${p.slug}">${p.titulo}</h3><p>${p.desc}</p></div></article>`;
+}
+
+/* ---------- 1: lista, cards e filtro ---------- */
+(() => {
+  const grade = document.querySelector("[data-grade]");
+  const chips = document.querySelector("[data-chips]");
+  grade.innerHTML = POSTS.map((p) => itemHTML(p)).join("");
+  const filtros = [["todos", "Todos"], ["arq", "Arquitetura"], ["dev", "Desenvolvimento"], ["dados", "Dados"], ["sre", "SRE"], ["java", "Série Java"]];
+  chips.innerHTML = filtros.map(([k, n], i) => `<button class="botao" data-filtro="${k}" aria-pressed="${i === 0}">${n}</button>`).join("");
+  const itens = () => grade.querySelectorAll(".item");
+  const visiveis = () => [...itens()].filter((i) => i.style.display !== "none");
+  // o painel não muda de tamanho: a grade reserva a altura do caso mais alto (todos os artigos em cards)
+  const reservar = () => { grade.style.minHeight = ""; if (grade.classList.contains("cards")) grade.style.minHeight = grade.offsetHeight + "px"; };
+  reservar();
+  addEventListener("resize", () => { const todos = [...itens()].every((i) => i.style.display !== "none"); if (todos && grade.classList.contains("cards")) reservar(); });
+  let ocupado = null;
+  // filtro: os que ficam deslizam para o novo lugar, os que saem desaparecem; nada muda de tamanho
+  const filtrar = (livro) => {
+    ocupado && ocupado.progress(1);
+    const estado = Flip.getState(itens());
+    itens().forEach((it) => it.style.display = livro === "todos" || it.dataset.livro === livro ? "" : "none");
+    if (reduzido) return;
+    ocupado = Flip.from(estado, {
+      duration: .55, ease: "power2.inOut", absolute: true, scale: true, stagger: .02,
+      onEnter: (els) => gsap.fromTo(els, { opacity: 0, scale: .94 }, { opacity: 1, scale: 1, duration: .4, delay: .2 }),
+      onLeave: (els) => gsap.to(els, { opacity: 0, scale: .94, duration: .25 }),
+    });
+  };
+  // lista e cards: formatos diferentes demais para "esticar" um no outro; troca em cascata
+  const trocarModo = (modo) => {
+    ocupado && ocupado.progress(1);
+    const aplicar = () => { grade.classList.toggle("cards", modo === "cards"); grade.classList.toggle("lista", modo === "lista"); };
+    if (reduzido) return aplicar();
+    const alvo = visiveis();
+    ocupado = gsap.timeline()
+      .to(alvo, { opacity: 0, y: 6, duration: .16, stagger: .015, ease: "power1.in" })
+      .add(aplicar)
+      .fromTo(alvo, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: .38, stagger: .04, ease: "power2.out", clearProps: "opacity,transform" });
+  };
+  document.querySelectorAll("[data-modo]").forEach((b) => b.onclick = () => {
+    if (b.getAttribute("aria-pressed") === "true") return;
+    document.querySelectorAll("[data-modo]").forEach((x) => x.setAttribute("aria-pressed", x === b));
+    trocarModo(b.dataset.modo);
+  });
+  chips.querySelectorAll("button").forEach((b) => b.onclick = () => {
+    chips.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+    filtrar(b.dataset.filtro);
+  });
+})();
+
+/* ---------- 2: do cartão ao artigo ---------- */
+(() => {
+  const trio = document.querySelector("[data-trio]");
+  const art = document.querySelector("[data-artigo2]");
+  const alvoT = art.querySelector(".alvo-thumb"), alvoH = art.querySelector(".alvo-titulo");
+  const escolhidos = POSTS.slice(0, 3);
+  trio.innerHTML = escolhidos.map((p) => itemHTML(p, "c2-")).join("");
+  let aberto = null;
+  trio.querySelectorAll(".item").forEach((card) => {
+    card.tabIndex = 0;
+    const abrir = () => {
+      if (aberto) return;
+      const p = POSTS.find((x) => x.slug === card.dataset.slug);
+      const thumb = card.querySelector(".thumb"), h = card.querySelector("h3");
+      const estado = Flip.getState([thumb, h]);
+      aberto = { card, thumb, h, casa: [thumb.parentNode, thumb.nextSibling, h.parentNode, h.nextSibling] };
+      art.style.setProperty("--cor", LIVRO[p.livro].cor);
+      art.querySelector("[data-livro2]").textContent = LIVRO[p.livro].nome;
+      art.querySelector("[data-meta2]").innerHTML = `<span>${p.data} 2026</span><span>${p.min} min de leitura</span>`;
+      thumb.querySelector("svg").setAttribute("viewBox", ILUS[p.slug].largo);
+      art.classList.add("aberto");
+      alvoT.appendChild(thumb); alvoH.appendChild(h);
+      thumb.style.height = "100%";
+      if (reduzido) return;
+      Flip.from(estado, { duration: .7, ease: "power3.inOut", absolute: true, scale: true });
+      gsap.from(art, { backgroundColor: "rgba(0,0,0,0)", borderColor: "rgba(0,0,0,0)", duration: .5, clearProps: "backgroundColor,borderColor" });
+      gsap.from(art.querySelectorAll(".migalha, .meta, .texto span, .voltar"), { opacity: 0, y: 8, stagger: .05, duration: .4, delay: .45 });
+    };
+    card.onclick = abrir;
+    card.onkeydown = (e) => { if (e.key === "Enter") abrir(); };
+  });
+  const fechar = () => {
+    if (!aberto) return;
+    const { thumb, h, casa } = aberto;
+    const p = POSTS.find((x) => x.slug === aberto.card.dataset.slug);
+    const estado = Flip.getState([thumb, h]);
+    thumb.querySelector("svg").setAttribute("viewBox", ILUS[p.slug].medio);
+    casa[0].insertBefore(thumb, casa[1]); casa[2].insertBefore(h, casa[3]);
+    thumb.style.height = "";
+    art.classList.remove("aberto");
+    aberto = null;
+    if (!reduzido) Flip.from(estado, { duration: .6, ease: "power3.inOut", absolute: true, scale: true });
+  };
+  art.querySelector(".voltar").onclick = fechar;
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") fechar(); });
+})();
+
+/* ---------- 3: o desenho se desenha ---------- */
+(() => {
+  const p = POSTS[0], l = LIVRO[p.livro];
+  const box = document.querySelector("[data-destaque3]");
+  box.style.setProperty("--cor", l.cor);
+  box.innerHTML = `<div class="thumb fundo-ilus">${ilus(p.slug, "largo", l.cor)}</div><div><div class="meta"><span class="livro"><i></i>${l.nome}</span><span>${p.data} 2026</span></div><h3>${p.titulo}</h3><p>${p.desc}</p><button class="botao" type="button">Desenhar de novo</button></div>`;
+  const desenhar = (svg, rapido = false) => {
+    const tracos = [...svg.querySelectorAll(".tinta :is(path, rect, circle, line, polyline, polygon):not(.cor):not(.hachura):not(.fantasma)")];
+    const tintas = [...svg.querySelectorAll(".tinta .cor, .tinta .hachura, .tinta .papel")];
+    const textos = [...svg.querySelectorAll("text"), ...svg.querySelectorAll(".tinta .fantasma")];
+    gsap.killTweensOf([...tracos, ...tintas, ...textos]);
+    if (reduzido) return;
+    const tl = gsap.timeline();
+    tl.set(tintas, { fillOpacity: 0 }).set(textos, { opacity: 0 })
+      .fromTo(tracos, { drawSVG: "0%" }, { drawSVG: "100%", duration: rapido ? .5 : 1.1, stagger: rapido ? .03 : .09, ease: "power1.inOut" })
+      .to(tintas, { fillOpacity: 1, duration: rapido ? .3 : .6, stagger: .03 }, rapido ? "-=.25" : "-=.4")
+      .to(textos, { opacity: 1, duration: .4, stagger: .06 }, "<");
+    return tl;
+  };
+  const svg = box.querySelector("svg");
+  ScrollTrigger.create({ trigger: box, start: "top 75%", once: true, onEnter: () => desenhar(svg) });
+  box.querySelector("button").onclick = () => desenhar(svg);
+  const mini = document.querySelector("[data-mini3]");
+  mini.innerHTML = POSTS.slice(3, 6).map((q) => itemHTML(q, "m3-")).join("");
+  mini.querySelectorAll(".item").forEach((it) => { let feito = 0; it.addEventListener("pointerenter", () => { if (Date.now() - feito > 900) { feito = Date.now(); desenhar(it.querySelector("svg"), true); } }); });
+})();
+
+/* ---------- 4: busca ---------- */
+(() => {
+  const palco = document.querySelector("[data-busca]");
+  const campo = palco.querySelector(".campo"), dlg = palco.querySelector(".dialogo"), veu = palco.querySelector(".veu4");
+  const input = dlg.querySelector("input"), lista = dlg.querySelector("ul");
+  const indice = [...POSTS.map((p) => ({ t: p.titulo, l: LIVRO[p.livro].nome })), ...MAIS.map((t) => ({ t, l: "" }))];
+  const sem = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const render = () => {
+    const q = input.value.trim();
+    const res = q ? indice.filter((x) => sem(x.t).includes(sem(q))) : indice.slice(0, 6);
+    if (!res.length) { lista.innerHTML = `<li class="nada">Nenhum artigo com "${q.replace(/</g, "&lt;")}".</li>`; return; }
+    lista.innerHTML = res.slice(0, 8).map((x) => {
+      let t = x.t;
+      if (q) { const i = sem(t).indexOf(sem(q)); t = t.slice(0, i) + "<mark>" + t.slice(i, i + q.length) + "</mark>" + t.slice(i + q.length); }
+      return `<li><b>${t}</b>${x.l ? `<small>${x.l}</small>` : ""}</li>`;
+    }).join("");
+    if (reduzido) { gsap.set(lista.querySelectorAll("mark"), { backgroundSize: "100% 100%" }); return; }
+    gsap.from(lista.querySelectorAll("li"), { opacity: 0, y: 6, stagger: .035, duration: .3 });
+    gsap.to(lista.querySelectorAll("mark"), { backgroundSize: "100% 100%", duration: .45, delay: .15, ease: "power2.out" });
+  };
+  let aberto = false;
+  const abrir = () => {
+    if (aberto) return; aberto = true;
+    input.value = ""; render();
+    campo.dataset.flipId = dlg.dataset.flipId = "busca";
+    const estado = Flip.getState(campo);
+    gsap.set(dlg, { clearProps: "transform,width,height,opacity" });
+    dlg.classList.add("aberto");
+    if (!reduzido) {
+      Flip.from(estado, { targets: dlg, duration: .5, ease: "power3.out", scale: true });
+      gsap.from(dlg.querySelectorAll(".entrada, ul"), { opacity: 0, duration: .3, delay: .2 });
+      gsap.to(veu, { opacity: 1, duration: .3 });
+    }
+    setTimeout(() => input.focus(), 60);
+  };
+  const fechar = () => {
+    if (!aberto) return; aberto = false;
+    const fim = () => { dlg.classList.remove("aberto"); campo.focus(); };
+    if (reduzido) return fim();
+    gsap.to(veu, { opacity: 0, duration: .25 });
+    gsap.to(dlg.querySelectorAll(".entrada, ul"), { opacity: 0, duration: .15 });
+    Flip.fit(dlg, campo, { duration: .35, ease: "power2.in", scale: true, onComplete: () => { fim(); gsap.set(dlg, { clearProps: "transform,width,height,opacity" }); gsap.set(dlg.querySelectorAll(".entrada, ul"), { clearProps: "opacity" }); } });
+  };
+  campo.onclick = abrir;
+  input.oninput = render;
+  document.addEventListener("keydown", (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") { e.preventDefault(); palco.scrollIntoView({ block: "center" }); abrir(); }
+    if (e.key === "Escape") fechar();
+  });
+  palco.addEventListener("pointerdown", (e) => { if (aberto && !dlg.contains(e.target) && !campo.contains(e.target)) fechar(); });
+})();
+
+/* ---------- 5: o caderno marcado ---------- */
+(() => {
+  const bloco = document.querySelector("[data-leitura]");
+  const riscos = [...bloco.querySelectorAll(".sub path, .circ path, .colchete path")];
+  const fundos = [...bloco.querySelectorAll(".mt")];
+  const termos = [...bloco.querySelectorAll(".termo")];
+  const pronto = () => { gsap.set([...fundos, ...termos], { backgroundSize: (i, el) => el.classList.contains("termo") ? "100% 100%, auto" : "100% 100%" }); gsap.set(riscos, { drawSVG: "100%" }); };
+  if (reduzido) return pronto();
+  const zerar = () => { gsap.set(fundos, { backgroundSize: "0% 100%" }); gsap.set(termos, { backgroundSize: "0% 100%, auto" }); gsap.set(riscos, { drawSVG: "0%" }); };
+  zerar();
+  // cada marcação acontece quando o próprio trecho entra na tela, uma vez
+  const marcar = (el) => {
+    if (el.matches(".mt")) return gsap.to(el, { backgroundSize: "100% 100%", duration: .8, ease: "power2.inOut" });
+    if (el.matches(".termos")) return gsap.to(el.querySelectorAll(".termo"), { backgroundSize: "100% 100%, auto", duration: .45, stagger: .14, ease: "power2.out" });
+    const p = el.querySelector("path");
+    return gsap.to(p, { drawSVG: "100%", duration: el.matches(".circ") ? .9 : .6, ease: "power1.inOut" });
+  };
+  const alvos = [...bloco.querySelectorAll(".mt, .sub, .circ, .margem, .termos")];
+  alvos.forEach((el) => ScrollTrigger.create({ trigger: el, start: "top 80%", once: true, onEnter: () => marcar(el) }));
+  bloco.querySelector("[data-repetir5]").onclick = () => { zerar(); gsap.timeline().add(alvos.map((el, i) => marcar(el).delay(i * .35))); };
+})();
+
+/* ---------- 6: tema em círculo ---------- */
+(() => {
+  const janela = document.querySelector("[data-janela]");
+  const cena = (classe) => `<div class="cena6 ${classe}"><div class="t6">Cesar Schutz <button class="b6" type="button" aria-label="Alternar tema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><g class="raios"><path d="M12 1.8v2.4M12 19.8v2.4M4.3 4.3l1.7 1.7M18 18l1.7 1.7M1.8 12h2.4M19.8 12h2.4M4.3 19.7l1.7-1.7M18 6l1.7-1.7"/></g><path class="astro" d="M20 14.5A8 8 0 0 1 9.5 4A8 8 0 1 0 20 14.5Z"/></svg></button></div><div class="f6"><b>Chave de idempotência — como impedir a cobrança duplicada no retry</b><span style="width:92%"></span><span style="width:84%"></span><span style="width:60%"></span></div></div>`;
+  janela.innerHTML = cena("claro") + cena("escuro");
+  const [claro, esc] = janela.querySelectorAll(".cena6");
+  const SOLD = "M16.2 12A4.2 4.2 0 1 1 7.8 12A4.2 4.2 0 1 1 16.2 12Z", LUAD = "M20 14.5A8 8 0 0 1 9.5 4A8 8 0 1 0 20 14.5Z";
+  // no claro mostra a lua (vai para o escuro); no escuro, o sol
+  gsap.set(claro.querySelector(".raios"), { scale: 0, opacity: 0, transformOrigin: "50% 50%" });
+  gsap.set(esc.querySelector(".astro"), { attr: { d: SOLD } });
+  let noEscuro = false, ocupado = false;
+  const trocar = (botao) => {
+    if (ocupado) return; ocupado = true;
+    const jr = janela.getBoundingClientRect(), br = botao.getBoundingClientRect();
+    const cx = br.left + br.width / 2 - jr.left, cy = br.top + br.height / 2 - jr.top;
+    const raio = Math.hypot(Math.max(cx, jr.width - cx), Math.max(cy, jr.height - cy));
+    const icone = botao.querySelector(".astro"), raios = botao.querySelector(".raios");
+    if (noEscuro) { gsap.set(claro.querySelector(".astro"), { attr: { d: LUAD } }); gsap.set(claro.querySelector(".raios"), { scale: 0, opacity: 0 }); }
+    const tl = gsap.timeline({ onComplete: () => { ocupado = false; } });
+    // o ícone do botão clicado se transforma antes
+    tl.to(icone, { morphSVG: noEscuro ? LUAD : SOLD, duration: .45, ease: "power2.inOut" })
+      .to(raios, { scale: noEscuro ? 0 : 1, opacity: noEscuro ? 0 : 1, rotation: noEscuro ? -45 : 0, duration: .45, transformOrigin: "50% 50%" }, "<");
+    if (!noEscuro) tl.fromTo(esc, { clipPath: `circle(0px at ${cx}px ${cy}px)` }, { clipPath: `circle(${raio}px at ${cx}px ${cy}px)`, duration: reduzido ? 0 : .7, ease: "power2.inOut" }, "<.1");
+    else tl.to(esc, { clipPath: `circle(0px at ${cx}px ${cy}px)`, duration: reduzido ? 0 : .7, ease: "power2.inOut" }, "<.1");
+    tl.add(() => {
+      noEscuro = !noEscuro;
+      // deixa os dois botões no mesmo estado
+      [claro, esc].forEach((c) => { gsap.set(c.querySelector(".astro"), { attr: { d: noEscuro ? SOLD : LUAD } }); gsap.set(c.querySelector(".raios"), { scale: noEscuro ? 1 : 0, opacity: noEscuro ? 1 : 0, rotation: 0 }); });
+    });
+  };
+  janela.querySelectorAll(".b6").forEach((b) => b.onclick = () => trocar(b));
+})();
+
+/* ---------- 7: detalhes ---------- */
+(() => {
+  const bt = document.querySelector(".copiar");
+  const frente = bt.querySelector(".c-frente"), tras = bt.querySelector(".c-tras"), rot = bt.querySelector("span");
+  const CHECK = "M5 12.5l4.5 4.5L19 7", RET = "M9 9h10v10H9z";
+  let t = null;
+  bt.onclick = () => {
+    navigator.clipboard && navigator.clipboard.writeText(document.querySelector(".codigo7 pre").textContent).catch(() => {});
+    clearTimeout(t);
+    gsap.to(frente, { morphSVG: CHECK, duration: .35, ease: "back.out(2)" });
+    gsap.to(tras, { opacity: 0, duration: .15 });
+    rot.textContent = "Copiado";
+    t = setTimeout(() => { gsap.to(frente, { morphSVG: RET, duration: .35 }); gsap.to(tras, { opacity: 1, duration: .2 }); rot.textContent = "Copiar"; }, 1600);
+  };
+  const area = document.querySelector(".logo7 .area");
+  const cap = area.querySelector(".cap"), fita = area.querySelector(".fita"), livro = area.querySelector(".l7");
+  const entra = () => { if (reduzido) return; gsap.to(cap, { rotationY: -38, duration: .5, ease: "power3.out" }); gsap.to(livro, { rotationY: 14, duration: .5 }); gsap.fromTo(fita, { rotation: 0 }, { rotation: 14, duration: .9, ease: "elastic.out(1.2, .3)" }); };
+  const sai = () => { gsap.to(cap, { rotationY: 0, duration: .45, ease: "power3.inOut" }); gsap.to(livro, { rotationY: 0, duration: .45 }); gsap.to(fita, { rotation: 0, duration: 1, ease: "elastic.out(1, .3)" }); };
+  area.addEventListener("pointerenter", entra); area.addEventListener("pointerleave", sai);
+  area.addEventListener("focus", entra); area.addEventListener("blur", sai);
+})();
+</script>
+</body>
+</html>
