@@ -72,7 +72,8 @@ abre na gaveta (`/livros/<slug>.svg`). O número das lombadas, da capa da revist
 coleção. Categoria ou série nova = pela seção "Livros novos" do `CAPAS.md`, com o OK do Cesar. Os
 componentes são `Capa`, `MioloLombada` (a lombada, em pé e, girada, deitada no `PainelHome`), `Estante` (também no modo
 "filtro" do arquivo e das tags), `Gaveta`, `Livro3D`, `LivroEmPe`, `TopoLivro` e `GradeLivros`:
-altere esses, sem criar outros em paralelo (`LivroAmpliado` só copia o livro 3D aberto para o visor).
+altere esses, sem criar outros em paralelo (`LivroAmpliado` copia o livro 3D para o visor e monta
+nele as páginas de dentro, de `/livros/<slug>.json`, D49).
 As peças usam os **papéis de cor** de `livro.css` (`--cima`, `--baixo`, `--revista-*`), nunca as
 cores cruas `--livro-*`. Os livros **não mudam com o tema** (D39): a categoria sempre com o papel em
 cima e a cor do livro embaixo, a série sempre clara. Para conferir, `/amostra/livros/` (só no dev).

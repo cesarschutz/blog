@@ -676,8 +676,16 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   - **Livro que gira** (D46, `data-livro-gira`, só CSS): na grade de categorias e séries, no topo da
     página do livro, no destaque de Séries e no livro do artigo, o livro vira de 38° para 24° ao
     passar o mouse (0,5s). A capa que seguia o mouse, com a luz e a capa entreaberta (`capa-viva.ts`,
-    D40), saiu na D46. No livro ampliado, arrastar gira com embalo (Draggable + InertiaPlugin) e, ao
-    soltar, o livro volta a 38° com `elastic.out(1, 0.6)`.
+    D40), saiu na D46.
+  - **O livro que abre** (o livro ampliado, D49, no lugar do giro com embalo): a capa gira pela
+    lombada (0,95s, `power2.inOut`; no celular, 0,71s) e, ao pousar, bate e volta um nada (0,07s e
+    0,12s); o livro vira de 38° para de frente enquanto abre, e a lombada vai para o meio. A folha é
+    leve: vira em 0,75s (`sine.inOut`), com a metade de fora até 24° atrás da de dentro (a folha curva
+    no meio da virada e chega reta) e uma sombra de até 22% no meio do caminho. Arrastar segue o dedo
+    e, ao soltar, a inércia leva a folha até aberta ou fechada (0,25 a 0,7s; a capa, até 0,9s), sem
+    passar do fim. Fechar o visor com o livro aberto: as folhas voltam juntas e a capa por cima
+    (0,6s), e só então o livro volta para o de origem. No celular, as folhas viram retas e a vista
+    corre para a página da vez (0,45s). As páginas não mudam com o tema (papel e tinta de papel).
 - **Caneta do caderno (D48):** **não anima.** As marcações já vêm feitas (a animação por rolagem do
   caderno marcado da D41, com ScrollTrigger e DrawSVG, saiu).
 - **O desenho do destaque da home** (D41, só ali): ao entrar na tela, os traços aparecem em sequência

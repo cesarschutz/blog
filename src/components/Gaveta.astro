@@ -21,7 +21,7 @@
 import Livro3D from "./Livro3D.astro";
 import LivroAmpliado from "./LivroAmpliado.astro";
 import { ICONES } from "../lib/icones";
-import { coresDoLivroCss, dadosDoLivro, type Livro } from "../lib/estante";
+import { coresDoLivroCss, dadosDoLivro, paginasDoLivro, type Livro } from "../lib/estante";
 import { diaEMes } from "../lib/formato";
 import type { Resumo } from "../lib/posts";
 import "../styles/estante.css";
@@ -59,6 +59,7 @@ function linhas(l: Livro): Linha[] {
         data-nome={l.nome}
         data-dados={dadosDoLivro(l)}
         data-href={l.href}
+        data-paginas={paginasDoLivro(l)}
         style={`${coresDoLivroCss(l)};--h:${l.emPe.altura}`}
       >
         <div class="livro-na-gaveta">

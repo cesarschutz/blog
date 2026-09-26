@@ -8,7 +8,7 @@
  */
 import Livro3D from "./Livro3D.astro";
 import { ICONES } from "../lib/icones";
-import { coresDoLivroCss, dadosDoLivro, type Livro } from "../lib/estante";
+import { coresDoLivroCss, dadosDoLivro, paginasDoLivro, type Livro } from "../lib/estante";
 import { medidasDoLivro3D } from "../lib/livro-3d";
 import "../styles/livro.css";
 
@@ -51,6 +51,7 @@ const estilo = [
   data-nome={ampliavel ? livro.nome : undefined}
   data-dados={ampliavel ? dadosDoLivro(livro) : undefined}
   data-href={ampliavel ? livro.href : undefined}
+  data-paginas={ampliavel ? paginasDoLivro(livro) : undefined}
 >
   <Livro3D livro={livro} desenho="inline" folhas={3} />
   {

@@ -1321,4 +1321,21 @@ nada muda.
      volta; sem chegar a 22°, cai de volta em pé. No celular, o gesto é 20% mais rápido e sem arrasto.
      Com movimento reduzido, tudo direto no estado final (o vizinho já aparece tombado). Na estante
      de filtro do arquivo e das tags, o mesmo toque na cabeça.
+  3. **D2** (o livro que abre, só no livro ampliado; `LivroAmpliado.astro`, `paginas.css`,
+     `src/pages/livros/[slug].json.ts`): no lugar do livro que girava com embalo (D40), o livro
+     ampliado abre. A capa dura gira pela lombada e o livro vira de frente enquanto abre; dentro, a
+     guarda na cor do livro com o ex-libris (o ícone do livro, "Cesar Schutz" e o endereço), o
+     sumário de verdade ("Ordem de leitura" na série), uma página por artigo (número, título,
+     subtítulo, descrição, "Ler o artigo →" e a data), uma página de notas quando o número de artigos
+     é ímpar, o fim do volume e, dentro da contracapa, o próximo livro da coleção (na ordem da
+     estante; depois da série, o volume 01). As folhas curvam ao virar (duas metades, a de fora 24°
+     atrás) e a capa é pesada (sai devagar, bate e assenta). Arrastar vira ou volta (a velocidade do
+     arrasto decide, InertiaPlugin); também os botões embaixo, as setas e um clique na página. No
+     celular, a vista corre para a página da vez e as folhas viram retas. Fechar o visor fecha o livro
+     antes de ele voltar para o de origem. As páginas vêm de `/livros/<slug>.json`, buscadas ao abrir
+     (e antes, na lupa). O livro é desenho (aria-hidden, links sem foco): a legenda diz a página da vez
+     (e os títulos, para o leitor de tela), e o livro inteiro está em "Ver o livro". Correções em
+     relação ao protótipo: o link das páginas em tinta de papel (o azul do escuro não passava no papel),
+     a duração da inércia dentro do `inertia` (fora dele, valia 1,2s) e a emenda das duas metades num
+     pixel inteiro (as letras que a cruzavam se partiam).
 - **Motivo:** o Cesar revisou os protótipos um a um e escolheu o que entra.

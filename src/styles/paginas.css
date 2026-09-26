@@ -1,0 +1,428 @@
+/*
+ * As páginas de dentro do livro ampliado (D49, protótipo D2, LivroAmpliado.astro): a guarda com o
+ * ex-libris, no verso da capa; as folhas, cada uma com duas metades presas pela lombada, para a folha
+ * curvar ao virar; e o que vai impresso (o sumário, uma página por artigo, o fim do volume e o próximo
+ * livro). Como os livros, as páginas não mudam com o tema (D39): papel claro e tinta de papel. Tudo
+ * aria-hidden: o livro é desenho, e a legenda do visor diz a página da vez.
+ */
+
+/* ---------- a folha: duas metades presas pela lombada ---------- */
+
+.livro-que-abre {
+  /*
+   * A largura da folha (e de cada página), a mesma da página de dentro do livro 3D, e a da metade
+   * de dentro, em pixels inteiros (--meia, do script): com a emenda num pixel inteiro, as letras que
+   * a atravessam não se partem.
+   */
+  --folha-w: calc(var(--cw) - 6px);
+  --meia-folha: var(--meia, calc(var(--folha-w) / 2));
+}
+
+.livro-que-abre .livro-3d {
+  --folha-papel: color-mix(in oklab, var(--livro-papel), white 55%);
+}
+
+.livro-que-abre .livro-3d .pagina {
+  overflow: hidden;
+  background: var(--folha-papel);
+}
+
+.folha-l {
+  position: absolute;
+  top: 4px;
+  left: 0;
+  width: var(--folha-w);
+  height: calc(var(--bh) - 8px);
+  transform-style: preserve-3d;
+}
+
+.seg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--meia-folha);
+  height: 100%;
+  transform-origin: 0 50%;
+  transform-style: preserve-3d;
+}
+
+/* A metade de fora começa 1px antes do fim da de dentro: a emenda das duas não aparece. */
+.seg .seg {
+  left: calc(var(--meia-folha) - 1px);
+  width: calc(var(--folha-w) - var(--meia-folha) + 1px);
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  backface-visibility: hidden;
+  background: var(--folha-papel);
+}
+
+.face.costas {
+  transform: rotateY(180deg);
+}
+
+/* A luz: a folha em pé, no meio da virada, pega menos luz (sombra proporcional ao ângulo). */
+.face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0);
+  opacity: var(--sombra, 0);
+  pointer-events: none;
+}
+
+/*
+ * Cada metade mostra a sua metade da página, com a página inteira na largura da folha (as duas
+ * metades quebram as linhas do mesmo jeito); a de fora, 1px mais larga, começa 1px antes.
+ */
+.face > .pg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--folha-w);
+  height: 100%;
+}
+
+.s1 > .face.meia-dir > .pg {
+  left: calc(var(--meia-folha) - var(--folha-w));
+}
+
+.s2 > .face.meia-dir > .pg {
+  left: calc(1px - var(--meia-folha));
+}
+
+.s2 > .face.frente {
+  border-radius: 0 3px 3px 0;
+}
+
+/* O vinco da lombada: a página escurece um pouco perto da costura. */
+.livro-que-abre .livro-3d .pagina::before,
+.s1 > .face.frente::before,
+.s1 > .face.costas.meia-dir::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 18%;
+  background: linear-gradient(90deg, rgb(0 0 0 / 0.1), rgb(0 0 0 / 0));
+  pointer-events: none;
+}
+
+.s1 > .face.costas.meia-dir::before {
+  right: 0;
+  background: linear-gradient(270deg, rgb(0 0 0 / 0.1), rgb(0 0 0 / 0));
+}
+
+/* A capa aberta faz sombra na mesa, do lado esquerdo. */
+.livro-que-abre .capa-verso {
+  box-shadow: 0 calc(var(--bh) * 0.08) calc(var(--bh) * 0.12) calc(var(--bh) * -0.06) rgb(0 0 0 / 0.45);
+}
+
+/* ---------- a guarda: o verso da capa, na cor do livro, com o ex-libris colado ---------- */
+
+.guarda {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: inherit;
+  background: var(--livro-cor);
+}
+
+.livro-3d:has(.de-serie) .guarda {
+  background: var(--revista-papel);
+}
+
+.guarda::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--grao) 0 0 / 180px 180px;
+  pointer-events: none;
+}
+
+.ex-libris {
+  --fs: calc(var(--cw) * 0.046);
+  --lombada-cor: var(--livro-papel);
+  --serie-papel: var(--livro-papel);
+  --traco-lombada: 1px;
+  position: relative;
+  z-index: 1;
+  width: 62%;
+  padding: 1.4em 1em 1.2em;
+  border: 1px solid color-mix(in oklab, var(--livro-tinta-papel) 25%, transparent);
+  background: var(--livro-papel);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+  color: var(--livro-tinta-papel);
+  font-family: var(--font-livro);
+  font-size: var(--fs);
+  text-align: center;
+}
+
+.ex-libris-icone {
+  display: block;
+  width: 42%;
+  height: 4.2em;
+  margin: 0 auto 0.6em;
+  color: var(--livro-destaque-texto, var(--livro-destaque));
+}
+
+.ex-libris p {
+  margin: 0;
+}
+
+.ex-libris .el {
+  font-family: var(--font-livro-italico);
+  font-style: italic;
+  font-size: 0.8em;
+  line-height: 1;
+  opacity: 0.75;
+}
+
+.ex-libris .nome {
+  margin: 0.3em 0;
+  font-weight: 800;
+  font-size: 1.2em;
+  line-height: 1.1;
+}
+
+.ex-libris .site {
+  font-weight: 600;
+  font-size: 0.5em;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  opacity: 0.6;
+}
+
+/* ---------- o que está impresso nas páginas ---------- */
+
+/* As margens da página, pela largura dela (e não pela da metade da folha em que ela aparece). */
+.pg {
+  --fs: calc(var(--cw) * 0.046);
+  box-sizing: border-box;
+  padding: calc(var(--folha-w) * 0.055) calc(var(--folha-w) * 0.05) calc(var(--folha-w) * 0.045);
+  color: var(--livro-tinta-papel);
+  font-family: var(--font-texto);
+  font-size: var(--fs);
+  line-height: 1.45;
+  font-variant-numeric: lining-nums;
+}
+
+.pg a {
+  color: inherit;
+  text-decoration-color: color-mix(in oklab, var(--livro-destaque) 60%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.pg .cab {
+  margin: 0 0 1.6em;
+  font-family: var(--font-livro);
+  font-weight: 700;
+  font-size: 0.62em;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  color: var(--livro-destaque-texto, var(--livro-destaque));
+}
+
+.pg h3 {
+  margin: 0 0 0.6em;
+  font-family: var(--font-livro);
+  font-weight: 800;
+  font-size: 1.55em;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.pg .folio {
+  position: absolute;
+  bottom: 5%;
+  margin: 0;
+  font-family: var(--font-livro);
+  font-weight: 600;
+  font-size: 0.7em;
+  line-height: 1;
+  opacity: 0.6;
+}
+
+.pg-dir .folio {
+  right: 10%;
+}
+
+.pg-esq .folio {
+  left: 10%;
+}
+
+/* O sumário: número, título e dia, como no índice de um livro. */
+.sum {
+  margin: 1.2em 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sum li {
+  margin: 0 0 0.9em;
+}
+
+.sum a {
+  display: grid;
+  grid-template-columns: 1.4em minmax(0, 1fr) auto;
+  column-gap: 0.4em;
+  align-items: baseline;
+  text-decoration: none;
+}
+
+.sum .n {
+  font-family: var(--font-livro);
+  font-weight: 800;
+  font-size: 0.9em;
+  line-height: 1;
+  color: var(--livro-destaque-texto, var(--livro-destaque));
+}
+
+.sum .t {
+  font-family: var(--font-livro);
+  font-weight: 600;
+  font-size: 0.92em;
+  line-height: 1.3;
+}
+
+.sum a:hover .t {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+
+.sum .d {
+  font-family: var(--font-livro-italico);
+  font-style: italic;
+  font-size: 0.85em;
+  line-height: 1;
+  opacity: 0.75;
+}
+
+.pg .vazio {
+  margin: 1.2em 0 0;
+  font-family: var(--font-livro-italico);
+  font-style: italic;
+  opacity: 0.8;
+}
+
+/* Um artigo por página: o número grande, o título, o subtítulo, a descrição e o caminho para ele. */
+.cap .num {
+  margin: 0 0 0.2em;
+  font-family: var(--font-livro);
+  font-weight: 800;
+  font-size: 3.4em;
+  line-height: 1;
+  color: var(--livro-destaque);
+}
+
+.cap .sub {
+  margin: -0.2em 0 1em;
+  font-family: var(--font-livro-italico);
+  font-style: italic;
+  font-size: 1.05em;
+  line-height: 1.3;
+}
+
+.cap .desc {
+  display: -webkit-box;
+  margin: 0 0 1.2em;
+  overflow: hidden;
+  font-size: 0.86em;
+  line-height: 1.55;
+  opacity: 0.85;
+  -webkit-line-clamp: 7;
+  -webkit-box-orient: vertical;
+}
+
+.cap .ler {
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: 0.8em;
+}
+
+.cap .quando {
+  position: absolute;
+  right: 10%;
+  bottom: 5%;
+  left: 10%;
+  margin: 0;
+  font-family: var(--font-livro-italico);
+  font-style: italic;
+  font-size: 0.75em;
+  line-height: 1;
+  text-align: center;
+  opacity: 0.6;
+}
+
+/* A página de notas (com número ímpar de artigos): pautada, como a de um caderno. */
+.notas .pauta {
+  height: 70%;
+  margin-top: 1.6em;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0 calc(1.9em - 1px),
+    color-mix(in oklab, var(--livro-tinta-papel) 16%, transparent) calc(1.9em - 1px) 1.9em
+  );
+}
+
+.colofao {
+  display: grid;
+  align-content: center;
+  text-align: center;
+}
+
+.colofao p {
+  margin: 0 0 0.8em;
+  font-family: var(--font-livro-italico);
+  font-style: italic;
+  line-height: 1.45;
+}
+
+.colofao .fim {
+  font-family: var(--font-livro);
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+}
+
+/* A última página, dentro da contracapa: o próximo livro da coleção, embaixo. */
+.livro-que-abre .pagina > .pg {
+  position: absolute;
+  inset: 0;
+}
+
+.proximo {
+  display: grid;
+  align-content: end;
+  padding-bottom: calc(var(--folha-w) * 0.09);
+}
+
+.proximo .vol {
+  margin: 0;
+  font-style: normal;
+  font-family: var(--font-livro);
+  font-weight: 700;
+  font-size: 0.62em;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  opacity: 0.7;
+}
+
+.proximo h3 {
+  color: var(--prox-cor);
+  font-size: 2.2em;
+}
+
+.proximo p {
+  margin: 0 0 0.8em;
+  font-family: var(--font-livro-italico);
+  font-style: italic;
+  line-height: 1.4;
+}

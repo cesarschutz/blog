@@ -234,6 +234,9 @@ Referência: aba "Home" do protótipo.
     até a frente do lugar dele, entra empurrando o vizinho de volta e assenta. **Trocar de livro**
     guarda o aberto antes de tirar o próximo. No celular, o sumário vai para baixo do livro.
   - No celular, as lombadas diminuem para caber todas na largura.
+  - **O livro ampliado abre** (D49): a capa gira pela lombada e, dentro, estão a guarda com o
+    ex-libris, o sumário, uma página por artigo (com o link para ele), o fim do volume e o próximo
+    livro da coleção. Arrastar, os botões, as setas ou um clique na página viram as folhas.
 - **Destaque** (só na primeira página): o post mais recente, com a ilustração (o painel acompanha a
   altura do texto; até 960px, vai para cima), categoria, data e tempo de leitura com os ícones, o
   **título inteiro**, a descrição e as tags (D33). O post em destaque **não se repete** na lista abaixo.

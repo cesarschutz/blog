@@ -1,28 +1,47 @@
 ---
 /**
- * O livro ampliado (D33): clicar no livro aberto (na gaveta da home e no topo das páginas de categoria
- * e de série) abre o mesmo livro 3D, grande, sobre a página escurecida (o visor, visor.css), com o
- * nome e o volume embaixo e, fora da página dele, o link "Ver o livro". Arrastar (ou ← e →) gira o
- * livro entre a lombada e a capa. Fecha no botão, com Esc ou com um clique fora. O livro cresce a
- * partir do livro de onde saiu (o de origem some enquanto isso) e, ao fechar, volta para ele (D47).
+ * O livro ampliado (D33, D49): clicar no livro aberto (na gaveta da home, no topo das páginas de
+ * categoria e de série e no livro do artigo) abre o mesmo livro 3D, grande, sobre a página escurecida
+ * (o visor, visor.css), com o nome e o volume embaixo e, fora da página dele, o link "Ver o livro". O
+ * livro cresce a partir do livro de onde saiu (o de origem some enquanto isso) e, ao fechar, volta
+ * para ele (D47).
  *
- * Quem abre: um elemento com `data-ampliar-livro` (com `data-largura`, `data-nome`, `data-dados` e
- * `data-href`, e as cores do livro no style) em volta de um `.livro-3d-caixa`, e o botão de lupa
- * `[data-ampliar]` que vai junto (ver Gaveta e LivroEmPe). O livro é uma cópia; as medidas são
- * refeitas para o tamanho da tela (src/lib/livro-3d.ts).
+ * O livro que abre (D49, protótipo D2; no lugar do livro que girava com embalo, D40): a capa dura gira
+ * pela lombada e o livro vira de frente enquanto abre. Dentro, a guarda com o ex-libris, o sumário de
+ * verdade, uma página por artigo, o fim do volume e o próximo livro da coleção. As folhas curvam ao
+ * virar, como papel (cada folha tem duas metades, e a de fora gira um pouco atrás da de dentro), e a
+ * capa é pesada: sai devagar, bate e assenta. Arrastar o livro para a esquerda abre e vira; para a
+ * direita, volta (a velocidade do arrasto decide se a folha para aberta ou fechada, InertiaPlugin).
+ * Também pelos botões embaixo, pelas setas do teclado e por um clique na página da direita (vira) ou
+ * da esquerda (volta); os links das páginas levam ao artigo e aos livros. No celular, o livro aberto
+ * fica maior que a tela, a vista corre para a página da vez, e as folhas viram retas e mais rápido.
+ * Com movimento reduzido, tudo troca na hora.
+ *
+ * Quem abre: um elemento com `data-ampliar-livro` (com `data-largura`, `data-nome`, `data-dados`,
+ * `data-href` e `data-paginas`, e as cores do livro no style) em volta de um `.livro-3d-caixa`, e o
+ * botão de lupa `[data-ampliar]` que vai junto (ver Gaveta e LivroEmPe). O livro é uma cópia; as
+ * medidas são refeitas para o tamanho da tela (src/lib/livro-3d.ts). As páginas vêm de
+ * /livros/<slug>.json (src/pages/livros/[slug].json.ts), buscadas ao abrir (e antes, ao passar o
+ * mouse na lupa). O livro é desenho (aria-hidden): a legenda diz a página da vez, e o livro inteiro
+ * está em "Ver o livro".
  */
 import { ICONES } from "../lib/icones";
 import "../styles/visor.css";
+import "../styles/paginas.css";
 ---
 
 <dialog class="visor visor-livro" data-livro-ampliado aria-label="Livro ampliado">
   <div class="palco-ampliado" data-palco-ampliado></div>
   <div class="legenda-livro">
     <p><strong data-nome></strong> <span data-dados></span></p>
+    <div class="folhear">
+      <button type="button" class="passo" data-anterior disabled>Voltar a página</button>
+      <span class="onde" data-onde aria-live="polite">Fechado</span>
+      <button type="button" class="passo primario" data-proxima>Abrir o livro</button>
+    </div>
     <a class="ir-livro" data-ir href="#"
       >Ver o livro<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} /></a
     >
-    <p class="dica-giro" aria-hidden="true">Arraste para girar o livro</p>
   </div>
   <button type="button" class="visor-botao visor-fechar" data-fechar aria-label="Fechar">
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.fechar} />
@@ -31,7 +50,18 @@ import "../styles/visor.css";
 
 <script>
   import { GIRO } from "../lib/livro-3d";
-  import { adiantar, carregarArrastar, carregarGsap, movimentoReduzido } from "../scripts/gsap";
+  import { adiantar, carregarArrastar, carregarGsap, movimentoReduzido, type GSAP } from "../scripts/gsap";
+
+  type Post = { titulo: string; subtitulo: string; descricao: string; dia: string; data: string; url: string };
+  type Paginas = {
+    nome: string;
+    serie: boolean;
+    volume: string | null;
+    href: string;
+    icone: string;
+    posts: Post[];
+    proximo: { nome: string; serie: boolean; volume: string | null; frase: string; href: string; destaque: string };
+  };
 
   const dialogo = document.querySelector<HTMLDialogElement>("[data-livro-ampliado]");
   if (dialogo && !dialogo.dataset.ligado) {
@@ -40,74 +70,423 @@ import "../styles/visor.css";
     const nome = dialogo.querySelector<HTMLElement>("[data-nome]")!;
     const dados = dialogo.querySelector<HTMLElement>("[data-dados]")!;
     const ir = dialogo.querySelector<HTMLAnchorElement>("[data-ir]")!;
+    const legenda = dialogo.querySelector<HTMLElement>(".legenda-livro")!;
+    const onde = dialogo.querySelector<HTMLElement>("[data-onde]")!;
+    const btAnterior = dialogo.querySelector<HTMLButtonElement>("[data-anterior]")!;
+    const btProxima = dialogo.querySelector<HTMLButtonElement>("[data-proxima]")!;
+    const celular = matchMedia("(max-width: 640px)");
     let origem: HTMLElement | null = null;
-    let livro: HTMLElement | null = null;
     // O livro de origem e a cópia no palco: a cópia sai dele e volta para ele (D47).
     let caixaDeOrigem: HTMLElement | null = null;
-    let copiaNoPalco: HTMLElement | null = null;
-    const legenda = dialogo.querySelector<HTMLElement>(".legenda-livro")!;
+    let copia: HTMLElement | null = null;
+    let livro: HTMLElement | null = null;
+    let m = { u: 0, bh: 0, cw: 0, sw: 0 };
+    let gsap: GSAP | null = null;
+
     /** Onde a cópia teria de estar para cobrir o livro de origem (a partir do lugar dela, sem transformação). */
     function sobreAOrigem() {
       const r0 = caixaDeOrigem!.getBoundingClientRect();
-      const r1 = copiaNoPalco!.getBoundingClientRect();
+      const r1 = copia!.getBoundingClientRect();
       return {
         x: r0.left + r0.width / 2 - (r1.left + r1.width / 2),
         y: r0.top + r0.height / 2 - (r1.top + r1.height / 2),
         scale: r0.height / r1.height,
       };
     }
-    let m = { u: 0, bh: 0, cw: 0, sw: 0 };
-    let giro = GIRO;
 
-    // O livro gira em volta do próprio centro (Livro3D): 0° é a capa de frente, 90° a lombada. Sem o
-    // GSAP (ou com movimento reduzido), pela variável do CSS; com ele, arrastar gira com embalo (D40).
-    function girar(graus: number) {
-      giro = Math.min(88, Math.max(-88, graus));
-      livro?.style.setProperty("--giro", `${giro}deg`);
+    // ---------- as páginas (buscadas uma vez por livro) ----------
+    const buscas = new Map<string, Promise<Paginas>>();
+    function buscarPaginas(endereco: string) {
+      if (!buscas.has(endereco)) {
+        const busca = fetch(endereco).then((r) => (r.ok ? (r.json() as Promise<Paginas>) : Promise.reject(new Error(String(r.status)))));
+        busca.catch(() => buscas.delete(endereco));
+        buscas.set(endereco, busca);
+      }
+      return buscas.get(endereco)!;
     }
 
-    // Arrastar com embalo (Draggable + InertiaPlugin): o livro continua girando depois de soltar e
-    // volta sozinho ao giro de sempre (GIRO) com um balanço. O Draggable mexe num elemento de mentira (o proxy).
-    let arrasto: { kill(): void } | null = null;
-    let gsapNoAr: Awaited<ReturnType<typeof carregarArrastar>>["gsap"] | null = null;
-    async function ligarArrasto() {
-      if (!livro || movimentoReduzido.matches) return;
-      const { gsap, Draggable } = await carregarArrastar();
-      gsapNoAr = gsap;
-      const alvo = livro;
-      if (!alvo || !dialogo!.open) return;
-      gsap.set(alvo, { rotationY: GIRO });
-      const proxy = document.createElement("div");
-      let inicio = GIRO;
-      const voltar = () => {
-        const agora = Number(gsap.getProperty(alvo, "rotationY"));
-        const destino = GIRO + Math.round((agora - GIRO) / 360) * 360;
-        gsap.to(alvo, { rotationY: destino, duration: 1.1, ease: "elastic.out(1, 0.6)", onComplete: () => gsap.set(alvo, { rotationY: GIRO }) });
+    const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
+    type Pagina = { html: string; rotulo: string; titulo?: string };
+
+    /**
+     * O que vai impresso. Cada folha leva duas páginas (frente à direita, costas à esquerda depois de
+     * virada): o sumário, os artigos e o fim do volume; com número ímpar de artigos, uma página de
+     * notas antes do fim, para ele cair à esquerda. O próximo livro fica dentro da contracapa, à
+     * direita, e a guarda, no verso da capa. Os links não recebem foco (o livro é aria-hidden).
+     */
+    function impresso(d: Paginas) {
+      const cab = `<p class="cab">${esc(d.nome.toUpperCase())} · ${d.volume ? `VOLUME ${d.volume}` : "SÉRIE"}</p>`;
+      const link = (href: string, texto: string, classe = "") => `<a${classe ? ` class="${classe}"` : ""} href="${esc(href)}" tabindex="-1">${texto}</a>`;
+      const guarda = `<div class="guarda"><div class="ex-libris"><span class="ex-libris-icone">${d.icone}</span><p class="el">Ex-libris</p><p class="nome">Cesar Schutz</p><p class="site">BLOG.CESARSCHUTZ.COM.BR</p></div></div>`;
+      const itens = d.posts
+        .map((p, i) => `<li><a href="${esc(p.url)}" tabindex="-1"><span class="n">${i + 1}</span><span class="t">${esc(p.titulo)}</span><span class="d">${esc(p.dia)}</span></a></li>`)
+        .join("");
+      const paginas: Pagina[] = [
+        {
+          html: `<div class="pg pg-dir">${cab}<h3>${d.serie ? "Ordem de leitura" : "Sumário"}</h3>${
+            itens ? `<ol class="sum">${itens}</ol>` : `<p class="vazio">Os artigos deste livro ainda vão ser escritos.</p>`
+          }<p class="folio">v</p></div>`,
+          rotulo: "sumário",
+        },
+        ...d.posts.map((p, i) => ({
+          html: `<div class="pg pg-${i % 2 === 0 ? "esq" : "dir"} cap">${cab}<p class="num">${i + 1}</p><h3>${esc(p.titulo)}</h3>${
+            p.subtitulo ? `<p class="sub">${esc(p.subtitulo)}</p>` : ""
+          }<p class="desc">${esc(p.descricao)}</p>${link(p.url, "Ler o artigo →", "ler")}<p class="quando">${esc(p.data)}</p><p class="folio">${i + 1}</p></div>`,
+          rotulo: `artigo ${i + 1}`,
+          titulo: p.titulo,
+        })),
+      ];
+      if (paginas.length % 2 === 0) {
+        paginas.push({ html: `<div class="pg pg-dir notas"><p class="cab">NOTAS</p><div class="pauta"></div></div>`, rotulo: "notas" });
+      }
+      const n = d.posts.length;
+      paginas.push({
+        html: `<div class="pg pg-esq colofao"><p class="fim">FIM ${d.volume ? `DO VOLUME ${d.volume}` : "DA SÉRIE"}</p><p>${
+          d.serie
+            ? `${n} ${n === 1 ? "edição" : "edições"} até aqui. As próximas entram nesta mesma série.`
+            : n === 0
+              ? "Nenhum artigo ainda. Os primeiros entram neste mesmo livro."
+              : `${n} ${n === 1 ? "artigo" : "artigos"} até aqui. Os próximos entram neste mesmo livro.`
+        }</p><p>${link(d.href, d.serie ? "Ver a série inteira" : "Ver o livro inteiro")}</p></div>`,
+        rotulo: "fim",
+      });
+      const px = d.proximo;
+      const proximo = `<div class="pg pg-dir proximo" style="--prox-cor:${esc(px.destaque)}"><p class="vol">PRÓXIMO · ${
+        px.volume ? `VOLUME ${px.volume}` : "SÉRIE"
+      }</p><h3>${esc(px.nome)}</h3><p>${esc(px.frase)}</p><p>${link(px.href, "Abrir o próximo livro →")}</p></div>`;
+      const folhas: { frente: Pagina; costas: Pagina }[] = [];
+      for (let i = 0; i < paginas.length; i += 2) folhas.push({ frente: paginas[i], costas: paginas[i + 1] });
+      return { guarda, folhas, proximo, serie: d.serie, nomeDoProximo: px.nome };
+    }
+
+    // ---------- o estado: p = a capa (0 fechada, 1 aberta), q[k] = cada folha (0 à direita, 1 virada) ----------
+    type Folha = { el: HTMLElement; s1: HTMLElement; s2: HTMLElement };
+    let folhas: Folha[] = [];
+    let conteudo: ReturnType<typeof impresso> | null = null;
+    let capa: HTMLElement | null = null;
+    let pagina: HTMLElement | null = null;
+    const estado = { p: 0, q: [] as number[] };
+    // No celular, a página que está à vista (o livro aberto é mais largo que a tela) e o quanto a vista correu.
+    let lado: "dir" | "esq" = "dir";
+    const vista = { x: 0 };
+    const curva = () => (celular.matches ? 0 : 24);
+    // Onde cada folha fica em z: à direita, debaixo da capa; virada, por cima da guarda.
+    const zDir = (k: number) => m.sw / 2 - 0.3 - k * 0.35;
+    const zEsq = (k: number) => m.sw / 2 + 0.95 + k * 0.35;
+
+    // Quem escreve as transformações a cada quadro (quickSetter: sem criar um tween por quadro).
+    type Escrever = (v: number) => void;
+    let escrita: { livroGiro: Escrever; livroX: Escrever; capa: Escrever; folhas: { z: Escrever; s1: Escrever; s2: Escrever }[] } | null = null;
+    function prepararEscrita() {
+      if (!gsap || !livro || !capa) return;
+      const g = gsap;
+      const qs = (el: Element, prop: string, unidade: string) => g.quickSetter(el, prop, unidade) as Escrever;
+      escrita = {
+        livroGiro: qs(livro, "rotationY", "deg"),
+        livroX: qs(livro, "x", "px"),
+        capa: qs(capa, "rotationY", "deg"),
+        folhas: folhas.map((f) => ({ z: qs(f.el, "z", "px"), s1: qs(f.s1, "rotationY", "deg"), s2: qs(f.s2, "rotationY", "deg") })),
       };
-      [arrasto] = Draggable.create(proxy, {
-        type: "x",
-        trigger: palco,
-        inertia: true,
-        onPress() {
-          gsap.killTweensOf(alvo);
-          inicio = Number(gsap.getProperty(alvo, "rotationY"));
-          gsap.set(proxy, { x: 0 });
-          this.update();
-        },
-        onDrag() {
-          arrastou = Math.abs(this.x) > 4;
-          gsap.set(alvo, { rotationY: inicio + this.x * 0.55 });
-        },
-        onThrowUpdate() {
-          gsap.set(alvo, { rotationY: inicio + this.x * 0.55 });
-        },
-        onRelease() {
-          if (!this.tween) voltar();
-        },
-        onThrowComplete: voltar,
+    }
+
+    function desenhar() {
+      if (!escrita) return;
+      const p = estado.p;
+      // Abrindo, o livro vira de frente, e a lombada vai para o meio (a capa abre para a esquerda).
+      escrita.livroGiro(GIRO * (1 - p));
+      escrita.livroX((m.cw / 2) * p + vista.x);
+      escrita.capa(-180 * p);
+      folhas.forEach((f, k) => {
+        const q = estado.q[k];
+        const e = escrita!.folhas[k];
+        e.z(zDir(k) + (zEsq(k) - zDir(k)) * q);
+        e.s1(-180 * q);
+        // A metade de fora vem atrás da de dentro: a folha curva no meio da virada e chega reta.
+        e.s2(curva() * Math.sin(Math.PI * q));
+        f.el.style.setProperty("--sombra", (0.22 * Math.sin(Math.PI * q)).toFixed(3));
       });
     }
 
+    const viradas = () => estado.q.filter((q) => q >= 0.999).length;
+    const aberto = () => estado.p >= 0.999;
+    /** 0: fechado; 1: guarda e sumário; 1 + k: com k folhas viradas. */
+    const passo = () => (aberto() ? 1 + viradas() : 0);
+
+    /** O nome da página da vez e, para quem usa leitor de tela, o que está escrito nela. */
+    function descrever(): { curto: string; extra?: string } {
+      const s = passo();
+      if (!conteudo || s === 0) return { curto: "Fechado" };
+      if (s === 1) return { curto: "Guarda e sumário" };
+      const k = s - 1;
+      const esq = conteudo.folhas[k - 1].costas;
+      const dir = conteudo.folhas[k]?.frente;
+      if (esq.rotulo === "fim") return { curto: conteudo.serie ? "Fim da série" : "Fim do volume", extra: `o próximo livro é ${conteudo.nomeDoProximo}` };
+      const artigos = [esq, dir].filter((pg): pg is Pagina => !!pg?.titulo);
+      const numeros = artigos.map((pg) => pg.rotulo.replace("artigo ", ""));
+      const curto = numeros.length === 2 ? `Artigos ${numeros[0]} e ${numeros[1]}` : `Artigo ${numeros[0]}`;
+      return { curto, extra: artigos.map((pg) => pg.titulo).join("; ") };
+    }
+
+    function atualizarBarra() {
+      const s = passo();
+      // Sem as páginas ainda, "Abrir o livro" espera por elas (proxima aguarda `pronto`).
+      const ultimo = conteudo ? conteudo.folhas.length + 1 : Number.POSITIVE_INFINITY;
+      const { curto, extra } = descrever();
+      const vistaDoCelular = celular.matches && aberto() ? (lado === "dir" ? " · direita" : " · esquerda") : "";
+      onde.innerHTML = `${curto}${vistaDoCelular}${extra ? `<span class="sr">: ${esc(extra)}</span>` : ""}`;
+      btAnterior.disabled = s === 0 && !(celular.matches && aberto());
+      btProxima.disabled = s === ultimo && !(celular.matches && lado === "esq");
+      btProxima.textContent = s === 0 ? "Abrir o livro" : "Virar a página";
+      btAnterior.textContent = s === 1 && !(celular.matches && lado === "dir") ? "Fechar o livro" : "Voltar a página";
+    }
+
+    // ---------- o movimento ----------
+    let andando: gsap.core.Timeline | null = null;
+    /** Leva a capa (k = -1) ou a folha k até `para`, com a física de cada uma; `v`: a velocidade ao soltar. */
+    function mover(k: number, para: number | null, v: number | null = null) {
+      if (!gsap) return;
+      const g = gsap;
+      andando?.kill();
+      const eCapa = k === -1;
+      const obj = { v: eCapa ? estado.p : estado.q[k] };
+      const aplicar = () => {
+        const v = Math.min(1, Math.max(0, obj.v));
+        if (eCapa) estado.p = v;
+        else estado.q[k] = v;
+        desenhar();
+      };
+      const fim = () => {
+        andando = null;
+        atualizarBarra();
+        enquadrar();
+      };
+      if (movimentoReduzido.matches) {
+        obj.v = para ?? (obj.v > 0.5 ? 1 : 0);
+        aplicar();
+        return fim();
+      }
+      const rapido = celular.matches ? 0.75 : 1;
+      let tween: gsap.core.Tween;
+      if (v !== null) {
+        // Solta com velocidade: a inércia decide onde para (aberta ou fechada) e desacelera até lá.
+        tween = g.to(obj, {
+          inertia: {
+            v: { velocity: v, end: [0, 1], min: 0, max: 1 },
+            // A duração da inércia vai dentro dela; sem passar do fim (a folha não vira além da lombada).
+            duration: { min: 0.25, max: eCapa ? 0.9 : 0.7, overshoot: 0 },
+          },
+          onUpdate: aplicar,
+        } as unknown as gsap.TweenVars);
+      } else if (eCapa) {
+        // A capa é papelão: sai devagar, ganha peso e assenta.
+        tween = g.to(obj, { v: para!, duration: 0.95 * rapido, ease: "power2.inOut", onUpdate: aplicar });
+      } else {
+        // A folha é leve: começa rápido, flutua no meio e pousa sem pressa.
+        tween = g.to(obj, { v: para!, duration: 0.75 * rapido, ease: "sine.inOut", onUpdate: aplicar });
+      }
+      const tl = g.timeline({ onComplete: fim }).add(tween);
+      andando = tl;
+      if (eCapa) {
+        // Ao pousar, a capa dura bate e volta um nada, só uma vez.
+        tl.add(() => {
+          const alvo = obj.v >= 0.5 ? 1 : 0;
+          tl.add(g.to(obj, { v: alvo === 1 ? 0.988 : 0.012, duration: 0.07, ease: "power1.out", onUpdate: aplicar }));
+          tl.add(g.to(obj, { v: alvo, duration: 0.12, ease: "power1.in", onUpdate: aplicar }));
+        });
+      }
+    }
+
+    /** No celular, a vista corre para a página da vez; no computador, o livro aberto cabe inteiro. */
+    function enquadrar(novo?: "dir" | "esq") {
+      if (novo) lado = novo;
+      const x = !celular.matches || !aberto() ? 0 : lado === "dir" ? -m.cw / 2 : m.cw / 2;
+      if (!gsap || movimentoReduzido.matches) {
+        vista.x = x;
+        desenhar();
+      } else {
+        gsap.to(vista, { x, duration: 0.45, ease: "power2.inOut", overwrite: true, onUpdate: desenhar });
+      }
+      atualizarBarra();
+    }
+
+    let pronto: Promise<void> = Promise.resolve();
+    async function proxima() {
+      await pronto;
+      if (andando || !conteudo) return;
+      if (celular.matches && aberto() && lado === "esq") return enquadrar("dir");
+      if (!aberto()) {
+        lado = "dir";
+        return mover(-1, 1);
+      }
+      const k = viradas();
+      if (k < folhas.length) {
+        lado = "esq";
+        mover(k, 1);
+      }
+    }
+    async function anterior() {
+      await pronto;
+      if (andando || !conteudo) return;
+      if (celular.matches && aberto() && lado === "dir") return enquadrar("esq");
+      const k = viradas();
+      if (aberto() && k > 0) {
+        lado = "dir";
+        return mover(k - 1, 0);
+      }
+      if (estado.p > 0) mover(-1, 0);
+    }
+
+    /** Fecha o livro de uma vez: as folhas voltam juntas, como quem fecha o livro com a mão, e a capa por cima. */
+    function fecharLivro(): Promise<void> {
+      andando?.kill();
+      andando = null;
+      if (!gsap || (estado.p === 0 && estado.q.every((q) => q === 0))) return Promise.resolve();
+      const q0 = [...estado.q];
+      const p0 = estado.p;
+      const fim = () => {
+        vista.x = 0;
+        desenhar();
+        atualizarBarra();
+      };
+      if (movimentoReduzido.matches) {
+        estado.p = 0;
+        estado.q = q0.map(() => 0);
+        fim();
+        return Promise.resolve();
+      }
+      const obj = { t: 0 };
+      const x0 = vista.x;
+      const g = gsap;
+      return new Promise((pronto) => {
+        g.to(obj, {
+          t: 1,
+          duration: 0.6,
+          ease: "power2.inOut",
+          onUpdate: () => {
+            estado.q = q0.map((q) => q * (1 - Math.min(1, obj.t * 1.6)));
+            estado.p = p0 * (1 - obj.t);
+            vista.x = x0 * (1 - obj.t);
+            desenhar();
+          },
+          onComplete: () => {
+            fim();
+            pronto();
+          },
+        });
+      });
+    }
+
+    /** Monta as folhas, a guarda e a última página dentro da cópia do livro. */
+    function montarPaginas(d: Paginas) {
+      if (!livro || !copia) return;
+      conteudo = impresso(d);
+      capa = livro.querySelector<HTMLElement>(".face-capa");
+      pagina = livro.querySelector<HTMLElement>(".pagina");
+      // As camadas de página por baixo da capa (D40) ficariam por cima das folhas.
+      for (const camada of livro.querySelectorAll(".folha-livro")) camada.remove();
+      livro.querySelector<HTMLElement>(".capa-verso")!.innerHTML = conteudo.guarda;
+      pagina!.innerHTML = conteudo.proximo;
+      const face = (lado: "frente" | "costas", html: string, meia: boolean) =>
+        `<div class="face ${lado}${meia ? " meia-dir" : ""}">${html}</div>`;
+      folhas = conteudo.folhas.map((f) => {
+        const el = document.createElement("div");
+        el.className = "folha-l";
+        // Metade de dentro (junto da lombada): a metade esquerda da frente e, nas costas, a metade
+        // direita da página de trás; a de fora, o contrário.
+        el.innerHTML = `<div class="seg s1">${face("frente", f.frente.html, false)}${face("costas", f.costas.html, true)}<div class="seg s2">${face("frente", f.frente.html, true)}${face("costas", f.costas.html, false)}</div></div>`;
+        livro!.insertBefore(el, capa);
+        return { el, s1: el.querySelector<HTMLElement>(".s1")!, s2: el.querySelector<HTMLElement>(".s2")! };
+      });
+      estado.p = 0;
+      estado.q = folhas.map(() => 0);
+      vista.x = 0;
+      lado = "dir";
+      prepararEscrita();
+      medirPagina();
+      desenhar();
+      atualizarBarra();
+    }
+
+    /** A última página (o próximo livro) fica abaixo de todas as folhas; a capa, acima delas. */
+    function medirPagina() {
+      if (!gsap || !pagina || !capa) return;
+      gsap.set(pagina, { z: zDir(folhas.length) - 0.3 });
+      gsap.set(capa, { z: m.sw / 2 + 0.6 });
+    }
+
+    // ---------- o tamanho: o livro aberto cabe inteiro (no celular, uma página) ----------
+    function medir(largura: number) {
+      const alturaMax = Math.min(innerHeight * 0.7, 640);
+      const larguraMax = innerWidth - 48;
+      const cw = (h: number) => 480 * (h / 720);
+      // Aberto, o livro tem duas capas de largura; no celular, a vista corre de uma página para a outra.
+      const cabe = (h: number) => (celular.matches ? cw(h) * 1.05 : cw(h) * 2 * 1.02) <= larguraMax;
+      let altura = alturaMax;
+      while (altura > 200 && !cabe(altura)) altura -= 10;
+      const u = altura / 720;
+      m = { u, bh: altura, cw: Math.round(480 * u), sw: Math.round(largura * u) };
+      for (const [k, v] of Object.entries(m)) palco.style.setProperty(`--${k}`, `${v}px`);
+      // A metade de dentro de cada folha, em pixels inteiros (paginas.css).
+      palco.style.setProperty("--meia", `${Math.floor((m.cw - 6) / 2)}px`);
+    }
+
+    // ---------- arrastar a folha (Draggable + InertiaPlugin) ----------
+    let arrasto: { kill(): void } | null = null;
+    let arrastou = false;
+    async function ligarArrasto() {
+      if (arrasto || movimentoReduzido.matches) return;
+      const { gsap: g, Draggable, InertiaPlugin } = await carregarArrastar();
+      if (arrasto || !dialogo!.open) return;
+      const proxy = document.createElement("div");
+      let alvo: number | "prox" | "ant" | null = null;
+      let base = 0;
+      let largura = 1;
+      let x0 = 0;
+      [arrasto] = Draggable.create(proxy, {
+        trigger: palco,
+        type: "x",
+        minimumMovement: 6,
+        onPress() {
+          arrastou = false;
+        },
+        onDragStart() {
+          arrastou = true;
+          alvo = null;
+          if (andando || !conteudo) return;
+          const esq = this.getDirection("start") === "left";
+          // No celular, o gesto inteiro vira (ou volta) a página, sem seguir o dedo.
+          if (celular.matches) return void (alvo = esq ? "prox" : "ant");
+          const k = viradas();
+          if (esq) alvo = !aberto() ? -1 : k < folhas.length ? k : null;
+          else alvo = aberto() && k > 0 ? k - 1 : estado.p > 0 ? -1 : null;
+          if (alvo === null) return;
+          base = alvo === -1 ? estado.p : estado.q[alvo];
+          largura = alvo === -1 ? m.cw * 1.1 : m.cw;
+          x0 = this.x;
+          lado = esq ? "esq" : "dir";
+        },
+        onDrag() {
+          if (typeof alvo !== "number") return;
+          const v = Math.min(1, Math.max(0, base - (this.x - x0) / largura));
+          if (alvo === -1) estado.p = v;
+          else estado.q[alvo] = v;
+          desenhar();
+        },
+        onRelease() {
+          const a = alvo;
+          alvo = null;
+          if (a === null) return;
+          if (a === "prox") return void proxima();
+          if (a === "ant") return void anterior();
+          // O arremesso: a velocidade no fim do arrasto, em "voltas" por segundo.
+          const vx = InertiaPlugin.getVelocity(proxy, "x") || 0;
+          mover(a, null, -vx / largura);
+        },
+      });
+      gsap ??= g;
+    }
+
+    // ---------- abrir e fechar o visor ----------
     function abrir(raiz: HTMLElement) {
       const caixa = raiz.querySelector<HTMLElement>(".livro-3d-caixa");
       if (!caixa) return;
@@ -117,24 +496,27 @@ import "../styles/visor.css";
       for (const prop of Array.from(raiz.style)) {
         if (prop.startsWith("--")) palco.style.setProperty(prop, raiz.style.getPropertyValue(prop));
       }
-      const largura = Number(raiz.dataset.largura);
-      // A maior altura que cabe: 70% da tela, com o livro inteiro na largura.
-      const alturaMax = Math.min(innerHeight * 0.7, 640);
-      const larguraMax = innerWidth - 48;
-      let altura = alturaMax;
-      const cabe = (h: number) => (480 * (h / 720)) * 1.05 <= larguraMax;
-      while (altura > 200 && !cabe(altura)) altura -= 10;
-      const u = altura / 720;
-      m = { u, bh: altura, cw: Math.round(480 * u), sw: Math.round(largura * u) };
-      for (const [k, v] of Object.entries(m)) palco.style.setProperty(`--${k}`, `${v}px`);
+      medir(Number(raiz.dataset.largura));
 
-      const copia = caixa.cloneNode(true) as HTMLElement;
-      copia.removeAttribute("style");
-      livro = copia.querySelector<HTMLElement>(".livro-3d");
-      // O giro da origem (o GSAP da gaveta o deixa no style) não vem junto: aqui manda o --giro.
+      const nova = caixa.cloneNode(true) as HTMLElement;
+      nova.removeAttribute("style");
+      nova.classList.add("livro-que-abre");
+      livro = nova.querySelector<HTMLElement>(".livro-3d");
+      // O giro da origem (o GSAP da gaveta o deixa no style) não vem junto.
       livro?.style.removeProperty("transform");
-      palco.replaceChildren(copia);
-      girar(GIRO);
+      livro?.style.setProperty("--giro", `${GIRO}deg`);
+      palco.replaceChildren(nova);
+      copia = nova;
+      caixaDeOrigem = caixa;
+      folhas = [];
+      conteudo = null;
+      escrita = null;
+      capa = pagina = null;
+      estado.p = 0;
+      estado.q = [];
+      vista.x = 0;
+      lado = "dir";
+      atualizarBarra();
 
       nome.textContent = raiz.dataset.nome ?? "";
       dados.textContent = raiz.dataset.dados ?? "";
@@ -143,107 +525,125 @@ import "../styles/visor.css";
       ir.href = destino || "#";
 
       dialogo!.showModal();
-      caixaDeOrigem = caixa;
-      copiaNoPalco = copia;
-      // Abre de lado, como o livro de origem (GIRO, D46); arrastar gira o livro, com embalo.
+      // As páginas e o GSAP chegam juntos; até lá, os botões esperam.
+      const endereco = raiz.dataset.paginas;
+      pronto = Promise.all([carregarGsap(), endereco ? buscarPaginas(endereco) : Promise.reject(new Error("sem páginas"))])
+        .then(([g, d]) => {
+          gsap ??= g;
+          if (copia === nova && dialogo!.open) montarPaginas(d);
+        })
+        .catch(() => {
+          btProxima.disabled = true;
+        });
       ligarArrasto();
       // O livro cresce a partir do de origem, que sai do lugar enquanto isso (D47).
       if (!movimentoReduzido.matches) {
-        carregarGsap().then((gsap) => {
-          if (!dialogo!.open || copiaNoPalco !== copia) return;
+        carregarGsap().then((g) => {
+          gsap ??= g;
+          if (!dialogo!.open || copia !== nova) return;
           const de = sobreAOrigem();
-          gsap.set(caixa, { opacity: 0 });
-          gsap.fromTo(copia, de, { x: 0, y: 0, scale: 1, duration: 0.7, ease: "power3.inOut" });
-          gsap.fromTo(legenda, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4, delay: 0.35, ease: "power2.out" });
+          g.set(caixa, { opacity: 0 });
+          g.fromTo(nova, de, { x: 0, y: 0, scale: 1, duration: 0.7, ease: "power3.inOut" });
+          g.fromTo(legenda, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4, delay: 0.35, ease: "power2.out" });
         });
       }
     }
 
-    // Fechar: o livro volta para o de origem, girando de volta ao GIRO, e o véu clareia (D47).
+    // Fechar: o livro se fecha, volta para o de origem, e o véu clareia (D47).
     let fechando = false;
     async function fechar() {
       if (fechando || !dialogo!.open) return;
-      if (movimentoReduzido.matches || !caixaDeOrigem || !copiaNoPalco) return dialogo!.close();
+      if (movimentoReduzido.matches || !caixaDeOrigem || !copia) return dialogo!.close();
       fechando = true;
-      const gsap = await carregarGsap();
-      const copia = copiaNoPalco;
-      dialogo!.classList.add("fechando");
+      const g = (gsap ??= await carregarGsap());
+      const nova = copia;
       arrasto?.kill();
       arrasto = null;
-      gsap.killTweensOf([copia, livro]);
-      gsap.to(legenda, { opacity: 0, duration: 0.2 });
-      if (livro) gsap.to(livro, { rotationY: GIRO, duration: 0.45, ease: "power2.out" });
+      g.to(legenda, { opacity: 0, duration: 0.2 });
+      await fecharLivro();
+      dialogo!.classList.add("fechando");
+      g.killTweensOf(nova);
       // A posição de origem é medida sem a transformação que a cópia tem agora.
-      const agora = { x: gsap.getProperty(copia, "x"), y: gsap.getProperty(copia, "y"), scale: gsap.getProperty(copia, "scale") };
-      gsap.set(copia, { x: 0, y: 0, scale: 1 });
+      const agora = { x: g.getProperty(nova, "x"), y: g.getProperty(nova, "y"), scale: g.getProperty(nova, "scale") };
+      g.set(nova, { x: 0, y: 0, scale: 1 });
       const para = sobreAOrigem();
-      gsap.set(copia, agora);
-      await gsap.to(copia, { ...para, duration: 0.55, ease: "power3.inOut" }).then();
+      g.set(nova, agora);
+      await g.to(nova, { ...para, duration: 0.55, ease: "power3.inOut" }).then();
       dialogo!.close();
     }
 
     dialogo.addEventListener("close", () => {
       arrasto?.kill();
       arrasto = null;
+      andando?.kill();
+      andando = null;
       fechando = false;
       dialogo.classList.remove("fechando");
       caixaDeOrigem?.style.removeProperty("opacity");
       legenda.style.removeProperty("opacity");
       legenda.style.removeProperty("transform");
-      caixaDeOrigem = copiaNoPalco = null;
+      caixaDeOrigem = copia = null;
       palco.replaceChildren();
+      folhas = [];
+      conteudo = null;
+      escrita = null;
       origem?.querySelector<HTMLElement>("[data-ampliar]")?.focus({ preventScroll: true });
-      origem = livro = null;
+      origem = livro = capa = pagina = null;
     });
     dialogo.querySelector("[data-fechar]")!.addEventListener("click", () => fechar());
-    // Esc também volta com o livro.
+    // Esc também fecha o livro e o leva de volta.
     dialogo.addEventListener("cancel", (e) => {
       e.preventDefault();
       fechar();
     });
-    // Clique fora do livro e da legenda fecha (mas não o clique que termina um arraste).
-    let arrastou = false;
+    btProxima.addEventListener("click", () => proxima());
+    btAnterior.addEventListener("click", () => anterior());
+    dialogo.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight") proxima();
+      else if (e.key === "ArrowLeft") anterior();
+      else return;
+      e.preventDefault();
+    });
+
+    // Um clique no livro: na página da direita, vira; na da esquerda, volta; num link, segue o link.
+    // Fora do livro e da legenda, fecha (mas não o clique que termina um arraste).
     dialogo.addEventListener("click", (e) => {
       const alvo = e.target as HTMLElement;
       if (arrastou) {
         arrastou = false;
         return;
       }
+      if (alvo.closest("a") && alvo.closest(".livro-3d-caixa")) return;
+      const noLivro = alvo.closest(".livro-3d-caixa");
+      if (noLivro && copia) {
+        if (!aberto()) return void proxima();
+        if (celular.matches) return void (e.clientX > innerWidth / 2 ? proxima() : anterior());
+        // Aberto, a lombada fica no meio do palco.
+        const lombada = palco.getBoundingClientRect().left + palco.clientWidth / 2;
+        return void (e.clientX > lombada ? proxima() : anterior());
+      }
       if (alvo === dialogo || alvo === palco) fechar();
     });
-    dialogo.addEventListener("keydown", (e) => {
-      const passo = e.key === "ArrowLeft" ? -8 : e.key === "ArrowRight" ? 8 : 0;
-      if (!passo) return;
-      // Com o GSAP, as setas giram o livro aos poucos; sem ele, pela variável do CSS.
-      if (arrasto && gsapNoAr && livro) gsapNoAr.to(livro, { rotationY: `+=${passo}`, duration: 0.3, ease: "power2.out" });
-      else girar(giro + passo);
-      e.preventDefault();
+
+    // Girou o celular ou mudou a janela com o livro aberto: refaz o tamanho, no mesmo estado.
+    let larguraDaTela = innerWidth;
+    addEventListener("resize", () => {
+      if (!dialogo.open || !origem || innerWidth === larguraDaTela) return;
+      larguraDaTela = innerWidth;
+      medir(Number(origem.dataset.largura));
+      medirPagina();
+      vista.x = 0;
+      if (!celular.matches) lado = "dir";
+      enquadrar();
     });
 
-    // Arrastar gira: para a direita, a capa vem para a frente; para a esquerda, a lombada.
-    let inicio: { x: number; giro: number } | null = null;
-    palco.addEventListener("pointerdown", (e) => {
-      arrastou = false;
-      // Com o embalo do GSAP ligado, é o Draggable que cuida do arrasto.
-      if (arrasto || !livro || !(e.target as HTMLElement).closest(".livro-3d-caixa")) return;
-      inicio = { x: e.clientX, giro };
-      palco.setPointerCapture(e.pointerId);
-      palco.classList.add("arrastando");
-    });
-    palco.addEventListener("pointermove", (e) => {
-      if (!inicio) return;
-      if (Math.abs(e.clientX - inicio.x) > 4) arrastou = true;
-      girar(inicio.giro + (e.clientX - inicio.x) * 0.35);
-    });
-    const soltar = () => {
-      inicio = null;
-      palco.classList.remove("arrastando");
-    };
-    palco.addEventListener("pointerup", soltar);
-    palco.addEventListener("pointercancel", soltar);
-
-    // O GSAP com o arrasto vem um pouco antes: ao passar o mouse, tocar ou focar a lupa.
-    for (const lupa of document.querySelectorAll("[data-ampliar]")) adiantar(lupa, carregarArrastar);
+    // O GSAP com o arrasto e as páginas vêm um pouco antes: ao passar o mouse, tocar ou focar a lupa.
+    for (const lupa of document.querySelectorAll<HTMLElement>("[data-ampliar]")) {
+      adiantar(lupa, () => {
+        const endereco = lupa.closest<HTMLElement>("[data-ampliar-livro]")?.dataset.paginas;
+        return Promise.all([carregarArrastar(), endereco ? buscarPaginas(endereco).catch(() => undefined) : undefined]);
+      });
+    }
 
     // Quem abre: o livro (clique) ou a lupa (clique e teclado), também na gaveta da home (D43).
     document.addEventListener("click", (e) => {
@@ -275,12 +675,8 @@ import "../styles/visor.css";
     user-select: none;
   }
 
-  .palco-ampliado.arrastando {
+  .palco-ampliado:active {
     cursor: grabbing;
-  }
-
-  .palco-ampliado.arrastando :global(.livro-3d) {
-    transition: none;
   }
 
   /* A sombra do livro no chão. */
@@ -297,9 +693,14 @@ import "../styles/visor.css";
     pointer-events: none;
   }
 
-  /* O livro cresce a partir do de origem pelo GSAP (D47). */
+  /* O livro cresce a partir do de origem pelo GSAP (D47); os links das páginas continuam clicáveis. */
   .palco-ampliado :global(.livro-3d-caixa) {
     z-index: 1;
+    cursor: inherit;
+  }
+
+  .palco-ampliado :global(.pg a) {
+    cursor: pointer;
   }
 
   /* Fechando, o véu clareia enquanto o livro volta. */
@@ -311,7 +712,7 @@ import "../styles/visor.css";
   .legenda-livro {
     display: grid;
     justify-items: center;
-    gap: 6px;
+    gap: 8px;
     padding: 10px var(--pad) calc(18px + env(safe-area-inset-bottom, 0px));
     font-family: var(--font-ui);
     text-align: center;
@@ -331,6 +732,57 @@ import "../styles/visor.css";
     margin-left: 8px;
     font-size: 14.5px;
     color: color-mix(in oklab, var(--veu-tinta) 72%, transparent);
+  }
+
+  /* Os passos do livro: voltar, onde está e virar. */
+  .folhear {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 8px 12px;
+  }
+
+  .passo {
+    min-height: 36px;
+    padding: 6px 14px;
+    border: 1px solid color-mix(in oklab, var(--veu-tinta) 30%, transparent);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--veu-tinta);
+    font-family: var(--font-ui);
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    transition:
+      background 0.15s,
+      border-color 0.15s;
+  }
+
+  .passo:hover:not(:disabled) {
+    border-color: color-mix(in oklab, var(--veu-tinta) 60%, transparent);
+    background: color-mix(in oklab, var(--veu-tinta) 10%, transparent);
+  }
+
+  .passo.primario {
+    border-color: var(--veu-tinta);
+  }
+
+  .passo:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .passo:focus-visible {
+    outline: 2px solid var(--veu-tinta);
+    outline-offset: 3px;
+  }
+
+  .onde {
+    min-width: 13ch;
+    font-size: 14px;
+    color: color-mix(in oklab, var(--veu-tinta) 78%, transparent);
+    font-variant-numeric: lining-nums tabular-nums;
   }
 
   .ir-livro {
@@ -355,10 +807,20 @@ import "../styles/visor.css";
     stroke-linejoin: round;
   }
 
-  .dica-giro {
-    font-size: 12.5px;
-    color: color-mix(in oklab, var(--veu-tinta) 55%, transparent);
+  @media (max-width: 640px) {
+    .folhear {
+      width: 100%;
+    }
+
+    .onde {
+      order: -1;
+      flex-basis: 100%;
+    }
   }
 
-
+  @media (prefers-reduced-motion: reduce) {
+    .passo {
+      transition: none;
+    }
+  }
 </style>

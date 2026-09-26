@@ -10,6 +10,7 @@ import { CATEGORIAS, type CoresDoLivro } from "../data/taxonomia";
 import { SERIES } from "../data/series";
 import { normalizar } from "./busca/tipos";
 import { getPostsDaSerie, getResumos, urlCategoria, urlSerie, type Resumo } from "./posts";
+import { url } from "./url";
 
 export interface Livro {
   /** Único na página: também é o view-transition-name (D29). */
@@ -143,6 +144,9 @@ export function larguraDaEstante(livros: Livro[], comAparador = true): number {
   const aparador = comAparador ? 43 + 12 + 25 : 0;
   return Math.ceil(2 * 16 + livros.reduce((soma, l) => soma + l.emPe.largura, 0) + 6 * (itens - 1) + aparador);
 }
+
+/** Onde o livro ampliado busca as páginas de dentro do livro (D49): /livros/<slug>.json. */
+export const paginasDoLivro = (l: Livro) => url(`/livros/${l.serie ? l.id : l.slug}.json`);
 
 /** Linha curta do livro, para legendas (D33): "Volume 01 · 6 artigos" ou "Série · 7 edições". */
 export function dadosDoLivro(l: Livro): string {
