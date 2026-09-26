@@ -100,11 +100,22 @@
   margin-inline: 0.15em;
 }
 
+/*
+ * O traço do círculo fica a ~5% das bordas do desenho: a folga cresce com a largura do trecho (em %),
+ * para o círculo não cortar a primeira e a última letra de um trecho longo.
+ */
 .prose .caneta-circulo > .caneta-svg {
-  left: -0.45em;
-  top: -0.32em;
-  width: calc(100% + 0.9em);
-  height: calc(100% + 0.64em);
+  left: calc(-0.2em - 6.5%);
+  top: -0.24em;
+  width: calc(113% + 0.4em);
+  height: calc(100% + 0.48em);
+}
+
+/* O círculo de trecho longo tem as bordas a 2% do desenho (src/plugins/marcacoes.mjs). */
+.prose .caneta-circulo.longo > .caneta-svg,
+.expressive-code .caneta-codigo-circulo.longo > .caneta-svg {
+  left: calc(-0.3em - 2.5%);
+  width: calc(105% + 0.6em);
 }
 
 .prose .caneta-caixa {
@@ -131,17 +142,21 @@
   height: 0.36em;
 }
 
-/* Seta ligando: um arco por cima do trecho, no respiro que ele abre acima da própria linha. */
+/*
+ * Seta ligando: um arco por cima do trecho, no respiro que ele abre acima da própria linha. O arco
+ * fica na parte de baixo do respiro, perto do trecho, e as pontas descem até as letras dele: longe da
+ * linha de cima, ele não parece sublinhá-la.
+ */
 .prose .caneta-liga {
   display: inline-block;
-  padding-top: 0.45em;
+  padding-top: 0.75em;
 }
 
 .prose .caneta-liga > .caneta-svg {
   left: 0;
-  top: 0.02em;
+  top: 0.3em;
   width: 100%;
-  height: 0.7em;
+  height: 0.62em;
 }
 
 /* Sinal entre dois termos (≠). */
@@ -162,19 +177,21 @@
 
 /*
  * Nota na margem e riscado com correção: a nota fica acima da palavra, num respiro que a própria
- * palavra abre na linha dela (inline-block com padding), sem cobrir a linha de cima. Quando não cabe
- * (celular, ou a nota passaria da margem direita: caneta.ts), ela vai logo depois da palavra.
+ * palavra abre na linha dela (inline-block com padding), sem cobrir a linha de cima. A nota desce um
+ * pouco dentro do respiro e gira pelo meio, para a ponta inclinada não subir até as letras de cima
+ * (conferido com a caixa da fonte, D48). Quando não cabe (celular, ou a nota passaria da margem
+ * direita: caneta.ts), ela vai logo depois da palavra.
  */
 .prose :is(.caneta-nota, .caneta-riscado.com-correcao) {
   display: inline-block;
-  padding-top: 1em;
+  padding-top: 1.3em;
   line-height: inherit;
 }
 
 .prose .caneta-nota-texto,
 .prose .caneta-correcao {
   position: absolute;
-  top: 0;
+  top: 0.25em;
   font-size: 1.2em;
   line-height: 1;
   white-space: nowrap;
@@ -184,7 +201,7 @@
   left: 62%;
   padding-left: 1.05em;
   transform: rotate(-2deg);
-  transform-origin: left bottom;
+  transform-origin: center bottom;
 }
 
 .prose .caneta-nota-texto > .caneta-seta {
@@ -199,6 +216,20 @@
   left: 50%;
   translate: -45% 0;
   transform: rotate(-4deg);
+}
+
+/* Quando a nota passaria da margem direita, ela fica acima, mas terminando sobre a palavra (caneta.ts). */
+.prose .caneta-nota[data-lugar="acima-esquerda"] .caneta-nota-texto {
+  left: auto;
+  right: 38%;
+  padding-left: 0;
+  padding-right: 1.05em;
+}
+
+.prose .caneta-nota[data-lugar="acima-esquerda"] .caneta-seta {
+  left: auto;
+  right: -0.05em;
+  scale: -1 1;
 }
 
 .prose :is(.caneta-nota, .caneta-riscado.com-correcao)[data-lugar="depois"] {
@@ -420,15 +451,16 @@
 
 /* ---------- nos blocos de código (src/lib/codigo.ts) ---------- */
 
+/* Quase sem folga dos lados: o círculo pode passar por cima da pontuação, mas o código não muda de forma. */
 .expressive-code .caneta-codigo-circulo {
   position: relative;
-  margin-inline: 0.5em;
+  margin-inline: 0.15em;
 }
 
 .expressive-code .caneta-codigo-circulo > .caneta-svg {
-  left: -0.8em;
+  left: calc(-0.2em - 6.5%);
   top: -0.3em;
-  width: calc(100% + 1.6em);
+  width: calc(113% + 0.4em);
   height: calc(100% + 0.6em);
 }
 

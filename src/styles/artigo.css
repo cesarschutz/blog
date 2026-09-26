@@ -117,8 +117,14 @@
  * com a margem normal do site, e os blocos largos ficam na largura do texto.
  */
 @media (max-width: 640px) {
+  /*
+   * A folha passa 12px do texto de cada lado (dentro da margem de 16px do site), sem mudar o texto de
+   * lugar: a caneta (D48) que sai um pouco da palavra, como o círculo e a caixa, não é cortada pela
+   * borda da folha (overflow: clip) quando a palavra abre a linha.
+   */
   .artigo-folha {
-    padding: 10px 0 32px;
+    margin-inline: -12px;
+    padding: 10px 12px 32px;
     border: 0;
     border-radius: 0;
     background: none;

@@ -1,9 +1,10 @@
 /**
  * A caneta do caderno (D48): as marcações são estáticas e já vêm prontas do Markdown (sem JS, tudo
  * aparece). Este script só decide o lugar das notas escritas acima da palavra (nota na margem e
- * riscado com correção): se a nota passaria da margem direita do texto, ela vai logo depois da
- * palavra, na mesma letra. No celular (≤ 640px) o CSS já as põe depois. Mede de novo quando a largura
- * do texto muda e quando a letra à mão termina de carregar.
+ * riscado com correção). Se a nota passaria da margem direita do texto, ela fica acima, mas terminando
+ * sobre a palavra (só a nota na margem); se ainda assim não couber, vai logo depois da palavra, na
+ * mesma letra. No celular (≤ 640px) o CSS já as põe depois. Mede de novo quando a largura do texto
+ * muda e quando a letra à mão termina de carregar.
  */
 export function canetaNoLugar() {
   const prosa = document.querySelector<HTMLElement>(".prose");
@@ -12,11 +13,16 @@ export function canetaNoLugar() {
   let largura = -1;
   const medir = () => {
     for (const nota of notas) delete nota.dataset.lugar;
-    const direita = prosa.getBoundingClientRect().right;
+    const { left: esquerda, right: direita } = prosa.getBoundingClientRect();
     for (const nota of notas) {
       const escrita = nota.querySelector<HTMLElement>(".caneta-escrita");
       if (!escrita || getComputedStyle(escrita).position !== "absolute") continue;
-      if (escrita.getBoundingClientRect().right > direita + 2) nota.dataset.lugar = "depois";
+      if (escrita.getBoundingClientRect().right <= direita + 2) continue;
+      if (nota.classList.contains("caneta-nota")) {
+        nota.dataset.lugar = "acima-esquerda";
+        if (escrita.getBoundingClientRect().left >= esquerda - 2) continue;
+      }
+      nota.dataset.lugar = "depois";
     }
   };
   new ResizeObserver(([entrada]) => {

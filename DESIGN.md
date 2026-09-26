@@ -536,9 +536,17 @@ têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm can
     esquerda do texto, quando a folha tem ao menos 30px de margem (tela ≥ 940px); abaixo disso, o
     parágrafo marcado recua 1,6rem e a marca fica no recuo. Certo e errado e números circulados
     usam o recuo da própria lista (1,9em). Nada corta nem cria rolagem lateral.
-  - **Notas acima da palavra** (nota na margem, riscado com correção): a palavra abre 1em de espaço
-    na própria linha, e a nota fica ali, sem cobrir a linha de cima. No celular (≤ 640px) ou quando
-    a nota passaria da margem direita (`src/scripts/caneta.ts`), ela vai logo depois da palavra.
+  - **Notas acima da palavra** (nota na margem, riscado com correção): a palavra abre 1,3em de
+    espaço na própria linha, e a nota fica ali, 0,25em abaixo do topo e inclinada 2° pelo meio, sem
+    cobrir a linha de cima. Quando a nota passaria da margem direita, ela termina sobre a palavra, com
+    a seta virada (`src/scripts/caneta.ts`); se ainda não couber, e sempre no celular (≤ 640px), vai
+    logo depois da palavra.
+  - **Círculo:** a folga cresce com o trecho (0,2em + 6,5% de cada lado); acima de 12 caracteres, o
+    círculo se cruza no alto, para não cortar as primeiras letras.
+  - **Seta ligando:** o trecho abre 0,75em acima da própria linha, e o arco fica na parte de baixo desse
+    respiro, com as pontas descendo até as letras (longe da linha de cima, não parece sublinhá-la).
+  - **Celular:** a folha do artigo passa 12px do texto de cada lado (dentro da margem de 16px), sem
+    mudar o texto de lugar, para os traços de uma palavra que abre a linha não serem cortados.
   - **Código:** a nota fica ao lado da linha quando cabe e embaixo dela (com "↑", parada na esquerda
     do bloco) quando a linha é longa e sempre no celular, para a rolagem do bloco não cortá-la.
   - Na impressão, tudo aparece; em alto contraste, os traços seguem a cor do texto.

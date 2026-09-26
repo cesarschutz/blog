@@ -216,6 +216,7 @@ export function pluginAlturaEstimada(): ExpressiveCodePlugin {
 const CABE_NA_LINHA = 58;
 const CANETA = {
   circulo: ["0 0 100 44", ["M10 25 C 5 10, 38 3, 68 5 C 94 7, 99 27, 80 35 C 55 43, 12 40, 6 26 C 4 17, 16 9, 30 7"]],
+  circuloLongo: ["0 0 100 44", ["M58 3.5 C 82 3.5, 98.5 10, 98 22 C 97.5 34, 77 41.5, 50 41 C 23 40.5, 1.5 34, 2 21.5 C 2.5 10, 24 3, 47 3.2 C 57 3.3, 66 4.5, 73 7"]],
   seta: ["0 0 20 12", ["M19 6.5 C 13 5.5, 8 6.5, 2 6", "M6 2 L 1.5 6 L 6 10"]],
   barra: ["0 0 8 100", ["M4 2 C 5 30, 3 70, 4 98"]],
 } as const;
@@ -268,8 +269,8 @@ export function pluginCaneta(): ExpressiveCodePlugin {
         const circulo: NoHast = {
           type: "element",
           tagName: "span",
-          properties: { className: ["caneta-codigo-circulo"] },
-          children: [{ type: "text", value: valor }, tracoDaCaneta("circulo", "caneta-traco")],
+          properties: { className: ["caneta-codigo-circulo", ...(valor.length > 12 ? ["longo"] : [])] },
+          children: [{ type: "text", value: valor }, tracoDaCaneta(valor.length > 12 ? "circuloLongo" : "circulo", "caneta-traco")],
         };
         const novos = [antes ? { type: "text", value: antes } : null, circulo, resto.join(valor) ? { type: "text", value: resto.join(valor) } : null];
         filhos.splice(i, 1, ...(novos.filter(Boolean) as NoHast[]));

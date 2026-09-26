@@ -34,6 +34,8 @@ const MAXIMO_TIPO = 3;
 /** Traços que não quebram linha: até aqui cabe numa linha de 320px. */
 const MAXIMO_TRECHO = 32;
 const MAXIMO_NOTA = 40;
+/** Até aqui, o círculo à mão (que se cruza à esquerda); acima, o círculo que se cruza no alto. */
+const CIRCULO_CURTO = 12;
 
 const EM_LINHA = new Set(["marca", "ondulado", "duplo", "circulo", "caixa", "nota", "riscado", "liga", "sinal"]);
 const PARAGRAFO = new Set(["colchete", "asterisco", "exclamacao", "pergunta", "comentario"]);
@@ -47,6 +49,8 @@ const TRACOS = {
   ondulado: ["0 0 100 10", ["M1 6.5 C 18 3.5, 36 8, 55 5.5 S 86 4, 99 6"]],
   duplo: ["0 0 100 12", ["M1 3.5 C 30 2.5, 65 4.5, 99 3", "M4 9 C 35 8, 62 10, 97 8.5"]],
   circulo: ["0 0 100 44", ["M10 25 C 5 10, 38 3, 68 5 C 94 7, 99 27, 80 35 C 55 43, 12 40, 6 26 C 4 17, 16 9, 30 7"]],
+  // Para trecho longo: começa e termina no alto (a volta que se cruza fica acima das letras, não em cima delas).
+  circuloLongo: ["0 0 100 44", ["M58 3.5 C 82 3.5, 98.5 10, 98 22 C 97.5 34, 77 41.5, 50 41 C 23 40.5, 1.5 34, 2 21.5 C 2.5 10, 24 3, 47 3.2 C 57 3.3, 66 4.5, 73 7"]],
   caixa: ["0 0 100 40", ["M3 5 C 30 3, 70 4, 97 4.5 C 98.5 15, 98 28, 97 37 C 70 38.5, 30 38, 3.5 37 C 2 27, 2.5 14, 4 3"]],
   riscado: ["0 0 100 8", ["M1 5.5 C 30 3.5, 70 4.5, 99 2.5"]],
   liga: ["0 0 100 14", ["M2 13 C 10 2, 85 1, 97 11", "M92 8.5 L 97.5 11.5 L 95 6"]],
@@ -184,9 +188,14 @@ export function remarkMarcacoes() {
       switch (no.name) {
         case "marca":
           return [envolver("mark", { className: ["caneta-marca"] }, filhos)];
+        case "circulo": {
+          const longo = trecho.length > CIRCULO_CURTO;
+          const props = classe("circulo");
+          if (longo) props.className.push("longo");
+          return [envolver("span", props, [...filhos, m(traco(longo ? "circuloLongo" : "circulo"))])];
+        }
         case "ondulado":
         case "duplo":
-        case "circulo":
         case "caixa":
         case "liga":
           return [envolver("span", classe(no.name), [...filhos, m(traco(no.name))])];
