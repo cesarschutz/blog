@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>E3 · O artigo, de perto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:ital,wght@0,400..900;1,400..900&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&display=swap" rel="stylesheet">
+<style>
+/* Tokens: os mesmos de src/styles/tokens.ts. Só aqui existem valores crus. */
+:root {
+  --paper: #F1F0EB; --paper-hi: #FFFFFE; --well: #F5F5F4; --ink: #1A2124; --ink-2: #57605E; --ink-3: #868D8A;
+  --rule: #E2E0D8; --acento: #2549B8; --sobre-acento: #FFFFFF;
+  --tinta-azul: 16%;
+  --sombra-folha: 0 1px 2px rgb(40 38 30 / .04), 0 10px 28px -18px rgb(40 38 30 / .28);
+  --ergue: 0 1px 0 rgb(28 36 39 / .05), 0 18px 34px -18px rgb(28 36 39 / .45);
+  --f-titulo: "Besley", Georgia, serif; --f-texto: "Literata", Georgia, serif;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; --f-codigo: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --pad: clamp(16px, 2.4vw, 32px);
+  --sint-chave: #2549B8; --sint-tipo: #7a4430; --sint-coment: #868D8A;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #111618; --paper-hi: #1A2124; --well: #21282A; --ink: #E7E9E4; --ink-2: #A9B0AC; --ink-3: #7F8884;
+  --rule: #2A3336; --acento: #93AEFF; --sobre-acento: #0D1530; --tinta-azul: 24%;
+  --sombra-folha: 0 12px 30px -18px rgb(0 0 0 / .8); --ergue: 0 18px 34px -16px rgb(0 0 0 / .75);
+  --sint-chave: #93AEFF; --sint-tipo: #E7957C; --sint-coment: #7F8884;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #111618; --paper-hi: #1A2124; --well: #21282A; --ink: #E7E9E4; --ink-2: #A9B0AC; --ink-3: #7F8884;
+  --rule: #2A3336; --acento: #93AEFF; --sobre-acento: #0D1530; --tinta-azul: 24%;
+  --sombra-folha: 0 12px 30px -18px rgb(0 0 0 / .8); --ergue: 0 18px 34px -16px rgb(0 0 0 / .75);
+  --sint-chave: #93AEFF; --sint-tipo: #E7957C; --sint-coment: #7F8884;
+  color-scheme: dark; }
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.6 var(--f-texto); -webkit-font-smoothing: antialiased; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--acento); outline-offset: 3px; }
+a { color: var(--acento); text-underline-offset: .18em; text-decoration-thickness: 1px; }
+code { font-family: var(--f-codigo); font-size: .86em; padding: .05em .3em; border-radius: 4px; background: var(--well); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ---------- moldura do protótipo ---------- */
+.barra { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px;
+  padding: 10px var(--pad); background: var(--paper); border-bottom: 1px solid var(--rule); font: 14px var(--f-ui); color: var(--ink-2); }
+.barra b { font: 700 16px var(--f-titulo); color: var(--ink); }
+.barra .acoes { display: flex; gap: 8px; }
+.botao { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 6px 14px; border: 1px solid var(--rule); border-radius: 999px;
+  background: var(--paper-hi); color: var(--ink); font: 14px var(--f-ui); cursor: pointer; transition: border-color .15s, color .15s; }
+.botao:hover { border-color: var(--acento); color: var(--acento); }
+.botao[aria-pressed="true"] { border-color: var(--acento); color: var(--acento); }
+.pagina { max-width: 1180px; margin: 0 auto; padding: 28px var(--pad) 96px; }
+.folha { background: var(--paper-hi); border: 1px solid var(--rule); border-radius: 14px; box-shadow: var(--sombra-folha); }
+.sobre { padding: clamp(22px, 3vw, 36px); }
+.sobre h1 { margin: 0 0 10px; font: 800 clamp(30px, 4vw, 44px)/1.05 var(--f-titulo); letter-spacing: -.015em; text-wrap: balance; }
+.sobre > p { margin: 0 0 20px; max-width: 68ch; color: var(--ink-2); }
+.sobre dl { display: grid; grid-template-columns: 180px 1fr; gap: 10px 22px; margin: 0; font: 15px/1.55 var(--f-ui); }
+.sobre dt { font-weight: 600; color: var(--ink); }
+.sobre dd { margin: 0; color: var(--ink-2); }
+.caso { margin-top: 64px; }
+.caso > h2 { margin: 0 0 6px; font: 700 clamp(22px, 2.6vw, 28px)/1.2 var(--f-titulo); text-wrap: balance; }
+.caso > p { margin: 0 0 18px; max-width: 70ch; color: var(--ink-2); }
+.lado { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.lado > figure { margin: 0; padding: 18px 22px 26px; min-width: 0; }
+figcaption { margin-bottom: 16px; font: 500 13.5px var(--f-ui); color: var(--ink-2); }
+.depois figcaption { color: var(--ink); }
+.notas { margin: 16px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; font: 14.5px/1.55 var(--f-ui); color: var(--ink-2); max-width: 90ch; }
+.notas b { color: var(--ink); font-weight: 600; }
+@media (max-width: 760px) {
+  .barra { position: static; }
+  .lado { grid-template-columns: 1fr; }
+  .sobre dl { grid-template-columns: 1fr; gap: 2px; }
+  .sobre dd { margin-bottom: 10px; }
+}
+
+/* ---------- 1. links do texto ---------- */
+.prosa { font-size: 18.5px; line-height: 1.72; font-variant-numeric: oldstyle-nums; }
+.prosa p { margin: 0 0 1em; }
+.prosa-prop a {
+  text-decoration-color: color-mix(in oklab, var(--acento) 55%, transparent);
+  background-image: linear-gradient(color-mix(in oklab, var(--acento) var(--tinta-azul), transparent), color-mix(in oklab, var(--acento) var(--tinta-azul), transparent));
+  background-repeat: no-repeat; background-position: 0 94%; background-size: 100% 0;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+  transition: background-size .3s cubic-bezier(.2,.75,.2,1), text-decoration-color .2s;
+}
+.prosa-prop a:hover, .prosa-prop a:focus-visible { background-size: 100% 42%; text-decoration-color: var(--acento); }
+.reduzir .prosa-prop a { transition: none; }
+
+/* ---------- 2 e 3. copiar ---------- */
+.codigo { margin: 0; border: 1px solid var(--rule); border-radius: 10px; background: var(--well); overflow: hidden; }
+.codigo .cab { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 12px 7px 14px; border-bottom: 1px solid var(--rule);
+  font: 13.5px var(--f-ui); color: var(--ink-2); }
+.codigo .ling { padding: 1px 8px; border: 1px solid var(--rule); border-radius: 999px; font: 500 11.5px var(--f-ui); }
+.codigo .corpo { position: relative; }
+.codigo pre { margin: 0; padding: 14px 16px; overflow-x: auto; font: 13.5px/1.6 var(--f-codigo); color: var(--ink); }
+.codigo .k { color: var(--sint-chave); } .codigo .t { color: var(--sint-tipo); } .codigo .c { color: var(--sint-coment); font-style: italic; }
+.copiar { position: absolute; top: 8px; right: 8px; display: inline-flex; align-items: center; height: 30px; padding: 0 7px; border: 1px solid var(--rule); border-radius: 8px;
+  background: var(--paper-hi); color: var(--ink-2); font: 500 12.5px var(--f-ui); cursor: pointer; transition: border-color .15s, color .15s, opacity .2s; }
+.copiar:hover { border-color: var(--acento); color: var(--acento); }
+@media (hover: hover) { .codigo .corpo:not(:hover) .copiar:not(:focus-visible):not(.ativo) { opacity: 0; } }
+.copiar svg, .pilula svg { flex: none; width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
+.copiar .check, .pilula .check { visibility: hidden; stroke-width: 2.1; }
+.balao { position: absolute; top: 9px; right: 48px; padding: 3px 9px; border-radius: 6px; background: var(--ink); color: var(--paper-hi); font: 500 12px var(--f-ui); opacity: 0; transition: opacity .2s; pointer-events: none; }
+.balao.visivel { opacity: 1; }
+.rotulo { display: inline-grid; overflow: hidden; white-space: nowrap; line-height: 1.4; padding-block: 1px; }
+.rotulo > span { grid-area: 1 / 1; justify-self: start; }
+.copiar .rotulo { width: 0; }
+.pilula { display: inline-flex; align-items: center; gap: 6px; min-height: 34px; padding: 4px 13px; border: 1px solid var(--rule); border-radius: 999px; background: var(--paper-hi);
+  color: var(--ink-2); font: 14px/1.3 var(--f-ui); cursor: pointer; transition: border-color .15s, color .15s; }
+.pilula:hover { border-color: var(--acento); color: var(--acento); }
+.compartilhar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font: 14px var(--f-ui); color: var(--ink-2); }
+
+/* ---------- 4. anterior / próximo ---------- */
+.vizinhos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.vizinhos a { position: relative; display: grid; gap: 4px; padding: 14px 16px; border: 1px solid var(--rule); border-radius: 10px; color: var(--ink); text-decoration: none;
+  transition: border-color .15s, background-color .15s; }
+.vizinhos a:hover, .vizinhos a:focus-visible { border-color: var(--acento); background: color-mix(in oklab, var(--acento) 5%, transparent); }
+.vizinhos a:hover .nome, .vizinhos a:focus-visible .nome { color: var(--acento); }
+.vizinhos .proximo { text-align: right; }
+.vizinhos .dir { display: inline-flex; align-items: center; gap: 6px; font: 14px var(--f-ui); color: var(--ink-2); }
+.vizinhos .proximo .dir { justify-content: flex-end; }
+.vizinhos .nome { font: 700 16.5px/1.3 var(--f-titulo); transition: color .15s; }
+/* A seta abre espaço sozinha: em repouso ela não ocupa lugar (largura 0 e o espaço do gap devolvido). */
+.viz-prop .dir svg { flex: none; width: 0; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; opacity: 0;
+  transition: opacity .2s, width .3s cubic-bezier(.2,.75,.2,1), margin .3s cubic-bezier(.2,.75,.2,1); }
+.viz-prop .anterior .dir svg { margin-right: -6px; }
+.viz-prop .proximo .dir svg { margin-left: -6px; }
+.viz-prop a:hover .dir svg, .viz-prop a:focus-visible .dir svg { width: 14px; margin: 0; opacity: 1; }
+/* A orelha: o canto de fora da folha dobra, como quem vira a página. */
+.viz-prop a::after { content: ""; position: absolute; top: -1px; width: 0; height: 0; pointer-events: none;
+  transition: width .26s cubic-bezier(.2,.75,.2,1), height .26s cubic-bezier(.2,.75,.2,1); }
+.viz-prop .proximo::after { right: -1px; border-bottom-left-radius: 3px; border-left: 1px solid var(--acento); border-bottom: 1px solid var(--acento);
+  background: linear-gradient(to bottom left, var(--paper-hi) 50%, color-mix(in oklab, var(--acento) 12%, var(--paper-hi)) 50%); }
+.viz-prop .anterior::after { left: -1px; border-bottom-right-radius: 3px; border-right: 1px solid var(--acento); border-bottom: 1px solid var(--acento);
+  background: linear-gradient(to bottom right, var(--paper-hi) 50%, color-mix(in oklab, var(--acento) 12%, var(--paper-hi)) 50%); }
+.viz-prop a:hover::after, .viz-prop a:focus-visible::after { width: 16px; height: 16px; }
+.viz-prop a:not(:hover):not(:focus-visible)::after { border-color: transparent; }
+@media (max-width: 600px) { .vizinhos { grid-template-columns: 1fr; } .vizinhos .proximo { text-align: left; } .vizinhos .proximo .dir { justify-content: flex-start; } }
+
+/* ---------- 5. voltar ao topo ---------- */
+.rolagem { position: relative; height: 300px; overflow: auto; padding: 16px 20px 0; border: 1px solid var(--rule); border-radius: 10px; background: var(--paper-hi);
+  font-size: 16px; line-height: 1.65; overscroll-behavior: contain; }
+.rolagem p { margin: 0 0 .9em; color: var(--ink-2); }
+.rolagem p b { font: 700 18px var(--f-titulo); color: var(--ink); }
+.fixo { position: sticky; bottom: 14px; height: 0; display: flex; justify-content: flex-end; }
+.voltar { display: grid; place-items: center; width: 46px; height: 46px; margin-top: -46px; padding: 0; border: 1px solid var(--rule); border-radius: 50%;
+  background: var(--paper-hi); box-shadow: var(--ergue); cursor: pointer; overflow: hidden; }
+.voltar svg { width: 20px; height: 20px; fill: none; stroke: var(--ink); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.voltar:hover { border-color: var(--acento); }
+.voltar:hover svg { stroke: var(--acento); }
+.voltar-hoje { opacity: 0; transform: translateY(8px); pointer-events: none; transition: opacity .2s, transform .2s; }
+.voltar-hoje.visivel { opacity: 1; transform: none; pointer-events: auto; }
+.voltar-prop { visibility: hidden; }
+</style>
+</head>
+<body>
+<div class="barra">
+  <span><b>E3</b> · o artigo, de perto</span>
+  <div class="acoes">
+    <button class="botao" type="button" data-reduzir aria-pressed="false">Movimento reduzido</button>
+    <button class="botao" type="button" data-tema-proto>Trocar tema</button>
+  </div>
+</div>
+
+<main class="pagina">
+  <header class="sobre folha">
+    <h1>O artigo, de perto: os gestos pequenos da leitura</h1>
+    <p>O artigo já tem o que é grande e bonito (a caneta da leitura, as marcações, o livro). O que falta acabamento são
+      os gestos pequenos que o leitor faz a toda hora: passar por um link, copiar um código, copiar o link, ir para o
+      próximo artigo, voltar ao topo.</p>
+    <dl>
+      <dt>Ideias</dt>
+      <dd>1. Links do texto: a tinta azul embebe o link por baixo. 2. Copiar o código: as folhas se decalcam, a caneta faz o visto e "Copiado" rola. 3. Copiar o link: o mesmo gesto, e a pílula cresce sem pular. 4. Anterior e próximo: a seta indica a direção e o canto da folha dobra. 5. Voltar ao topo: chega assentando e a seta sobe junto com a página.</dd>
+      <dt>Onde entram</dt>
+      <dd><code>prosa.css</code> (links), o Expressive Code (<code>lib/codigo.ts</code>, botão Copiar), <code>RodapeArtigo.astro</code> (compartilhar e vizinhos) e <code>VoltarTopo.astro</code>.</dd>
+      <dt>Por que melhora</dt>
+      <dd>Hoje o link não reage ao mouse; o Copiar do código é o padrão do Expressive Code, com um balão preto que destoa do papel; o "Copiar link" troca de texto e a pílula pula de largura; anterior e próximo não dizem a direção; o voltar ao topo só esmaece.</dd>
+      <dt>Recursos do GSAP</dt>
+      <dd>SplitText (o rótulo que rola, letra a letra, com máscara), DrawSVG (o visto), <code>easeReverse</code> do GSAP 3.15 no voltar ao topo (entra com <code>back.out</code>, sai com <code>power2.in</code>, 1,6× mais rápido). <strong>1 e 4 são só CSS</strong>; 2, 3 e 5 são sequências (o artigo já carrega o GSAP para as marcações).</dd>
+      <dt>Referências</dt>
+      <dd><a href="https://demos.gsap.com/demo/easereverse-ui-interactions">easeReverse, UI interactions</a>, <a href="https://demos.gsap.com/demo/interruptible-single-timeline-enterexit">Interruptible single timeline enter/exit</a>, <a href="https://demos.gsap.com/demo/text-masking">Text masking</a> (SplitText com <code>mask</code>) e <a href="https://demos.gsap.com/demo/draw-a-path">Draw a path</a>.</dd>
+      <dt>No celular</dt>
+      <dd>O botão Copiar fica sempre à vista (sem hover para revelá-lo). A orelha e a seta dos vizinhos aparecem no toque (<code>:active</code>). O voltar ao topo é o mesmo.</dd>
+      <dt>Movimento reduzido</dt>
+      <dd>O marca-texto do link aparece pronto; o rótulo troca seco (a largura também); o visto aparece desenhado; o voltar ao topo só aparece e some.</dd>
+    </dl>
+  </header>
+
+  <!-- 1 -->
+  <section class="caso" aria-labelledby="c1">
+    <h2 id="c1">1. Links do texto: a tinta embebe</h2>
+    <p>Passe o mouse nos links. O sublinhado em repouso fica um pouco mais leve, e no hover a tinta azul sobe de baixo até
+      pouco menos da metade da letra, na mesma camada de fundo que o marca-texto das marcações usa (D41), mas em azul-tinta,
+      porque é clicável.</p>
+    <div class="lado">
+      <figure class="folha antes">
+        <figcaption>Hoje</figcaption>
+        <div class="prosa"><p>Quando a resposta se perde no caminho de volta, o app tenta de novo com a mesma chave. A
+          <a href="#">restrição única do PostgreSQL</a> recusa a segunda gravação, e o serviço devolve a resposta guardada,
+          como descreve o <a href="#">guia de confiabilidade do RabbitMQ</a>.</p></div>
+      </figure>
+      <figure class="folha depois">
+        <figcaption>Proposta</figcaption>
+        <div class="prosa prosa-prop"><p>Quando a resposta se perde no caminho de volta, o app tenta de novo com a mesma chave. A
+          <a href="#">restrição única do PostgreSQL</a> recusa a segunda gravação, e o serviço devolve a resposta guardada,
+          como descreve o <a href="#">guia de confiabilidade do RabbitMQ</a>.</p></div>
+      </figure>
+    </div>
+    <ul class="notas">
+      <li><b>Medidas:</b> sublinhado em repouso com a cor a 55% (o link continua claro como link); no hover, a tinta a 16% (24% no escuro) sobe até 42% da linha em 0,3s. O texto continua azul-tinta: o contraste não muda.</li>
+      <li><b>Quebra de linha:</b> <code>box-decoration-break: clone</code>, para o link que quebra ganhar a tinta nas duas linhas.</li>
+      <li><b>No site:</b> só CSS, em <code>prosa.css</code>. Serve também ao chip de categoria e aos links do rodapé do artigo.</li>
+    </ul>
+  </section>
+
+  <!-- 2 -->
+  <section class="caso" aria-labelledby="c2">
+    <h2 id="c2">2. Copiar o código: decalque, visto e "Copiado"</h2>
+    <p>Passe o mouse no bloco e clique no botão (o código vai mesmo para a área de transferência).</p>
+    <div class="lado">
+      <figure class="folha antes">
+        <figcaption>Hoje</figcaption>
+        <div class="codigo"><div class="cab"><span>cobranca.sql</span><span class="ling">SQL</span></div>
+          <div class="corpo"><pre data-fonte><span class="k">INSERT INTO</span> cobranca (idempotency_key, status)
+<span class="k">VALUES</span> ('5b0e7a52', 'PROCESSANDO')
+<span class="k">ON CONFLICT</span> (idempotency_key) <span class="k">DO NOTHING</span>
+<span class="k">RETURNING</span> id; <span class="c">-- vazio na repetição</span></pre>
+            <span class="balao" data-balao>Copiado</span>
+            <button type="button" class="copiar" data-copiar-hoje aria-label="Copiar"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4.5A1.5 1.5 0 0 1 3 13.5v-9A1.5 1.5 0 0 1 4.5 3h9A1.5 1.5 0 0 1 15 4.5V5"/></svg></button>
+          </div></div>
+      </figure>
+      <figure class="folha depois">
+        <figcaption>Proposta</figcaption>
+        <div class="codigo"><div class="cab"><span>cobranca.sql</span><span class="ling">SQL</span></div>
+          <div class="corpo"><pre data-fonte><span class="k">INSERT INTO</span> cobranca (idempotency_key, status)
+<span class="k">VALUES</span> ('5b0e7a52', 'PROCESSANDO')
+<span class="k">ON CONFLICT</span> (idempotency_key) <span class="k">DO NOTHING</span>
+<span class="k">RETURNING</span> id; <span class="c">-- vazio na repetição</span></pre>
+            <button type="button" class="copiar" data-copiar="Copiado" aria-label="Copiar código">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect class="tras" x="9" y="9" width="12" height="12" rx="2"/><rect class="frente" x="3" y="3" width="12" height="12" rx="2"/><path class="check" d="M4.5 12.8 9.4 17.4 19.5 6.6"/></svg>
+              <span class="rotulo"><span></span></span>
+            </button>
+            <span class="sr" aria-live="polite" data-status></span>
+          </div></div>
+      </figure>
+    </div>
+    <ul class="notas">
+      <li><b>Sequência (0,6s):</b> a folha da frente desliza sobre a de trás (0,16s, o decalque); as duas somem enquanto a caneta faz o visto (DrawSVG, 0,3s, <code>power2.out</code>); o botão abre para a esquerda e "Copiado" sobe letra por letra (SplitText com máscara, 0,012s entre letras). Depois de 1,6s, tudo volta, mais depressa.</li>
+      <li><b>Sem o balão preto:</b> a confirmação fica no próprio botão, no papel e na tinta do site, e é lida pelos leitores de tela numa região <code>aria-live</code>.</li>
+      <li><b>No site:</b> o Expressive Code aceita trocar o botão (ou esconder o dele e pôr o nosso por um plugin, como o <code>pluginCopiarSemRemovidas</code> já faz com o texto copiado). O GSAP, o SplitText e o DrawSVG já são baixados no artigo.</li>
+    </ul>
+  </section>
+
+  <!-- 3 -->
+  <section class="caso" aria-labelledby="c3">
+    <h2 id="c3">3. Copiar o link: a pílula cresce sem pular</h2>
+    <p>Clique em "Copiar link" dos dois lados e compare a largura da pílula e os vizinhos dela.</p>
+    <div class="lado">
+      <figure class="folha antes">
+        <figcaption>Hoje</figcaption>
+        <div class="compartilhar"><span>Compartilhar</span>
+          <button type="button" class="pilula" data-link-hoje><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg><span>Copiar link</span></button>
+          <button type="button" class="pilula">LinkedIn</button><button type="button" class="pilula">WhatsApp</button></div>
+      </figure>
+      <figure class="folha depois">
+        <figcaption>Proposta</figcaption>
+        <div class="compartilhar"><span>Compartilhar</span>
+          <button type="button" class="pilula" data-copiar="Link copiado" data-repouso="Copiar link">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><g class="frente"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></g><path class="check" d="M4.5 12.8 9.4 17.4 19.5 6.6"/></svg>
+            <span class="rotulo"><span>Copiar link</span></span>
+          </button>
+          <button type="button" class="pilula">LinkedIn</button><button type="button" class="pilula">WhatsApp</button>
+          <span class="sr" aria-live="polite" data-status></span></div>
+      </figure>
+    </div>
+    <ul class="notas">
+      <li><b>O mesmo gesto do código</b> (visto e texto que rola), para o site ter um jeito só de dizer "copiado". Os elos se juntam (escala 0,8) e somem antes do visto.</li>
+      <li><b>A largura anima</b> de "Copiar link" para "Link copiado" (0,35s), e as pílulas do lado andam junto, sem o salto de hoje.</li>
+      <li><b>No site:</b> <code>RodapeArtigo.astro</code>, no mesmo ouvinte de clique; a função do rótulo que rola é a mesma do Copiar do código.</li>
+    </ul>
+  </section>
+
+  <!-- 4 -->
+  <section class="caso" aria-labelledby="c4">
+    <h2 id="c4">4. Anterior e próximo: a seta e a orelha</h2>
+    <p>Passe o mouse nos dois lados. Na proposta, a seta aparece vindo da direção certa e o canto de fora da folha dobra, como quem vai virar a página.</p>
+    <div class="lado">
+      <figure class="folha antes">
+        <figcaption>Hoje</figcaption>
+        <nav class="vizinhos" aria-label="Outros artigos (hoje)">
+          <a href="#"><span class="dir">Artigo anterior</span><span class="nome">Arquitetura de ledger — partidas dobradas</span></a>
+          <a href="#" class="proximo"><span class="dir">Próximo artigo</span><span class="nome">Efeito externo sem registro local</span></a>
+        </nav>
+      </figure>
+      <figure class="folha depois">
+        <figcaption>Proposta</figcaption>
+        <nav class="vizinhos viz-prop" aria-label="Outros artigos (proposta)">
+          <a href="#" class="anterior"><span class="dir"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>Artigo anterior</span><span class="nome">Arquitetura de ledger — partidas dobradas</span></a>
+          <a href="#" class="proximo"><span class="dir">Próximo artigo<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span><span class="nome">Efeito externo sem registro local</span></a>
+        </nav>
+      </figure>
+    </div>
+    <ul class="notas">
+      <li><b>Seta:</b> abre o próprio espaço e empurra "Artigo anterior" ou "Próximo artigo" (0,3s), apontando para onde o leitor vai. <b>Orelha:</b> de 0 a 16px (0,26s), com o verso levemente azul e o fio azul da borda.</li>
+      <li><b>Por que a orelha:</b> é o único lugar do site em que se "vira a página" de verdade; a marca d'água do livro já está atrás desses dois cartões (D39).</li>
+      <li><b>No site:</b> só CSS em <code>RodapeArtigo.astro</code> (um <code>::after</code> por cartão). Sem GSAP.</li>
+    </ul>
+  </section>
+
+  <!-- 5 -->
+  <section class="caso" aria-labelledby="c5">
+    <h2 id="c5">5. Voltar ao topo: chega assentando e a seta sobe junto</h2>
+    <p>Role os dois quadros até o botão aparecer, clique nele e role de novo até o topo para vê-lo sair.</p>
+    <div class="lado">
+      <figure class="folha antes">
+        <figcaption>Hoje</figcaption>
+        <div class="rolagem" data-rolagem="hoje" tabindex="0" aria-label="Texto de exemplo, hoje"></div>
+      </figure>
+      <figure class="folha depois">
+        <figcaption>Proposta</figcaption>
+        <div class="rolagem" data-rolagem="prop" tabindex="0" aria-label="Texto de exemplo, proposta"></div>
+      </figure>
+    </div>
+    <ul class="notas">
+      <li><b>Entrada e saída numa timeline só:</b> entra subindo 14px com <code>back.out(1.4)</code> (0,4s); sai com <code>easeReverse: "power2.in"</code> e 1,6× mais rápido, sem o assentamento ao contrário. Se o leitor rola para cima e para baixo depressa, a timeline só muda de direção, sem recomeçar.</li>
+      <li><b>No clique:</b> a seta sai por cima (0,18s) e volta por baixo (0,26s) enquanto a página sobe: o botão faz o que promete.</li>
+      <li><b>No site:</b> <code>VoltarTopo.astro</code> e <code>artigo.ts</code> (que já decide quando o botão aparece).</li>
+    </ul>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/DrawSVGPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/SplitText.min.js"></script>
+<script>
+gsap.registerPlugin(DrawSVGPlugin, SplitText);
+
+/* ---------- comum ---------- */
+const raiz = document.documentElement;
+const mqReduz = matchMedia("(prefers-reduced-motion: reduce)");
+const mqEscuro = matchMedia("(prefers-color-scheme: dark)");
+const reduzido = () => mqReduz.matches || raiz.dataset.reduzido === "sim";
+const temaAtual = () => raiz.dataset.theme || (mqEscuro.matches ? "dark" : "light");
+document.querySelector("[data-tema-proto]").addEventListener("click", () => { raiz.dataset.theme = temaAtual() === "dark" ? "light" : "dark"; });
+const bReduz = document.querySelector("[data-reduzir]");
+bReduz.addEventListener("click", () => {
+  const liga = raiz.dataset.reduzido !== "sim";
+  raiz.dataset.reduzido = liga ? "sim" : "nao";
+  raiz.classList.toggle("reduzir", liga);
+  bReduz.setAttribute("aria-pressed", String(liga));
+});
+if (mqReduz.matches) raiz.classList.add("reduzir");
+document.querySelectorAll(".prosa a, .vizinhos a").forEach((a) => a.addEventListener("click", (e) => e.preventDefault()));
+
+async function copiarTexto(texto) {
+  try { await navigator.clipboard.writeText(texto); return true; } catch { return false; }
+}
+
+/* O rótulo que rola: as letras antigas sobem e somem, as novas sobem de baixo, e a largura acompanha. */
+function rolarRotulo(rotulo, novo) {
+  const velho = rotulo.firstElementChild;
+  const w0 = rotulo.getBoundingClientRect().width;
+  const proximo = document.createElement("span");
+  proximo.textContent = novo;
+  rotulo.append(proximo);
+  const w1 = novo ? Math.ceil(proximo.getBoundingClientRect().width) + 2 : 0;
+  const ml1 = novo ? 6 : 0;
+  if (reduzido()) {
+    velho.remove();
+    gsap.set(rotulo, { width: w1, marginLeft: ml1 });
+    return gsap.timeline();
+  }
+  gsap.set(rotulo, { width: w0 });
+  const a = velho.textContent ? SplitText.create(velho, { type: "chars" }) : null;
+  const b = novo ? SplitText.create(proximo, { type: "chars" }) : null;
+  const tl = gsap.timeline({ onComplete: () => { velho.remove(); b && b.revert(); } });
+  tl.to(rotulo, { width: w1, marginLeft: ml1, duration: 0.35, ease: "power3.inOut" }, 0);
+  if (a) tl.to(a.chars, { yPercent: -120, opacity: 0, duration: 0.2, stagger: 0.01, ease: "power2.in" }, 0);
+  if (b) tl.from(b.chars, { yPercent: 120, opacity: 0, duration: 0.3, stagger: 0.012, ease: "power3.out" }, 0.1);
+  return tl;
+}
+
+/* Ícone: a frente vai para trás (decalque), tudo some e a caneta faz o visto. */
+function iconeCopiado(svg, ida) {
+  const frente = svg.querySelector(".frente"), tras = svg.querySelector(".tras"), check = svg.querySelector(".check");
+  const folhas = [frente, tras].filter(Boolean);
+  if (reduzido()) {
+    gsap.set(folhas, { opacity: ida ? 0 : 1, x: 0, y: 0, scale: 1 });
+    gsap.set(check, { visibility: "visible", drawSVG: ida ? "100%" : "0%" });
+    return;
+  }
+  const tl = gsap.timeline();
+  if (ida) {
+    if (tras) tl.to(frente, { x: 6, y: 6, duration: 0.16, ease: "power2.in" });
+    else tl.to(frente, { scale: 0.8, svgOrigin: "12 12", duration: 0.16, ease: "power2.in" });
+    tl.to(folhas, { opacity: 0, duration: 0.1 })
+      .set(check, { visibility: "visible" }, "<")
+      .fromTo(check, { drawSVG: "0% 0%" }, { drawSVG: "0% 100%", duration: 0.3, ease: "power2.out" }, "<");
+  } else {
+    tl.to(check, { drawSVG: "100% 100%", duration: 0.16, ease: "power2.in" })
+      .set(frente, { x: 0, y: 0, scale: 1 })
+      .to(folhas, { opacity: 1, duration: 0.18 });
+  }
+}
+
+/* ---------- 2 e 3: proposta ---------- */
+document.querySelectorAll("[data-copiar]").forEach((b) => {
+  const rotulo = b.querySelector(".rotulo"), svg = b.querySelector("svg");
+  const status = b.parentElement.querySelector("[data-status]");
+  const repouso = b.dataset.repouso || "";
+  let volta, ocupado = false;
+  gsap.set(svg.querySelector(".check"), { drawSVG: "0%" });
+  if (repouso) gsap.set(rotulo, { width: "auto", marginLeft: 6 });
+  else gsap.set(rotulo, { width: 0, marginLeft: 0 });
+  b.addEventListener("click", async () => {
+    if (ocupado) return;
+    ocupado = true;
+    const pre = b.closest(".corpo")?.querySelector("pre");
+    const ok = await copiarTexto(pre ? pre.textContent : location.href);
+    const texto = ok ? b.dataset.copiar : "Não deu para copiar";
+    b.classList.add("ativo");
+    status.textContent = ok ? (pre ? "Código copiado" : "Link copiado") : texto;
+    if (ok) iconeCopiado(svg, true);
+    rolarRotulo(rotulo, texto);
+    clearTimeout(volta);
+    volta = setTimeout(() => {
+      if (ok) iconeCopiado(svg, false);
+      rolarRotulo(rotulo, repouso);
+      setTimeout(() => { b.classList.remove("ativo"); ocupado = false; if (repouso) gsap.set(rotulo, { width: "auto" }); }, 450);
+    }, 1600);
+  });
+});
+
+/* ---------- 2 e 3: hoje ---------- */
+const bHoje = document.querySelector("[data-copiar-hoje]"), balao = document.querySelector("[data-balao]");
+bHoje.addEventListener("click", async () => {
+  await copiarTexto(bHoje.closest(".corpo").querySelector("pre").textContent);
+  balao.classList.add("visivel");
+  setTimeout(() => balao.classList.remove("visivel"), 1000);
+});
+const lHoje = document.querySelector("[data-link-hoje]");
+lHoje.addEventListener("click", async () => {
+  const t = lHoje.querySelector("span");
+  t.textContent = (await copiarTexto(location.href)) ? "Link copiado" : "Não deu para copiar";
+  setTimeout(() => (t.textContent = "Copiar link"), 1600);
+});
+
+/* ---------- 5. voltar ao topo ---------- */
+const PARAGRAFOS = [
+  "<b>Gravar primeiro e deixar o banco recusar</b>",
+  "A consulta antes da gravação tem uma janela: entre o SELECT que não achou nada e o INSERT, a outra tentativa pode passar pelo mesmo caminho.",
+  "Com a restrição única, a janela some. As duas tentativas tentam gravar, e o banco escolhe uma. A outra recebe o conflito e devolve o que ficou guardado.",
+  "O custo é pequeno: um índice a mais e uma coluna de status. O ganho é que a regra passa a valer mesmo com dez réplicas do serviço.",
+  "<b>O que a restrição única não cobre</b>",
+  "Se a primeira tentativa ainda está em andamento, a segunda encontra o registro em PROCESSANDO. Aqui a escolha é de produto: esperar, responder 409 ou pedir para tentar depois.",
+  "E se o efeito externo acontece e a gravação local falha, o problema é outro, com outra saída: o registro do efeito vem antes da chamada.",
+  "<b>Regra prática</b>",
+  "Gravar primeiro, com a chave; cobrar depois; guardar a resposta; devolver a resposta guardada nas repetições."
+];
+document.querySelectorAll("[data-rolagem]").forEach((caixa) => {
+  const prop = caixa.dataset.rolagem === "prop";
+  caixa.innerHTML = PARAGRAFOS.map((p) => `<p>${p}</p>`).join("") +
+    `<div class="fixo"><button type="button" class="voltar ${prop ? "voltar-prop" : "voltar-hoje"}" aria-label="Voltar ao topo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button></div>`;
+  const botao = caixa.querySelector(".voltar"), seta = botao.querySelector("svg");
+  let aparece;
+  if (prop) {
+    aparece = gsap.timeline({ paused: true })
+      .fromTo(botao, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.4, ease: "back.out(1.4)", easeReverse: "power2.in" });
+  }
+  let visivel = false;
+  caixa.addEventListener("scroll", () => {
+    const deve = caixa.scrollTop > 140;
+    if (deve === visivel) return;
+    visivel = deve;
+    if (!prop) return botao.classList.toggle("visivel", deve);
+    if (reduzido()) { aparece.progress(deve ? 1 : 0).pause(); return; }
+    deve ? aparece.timeScale(1).play() : aparece.timeScale(1.6).reverse();
+  }, { passive: true });
+  botao.addEventListener("click", () => {
+    caixa.scrollTo({ top: 0, behavior: reduzido() ? "auto" : "smooth" });
+    if (!prop || reduzido()) return;
+    gsap.timeline()
+      .to(seta, { yPercent: -160, duration: 0.18, ease: "power2.in" })
+      .set(seta, { yPercent: 160 })
+      .to(seta, { yPercent: 0, duration: 0.26, ease: "power3.out" });
+  });
+});
+</script>
+</body>
+</html>

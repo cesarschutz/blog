@@ -33,7 +33,6 @@ export const TOKENS = [
   "lousa-mistura",
   "marca",
   "marca-letra",
-  "marca-fita",
   "veu",
   "veu-tinta",
 ] as const;
@@ -67,11 +66,10 @@ export const claro: Paleta = {
   "lousa-borda": "#2C3438",
   "lousa-caneta": "#F4F6F5",
   "lousa-mistura": "#9FF5DC", // o destaque é a cor da categoria misturada com esta (LOUSA.mistura)
-  // Marca (D33): o livro "cs" tem a capa do Volume 01 e a fita no destaque da série (docs/capas/livros.json).
+  // Marca (D33, D47): o livro "cs" tem a capa do Volume 01 (a fita da série saiu na D47).
   // Como os livros, é igual nos dois temas.
   marca: "#2D4B46",
   "marca-letra": "#F2EDE2", // o papel dos livros (PAPEL em docs/capas/cores.js)
-  "marca-fita": "#C24D1C",
   // Véu do visor de imagens e do livro ampliado (D33): escurece a página por trás, nos dois temas.
   veu: "#0C0F11",
   "veu-tinta": "#EEF1EE",
@@ -105,7 +103,6 @@ export const escuro: Paleta = {
   "lousa-mistura": "#0B6F58",
   marca: "#2D4B46",
   "marca-letra": "#F2EDE2",
-  "marca-fita": "#C24D1C",
   veu: "#050708",
   "veu-tinta": "#EEF1EE",
 };

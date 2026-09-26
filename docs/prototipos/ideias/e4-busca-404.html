@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>E4 · Busca, 404 e números</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:ital,wght@0,400..900;1,400..900&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&display=swap" rel="stylesheet">
+<style>
+/* Tokens: os mesmos de src/styles/tokens.ts. Só aqui existem valores crus. */
+:root {
+  --paper: #F1F0EB; --paper-hi: #FFFFFE; --well: #F5F5F4; --ink: #1A2124; --ink-2: #57605E; --ink-3: #868D8A;
+  --rule: #E2E0D8; --acento: #2549B8; --sobre-acento: #FFFFFF; --aviso-cuidado: #A3432A; --livro-arq: #2d4b46; --leitura: var(--livro-arq);
+  --marca-busca: color-mix(in oklab, var(--acento) 18%, transparent);
+  --sombra-folha: 0 1px 2px rgb(40 38 30 / .04), 0 10px 28px -18px rgb(40 38 30 / .28);
+  --f-titulo: "Besley", Georgia, serif; --f-texto: "Literata", Georgia, serif;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif; --f-codigo: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --pad: clamp(16px, 2.4vw, 32px);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #111618; --paper-hi: #1A2124; --well: #21282A; --ink: #E7E9E4; --ink-2: #A9B0AC; --ink-3: #7F8884;
+  --rule: #2A3336; --acento: #93AEFF; --sobre-acento: #0D1530; --aviso-cuidado: #E7957C; --leitura: color-mix(in oklab, var(--livro-arq), #fff 42%);
+  --marca-busca: color-mix(in oklab, var(--acento) 26%, transparent);
+  --sombra-folha: 0 12px 30px -18px rgb(0 0 0 / .8);
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #111618; --paper-hi: #1A2124; --well: #21282A; --ink: #E7E9E4; --ink-2: #A9B0AC; --ink-3: #7F8884;
+  --rule: #2A3336; --acento: #93AEFF; --sobre-acento: #0D1530; --aviso-cuidado: #E7957C; --leitura: color-mix(in oklab, var(--livro-arq), #fff 42%);
+  --marca-busca: color-mix(in oklab, var(--acento) 26%, transparent);
+  --sombra-folha: 0 12px 30px -18px rgb(0 0 0 / .8);
+  color-scheme: dark; }
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.6 var(--f-texto); -webkit-font-smoothing: antialiased; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--acento); outline-offset: 3px; }
+a { color: var(--acento); text-underline-offset: .18em; text-decoration-thickness: 1px; }
+code { font-family: var(--f-codigo); font-size: .86em; padding: .05em .3em; border-radius: 4px; background: var(--well); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ---------- moldura do protótipo ---------- */
+.barra { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px;
+  padding: 10px var(--pad); background: var(--paper); border-bottom: 1px solid var(--rule); font: 14px var(--f-ui); color: var(--ink-2); }
+.barra b { font: 700 16px var(--f-titulo); color: var(--ink); }
+.barra .acoes { display: flex; gap: 8px; }
+.botao { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 6px 14px; border: 1px solid var(--rule); border-radius: 999px;
+  background: var(--paper-hi); color: var(--ink); font: 14px var(--f-ui); cursor: pointer; transition: border-color .15s, color .15s; }
+.botao:hover { border-color: var(--acento); color: var(--acento); }
+.botao[aria-pressed="true"] { border-color: var(--acento); color: var(--acento); }
+.botao.mini { min-height: 30px; padding: 3px 11px; font-size: 13px; }
+.pagina { max-width: 1180px; margin: 0 auto; padding: 28px var(--pad) 96px; }
+.folha { background: var(--paper-hi); border: 1px solid var(--rule); border-radius: 14px; box-shadow: var(--sombra-folha); }
+.sobre { padding: clamp(22px, 3vw, 36px); }
+.sobre h1 { margin: 0 0 10px; font: 800 clamp(30px, 4vw, 44px)/1.05 var(--f-titulo); letter-spacing: -.015em; text-wrap: balance; }
+.sobre > p { margin: 0 0 20px; max-width: 68ch; color: var(--ink-2); }
+.sobre dl { display: grid; grid-template-columns: 180px 1fr; gap: 10px 22px; margin: 0; font: 15px/1.55 var(--f-ui); }
+.sobre dt { font-weight: 600; color: var(--ink); }
+.sobre dd { margin: 0; color: var(--ink-2); }
+.caso { margin-top: 64px; }
+.caso > h2 { margin: 0 0 6px; font: 700 clamp(22px, 2.6vw, 28px)/1.2 var(--f-titulo); text-wrap: balance; }
+.caso > p { margin: 0 0 18px; max-width: 70ch; color: var(--ink-2); }
+.lado { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.lado > figure { margin: 0; padding: 18px 22px 26px; min-width: 0; }
+figcaption { margin-bottom: 16px; font: 500 13.5px var(--f-ui); color: var(--ink-2); }
+.depois figcaption { color: var(--ink); }
+.notas { margin: 16px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; font: 14.5px/1.55 var(--f-ui); color: var(--ink-2); max-width: 90ch; }
+.notas b { color: var(--ink); font-weight: 600; }
+.controles { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 14px; font: 13.5px var(--f-ui); color: var(--ink-2); }
+@media (max-width: 760px) {
+  .barra { position: static; }
+  .lado { grid-template-columns: 1fr; }
+  .sobre dl { grid-template-columns: 1fr; gap: 2px; }
+  .sobre dd { margin-bottom: 10px; }
+}
+
+/* ---------- 1. 404 ---------- */
+.nf .erro { margin: 0; font: 14.5px var(--f-ui); color: var(--ink-2); font-variant-numeric: lining-nums; }
+.nf h3 { margin: 6px 0 10px; font: 700 clamp(28px, 3.6vw, 40px)/1.08 var(--f-titulo); }
+.nf p { margin: 0; font-size: 16.5px; }
+.nf .caminhos { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; margin-top: 18px; font: 15px var(--f-ui); }
+.nf .pilula { display: inline-flex; align-items: center; min-height: 34px; padding: 4px 13px; border: 1px solid var(--rule); border-radius: 999px; background: var(--paper-hi); color: var(--ink-2); font: 14px var(--f-ui); }
+.nf .endereco { position: relative; display: inline-block; max-width: 100%; margin: 0 0 14px; font: 15px/1.5 var(--f-codigo); color: var(--ink-2); overflow-wrap: anywhere; }
+.rasura { position: absolute; left: -4px; top: 0; height: 100%; overflow: visible; pointer-events: none; }
+.rasura path { fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; visibility: hidden; }
+.talvez { margin-top: 16px !important; font: 15px var(--f-ui) !important; color: var(--ink-2); }
+.talvez a { font-family: var(--f-titulo); font-weight: 700; font-size: 16.5px; }
+
+/* ---------- 2 e 3. busca ---------- */
+.busca { border: 1px solid var(--rule); border-radius: 12px; overflow: hidden; background: var(--paper-hi); }
+.busca .campo { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--rule); }
+.busca .campo svg { flex: none; width: 17px; height: 17px; fill: none; stroke: var(--ink-2); stroke-width: 1.8; stroke-linecap: round; }
+.busca input { flex: 1; min-width: 0; border: 0; background: none; font: 16px var(--f-ui); outline: none; }
+.busca .estado:empty { display: none; }
+.busca .estado { margin: 0; padding: 10px 14px 4px; font: 13.5px var(--f-ui); color: var(--ink-2); }
+.busca ul { position: relative; margin: 0; padding: 4px 8px 10px; list-style: none; }
+.busca li a { position: relative; z-index: 1; display: grid; gap: 1px; padding: 9px 12px; border-radius: 10px; color: var(--ink); text-decoration: none; }
+.busca .r-titulo { font: 700 16px/1.3 var(--f-titulo); }
+.busca .r-livro { font: 13px var(--f-ui); color: var(--ink-2); }
+.busca mark { background: var(--marca-busca); color: inherit; border-radius: 2px; }
+.busca-hoje li a.ativo { background: var(--well); }
+.busca-hoje li a.ativo .r-titulo { color: var(--acento); }
+.busca-prop li a.ativo .r-titulo { color: var(--acento); }
+.marcador { position: absolute; left: 8px; right: 8px; top: 0; height: 0; border-radius: 10px; background: var(--well); pointer-events: none; opacity: 0; }
+.marcador::before { content: ""; position: absolute; left: 4px; top: 9px; bottom: 9px; width: 2px; border-radius: 2px; background: var(--acento); }
+.vazio { padding: 14px 14px 16px; font: 15px/1.5 var(--f-ui); color: var(--ink-2); }
+.vazio p { margin: 0; }
+.termo { position: relative; display: inline-block; color: var(--ink); }
+.ondinha { position: absolute; left: 0; top: 100%; height: 6px; overflow: visible; pointer-events: none; }
+.ondinha path { fill: none; stroke: var(--aviso-cuidado); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; visibility: hidden; }
+.vazio .dica { margin-top: 8px; }
+
+/* ---------- 4. números da leitura ---------- */
+.leitura { max-width: 280px; padding: 16px 18px; border: 1px solid var(--rule); border-radius: 14px; }
+.leitura .trilho { height: 3px; border-radius: 3px; background: var(--rule); overflow: hidden; }
+.leitura .feito { height: 100%; width: 0; background: var(--leitura); }
+.leitura .linha { display: flex; justify-content: space-between; margin-top: 10px; font: 13px/1.3 var(--f-codigo); color: var(--ink-2); font-variant-numeric: tabular-nums lining-nums; }
+.leitura .fim { display: inline-grid; overflow: hidden; justify-items: end; }
+.leitura .fim > span { grid-area: 1 / 1; white-space: nowrap; }
+.deslizar { width: 100%; max-width: 280px; margin: 18px 0 0; accent-color: var(--acento); }
+.odometro { display: inline-flex; vertical-align: top; font-variant-numeric: tabular-nums lining-nums; }
+.odometro .col { display: inline-block; height: 1.3em; overflow: hidden; }
+.odometro .fita { display: block; }
+.odometro .fita > span { display: block; height: 1.3em; line-height: 1.3em; text-align: center; }
+</style>
+</head>
+<body>
+<div class="barra">
+  <span><b>E4</b> · busca, 404 e números</span>
+  <div class="acoes">
+    <button class="botao" type="button" data-reduzir aria-pressed="false">Movimento reduzido</button>
+    <button class="botao" type="button" data-tema-proto>Trocar tema</button>
+  </div>
+</div>
+
+<main class="pagina">
+  <header class="sobre folha">
+    <h1>Busca, 404 e números: quando nada é encontrado</h1>
+    <p>Os estados vazios e de erro são onde o site mais parece de modelo: "Página não encontrada" e "Nenhum artigo
+      encontrado" em texto corrido. São também os momentos em que o leitor mais precisa de ajuda. Aqui a caneta
+      corrige, e os números contam em vez de pular.</p>
+    <dl>
+      <dt>Ideias</dt>
+      <dd>1. A 404 rasura o endereço errado e, quando dá, sugere o artigo certo. 2. Busca sem resultado: o termo ganha a ondinha de revisor e uma saída. 3. Nos resultados, o marcador desliza com as setas e o mouse. 4. No sumário, os minutos que faltam rodam como contador.</dd>
+      <dt>Onde entram</dt>
+      <dd><code>pages/404.astro</code>, <code>Busca.astro</code> e <code>Sumario.astro</code> (com <code>artigo.ts</code>).</dd>
+      <dt>Por que melhora</dt>
+      <dd>A 404 hoje é uma folha com três links; a rasura mostra o que deu errado e a sugestão resolve o caso mais comum (endereço digitado quase certo). Na busca, o estado vazio é um texto cinza, e o destaque do resultado pula de um item para outro.</dd>
+      <dt>Recursos do GSAP</dt>
+      <dd>DrawSVG (rasura e ondinha), <code>gsap.quickTo</code> (o marcador segue o teclado e o mouse sem criar tweens novos) e fitas em <code>y</code> (o contador, o mesmo da E2). <strong>A 404 e a busca já carregam o GSAP</strong> (a busca, com o Flip, D44).</dd>
+      <dt>Referências</dt>
+      <dd><a href="https://demos.gsap.com/demo/draw-a-path">Draw a path</a>, <a href="https://gsap.com/docs/v3/GSAP/gsap.quickTo()">gsap.quickTo()</a>, <a href="https://demos.gsap.com/demo/animate-text-replacement">Animate text replacement</a>. Descartei o <a href="https://demos.gsap.com/demo/text-scrambling">ScrambleText</a>: letras sorteadas têm cara de terminal de filme, não de caderno.</dd>
+      <dt>No celular</dt>
+      <dd>Tudo igual: a busca do celular usa o mesmo diálogo, e o marcador segue o toque e o teclado virtual (setas não existem, mas o toque move o marcador antes de abrir).</dd>
+      <dt>Movimento reduzido</dt>
+      <dd>A rasura e a ondinha aparecem prontas; o marcador pula de um item para o outro; o contador troca seco.</dd>
+    </dl>
+  </header>
+
+  <!-- 1 -->
+  <section class="caso" aria-labelledby="c1">
+    <h2 id="c1">1. A 404 rasura o endereço e sugere o artigo</h2>
+    <p>Escolha um endereço errado. Quando ele se parece com o de um artigo (erro de digitação, hífen que faltou), a página
+      diz qual é; quando não, fica só a rasura e os caminhos de sempre.</p>
+    <div class="controles" role="group" aria-label="Endereço pedido">Endereço:
+      <button type="button" class="botao mini" data-caminho="/posts/java21" aria-pressed="true">/posts/java21</button>
+      <button type="button" class="botao mini" data-caminho="/posts/idempotencia" aria-pressed="false">/posts/idempotencia</button>
+      <button type="button" class="botao mini" data-caminho="/qualquer-coisa" aria-pressed="false">/qualquer-coisa</button>
+    </div>
+    <div class="lado">
+      <figure class="folha antes">
+        <figcaption>Hoje</figcaption>
+        <div class="nf">
+          <p class="erro">Erro 404</p>
+          <h3>Página não encontrada</h3>
+          <p>O endereço pode ter mudado ou nunca ter existido. Tente a busca, a lista de artigos ou a página inicial.</p>
+          <div class="caminhos"><a href="#">Todos os artigos</a><a href="#">Página inicial</a><span class="pilula">Buscar</span></div>
+        </div>
+      </figure>
+      <figure class="folha depois">
+        <figcaption>Proposta</figcaption>
+        <div class="nf" data-nf>
+          <p class="endereco" data-endereco><span data-texto-endereco></span><svg class="rasura" aria-hidden="true"><path/><path/></svg></p>
+          <p class="erro">Erro 404</p>
+          <h3>Página não encontrada</h3>
+          <p>O endereço pode ter mudado ou nunca ter existido.</p>
+          <p class="talvez" data-talvez hidden>Talvez seja este: <a href="#" data-sugestao></a></p>
+          <div class="caminhos"><a href="#">Todos os artigos</a><a href="#">Página inicial</a><span class="pilula">Buscar</span></div>
+        </div>
+      </figure>
+    </div>
+    <ul class="notas">
+      <li><b>Rasura:</b> dois traços de caneta sobre o endereço, o primeiro da esquerda para a direita (0,35s) e o segundo de volta, mais curto (0,25s), 0,3s depois de a página abrir. O endereço continua legível por baixo.</li>
+      <li><b>Sugestão:</b> a 404 leva a lista dos endereços dos artigos (27 hoje, menos de 2 KB) e compara o pedido com cada um (distância de edição e trechos do título). Se houver um parecido, a linha "Talvez seja este" chega depois da rasura (0,3s). É função, não enfeite: o leitor que digitou <code>java21</code> chega ao <code>java-21</code> com um clique.</li>
+      <li><b>No site:</b> <code>404.astro</code> com um script pequeno; os redirecionamentos da D7 continuam valendo antes dela.</li>
+    </ul>
+  </section>
+
+  <!-- 2 e 3 -->
+  <section class="caso" aria-labelledby="c2">
+    <h2 id="c2">2 e 3. Busca: a ondinha de revisor e o marcador que desliza</h2>
+    <p>Digite nos dois campos (ou use os atalhos). Com resultados, use ↑ e ↓ ou o mouse. Sem resultado, veja o estado vazio.
+      O marca-texto no termo e a entrada dos resultados já existem (D44) e ficam como estão.</p>
+    <div class="controles" role="group" aria-label="Termos de exemplo">Buscar:
+      <button type="button" class="botao mini" data-termo="java">java</button>
+      <button type="button" class="botao mini" data-termo="spring">spring</button>
+      <button type="button" class="botao mini" data-termo="kafak">kafak</button>
+    </div>
+    <div class="lado">
+      <figure class="folha antes">
+        <figcaption>Hoje</figcaption>
+        <div class="busca busca-hoje" data-busca="hoje"></div>
+      </figure>
+      <figure class="folha depois">
+        <figcaption>Proposta</figcaption>
+        <div class="busca busca-prop" data-busca="prop"></div>
+      </figure>
+    </div>
+    <ul class="notas">
+      <li><b>Ondinha:</b> o termo sem resultado recebe o traço ondulado de revisor na cor de Cuidado (0,45s, da esquerda para a direita). Não é erro do leitor, é aviso: por isso a ondinha, e não um X. Embaixo, uma saída concreta: termo mais curto ou a página de tags.</li>
+      <li><b>Marcador:</b> um só fundo, que corre até o item ativo com <code>gsap.quickTo</code> em <code>y</code> e <code>height</code> (0,28s, <code>power3.out</code>), com o fio azul à esquerda. Seguindo o teclado depressa, ele não recomeça: só muda de destino.</li>
+      <li><b>No site:</b> <code>Busca.astro</code>, no mesmo código que já trata as setas; o <code>:focus-visible</code> dos links continua para quem usa Tab.</li>
+    </ul>
+  </section>
+
+  <!-- 4 -->
+  <section class="caso" aria-labelledby="c4">
+    <h2 id="c4">4. Os minutos que faltam rodam</h2>
+    <p>Arraste para simular a leitura. A porcentagem acompanha a rolagem a cada quadro e fica como está (rodar a cada
+      quadro seria ruído); só os minutos, que mudam de vez em quando, rodam. No fim, "faltam 1 min" dá lugar a "chegou ao fim".</p>
+    <div class="lado">
+      <figure class="folha antes">
+        <figcaption>Hoje</figcaption>
+        <div class="leitura" data-leitura="hoje"><div class="trilho"><div class="feito"></div></div>
+          <div class="linha"><span><span data-pct>0</span>% lido</span><span data-fim>faltam 12 min</span></div></div>
+        <input class="deslizar" type="range" min="0" max="100" value="0" aria-label="Progresso da leitura (hoje)" data-deslizar="hoje">
+      </figure>
+      <figure class="folha depois">
+        <figcaption>Proposta</figcaption>
+        <div class="leitura" data-leitura="prop"><div class="trilho"><div class="feito"></div></div>
+          <div class="linha"><span><span data-pct>0</span>% lido</span>
+            <span class="fim" data-fim-caixa><span data-faltam>faltam <span data-min></span> min</span><span data-chegou hidden>chegou ao fim</span></span></div></div>
+        <input class="deslizar" type="range" min="0" max="100" value="0" aria-label="Progresso da leitura (proposta)" data-deslizar="prop">
+      </figure>
+    </div>
+    <ul class="notas">
+      <li><b>Minutos:</b> a fita do algarismo anda 0,4s (<code>power3.out</code>) quando o número muda; de 10 para 9, a coluna das dezenas fecha.</li>
+      <li><b>No fim:</b> "faltam 1 min" sobe e some, "chegou ao fim" sobe de baixo (0,3s). Voltando a rolagem, o caminho é o contrário.</li>
+      <li><b>No site:</b> <code>artigo.ts</code> já calcula os dois valores; o contador é o mesmo da E2 (filtro por livro), numa função só.</li>
+    </ul>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/DrawSVGPlugin.min.js"></script>
+<script>
+gsap.registerPlugin(DrawSVGPlugin);
+
+/* ---------- comum ---------- */
+const raiz = document.documentElement;
+const mqReduz = matchMedia("(prefers-reduced-motion: reduce)");
+const mqEscuro = matchMedia("(prefers-color-scheme: dark)");
+const reduzido = () => mqReduz.matches || raiz.dataset.reduzido === "sim";
+const temaAtual = () => raiz.dataset.theme || (mqEscuro.matches ? "dark" : "light");
+document.querySelector("[data-tema-proto]").addEventListener("click", () => { raiz.dataset.theme = temaAtual() === "dark" ? "light" : "dark"; });
+const bReduz = document.querySelector("[data-reduzir]");
+bReduz.addEventListener("click", () => {
+  const liga = raiz.dataset.reduzido !== "sim";
+  raiz.dataset.reduzido = liga ? "sim" : "nao";
+  bReduz.setAttribute("aria-pressed", String(liga));
+});
+document.addEventListener("click", (e) => { if (e.target.closest(".nf a, .busca a")) e.preventDefault(); });
+function sorteio(semente) {
+  let s = semente | 0;
+  return () => { s = (s + 0x6d2b79f5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+}
+const sementeDe = (texto) => [...texto].reduce((a, c) => (a * 31 + c.charCodeAt(0)) | 0, 7);
+const f = (n) => n.toFixed(2);
+function curva(p) {
+  let d = `M${f(p[0][0])} ${f(p[0][1])}`;
+  for (let i = 0; i < p.length - 1; i++) {
+    const a = p[i - 1] || p[i], b = p[i], c = p[i + 1], e = p[i + 2] || c;
+    d += ` C${f(b[0] + (c[0] - a[0]) / 6)} ${f(b[1] + (c[1] - a[1]) / 6)} ${f(c[0] - (e[0] - b[0]) / 6)} ${f(c[1] - (e[1] - b[1]) / 6)} ${f(c[0])} ${f(c[1])}`;
+  }
+  return d;
+}
+const semAcento = (t) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+/* ---------- dados de mentira ---------- */
+const ARTIGOS = [
+  { slug: "java-21", t: "Java 21 (LTS)", livro: "Atualizações do Java" },
+  { slug: "java-25", t: "Java 25 (LTS)", livro: "Atualizações do Java" },
+  { slug: "java-29", t: "Java 29 (próxima LTS)", livro: "Atualizações do Java" },
+  { slug: "virtual-threads-java-21", t: "Virtual threads no Java 21", livro: "Desenvolvimento de Software" },
+  { slug: "cobranca-duplicada-no-retry", t: "Chave de idempotência", livro: "Arquitetura de Software" },
+  { slug: "cronjob-ou-endpoint-fila", t: "CronJob ou endpoint + fila", livro: "Arquitetura de Software" },
+  { slug: "bloqueio-otimista-pessimista", t: "Bloqueio otimista e pessimista", livro: "Dados" },
+  { slug: "jackson-filtros-mascarando-cartao", t: "Filtros de serialização no Jackson", livro: "Desenvolvimento de Software" },
+  { slug: "logging-estruturado-spring-boot", t: "Logging estruturado em Spring Boot", livro: "SRE" },
+  { slug: "spring-proxy-classe-real", t: "A classe real por trás do proxy do Spring", livro: "Desenvolvimento de Software" },
+  { slug: "w3c-trace-context", t: "W3C Trace Context", livro: "SRE" }
+];
+
+/* ---------- 1. 404 ---------- */
+function distancia(a, b) {
+  const m = a.length, n = b.length, d = Array.from({ length: m + 1 }, (_, i) => [i, ...Array(n).fill(0)]);
+  for (let j = 1; j <= n; j++) d[0][j] = j;
+  for (let i = 1; i <= m; i++) for (let j = 1; j <= n; j++)
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+  return d[m][n];
+}
+function sugerir(caminho) {
+  const pedido = semAcento(caminho.replace(/^\/(posts\/)?/, "").replace(/\/$/, ""));
+  if (pedido.length < 3) return null;
+  let melhor = null, nota = Infinity;
+  for (const a of ARTIGOS) {
+    const titulo = semAcento(a.t).replace(/[^a-z0-9]+/g, "-");
+    let n = Math.min(distancia(pedido, a.slug), distancia(pedido, titulo));
+    if (a.slug.includes(pedido) || titulo.includes(pedido)) n = Math.min(n, 1);
+    if (n < nota) { nota = n; melhor = a; }
+  }
+  return nota <= Math.max(2, Math.round(pedido.length * 0.25)) ? melhor : null;
+}
+const nf = document.querySelector("[data-nf]");
+const endereco = nf.querySelector("[data-endereco]"), textoEnd = nf.querySelector("[data-texto-endereco]");
+const rasura = nf.querySelector(".rasura"), tracos = rasura.querySelectorAll("path");
+const talvez = nf.querySelector("[data-talvez]"), sugestao = nf.querySelector("[data-sugestao]");
+let tl404;
+function mostrar404(caminho) {
+  textoEnd.textContent = "blog.cesarschutz.com.br" + caminho;
+  const r = textoEnd.getBoundingClientRect(), w = r.width + 8, h = r.height;
+  rasura.setAttribute("viewBox", `0 0 ${f(w)} ${f(h)}`);
+  rasura.style.width = w + "px";
+  const s = sorteio(sementeDe(caminho)), j = () => (s() - 0.5) * 1.6;
+  const n = Math.max(4, Math.round(w / 40));
+  const ida = [], volta = [];
+  for (let i = 0; i <= n; i++) ida.push([2 + (w - 4) * i / n, h * 0.5 - (i / n) * 2 + j()]);
+  for (let i = 0; i <= Math.ceil(n * 0.6); i++) volta.push([w - 3 - (w * 0.62) * i / Math.ceil(n * 0.6), h * 0.6 + j() * 0.8]);
+  tracos[0].setAttribute("d", curva(ida));
+  tracos[1].setAttribute("d", curva(volta));
+  const a = sugerir(caminho);
+  talvez.hidden = !a;
+  if (a) { sugestao.textContent = a.t; sugestao.href = "#" + a.slug; }
+  tl404 && tl404.kill();
+  gsap.set(tracos, { visibility: "visible" });
+  if (reduzido()) { gsap.set(tracos, { drawSVG: "100%" }); gsap.set(talvez, { opacity: 1, y: 0 }); return; }
+  gsap.set(tracos, { drawSVG: "0%" });
+  tl404 = gsap.timeline({ delay: 0.3 })
+    .to(tracos[0], { drawSVG: "100%", duration: 0.35, ease: "power2.inOut" })
+    .to(tracos[1], { drawSVG: "100%", duration: 0.25, ease: "power2.out" }, "+=0.04");
+  if (a) tl404.fromTo(talvez, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, "+=0.05");
+}
+document.querySelectorAll("[data-caminho]").forEach((b, _, todos) => b.addEventListener("click", () => {
+  todos.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  mostrar404(b.dataset.caminho);
+}));
+
+/* ---------- 2 e 3. busca ---------- */
+function onda(w, semente) {
+  const s = sorteio(semente), passo = 3.2;
+  let d = `M0 ${f(3 + (s() - 0.5) * 0.4)}`, x = 0, cima = true;
+  while (x < w) { const nx = Math.min(w, x + passo); d += ` Q${f(x + passo / 2)} ${f(cima ? 0.4 + s() * 0.5 : 5.2 + s() * 0.5)} ${f(nx)} 3`; x = nx; cima = !cima; }
+  return d;
+}
+function destacar(texto, termo) {
+  const i = semAcento(texto).indexOf(semAcento(termo));
+  if (!termo || i < 0) return texto;
+  return texto.slice(0, i) + "<mark>" + texto.slice(i, i + termo.length) + "</mark>" + texto.slice(i + termo.length);
+}
+document.querySelectorAll("[data-busca]").forEach((caixa) => {
+  const prop = caixa.dataset.busca === "prop";
+  caixa.innerHTML = `<label class="campo"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    <span class="sr">Buscar nos artigos</span><input type="search" value="java" autocomplete="off" spellcheck="false" placeholder="Buscar nos artigos…"></label>
+    <p class="estado" aria-live="polite"></p><ul>${prop ? '<li class="marcador" aria-hidden="true"></li>' : ""}</ul><div class="vazio" hidden></div>`;
+  const campo = caixa.querySelector("input"), lista = caixa.querySelector("ul"), estado = caixa.querySelector(".estado"), vazio = caixa.querySelector(".vazio");
+  const marcador = caixa.querySelector(".marcador");
+  const irY = marcador && gsap.quickTo(marcador, "y", { duration: 0.28, ease: "power3.out" });
+  const irH = marcador && gsap.quickTo(marcador, "height", { duration: 0.28, ease: "power3.out" });
+  let ativo = -1;
+  const itens = () => [...lista.querySelectorAll("a")];
+  function ativar(i, seco) {
+    const todos = itens();
+    if (!todos.length) return;
+    ativo = (i + todos.length) % todos.length;
+    todos.forEach((a, k) => a.classList.toggle("ativo", k === ativo));
+    if (!marcador) return;
+    const a = todos[ativo], y = a.offsetTop, h = a.offsetHeight;
+    if (seco || reduzido() || +gsap.getProperty(marcador, "opacity") === 0) {
+      gsap.set(marcador, { y, height: h, opacity: 1 });
+      irY(y, y); irH(h, h);
+    } else { irY(y); irH(h); }
+  }
+  function buscar() {
+    const termo = campo.value.trim();
+    const achados = termo ? ARTIGOS.filter((a) => semAcento(a.t + " " + a.livro).includes(semAcento(termo))) : [];
+    itens().forEach((a) => a.parentElement.remove());
+    if (marcador) gsap.set(marcador, { opacity: 0 });
+    ativo = -1;
+    vazio.hidden = true;
+    if (!termo) { estado.textContent = ""; return; }
+    if (!achados.length) {
+      estado.textContent = "";
+      vazio.hidden = false;
+      if (!prop) { vazio.innerHTML = `<p>Nenhum artigo encontrado para “${termo}”.</p>`; return; }
+      vazio.innerHTML = `<p>Nenhum artigo para <span class="termo">${termo}<svg class="ondinha" aria-hidden="true"><path/></svg></span>.</p>
+        <p class="dica">Tente um termo mais curto ou veja <a href="#">todas as tags</a>.</p>`;
+      const t = vazio.querySelector(".termo"), svg = t.querySelector("svg"), p = svg.querySelector("path"), w = t.getBoundingClientRect().width;
+      svg.setAttribute("viewBox", `0 0 ${f(w)} 6`); svg.style.width = w + "px";
+      p.setAttribute("d", onda(w, sementeDe(termo)));
+      gsap.set(p, { visibility: "visible" });
+      const dica = vazio.querySelector(".dica");
+      if (reduzido()) return gsap.set(p, { drawSVG: "100%" });
+      gsap.timeline()
+        .fromTo(p, { drawSVG: "0%" }, { drawSVG: "100%", duration: 0.45, ease: "power1.inOut", delay: 0.1 })
+        .fromTo(dica, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, "-=0.1");
+      return;
+    }
+    estado.textContent = `${achados.length} ${achados.length === 1 ? "artigo" : "artigos"}`;
+    lista.insertAdjacentHTML("beforeend", achados.map((a) => `<li><a href="#${a.slug}"><span class="r-titulo">${destacar(a.t, termo)}</span><span class="r-livro">${a.livro}</span></a></li>`).join(""));
+    itens().forEach((a, k) => a.addEventListener("pointerenter", () => ativar(k)));
+    ativar(0, true);
+  }
+  campo.addEventListener("input", buscar);
+  campo.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowDown") { e.preventDefault(); ativar(ativo + 1); }
+    if (e.key === "ArrowUp") { e.preventDefault(); ativar(ativo - 1); }
+  });
+  caixa.buscar = buscar;
+});
+document.querySelectorAll("[data-termo]").forEach((b) => b.addEventListener("click", () => {
+  document.querySelectorAll("[data-busca]").forEach((c) => { c.querySelector("input").value = b.dataset.termo; c.buscar(); });
+}));
+
+/* ---------- 4. números da leitura ---------- */
+function criarOdometro(el, valor) {
+  el.classList.add("odometro");
+  el.setAttribute("aria-hidden", "true");
+  el.innerHTML = [0, 1].map(() => `<span class="col"><span class="fita">${[..."0123456789"].map((d) => `<span>${d}</span>`).join("")}<span>&#160;</span></span></span>`).join("");
+  mudarOdometro(el, valor, true);
+}
+function mudarOdometro(el, valor, seco) {
+  if (+el.dataset.valor === valor && !seco) return;
+  const cols = el.querySelectorAll(".col"), ref = cols[1].querySelector(".fita > span").getBoundingClientRect();
+  const alvo = [valor >= 10 ? Math.floor(valor / 10) % 10 : 10, valor % 10];
+  const instante = seco || reduzido();
+  cols.forEach((c, i) => {
+    const fita = c.querySelector(".fita");
+    if (instante) gsap.set(fita, { y: -alvo[i] * ref.height });
+    else gsap.to(fita, { y: -alvo[i] * ref.height, duration: 0.4, ease: "power3.out", overwrite: true });
+  });
+  const larg = alvo[0] === 10 ? 0 : ref.width;
+  if (instante) gsap.set(cols[0], { width: larg }); else gsap.to(cols[0], { width: larg, duration: 0.3, ease: "power3.inOut", overwrite: true });
+  el.dataset.valor = valor;
+}
+const TOTAL_MIN = 12;
+document.querySelectorAll("[data-deslizar]").forEach((d) => {
+  const prop = d.dataset.deslizar === "prop";
+  const caixa = document.querySelector(`[data-leitura="${d.dataset.deslizar}"]`);
+  const feito = caixa.querySelector(".feito"), pct = caixa.querySelector("[data-pct]");
+  const min = caixa.querySelector("[data-min]");
+  const faltam = caixa.querySelector("[data-faltam]"), chegou = caixa.querySelector("[data-chegou]");
+  let noFim = false;
+  if (prop) criarOdometro(min, TOTAL_MIN);
+  d.addEventListener("input", () => {
+    const p = +d.value, resta = Math.max(1, Math.ceil(TOTAL_MIN * (1 - p / 100)));
+    feito.style.width = p + "%";
+    pct.textContent = p;
+    if (!prop) { caixa.querySelector("[data-fim]").textContent = p >= 100 ? "chegou ao fim" : `faltam ${resta} min`; return; }
+    mudarOdometro(min, resta);
+    const fim = p >= 100;
+    if (fim === noFim) return;
+    noFim = fim;
+    const sai = fim ? faltam : chegou, entra = fim ? chegou : faltam;
+    entra.hidden = false;
+    if (reduzido()) { sai.hidden = true; return; }
+    gsap.to(sai, { yPercent: -110, opacity: 0, duration: 0.2, ease: "power2.in", onComplete: () => { sai.hidden = true; gsap.set(sai, { yPercent: 0, opacity: 1 }); } });
+    gsap.fromTo(entra, { yPercent: 110, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.3, delay: 0.08, ease: "power3.out" });
+  });
+});
+
+/* ---------- montagem ---------- */
+document.fonts.ready.then(() => {
+  mostrar404("/posts/java21");
+  document.querySelectorAll("[data-busca]").forEach((c) => c.buscar());
+  document.querySelectorAll(".odometro").forEach((el) => mudarOdometro(el, +el.dataset.valor, true));
+});
+</script>
+</body>
+</html>

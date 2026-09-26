@@ -24,7 +24,7 @@ const Titulo = nivel;
 <li class="cartao folha" data-livro={post.livro}>
   {
     temIlustracao(post.slug) && (
-      <div class="ilustracao-cartao painel" aria-hidden="true" style={`--cor:${post.cor}`}>
+      <div class="ilustracao-cartao painel" aria-hidden="true" data-vt-desenho style={`--cor:${post.cor}`}>
         <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} tamanho="cartao" decorativa />
       </div>
     )

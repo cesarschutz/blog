@@ -1163,3 +1163,37 @@ nada muda.
 - **Movimento reduzido:** a pilha não anima (o clique só abre a página), o livro não gira, o menu
   abre e fecha direto.
 
+## D47 · Marca em degrau, estante que só sobe, abertura do site e o movimento das páginas
+- **Data:** 26/09/2026 · **Status:** aplicada **só local, sem commit**, aguardando o Cesar validar
+  (parte 2 da lista de 26/09/2026, `docs/controle-parte2.md`).
+- **Pedido do Cesar e o que mudou:**
+  1. **Marca "cs":** o "c" 5,4 acima e o "s" 5,4 abaixo do centro da capa, um pouco maiores, e **sem a
+     fita** (gerador `scripts/marca.mjs`, favicon e ícone do iPhone regerados; saiu o token
+     `--marca-fita`). Na abertura da home, o livro tem a altura das duas linhas do nome, com "Cesar" e
+     "Schutz" empilhados e o "blog" depois do sobrenome; o livro grande abre ao passar o mouse. O nome
+     fica sem acento, como em todo o site.
+  2. **Estante realista:** o livro puxado só desliza para cima (16px); os dois vizinhos sobem 2px pelo
+     atrito, um pouco depois; nada inclina (o topo inclinado entrava no livro ao lado); ao soltar,
+     desce e assenta com `bounce.out`. As espiadinhas em repouso também só sobem.
+  3. **Abertura do site** (`Abertura.astro`, inspirada em clevante.cz): na primeira visita da sessão,
+     só na home e sem movimento reduzido, uma folha de papel cobre a página com o livro "cs" e o fio
+     escrito pela caneta (a da leitura, D45) com a contagem até 100; quando a página e as fontes estão
+     prontas (no mínimo ~1,2s, no máximo ~2,6s), o livro voa até o livro grande da abertura (no
+     celular, até o do cabeçalho), a folha sobe e o site chega: o destaque, a folha da abertura, o nome
+     linha a linha, os livros descendo para a prateleira um a um e, por último, o cabeçalho. No celular,
+     sem os livros um a um. O script do `<head>` decide e tira sozinho a abertura depois de 7s.
+  4. **Troca de páginas, a mesma de qualquer página para qualquer outra** (base.css): o cabeçalho fica
+     parado; a página antiga sai subindo 6px e sumindo (0,2s) e a nova chega subindo 18px (0,5s), como
+     uma folha posta na mesa; os livros voam quando estão nas duas páginas (e o que não tem par sai com
+     a folha, em vez de sumir por cima de tudo, o problema da categoria para o post); o desenho do
+     artigo na lista, nos cards e no destaque vira o desenho do topo do post.
+  5. **Gaveta que cresce:** abre crescendo (0,8s) com o conteúdo de baixo descendo junto, recolhe ao
+     fechar e, na troca de livro, vai da altura de um para a do outro.
+  6. **Livro ampliado:** cresce a partir do livro de onde saiu (que some do lugar) e, ao fechar (botão,
+     Esc ou clique fora), volta para ele, girando de volta a 38°, com o véu clareando.
+  7. **Filtro por livro** (arquivo e tags): a lista esmaece e os artigos escolhidos chegam subindo em
+     sequência.
+  8. **Rolagem suave** nos links do sumário e nas âncoras.
+- **Movimento reduzido:** sem abertura, sem transição de página, a gaveta e o livro ampliado abrem
+  direto, o filtro troca direto.
+

@@ -590,9 +590,10 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   passar o mouse, tocar, receber o foco ou com a página ociosa). Só transformações e opacidade, nunca
   `filter` no livro 3D; o foco do teclado faz o mesmo que o mouse; Esc fecha; com movimento reduzido,
   tudo no estado final.
-  - **Estante que responde ao mouse** (home e filtro, só com mouse): o livro sob o mouse sobe 16px; os
-    vizinhos até 120px sobem até 5px e inclinam até 2,4° para longe dele (`quickTo`, y 0,45s, rotação
-    0,6s, `power3.out`); ao sair, `elastic.out(1, 0.45)` em 1,1s. Embaixo, a legenda com o nome e a
+  - **Estante que responde ao mouse** (home e filtro, só com mouse; D47): o livro sob o mouse desliza
+    16px para cima (0,42s, `power3.out`); os dois vizinhos sobem 2px pelo atrito (0,7s, `power2.out`);
+    **nada inclina** (o topo inclinado entrava no vizinho); ao sair, desce e assenta com `bounce.out`
+    (0,55s). Embaixo, a legenda com o nome e a
     contagem (`estante-viva.ts`).
   - **Estante em repouso** (só a home): depois de 3s sem mouse, toque, tecla ou rolagem, com a estante
     ao menos metade visível e a aba ativa, a cada 4 a 7s um livro sorteado sobe 10px, inclina 1,2°, espera 0,6s e volta com `elastic`. Qualquer
@@ -628,9 +629,24 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
 - **O desenho do destaque da home** (D41, só ali): ao entrar na tela, os traços aparecem em sequência
   com DrawSVG (1,1s cada, sequência de até ~1,2s), depois a cor, a hachura (0,6s) e os textos (0,4s);
   tracejados só por opacidade.
-- **Marca "cs"** (D41, só CSS): no hover ou foco, a capa entreabre 38° sobre as páginas (0,5s) e a fita
-  balança até 14° com `elastic.out(1.2, 0.3)` (0,9s) e volta com `elastic.out(1, 0.3)` (1s), as curvas
-  do GSAP em `linear()`.
+- **Marca "cs"** (D41, D47, só CSS): no hover ou foco, a capa entreabre 38° sobre as páginas (0,5s). A
+  fita saiu na D47; o "c" fica acima e o "s" abaixo, em degrau.
+- **Abertura do site** (D47, `Abertura.astro`, GSAP): só na home, na primeira visita da sessão e sem
+  movimento reduzido. Folha de papel com o livro "cs" (0,55s) e o fio escrito pela caneta com a
+  contagem até 100 (mínimo ~1,2s; no celular, ~0,9s); o livro voa até o livro grande da abertura
+  (1s, `power3.inOut`; no celular, até o do cabeçalho) e a folha sobe (`yPercent -100`, 0,95s); o
+  site chega de baixo para cima: destaque, folha da abertura, nome linha a linha, livros descendo
+  para a prateleira um a um (`yPercent`, `bounce.out`, 50ms entre eles; não no celular) e, por último,
+  o cabeçalho. Durante ela, as transições de CSS ficam desligadas (atrapalham o GSAP a ler o estado final).
+- **Troca de página** (D47, View Transitions entre documentos, `base.css`): o cabeçalho parado; a
+  folha antiga sai (6px para cima, 0,2s) e a nova chega (18px, 0,5s, 60ms depois); livros e o desenho
+  do post voam quando estão nas duas páginas; sem par, saem e chegam com a folha (`:only-child`).
+- **Gaveta** (D47): cresce (0,8s) com o conteúdo de baixo descendo junto; recolhe ao fechar; na troca
+  de livro, vai da altura de um para a do outro (0,55s).
+- **Livro ampliado** (D47): cresce do livro de origem (0,7s, `power3.inOut`) e volta para ele ao fechar
+  (0,55s), girando de volta a 38°, com o véu clareando.
+- **Filtro por livro** (D47): a lista esmaece (0,18s) e os primeiros artigos chegam subindo (0,42s,
+  40ms entre eles).
 - **Sem lousa de passos** (D46): a lousa que a caneta desenha enquanto o texto rola saiu. Nos posts,
   só a linha do tempo de arrastar e a animação curta em loop.
 - **Diagrama que avança com a rolagem só em posts que explicam um fluxo** (passo a passo, linha do

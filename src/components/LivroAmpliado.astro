@@ -3,7 +3,8 @@
  * O livro ampliado (D33): clicar no livro aberto (na gaveta da home e no topo das páginas de categoria
  * e de série) abre o mesmo livro 3D, grande, sobre a página escurecida (o visor, visor.css), com o
  * nome e o volume embaixo e, fora da página dele, o link "Ver o livro". Arrastar (ou ← e →) gira o
- * livro entre a lombada e a capa. Fecha no botão, com Esc ou com um clique fora.
+ * livro entre a lombada e a capa. Fecha no botão, com Esc ou com um clique fora. O livro cresce a
+ * partir do livro de onde saiu (o de origem some enquanto isso) e, ao fechar, volta para ele (D47).
  *
  * Quem abre: um elemento com `data-ampliar-livro` (com `data-largura`, `data-nome`, `data-dados` e
  * `data-href`, e as cores do livro no style) em volta de um `.livro-3d-caixa`, e o botão de lupa
@@ -30,7 +31,7 @@ import "../styles/visor.css";
 
 <script>
   import { GIRO } from "../lib/livro-3d";
-  import { adiantar, carregarArrastar, movimentoReduzido } from "../scripts/gsap";
+  import { adiantar, carregarArrastar, carregarGsap, movimentoReduzido } from "../scripts/gsap";
 
   const dialogo = document.querySelector<HTMLDialogElement>("[data-livro-ampliado]");
   if (dialogo && !dialogo.dataset.ligado) {
@@ -41,6 +42,20 @@ import "../styles/visor.css";
     const ir = dialogo.querySelector<HTMLAnchorElement>("[data-ir]")!;
     let origem: HTMLElement | null = null;
     let livro: HTMLElement | null = null;
+    // O livro de origem e a cópia no palco: a cópia sai dele e volta para ele (D47).
+    let caixaDeOrigem: HTMLElement | null = null;
+    let copiaNoPalco: HTMLElement | null = null;
+    const legenda = dialogo.querySelector<HTMLElement>(".legenda-livro")!;
+    /** Onde a cópia teria de estar para cobrir o livro de origem (a partir do lugar dela, sem transformação). */
+    function sobreAOrigem() {
+      const r0 = caixaDeOrigem!.getBoundingClientRect();
+      const r1 = copiaNoPalco!.getBoundingClientRect();
+      return {
+        x: r0.left + r0.width / 2 - (r1.left + r1.width / 2),
+        y: r0.top + r0.height / 2 - (r1.top + r1.height / 2),
+        scale: r0.height / r1.height,
+      };
+    }
     let m = { u: 0, bh: 0, cw: 0, sw: 0 };
     let giro = GIRO;
 
@@ -128,18 +143,64 @@ import "../styles/visor.css";
       ir.href = destino || "#";
 
       dialogo!.showModal();
+      caixaDeOrigem = caixa;
+      copiaNoPalco = copia;
       // Abre de lado, como o livro de origem (GIRO, D46); arrastar gira o livro, com embalo.
       ligarArrasto();
+      // O livro cresce a partir do de origem, que sai do lugar enquanto isso (D47).
+      if (!movimentoReduzido.matches) {
+        carregarGsap().then((gsap) => {
+          if (!dialogo!.open || copiaNoPalco !== copia) return;
+          const de = sobreAOrigem();
+          gsap.set(caixa, { opacity: 0 });
+          gsap.fromTo(copia, de, { x: 0, y: 0, scale: 1, duration: 0.7, ease: "power3.inOut" });
+          gsap.fromTo(legenda, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4, delay: 0.35, ease: "power2.out" });
+        });
+      }
+    }
+
+    // Fechar: o livro volta para o de origem, girando de volta ao GIRO, e o véu clareia (D47).
+    let fechando = false;
+    async function fechar() {
+      if (fechando || !dialogo!.open) return;
+      if (movimentoReduzido.matches || !caixaDeOrigem || !copiaNoPalco) return dialogo!.close();
+      fechando = true;
+      const gsap = await carregarGsap();
+      const copia = copiaNoPalco;
+      dialogo!.classList.add("fechando");
+      arrasto?.kill();
+      arrasto = null;
+      gsap.killTweensOf([copia, livro]);
+      gsap.to(legenda, { opacity: 0, duration: 0.2 });
+      if (livro) gsap.to(livro, { rotationY: GIRO, duration: 0.45, ease: "power2.out" });
+      // A posição de origem é medida sem a transformação que a cópia tem agora.
+      const agora = { x: gsap.getProperty(copia, "x"), y: gsap.getProperty(copia, "y"), scale: gsap.getProperty(copia, "scale") };
+      gsap.set(copia, { x: 0, y: 0, scale: 1 });
+      const para = sobreAOrigem();
+      gsap.set(copia, agora);
+      await gsap.to(copia, { ...para, duration: 0.55, ease: "power3.inOut" }).then();
+      dialogo!.close();
     }
 
     dialogo.addEventListener("close", () => {
       arrasto?.kill();
       arrasto = null;
+      fechando = false;
+      dialogo.classList.remove("fechando");
+      caixaDeOrigem?.style.removeProperty("opacity");
+      legenda.style.removeProperty("opacity");
+      legenda.style.removeProperty("transform");
+      caixaDeOrigem = copiaNoPalco = null;
       palco.replaceChildren();
       origem?.querySelector<HTMLElement>("[data-ampliar]")?.focus({ preventScroll: true });
       origem = livro = null;
     });
-    dialogo.querySelector("[data-fechar]")!.addEventListener("click", () => dialogo.close());
+    dialogo.querySelector("[data-fechar]")!.addEventListener("click", () => fechar());
+    // Esc também volta com o livro.
+    dialogo.addEventListener("cancel", (e) => {
+      e.preventDefault();
+      fechar();
+    });
     // Clique fora do livro e da legenda fecha (mas não o clique que termina um arraste).
     let arrastou = false;
     dialogo.addEventListener("click", (e) => {
@@ -148,7 +209,7 @@ import "../styles/visor.css";
         arrastou = false;
         return;
       }
-      if (alvo === dialogo || alvo === palco) dialogo.close();
+      if (alvo === dialogo || alvo === palco) fechar();
     });
     dialogo.addEventListener("keydown", (e) => {
       const passo = e.key === "ArrowLeft" ? -8 : e.key === "ArrowRight" ? 8 : 0;
@@ -236,16 +297,15 @@ import "../styles/visor.css";
     pointer-events: none;
   }
 
+  /* O livro cresce a partir do de origem pelo GSAP (D47). */
   .palco-ampliado :global(.livro-3d-caixa) {
     z-index: 1;
-    animation: livro-sobe 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
   }
 
-  @keyframes livro-sobe {
-    from {
-      opacity: 0;
-      transform: translateY(18px) scale(0.96);
-    }
+  /* Fechando, o véu clareia enquanto o livro volta. */
+  .visor-livro.fechando::backdrop {
+    opacity: 0;
+    transition: opacity 0.5s ease-in;
   }
 
   .legenda-livro {
@@ -300,9 +360,5 @@ import "../styles/visor.css";
     color: color-mix(in oklab, var(--veu-tinta) 55%, transparent);
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .palco-ampliado :global(.livro-3d-caixa) {
-      animation: none;
-    }
-  }
+
 </style>

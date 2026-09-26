@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * A marca do blog (D33): o livro "cs", com a capa do Volume 01 e a fita da série.
+ * A marca do blog (D33, D47): o livro "cs", com a capa do Volume 01; o "c" um pouco acima e o "s" um
+ * pouco abaixo, ocupando a capa, e sem a fita da série (D47).
  *
  * Gera, a partir da fonte Besley 800 que o site já usa:
  * - src/lib/marca.ts: o SVG da marca (as letras viram traçado, sem depender da fonte carregar), que o
@@ -66,24 +67,31 @@ const { usos, x0, y0, x1, y1 } = await contorno("cs", FONTE, "font-weight:800", 
 const blog = await contorno("blog", ITALICO, 'font-style:italic;font-weight:420;font-variation-settings:"opsz" 24', "blog");
 await navegador.close();
 
-// ---------- 2. a marca: capa 40 × 52, dobradiça, letras e a fita que sai por baixo ----------
+// ---------- 2. a marca: capa 40 × 52, dobradiça e as letras em degrau (D47) ----------
 const LARGURA = 40;
 const CAPA = 52;
-const ALTURA = 60;
-const LETRAS = 25.5; // largura de "cs"
+const ALTURA = CAPA;
+const LETRAS = 28; // largura de "cs"
+// O degrau (D47): o "c" sobe e o "s" desce, na escala da capa; um passo para o lado aproxima os dois.
+const DEGRAU = 5.4;
+const APERTO = 0.9;
 const escala = LETRAS / (x1 - x0);
 const centroX = (5 + LARGURA) / 2; // à direita da dobradiça
-const centroY = 23.5;
+const centroY = CAPA / 2;
 const tx = centroX - ((x0 + x1) / 2) * escala;
 const ty = centroY - ((y0 + y1) / 2) * escala;
 const arredondar = (d) => d.replace(/-?\d+\.\d+/g, (n) => String(Math.round(Number(n) * 10) / 10));
 const letras = usos
-  .map((u) => `<path transform="translate(${u.x.toFixed(1)} ${u.y.toFixed(1)})" d="${arredondar(u.d).replace(/\s+/g, " ").trim()}"/>`)
+  .map((u, i) => {
+    const sinal = i === 0 ? -1 : 1;
+    const x = u.x - (sinal * APERTO) / escala;
+    const y = u.y + (sinal * DEGRAU) / escala;
+    return `<path transform="translate(${x.toFixed(1)} ${y.toFixed(1)})" d="${arredondar(u.d).replace(/\s+/g, " ").trim()}"/>`;
+  })
   .join("");
 
 /** SVG interno da marca, com classes para o CSS pintar (Marca.astro). */
 const interno =
-  `<path class="marca-fita" d="M27 44h6v16l-3-3.4-3 3.4z"/>` +
   `<rect class="marca-capa" width="${LARGURA}" height="${CAPA}" rx="3.2"/>` +
   `<rect class="marca-dobra" x="4" width="1" height="${CAPA}"/>` +
   `<g class="marca-letras" transform="translate(${tx.toFixed(3)} ${ty.toFixed(3)}) scale(${escala.toFixed(5)})">${letras}</g>`;
@@ -101,9 +109,9 @@ const viewBoxBlog = `0 ${((blog.y0 - blog.y1) * E).toFixed(1)} ${((blog.x1 - blo
 writeFileSync(
   join(RAIZ, "src/lib/marca.ts"),
   `/**
- * A marca do blog (D33), gerada por scripts/marca.mjs (não edite à mão): o livro "cs" com a capa do
- * Volume 01, a dobradiça, as letras em Besley 800 (em traçado) e a fita da série saindo por baixo.
- * As classes são pintadas pelo Marca.astro com os tokens --marca, --marca-letra e --marca-fita.
+ * A marca do blog (D33, D47), gerada por scripts/marca.mjs (não edite à mão): o livro "cs" com a capa
+ * do Volume 01, a dobradiça e as letras em Besley 800 (em traçado), o "c" acima e o "s" abaixo.
+ * As classes são pintadas pelo Marca.astro com os tokens --marca e --marca-letra.
  */
 export const MARCA_VIEWBOX = "0 0 ${LARGURA} ${ALTURA}";
 export const MARCA_SVG = ${JSON.stringify(interno)};
@@ -121,7 +129,6 @@ export const BLOG_DESCENDENTE = ${((blog.y1 - blog.usos[0].y) / (blog.y1 - blog.
 
 // ---------- 3. ícones: o livro sobre um quadrado de papel ----------
 const pintado = interno
-  .replace('class="marca-fita"', `fill="${claro["marca-fita"]}"`)
   .replace('class="marca-capa"', `fill="${claro.marca}"`)
   .replace('class="marca-dobra"', 'fill="#000" fill-opacity=".24"')
   .replace('class="marca-letras"', `fill="${claro["marca-letra"]}"`);

@@ -1,14 +1,14 @@
 ---
 /**
- * A marca do blog (D33): o livro "cs" (a capa do Volume 01, com a fita da série saindo por baixo), o
- * nome e "blog" em itálico. Em linha no cabeçalho e no rodapé; grande na abertura da home, ao lado da
- * estante, onde ela é o h1. O ícone do navegador é o mesmo livro sobre um quadrado de papel. O
- * traçado do livro e do "blog" vem de src/lib/marca.ts, e os ícones de public/, todos gerados por
- * scripts/marca.mjs.
+ * A marca do blog (D33, D47): o livro "cs" (a capa do Volume 01, com o "c" acima e o "s" abaixo, sem
+ * a fita), o nome e "blog" em itálico. Em linha no cabeçalho e no rodapé. Na abertura da home, onde ela
+ * é o h1 (variante "grande", D47), o livro fica grande, da altura de duas linhas, com "Cesar" e
+ * "Schutz" um embaixo do outro ao lado dele e o "blog" depois do sobrenome. O ícone do navegador é o
+ * mesmo livro sobre um quadrado de papel. O traçado do livro e do "blog" vem de src/lib/marca.ts, e os
+ * ícones de public/, todos gerados por scripts/marca.mjs.
  *
- * O livro abre (D41): ao passar o mouse ou focar o link, a capa entreabre 38° sobre as páginas e a fita
- * balança com um `elastic` (a curva do GSAP, `elastic.out`, em `linear()`), só com CSS. Para isso o
- * livro são duas camadas do mesmo traçado: atrás, as páginas e a fita; na frente, a capa sem a fita.
+ * O livro abre (D41): ao passar o mouse (ou focar o link), a capa entreabre 38° sobre as páginas, só
+ * com CSS. Para isso o livro são duas camadas do mesmo traçado: atrás, as páginas; na frente, a capa.
  */
 import { BLOG_DESCENDENTE, BLOG_SVG, BLOG_VIEWBOX, MARCA_SVG, MARCA_VIEWBOX } from "../lib/marca";
 import { url } from "../lib/url";
@@ -32,10 +32,20 @@ const Elemento = semLink ? "span" : "a";
     <svg class="marca-livro marca-miolo" viewBox={MARCA_VIEWBOX} focusable="false" set:html={`<rect class="marca-pagina" x="3" y="1.2" width="36" height="49.6" rx="2"/>${MARCA_SVG}`} />
     <svg class="marca-livro marca-capa-3d" viewBox={MARCA_VIEWBOX} focusable="false" set:html={MARCA_SVG} />
   </span>
-  <span class="marca-texto"
-    ><span class="marca-nome">Cesar Schutz</span>
-    <svg class="marca-blog" viewBox={BLOG_VIEWBOX} role="img" aria-label="blog" set:html={BLOG_SVG} /></span
-  >
+  {
+    variante === "grande" ? (
+      <span class="marca-texto">
+        <span class="marca-nome">
+          <span class="marca-linha-nome">Cesar</span> <span class="marca-linha-nome">Schutz<svg class="marca-blog" viewBox={BLOG_VIEWBOX} role="img" aria-label="blog" set:html={BLOG_SVG} /></span>
+        </span>
+      </span>
+    ) : (
+      <span class="marca-texto">
+        <span class="marca-nome">Cesar Schutz</span>
+        <svg class="marca-blog" viewBox={BLOG_VIEWBOX} role="img" aria-label="blog" set:html={BLOG_SVG} />
+      </span>
+    )
+  }
 </Elemento>
 
 <style>
@@ -56,24 +66,22 @@ const Elemento = semLink ? "span" : "a";
     font-size: 21px;
   }
 
-  /* O livro fica centrado nas maiúsculas; a fita pende abaixo da linha. */
+  /* O livro fica centrado nas maiúsculas. */
   .marca-livro-3d {
     display: inline-grid;
     flex: none;
     perspective: 12em;
-    translate: 0 0.1em;
   }
 
   .marca-livro {
     grid-area: 1 / 1;
     width: auto;
-    height: 1.46em;
+    height: 1.27em;
     overflow: visible;
   }
 
-  /* Atrás, só as páginas e a fita; na frente, a capa, presa pela lombada (à esquerda). */
-  .marca-miolo :global(:is(.marca-capa, .marca-dobra, .marca-letras)),
-  .marca-capa-3d :global(.marca-fita) {
+  /* Atrás, só as páginas; na frente, a capa, presa pela lombada (à esquerda). */
+  .marca-miolo :global(:is(.marca-capa, .marca-dobra, .marca-letras)) {
     display: none;
   }
 
@@ -85,6 +93,8 @@ const Elemento = semLink ? "span" : "a";
   }
 
   .marca-capa-3d {
+    position: relative;
+    z-index: 1;
     transform-origin: 0 50%;
     transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
   }
@@ -122,16 +132,6 @@ const Elemento = semLink ? "span" : "a";
     fill: var(--marca-letra);
   }
 
-  /* A fita volta balançando (elastic.out(1, 0.3), 1s) e, com o mouse, vai balançando até 14°
-     (elastic.out(1.2, 0.3), 0,9s): as curvas do GSAP amostradas em linear(). */
-  .marca-livro :global(.marca-fita) {
-    fill: var(--marca-fita);
-    transform-box: fill-box;
-    transform-origin: 50% 0;
-    transition: rotate 1s
-      linear(0, 0.272, 0.646, 1, 1.25, 1.364, 1.354, 1.257, 1.125, 1, 0.912, 0.871, 0.875, 0.909, 0.956, 1, 1.031, 1.046, 1.044, 1.032, 1.016, 1, 0.989, 0.984, 0.984, 0.989, 0.994, 1, 1.004, 1.006, 1.006, 1.004, 1.002, 1, 0.999, 0.998, 0.998, 0.999, 0.999, 1, 1);
-  }
-
   /* "blog" em traçado, com a linha de base na do nome (a perna do g desce, como na letra). */
   .marca-blog {
     width: auto;
@@ -146,43 +146,57 @@ const Elemento = semLink ? "span" : "a";
     color: var(--ink);
   }
 
-  a.marca:is(:hover, :focus-visible) .marca-livro :global(.marca-fita) {
-    rotate: 14deg;
-    transition: rotate 0.9s
-      linear(0, 0.551, 1.053, 1.394, 1.537, 1.504, 1.354, 1.159, 0.981, 0.861, 0.81, 0.822, 0.875, 0.944, 1.007, 1.049, 1.067, 1.063, 1.044, 1.02, 0.998, 0.983, 0.976, 0.978, 0.984, 0.993, 1.001, 1.006, 1.008, 1.008, 1.006, 1.002, 1, 0.998, 0.997, 0.997, 0.998, 0.999, 1, 1.001, 1);
-  }
-
+  /*
+   * A abertura da home (D47): o livro grande, da altura das duas linhas do nome, com "Cesar" e
+   * "Schutz" empilhados ao lado e o "blog" depois do sobrenome, na linha de base dele. O livro abre ao
+   * passar o mouse, como o do cabeçalho.
+   */
   .marca-grande {
+    gap: 0.34em;
     font-size: clamp(40px, 5.4vw, 62px);
-    gap: 0.3em;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.018em;
+    white-space: normal;
   }
 
   .marca-grande .marca-livro-3d {
-    translate: 0 0.08em;
-    filter: drop-shadow(0 0.06em 0.08em rgb(0 0 0 / 0.18));
+    filter: drop-shadow(0 0.05em 0.07em rgb(0 0 0 / 0.2));
   }
 
   .marca-grande .marca-livro {
-    height: 1.3em;
+    height: 2.02em;
+  }
+
+  /* No livro grande, o bloco das páginas aparece um pouco à direita e embaixo da capa. */
+  .marca-grande .marca-miolo {
+    translate: 0.045em 0.035em;
+  }
+
+  .marca-grande .marca-nome {
+    display: grid;
+    line-height: 0.98;
+  }
+
+  .marca-linha-nome {
+    white-space: nowrap;
   }
 
   .marca-grande .marca-blog {
-    height: 0.56em;
-    vertical-align: calc(-0.56em * var(--descendente));
+    height: 0.5em;
+    margin-left: 0.22em;
+    vertical-align: calc(-0.5em * var(--descendente));
+  }
+
+  .marca-grande:is(:hover, :focus-visible) .marca-capa-3d {
+    transform: rotateY(-38deg);
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .marca-livro :global(.marca-fita),
     .marca-capa-3d {
       transition: none;
     }
 
-    a.marca:is(:hover, :focus-visible) .marca-livro :global(.marca-fita) {
-      rotate: none;
-    }
-
-    a.marca:is(:hover, :focus-visible) .marca-capa-3d {
+    .marca:is(:hover, :focus-visible) .marca-capa-3d {
       transform: none;
     }
   }

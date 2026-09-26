@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A2 · Folhas em voo · abertura do site (protótipo)</title>
+<!-- Só no protótipo: fontes do Google Fonts e GSAP pelo jsDelivr. No site, @fontsource e o gsap do npm. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@700;800&family=Bitter:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+
+<style>
+/* Tokens: espelham src/styles/tokens.ts e docs/capas (DESIGN.md). Os livros não mudam com o tema. */
+:root {
+  --paper: #F1F0EB; --paper-hi: #FFFFFE; --well: #F5F5F4;
+  --ink: #1A2124; --ink-2: #57605E; --ink-3: #868D8A; --rule: #E2E0D8;
+  --acento: #2549B8; --sobre-acento: #FFFFFF;
+  --marca: #2D4B46; --marca-letra: #F2EDE2;
+  --tabua: #B5BAB4; --tabua-borda: #9BA19B; --aparador: #7A8280;
+  --sombra: 0 1px 2px rgba(40,38,30,.04), 0 10px 28px -18px rgba(40,38,30,.28);
+  --sombra-alta: 0 2px 4px rgba(40,38,30,.05), 0 18px 36px -18px rgba(40,38,30,.35);
+  --sombra-papel: 0 26px 40px -22px rgba(40,38,30,.45);
+  --painel-mistura: 11%;
+  --ma: 30; /* força do marca-texto (%) */
+  /* livros (docs/capas/cores.js) */
+  --livro-papel: #f2ede2; --livro-tinta: #1f1c18; --livro-clara: #efe8d8; --livro-escura: #29251b;
+  --l-arq: #2d4b46; --l-dev: #7a4430; --l-dados: #5f4662; --l-ia: #6e2f45; --l-seg: #606a37;
+  --l-devops: #465976; --l-sre: #c4a050; --l-sre-dest: #836100; --l-carreira: #9a7650;
+  --l-carreira-dest: #7f5b36; --l-carreira-texto: #816342;
+  --l-java: #c24d1c; --l-java-texto: #b8481a;
+  --f-titulo: "Besley", Georgia, serif;
+  --f-texto: "Literata", Georgia, serif;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-codigo: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --f-livro: "Bitter", Georgia, serif;
+  --f-livro-it: "Newsreader", Georgia, serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #111618; --paper-hi: #1A2124; --well: #21282A;
+    --ink: #E7E9E4; --ink-2: #A9B0AC; --ink-3: #7F8884; --rule: #2A3336;
+    --acento: #93AEFF; --sobre-acento: #0D1530;
+    --tabua: #3A4245; --tabua-borda: #2C3336; --aparador: #56605E;
+    --sombra: 0 12px 30px -18px rgba(0,0,0,.8);
+    --sombra-alta: 0 18px 36px -16px rgba(0,0,0,.9);
+    --sombra-papel: 0 26px 44px -20px rgba(0,0,0,.85);
+    --painel-mistura: 20%;
+    --ma: 38;
+    color-scheme: dark;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 15px/1.5 var(--f-ui);
+  -webkit-font-smoothing: antialiased;
+  padding: max(16px, env(safe-area-inset-top, 0px)) clamp(16px, 2.2vw, 32px) max(32px, env(safe-area-inset-bottom, 0px));
+}
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--acento); outline-offset: 3px; border-radius: 4px; }
+
+/* ---------- o bloco que explica ---------- */
+.nota {
+  max-width: 1320px;
+  margin: 0 auto 16px;
+  background: var(--paper-hi);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  box-shadow: var(--sombra);
+  padding: 18px clamp(16px, 2vw, 26px) 16px;
+}
+.nota h1 { font: 700 clamp(21px, 2.2vw, 26px)/1.2 var(--f-titulo); margin: 0 0 4px; text-wrap: balance; }
+.nota .sub { color: var(--ink-2); margin: 0 0 14px; font: 400 16px/1.5 var(--f-texto); max-width: 70ch; }
+.nota dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px 26px; margin: 0 0 14px; }
+.nota .largo { grid-column: 1 / -1; }
+.nota .largo ul { columns: 2 380px; column-gap: 32px; }
+.nota .largo li { break-inside: avoid; margin: 0 0 3px; }
+.nota dt { font-weight: 600; font-size: 13.5px; }
+.nota dd { margin: 2px 0 0; color: var(--ink-2); font-size: 13.5px; line-height: 1.5; }
+.nota dd ul { margin: 4px 0 0; padding-left: 18px; }
+.nota dd li + li { margin-top: 3px; }
+.nota a { color: var(--acento); }
+.nota code { font: 12.5px var(--f-codigo); background: var(--well); border-radius: 3px; padding: 0 3px; }
+.acoes { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+.btn {
+  font: 500 15px var(--f-ui); background: var(--acento); color: var(--sobre-acento);
+  border: 0; border-radius: 999px; padding: 9px 20px; cursor: pointer;
+}
+.chk { display: inline-flex; gap: 8px; align-items: center; font-size: 14px; color: var(--ink-2); cursor: pointer; }
+.dica { font-size: 13px; color: var(--ink-2); }
+
+/* ---------- o palco: faz o papel da janela do navegador ---------- */
+.palco {
+  position: relative;
+  max-width: 1320px;
+  margin: 0 auto;
+  height: clamp(560px, calc(100svh - 32px), 900px);
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--paper);
+  container-type: inline-size;
+  isolation: isolate;
+}
+.site { position: absolute; inset: 0; overflow: hidden auto; scrollbar-gutter: stable; scrollbar-width: thin; scrollbar-color: color-mix(in oklab, var(--ink) 24%, transparent) transparent; }
+.palco.intro .site { overflow: hidden; }
+
+/* ---------- o site simulado ---------- */
+.site { --g: clamp(16px, 3cqw, 32px); }
+.cab {
+  position: sticky; top: 0; z-index: 5;
+  height: 60px; display: flex; align-items: center; gap: 22px;
+  padding: 0 var(--g);
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+}
+.logo { display: flex; align-items: center; gap: 8px; margin-right: auto; white-space: nowrap; }
+.logo .mc { width: 20px; height: 26px; }
+.logo b { font: 800 21px/1 var(--f-titulo); letter-spacing: -.01em; }
+.logo i { font: italic 400 15px/1 var(--f-livro-it); color: var(--ink-2); }
+.nav { display: flex; gap: 22px; font-size: 15px; color: var(--ink-2); }
+.busca {
+  display: flex; align-items: center; gap: 8px; width: 210px; height: 40px;
+  border: 1px solid var(--rule); border-radius: 999px; background: var(--paper-hi);
+  padding: 0 8px 0 14px; color: var(--ink-2); font-size: 15px;
+}
+.busca kbd { margin-left: auto; font: 11px var(--f-ui); border: 1px solid var(--rule); border-radius: 4px; padding: 1px 5px; }
+.redondo { flex: none; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--rule); background: var(--paper-hi); display: grid; place-items: center; color: var(--ink); }
+.ico { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.menu { display: none; }
+@container (max-width: 860px) {
+  .nav { display: none; }
+  .busca { width: 40px; padding: 0; justify-content: center; }
+  .busca span, .busca kbd { display: none; }
+  .menu { display: grid; }
+  .cab { gap: 10px; }
+}
+
+.conteudo { max-width: 1320px; margin: 0 auto; padding: 26px var(--g) 56px; display: grid; gap: 22px; }
+.folha { background: var(--paper-hi); border: 1px solid var(--rule); border-radius: 14px; box-shadow: var(--sombra); }
+.secao { font: 700 clamp(26px, 2.6cqw, 32px)/1.2 var(--f-titulo); margin: 22px 0 -6px; }
+
+/* marca "cs" (MARCA_SVG) */
+.mc .marca-capa { fill: var(--marca); }
+.mc .marca-dobra { fill: black; opacity: .24; }
+.mc .marca-letras { fill: var(--marca-letra); }
+
+/* folha da abertura */
+.abertura-home {
+  display: grid; grid-template-columns: 1fr 1.05fr; gap: 4cqw; align-items: center;
+  padding: clamp(26px, 4.4cqw, 60px) clamp(22px, 3.4cqw, 46px);
+}
+.identidade .topo { display: flex; align-items: center; gap: clamp(14px, 1.8cqw, 24px); margin-bottom: clamp(18px, 2.4cqw, 30px); }
+.marca-grande { display: block; width: clamp(62px, 7.4cqw, 104px); height: auto; aspect-ratio: 40 / 52; filter: drop-shadow(0 8px 10px rgb(0 0 0 / .16)); }
+.nome { font: 800 clamp(38px, 5.2cqw, 66px)/.98 var(--f-titulo); letter-spacing: -.02em; margin: 0; }
+.nome .linha { display: block; }
+.nome i { font: italic 400 .52em var(--f-livro-it); color: var(--ink-2); letter-spacing: 0; margin-left: .15em; }
+.frase { position: relative; font: 400 clamp(17px, 1.55cqw, 20px)/1.55 var(--f-texto); margin: 0; max-width: 29em; }
+
+/* estante */
+.prateleira { position: relative; padding: 0 2% 7px; }
+.estante { --eh: clamp(170px, 21cqw, 280px); display: flex; align-items: flex-end; gap: 5px; height: var(--eh); }
+.lombada, .revista {
+  position: relative; flex: var(--w) 1 0; min-width: 0; height: calc(var(--h) * 1%);
+  display: flex; flex-direction: column; border-radius: 2px 2px 1px 1px; overflow: hidden;
+  box-shadow: inset 2px 0 0 rgb(255 255 255 / .14), inset -3px 0 5px rgb(0 0 0 / .2), 0 1px 1px rgb(0 0 0 / .14);
+  transform-origin: 50% 100%;
+}
+.lb-cima { flex: 1; min-height: 0; background: var(--livro-papel); display: grid; place-items: center; color: var(--dest); }
+.lb-cima svg, .revista .rv-icone { width: 64%; max-width: 30px; height: auto; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.lb-baixo {
+  flex: 0 0 calc(var(--eh) * .62); background: var(--cor); color: var(--tinta);
+  display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 12% 0 10%;
+}
+.lb-titulo { writing-mode: vertical-rl; font: 800 clamp(9px, 1.02cqw, 14px)/1.04 var(--f-livro); max-height: 84%; }
+.lb-num { writing-mode: vertical-rl; font: 700 clamp(8.5px, .86cqw, 12px)/1 var(--f-livro); }
+.revista { background: var(--livro-papel); color: var(--livro-tinta); border-top: 4px solid var(--l-java); align-items: center; padding: 10% 0 8%; gap: 5%; }
+.revista .rv-icone { width: 70%; color: var(--livro-tinta); flex: none; }
+.rv-titulo { writing-mode: vertical-rl; font: 800 clamp(8.5px, .95cqw, 13px)/1 var(--f-livro); white-space: nowrap; }
+.rv-titulo i { font: italic 400 1.02em var(--f-livro-it); color: var(--l-java-texto); }
+.revista .lb-num { margin-top: auto; color: var(--l-java-texto); }
+.aparador { flex: 0 0 3px; height: 62%; background: var(--aparador); border-radius: 1px; position: relative; }
+.aparador::after { content: ""; position: absolute; bottom: 0; left: -5px; width: 13px; height: 3px; background: var(--aparador); border-radius: 1px; }
+.tabua { position: absolute; left: 0; right: 0; bottom: 0; height: 7px; background: var(--tabua); border-bottom: 2px solid var(--tabua-borda); border-radius: 1px; }
+
+/* destaque e cards */
+.destaque { display: grid; grid-template-columns: 1.08fr 1fr; gap: 3cqw; padding: 14px; align-items: center; }
+.painel {
+  --fig-bg: color-mix(in oklab, var(--c) var(--painel-mistura), var(--paper-hi));
+  border-radius: 10px; background: var(--fig-bg); aspect-ratio: 16 / 10; display: grid; place-items: center; color: var(--ink);
+}
+.painel svg { width: 76%; height: auto; overflow: visible; }
+.painel .tr { fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.painel .cor { fill: var(--c); }
+.painel .fundo { fill: var(--fig-bg); }
+.painel .fantasma { stroke-dasharray: 6 5; }
+.painel .tx { font: 800 20px var(--f-titulo); fill: currentColor; text-anchor: middle; }
+.dest-texto { padding: 8px 3cqw 8px 0; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 14px; color: var(--ink-2); }
+.chip { display: inline-flex; align-items: center; gap: 7px; color: color-mix(in oklab, var(--c) 66%, var(--ink)); font-weight: 500; }
+.chip::before { content: ""; width: 9px; height: 9px; border-radius: 2px; background: var(--c); flex: none; }
+.dest-titulo { font: 700 clamp(26px, 3cqw, 38px)/1.1 var(--f-titulo); margin: 12px 0 6px; text-wrap: balance; }
+.dest-sub { font: 400 clamp(18px, 1.8cqw, 24px)/1.3 var(--f-texto); color: var(--ink-2); margin: 0 0 12px; }
+.dest-resumo { font-size: 15.5px; line-height: 1.6; color: var(--ink-2); margin: 0; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; }
+.card { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.card .painel { aspect-ratio: 16 / 9; }
+.card .meta { padding: 2px 4px 0; font-size: 13px; }
+.card h3 { font: 700 21px/1.25 var(--f-titulo); margin: 0 4px; text-wrap: balance; }
+.card p { margin: 0 4px 6px; font-size: 14.5px; color: var(--ink-2); }
+
+@container (max-width: 640px) {
+  .abertura-home { grid-template-columns: 1fr; gap: 26px; }
+  .identidade .topo { display: none; }
+  .frase { font-size: 21px; line-height: 1.5; }
+  .estante { --eh: 50cqw; }
+  .destaque { grid-template-columns: 1fr; }
+  .dest-texto { padding: 6px 4px 8px; }
+}
+
+/* a caneta (a mesma da barra de leitura, D45) */
+.caneta { position: absolute; width: 22px; height: 22px; overflow: visible; pointer-events: none; }
+.caneta .corpo { fill: var(--paper-hi); stroke: var(--ink); stroke-width: 1.3; stroke-linejoin: round; }
+.caneta .anel { fill: none; stroke: var(--ink); stroke-width: 1.3; }
+.caneta .ponta { fill: var(--marca); stroke: var(--ink); stroke-width: 1.1; stroke-linejoin: round; }
+
+/* a camada da abertura: só existe durante .intro */
+.abertura { position: absolute; inset: 0; z-index: 20; pointer-events: none; display: none; }
+.palco.intro .abertura { display: block; }
+
+/* ---------- deste protótipo ---------- */
+.abertura { overflow: hidden; }
+/* Um ponto de fuga só para todas as folhas que passam (perspective no contêiner). */
+.voo { position: absolute; inset: 0; perspective: 1500px; perspective-origin: 64% 40%; }
+.folhinha {
+  position: absolute; left: 64%; top: 44%;
+  width: clamp(200px, 23cqw, 300px);
+  background: var(--paper-hi); border: 1px solid var(--rule); border-radius: 12px;
+  box-shadow: var(--sombra-alta);
+  padding: 10px 10px 14px; display: grid; gap: 7px;
+  backface-visibility: hidden;
+}
+.folhinha .painel { aspect-ratio: 16 / 10; }
+.folhinha .chip { font: 500 11.5px var(--f-ui); }
+.folhinha b { font: 700 clamp(16px, 1.5cqw, 19px)/1.2 var(--f-titulo); }
+.folhinha small { font: 400 13px/1.35 var(--f-texto); color: var(--ink-2); }
+
+/* A ficha ao lado: o título da folha que está passando. */
+.legenda {
+  position: absolute; left: clamp(20px, 5cqw, 72px); top: 40%; translate: 0 -50%;
+  width: min(34cqw, 440px); display: grid; gap: 12px; justify-items: start;
+}
+.leg-data { font: 500 13px var(--f-ui); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.leg-mascara { overflow: clip; width: 100%; height: 2.4em; display: flex; align-items: flex-end; font: 700 clamp(28px, 3.4cqw, 46px)/1.08 var(--f-titulo); }
+.leg-titulo { margin: 0; padding-bottom: .14em; font: inherit; letter-spacing: -.01em; text-wrap: balance; }
+.leg-chip { font-size: 14px; }
+
+/* Durante a abertura, o site é só a mesa: as folhas e os títulos chegam depois. */
+.palco.intro .site .cab, .palco.intro .site .secao, .palco.intro .site .folha { opacity: 0; }
+
+@container (max-width: 640px) {
+  .voo { perspective-origin: 50% 45%; }
+  .folhinha { left: 50%; top: 58%; width: 56cqw; }
+  .legenda { top: 22px; translate: none; left: 18px; right: 18px; width: auto; gap: 6px; }
+  .leg-mascara { font-size: 25px; }
+}
+
+</style>
+</head>
+<body>
+<header class="nota">
+  <h1>A2 · Folhas em voo</h1>
+  <p class="sub">A ideia do Cesar: os artigos são folhas. Enquanto a página carrega, as folhas dos artigos recentes atravessam a tela em perspectiva, em cascata e um pouco tortas, e a ficha ao lado mostra o título de cada uma. No fim, a folha da abertura e a do destaque saem do mesmo fluxo e pousam no lugar; as outras seguem para baixo, para a lista.</p>
+  <dl>
+    <div><dt>Onde entra</dt><dd>Home, na primeira visita da sessão. O mesmo movimento serve para <code>/archive/</code>, com as folhas pousando na lista.</dd></div>
+    <div><dt>Por que fica melhor que hoje</dt><dd>A espera mostra o conteúdo (os artigos de verdade, com o desenho e a cor do livro) em vez de um número. E as folhas que pousam são as da página, não cópias: não há troca no fim.</dd></div>
+    <div><dt>GSAP</dt><dd>Timeline com <code>keyframes</code> (o caminho curvo, que desacelera no meio), <code>perspective</code> no contêiner com <code>z</code>, <code>rotationX</code> e <code>rotationY</code>, <code>tl.call</code> para trocar o título e o pouso por FLIP feito à mão em 3D (o Flip não faz <code>z</code>).</dd></div>
+    <div><dt>Inspiração</dt><dd>A parede de folhas do <a href="https://gsap.com/showcase/">showcase do GSAP</a> que o Cesar mandou; os demos <a href="https://demos.gsap.com/demo/card-stack">Card stack</a> e <a href="https://demos.gsap.com/demo/animate-between-layout-positions">Animate between layout positions</a>; e o <a href="https://codepen.io/GreenSock/pen/AWQprN">3D Animation with GSAP</a> (perspective e transformPerspective).</dd></div>
+    <div><dt>No celular</dt><dd>Seis folhas, mais estreitas, caindo do alto em linha reta (sem giro lateral). O título fica no topo e as folhas da página pousam vindo do mesmo fluxo.</dd></div>
+    <div><dt>Movimento reduzido</dt><dd>Nada voa: o site aparece pronto.</dd></div>
+    <div class="largo"><dt>Cuidados</dt><dd><ul>
+      <li>É a mais chamativa das quatro. Para não virar vitrine de efeito: um voo por sessão, cerca de 3s no total, e clique ou tecla pulam.</li>
+      <li>O título troca a cada 0,14s: não é para ler, é o "folhear". Se o Cesar quiser ler, dá para passar menos folhas, mais devagar.</li>
+      <li>Custo: sete folhas (seis no celular) com transform 3D, mais as duas da página, sem sombra animada nem filtro; o texto é HTML de verdade, nítido no meio do voo. Precisa de trace de performance com CPU 4× antes de entrar.</li>
+    </ul></dd></div>
+  </dl>
+
+  <div class="acoes">
+    <button type="button" class="btn" id="de-novo">Ver de novo</button>
+    <label class="chk"><input type="checkbox" id="reduzido"> Simular movimento reduzido</label>
+    <span class="dica">Durante a abertura, um clique ou qualquer tecla pula direto para o fim.</span>
+  </div>
+</header>
+
+<section class="palco intro" id="palco" aria-label="Simulação da home do blog">
+  <div class="site" id="site"></div>
+  <!-- A abertura: sem folha por cima. O próprio site é a mesa; as folhas dos artigos passam por uma camada 3D. -->
+  <div class="abertura" aria-hidden="true">
+    <div class="voo"></div>
+    <div class="legenda">
+      <span class="leg-data"></span>
+      <div class="leg-mascara"><p class="leg-titulo"></p></div>
+      <span class="chip leg-chip"></span>
+    </div>
+  </div>
+
+</section>
+
+<script>
+/* ================= Dados de exemplo (títulos reais do blog, desenhos simplificados) ================= */
+const MARCA = `<rect class="marca-capa" width="40" height="52" rx="3.2"/><rect class="marca-dobra" x="4" width="1" height="52"/><g class="marca-letras" transform="translate(7.770 4.786) scale(0.04746)"><path transform="translate(19.0 505.0)" d="M 193.4 -354.9 C 224.8 -354.9 252.1 -347.2 275.2 -331.8 C 298.3 -316.4 309.8 -296.6 309.8 -272.5 C 309.8 -259.5 305.2 -248.3 296.1 -238.8 C 286.9 -229.2 275.3 -224.5 261.1 -224.5 C 251.6 -224.5 243.3 -226.7 236.2 -231.1 C 222.8 -238.9 216.1 -253.1 216.1 -273.6 C 216.1 -275.8 216.2 -279 216.4 -283.3 C 216.7 -287.5 216.8 -292.1 216.8 -297 C 216.8 -310.2 213.7 -319.2 207.6 -324.1 C 201.3 -329 194.1 -331.4 186 -331.4 C 162.8 -331.4 146.4 -318.7 136.6 -293.2 C 126.8 -267.6 122 -238.4 122 -205.4 C 122 -158.6 131.2 -119.3 149.8 -87.5 C 168.3 -55.8 193.4 -39.9 224.9 -39.9 C 244.6 -39.9 261.5 -44.3 275.4 -53.1 C 283.7 -58.2 293.9 -67.6 306.2 -81.3 L 320.1 -68.5 C 295.7 -34.5 267.1 -11.2 234.4 1.5 C 217 8.1 198.6 11.4 179.1 11.4 C 131 11.4 91.7 -5.9 61.2 -40.3 C 30.6 -74.7 15.4 -116.7 15.4 -166.3 C 15.4 -218.5 31.5 -263 63.9 -299.7 C 96.2 -336.5 139.4 -354.9 193.4 -354.9 Z M 176.5 -354.9 Z M 176.5 -354.9"/><path transform="translate(313.9 732.5)" d="M 19 -113.5 L 39.9 -113.5 C 47.2 -77.6 60.9 -52.3 80.9 -37.5 C 101 -22.8 121.5 -15.4 142.5 -15.4 C 161.7 -15.4 175.9 -19.7 184.9 -28.4 C 194 -37 198.5 -48.5 198.5 -62.6 C 198.5 -76.1 193.6 -87.5 183.8 -97 C 178.5 -102.2 169.8 -107.7 157.8 -113.5 L 102.2 -140.6 C 72.9 -155 51.9 -170.7 39.2 -187.5 C 26.3 -204.3 19.8 -224.2 19.8 -247.2 C 19.8 -276.2 29.9 -301.3 50.2 -322.4 C 70.4 -343.6 98.8 -354.1 135.1 -354.1 C 151 -354.1 167.8 -351.5 185.7 -346.2 C 203.5 -341 214.6 -338.4 219 -338.4 C 225.1 -338.4 229.4 -339.7 232 -342.2 C 234.6 -344.8 236.7 -348.4 238.4 -353 L 254.9 -353 L 254.9 -244.6 L 235.8 -244.6 C 228.8 -270 217.2 -290.4 201 -305.8 C 184.9 -321.2 166.1 -328.9 144.7 -328.9 C 128.1 -328.9 115.7 -324.2 107.5 -314.9 C 99.3 -305.7 95.2 -295.7 95.2 -284.9 C 95.2 -276.1 98.9 -267.3 106.2 -258.5 C 113.3 -249.5 126.7 -240.2 146.5 -230.7 L 187.5 -210.9 C 212.9 -198.7 231.5 -186.9 243.2 -175.4 C 262.7 -155.9 272.5 -131.8 272.5 -103.3 C 272.5 -75.4 262.4 -49.5 242.3 -25.5 C 222.1 -1.4 191.9 10.6 151.6 10.6 C 141.6 10.6 131.5 9.6 121.4 7.5 C 111.3 5.4 98.8 1.8 83.9 -3.3 L 71 -7.7 C 66.4 -9.4 63.5 -10.4 62.4 -10.6 C 61.3 -10.9 59.9 -11 58.2 -11 C 54.1 -11 50.5 -9.3 47.4 -6 C 44.4 -2.7 40.9 2.8 37 10.6 L 19 10.6 Z M 145.4 -354.9 Z M 145.4 -354.9"/></g>`;
+const CATS = {
+  arq: "Arquitetura de Software", dev: "Desenvolvimento de Software", dados: "Dados", ia: "IA",
+  seg: "Segurança", devops: "DevOps", sre: "SRE", carreira: "Carreira", java: "Atualizações do Java",
+};
+const POSTS = [
+  { t: "CronJob ou endpoint + fila", s: "Onde rodar o batch de uma API Spring Boot no Kubernetes", c: "arq", d: "relogio", dt: "23 set 2026" },
+  { t: "Java 29 (próxima LTS)", s: "O que o Java 26 e o 27 já trouxeram", c: "java", d: "xicara", dt: "16 set 2026" },
+  { t: "Bloqueio otimista e pessimista", s: "Como funcionam e quando usar cada um", c: "dados", d: "cadeados", dt: "13 set 2026" },
+  { t: "Chave de idempotência", s: "Como impedir a cobrança duplicada no retry", c: "arq", d: "chave", dt: "12 set 2026" },
+  { t: "W3C Trace Context", s: "Correlacionando logs entre microsserviços", c: "sre", d: "nos", dt: "9 set 2026" },
+  { t: "Virtual threads no Java 21", s: "Pinning e CLOSE_WAIT", c: "dev", d: "fios", dt: "5 set 2026" },
+  { t: "JWT", s: "A estrutura e o significado de cada campo", c: "seg", d: "envelope", dt: "2 set 2026" },
+  { t: "Data lake vs data warehouse", s: "E onde entra o lakehouse", c: "dados", d: "cilindro", dt: "29 ago 2026" },
+  { t: "SIGTERM e SIGKILL", s: "O ciclo de término de um pod no Kubernetes", c: "devops", d: "sinal", dt: "26 ago 2026" },
+  { t: "Arquitetura de ledger", s: "Partidas dobradas, saldos e conciliação", c: "arq", d: "razao", dt: "22 ago 2026" },
+  { t: "Overhead vs overkill", s: "O custo de toda escolha e o exagero dela", c: "carreira", d: "balanca", dt: "19 ago 2026" },
+  { t: "Wide events e canonical log lines", s: "A evolução do logging estruturado", c: "sre", d: "nos", dt: "15 ago 2026" },
+  { t: "Kubernetes CronJob", s: "Concorrência, retries e tempo máximo de execução", c: "devops", d: "relogio", dt: "12 ago 2026" },
+  { t: "Gradle: implementation ou api?", s: "As configurações de dependência, uma a uma", c: "dev", d: "razao", dt: "8 ago 2026" },
+];
+const DESTAQUE = { t: "Filtros de serialização no Jackson", s: "Mascarando número de cartão nos logs", c: "dev", d: "cartao", dt: "25 set 2026",
+  r: "Como usar @JsonFilter, PropertyFilter e um mixin em Object para mascarar o número do cartão e remover o CVV só no mapper de log." };
+
+const DESENHOS = {
+  relogio: `<circle class="cor" cx="112" cy="34" r="16"/><circle class="tr" cx="112" cy="34" r="16"/><path class="tr" d="M112 24v10l7 5"/><rect class="tr" x="16" y="50" width="36" height="24" rx="3"/><path class="tr" d="M23 58h22M23 66h14"/><path class="tr" d="M52 58c20-2 32-10 44-20"/><path class="tr" d="M52 68c24 4 40 8 52 8"/><rect class="tr" x="104" y="68" width="44" height="16" rx="8"/><path class="tr" d="M113 76h5m6 0h5m6 0h4"/>`,
+  xicara: `<path class="tr" d="M50 40h50v22a16 16 0 0 1-16 16H66a16 16 0 0 1-16-16z"/><path class="tr" d="M100 48h6a8 8 0 0 1 0 16h-6"/><path class="tr" d="M66 14c-4 6 4 10 0 17M82 14c-4 6 4 10 0 17"/><text class="tx" x="75" y="66">29</text><path class="tr" d="M34 86h92"/><rect class="cor" x="98" y="78" width="36" height="9" rx="1" transform="rotate(-8 116 82)"/>`,
+  cadeados: `<rect class="cor" x="38" y="44" width="32" height="32" rx="4"/><rect class="tr" x="38" y="44" width="32" height="32" rx="4"/><path class="tr" d="M44 44V33a10 10 0 0 1 20 0v11"/><circle class="tr" cx="54" cy="58" r="3"/><path class="tr" d="M54 61v6"/><rect class="tr" x="90" y="44" width="32" height="32" rx="4"/><path class="tr" d="M96 44V33a10 10 0 0 1 20 0"/><circle class="tr" cx="106" cy="58" r="3"/><path class="tr" d="M106 61v6"/>`,
+  cartao: `<rect class="tr" x="94" y="10" width="46" height="78"/><path class="tr" d="M102 24h30M102 34h30M102 44h30M102 54h30M102 64h30M102 74h30"/><g transform="rotate(-4 67 58)"><rect class="fundo" x="22" y="30" width="88" height="56" rx="6"/><rect class="tr" x="22" y="30" width="88" height="56" rx="6"/><rect class="tr" x="31" y="40" width="15" height="12" rx="2"/><path class="tr" d="M31 66h14"/><rect class="cor" x="50" y="61" width="28" height="8"/><path class="tr" d="M83 66h16"/></g>`,
+  chave: `<circle class="tr" cx="50" cy="46" r="17"/><circle class="cor" cx="50" cy="46" r="7"/><path class="tr" d="M67 46h62M114 46v13M124 46v9"/><path class="tr fantasma" d="M28 80h104"/>`,
+  nos: `<circle class="cor" cx="32" cy="50" r="10"/><circle class="tr" cx="32" cy="50" r="10"/><circle class="tr" cx="82" cy="26" r="10"/><circle class="tr" cx="82" cy="74" r="10"/><circle class="tr" cx="132" cy="50" r="10"/><path class="tr" d="M41 45l32-14M41 55l32 14M91 30l32 15M91 70l32-15"/>`,
+  fios: `<path class="tr" d="M18 28c20-10 30 10 50 0s30 10 50 0 22 6 22 6"/><path class="tr" d="M18 50c20-10 30 10 50 0s30 10 50 0 22 6 22 6"/><path class="tr" d="M18 72c20-10 30 10 50 0"/><circle class="cor" cx="78" cy="72" r="7"/><circle class="tr" cx="78" cy="72" r="7"/><path class="tr fantasma" d="M88 72h52"/>`,
+  envelope: `<rect class="tr" x="32" y="24" width="96" height="58" rx="3"/><path class="tr" d="M32 26l48 33 48-33"/><circle class="cor" cx="80" cy="62" r="9"/><circle class="tr" cx="80" cy="62" r="9"/>`,
+  cilindro: `<ellipse class="cor" cx="58" cy="26" rx="26" ry="8"/><path class="tr" d="M32 26v46c0 4.4 11.6 8 26 8s26-3.6 26-8V26"/><ellipse class="tr" cx="58" cy="26" rx="26" ry="8"/><path class="tr" d="M32 49c0 4.4 11.6 8 26 8s26-3.6 26-8"/><rect class="tr" x="100" y="28" width="38" height="52" rx="2"/><path class="tr" d="M100 43h38M100 58h38M119 28v52"/>`,
+  sinal: `<rect class="tr" x="24" y="30" width="46" height="40" rx="4"/><path class="tr" d="M32 42h30M32 52h18"/><path class="tr" d="M78 50h22M96 44l6 6-6 6"/><circle class="cor" cx="124" cy="50" r="13"/><circle class="tr" cx="124" cy="50" r="13"/><path class="tr" d="M118 44l12 12M130 44l-12 12"/>`,
+  razao: `<path class="tr" d="M28 20h52v62H28zM80 20h52v62H80z"/><path class="tr" d="M36 34h36M36 44h36M36 54h22M88 34h36M88 44h36M88 54h22"/><rect class="cor" x="88" y="64" width="36" height="8"/>`,
+  balanca: `<path class="tr" d="M80 18v62M56 82h48M40 30h80"/><path class="tr" d="M40 30l-14 28M40 30l14 28M120 30l-14 28M120 30l14 28"/><path class="cor" d="M26 58h28a14 9 0 0 1-28 0z"/><path class="tr" d="M26 58h28a14 9 0 0 1-28 0zM106 58h28a14 9 0 0 1-28 0z"/>`,
+};
+const desenho = (k) => `<svg viewBox="0 0 160 100" aria-hidden="true">${DESENHOS[k]}</svg>`;
+
+const ICONES = {
+  arq: `<path d="M5 20V12a7 7 0 0 1 14 0v8M9 20v-7a3 3 0 0 1 6 0v7M4 20h16M11 3.5h2v2.5h-2z"/>`,
+  dev: `<path d="M7 3v18M7 5h10l-2.5 3H7M7 13h6M11 13v3.5"/>`,
+  dados: `<ellipse cx="12" cy="6" rx="6" ry="2.4"/><path d="M6 6v12c0 1.3 2.7 2.4 6 2.4s6-1.1 6-2.4V6M6 12c0 1.3 2.7 2.4 6 2.4s6-1.1 6-2.4"/>`,
+  ia: `<rect x="5" y="4" width="14" height="16" rx="1"/><path d="M8.5 16l3.5-8 3.5 8M9.8 13h4.4"/>`,
+  seg: `<rect x="4" y="6" width="16" height="12" rx="1"/><path d="M4 7l8 6 8-6"/><circle cx="12" cy="15.5" r="1.8"/>`,
+  devops: `<path d="M6 21V4M6 5h13M6 5l4-2M16 5v5M14.5 10h3v3h-3zM3 21h6"/>`,
+  sre: `<path d="M10 21l1-11h2l1 11zM9 10h6M10.5 7h3v3h-3zM12 5V4M4 8l4 1M20 8l-4 1"/>`,
+  carreira: `<path d="M12 3v3M12 6l-6 15M12 6l6 15M8.5 15h7"/><circle cx="12" cy="6" r="1.4"/>`,
+  java: `<path d="M5 10h11v5a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4zM16 11.5h1.5a2 2 0 0 1 0 4H16M9 4c-1 1.2 1 2.2 0 3.6M12.5 4c-1 1.2 1 2.2 0 3.6"/>`,
+};
+const LIVROS = [
+  { k: "arq", linhas: ["Arquitetura", "de Software"], n: 7, w: 62, h: 92, cor: "var(--l-arq)", tinta: "var(--livro-clara)", dest: "var(--l-arq)" },
+  { k: "dev", linhas: ["Desenvolvimento", "de Software"], n: 6, w: 60, h: 88, cor: "var(--l-dev)", tinta: "var(--livro-clara)", dest: "var(--l-dev)" },
+  { k: "dados", linhas: ["Dados"], n: 2, w: 54, h: 85, cor: "var(--l-dados)", tinta: "var(--livro-clara)", dest: "var(--l-dados)" },
+  { k: "ia", linhas: ["IA"], n: 0, w: 50, h: 82, cor: "var(--l-ia)", tinta: "var(--livro-clara)", dest: "var(--l-ia)" },
+  { k: "seg", linhas: ["Segurança"], n: 1, w: 58, h: 90, cor: "var(--l-seg)", tinta: "var(--livro-clara)", dest: "var(--l-seg)" },
+  { k: "devops", linhas: ["DevOps"], n: 2, w: 54, h: 84, cor: "var(--l-devops)", tinta: "var(--livro-clara)", dest: "var(--l-devops)" },
+  { k: "sre", linhas: ["SRE"], n: 3, w: 52, h: 86, cor: "var(--l-sre)", tinta: "var(--livro-escura)", dest: "var(--l-sre-dest)" },
+  { k: "carreira", linhas: ["Carreira"], n: 0, w: 58, h: 89, cor: "var(--l-carreira-texto)", tinta: "var(--livro-clara)", dest: "var(--l-carreira-dest)" },
+];
+
+/* ================= O site simulado ================= */
+function montarSite() {
+  const lombadas = LIVROS.map((l) => `
+    <div class="lombada" data-livro="${l.k}" style="--w:${l.w};--h:${l.h};--cor:${l.cor};--tinta:${l.tinta};--dest:${l.dest}">
+      <div class="lb-cima"><svg viewBox="0 0 24 24">${ICONES[l.k]}</svg></div>
+      <div class="lb-baixo"><span class="lb-titulo">${l.linhas.join("<br>")}</span>${l.n ? `<span class="lb-num">${l.n}</span>` : "<span></span>"}</div>
+    </div>`).join("");
+  const card = (p) => `
+    <article class="folha card" style="--c:var(--l-${p.c})">
+      <div class="painel">${desenho(p.d)}</div>
+      <div class="meta"><span class="chip">${CATS[p.c]}</span><span>${p.dt}</span></div>
+      <h3>${p.t}</h3><p>${p.s}</p>
+    </article>`;
+  document.getElementById("site").innerHTML = `
+  <header class="cab">
+    <div class="logo"><svg class="mc" viewBox="0 0 40 52" aria-hidden="true">${MARCA}</svg><b>Cesar Schutz</b><i>blog</i></div>
+    <nav class="nav"><span>Artigos</span><span>Categorias</span><span>Séries</span><span>Tags</span></nav>
+    <div class="busca"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><span>Buscar</span><kbd>⌘K</kbd></div>
+    <div class="redondo"><svg class="ico" viewBox="0 0 24 24"><path d="M19.5 14.5A8 8 0 0 1 9.5 4.5a8 8 0 1 0 10 10z"/></svg></div>
+    <div class="redondo menu"><svg class="ico" viewBox="0 0 24 24"><path d="M5 8h14M5 16h14"/></svg></div>
+  </header>
+  <main class="conteudo">
+    <section class="folha abertura-home">
+      <div class="identidade">
+        <div class="topo">
+          <svg class="mc marca-grande" viewBox="0 0 40 52" aria-hidden="true">${MARCA}</svg>
+          <h1 class="nome"><span class="linha">Cesar</span><span class="linha">Schutz <i>blog</i></span></h1>
+        </div>
+        <p class="frase">Publico aqui o que ando estudando — lançamento do Java, código, arquitetura, IA, o que me despertar interesse. Quando o estudo rende algo que vale guardar, <span class="fecho">vira&#160;artigo.</span></p>
+      </div>
+      <div class="prateleira">
+        <div class="estante">
+          ${lombadas}
+          <div class="aparador"></div>
+          <div class="revista" data-livro="java" style="--w:36;--h:98">
+            <svg class="rv-icone" viewBox="0 0 24 24">${ICONES.java}</svg>
+            <span class="rv-titulo">Atualizações <i>do Java</i></span>
+            <span class="lb-num">7</span>
+          </div>
+        </div>
+        <div class="tabua"></div>
+      </div>
+    </section>
+    <h2 class="secao">Em destaque</h2>
+    <article class="folha destaque" style="--c:var(--l-${DESTAQUE.c})">
+      <div class="painel">${desenho(DESTAQUE.d)}</div>
+      <div class="dest-texto">
+        <div class="meta"><span class="chip">${CATS[DESTAQUE.c]}</span><span>${DESTAQUE.dt}</span><span>12 min de leitura</span></div>
+        <h3 class="dest-titulo">${DESTAQUE.t}</h3>
+        <p class="dest-sub">${DESTAQUE.s}</p>
+        <p class="dest-resumo">${DESTAQUE.r}</p>
+      </div>
+    </article>
+    <h2 class="secao">Artigos recentes</h2>
+    <div class="cards">${POSTS.slice(0, 6).map(card).join("")}</div>
+  </main>`;
+}
+
+/* ================= Ajudantes e controle da reprodução ================= */
+const palco = document.getElementById("palco");
+const site = document.getElementById("site");
+const caixaReduzido = document.getElementById("reduzido");
+const reduzido = () => matchMedia("(prefers-reduced-motion: reduce)").matches || caixaReduzido.checked;
+const celular = () => palco.clientWidth < 640;
+const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
+const $ = (s, r = palco) => [...r.querySelectorAll(s)];
+/** Retângulo de um elemento nas coordenadas do palco (já com as transformações aplicadas). */
+function caixa(el) {
+  const r = el.getBoundingClientRect(), p = palco.getBoundingClientRect();
+  const x = r.left - p.left - palco.clientLeft, y = r.top - p.top - palco.clientTop;
+  return { x, y, w: r.width, h: r.height, cx: x + r.width / 2, cy: y + r.height / 2 };
+}
+const penSVG = `<svg class="caneta" viewBox="0 0 24 24" aria-hidden="true"><path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1.4 1.4 0 0 1 0 2l-9.2 9.2Z"/><path class="anel" d="m15.6 5.8 2.6 2.6"/><path class="ponta" d="M8.2 13.2 10.8 15.8 4 20Z"/></svg>`;
+
+let geracao = 0;      // cada reprodução nova invalida a anterior
+let splits = [];      // SplitText criados na reprodução (revertidos no fim)
+let tocando = false;
+
+/** Volta tudo ao estado natural do site: o estado final da abertura é o próprio CSS. */
+function limparTudo() {
+  gsap.globalTimeline.getChildren(true, true, true).forEach((t) => t.kill());
+  splits.forEach((s) => s.revert());
+  splits = [];
+  if (typeof protoLimpar === "function") protoLimpar();
+  // Só fora dos SVGs: no SVG, limpar "transform" apagaria o atributo dos desenhos (as letras da marca).
+  gsap.set(palco.querySelectorAll("*:not(svg *)"), { clearProps: "transform,opacity,visibility,clipPath,zIndex" });
+}
+function terminar() {
+  tocando = false;
+  limparTudo();
+  palco.classList.remove("intro");
+}
+async function tocar() {
+  const g = ++geracao;
+  limparTudo();
+  site.scrollTop = 0;
+  if (reduzido()) { terminar(); return; }   // movimento reduzido: o site já pronto, sem abertura
+  palco.classList.add("intro");
+  await document.fonts.ready;
+  if (g !== geracao) return;
+  protoPreparar();
+  tocando = true;
+  await protoAbrir(g);
+}
+function pular() { if (!tocando) return; geracao++; terminar(); }
+
+caixaReduzido.addEventListener("change", tocar);
+document.getElementById("de-novo").addEventListener("click", () => {
+  palco.scrollIntoView({ block: "nearest" });
+  tocar();
+});
+palco.addEventListener("pointerdown", pular);
+addEventListener("keydown", (e) => { if (tocando && !e.metaKey && !e.ctrlKey && e.key !== "Tab") pular(); });
+
+montarSite();
+// Toca sozinho quando o palco aparece na tela (uma vez); até lá, a abertura fica no primeiro quadro.
+document.fonts.ready.then(() => {
+  if (reduzido()) { terminar(); return; }
+  protoPreparar();
+  const io = new IntersectionObserver((es) => {
+    if (es.some((e) => e.isIntersecting)) { io.disconnect(); tocar(); }
+  }, { threshold: 0.55 });
+  io.observe(palco);
+});
+
+/* ---------- deste protótipo ---------- */
+/* A2: as folhas dos artigos atravessam a tela em perspectiva e as da página pousam no lugar. */
+const ov = palco.querySelector(".abertura");
+const voo = ov.querySelector(".voo");
+const legenda = ov.querySelector(".legenda");
+const legTitulo = ov.querySelector(".leg-titulo");
+const legData = ov.querySelector(".leg-data");
+const legChip = ov.querySelector(".leg-chip");
+const rnd = gsap.utils.random;
+const PERSPECTIVA = 1500; // a mesma do .voo no CSS
+/** Um ponto da tela (deslocamento a partir do centro do voo) na profundidade z. */
+const em3d = (sx, sy, z) => ({ x: (sx * (PERSPECTIVA - z)) / PERSPECTIVA, y: (sy * (PERSPECTIVA - z)) / PERSPECTIVA, z });
+
+function folhinha(p) {
+  const d = document.createElement("div");
+  d.className = "folhinha";
+  d.style.setProperty("--c", `var(--l-${p.c})`);
+  d.innerHTML = `<div class="painel">${desenho(p.d)}</div><span class="chip">${CATS[p.c]}</span><b>${p.t}</b><small>${p.s}</small>`;
+  return d;
+}
+function trocarLegenda(p) {
+  legData.textContent = p.dt;
+  legChip.textContent = CATS[p.c];
+  legChip.style.setProperty("--c", `var(--l-${p.c})`);
+  legTitulo.textContent = p.t;
+  gsap.fromTo(legTitulo, { yPercent: 70, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.24, ease: "power2.out", overwrite: true });
+}
+
+function protoLimpar() { voo.innerHTML = ""; }
+function protoPreparar() { voo.innerHTML = ""; gsap.set(legenda, { opacity: 0 }); }
+
+async function protoAbrir(g) {
+  const cel = celular();
+  const W = palco.clientWidth, H = palco.clientHeight;
+
+  // ---------- 1. o desfile: enquanto a página carrega, os artigos passam ----------
+  // No site: os artigos da página 1 (já estão no HTML), sem cópia de imagem nenhuma. Se a página ainda
+  // não estiver pronta quando o desfile acabar, ele recomeça com os mesmos artigos (aqui, as fontes já estão).
+  const lista = POSTS.slice(0, cel ? 6 : 7);
+  const folhas = lista.map((p) => { const f = folhinha(p); voo.append(f); return f; });
+  const dur = cel ? 1.35 : 1.5;
+  const passo = cel ? 0.16 : 0.14;
+  gsap.set(folhas, { xPercent: -50, yPercent: -50, opacity: 0 });
+
+  const tl = gsap.timeline({ onComplete: terminar });
+  tl.to(legenda, { opacity: 1, duration: 0.3 }, 0.2);
+  folhas.forEach((f, i) => {
+    const t = i * passo;
+    // de longe (em cima, à direita) para perto (embaixo): cada folha desacelera no meio, como se
+    // parasse um instante para ser lida, e depois cai para fora da tela, na direção da lista
+    // posições pensadas na tela (sx, sy) e convertidas para o espaço 3D: longe, tudo encolhe pela
+    // perspectiva do contêiner (1500px), então o deslocamento é multiplicado para o caminho ficar longo
+    const A = cel
+      ? { ...em3d(rnd(-10, 10), -H * 0.26, -1600), rotationX: 26, rotationY: 0, rotationZ: rnd(-8, 8) }
+      : { ...em3d(W * 0.3, -H * 0.5, -3000), rotationX: 20, rotationY: -38, rotationZ: rnd(-10, 10) };
+    const M = cel
+      ? { x: rnd(-14, 14), y: 0, z: 0, rotationX: 10, rotationZ: rnd(-4, 4) }
+      : { x: rnd(-24, 24), y: 0, z: 0, rotationX: 10, rotationY: -18, rotationZ: rnd(-6, 6) };
+    const B = cel
+      ? { ...em3d(rnd(-20, 20), H * 0.95, 320), rotationX: 30, rotationZ: rnd(-6, 6) }
+      : { ...em3d(-W * 0.12, H * 0.95, 600), rotationX: 32, rotationY: -8, rotationZ: rnd(-8, 8) };
+    gsap.set(f, A);
+    tl.to(f, { opacity: 1, duration: 0.22, ease: "none" }, t)
+      .to(f, { keyframes: [{ ...M, duration: dur * 0.5, ease: "sine.out" }, { ...B, duration: dur * 0.5, ease: "sine.in" }] }, t)
+      .to(f, { opacity: 0, duration: 0.25, ease: "power1.in" }, t + dur - 0.25)
+      .call(trocarLegenda, [lista[i]], t + dur * 0.45);
+  });
+
+  // ---------- 2. o encaixe: as folhas da página vêm no mesmo fluxo e pousam no lugar ----------
+  // São os elementos de verdade (a folha da abertura, o destaque), não cópias: o "FLIP" é feito à mão,
+  // em 3D (o Flip do GSAP não faz z nem rotationY). A posição inicial compensa a perspectiva de cada folha.
+  // quando a última folha do desfile já está saindo da tela
+  const t0 = (lista.length - 1) * passo + dur * 0.7;
+  const todas = $(".folha", site);
+  const alvos = todas.filter((el) => caixa(el).y < H);
+  const P = 1400;
+  tl.to(legenda, { opacity: 0, duration: 0.25 }, t0 - 0.2);
+  alvos.forEach((el, j) => {
+    const z = cel ? -700 : -1600;
+    const k = P / (P - z);
+    // todas com o mesmo deslocamento a partir do próprio lugar: caminhos paralelos, sem uma cruzar a outra
+    const dx = cel ? 0 : W * 0.3, dy = cel ? -H * 0.45 : -H * 0.5;
+    gsap.set(el, { transformPerspective: P });
+    tl.fromTo(
+      el,
+      { x: dx / k, y: dy / k, z, rotationX: cel ? 22 : 16, rotationY: cel ? 0 : -30, rotationZ: cel ? -2 : -4 },
+      { x: 0, y: 0, z: 0, rotationX: 0, rotationY: 0, rotationZ: 0, duration: cel ? 0.95 : 1.15, ease: "power3.out" },
+      t0 + j * 0.16,
+    ).to(el, { opacity: 1, duration: 0.3, ease: "none" }, t0 + j * 0.16);
+  });
+  // as folhas abaixo da dobra já estão na lista quando alguém rolar; o cabeçalho e os títulos, por último
+  tl.set(todas.filter((el) => !alvos.includes(el)), { opacity: 1 }, t0)
+    .to($(".cab, .secao", site), { opacity: 1, duration: 0.45, ease: "power1.out", stagger: 0.05 }, t0 + 0.5);
+}
+
+</script>
+</body>
+</html>

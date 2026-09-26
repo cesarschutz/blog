@@ -27,7 +27,7 @@ const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "
 <div class="folha topo-folha">
   {
     temIlustracao(post.slug) && (
-      <figure class="ilustracao-topo painel" data-pagefind-ignore style={`--cor:${post.cor}`}>
+      <figure class="ilustracao-topo painel" data-pagefind-ignore data-vt-topo style={`--cor:${post.cor}`}>
         <div class="largo">
           <Ilustracao slug={post.slug} recorte="largo" cor={post.cor} anotacoes />
         </div>
@@ -60,7 +60,8 @@ const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "
     overflow: hidden;
   }
 
-  /* O painel ocupa o alto da folha; o canto arredondado vem dela. */
+  /* O painel ocupa o alto da folha; o canto arredondado vem dela. O desenho da lista chega aqui pela
+     transição de página (D47, base.css; o nome vem do script do <head>). */
   .ilustracao-topo {
     margin: 0;
     border-radius: 0;

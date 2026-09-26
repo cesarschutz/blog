@@ -6,7 +6,9 @@
  * um com o número deles. Clicar num livro mostra só os artigos dele (a URL ganha ?livro=<slug>, para
  * compartilhar); clicar de novo, ou em "Ver todos", volta à lista inteira. Sem JS, o livro leva à
  * página dele. Embaixo, a contagem, o seletor Lista / Cards e os artigos no formato da home (D27),
- * agrupados por ano quando `porAno` (os ids #y2026 vêm do blog atual).
+ * agrupados por ano quando `porAno` (os ids #y2026 vêm do blog atual). Ao filtrar, a lista sai
+ * esmaecendo e os artigos escolhidos chegam em sequência, subindo (D47); com movimento reduzido, troca
+ * direto.
  */
 import Cartao from "./Cartao.astro";
 import Estante from "./Estante.astro";
@@ -95,6 +97,7 @@ const nivelDoItem = porAno ? "h3" : "h2";
 </section>
 
 <script>
+  import { carregarGsap, movimentoReduzido } from "../scripts/gsap";
 
   const lista = document.querySelector<HTMLElement>("[data-lista-filtrada]");
   const estante = document.querySelector<HTMLElement>("[data-estante-filtro]");
@@ -109,6 +112,26 @@ const nivelDoItem = porAno ? "h3" : "h2";
     const plural = (n: number) => `${n} ${n === 1 ? "artigo" : "artigos"}`;
     const nome = (b: HTMLButtonElement) => b.dataset.nome!;
     let atual = "";
+
+    // A troca animada (D47): a lista esmaece, o filtro muda e os primeiros artigos à vista chegam subindo.
+    const blocos = [...lista.querySelectorAll<HTMLElement>("[data-grupo], .lista-modo, .cartoes-modo")].filter(
+      (b) => !b.parentElement?.closest("[data-grupo], .lista-modo, .cartoes-modo"),
+    );
+    let trocando: Promise<void> = Promise.resolve();
+    // O livro clicado de novo tira o filtro; a decisão fica na fila, para cliques rápidos não se perderem.
+    function filtrar(alvo: string) {
+      const escolha = () => (alvo && atual === alvo ? "" : alvo);
+      if (movimentoReduzido.matches) return aplicar(escolha());
+      trocando = trocando.then(async () => {
+        const id = escolha();
+        const gsap = await carregarGsap();
+        await gsap.to(blocos, { opacity: 0, y: 6, duration: 0.18, ease: "power2.in" }).then();
+        aplicar(id);
+        gsap.set(blocos, { opacity: 1, y: 0 });
+        const visiveis = itens().filter((i) => !i.hidden && i.offsetParent).slice(0, 10);
+        gsap.fromTo(visiveis, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.42, stagger: 0.04, ease: "power3.out", clearProps: "opacity,transform" });
+      });
+    }
 
     function aplicar(id: string) {
       atual = id;
@@ -132,9 +155,9 @@ const nivelDoItem = porAno ? "h3" : "h2";
     }
 
     livros.forEach((livro) => {
-      livro.addEventListener("click", () => aplicar(atual === livro.dataset.filtro ? "" : livro.dataset.filtro!));
+      livro.addEventListener("click", () => filtrar(livro.dataset.filtro!));
     });
-    limpar.addEventListener("click", () => aplicar(""));
+    limpar.addEventListener("click", () => filtrar(""));
     addEventListener("cartoes:prontos", () => aplicar(atual));
 
     const pedido = new URL(location.href).searchParams.get("livro");

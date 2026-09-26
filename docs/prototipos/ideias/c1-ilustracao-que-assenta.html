@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>C1 · A ilustração que assenta</title>
+<script>document.documentElement.classList.add("js");</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&display=swap" rel="stylesheet">
+<style>
+/* Tokens (espelham src/styles/tokens.ts). Nenhuma cor fora daqui. */
+:root {
+  --paper: #F1F0EB; --paper-hi: #FFFFFE; --well: #F5F5F4; --ink: #1A2124; --ink-2: #57605E; --ink-3: #868D8A;
+  --rule: #E2E0D8; --acento: #2549B8; --sobre-acento: #FFFFFF; --marca: #2D4B46; --marca-letra: #F2EDE2;
+  --livro-cor: #2d4b46;
+  --branco-no-escuro: 0%;
+  --cor: var(--livro-cor);
+  --cor-ui: color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro));
+  --marca-texto: color-mix(in oklab, var(--cor) 32%, transparent);
+  --fig-bg: color-mix(in oklab, var(--cor) 11%, var(--paper-hi));
+  --sombra-folha: 0 1px 2px rgb(40 38 30 / .04), 0 10px 28px -18px rgb(40 38 30 / .28);
+  --altura-topo: 60px;
+  --f-titulo: "Besley", Georgia, serif; --f-texto: "Literata", Georgia, serif;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-codigo: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #111618; --paper-hi: #1A2124; --well: #21282A; --ink: #E7E9E4; --ink-2: #A9B0AC; --ink-3: #7F8884;
+  --rule: #2A3336; --acento: #93AEFF; --sobre-acento: #0D1530; --branco-no-escuro: 42%;
+  --marca-texto: color-mix(in oklab, color-mix(in oklab, var(--cor), #fff 60%) 36%, transparent);
+  --fig-bg: color-mix(in oklab, var(--cor) 20%, var(--paper-hi));
+  --sombra-folha: 0 12px 30px -18px rgb(0 0 0 / .8);
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #111618; --paper-hi: #1A2124; --well: #21282A; --ink: #E7E9E4; --ink-2: #A9B0AC; --ink-3: #7F8884;
+  --rule: #2A3336; --acento: #93AEFF; --sobre-acento: #0D1530; --branco-no-escuro: 42%;
+  --marca-texto: color-mix(in oklab, color-mix(in oklab, var(--cor), #fff 60%) 36%, transparent);
+  --fig-bg: color-mix(in oklab, var(--cor) 20%, var(--paper-hi));
+  --sombra-folha: 0 12px 30px -18px rgb(0 0 0 / .8);
+  color-scheme: dark; }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-padding-top: calc(var(--altura-topo) + 16px); }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.6 var(--f-texto); -webkit-font-smoothing: antialiased;
+  padding: calc(var(--altura-topo) + env(safe-area-inset-top, 0px) + 24px) clamp(16px, 3vw, 32px) 80px; }
+button { font: inherit; color: inherit; }
+a { color: var(--acento); }
+:focus-visible { outline: 2px solid var(--acento); outline-offset: 3px; border-radius: 4px; }
+
+/* Cabeçalho fixo com a caneta da leitura (como no site hoje, D45). */
+.cabecalho { position: fixed; inset: 0 0 auto; z-index: 30; height: calc(var(--altura-topo) + env(safe-area-inset-top, 0px));
+  padding: env(safe-area-inset-top, 0px) clamp(16px, 3vw, 32px) 0; background: var(--paper); border-bottom: 1px solid var(--rule);
+  display: flex; align-items: center; gap: 20px; }
+.logo { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--ink); }
+.logo svg { width: 22px; height: 28px; }
+.logo-capa { fill: var(--marca); }
+.logo-letra { fill: var(--marca-letra); font: 800 10px var(--f-titulo); }
+.logo b { font: 800 22px/1 var(--f-titulo); letter-spacing: -.01em; }
+.logo i { font: italic 15px var(--f-texto); color: var(--ink-2); }
+.nav { margin-left: auto; display: flex; gap: 22px; font: 15px var(--f-ui); color: var(--ink-2); }
+.tema { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--rule); background: var(--paper-hi); cursor: pointer; display: grid; place-items: center; }
+.tema svg { width: 17px; height: 17px; fill: none; stroke: var(--ink); stroke-width: 1.6; }
+.barra-leitura { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; container-type: inline-size; pointer-events: none; }
+.barra-leitura .traco { position: absolute; inset: 0; background: var(--cor-ui); transform: scaleX(var(--lido, 0)); transform-origin: 0 50%; }
+.barra-leitura .caneta { position: absolute; top: -17.3px; left: -3.7px; width: 22px; height: 22px; overflow: visible; opacity: 0; transition: opacity .2s;
+  transform: translateX(calc(var(--lido, 0) * 100cqw)); }
+.escrevendo .caneta { opacity: 1; }
+.caneta .corpo { fill: var(--paper-hi); stroke: var(--ink); stroke-width: 1.3; stroke-linejoin: round; }
+.caneta .anel { fill: none; stroke: var(--ink); stroke-width: 1.3; }
+.caneta .ponta { fill: var(--cor-ui); stroke: var(--ink); stroke-width: 1.1; stroke-linejoin: round; }
+@media (max-width: 860px) { .nav { display: none; } .logo { margin-right: auto; } }
+
+.pagina { max-width: 1040px; margin: 0 auto; }
+.folha { background: var(--paper-hi); border: 1px solid var(--rule); border-radius: 14px; box-shadow: var(--sombra-folha); }
+
+/* Bloco do protótipo */
+.sobre { padding: 26px clamp(20px, 4vw, 44px) 24px; margin-bottom: 28px; font: 15px/1.55 var(--f-ui); color: var(--ink-2); }
+.sobre h1 { font: 800 clamp(26px, 3.4vw, 36px)/1.1 var(--f-titulo); color: var(--ink); margin: 0 0 6px; text-wrap: balance; }
+.sobre .resumo { font: 17px/1.55 var(--f-texto); color: var(--ink); margin: 0 0 18px; max-width: 70ch; }
+.sobre dl { display: grid; grid-template-columns: 11.5em 1fr; gap: 8px 20px; margin: 0; }
+.sobre dt { font-weight: 600; color: var(--ink); }
+.sobre dd { margin: 0; }
+.sobre code { font: 13.5px var(--f-codigo); background: var(--well); padding: 1px 5px; border-radius: 4px; }
+.controles { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.pilula { border: 1px solid var(--rule); background: var(--paper-hi); border-radius: 999px; padding: 7px 14px; font: 500 14px/1 var(--f-ui); cursor: pointer; color: var(--ink); text-decoration: none; }
+.pilula:hover { color: var(--acento); border-color: color-mix(in oklab, var(--acento) 40%, var(--rule)); }
+@media (max-width: 700px) { .sobre dl { grid-template-columns: 1fr; gap: 2px; } .sobre dd { margin-bottom: 10px; } }
+
+/* Topo do artigo: o painel da ilustração e o título */
+.topo-folha { overflow: hidden; }
+.painel { position: relative; background: var(--fig-bg); aspect-ratio: 1100 / 468; overflow: hidden; }
+.camada { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.titulo-folha { padding: 34px clamp(20px, 4.4vw, 46px) 30px; }
+.trilha { font: 14.5px var(--f-ui); color: var(--ink-2); display: flex; gap: 10px; align-items: center; margin-bottom: 14px; }
+.trilha .chip { display: inline-flex; align-items: center; gap: 7px; color: color-mix(in oklab, var(--cor-ui), var(--ink) 34%); font-weight: 500; }
+.trilha .chip::before { content: ""; width: 9px; height: 9px; border-radius: 2px; background: var(--cor-ui); }
+h2.titulo { font: 700 clamp(30px, 5vw, 50px)/1.06 var(--f-titulo); letter-spacing: -.014em; margin: 0; text-wrap: balance; }
+.sub { font: 400 clamp(21px, 2.4vw, 29px)/1.25 var(--f-texto); color: var(--ink-2); margin: 6px 0 16px; }
+.lede { font: 18px/1.65 var(--f-ui); color: var(--ink-2); margin: 0; max-width: 72ch; }
+.meta { border-top: 1px solid var(--rule); margin-top: 22px; padding-top: 16px; font: 14.5px var(--f-ui); color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 6px 22px; }
+
+/* Corpo */
+.corpo-artigo { margin-top: 24px; padding: 40px clamp(20px, 4.4vw, 46px) 48px; font: 18.5px/1.72 var(--f-texto); font-variant-numeric: oldstyle-nums; }
+.corpo-artigo h3 { font: 700 30px/1.2 var(--f-titulo); margin: 36px 0 12px; }
+.corpo-artigo h3:first-child { margin-top: 0; }
+.corpo-artigo p { margin: 0 0 18px; max-width: 76ch; }
+.corpo-artigo code { font: 15px var(--f-codigo); background: var(--well); padding: 1px 5px; border-radius: 4px; }
+.mt { background: linear-gradient(transparent 52%, var(--marca-texto) 52%, var(--marca-texto) 92%, transparent 92%); padding: 0 2px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+@media (max-width: 860px) {
+  .corpo-artigo { background: none; border: 0; box-shadow: none; padding: 8px 0 0; }
+  .titulo-folha { padding: 24px 20px 22px; }
+}
+
+/* A ilustração: as mesmas classes do site (src/styles/desenho.css). */
+.ilustracao { --traco: 3; --traco-no-painel: 1.2; --cor-desenho: var(--cor-ui); --superficie: var(--fig-bg); }
+.ilustracao .tinta { filter: url(#tremor); }
+.ilustracao .tinta :is(path, rect, circle) { stroke: var(--ink); stroke-width: calc(var(--traco) * var(--traco-no-painel)); stroke-linecap: round; stroke-linejoin: round; }
+.ilustracao .linha { fill: none; }
+.ilustracao .papel { fill: var(--superficie); }
+.ilustracao .tinta .cor { fill: color-mix(in oklab, var(--cor-desenho) 78%, var(--superficie)); stroke: none; }
+.ilustracao .tinta .hachura { fill: url(#hachura); stroke: none; opacity: .75; }
+.ilustracao .tinta .fantasma { fill: none; stroke-width: calc(var(--traco) * var(--traco-no-painel) * .8); stroke-dasharray: 24 8 4 8 4 8; }
+.ilustracao .tinta .carimbo { fill: none; stroke: var(--cor-desenho); }
+.ilustracao .rotulo { font: italic 26px var(--f-texto); fill: var(--ink); }
+.ilustracao .valor { font: 700 40px var(--f-titulo); fill: var(--ink); }
+.ilustracao .codigo { font: 25px var(--f-codigo); fill: var(--ink); }
+.ilustracao .carimbo-texto { font: 800 30px var(--f-titulo); letter-spacing: .06em; fill: var(--cor-desenho); }
+.ilustracao .nota { font: italic 25px var(--f-texto); fill: var(--ink); }
+.ilustracao .nota-pequena { font: italic 20px var(--f-texto); fill: var(--ink-2); }
+.ilustracao .chamada { fill: none; stroke: var(--ink-2); stroke-width: 1.8; stroke-linecap: round; }
+.traco-hachura { stroke: var(--ink); stroke-width: 1; }
+@media (max-width: 860px) { .camada-anotacao { display: none; } .painel { aspect-ratio: 856 / 570; } }
+
+/* Antes de o script preparar a sequência, o desenho não pisca inteiro (como o destaque da home, D41). */
+@media (prefers-reduced-motion: no-preference) {
+  html.js .painel:not(.pronto) .camada { visibility: hidden; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <filter id="tremor" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="7" result="ruido"/>
+      <feDisplacementMap in="SourceGraphic" in2="ruido" scale="4" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <pattern id="hachura" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="7" class="traco-hachura"/>
+    </pattern>
+  </defs>
+</svg>
+
+<header class="cabecalho">
+  <a class="logo" href="#" aria-label="Cesar Schutz, blog">
+    <svg viewBox="0 0 22 28" aria-hidden="true"><rect x="1" y="1" width="20" height="26" rx="2" class="logo-capa"/><text x="5" y="14" class="logo-letra">c</text><text x="11" y="21" class="logo-letra">s</text></svg>
+    <b>Cesar Schutz</b> <i>blog</i>
+  </a>
+  <nav class="nav" aria-label="Seções"><span>Artigos</span><span>Categorias</span><span>Séries</span><span>Tags</span></nav>
+  <button class="tema" type="button" data-tema aria-label="Alternar tema claro e escuro"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg></button>
+  <div class="barra-leitura" data-barra aria-hidden="true">
+    <div class="traco"></div>
+    <svg class="caneta" viewBox="0 0 24 24"><path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1.4 1.4 0 0 1 0 2l-9.2 9.2Z"/><path class="anel" d="m15.6 5.8 2.6 2.6"/><path class="ponta" d="M8.2 13.2 10.8 15.8 4 20Z"/></svg>
+  </div>
+</header>
+
+<main class="pagina">
+  <section class="folha sobre" aria-labelledby="t-sobre">
+    <h1 id="t-sobre">C1 · A ilustração que assenta</h1>
+    <p class="resumo">Quem chega ao artigo por um link vê a ilustração do topo ser desenhada uma vez, à caneta, e a impressão da cor “acertar o registro”; o carimbo bate por último. Ao rolar, as camadas do desenho se separam alguns pixels, como papéis empilhados, e o topo ganha profundidade enquanto sai da tela. O título e o texto nunca esperam: só o desenho anima.</p>
+    <dl>
+      <dt>Onde entraria</dt><dd>No topo de todo artigo (<code>TopoArtigo</code> e <code>Ilustracao</code>), usando as classes que as ilustrações já têm (<code>.tinta</code>, <code>.fantasma</code>, <code>.cor</code>, <code>.hachura</code>, <code>.carimbo</code>, <code>.anotacao</code>): nenhum desenho precisa ser refeito.</dd>
+      <dt>Por que é melhor que hoje</dt><dd>Hoje o topo é uma imagem parada e a mesma ilustração se desenha no destaque da home (D41), mas não no próprio artigo. Aqui o artigo ganha a mesma assinatura de caneta, uma vez, no lugar em que o desenho é maior. A profundidade ao rolar tira o corte seco entre ilustração e texto sem prender a rolagem.</dd>
+      <dt>GSAP</dt><dd>DrawSVG (traços e chamadas), timeline (sequência: traço, registro da cor, hachura, texto, carimbo), ScrollTrigger com <code>scrub</code> (as três camadas em velocidades diferentes) e <code>gsap.matchMedia()</code> para celular e movimento reduzido.</dd>
+      <dt>Referência</dt><dd><a href="https://demos.gsap.com/demo/draw-a-path">Draw a path</a> (DrawSVG) e a profundidade por camadas dos sites da <a href="https://gsap.com/showcase/">vitrine do GSAP</a> (como o da Unseen Studio), aqui reduzida a alguns pixels.</dd>
+      <dt>No celular</dt><dd>Recorte médio sem as anotações (como hoje), sequência mais curta (cerca de 1s) e <strong>sem</strong> a profundidade ao rolar: o dedo rola rápido e o filtro do tremor pesa em aparelho fraco.</dd>
+      <dt>Movimento reduzido</dt><dd>O desenho aparece pronto, parado, sem profundidade.</dd>
+      <dt>Cuidados</dt><dd>Se o desenho chegou voando do cartão da home (View Transition, D47), ele não se desenha de novo: fica só a profundidade. As camadas são três SVGs empilhados (fantasma, tinta, anotações) movidos por <code>transform</code>, para o tremor não ser recalculado a cada quadro; mesmo assim, passa por um trace com CPU 4× antes de entrar (regra do <code>DESIGN.md</code>).</dd>
+    </dl>
+    <div class="controles">
+      <button class="pilula" type="button" data-repetir>Repetir a entrada</button>
+      <a class="pilula" href="?reduzido" data-link-reduzido>Ver com movimento reduzido</a>
+    </div>
+  </section>
+
+  <article data-artigo>
+    <div class="folha topo-folha">
+      <div class="painel" data-painel>
+        <!-- Camada de trás: o que não acontece (linha fantasma). -->
+        <svg class="camada camada-fantasma ilustracao" data-camada="fantasma" viewBox="80 164 1100 468" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <g class="tinta">
+            <g transform="rotate(-8 505 370)"><path d="M380 180 H630 V560 L619.6 574 L609.2 560 L598.8 574 L588.3 560 L577.9 574 L567.5 560 L557.1 574 L546.7 560 L536.2 574 L525.8 560 L515.4 574 L505.0 560 L494.6 574 L484.2 560 L473.8 574 L463.3 560 L452.9 574 L442.5 560 L432.1 574 L421.7 560 L411.2 574 L400.8 560 L390.4 574 L380.0 560 Z" class="fantasma"/></g>
+          </g>
+        </svg>
+        <!-- Camada do meio: a tinta, a cor e os textos do desenho. -->
+        <svg class="camada camada-tinta ilustracao" data-camada="tinta" viewBox="80 164 1100 468" preserveAspectRatio="xMidYMid slice" role="img"
+          aria-label="Uma chave com a etiqueta abc-123 sobre o comprovante pago de R$ 250,00; atrás dele, a segunda cobrança aparece em linha tracejada, porque nunca acontece.">
+          <g class="tinta">
+            <g transform="rotate(4 595 405)"><path d="M470 215 H720 V595 L709.6 609 L699.2 595 L688.8 609 L678.3 595 L667.9 609 L657.5 595 L647.1 609 L636.7 595 L626.2 609 L615.8 595 L605.4 609 L595.0 595 L584.6 609 L574.2 595 L563.8 609 L553.3 595 L542.9 609 L532.5 595 L522.1 609 L511.7 595 L501.2 609 L490.8 595 L480.4 609 L470.0 595 Z" transform="translate(14 14)" class="hachura"/></g>
+            <g transform="rotate(4 595 405)">
+              <path d="M470 215 H720 V595 L709.6 609 L699.2 595 L688.8 609 L678.3 595 L667.9 609 L657.5 595 L647.1 609 L636.7 595 L626.2 609 L615.8 595 L605.4 609 L595.0 595 L584.6 609 L574.2 595 L563.8 609 L553.3 595 L542.9 609 L532.5 595 L522.1 609 L511.7 595 L501.2 609 L490.8 595 L480.4 609 L470.0 595 Z" class="papel"/>
+              <path d="M498 296 H668 M498 320 H628 M498 344 H648 M498 446 H618" class="linha"/>
+              <g transform="rotate(-12 620 520)"><g data-carimbo><rect x="548" y="494" width="144" height="54" rx="6" class="carimbo"/></g></g>
+            </g>
+            <path d="M875 286 C905 320 925 385 915 428" class="linha"/>
+            <g transform="translate(905 380) rotate(14)">
+              <path d="M0 20 L24 0 H170 V90 H24 L0 70 Z" transform="translate(7 6)" class="cor"/>
+              <path d="M0 20 L24 0 H170 V90 H24 L0 70 Z" class="linha"/>
+              <circle cx="22" cy="45" r="8" class="linha"/>
+            </g>
+            <g transform="translate(852 262) rotate(128)"><path d="M50 0 A50 50 0 1 1 -50 0 A50 50 0 1 1 50 0 Z M6 0 A16 16 0 1 0 -26 0 A16 16 0 1 0 6 0 Z M46 -14 H62 V-9 H280 V30 H262 V20 H244 V38 H226 V24 H210 V9 H62 V14 H46 Z" fill-rule="evenodd" class="hachura"/></g>
+            <g transform="translate(840 250) rotate(128)">
+              <path d="M50 0 A50 50 0 1 1 -50 0 A50 50 0 1 1 50 0 Z M6 0 A16 16 0 1 0 -26 0 A16 16 0 1 0 6 0 Z M46 -14 H62 V-9 H280 V30 H262 V20 H244 V38 H226 V24 H210 V9 H62 V14 H46 Z" fill-rule="evenodd" class="papel"/>
+              <path d="M72 0 H200" class="linha"/>
+            </g>
+          </g>
+          <g class="textos">
+            <g transform="rotate(4 595 405)">
+              <text x="498" y="266" class="rotulo">Comprovante</text>
+              <text x="498" y="416" class="valor">R$ 250,00</text>
+              <g transform="rotate(-12 620 520)"><g data-carimbo><text x="620" y="532" text-anchor="middle" class="carimbo-texto">PAGO</text></g></g>
+            </g>
+            <g transform="translate(905 380) rotate(14)"><text x="44" y="55" class="codigo">abc-123</text></g>
+          </g>
+        </svg>
+        <!-- Camada da frente: as anotações, escritas por último. -->
+        <svg class="camada camada-anotacao ilustracao" data-camada="anotacao" viewBox="80 164 1100 468" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <g class="anotacao">
+            <path d="M962 502 C 972 520 966 534 952 546" class="chamada"/>
+            <text x="880" y="572" class="nota">chave de idempotência</text>
+            <text x="880" y="598" class="nota-pequena">a mesma nas duas tentativas</text>
+            <path d="M370 352 C 352 356 344 362 338 372" class="chamada"/>
+            <text x="126" y="398" class="nota">a segunda cobrança</text>
+            <text x="126" y="424" class="nota-pequena">nunca acontece</text>
+          </g>
+        </svg>
+      </div>
+      <div class="titulo-folha">
+        <div class="trilha"><span>Artigos</span><span aria-hidden="true">›</span><span class="chip">Arquitetura de Software</span></div>
+        <h2 class="titulo">Chave de idempotência</h2>
+        <p class="sub">Como impedir a cobrança duplicada no retry</p>
+        <p class="lede">Por que consultar antes de gravar não impede que um retry cobre o cliente duas vezes, e como resolver com chave de idempotência, restrição única e resposta guardada.</p>
+        <div class="meta"><span>Cesar Schutz</span><span>10 set 2026</span><span>12 min de leitura</span></div>
+      </div>
+    </div>
+
+    <div class="folha corpo-artigo">
+      <h3>1. O que o timeout não diz</h3>
+      <p>O app manda a cobrança, o serviço repassa ao adquirente e a resposta se perde no caminho. Do lado do app, sobra um timeout. <span class="mt">Um timeout não diz se a operação aconteceu</span>: ele só diz que a resposta não chegou a tempo.</p>
+      <p>O comportamento padrão dos clientes HTTP é tentar de novo. Em GET isso é inofensivo; numa cobrança, o reenvio pode cair numa instância diferente e chegar enquanto a primeira ainda está trabalhando.</p>
+      <p>O nome da propriedade que falta é <strong>idempotência</strong>: uma operação é idempotente quando repeti-la tem o mesmo efeito que executá-la uma vez. A RFC 9110 classifica GET, PUT e DELETE como idempotentes; POST não é.</p>
+      <h3>2. Por que consultar antes de gravar não basta</h3>
+      <p>A ideia está certa: reconhecer o pedido repetido e não cobrar de novo. O problema é onde a verificação acontece. Consultar e depois gravar são duas operações separadas, e entre elas existe uma janela curta, mas real.</p>
+      <p>Se a requisição original e o reenvio caem em instâncias diferentes ao mesmo tempo, as duas consultam antes de qualquer uma gravar, <span class="mt">as duas encontram a tabela vazia e as duas cobram</span>.</p>
+      <p>Esse defeito tem nome: condição de corrida do tipo verificar-e-agir (<em>check-then-act</em>), catalogada como TOCTOU na CWE-367. Ele quase nunca aparece em teste local, porque precisa de duas requisições chegando no mesmo milissegundo.</p>
+      <h3>3. Gravar primeiro e deixar o banco recusar</h3>
+      <p>A saída é inverter a ordem: toda requisição começa tentando inserir a chave, com uma restrição única na coluna. Quem insere primeiro segue; quem chega depois recebe “nada inserido” e devolve a resposta guardada. Verificar e gravar passam a ser a mesma operação, e quem arbitra é o banco.</p>
+      <p>Com <code>INSERT … ON CONFLICT DO NOTHING RETURNING id</code>, o PostgreSQL devolve uma linha só para quem de fato inseriu. Não há janela entre a pergunta e a resposta, porque não há pergunta separada.</p>
+    </div>
+  </article>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/DrawSVGPlugin.min.js"></script>
+<script>
+// ---------- tema e caneta da leitura (iguais em todos os protótipos) ----------
+document.querySelector("[data-tema]").addEventListener("click", () => {
+  const raiz = document.documentElement;
+  const escuro = raiz.dataset.theme ? raiz.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  raiz.dataset.theme = escuro ? "light" : "dark";
+});
+const artigo = document.querySelector("[data-artigo]");
+const barra = document.querySelector("[data-barra]");
+function aoRolar() {
+  const c = artigo.getBoundingClientRect();
+  const lido = Math.min(1, Math.max(0, -c.top / Math.max(c.height - innerHeight, 1)));
+  barra.style.setProperty("--lido", lido.toFixed(4));
+  barra.classList.toggle("escrevendo", lido > 0.002);
+}
+addEventListener("scroll", aoRolar, { passive: true });
+aoRolar();
+
+// ---------- a ilustração ----------
+const forcaReduzido = new URLSearchParams(location.search).has("reduzido");
+const link = document.querySelector("[data-link-reduzido]");
+if (forcaReduzido) { link.textContent = "Ver com movimento"; link.href = location.pathname; }
+
+const painel = document.querySelector("[data-painel]");
+const camadas = {
+  fantasma: painel.querySelector('[data-camada="fantasma"]'),
+  tinta: painel.querySelector('[data-camada="tinta"]'),
+  anotacao: painel.querySelector('[data-camada="anotacao"]'),
+};
+const celularMq = matchMedia("(max-width: 860px)");
+// No celular, o recorte médio (data-medio do SVG do site); no computador, o largo.
+function recorte() {
+  const vb = celularMq.matches ? "288 113 856 570" : "80 164 1100 468";
+  Object.values(camadas).forEach((svg) => svg.setAttribute("viewBox", vb));
+}
+recorte();
+celularMq.addEventListener("change", recorte);
+
+// Se o GSAP não chegar, o desenho aparece inteiro depois de 2,5s.
+const seguranca = setTimeout(() => painel.classList.add("pronto"), 2500);
+
+if (window.gsap) {
+  gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
+
+  // O carimbo tem duas partes (moldura e texto) no mesmo espaço de coordenadas: escala pelas duas juntas.
+  const carimbos = [...painel.querySelectorAll("[data-carimbo]")];
+  const pancada = { s: 1 };
+  const aplicarCarimbo = () => carimbos.forEach((g) =>
+    g.setAttribute("transform", `translate(620 521) scale(${pancada.s.toFixed(4)}) translate(-620 -521)`));
+
+  let entrada;
+  function montarEntrada(celular) {
+    const tinta = camadas.tinta;
+    const tracos = [...tinta.querySelectorAll(".tinta :is(path, rect, circle)")]
+      .filter((el) => !el.matches(".hachura, .cor, .carimbo"));
+    const papeis = tinta.querySelectorAll(".papel");
+    const hachuras = tinta.querySelectorAll(".hachura");
+    const cor = tinta.querySelectorAll(".cor");
+    const textos = tinta.querySelectorAll(".textos text:not(.carimbo-texto)");
+    const carimboPartes = [...painel.querySelectorAll(".carimbo, .carimbo-texto")];
+    const fantasma = camadas.fantasma.querySelectorAll(".fantasma");
+    const chamadas = camadas.anotacao.querySelectorAll(".chamada");
+    const notas = camadas.anotacao.querySelectorAll("text");
+
+    const t = celular ? 0.65 : 1;
+    const tl = gsap.timeline({ paused: true, defaults: { ease: "power1.inOut" } });
+    tl.set(fantasma, { opacity: 0 })
+      .set(papeis, { fillOpacity: 0 })
+      .set([hachuras, textos, carimboPartes], { opacity: 0 })
+      .set(cor, { x: 27, y: 22, opacity: 0 })
+      .set(notas, { clipPath: "inset(0 100% 0 0)" })
+      .set(pancada, { s: 1.45 })
+      .call(aplicarCarimbo)
+      // 1. traços, em sequência (como o destaque da home, D41)
+      .fromTo(tracos, { drawSVG: "0%" }, { drawSVG: "100%", duration: 0.9 * t, stagger: { amount: 0.6 * t } }, 0)
+      .to(fantasma, { opacity: 1, duration: 0.5 * t }, 0.35 * t)
+      // 2. o papel ganha corpo e a cor "acerta o registro": desliza até o deslocamento de sempre (7, 6)
+      .addLabel("corpo", 1.2 * t) // os traços acabam em 1,5s; o papel começa um pouco antes
+      .to(papeis, { fillOpacity: 1, duration: 0.4 * t }, "corpo")
+      .to(cor, { x: 7, y: 6, opacity: 1, duration: 0.7 * t, ease: "power3.out" }, "<")
+      .to(hachuras, { opacity: 0.75, duration: 0.6 * t }, "<0.1")
+      .to(textos, { opacity: 1, duration: 0.4 * t, stagger: 0.06 }, "<0.15")
+      // 3. o carimbo bate: cai de cima (ease de entrada) e assenta com um tranco curto
+      .to(carimboPartes, { opacity: 1, duration: 0.08 }, ">-0.1")
+      .to(pancada, { s: 1, duration: 0.24, ease: "power4.in", onUpdate: aplicarCarimbo }, "<")
+      .to(pancada, { keyframes: [{ s: 0.97, duration: 0.07 }, { s: 1, duration: 0.18, ease: "power2.out" }], onUpdate: aplicarCarimbo })
+      // 4. as anotações são escritas: primeiro a chamada, depois o texto da esquerda para a direita
+      .fromTo(chamadas, { drawSVG: "0%" }, { drawSVG: "100%", duration: 0.45, stagger: 0.25 }, "<-0.2")
+      .to(notas, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "none", stagger: 0.18 }, "<0.25");
+    return tl;
+  }
+
+  const mm = gsap.matchMedia();
+  // "sempre" garante que a função rode também quando nenhuma das outras condições vale.
+  mm.add({ sempre: "all", reduzir: "(prefers-reduced-motion: reduce)", celular: "(max-width: 860px)" }, (ctx) => {
+    const { reduzir, celular } = ctx.conditions;
+    clearTimeout(seguranca);
+    painel.classList.add("pronto");
+    if (reduzir || forcaReduzido) return; // estado final: o desenho como está no HTML
+
+    // Entrada: no site, o topo já está na tela ao abrir; aqui, espera o painel aparecer.
+    // Quem abre no meio do artigo (painel acima da tela) vê o desenho pronto, sem sequência.
+    entrada = montarEntrada(celular);
+    if (painel.getBoundingClientRect().bottom < 0) entrada.progress(1);
+    else {
+      entrada.progress(0);
+      ScrollTrigger.create({ trigger: painel, start: "top 88%", once: true, onEnter: () => entrada.play(0) });
+    }
+
+    // Profundidade ao rolar (só no computador): três camadas em velocidades diferentes.
+    if (!celular) {
+      gsap.timeline({
+        defaults: { ease: "none" },
+        scrollTrigger: { trigger: painel, start: "top top+=60", end: "bottom top+=60", scrub: 0.5 },
+      })
+        .to(camadas.fantasma, { yPercent: 12 }, 0)
+        .to(camadas.tinta, { yPercent: 7, scale: 1.02, transformOrigin: "50% 100%" }, 0)
+        .to(camadas.anotacao, { yPercent: 2 }, 0);
+    }
+    return () => { entrada?.kill(); pancada.s = 1; aplicarCarimbo(); };
+  });
+
+  document.querySelector("[data-repetir]").addEventListener("click", () => {
+    scrollTo({ top: painel.getBoundingClientRect().top + scrollY - 84, behavior: "instant" });
+    if (entrada && !forcaReduzido) entrada.play(0);
+  });
+}
+</script>
+</body>
+</html>

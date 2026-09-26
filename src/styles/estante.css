@@ -95,7 +95,7 @@
 
 @media (hover: hover) {
   .lombada.inclinada:hover {
-    transform: rotate(5deg) translateY(-4px);
+    transform: rotate(6deg) translateY(-4px);
   }
 }
 

@@ -57,6 +57,9 @@
 
 html {
   scroll-padding-top: calc(env(safe-area-inset-top, 0px) + var(--altura-topo) + 16px);
+  /* O lugar da barra de rolagem fica reservado: o cabeçalho não anda para o lado entre uma página
+     curta (sem barra) e uma longa (D47). */
+  scrollbar-gutter: stable;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
@@ -399,6 +402,13 @@ a:hover > .titulo-sub,
   overflow-wrap: anywhere;
 }
 
+/* Os links do sumário e as âncoras rolam suave até a seção (D47); a busca do navegador, não. */
+@media (prefers-reduced-motion: no-preference) {
+  html:focus-within {
+    scroll-behavior: smooth;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -417,21 +427,71 @@ a:hover > .titulo-sub,
 }
 
 /*
- * Transição entre páginas (D29): só os livros se movem. Um livro deitado do painel da home e o livro
- * em pé do topo da página de categoria têm o mesmo `view-transition-name`, e o navegador leva um ao
- * outro ao trocar de página. O resto da página troca na hora, como antes (a raiz não anima). Sem
- * suporte do navegador (ou com movimento reduzido), a página só abre.
+ * Transição entre páginas (D29, D47), a mesma de qualquer página para qualquer outra:
+ * - o cabeçalho fica parado (tem nome próprio, "topo", e não anima);
+ * - a página é uma folha: a antiga sai depressa, subindo 6px e sumindo (0,2s), e a nova chega subindo
+ *   18px, como uma folha posta na mesa (0,5s, um instante depois);
+ * - os livros voam de um lugar ao outro quando o mesmo livro está nas duas páginas (a pilha e a grade
+ *   viram o livro do topo; o do topo vira o do post e o contrário), com o nome de transição dado pelo
+ *   script do <head> (Base.astro) ou fixo no HTML; o livro que não tem par na página nova sai junto
+ *   com a folha, e não por cima dela;
+ * - o desenho do artigo na lista, nos cards e no destaque vira o desenho do topo do post (e volta);
+ *   entre dois posts, nada voa (o topo só ganha nome quando a outra página não é um post).
+ * Sem suporte do navegador (ou com movimento reduzido), a página só abre.
  */
 @view-transition {
   navigation: auto;
 }
 
-::view-transition-old(root),
-::view-transition-new(root) {
+.topo-fixo {
+  view-transition-name: topo;
+}
+
+/* Por baixo da troca, a mesa (nunca a tela branca entre a folha que sai e a que chega). */
+::view-transition {
+  background-color: var(--paper);
+}
+
+/* O cabeçalho fica por cima de tudo o que voa. */
+::view-transition-group(topo) {
+  z-index: 100;
+}
+
+::view-transition-group(topo),
+::view-transition-old(topo),
+::view-transition-new(topo) {
   animation: none;
 }
 
-::view-transition-group(.livro) {
+::view-transition-old(topo) {
+  display: none;
+}
+
+/* Só na troca de página: a troca de tema (tema.ts, .trocando-tema) tem o círculo dela. */
+:root:not(.trocando-tema)::view-transition-old(root) {
+  animation: folha-sai 0.2s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+:root:not(.trocando-tema)::view-transition-new(root) {
+  animation: folha-entra 0.5s cubic-bezier(0.2, 0.75, 0.2, 1) both;
+}
+
+@keyframes folha-sai {
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes folha-entra {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+
+::view-transition-group(.livro),
+::view-transition-group(desenho-do-post) {
   animation-duration: 0.7s;
   animation-timing-function: cubic-bezier(0.3, 0.75, 0.2, 1);
 }
@@ -442,6 +502,38 @@ a:hover > .titulo-sub,
   height: 100%;
   object-fit: contain;
   animation-duration: 0.7s;
+}
+
+/*
+ * O desenho da lista vira o largo do topo: só a imagem nova, cobrindo a caixa que cresce (as duas
+ * misturadas deixavam um fantasma do recorte quadrado ampliado).
+ */
+::view-transition-new(desenho-do-post) {
+  height: 100%;
+  object-fit: cover;
+  animation: none;
+}
+
+::view-transition-old(desenho-do-post) {
+  height: 100%;
+  object-fit: cover;
+  animation: none;
+  opacity: 0;
+}
+
+/* Sem par na página nova (ou na antiga), o livro e o desenho saem e chegam com a folha. */
+::view-transition-old(.livro):only-child,
+::view-transition-old(desenho-do-post):only-child {
+  animation: folha-sai 0.2s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+::view-transition-old(desenho-do-post):only-child {
+  opacity: 1;
+}
+
+::view-transition-new(.livro):only-child,
+::view-transition-new(desenho-do-post):only-child {
+  animation: folha-entra 0.5s cubic-bezier(0.2, 0.75, 0.2, 1) both;
 }
 
 /*

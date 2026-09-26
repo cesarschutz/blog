@@ -24,7 +24,7 @@ const { post } = Astro.props;
   <article class:list={["cartao-destaque", "folha", { "com-ilustracao": temIlustracao(post.slug) }]}>
     {
       temIlustracao(post.slug) && (
-        <a class="ilustracao-destaque painel" data-desenhar href={post.url} tabindex="-1" aria-hidden="true" style={`--cor:${post.cor}`}>
+        <a class="ilustracao-destaque painel" data-desenhar data-vt-desenho href={post.url} tabindex="-1" aria-hidden="true" style={`--cor:${post.cor}`}>
           <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} tamanho="cartao" decorativa inteira />
         </a>
       )

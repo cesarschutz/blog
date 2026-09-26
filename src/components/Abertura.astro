@@ -1,0 +1,240 @@
+---
+/**
+ * A abertura do site (D47, inspirada em clevante.cz): na primeira visita da sessão, só na home e sem
+ * movimento reduzido, a página começa coberta por uma folha de papel com o livro "cs" no meio e, embaixo
+ * dele, um fio escrito pela caneta (a mesma do progresso da leitura, D45) com a contagem até 100.
+ * Quando a página e as fontes estão prontas, o fio some, o livro voa até o livro grande da abertura (no
+ * celular, até o do cabeçalho) e a folha sobe, descobrindo o site: a folha da abertura chega subindo, o
+ * nome sobe linha a linha, os livros descem para a prateleira um a um e o destaque vem depois. No
+ * celular, mais simples: sem os livros um a um.
+ *
+ * Quem decide se ela acontece é o script do <head> (Base.astro, `abertura`), antes da primeira pintura:
+ * ele põe `data-abertura` no <html> e, por segurança, tira sozinho depois de 7s. Sem JS, nada aparece.
+ * Tudo por transformações e opacidade; a página continua inteira no HTML por baixo (leitor de tela e
+ * busca não percebem a abertura).
+ */
+import { MARCA_SVG, MARCA_VIEWBOX } from "../lib/marca";
+---
+
+<div class="abertura-site" aria-hidden="true" data-abertura-site>
+  <div class="abertura-fundo"></div>
+  <div class="abertura-centro">
+    <svg class="abertura-livro" viewBox={MARCA_VIEWBOX} focusable="false" set:html={MARCA_SVG} />
+    <div class="abertura-fio">
+      <span class="abertura-traco"></span>
+      <svg class="abertura-caneta" viewBox="0 0 24 24" focusable="false">
+        <path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1.4 1.4 0 0 1 0 2l-9.2 9.2Z"></path>
+        <path class="anel" d="m15.6 5.8 2.6 2.6"></path>
+        <path class="ponta" d="M8.2 13.2 10.8 15.8 4 20Z"></path>
+      </svg>
+    </div>
+    <span class="abertura-conta">000</span>
+  </div>
+</div>
+
+<script>
+  import { carregarGsap } from "../scripts/gsap";
+
+  const raiz = document.documentElement;
+  const cena = document.querySelector<HTMLElement>("[data-abertura-site]");
+  if (cena && raiz.hasAttribute("data-abertura")) abrir(cena);
+
+  function esperar(ms: number) {
+    return new Promise<void>((r) => setTimeout(r, ms));
+  }
+
+  async function abrir(cena: HTMLElement) {
+    const gsap = await carregarGsap();
+    const celular = matchMedia("(max-width: 640px)").matches;
+    const livro = cena.querySelector<SVGElement>(".abertura-livro")!;
+    const fundo = cena.querySelector<HTMLElement>(".abertura-fundo")!;
+    const fio = cena.querySelector<HTMLElement>(".abertura-fio")!;
+    const traco = cena.querySelector<HTMLElement>(".abertura-traco")!;
+    const caneta = cena.querySelector<SVGElement>(".abertura-caneta")!;
+    const conta = cena.querySelector<HTMLElement>(".abertura-conta")!;
+
+    // ---------- 1. carregando: o livro aparece e a caneta escreve o fio até 100 ----------
+    const progresso = { v: 0 };
+    const pintar = () => {
+      gsap.set(traco, { scaleX: progresso.v });
+      gsap.set(caneta, { x: progresso.v * fio.offsetWidth });
+      conta.textContent = String(Math.round(progresso.v * 100)).padStart(3, "0");
+    };
+    const pronto = Promise.all([
+      document.fonts.ready,
+      document.readyState === "complete" ? null : new Promise((r) => addEventListener("load", r, { once: true })),
+    ]);
+    const carga = gsap
+      .timeline()
+      .from(livro, { opacity: 0, y: 14, scale: 0.94, duration: 0.55, ease: "power3.out" })
+      .from([fio, conta], { opacity: 0, duration: 0.3 }, 0.2)
+      .to(progresso, { v: 0.82, duration: celular ? 0.6 : 0.95, ease: "power1.inOut", onUpdate: pintar }, 0.2);
+    await Promise.all([carga.then(), Promise.race([pronto, esperar(2400)])]);
+    await gsap.to(progresso, { v: 1, duration: 0.28, ease: "power2.out", onUpdate: pintar }).then();
+
+    // ---------- 2. a folha sobe e o site aparece ----------
+    // Para onde o livro voa: o livro grande da abertura ou, no celular, o do cabeçalho.
+    const destino = document.querySelector<HTMLElement>(
+      celular ? ".cabecalho .marca-livro-3d" : ".marca-abertura .marca-livro-3d",
+    );
+    const r0 = livro.getBoundingClientRect();
+    const r1 = destino?.getBoundingClientRect();
+    const $ = (seletor: string) => [...document.querySelectorAll<HTMLElement>(seletor)];
+
+    const tl = gsap.timeline({ onComplete: terminar });
+    tl.to([fio, conta], { opacity: 0, y: 6, duration: 0.25, ease: "power2.in" }, 0);
+    if (destino && r1 && r1.width > 0) {
+      gsap.set(destino, { opacity: 0 });
+      tl.to(
+        livro,
+        {
+          x: r1.left + r1.width / 2 - (r0.left + r0.width / 2),
+          y: r1.top + r1.height / 2 - (r0.top + r0.height / 2),
+          scale: r1.height / r0.height,
+          duration: 1,
+          ease: "power3.inOut",
+        },
+        0.12,
+      )
+        .set(destino, { opacity: 1 })
+        .set(livro, { opacity: 0 });
+    } else tl.to(livro, { opacity: 0, duration: 0.3 }, 0.12);
+    tl.to(fundo, { yPercent: -100, duration: 0.95, ease: "power3.inOut" }, 0.22);
+
+    // O site por baixo: tudo começa no estado de antes e chega no lugar (os `from` valem na hora).
+    // A folha sobe: o que está embaixo da tela aparece primeiro, e o cabeçalho, por último.
+    tl.from($(".destaque"), { y: 40, opacity: 0, duration: 0.9, ease: "power3.out" }, 0.4)
+      .from($(".folha-abertura"), { y: celular ? 24 : 48, opacity: 0, duration: 0.9, ease: "power3.out" }, 0.5)
+      .from($(".cabecalho > :not(.marca)"), { y: -10, opacity: 0, duration: 0.5, stagger: 0.04, ease: "power2.out" }, 0.95);
+    if (!celular) {
+      tl.from($(".marca-abertura .marca-linha-nome"), { yPercent: 60, opacity: 0, duration: 0.7, stagger: 0.09, ease: "power3.out" }, 0.7)
+        .from($(".identidade .frase"), { y: 14, opacity: 0, duration: 0.6, ease: "power2.out" }, 0.85)
+        // Os livros descem para a prateleira um a um (por yPercent: o `y` é da estante viva).
+        .from(
+          $("[data-estante] .lombada, [data-estante] .aparador"),
+          { yPercent: -22, opacity: 0, duration: 0.62, stagger: 0.05, ease: "bounce.out" },
+          0.75,
+        );
+    }
+
+    function terminar() {
+      delete raiz.dataset.abertura;
+      cena!.remove();
+      gsap.set($(".cabecalho > *, .folha-abertura, .destaque, .marca-linha-nome, .identidade .frase"), { clearProps: "transform,opacity" });
+    }
+  }
+</script>
+
+<style>
+  .abertura-site {
+    display: none;
+  }
+
+  /* Só com a abertura ligada (script do <head>): por cima de tudo, a página não rola. */
+  :global(:root[data-abertura]) {
+    overflow: hidden;
+  }
+
+  /* As transições do CSS (a da lombada, de 0,25s na opacidade) atrapalham o GSAP a ler o estado final:
+     durante a abertura, só ele anima. */
+  :global(:root[data-abertura] *) {
+    transition: none !important;
+  }
+
+  :global(:root[data-abertura]) .abertura-site {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+  }
+
+  .abertura-fundo {
+    position: absolute;
+    inset: 0;
+    background: var(--paper);
+    box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.25);
+  }
+
+  .abertura-centro {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 26px;
+  }
+
+  .abertura-livro {
+    width: auto;
+    height: clamp(96px, 16vh, 140px);
+    overflow: visible;
+    filter: drop-shadow(0 10px 14px rgb(0 0 0 / 0.18));
+  }
+
+  .abertura-livro :global(.marca-capa) {
+    fill: var(--marca);
+  }
+
+  .abertura-livro :global(.marca-dobra) {
+    fill: black;
+    opacity: 0.24;
+  }
+
+  .abertura-livro :global(.marca-letras) {
+    fill: var(--marca-letra);
+  }
+
+  /* O fio: a linha apagada inteira e, por cima, o traço que a caneta escreve. */
+  .abertura-fio {
+    position: relative;
+    width: min(220px, 56vw);
+    height: 1px;
+    background: var(--rule);
+  }
+
+  .abertura-traco {
+    position: absolute;
+    inset: -0.5px 0;
+    background: var(--ink);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+  }
+
+  /* A ponta da caneta (4, 20 no desenho de 24) encosta no fim do traço, como em BarraLeitura. */
+  .abertura-caneta {
+    position: absolute;
+    top: -17.3px;
+    left: -3.7px;
+    width: 22px;
+    height: 22px;
+    overflow: visible;
+  }
+
+  .abertura-caneta .corpo {
+    fill: var(--paper-hi);
+    stroke: var(--ink);
+    stroke-width: 1.3;
+    stroke-linejoin: round;
+  }
+
+  .abertura-caneta .anel {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.3;
+  }
+
+  .abertura-caneta .ponta {
+    fill: var(--marca);
+    stroke: var(--ink);
+    stroke-width: 1.1;
+    stroke-linejoin: round;
+  }
+
+  .abertura-conta {
+    font-family: var(--font-codigo);
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    color: var(--ink-3);
+    font-variant-numeric: tabular-nums;
+  }
+</style>

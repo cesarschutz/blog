@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>C3 · O código que responde ao texto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&display=swap" rel="stylesheet">
+<style>
+/* Tokens (espelham src/styles/tokens.ts). Nenhuma cor fora daqui. */
+:root {
+  --paper: #F1F0EB; --paper-hi: #FFFFFE; --well: #F5F5F4; --ink: #1A2124; --ink-2: #57605E; --ink-3: #868D8A;
+  --rule: #E2E0D8; --acento: #2549B8; --sobre-acento: #FFFFFF; --marca: #2D4B46; --marca-letra: #F2EDE2;
+  --aviso-dica: #2F6B4F;
+  --livro-cor: #5f4662; /* Dados */
+  --branco-no-escuro: 0%;
+  --cor: var(--livro-cor);
+  --cor-ui: color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro));
+  --marca-texto: color-mix(in oklab, var(--cor) 32%, transparent);
+  --marca-linha: color-mix(in oklab, var(--cor) 16%, transparent);
+  --sombra-folha: 0 1px 2px rgb(40 38 30 / .04), 0 10px 28px -18px rgb(40 38 30 / .28);
+  --altura-topo: 60px;
+  --f-titulo: "Besley", Georgia, serif; --f-texto: "Literata", Georgia, serif;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-codigo: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #111618; --paper-hi: #1A2124; --well: #21282A; --ink: #E7E9E4; --ink-2: #A9B0AC; --ink-3: #7F8884;
+  --rule: #2A3336; --acento: #93AEFF; --sobre-acento: #0D1530; --aviso-dica: #86C3A2; --branco-no-escuro: 42%;
+  --marca-texto: color-mix(in oklab, color-mix(in oklab, var(--cor), #fff 60%) 36%, transparent);
+  --marca-linha: color-mix(in oklab, color-mix(in oklab, var(--cor), #fff 60%) 20%, transparent);
+  --sombra-folha: 0 12px 30px -18px rgb(0 0 0 / .8);
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #111618; --paper-hi: #1A2124; --well: #21282A; --ink: #E7E9E4; --ink-2: #A9B0AC; --ink-3: #7F8884;
+  --rule: #2A3336; --acento: #93AEFF; --sobre-acento: #0D1530; --aviso-dica: #86C3A2; --branco-no-escuro: 42%;
+  --marca-texto: color-mix(in oklab, color-mix(in oklab, var(--cor), #fff 60%) 36%, transparent);
+  --marca-linha: color-mix(in oklab, color-mix(in oklab, var(--cor), #fff 60%) 20%, transparent);
+  --sombra-folha: 0 12px 30px -18px rgb(0 0 0 / .8);
+  color-scheme: dark; }
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.6 var(--f-texto); -webkit-font-smoothing: antialiased;
+  padding: calc(var(--altura-topo) + env(safe-area-inset-top, 0px) + 24px) clamp(16px, 3vw, 32px) 80px; }
+button { font: inherit; color: inherit; }
+a { color: var(--acento); }
+:focus-visible { outline: 2px solid var(--acento); outline-offset: 3px; border-radius: 4px; }
+
+.cabecalho { position: fixed; inset: 0 0 auto; z-index: 30; height: calc(var(--altura-topo) + env(safe-area-inset-top, 0px));
+  padding: env(safe-area-inset-top, 0px) clamp(16px, 3vw, 32px) 0; background: var(--paper); border-bottom: 1px solid var(--rule);
+  display: flex; align-items: center; gap: 20px; }
+.logo { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--ink); margin-right: auto; }
+.logo svg { width: 22px; height: 28px; }
+.logo-capa { fill: var(--marca); }
+.logo-letra { fill: var(--marca-letra); font: 800 10px var(--f-titulo); }
+.logo b { font: 800 22px/1 var(--f-titulo); letter-spacing: -.01em; }
+.logo i { font: italic 15px var(--f-texto); color: var(--ink-2); }
+.nav { display: flex; gap: 22px; font: 15px var(--f-ui); color: var(--ink-2); }
+.tema { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--rule); background: var(--paper-hi); cursor: pointer; display: grid; place-items: center; }
+.tema svg { width: 17px; height: 17px; fill: none; stroke: var(--ink); stroke-width: 1.6; }
+.barra-leitura { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; container-type: inline-size; pointer-events: none; }
+.barra-leitura .traco { position: absolute; inset: 0; background: var(--cor-ui); transform: scaleX(var(--lido, 0)); transform-origin: 0 50%; }
+.barra-leitura .caneta { position: absolute; top: -17.3px; left: -3.7px; width: 22px; height: 22px; overflow: visible; opacity: 0; transition: opacity .2s;
+  transform: translateX(calc(var(--lido, 0) * 100cqw)); }
+.escrevendo .caneta { opacity: 1; }
+.caneta .c-corpo { fill: var(--paper-hi); stroke: var(--ink); stroke-width: 1.3; stroke-linejoin: round; }
+.caneta .c-anel { fill: none; stroke: var(--ink); stroke-width: 1.3; }
+.caneta .c-ponta { fill: var(--cor-ui); stroke: var(--ink); stroke-width: 1.1; stroke-linejoin: round; }
+@media (max-width: 860px) { .nav { display: none; } }
+
+.pagina { max-width: 1040px; margin: 0 auto; }
+.folha { background: var(--paper-hi); border: 1px solid var(--rule); border-radius: 14px; box-shadow: var(--sombra-folha); }
+
+.sobre { padding: 26px clamp(20px, 4vw, 44px) 24px; margin-bottom: 28px; font: 15px/1.55 var(--f-ui); color: var(--ink-2); }
+.sobre h1 { font: 800 clamp(26px, 3.4vw, 36px)/1.1 var(--f-titulo); color: var(--ink); margin: 0 0 6px; text-wrap: balance; }
+.sobre .resumo { font: 17px/1.55 var(--f-texto); color: var(--ink); margin: 0 0 18px; max-width: 72ch; }
+.sobre dl { display: grid; grid-template-columns: 11.5em 1fr; gap: 8px 20px; margin: 0; }
+.sobre dt { font-weight: 600; color: var(--ink); }
+.sobre dd { margin: 0; }
+.sobre code { font: 13.5px var(--f-codigo); background: var(--well); padding: 1px 5px; border-radius: 4px; }
+.controles { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.pilula { border: 1px solid var(--rule); background: var(--paper-hi); border-radius: 999px; padding: 7px 14px; font: 500 14px/1 var(--f-ui); cursor: pointer; color: var(--ink); text-decoration: none; }
+.pilula:hover { color: var(--acento); border-color: color-mix(in oklab, var(--acento) 40%, var(--rule)); }
+@media (max-width: 700px) { .sobre dl { grid-template-columns: 1fr; gap: 2px; } .sobre dd { margin-bottom: 10px; } }
+
+/* Corpo do artigo */
+.corpo-artigo { padding: 40px clamp(22px, 4.4vw, 46px) 48px; font: 18.5px/1.72 var(--f-texto); font-variant-numeric: oldstyle-nums; }
+.corpo-artigo h2 { font: 700 30px/1.2 var(--f-titulo); margin: 44px 0 12px; text-wrap: balance; }
+.corpo-artigo h2:first-child { margin-top: 0; }
+.corpo-artigo p { margin: 0 0 18px; max-width: 76ch; position: relative; }
+.corpo-artigo :not(pre) > code { font: 15px var(--f-codigo); background: var(--well); padding: 1px 5px; border-radius: 4px; }
+.mt { background: linear-gradient(transparent 52%, var(--marca-texto) 52%, var(--marca-texto) 92%, transparent 92%); padding: 0 2px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+@media (max-width: 860px) { .corpo-artigo { background: none; border: 0; box-shadow: none; padding: 8px 0 0; } }
+
+/* Bloco de código (como o Expressive Code do site: título, etiqueta da linguagem, Copiar) */
+.bloco { position: relative; margin: 0 0 22px; border: 1px solid var(--rule); border-radius: 10px; background: var(--well); overflow: hidden; }
+.bloco-barra { display: flex; align-items: center; gap: 10px; padding: 0 10px 0 16px; height: 38px; border-bottom: 1px solid var(--rule); font: 13.5px var(--f-ui); color: var(--ink-2); }
+.bloco-barra .ling { margin-left: auto; border: 1px solid var(--rule); border-radius: 999px; padding: 1px 8px; font-size: 12px; color: var(--ink); }
+.copiar { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--rule); border-radius: 6px; background: var(--paper-hi); padding: 3px 9px; font: 500 12.5px var(--f-ui); cursor: pointer; }
+.copiar svg { width: 12px; height: 12px; fill: none; stroke: var(--cor-ui); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; display: none; }
+.copiar.feito svg { display: block; }
+.bloco pre { margin: 0; padding: 14px 0; overflow-x: auto; font: 14.5px/1.65 var(--f-codigo); scrollbar-width: thin; }
+.bloco code { display: block; min-width: max-content; }
+.linha { display: block; padding: 0 22px 0 30px; white-space: pre;
+  background-image: linear-gradient(var(--marca-linha), var(--marca-linha)); background-repeat: no-repeat; background-size: 0% 100%; }
+.k { color: var(--acento); }
+.s { color: var(--aviso-dica); }
+.c { color: var(--ink-2); font-style: italic; }
+.a { color: var(--cor-ui); }
+.trecho { text-decoration: underline 2px transparent; text-underline-offset: 4px; transition: text-decoration-color .2s; }
+.trecho.apontado { text-decoration-color: var(--cor-ui); }
+/* O colchete na margem do código e o do parágrafo: o mesmo traço de caneta do caderno marcado */
+.colchete { position: absolute; pointer-events: none; overflow: visible; }
+.colchete path { fill: none; stroke: var(--cor-ui); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.bloco .colchete { left: 9px; width: 12px; }
+.corpo-artigo p .colchete { left: -20px; top: 4px; width: 10px; height: calc(100% - 8px); }
+@media (max-width: 860px) { .corpo-artigo p .colchete { left: -13px; width: 8px; } }
+
+/* Termo do texto que aponta para o código (ao passar o mouse ou com o foco) */
+code[data-trecho] { cursor: default; text-decoration: underline 1px dotted var(--ink-3); text-underline-offset: 4px; }
+code[data-trecho]:hover, code[data-trecho]:focus-visible { text-decoration-color: var(--cor-ui); }
+</style>
+</head>
+<body>
+<header class="cabecalho">
+  <a class="logo" href="#" aria-label="Cesar Schutz, blog">
+    <svg viewBox="0 0 22 28" aria-hidden="true"><rect x="1" y="1" width="20" height="26" rx="2" class="logo-capa"/><text x="5" y="14" class="logo-letra">c</text><text x="11" y="21" class="logo-letra">s</text></svg>
+    <b>Cesar Schutz</b> <i>blog</i>
+  </a>
+  <nav class="nav" aria-label="Seções"><span>Artigos</span><span>Categorias</span><span>Séries</span><span>Tags</span></nav>
+  <button class="tema" type="button" data-tema aria-label="Alternar tema claro e escuro"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg></button>
+  <div class="barra-leitura" data-barra aria-hidden="true">
+    <div class="traco"></div>
+    <svg class="caneta" viewBox="0 0 24 24"><path class="c-corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1.4 1.4 0 0 1 0 2l-9.2 9.2Z"/><path class="c-anel" d="m15.6 5.8 2.6 2.6"/><path class="c-ponta" d="M8.2 13.2 10.8 15.8 4 20Z"/></svg>
+  </div>
+</header>
+
+<main class="pagina">
+  <section class="folha sobre" aria-labelledby="t-sobre">
+    <h1 id="t-sobre">C3 · O código que responde ao texto</h1>
+    <p class="resumo">Quando um parágrafo explica linhas de um bloco de código logo acima, as linhas se marcam no bloco no momento em que o parágrafo chega à altura da leitura: um colchete à caneta na margem do código e outro na margem do parágrafo, como quem liga as duas coisas com o lápis. Passar o mouse (ou o foco) num termo de código do texto sublinha o mesmo trecho no bloco.</p>
+    <dl>
+      <dt>Onde entraria</dt><dd>Nos posts com código explicado passo a passo (SQL, Java, configuração). No Markdown, uma diretiva no parágrafo, como <code>:::linhas{bloco="conta.sql" linhas="7-9"}</code>, que o plugin transforma em <code>data-linhas</code>; o Expressive Code já gera uma linha por elemento. Opcional por post, como as lousas.</dd>
+      <dt>Por que é melhor que hoje</dt><dd>Hoje o texto diz “o <code>ON CONFLICT</code> faz o banco ignorar…” e o leitor volta ao bloco para achar a linha. Aqui a linha se acende sozinha, sem prender a rolagem e sem esconder nada: o código está sempre inteiro e copiável. <strong>Não</strong> proponho o código “sendo digitado” ao aparecer: atrasa quem quer ler ou copiar e vira truque em post de consulta.</dd>
+      <dt>GSAP</dt><dd>ScrollTrigger com <code>onToggle</code> (um por parágrafo, linha de leitura a 58% da tela), DrawSVG nos colchetes, tween de <code>backgroundSize</code> nas linhas (a técnica do marca-texto, D41) e <code>gsap.matchMedia()</code>. Nada de <code>pin</code> nem <code>scrub</code>: o código não fica preso ao lado do texto (é o que a lousa de passos fazia, e saiu).</dd>
+      <dt>Referência</dt><dd><a href="https://demos.gsap.com/demo/scroll-waypoints">Scroll waypoints</a> (a ideia de “pontos de passagem” na rolagem que disparam um estado) e <a href="https://demos.gsap.com/demo/draw-a-path">Draw a path</a> para o traço.</dd>
+      <dt>No celular</dt><dd>Igual, com o colchete do parágrafo mais estreito na margem de 16px. O bloco já vem antes do texto, então a marcação acontece com ele à vista na maioria das vezes; quando o bloco já saiu da tela, a marca só fica pronta para quem voltar.</dd>
+      <dt>Movimento reduzido</dt><dd>As linhas e os colchetes aparecem e somem sem animar (a informação continua: é um destaque, não um efeito).</dd>
+      <dt>Regra editorial</dt><dd>Só para parágrafos que explicam linhas específicas, logo depois do bloco; no máximo três ou quatro por bloco. O caderno marcado continua valendo no texto (nunca marcação dentro do código).</dd>
+    </dl>
+    <div class="controles">
+      <a class="pilula" href="?reduzido" data-link-reduzido>Ver com movimento reduzido</a>
+    </div>
+  </section>
+
+  <article class="folha corpo-artigo" data-artigo>
+    <h2>Bloqueio otimista: a versão na hora de gravar</h2>
+    <p>A aposta do bloqueio otimista é que conflito é raro. Ninguém trava nada na leitura; a escrita carrega a pergunta junto: <em>o dado ainda está como eu li?</em> A forma de fazer essa pergunta é uma coluna de versão, que muda a cada gravação.</p>
+
+    <div class="bloco" data-bloco="conta.sql">
+      <div class="bloco-barra"><span>conta.sql</span><span class="ling">SQL</span><button class="copiar" type="button" data-copiar><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.4 4.7 9 10 2.8"/></svg><span>Copiar</span></button></div>
+      <pre><code><span class="linha"><span class="c">-- 1. lê a linha e guarda a versão</span></span><span class="linha"><span class="k">SELECT</span> saldo, <span class="trecho" data-trecho="versao">versao</span></span><span class="linha">  <span class="k">FROM</span> conta</span><span class="linha"> <span class="k">WHERE</span> id = <span class="a">1</span>;              <span class="c">-- saldo 100, versao 7</span></span><span class="linha"> </span><span class="linha"><span class="c">-- 2. grava só se ninguém mudou a linha depois da leitura</span></span><span class="linha"><span class="k">UPDATE</span> conta</span><span class="linha">   <span class="k">SET</span> saldo  = <span class="a">90</span>,</span><span class="linha">       <span class="trecho" data-trecho="versao = versao + 1">versao = versao + <span class="a">1</span></span></span><span class="linha"> <span class="k">WHERE</span> id = <span class="a">1</span></span><span class="linha">   <span class="k">AND</span> <span class="trecho" data-trecho="versao = 7">versao = <span class="a">7</span></span>;          <span class="c">-- 1 linha: gravou; 0 linhas: conflito</span></span></code></pre>
+    </div>
+
+    <p data-linhas="conta.sql:2-4">A leitura traz a <code data-trecho="versao" tabindex="0">versao</code> junto com o saldo, e a aplicação guarda esse número até a hora de gravar. É uma leitura comum: não trava a linha nem impede outra transação de ler ou gravar enquanto a regra de negócio roda.</p>
+    <p data-linhas="conta.sql:7-9">A gravação muda o saldo e, na mesma instrução, soma um à versão com <code data-trecho="versao = versao + 1" tabindex="0">versao = versao + 1</code>. Assim, qualquer transação que tenha lido a versão antiga passa a estar atrasada, sem precisar saber disso.</p>
+    <p data-linhas="conta.sql:10-11">O filtro <code data-trecho="versao = 7" tabindex="0">versao = 7</code> é a detecção do conflito. Se outra transação gravou antes, a versão já é 8, a condição não encontra nenhuma linha e o banco devolve <span class="mt">zero linhas afetadas</span>. Nada foi sobrescrito; cabe à aplicação ler de novo e decidir.</p>
+    <p>O que fazer com o conflito depende do negócio. Num débito de saldo, repetir a leitura e tentar de novo costuma bastar; num formulário editado por uma pessoa, o certo é mostrar o que mudou e pedir que ela decida.</p>
+
+    <h2>O mesmo com JPA</h2>
+    <p>Com JPA, a coluna de versão vira um campo anotado. O Hibernate passa a gerar exatamente o <code>UPDATE</code> acima em toda gravação da entidade.</p>
+
+    <div class="bloco" data-bloco="Conta.java">
+      <div class="bloco-barra"><span>Conta.java</span><span class="ling">Java</span><button class="copiar" type="button" data-copiar><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 6.4 4.7 9 10 2.8"/></svg><span>Copiar</span></button></div>
+      <pre><code><span class="linha"><span class="a">@Entity</span></span><span class="linha"><span class="k">public class</span> Conta {</span><span class="linha"> </span><span class="linha">    <span class="a">@Id</span></span><span class="linha">    <span class="k">private</span> Long id;</span><span class="linha"> </span><span class="linha">    <span class="k">private</span> BigDecimal saldo;</span><span class="linha"> </span><span class="linha">    <span class="trecho" data-trecho="@Version"><span class="a">@Version</span></span></span><span class="linha">    <span class="k">private long</span> versao;</span><span class="linha">}</span></code></pre>
+    </div>
+
+    <p data-linhas="Conta.java:9-10">O campo com <code data-trecho="@Version" tabindex="0">@Version</code> não precisa de setter nem de lógica: o Hibernate lê o valor ao carregar a entidade, inclui <code>AND versao = ?</code> no <code>UPDATE</code> e incrementa o campo depois de gravar. <span class="mt">Se o <code>UPDATE</code> afeta zero linhas, a gravação falha com <code>OptimisticLockException</code></span>, que o Spring traduz para <code>ObjectOptimisticLockingFailureException</code>.</p>
+    <p data-linhas="Conta.java:7">O saldo continua um campo comum. A comparação é sempre pela versão, nunca pelo valor do saldo: duas transações que calculam o mesmo saldo final por caminhos diferentes ainda são um conflito, e a versão enxerga isso.</p>
+    <p>Com isso, o tratamento sai do SQL e vai para o serviço: capturar a exceção, ler a conta de novo e repetir a operação algumas vezes antes de desistir e devolver o erro para quem chamou.</p>
+  </article>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/DrawSVGPlugin.min.js"></script>
+<script>
+document.querySelector("[data-tema]").addEventListener("click", () => {
+  const raiz = document.documentElement;
+  const escuro = raiz.dataset.theme ? raiz.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  raiz.dataset.theme = escuro ? "light" : "dark";
+});
+const artigo = document.querySelector("[data-artigo]");
+const barra = document.querySelector("[data-barra]");
+function aoRolar() {
+  const c = artigo.getBoundingClientRect();
+  const lido = Math.min(1, Math.max(0, -c.top / Math.max(c.height - innerHeight, 1)));
+  barra.style.setProperty("--lido", lido.toFixed(4));
+  barra.classList.toggle("escrevendo", lido > 0.002);
+}
+addEventListener("scroll", aoRolar, { passive: true });
+aoRolar();
+
+const forcaReduzido = new URLSearchParams(location.search).has("reduzido");
+if (forcaReduzido) { const l = document.querySelector("[data-link-reduzido]"); l.textContent = "Ver com movimento"; l.href = location.pathname; }
+gsap.registerPlugin(ScrollTrigger, DrawSVGPlugin);
+
+const NS = "http://www.w3.org/2000/svg";
+// Um colchete feito à mão: a ponta de cima, a haste com um tremor pequeno e a ponta de baixo.
+function colchete(altura, largura) {
+  const svg = document.createElementNS(NS, "svg");
+  svg.classList.add("colchete");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("viewBox", `0 0 ${largura} ${altura}`);
+  svg.setAttribute("preserveAspectRatio", "none");
+  const path = document.createElementNS(NS, "path");
+  const x = 2, meio = altura / 2;
+  path.setAttribute("d", `M${largura} 1 Q${x} 0 ${x + 0.6} 6 Q${x - 0.5} ${meio} ${x + 0.4} ${altura - 6} Q${x} ${altura} ${largura} ${altura - 1}`);
+  svg.append(path);
+  return svg;
+}
+
+const blocos = new Map([...document.querySelectorAll("[data-bloco]")].map((b) => [b.dataset.bloco, b]));
+let ativo = null;
+
+function estado(reduzir) {
+  const d = (s) => (reduzir ? 0 : s);
+
+  function limpar() {
+    if (!ativo) return;
+    const { linhas, marcaBloco, marcaTexto } = ativo;
+    gsap.to(linhas, { backgroundSize: "0% 100%", duration: d(0.25), ease: "power1.in", overwrite: true });
+    gsap.to([marcaBloco, marcaTexto], { opacity: 0, duration: d(0.2), onComplete: function () { this.targets().forEach((el) => el.remove()); } });
+    ativo = null;
+  }
+
+  function ativar(p) {
+    if (ativo?.p === p) return;
+    limpar();
+    const [nome, faixa] = p.dataset.linhas.split(":");
+    const [ini, fim = ini] = faixa.split("-").map(Number);
+    const bloco = blocos.get(nome);
+    const todas = [...bloco.querySelectorAll(".linha")];
+    const linhas = todas.slice(ini - 1, fim);
+    // Colchete na margem do código, da primeira à última linha marcada.
+    const pre = bloco.querySelector("pre");
+    const topo = linhas[0].offsetTop + pre.offsetTop + 3;
+    const altura = linhas.at(-1).offsetTop + linhas.at(-1).offsetHeight - linhas[0].offsetTop - 6;
+    const marcaBloco = colchete(altura, 12);
+    marcaBloco.style.top = `${topo}px`;
+    marcaBloco.style.height = `${altura}px`;
+    bloco.append(marcaBloco);
+    // E o do parágrafo, na margem da folha.
+    const marcaTexto = colchete(Math.max(p.offsetHeight - 8, 20), 10);
+    p.append(marcaTexto);
+
+    gsap.fromTo(linhas, { backgroundSize: "0% 100%" }, { backgroundSize: "100% 100%", duration: d(0.55), stagger: d(0.06), ease: "power2.inOut", overwrite: true });
+    gsap.fromTo(marcaBloco.querySelector("path"), { drawSVG: "0%" }, { drawSVG: "100%", duration: d(0.5), ease: "power1.inOut" });
+    gsap.fromTo(marcaTexto.querySelector("path"), { drawSVG: "0%" }, { drawSVG: "100%", duration: d(0.45), delay: d(0.1), ease: "power1.inOut" });
+    ativo = { p, linhas, marcaBloco, marcaTexto };
+  }
+
+  // Cada parágrafo explicativo acende as linhas dele quando cruza a linha de leitura (58% da tela).
+  document.querySelectorAll("p[data-linhas]").forEach((p) => {
+    ScrollTrigger.create({ trigger: p, start: "top 58%", end: "bottom 58%", onToggle: (st) => st.isActive && ativar(p) });
+  });
+  // Quando o bloco sai da tela, a marcação some com ele (ela não serve para nada fora de vista).
+  blocos.forEach((bloco) => {
+    ScrollTrigger.create({
+      trigger: bloco, start: "top bottom", end: "bottom top+=60",
+      onLeave: () => ativo && blocos.get(ativo.p.dataset.linhas.split(":")[0]) === bloco && limpar(),
+      onLeaveBack: () => ativo && blocos.get(ativo.p.dataset.linhas.split(":")[0]) === bloco && limpar(),
+    });
+  });
+  // Seção seguinte (parágrafo sem linhas cruzando a linha de leitura): apaga.
+  document.querySelectorAll(".corpo-artigo > p:not([data-linhas]), .corpo-artigo > h2").forEach((el) => {
+    ScrollTrigger.create({ trigger: el, start: "top 58%", end: "bottom 58%", onToggle: (st) => st.isActive && limpar() });
+  });
+  return () => { limpar(); };
+}
+
+const mm = gsap.matchMedia();
+// "sempre" garante que a função rode também quando nenhuma das outras condições vale.
+mm.add({ sempre: "all", reduzir: "(prefers-reduced-motion: reduce)" }, (ctx) => estado(ctx.conditions.reduzir || forcaReduzido));
+
+// ---------- termo do texto que aponta para o trecho do código ----------
+document.querySelectorAll("code[data-trecho]").forEach((code) => {
+  const p = code.closest("[data-linhas]");
+  const bloco = p && blocos.get(p.dataset.linhas.split(":")[0]);
+  const alvos = bloco ? [...bloco.querySelectorAll(`.trecho[data-trecho="${code.dataset.trecho}"]`)] : [];
+  const liga = (on) => alvos.forEach((a) => a.classList.toggle("apontado", on));
+  code.addEventListener("pointerenter", () => liga(true));
+  code.addEventListener("pointerleave", () => liga(false));
+  code.addEventListener("focus", () => liga(true));
+  code.addEventListener("blur", () => liga(false));
+});
+
+// ---------- Copiar: o visto é escrito no botão ----------
+document.querySelectorAll("[data-copiar]").forEach((b) => {
+  b.addEventListener("click", async () => {
+    const texto = [...b.closest(".bloco").querySelectorAll(".linha")].map((l) => l.textContent.replace(/\s+$/, "")).join("\n");
+    try { await navigator.clipboard.writeText(texto); } catch { /* no file:// o navegador pode recusar; o visto aparece mesmo assim */ }
+    const rotulo = b.querySelector("span");
+    b.classList.add("feito");
+    rotulo.textContent = "Copiado";
+    if (!(forcaReduzido || matchMedia("(prefers-reduced-motion: reduce)").matches))
+      gsap.fromTo(b.querySelector("path"), { drawSVG: "0%" }, { drawSVG: "100%", duration: 0.35, ease: "power1.out" });
+    clearTimeout(b._t);
+    b._t = setTimeout(() => { b.classList.remove("feito"); rotulo.textContent = "Copiar"; }, 1800);
+  });
+});
+</script>
+</body>
+</html>

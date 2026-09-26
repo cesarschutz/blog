@@ -45,6 +45,8 @@ interface Props {
   jsonLd?: Record<string, unknown>;
   /** Fora dos buscadores e sem canonical (a 404, que responde em qualquer endereço). */
   semIndice?: boolean;
+  /** A abertura do site (D47, Abertura.astro): só a home, na primeira visita da sessão. */
+  abertura?: boolean;
 }
 
 const NOME = "Cesar Schutz";
@@ -59,6 +61,7 @@ const {
   modificado,
   jsonLd,
   semIndice = false,
+  abertura = false,
 } = Astro.props;
 const tituloDaAba = titulo ? `${titulo} · ${NOME}` : `${NOME} · Arquitetura e engenharia de software`;
 const canonico = new URL(Astro.url.pathname, Astro.site);
@@ -87,23 +90,63 @@ const preVisualizacao = process.env.PREVIEW === "true";
         if (localStorage.getItem("cs-post-view") === "cards") raiz.dataset.postView = "cards";
       } catch (e) {}
     </script>
+    {
+      abertura && (
+        <script is:inline>
+          // A abertura do site (D47, Abertura.astro): na primeira visita da sessão, sem movimento reduzido.
+          // Por segurança, ela sai sozinha em 7s, mesmo que o script dela não chegue.
+          try {
+            var raizDaAbertura = document.documentElement;
+            if (!sessionStorage.getItem("cs-aberto") && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+              raizDaAbertura.dataset.abertura = "";
+              setTimeout(function () {
+                delete raizDaAbertura.dataset.abertura;
+              }, 7000);
+            }
+            sessionStorage.setItem("cs-aberto", "1");
+          } catch (e) {}
+        </script>
+      )
+    }
     <script is:inline>
       // Transição do livro (D29, D31): um livro da pilha do painel ou da grade de categorias e séries
       // voa até o livro aberto no topo da página dele. Só o livro que leva à página nova (ou que veio
       // da anterior) ganha o nome de transição (data-vt), para os outros não voarem junto; o livro
       // do topo já tem o nome no HTML. O link é o próprio elemento ou o <a> em volta dele.
+      // O desenho do artigo (D47): o da lista, do card ou do destaque que leva ao post (data-vt-desenho,
+      // com o link no item em volta) vira o desenho do topo dele, que tem o nome fixo.
       (function () {
+        function mesmo(link, caminho) {
+          return link && new URL(link.href).pathname === caminho;
+        }
         function livro(endereco) {
           var caminho = new URL(endereco).pathname;
           var livros = document.querySelectorAll("[data-vt]");
           for (var i = 0; i < livros.length; i++) {
-            var link = livros[i].closest("a[href]");
-            if (link && new URL(link.href).pathname === caminho) return livros[i];
+            if (mesmo(livros[i].closest("a[href]"), caminho)) return livros[i];
           }
         }
+        function desenho(endereco) {
+          var caminho = new URL(endereco).pathname;
+          var desenhos = document.querySelectorAll("[data-vt-desenho]");
+          for (var i = 0; i < desenhos.length; i++) {
+            var item = desenhos[i].closest("li, article");
+            var links = item ? item.querySelectorAll("a[href]") : [];
+            for (var j = 0; j < links.length; j++) if (mesmo(links[j], caminho)) return desenhos[i];
+          }
+        }
+        // O desenho do topo do post só tem par numa lista (nunca em outro post).
+        function topo(endereco) {
+          var t = document.querySelector("[data-vt-topo]");
+          if (t && !/\/posts\//.test(new URL(endereco).pathname)) t.style.viewTransitionName = "desenho-do-post";
+        }
         function nomear(endereco) {
-          var l = endereco && livro(endereco);
+          if (!endereco) return;
+          var l = livro(endereco);
           if (l) l.style.viewTransitionName = l.dataset.vt;
+          var d = desenho(endereco);
+          if (d) d.style.viewTransitionName = "desenho-do-post";
+          topo(endereco);
         }
         addEventListener("pageswap", function (e) {
           if (e.viewTransition && e.activation && e.activation.entry) nomear(e.activation.entry.url);

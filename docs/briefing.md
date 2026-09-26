@@ -199,6 +199,11 @@ Referência: aba "Home" do protótipo.
   estudando — …") e a **estante**. A partir de 1360px, identidade à esquerda e estante à direita;
   até 1359px, a estante desce para baixo do texto, no centro; até 640px, a marca grande sai (fica a
   do cabeçalho; ela continua como o h1 para leitor de tela), para a abertura ficar mais curta (D38).
+  Na abertura (D47), a marca é o livro "cs" grande, da altura de duas linhas, com "Cesar" e "Schutz"
+  empilhados e o "blog" depois do sobrenome. **Na primeira visita da sessão**, o site abre com a
+  folha de papel, o livro "cs" e o fio escrito pela caneta até 100; depois a folha sobe, o livro voa
+  até o da abertura e o site chega por partes (`Abertura.astro`; no celular, mais simples; nunca com
+  movimento reduzido).
   A linha sobre IA saiu da abertura (fica no fim de cada artigo). O post-it das frases de autores
   saiu do blog (D39).
 - **Estante** (D30, pela regra de `docs/capas/CAPAS.md`):
@@ -305,8 +310,9 @@ depois, o guia e as versões, como antes.
   sem paginação.
 - **Transição**: ao clicar num livro do painel, ele sai da pilha e vira o livro em pé do topo da
   página nova (View Transitions entre documentos). Entre duas categorias, o livro antigo volta para
-  a pilha enquanto o novo sobe. Só o livro se move; o resto da página troca na hora. Sem suporte do
-  navegador, ou com `prefers-reduced-motion`, a página só abre.
+  a pilha enquanto o novo sobe. O resto da página troca como em todo o site (D47): o cabeçalho fica
+  parado, a folha antiga sai e a nova chega subindo. Sem suporte do navegador, ou com
+  `prefers-reduced-motion`, a página só abre.
 
 ### 5.3 Artigo
 Referência: aba "Artigo" do protótipo.

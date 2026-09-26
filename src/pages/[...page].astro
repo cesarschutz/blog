@@ -14,6 +14,7 @@ import Gaveta from "../components/Gaveta.astro";
 import Destaque from "../components/Destaque.astro";
 import Recentes from "../components/Recentes.astro";
 import Marca from "../components/Marca.astro";
+import Abertura from "../components/Abertura.astro";
 import { TEXTOS } from "../data/site";
 import { montarLivros } from "../lib/estante";
 import { getResumos, type Resumo } from "../lib/posts";
@@ -48,10 +49,12 @@ const jsonLd = {
   titulo={primeira ? undefined : `Artigos — página ${page.currentPage}`}
   descricao={primeira ? undefined : `Artigos do blog de Cesar Schutz, do mais recente ao mais antigo: página ${page.currentPage} de ${page.lastPage}.`}
   jsonLd={primeira ? jsonLd : undefined}
+  abertura={primeira}
 >
   {
     primeira && (
       <>
+        <Abertura />
         {/*
           A abertura (D33) é uma folha: a identidade (a marca grande e a apresentação do blog atual) e a
           estante; a gaveta do livro aberto abre dentro da folha (D26). O post-it das frases saiu (D39).
@@ -112,7 +115,7 @@ const jsonLd = {
     align-items: center;
   }
 
-  /* A marca ocupa a largura da coluna (a identidade é um contêiner), até 52px. */
+  /* A marca (o livro grande e o nome em duas linhas, D47) acompanha a largura da coluna, até 66px. */
   .identidade {
     container-type: inline-size;
     min-width: 0;
@@ -120,7 +123,7 @@ const jsonLd = {
 
   .marca-abertura {
     margin: 0;
-    font-size: clamp(28px, calc(100cqi / 9.9), 52px);
+    font-size: clamp(34px, calc(100cqi / 6.6), 66px);
     line-height: 1;
   }
 

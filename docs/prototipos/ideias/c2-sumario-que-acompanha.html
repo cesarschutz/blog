@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>C2 · O sumário que acompanha</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&display=swap" rel="stylesheet">
+<style>
+/* Tokens (espelham src/styles/tokens.ts). Nenhuma cor fora daqui. */
+:root {
+  --paper: #F1F0EB; --paper-hi: #FFFFFE; --well: #F5F5F4; --ink: #1A2124; --ink-2: #57605E; --ink-3: #868D8A;
+  --rule: #E2E0D8; --acento: #2549B8; --sobre-acento: #FFFFFF; --marca: #2D4B46; --marca-letra: #F2EDE2; --veu: #0C0F11;
+  --livro-cor: #5f4662; /* Dados */
+  --branco-no-escuro: 0%;
+  --cor: var(--livro-cor);
+  --cor-ui: color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro));
+  --marca-texto: color-mix(in oklab, var(--cor) 32%, transparent);
+  --sombra-folha: 0 1px 2px rgb(40 38 30 / .04), 0 10px 28px -18px rgb(40 38 30 / .28);
+  --altura-topo: 60px;
+  --f-titulo: "Besley", Georgia, serif; --f-texto: "Literata", Georgia, serif;
+  --f-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-codigo: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #111618; --paper-hi: #1A2124; --well: #21282A; --ink: #E7E9E4; --ink-2: #A9B0AC; --ink-3: #7F8884;
+  --rule: #2A3336; --acento: #93AEFF; --sobre-acento: #0D1530; --veu: #050708; --branco-no-escuro: 42%;
+  --marca-texto: color-mix(in oklab, color-mix(in oklab, var(--cor), #fff 60%) 36%, transparent);
+  --sombra-folha: 0 12px 30px -18px rgb(0 0 0 / .8);
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #111618; --paper-hi: #1A2124; --well: #21282A; --ink: #E7E9E4; --ink-2: #A9B0AC; --ink-3: #7F8884;
+  --rule: #2A3336; --acento: #93AEFF; --sobre-acento: #0D1530; --veu: #050708; --branco-no-escuro: 42%;
+  --marca-texto: color-mix(in oklab, color-mix(in oklab, var(--cor), #fff 60%) 36%, transparent);
+  --sombra-folha: 0 12px 30px -18px rgb(0 0 0 / .8);
+  color-scheme: dark; }
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-padding-top: calc(var(--altura-topo) + 24px); }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.6 var(--f-texto); -webkit-font-smoothing: antialiased;
+  padding: calc(var(--altura-topo) + env(safe-area-inset-top, 0px) + 24px) clamp(16px, 3vw, 32px) 80px; }
+button { font: inherit; color: inherit; }
+a { color: var(--acento); }
+:focus-visible { outline: 2px solid var(--acento); outline-offset: 3px; border-radius: 4px; }
+
+/* Cabeçalho fixo com a caneta da leitura (D45) */
+.cabecalho { position: fixed; inset: 0 0 auto; z-index: 30; height: calc(var(--altura-topo) + env(safe-area-inset-top, 0px));
+  padding: env(safe-area-inset-top, 0px) clamp(16px, 3vw, 32px) 0; background: var(--paper); border-bottom: 1px solid var(--rule);
+  display: flex; align-items: center; gap: 20px; }
+.lugar { position: relative; flex: 1; min-width: 0; height: 44px; overflow: hidden; }
+.logo { position: absolute; inset: 0 auto 0 0; display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--ink); white-space: nowrap; }
+.logo svg { width: 22px; height: 28px; }
+.logo-capa { fill: var(--marca); }
+.logo-letra { fill: var(--marca-letra); font: 800 10px var(--f-titulo); }
+.logo b { font: 800 22px/1 var(--f-titulo); letter-spacing: -.01em; }
+.logo i { font: italic 15px var(--f-texto); color: var(--ink-2); }
+.nav { display: flex; gap: 22px; font: 15px var(--f-ui); color: var(--ink-2); }
+.tema { flex: none; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--rule); background: var(--paper-hi); cursor: pointer; display: grid; place-items: center; }
+.tema svg { width: 17px; height: 17px; fill: none; stroke: var(--ink); stroke-width: 1.6; }
+.barra-leitura { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; container-type: inline-size; pointer-events: none; }
+.barra-leitura .traco { position: absolute; inset: 0; background: var(--cor-ui); transform: scaleX(var(--lido, 0)); transform-origin: 0 50%; }
+.barra-leitura .caneta { position: absolute; top: -17.3px; left: -3.7px; width: 22px; height: 22px; overflow: visible; opacity: 0; transition: opacity .2s;
+  transform: translateX(calc(var(--lido, 0) * 100cqw)); }
+.escrevendo .caneta { opacity: 1; }
+.caneta .c-corpo { fill: var(--paper-hi); stroke: var(--ink); stroke-width: 1.3; stroke-linejoin: round; }
+.caneta .c-anel { fill: none; stroke: var(--ink); stroke-width: 1.3; }
+.caneta .c-ponta { fill: var(--cor-ui); stroke: var(--ink); stroke-width: 1.1; stroke-linejoin: round; }
+
+/* A seção atual no cabeçalho (celular e telas sem a lateral): ocupa o lugar do nome. */
+.secao-atual { position: absolute; inset: 0; display: none; width: 100%; padding: 0; border: 0; background: none; cursor: pointer; text-align: left; }
+.vaga { position: absolute; inset: 0; display: flex; align-items: center; gap: 8px; min-width: 0; visibility: hidden; }
+.vaga .num { flex: none; font: 500 12.5px/1 var(--f-ui); color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.vaga .nome { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 700 17px/1.2 var(--f-titulo); color: var(--ink); }
+.vaga svg { flex: none; width: 14px; height: 14px; fill: none; stroke: var(--ink-2); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+@media (max-width: 1099px) { .secao-atual { display: block; } .nav { display: none; } }
+
+.pagina { max-width: 1320px; margin: 0 auto; }
+.folha { background: var(--paper-hi); border: 1px solid var(--rule); border-radius: 14px; box-shadow: var(--sombra-folha); }
+
+/* Bloco do protótipo */
+.sobre { padding: 26px clamp(20px, 4vw, 44px) 24px; margin-bottom: 28px; font: 15px/1.55 var(--f-ui); color: var(--ink-2); }
+.sobre h1 { font: 800 clamp(26px, 3.4vw, 36px)/1.1 var(--f-titulo); color: var(--ink); margin: 0 0 6px; text-wrap: balance; }
+.sobre .resumo { font: 17px/1.55 var(--f-texto); color: var(--ink); margin: 0 0 18px; max-width: 72ch; }
+.sobre dl { display: grid; grid-template-columns: 11.5em 1fr; gap: 8px 20px; margin: 0; }
+.sobre dt { font-weight: 600; color: var(--ink); }
+.sobre dd { margin: 0; }
+.sobre code { font: 13.5px var(--f-codigo); background: var(--well); padding: 1px 5px; border-radius: 4px; }
+.controles { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.pilula { border: 1px solid var(--rule); background: var(--paper-hi); border-radius: 999px; padding: 7px 14px; font: 500 14px/1 var(--f-ui); cursor: pointer; color: var(--ink); text-decoration: none; }
+.pilula:hover { color: var(--acento); border-color: color-mix(in oklab, var(--acento) 40%, var(--rule)); }
+@media (max-width: 700px) { .sobre dl { grid-template-columns: 1fr; gap: 2px; } .sobre dd { margin-bottom: 10px; } }
+
+/* Grade do artigo: lateral a partir de 1100px (no site, 1300px) */
+.grade { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; align-items: start; }
+.grade > * { min-width: 0; }
+.lateral { display: none; }
+@media (min-width: 1100px) {
+  .grade { grid-template-columns: 250px minmax(0, 1fr); }
+  .lateral { display: block; position: sticky; top: calc(var(--altura-topo) + 20px); }
+}
+
+/* O sumário */
+.sumario { padding: 20px 18px 16px; }
+.sumario-titulo { font: 700 17px/1.2 var(--f-titulo); margin: 0 0 14px; }
+.lista-sumario { position: relative; }
+.lista-sumario ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; position: relative; z-index: 1; }
+.lista-sumario li { display: flex; gap: 10px; align-items: flex-start; }
+.lista-sumario a { color: var(--ink-2); text-decoration: none; font: 14px/1.4 var(--f-ui); padding: 2px 0; }
+.lista-sumario a:hover { color: var(--acento); }
+.lista-sumario li[aria-current="true"] a { color: var(--ink); font-weight: 600; }
+.rotulo { padding: 0 2px; background-image: linear-gradient(transparent 52%, var(--marca-texto) 52%, var(--marca-texto) 92%, transparent 92%);
+  background-repeat: no-repeat; background-size: 0% 100%; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.ponto { flex: none; width: 14px; height: 14px; margin-top: 4px; }
+.ponto svg { display: block; width: 14px; height: 14px; overflow: visible; }
+.bolinha { r: 3.4px; fill: var(--paper-hi); stroke: var(--ink-3); stroke-width: 1.2; transition: r .2s, fill .2s, stroke .2s; }
+.lista-sumario li[aria-current="true"] .bolinha { fill: var(--cor-ui); stroke: var(--cor-ui); }
+/* Seção deixada para trás: a bolinha vira uma clareira no fio e o visto é escrito dentro dela. */
+.lista-sumario li[data-visto]:not([aria-current]) .bolinha { r: 6.4px; fill: var(--paper-hi); stroke: transparent; }
+.visto { fill: none; stroke: var(--cor-ui); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 0 100; transition: opacity .2s; }
+.lista-sumario li[aria-current="true"] .visto { opacity: 0; }
+.sem-movimento :is(.bolinha, .visto) { transition: none; }
+.trilho { position: absolute; left: 0; top: 0; width: 14px; height: 100%; overflow: visible; pointer-events: none; }
+.trilho path { fill: none; stroke-linecap: round; }
+.trilho .base { stroke: var(--rule); stroke-width: 1.4; }
+.trilho .tinta { stroke: var(--cor-ui); stroke-width: 2; }
+.lido { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; font: 12.5px var(--f-codigo); color: var(--ink-2); }
+
+/* A folha do sumário no celular: desce do cabeçalho */
+.veu { position: fixed; inset: 0; z-index: 25; background: color-mix(in oklab, var(--veu) 32%, transparent); }
+.folha-sumario { position: fixed; z-index: 28; top: calc(var(--altura-topo) + env(safe-area-inset-top, 0px) + 8px); left: clamp(12px, 3vw, 24px); right: clamp(12px, 3vw, 24px);
+  max-height: calc(100dvh - var(--altura-topo) - 32px); overflow: auto; padding: 18px 18px 14px; scrollbar-width: thin; }
+.folha-sumario .lista-sumario a { font-size: 15.5px; padding: 5px 0; }
+.folha-sumario .ponto { margin-top: 8px; }
+@media (min-width: 1100px) { .folha-sumario, .veu { display: none !important; } }
+
+/* Artigo */
+.titulo-folha { padding: 34px clamp(20px, 4.4vw, 46px) 30px; margin-bottom: 24px; }
+.trilha { font: 14.5px var(--f-ui); color: var(--ink-2); display: flex; gap: 10px; align-items: center; margin-bottom: 14px; }
+.trilha .chip { display: inline-flex; align-items: center; gap: 7px; color: color-mix(in oklab, var(--cor-ui), var(--ink) 34%); font-weight: 500; }
+.trilha .chip::before { content: ""; width: 9px; height: 9px; border-radius: 2px; background: var(--cor-ui); }
+h2.titulo { font: 700 clamp(30px, 5vw, 50px)/1.06 var(--f-titulo); letter-spacing: -.014em; margin: 0; text-wrap: balance; }
+.sub { font: 400 clamp(21px, 2.4vw, 29px)/1.25 var(--f-texto); color: var(--ink-2); margin: 6px 0 0; }
+.corpo-artigo { padding: 40px clamp(20px, 4.4vw, 46px) 48px; font: 18.5px/1.72 var(--f-texto); font-variant-numeric: oldstyle-nums; }
+.corpo-artigo h3 { font: 700 30px/1.2 var(--f-titulo); margin: 44px 0 12px; text-wrap: balance; }
+.corpo-artigo h3:first-child { margin-top: 0; }
+.corpo-artigo p, .corpo-artigo li { max-width: 72ch; }
+.corpo-artigo p { margin: 0 0 18px; }
+.corpo-artigo code { font: 15px var(--f-codigo); background: var(--well); padding: 1px 5px; border-radius: 4px; }
+.corpo-artigo pre { font: 14.5px/1.6 var(--f-codigo); background: var(--well); border-radius: 10px; padding: 16px 18px; overflow-x: auto; margin: 0 0 20px; scrollbar-width: thin; }
+.corpo-artigo pre code { background: none; padding: 0; font-size: inherit; }
+.mt { background: linear-gradient(transparent 52%, var(--marca-texto) 52%, var(--marca-texto) 92%, transparent 92%); padding: 0 2px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.fontes li { margin-bottom: 8px; font-size: 17px; }
+@media (max-width: 860px) {
+  .corpo-artigo { background: none; border: 0; box-shadow: none; padding: 8px 0 0; }
+  .corpo-artigo h3 { font-size: 25px; }
+  .titulo-folha { padding: 24px 20px 22px; }
+}
+</style>
+</head>
+<body>
+<header class="cabecalho">
+  <div class="lugar">
+    <a class="logo" href="#" aria-label="Cesar Schutz, blog" data-logo>
+      <svg viewBox="0 0 22 28" aria-hidden="true"><rect x="1" y="1" width="20" height="26" rx="2" class="logo-capa"/><text x="5" y="14" class="logo-letra">c</text><text x="11" y="21" class="logo-letra">s</text></svg>
+      <b>Cesar Schutz</b> <i>blog</i>
+    </a>
+    <button class="secao-atual" type="button" data-abrir-sumario aria-expanded="false" aria-controls="folha-sumario" aria-label="Seções do artigo" tabindex="-1">
+      <span class="vaga" data-vaga><span class="num"></span><span class="nome"></span><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3.5 5.5 7 9l3.5-3.5"/></svg></span>
+      <span class="vaga" data-vaga><span class="num"></span><span class="nome"></span><svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3.5 5.5 7 9l3.5-3.5"/></svg></span>
+    </button>
+  </div>
+  <nav class="nav" aria-label="Seções do site"><span>Artigos</span><span>Categorias</span><span>Séries</span><span>Tags</span></nav>
+  <button class="tema" type="button" data-tema aria-label="Alternar tema claro e escuro"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg></button>
+  <div class="barra-leitura" data-barra aria-hidden="true">
+    <div class="traco"></div>
+    <svg class="caneta" viewBox="0 0 24 24"><path class="c-corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1.4 1.4 0 0 1 0 2l-9.2 9.2Z"/><path class="c-anel" d="m15.6 5.8 2.6 2.6"/><path class="c-ponta" d="M8.2 13.2 10.8 15.8 4 20Z"/></svg>
+  </div>
+</header>
+
+<div class="veu" data-veu hidden></div>
+<div class="folha folha-sumario" id="folha-sumario" data-folha-sumario hidden role="dialog" aria-label="Neste artigo">
+  <p class="sumario-titulo">Neste artigo</p>
+</div>
+
+<main class="pagina">
+  <section class="folha sobre" aria-labelledby="t-sobre">
+    <h1 id="t-sobre">C2 · O sumário que acompanha</h1>
+    <p class="resumo">O sumário vira o índice de um caderno de estudo: o fio da lateral é escrito à caneta conforme a leitura anda <em>dentro</em> da seção, a seção em que você está ganha o marca-texto, e a que ficou para trás recebe um visto. No celular, onde hoje o sumário some depois do topo, o nome da seção atual toma o lugar do nome do blog no cabeçalho e, tocado, abre o sumário numa folha.</p>
+    <dl>
+      <dt>Onde entraria</dt><dd><code>Sumario.astro</code> e <code>src/scripts/artigo.ts</code> (a função <code>marcarSumario</code> já calcula a seção atual e as lidas) e, no celular, o <code>Cabecalho</code> dos artigos.</dd>
+      <dt>Por que é melhor que hoje</dt><dd>Hoje o fio só muda de cor seção a seção e a barra “NN% lido” mede o artigo inteiro: num post de 52 minutos (Java 21), ela anda 1% a cada tela. O fio escrito por seção mostra quanto falta <em>desta</em> parte. No celular, depois do topo, não há como saber em que seção se está nem voltar ao sumário sem subir tudo.</dd>
+      <dt>GSAP</dt><dd><code>quickTo</code> no traço do fio (segue a rolagem com um leve atraso, sem tween novo a cada evento), DrawSVG no visto, tween de <code>backgroundSize</code> no marca-texto (a mesma técnica do caderno marcado, D41), <code>clipPath</code> na folha que desce e <code>gsap.matchMedia()</code>.</dd>
+      <dt>Referência</dt><dd><a href="https://demos.gsap.com/demo/lateral-pin-indicator">Lateral pin indicator</a> (o indicador que acompanha as seções) e <a href="https://demos.gsap.com/demo/directionally-aware-header">Directionally aware header</a> (o cabeçalho que muda com a direção da rolagem: aqui, a seção nova entra por baixo ao descer e por cima ao subir).</dd>
+      <dt>No celular</dt><dd>Sem a lateral: o nome da seção rola no cabeçalho (0,35s) só quando a seção muda, e o sumário abre numa folha que desce do cabeçalho, como o menu (D46), com os mesmos vistos.</dd>
+      <dt>Movimento reduzido</dt><dd>O fio acompanha a rolagem sem atraso, o visto e o marca-texto aparecem prontos e o nome da seção troca sem deslizar; a folha abre sem animação.</dd>
+    </dl>
+    <div class="controles">
+      <a class="pilula" href="?reduzido" data-link-reduzido>Ver com movimento reduzido</a>
+    </div>
+  </section>
+
+  <div class="grade">
+    <aside class="lateral">
+      <nav class="folha sumario" aria-label="Neste artigo">
+        <p class="sumario-titulo">Neste artigo</p>
+        <div class="lista-sumario" data-lista-sumario>
+          <svg class="trilho" aria-hidden="true"><path class="base"/><path class="tinta"/></svg>
+          <ol>
+            <li><span class="ponto" aria-hidden="true"><svg viewBox="0 0 14 14"><circle class="bolinha" cx="7" cy="7" r="3.4"/><path class="visto" d="M2.6 7.6 5.7 10.5 11.6 3.3"/></svg></span><a href="#s1"><span class="rotulo">O evento que some entre o banco e a fila</span></a></li>
+            <li><span class="ponto" aria-hidden="true"><svg viewBox="0 0 14 14"><circle class="bolinha" cx="7" cy="7" r="3.4"/><path class="visto" d="M2.6 7.6 5.7 10.5 11.6 3.3"/></svg></span><a href="#s2"><span class="rotulo">Por que gravar e publicar não é atômico</span></a></li>
+            <li><span class="ponto" aria-hidden="true"><svg viewBox="0 0 14 14"><circle class="bolinha" cx="7" cy="7" r="3.4"/><path class="visto" d="M2.6 7.6 5.7 10.5 11.6 3.3"/></svg></span><a href="#s3"><span class="rotulo">A tabela de outbox</span></a></li>
+            <li><span class="ponto" aria-hidden="true"><svg viewBox="0 0 14 14"><circle class="bolinha" cx="7" cy="7" r="3.4"/><path class="visto" d="M2.6 7.6 5.7 10.5 11.6 3.3"/></svg></span><a href="#s4"><span class="rotulo">Quem publica: polling ou CDC</span></a></li>
+            <li><span class="ponto" aria-hidden="true"><svg viewBox="0 0 14 14"><circle class="bolinha" cx="7" cy="7" r="3.4"/><path class="visto" d="M2.6 7.6 5.7 10.5 11.6 3.3"/></svg></span><a href="#s5"><span class="rotulo">Pelo menos uma vez, e o consumidor</span></a></li>
+            <li><span class="ponto" aria-hidden="true"><svg viewBox="0 0 14 14"><circle class="bolinha" cx="7" cy="7" r="3.4"/><path class="visto" d="M2.6 7.6 5.7 10.5 11.6 3.3"/></svg></span><a href="#s6"><span class="rotulo">Fontes</span></a></li>
+          </ol>
+        </div>
+        <div class="lido" aria-hidden="true"><span data-pct>0% lido</span><span data-falta>faltam 9 min</span></div>
+      </nav>
+    </aside>
+
+    <article data-artigo>
+      <div class="folha titulo-folha">
+        <div class="trilha"><span>Artigos</span><span aria-hidden="true">›</span><span class="chip">Dados</span></div>
+        <h2 class="titulo">Outbox transacional</h2>
+        <p class="sub">Como publicar um evento sem perder nem inventar nenhum</p>
+      </div>
+      <div class="folha corpo-artigo">
+        <h3 id="s1">O evento que some entre o banco e a fila</h3>
+        <p>O serviço de pedidos grava o pedido no PostgreSQL e, logo depois, publica <code>PedidoCriado</code> no Kafka para o estoque e o faturamento. Em teste, os dois passos sempre acontecem juntos. Em produção, basta o processo cair entre um e outro.</p>
+        <p>Se ele cai depois do commit e antes da publicação, <span class="mt">o pedido existe, mas ninguém mais fica sabendo dele</span>. O estoque não reserva, o faturamento não emite, e nada no log aponta o erro: do ponto de vista de cada serviço, tudo funcionou.</p>
+        <p>Inverter a ordem não resolve. Publicar primeiro e gravar depois troca o evento perdido por um evento sobre algo que nunca aconteceu, se a transação falhar por uma restrição ou um deadlock.</p>
+        <p>Esse é o problema da escrita dupla (<em>dual write</em>): duas escritas em dois sistemas que não compartilham transação. Qualquer ordem deixa uma janela em que um lado sabe e o outro não.</p>
+
+        <h3 id="s2">Por que gravar e publicar não é atômico</h3>
+        <p>A transação do banco garante que as linhas do pedido entram juntas ou não entram. Ela não enxerga o Kafka. O produtor do Kafka, por sua vez, tem transações próprias, que valem entre tópicos do Kafka e não incluem o PostgreSQL.</p>
+        <p>O caminho clássico para juntar os dois seria uma transação distribuída com XA e confirmação em duas fases. O Kafka não participa de XA, e mesmo onde ela existe o custo em latência e disponibilidade raramente compensa num fluxo de pedidos.</p>
+        <p>A saída prática é parar de escrever em dois lugares. <span class="mt">O evento vira uma linha no mesmo banco, gravada na mesma transação do pedido</span>, e outro processo se encarrega de levá-lo ao Kafka depois.</p>
+        <p>Assim, a pergunta “o evento vai sair?” passa a ter a mesma resposta que “o pedido foi gravado?”. Se a transação confirma, os dois existem; se desfaz, nenhum dos dois.</p>
+
+        <h3 id="s3">A tabela de outbox</h3>
+        <p>A tabela guarda o suficiente para publicar sem consultar mais nada: um identificador único do evento, o agregado a que ele se refere, o tipo, o conteúdo e o instante da gravação.</p>
+<pre><code>CREATE TABLE outbox (
+    id           uuid PRIMARY KEY,
+    agregado_id  text        NOT NULL,
+    tipo         text        NOT NULL,
+    conteudo     jsonb       NOT NULL,
+    criado_em    timestamptz NOT NULL DEFAULT now(),
+    publicado_em timestamptz
+);</code></pre>
+        <p>No código, a gravação do pedido e a do evento ficam no mesmo método transacional. Não há chamada ao Kafka ali dentro: <span class="mt">a transação termina no banco</span>.</p>
+        <p>O <code>id</code> do evento é gerado na aplicação, e não pelo banco, porque ele viaja junto com a mensagem e é o que o consumidor vai usar para reconhecer uma repetição.</p>
+        <p>O <code>agregado_id</code> vira a chave da mensagem no Kafka. Mensagens com a mesma chave vão para a mesma partição e mantêm a ordem entre si, que é a garantia que importa: os eventos de um mesmo pedido chegam na ordem em que aconteceram.</p>
+
+        <h3 id="s4">Quem publica: polling ou CDC</h3>
+        <p>O retransmissor (<em>relay</em>) lê a tabela e publica. A forma mais simples é consultar de tempos em tempos as linhas ainda não publicadas, em lotes, e marcar cada uma depois que o Kafka confirmar o recebimento.</p>
+        <p>Com mais de uma instância lendo a mesma tabela, <code>FOR UPDATE SKIP LOCKED</code> evita que duas peguem o mesmo lote: cada uma trava as linhas que leu e as outras pulam essas linhas em vez de esperar.</p>
+        <p>A outra forma é a captura de mudanças (CDC). O Debezium lê o log de escrita do PostgreSQL por replicação lógica e transforma cada inserção na outbox em mensagem, com a transformação <em>Outbox Event Router</em>. Não há consulta periódica, e a latência cai para o tempo de ler o log.</p>
+        <p>O polling custa consultas constantes, mas é só SQL. O CDC exige o Debezium, um slot de replicação para monitorar e alguém que saiba operar os dois. <span class="mt">A escolha é mais de operação do que de código.</span></p>
+
+        <h3 id="s5">Pelo menos uma vez, e o consumidor</h3>
+        <p>Nenhuma das duas formas entrega exatamente uma vez. O retransmissor pode publicar e cair antes de marcar a linha; ao voltar, publica de novo. O Kafka recebeu a mesma mensagem duas vezes, e isso é correto do ponto de vista da outbox.</p>
+        <p>A garantia da outbox é <strong>pelo menos uma vez</strong>. O que fecha o desenho é <span class="mt">o consumidor reconhecer o evento repetido pelo <code>id</code></span> e ignorar a segunda cópia, gravando os ids processados na mesma transação do efeito que o evento causa.</p>
+        <p>Por fim, a tabela cresce. Apagar as linhas publicadas depois de alguns dias, ou particionar por data e descartar partições antigas, mantém o polling rápido e o disco sob controle.</p>
+
+        <h3 id="s6">Fontes</h3>
+        <ul class="fontes">
+          <li>Chris Richardson, microservices.io — <a href="https://microservices.io/patterns/data/transactional-outbox.html">Pattern: Transactional outbox</a></li>
+          <li>Debezium — <a href="https://debezium.io/documentation/reference/stable/transformations/outbox-event-router.html">Outbox Event Router</a></li>
+          <li>PostgreSQL 17 — <a href="https://www.postgresql.org/docs/17/sql-select.html#SQL-FOR-UPDATE-SHARE">The Locking Clause (SKIP LOCKED)</a></li>
+          <li>Apache Kafka — <a href="https://kafka.apache.org/documentation/#semantics">Message Delivery Semantics</a></li>
+        </ul>
+      </div>
+    </article>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/DrawSVGPlugin.min.js"></script>
+<script>
+document.querySelector("[data-tema]").addEventListener("click", () => {
+  const raiz = document.documentElement;
+  const escuro = raiz.dataset.theme ? raiz.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+  raiz.dataset.theme = escuro ? "light" : "dark";
+});
+
+const forcaReduzido = new URLSearchParams(location.search).has("reduzido");
+const reduzidoMq = matchMedia("(prefers-reduced-motion: reduce)");
+const reduzido = () => forcaReduzido || reduzidoMq.matches;
+const lateralMq = matchMedia("(min-width: 1100px)");
+if (reduzido()) document.documentElement.classList.add("sem-movimento");
+if (forcaReduzido) { const l = document.querySelector("[data-link-reduzido]"); l.textContent = "Ver com movimento"; l.href = location.pathname; }
+gsap.registerPlugin(DrawSVGPlugin);
+
+// ---------- as listas: a da lateral e a cópia da folha do celular ----------
+const listaLateral = document.querySelector("[data-lista-sumario]");
+const folha = document.querySelector("[data-folha-sumario]");
+const copia = listaLateral.cloneNode(true);
+copia.querySelector(".trilho").remove(); // na folha do celular, só os pontos e os vistos
+folha.append(copia);
+const listas = [listaLateral, copia];
+
+const artigo = document.querySelector("[data-artigo]");
+const barra = document.querySelector("[data-barra]");
+const pct = document.querySelector("[data-pct]");
+const falta = document.querySelector("[data-falta]");
+const titulos = [...artigo.querySelectorAll("h3[id]")];
+const nomes = titulos.map((t) => t.textContent.trim());
+const LINHA = 140; // a mesma linha do site: a seção vira atual quando o título passa de 140px
+
+// ---------- o fio escrito à caneta (só na lateral) ----------
+const trilho = listaLateral.querySelector(".trilho");
+const base = trilho.querySelector(".base");
+const tinta = trilho.querySelector(".tinta");
+let pontosY = [];
+let tabelaComprimento = [];
+let comprimento = 0;
+let moverTinta;
+
+function desenharTrilho() {
+  const caixa = listaLateral.getBoundingClientRect();
+  pontosY = [...listaLateral.querySelectorAll(".ponto")].map((p) => {
+    const r = p.getBoundingClientRect();
+    return r.top - caixa.top + r.height / 2;
+  });
+  const y0 = pontosY[0], y1 = pontosY.at(-1);
+  // Um traço quase reto, com o tremor pequeno de uma linha feita à mão (semente fixa: sempre o mesmo).
+  let semente = 7;
+  const acaso = () => ((semente = (semente * 16807) % 2147483647) / 2147483647 - 0.5);
+  let d = `M7 ${y0.toFixed(1)}`;
+  for (let y = y0 + 22; y < y1; y += 22) d += ` L${(7 + acaso() * 1.3).toFixed(2)} ${y.toFixed(1)}`;
+  d += ` L7 ${y1.toFixed(1)}`;
+  base.setAttribute("d", d);
+  tinta.setAttribute("d", d);
+  comprimento = tinta.getTotalLength();
+  tabelaComprimento = [];
+  for (let l = 0; l <= comprimento; l += 2) tabelaComprimento.push([tinta.getPointAtLength(l).y, l]);
+  gsap.set(tinta, { strokeDasharray: comprimento, strokeDashoffset: comprimento });
+  moverTinta = gsap.quickTo(tinta, "strokeDashoffset", { duration: reduzido() ? 0 : 0.35, ease: "power2.out" });
+}
+function comprimentoAte(y) {
+  let r = 0;
+  for (const [py, l] of tabelaComprimento) { if (py <= y) r = l; else break; }
+  return r;
+}
+
+// ---------- estado da leitura ----------
+let atual = -2; // -1: antes da primeira seção
+const vistos = new Set();
+
+function estado() {
+  const topos = titulos.map((t) => t.getBoundingClientRect().top);
+  let i = -1;
+  topos.forEach((t, k) => { if (t < LINHA) i = k; });
+  // Quanto da seção atual já foi lido (0 a 1): do título dela passar da linha até o próximo passar.
+  const fimArtigo = artigo.getBoundingClientRect().bottom - innerHeight;
+  let f = 0;
+  if (i >= 0) {
+    const ini = topos[i] - LINHA;
+    const fim = i + 1 < topos.length ? topos[i + 1] - LINHA : fimArtigo;
+    f = Math.min(1, Math.max(0, -ini / Math.max(fim - ini, 1)));
+  }
+  return { i, f };
+}
+
+function aoRolar() {
+  const c = artigo.getBoundingClientRect();
+  const lido = Math.min(1, Math.max(0, -c.top / Math.max(c.height - innerHeight, 1)));
+  barra.style.setProperty("--lido", lido.toFixed(4));
+  barra.classList.toggle("escrevendo", lido > 0.002);
+  pct.textContent = `${Math.round(lido * 100)}% lido`;
+  falta.textContent = lido > 0.995 ? "chegou ao fim" : `faltam ${Math.max(1, Math.ceil(9 * (1 - lido)))} min`;
+
+  const { i, f } = estado();
+  if (moverTinta && pontosY.length) {
+    let y = pontosY[0];
+    if (i >= 0) y = i + 1 < pontosY.length ? pontosY[i] + f * (pontosY[i + 1] - pontosY[i]) : pontosY[i];
+    moverTinta(comprimento - comprimentoAte(y));
+  }
+  if (i !== atual) mudarSecao(atual, i);
+}
+
+function mudarSecao(de, para) {
+  atual = para;
+  const rapido = reduzido();
+  for (const lista of listas) {
+    const itens = [...lista.querySelectorAll("li")];
+    itens.forEach((li, k) => {
+      const rotulo = li.querySelector(".rotulo");
+      if (k === para) {
+        li.setAttribute("aria-current", "true");
+        gsap.fromTo(rotulo, { backgroundSize: "0% 100%" }, { backgroundSize: "100% 100%", duration: rapido ? 0 : 0.55, ease: "power2.inOut", overwrite: true });
+      } else if (li.hasAttribute("aria-current")) {
+        li.removeAttribute("aria-current");
+        gsap.to(rotulo, { backgroundSize: "0% 100%", duration: rapido ? 0 : 0.2, ease: "power1.in", overwrite: true });
+      }
+    });
+  }
+  // O visto: uma vez por seção deixada para trás (descendo), e fica, como as marcações do caderno.
+  for (let k = 0; k < para; k++) vistos.add(k);
+  for (const k of vistos) {
+    for (const lista of listas) {
+      const li = lista.querySelectorAll("li")[k];
+      if (li.dataset.visto) continue;
+      li.dataset.visto = "1";
+      const visto = li.querySelector(".visto");
+      if (rapido) { gsap.set(visto, { drawSVG: "100%" }); continue; }
+      gsap.fromTo(visto, { drawSVG: "0%" }, { drawSVG: "100%", duration: 0.42, delay: 0.15, ease: "power1.inOut" });
+    }
+  }
+  trocarCabecalho(de, para, rapido);
+}
+
+// ---------- a seção no cabeçalho (sem a lateral) ----------
+const logo = document.querySelector("[data-logo]");
+const botao = document.querySelector("[data-abrir-sumario]");
+const vagas = [...document.querySelectorAll("[data-vaga]")];
+let vagaAtiva = 0;
+
+function trocarCabecalho(de, para, rapido) {
+  if (lateralMq.matches || de === -2 && para === -1) {
+    gsap.set(logo, { yPercent: 0, autoAlpha: 1 });
+    gsap.set(vagas, { autoAlpha: 0 });
+    if (lateralMq.matches) return;
+  }
+  const desce = para > de ? 1 : -1;
+  const d = rapido || de === -2 ? 0 : 0.35;
+  const sai = de >= 0 ? vagas[vagaAtiva] : logo;
+  let entra = logo;
+  if (para >= 0) {
+    vagaAtiva = de >= 0 ? 1 - vagaAtiva : vagaAtiva;
+    entra = vagas[vagaAtiva];
+    entra.querySelector(".num").textContent = `${para + 1} de ${nomes.length}`;
+    entra.querySelector(".nome").textContent = nomes[para];
+  }
+  botao.tabIndex = para >= 0 ? 0 : -1;
+  if (sai === entra) return;
+  gsap.to(sai, { yPercent: -100 * desce, autoAlpha: 0, duration: d, ease: "power2.in", overwrite: true });
+  gsap.fromTo(entra, { yPercent: 100 * desce, autoAlpha: 0 }, { yPercent: 0, autoAlpha: 1, duration: d, delay: d ? 0.08 : 0, ease: "power3.out", overwrite: true });
+}
+
+// ---------- a folha do sumário no celular ----------
+const veu = document.querySelector("[data-veu]");
+let aberta = false;
+function abrir() {
+  aberta = true;
+  folha.hidden = false; veu.hidden = false;
+  botao.setAttribute("aria-expanded", "true");
+  const itens = folha.querySelectorAll("li");
+  if (reduzido()) { folha.querySelector("a")?.focus(); return; }
+  gsap.timeline()
+    .fromTo(folha, { clipPath: "inset(0 0 100% 0 round 14px)" }, { clipPath: "inset(0 0 0% 0 round 14px)", duration: 0.46, ease: "power3.out" })
+    .fromTo(veu, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0)
+    .fromTo(itens, { y: 8, opacity: 0 }, { y: 0, opacity: 1, duration: 0.3, stagger: 0.05, ease: "power2.out" }, 0.12);
+  folha.querySelector("a")?.focus({ preventScroll: true });
+}
+function fechar(devolverFoco = true) {
+  if (!aberta) return;
+  aberta = false;
+  botao.setAttribute("aria-expanded", "false");
+  const fim = () => { folha.hidden = true; veu.hidden = true; if (devolverFoco) botao.focus({ preventScroll: true }); };
+  if (reduzido()) return fim();
+  gsap.timeline({ onComplete: fim })
+    .to(folha, { clipPath: "inset(0 0 100% 0 round 14px)", duration: 0.34, ease: "power2.in" })
+    .to(veu, { opacity: 0, duration: 0.25 }, 0);
+}
+botao.addEventListener("click", () => (aberta ? fechar() : abrir()));
+veu.addEventListener("click", () => fechar());
+addEventListener("keydown", (e) => { if (e.key === "Escape") fechar(); });
+folha.addEventListener("click", (e) => { if (e.target.closest("a")) fechar(false); });
+
+// ---------- ligar ----------
+let agendado = false;
+addEventListener("scroll", () => { if (!agendado) { agendado = true; requestAnimationFrame(() => { agendado = false; aoRolar(); }); } }, { passive: true });
+addEventListener("resize", () => { if (lateralMq.matches) desenharTrilho(); aoRolar(); });
+lateralMq.addEventListener("change", () => { atual = -2; aoRolar(); });
+document.fonts.ready.then(() => { desenharTrilho(); aoRolar(); });
+desenharTrilho();
+aoRolar();
+</script>
+</body>
+</html>

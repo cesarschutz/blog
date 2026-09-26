@@ -4,7 +4,8 @@
  * o livro sai da prateleira (o lugar dele fica vazio), sobe e vem para a gaveta girando da lombada até
  * os 38° (fechado, com a lombada bem à vista). Ao lado aparece o sumário, como antes da D40: "Neste
  * livro" (ou "Ordem de leitura", nas séries) e os artigos por ano, com "Ver o livro" (a página do
- * livro) e "Fechar livro". Clicar no livro, ou na lupa, abre o livro ampliado (D33, D43). "Fechar
+ * livro) e "Fechar livro". A gaveta abre crescendo, e o que está embaixo desce junto; fecha recolhendo,
+ * enquanto o livro volta; na troca de livro, vai da altura de um para a do outro (D47). Clicar no livro, ou na lupa, abre o livro ampliado (D33, D43). "Fechar
  * livro", Esc ou a mesma lombada fazem o caminho de volta, 1,5× mais rápido, e o livro volta ao
  * lugar; outro livro fecha o atual e abre o novo. Com movimento reduzido, tudo direto no estado final.
  *
@@ -136,6 +137,20 @@ function linhas(l: Livro): Linha[] {
 
     type Aberto = { id: string; lombada: HTMLElement; tl: gsap.core.Timeline };
     let aberto: Aberto | null = null;
+    // A gaveta que cresce e recolhe (D47): altura, margem e respiros vão de zero ao natural.
+    const FECHADA = { height: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 };
+    const MEDIDAS = "height,marginTop,paddingTop,paddingBottom";
+    const cheia = () => {
+      const cs = getComputedStyle(gaveta!);
+      return {
+        height: gaveta!.offsetHeight,
+        marginTop: parseFloat(cs.marginTop),
+        paddingTop: parseFloat(cs.paddingTop),
+        paddingBottom: parseFloat(cs.paddingBottom),
+      };
+    };
+    // Na troca de livro, a altura do que estava aberto: a gaveta vai dela para a do novo.
+    let alturaDaTroca = 0;
     let ocupado = false;
     let pendente: { id: string; foco: boolean } | null = null;
 
@@ -162,9 +177,18 @@ function linhas(l: Livro): Linha[] {
         onComplete: () => foco && no.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true }),
       });
       lombada.classList.add("retirado");
+      const troca = alturaDaTroca;
+      alturaDaTroca = 0;
       if (movimentoReduzido.matches) {
         tl.set(livro, { rotationY: GIRO });
       } else {
+        // A gaveta cresce (do zero, ou da altura do livro anterior) enquanto o livro sobe e vem.
+        const fim = cheia();
+        gsap.fromTo(
+          gaveta!,
+          troca ? { ...fim, height: troca } : FECHADA,
+          { ...fim, duration: troca ? 0.55 : 0.8, ease: "power3.inOut", overwrite: true, clearProps: MEDIDAS },
+        );
         gsap.set(voo, { x: dx, y: dy, scale: s0, transformOrigin: "50% 50%", zIndex: 6 });
         gsap.set(livro, { rotationY: 90 });
         gsap.set([sumario, lupa], { opacity: 0 });
@@ -193,6 +217,7 @@ function linhas(l: Livro): Linha[] {
       const terminar = () => {
         gaveta!.replaceChildren();
         gaveta!.hidden = true;
+        if (!depois) gsapNoAr?.set(gaveta!, { clearProps: MEDIDAS });
         lombada.classList.remove("retirado");
         lombada.setAttribute("aria-expanded", "false");
         ocupado = false;
@@ -205,15 +230,23 @@ function linhas(l: Livro): Linha[] {
           escolher(p.id, p.foco);
         }
       };
-      // Sem movimento, fecha na hora; com, faz o caminho de volta 1,5× mais rápido.
-      if (movimentoReduzido.matches) terminar();
-      else tl.eventCallback("onReverseComplete", terminar).timeScale(1.5).reverse();
+      // Sem movimento, fecha na hora; com, faz o caminho de volta 1,5× mais rápido. Fechando de vez, a
+      // gaveta recolhe enquanto o livro volta; trocando de livro, fica na altura de agora até o novo.
+      if (movimentoReduzido.matches) return terminar();
+      if (depois) {
+        alturaDaTroca = gaveta!.offsetHeight;
+        gsapNoAr?.set(gaveta!, { height: alturaDaTroca });
+      } else {
+        gsapNoAr?.to(gaveta!, { ...FECHADA, duration: 0.7, delay: 0.2, ease: "power3.inOut", overwrite: true });
+      }
+      tl.eventCallback("onReverseComplete", terminar).timeScale(1.5).reverse();
     }
 
+    let gsapNoAr: GSAP | null = null;
     async function escolher(id: string, foco: boolean) {
       if (ocupado) return void (pendente = { id, foco });
       if (aberto?.id === id) return fechar(undefined, foco);
-      const gsap = await carregarGsap();
+      const gsap = (gsapNoAr = await carregarGsap());
       fechar(() => {
         ocupado = true;
         abrir(gsap, id, foco).then(() => {

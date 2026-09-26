@@ -1,10 +1,11 @@
 /**
  * A estante viva (D40), com GSAP sob demanda:
  *
- * - ideia 1, a estante responde ao mouse (home e estante de filtro): o livro sob o mouse sobe 16px;
- *   os vizinhos até 120px sobem até 5px e inclinam até 2,4° para longe do mouse; ao sair, tudo volta
- *   com um balanço. Embaixo, a legenda mostra o nome e a contagem. O foco do teclado faz o mesmo.
- *   Só com mouse; no toque, a lombada abre o livro direto (Gaveta.astro).
+ * - ideia 1, a estante responde ao mouse (home e estante de filtro): o livro sob o mouse desliza 16px
+ *   para cima, como puxado pela ponta; os dois vizinhos, encostados nele, sobem só 2px, pelo atrito,
+ *   e um pouco depois (D47: nada inclina, porque o topo de um livro inclinado entrava no vizinho). Ao
+ *   sair, tudo desce e assenta com um quique curto. Embaixo, a legenda mostra o nome e a contagem. O
+ *   foco do teclado faz o mesmo. Só com mouse; no toque, a lombada abre o livro direto (Gaveta.astro).
  *
  * - ideia 2, a estante em repouso (só a home, `emRepouso`): depois de 3s sem mouse, toque, tecla ou
  *   rolagem, com a estante ao menos metade visível e a aba ativa, a cada 4 a 7s um livro sorteado dá
@@ -18,9 +19,7 @@
 import { adiantar, carregarGsap, movimentoReduzido, temMouse, type GSAP } from "./gsap";
 
 const SOBE = 16;
-const ALCANCE = 120;
-const VIZINHO_SOBE = 5;
-const VIZINHO_INCLINA = 2.4;
+const VIZINHO_SOBE = 2;
 
 /** Onde a lombada descansa: inclinada (a última da coleção, na home) e escolhida (no filtro). */
 function repouso(el: HTMLElement) {
@@ -44,7 +43,7 @@ export function estanteViva(raiz: HTMLElement, { emRepouso = false } = {}) {
 
   let gsap: GSAP | null = null;
   let qy: ((v: number) => void)[] = [];
-  let qr: ((v: number) => void)[] = [];
+  let qv: ((v: number) => void)[] = [];
   let sobAtual: HTMLElement | null = null;
 
   const preparar = (g: GSAP) => {
@@ -70,23 +69,25 @@ export function estanteViva(raiz: HTMLElement, { emRepouso = false } = {}) {
   function refazerQuick() {
     if (!gsap || !quickVelho) return;
     quickVelho = false;
-    qy = lombadas.map((el) => gsap!.quickTo(el, "y", { duration: 0.45, ease: "power3.out" }));
-    qr = lombadas.map((el) => gsap!.quickTo(el, "rotation", { duration: 0.6, ease: "power3.out" }));
+    qy = lombadas.map((el) => gsap!.quickTo(el, "y", { duration: 0.42, ease: "power3.out" }));
+    // Os vizinhos vão atrás, mais devagar: o atrito leva um instante para puxar.
+    qv = lombadas.map((el) => gsap!.quickTo(el, "y", { duration: 0.7, ease: "power2.out" }));
   }
 
   function mover(x: number) {
     if (!gsap) return;
     refazerQuick();
-    let sob: HTMLElement | null = null;
-    lombadas.forEach((el, i) => {
+    const i = lombadas.findIndex((el) => {
       const caixa = el.getBoundingClientRect();
-      const centro = caixa.left + caixa.width / 2;
-      const dentro = x >= caixa.left - 1.5 && x <= caixa.right + 1.5;
+      return x >= caixa.left - 3 && x <= caixa.right + 3;
+    });
+    const sob = i >= 0 ? lombadas[i] : null;
+    lombadas.forEach((el, n) => {
       const r = repouso(el);
-      const forca = Math.max(0, 1 - Math.abs(x - centro) / ALCANCE);
-      if (dentro) sob = el;
-      qy[i](r.y + (dentro ? -SOBE : -VIZINHO_SOBE * forca * forca));
-      qr[i](dentro ? r.rotation * 0.4 : r.rotation + (centro < x ? -1 : 1) * VIZINHO_INCLINA * forca);
+      // Só sobe, na vertical; o inclinado continua apoiado no aparador, no mesmo ângulo.
+      if (n === i) qy[n](r.y - SOBE);
+      else if (i >= 0 && Math.abs(n - i) === 1) qv[n](r.y - VIZINHO_SOBE);
+      else qv[n](r.y);
     });
     if (sob !== sobAtual) {
       sobAtual = sob;
@@ -98,7 +99,8 @@ export function estanteViva(raiz: HTMLElement, { emRepouso = false } = {}) {
     sobAtual = null;
     mostrarLegenda(null);
     if (!gsap) return;
-    for (const el of lombadas) gsap.to(el, { ...repouso(el), duration: 1.1, ease: "elastic.out(1, 0.45)", overwrite: true });
+    // Desce e assenta: um quique curto, de livro que bate na prateleira (sem balançar de lado).
+    for (const el of lombadas) gsap.to(el, { ...repouso(el), duration: 0.55, ease: "bounce.out", overwrite: true });
     quickVelho = true;
   }
 
@@ -116,8 +118,8 @@ export function estanteViva(raiz: HTMLElement, { emRepouso = false } = {}) {
       const el = lombadas[Math.floor(Math.random() * lombadas.length)];
       const r = repouso(el);
       g.timeline()
-        .to(el, { y: r.y - 10, rotation: r.rotation - 1.2, duration: 0.7, ease: "power2.out" })
-        .to(el, { y: r.y, rotation: r.rotation, duration: 1.1, ease: "elastic.out(1, 0.5)" }, "+=0.6");
+        .to(el, { y: r.y - 10, duration: 0.7, ease: "power2.out" })
+        .to(el, { y: r.y, duration: 0.55, ease: "bounce.out" }, "+=0.6");
       quickVelho = true;
       espiada = g.delayedCall(4 + Math.random() * 3, espiar);
     };
