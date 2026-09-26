@@ -148,7 +148,12 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
 
 ## Próximos passos
 
-0. Publicar a D39, a D40 e a D41: o Cesar dá o push quando revisar. Os ajustes pedidos depois da D40 já
+0. Publicar a D42 a D45 (tema em círculo, Lista / Cards, gaveta com o livro que sai da estante,
+   ajustes da home e caneta da leitura): commitadas pelo Cesar em 26/09/2026, na `main`, sem push.
+   Pendente de resposta: as cores da capa na gaveta (a referência dele tinha a cor do livro em cima;
+   hoje, pela D39, o papel fica em cima) e se o título em duas partes vale também na gaveta e no
+   "anterior / próximo".
+0.0. Publicar a D39, a D40 e a D41: o Cesar dá o push quando revisar. Os ajustes pedidos depois da D40 já
    entraram: "Próximas ▸" virando a folha, capa entreaberta a -40° e a pilha mais grossa.
 0.1. Publicar a auditoria de acabamento (D37, D38): o Cesar dá o push quando revisar. Fora dela ficou
    o lote 7 (topo do post e miniatura da lista mais compactos no celular), que mexe na densidade da
