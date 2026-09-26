@@ -8,7 +8,9 @@
  * página dele. Embaixo, a contagem, o seletor Lista / Cards e os artigos no formato da home (D27),
  * agrupados por ano quando `porAno` (os ids #y2026 vêm do blog atual). Ao filtrar, a lista sai
  * esmaecendo e os artigos escolhidos chegam em sequência, subindo (D47); com movimento reduzido, troca
- * direto.
+ * direto. O total e o de cada ano rodam como um contador já no clique, cada algarismo numa fita, na
+ * direção certa (D49, protótipo E2; src/scripts/contador.ts): quem olha para a estante vê o número
+ * mudar. O leitor de tela ouve só o valor final ("6 artigos em Dados").
  */
 import Cartao from "./Cartao.astro";
 import Estante from "./Estante.astro";
@@ -30,7 +32,7 @@ const { posts, titulo, descricao, trilha, porAno = false } = Astro.props;
 const livros = (await montarLivros())
   .map((l) => ({ ...l, posts: posts.filter((p) => p.livro === l.id) }))
   .filter((l) => l.posts.length > 0);
-const plural = (n: number) => `${n} ${n === 1 ? "artigo" : "artigos"}`;
+const palavra = (n: number) => (n === 1 ? "artigo" : "artigos");
 const grupos = porAno
   ? [...new Set(posts.map((p) => p.publicado.getUTCFullYear()))].map((ano) => ({
       ano,
@@ -62,7 +64,9 @@ const nivelDoItem = porAno ? "h3" : "h2";
 
 <section class="lista-filtrada" aria-label="Artigos" data-lista-filtrada>
   <div class="barra-lista">
-    <p class="status" aria-live="polite" data-status data-total={posts.length}>{plural(posts.length)}</p>
+    <p class="status" data-status data-total={posts.length}>
+      <span data-numero>{posts.length}</span> <span data-resto>{palavra(posts.length)}</span>
+    </p>
     <button type="button" class="pilula limpar" data-limpar hidden>Limpar filtro</button>
     <SeletorModo />
   </div>
@@ -72,7 +76,9 @@ const nivelDoItem = porAno ? "h3" : "h2";
         {g.ano && (
           <h2 id={`y${g.ano}`} class="ano">
             <span>{g.ano}</span>
-            <small data-contagem>{plural(g.posts.length)}</small>
+            <small data-contagem>
+              <span data-numero>{g.posts.length}</span> <span data-resto>{palavra(g.posts.length)}</span>
+            </small>
           </h2>
         )}
         <ol class="lista-modo lista-artigos folha">
@@ -97,6 +103,7 @@ const nivelDoItem = porAno ? "h3" : "h2";
 </section>
 
 <script>
+  import { criarContador, mudarContador } from "../scripts/contador";
   import { carregarGsap, movimentoReduzido } from "../scripts/gsap";
 
   const lista = document.querySelector<HTMLElement>("[data-lista-filtrada]");
@@ -109,21 +116,51 @@ const nivelDoItem = porAno ? "h3" : "h2";
     const status = lista.querySelector<HTMLElement>("[data-status]")!;
     const limpar = lista.querySelector<HTMLButtonElement>("[data-limpar]")!;
     const total = Number(status.dataset.total);
-    const plural = (n: number) => `${n} ${n === 1 ? "artigo" : "artigos"}`;
+    const palavra = (n: number) => (n === 1 ? "artigo" : "artigos");
     const nome = (b: HTMLButtonElement) => b.dataset.nome!;
     let atual = "";
+    // Para onde o filtro vai (os cliques entram na fila; o número já roda no clique).
+    let destino = "";
+
+    // Os números viram contadores (D49): o total e o de cada ano. O status só vira região viva depois,
+    // para a montagem não ser anunciada.
+    const numero = (el: Element) => el.querySelector<HTMLElement>("[data-numero]")!;
+    const resto = (el: Element) => el.querySelector<HTMLElement>("[data-resto]")!;
+    const contagens = grupos.map((g) => g.querySelector<HTMLElement>("[data-contagem]"));
+    criarContador(numero(status), total);
+    for (const c of contagens) if (c) criarContador(numero(c), Number(numero(c).textContent));
+    status.setAttribute("aria-live", "polite");
+    status.setAttribute("aria-atomic", "true");
+
+    function contar(id: string) {
+      const conta = (raiz: ParentNode) =>
+        [...raiz.querySelectorAll<HTMLElement>(".lista-modo > [data-livro]")].filter((i) => !id || i.dataset.livro === id).length;
+      grupos.forEach((grupo, i) => {
+        const c = contagens[i];
+        if (!c) return;
+        const n = conta(grupo);
+        mudarContador(numero(c), n);
+        resto(c).textContent = palavra(n);
+      });
+      const escolhido = livros.find((l) => l.dataset.filtro === id);
+      const n = escolhido ? conta(lista!) : total;
+      mudarContador(numero(status), n);
+      resto(status).textContent = escolhido ? `${palavra(n)} em ${nome(escolhido)}` : palavra(n);
+    }
 
     // A troca animada (D47): a lista esmaece, o filtro muda e os primeiros artigos à vista chegam subindo.
     const blocos = [...lista.querySelectorAll<HTMLElement>("[data-grupo], .lista-modo, .cartoes-modo")].filter(
       (b) => !b.parentElement?.closest("[data-grupo], .lista-modo, .cartoes-modo"),
     );
     let trocando: Promise<void> = Promise.resolve();
-    // O livro clicado de novo tira o filtro; a decisão fica na fila, para cliques rápidos não se perderem.
+    // O livro clicado de novo tira o filtro. O número roda já no clique; a lista troca na fila, para
+    // cliques rápidos não se perderem.
     function filtrar(alvo: string) {
-      const escolha = () => (alvo && atual === alvo ? "" : alvo);
-      if (movimentoReduzido.matches) return aplicar(escolha());
+      destino = alvo && destino === alvo ? "" : alvo;
+      const id = destino;
+      contar(id);
+      if (movimentoReduzido.matches) return aplicar(id);
       trocando = trocando.then(async () => {
-        const id = escolha();
         const gsap = await carregarGsap();
         await gsap.to(blocos, { opacity: 0, y: 6, duration: 0.18, ease: "power2.in" }).then();
         aplicar(id);
@@ -136,17 +173,11 @@ const nivelDoItem = porAno ? "h3" : "h2";
     function aplicar(id: string) {
       atual = id;
       for (const item of itens()) item.hidden = Boolean(id) && item.dataset.livro !== id;
-      for (const grupo of grupos) {
-        const n = grupo.querySelectorAll(".lista-modo > [data-livro]:not([hidden])").length;
-        grupo.hidden = n === 0;
-        const contagem = grupo.querySelector("[data-contagem]");
-        if (contagem) contagem.textContent = plural(n);
-      }
+      for (const grupo of grupos) grupo.hidden = !grupo.querySelector(".lista-modo > [data-livro]:not([hidden])");
       for (const livro of livros) livro.setAttribute("aria-pressed", String(livro.dataset.filtro === id));
       estante!.classList.toggle("filtrando", Boolean(id));
+      contar(id);
       const escolhido = livros.find((l) => l.dataset.filtro === id);
-      const n = itens().filter((i) => !i.hidden && i.matches(".lista-modo > *")).length;
-      status.textContent = escolhido ? `${plural(n)} em ${nome(escolhido)}` : plural(total);
       limpar.hidden = !escolhido;
       const endereco = new URL(location.href);
       if (escolhido) endereco.searchParams.set("livro", id.replace(/^(livro|serie)-/, ""));
@@ -162,7 +193,7 @@ const nivelDoItem = porAno ? "h3" : "h2";
 
     const pedido = new URL(location.href).searchParams.get("livro");
     const inicial = pedido && livros.find((l) => l.dataset.filtro!.replace(/^(livro|serie)-/, "") === pedido);
-    if (inicial) aplicar(inicial.dataset.filtro!);
+    if (inicial) aplicar((destino = inicial.dataset.filtro!));
   }
 </script>
 

@@ -7,11 +7,17 @@
  * na página (script logo depois dele) se o modo já for Cards, ou aqui, na primeira troca para Cards.
  * A troca esmaece a forma atual e traz a nova com um deslize de 8px (D42, Web Animations; direta com
  * movimento reduzido). Sem JS, fica a lista e o seletor some.
+ *
+ * A pílula que escorre (D49, protótipo E2): o azul do botão ativo é uma tinta só, atrás dos dois
+ * botões, que vai de um para o outro como uma gota: a borda da frente corre primeiro (0,2s) e a de
+ * trás alcança (0,28s); o texto troca de cor no meio do caminho. O script só mede e diz para que lado
+ * ela vai (`data-rumo`); quem anima é a transição de CSS. Com movimento reduzido, pula direto.
  */
 import { ICONES } from "../lib/icones";
 ---
 
 <div class="modo" role="group" aria-label="Modo de exibição" data-modo hidden>
+  <span class="tinta" aria-hidden="true"></span>
   <button type="button" data-valor="list"
     ><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.lista} />Lista</button
   >
@@ -26,9 +32,27 @@ import { ICONES } from "../lib/icones";
   const seletores = [...document.querySelectorAll<HTMLElement>("[data-modo]")];
   // O modo para onde a página vai (durante a troca, o <html> ainda mostra o anterior).
   let alvo = raiz.dataset.postView === "cards" ? "cards" : "list";
-  const marcar = () => {
-    for (const s of seletores)
+  // A tinta vai para baixo do botão ativo: `animar` diz o lado (a transição de CSS faz o resto); sem
+  // ele (a primeira pintura, as fontes que chegam, a largura que muda), ela só muda de lugar.
+  const posicionar = (s: HTMLElement, animar: boolean) => {
+    const b = s.querySelector<HTMLButtonElement>('button[aria-pressed="true"]');
+    if (!b) return;
+    // Medido com frações de pixel (offsetLeft arredonda), a partir da borda de dentro do seletor.
+    const caixa = s.getBoundingClientRect();
+    const botao = b.getBoundingClientRect();
+    const l = botao.left - caixa.left - s.clientLeft;
+    const r = caixa.right - s.clientLeft - botao.right;
+    const antes = Number.parseFloat(s.style.getPropertyValue("--tinta-l"));
+    if (animar && !Number.isNaN(antes) && Math.abs(l - antes) > 0.5) s.dataset.rumo = l > antes ? "direita" : "esquerda";
+    else if (!animar) delete s.dataset.rumo;
+    s.style.setProperty("--tinta-l", `${l.toFixed(2)}px`);
+    s.style.setProperty("--tinta-r", `${r.toFixed(2)}px`);
+  };
+  const marcar = (animar = false) => {
+    for (const s of seletores) {
       s.querySelectorAll<HTMLButtonElement>("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.valor === alvo)));
+      if (!s.hidden) posicionar(s, animar);
+    }
   };
   const reduzir = matchMedia("(prefers-reduced-motion: reduce)");
   const formas = () => [...document.querySelectorAll<HTMLElement>(".lista-modo, .cartoes-modo")];
@@ -39,7 +63,7 @@ import { ICONES } from "../lib/icones";
   const trocar = async (valor: string) => {
     if (valor === alvo) return;
     alvo = valor;
-    marcar();
+    marcar(true);
     const minha = ++vez;
     formas().forEach((f) => f.getAnimations().forEach((a) => a.cancel()));
     if (!reduzir.matches) {
@@ -73,10 +97,14 @@ import { ICONES } from "../lib/icones";
     seletor.hidden = false;
   }
   marcar();
+  // As fontes que chegam depois (ou a largura que muda) mexem na largura dos botões.
+  const medida = new ResizeObserver((entradas) => entradas.forEach((e) => posicionar(e.target as HTMLElement, false)));
+  seletores.forEach((s) => medida.observe(s));
 </script>
 
 <style>
   .modo {
+    position: relative;
     display: inline-flex;
     flex: none;
     padding: 3px;
@@ -91,6 +119,8 @@ import { ICONES } from "../lib/icones";
   }
 
   .modo button {
+    position: relative;
+    z-index: 1;
     display: inline-flex;
     align-items: center;
     gap: 7px;
@@ -102,15 +132,39 @@ import { ICONES } from "../lib/icones";
     color: var(--ink-2);
     font-size: 14px;
     cursor: pointer;
+    transition: color 0.16s 0.1s;
   }
 
   .modo button:hover {
     color: var(--ink);
   }
 
+  /* O botão ativo não tem fundo próprio: o azul é a tinta, atrás dos dois (D49). */
   .modo button[aria-pressed="true"] {
-    background: var(--acento);
     color: var(--sobre-acento);
+  }
+
+  .tinta {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    left: var(--tinta-l, 3px);
+    right: var(--tinta-r, 50%);
+    border-radius: 999px;
+    background: var(--acento);
+  }
+
+  /* A gota: a borda da frente sai primeiro (power2.in), a de trás alcança (power3.out). */
+  .modo[data-rumo="direita"] .tinta {
+    transition:
+      right 0.2s cubic-bezier(0.55, 0.085, 0.68, 0.53),
+      left 0.28s cubic-bezier(0.215, 0.61, 0.355, 1) 0.2s;
+  }
+
+  .modo[data-rumo="esquerda"] .tinta {
+    transition:
+      left 0.2s cubic-bezier(0.55, 0.085, 0.68, 0.53),
+      right 0.28s cubic-bezier(0.215, 0.61, 0.355, 1) 0.2s;
   }
 
   .modo svg {
@@ -121,5 +175,12 @@ import { ICONES } from "../lib/icones";
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .modo button,
+    .modo[data-rumo] .tinta {
+      transition: none;
+    }
   }
 </style>

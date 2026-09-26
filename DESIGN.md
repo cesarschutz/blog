@@ -713,7 +713,9 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
 - **Livro ampliado** (D47): cresce do livro de origem (0,7s, `power3.inOut`) e volta para ele ao fechar
   (0,55s), girando de volta a 38°, com o véu clareando.
 - **Filtro por livro** (D47): a lista esmaece (0,18s) e os primeiros artigos chegam subindo (0,42s,
-  40ms entre eles).
+  40ms entre eles). O total e o de cada ano rodam como contador já no clique (D49, `contador.ts`):
+  cada algarismo numa fita (0,55s, `power3.out`, as dezenas 0,05s depois), e a coluna que sobra fecha
+  a largura (0,4s).
 - **Sem lousa de passos** (D46): a lousa que a caneta desenha enquanto o texto rola saiu. Nos posts,
   só a linha do tempo de arrastar e a animação curta em loop.
 - **Diagrama que avança com a rolagem só em posts que explicam um fluxo** (passo a passo, linha do
@@ -755,7 +757,14 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   se estica em 0,45s, também no título do resultado. Esc, "Fechar" ou clique fora encolhem a janela
   de volta para o campo (0,35s, `power2.in`), e o foco volta para ele.
 - **Troca Lista / Cards** (D42): a forma atual esmaece (0,12s) e a nova aparece subindo 8px (0,22s),
-  com a Web Animations API (`SeletorModo`). Sem Flip e sem cascata nos cards.
+  com a Web Animations API (`SeletorModo`). Sem Flip e sem cascata nos cards. O azul do botão ativo
+  é uma tinta só que escorre de um botão para o outro (D49): a borda da frente corre (0,2s,
+  `power2.in`) e a de trás alcança (0,28s, `power3.out`); o texto troca de cor no meio (0,16s).
+- **A caneta que marca** (D49, com mouse ou foco; `traco.css`): no hover de um artigo da lista, um
+  colchete na margem esquerda se escreve de cima para baixo (0,34s) e, ao sair, some por baixo (0,2s);
+  nos números da paginação e no GitHub e no LinkedIn do cabeçalho, um círculo à mão (uma volta e 8%,
+  0,42s, `power2.inOut`) que some pela ponta ao sair (0,2s). As setas de "Anteriores" e "Mais
+  artigos" avançam 3px no hover e, no clique, saem pela frente e voltam por trás (0,32s).
 - Toda animação respeita `prefers-reduced-motion`: tudo aparece no estado final, sem prender a
   tela.
 - Vídeo (MP4/WebM) só quando o Cesar pedir: comprimido, com poster e carregado sob demanda.

@@ -1,9 +1,10 @@
 /**
- * O traço de caneta do menu e do rodapé (D49, protótipo E1): uma linha quase reta, com um tremor
- * pequeno e a ponta que sobe um pouco no fim, sempre o mesmo para o mesmo texto (o tremor sai de uma
- * semente tirada do texto, e fica igual em toda visita). O caminho fica numa caixa de 100 × 8 e estica
- * até a largura do link (o SVG com preserveAspectRatio="none" e o traço sem escala, vector-effect), sem
- * o filtro de turbulência, que custaria a cada quadro.
+ * Os traços de caneta da interface (D49): o sublinhado do menu e do rodapé (protótipo E1), o colchete
+ * da lista e o círculo da paginação (E2). Cada um é sempre o mesmo para o mesmo texto: o tremor sai de
+ * uma semente tirada do texto, e fica igual em toda visita. O sublinhado é uma linha quase reta, com a
+ * ponta que sobe um pouco no fim, numa caixa de 100 × 8 que estica até a largura do link (o SVG com
+ * preserveAspectRatio="none" e o traço sem escala, vector-effect), sem o filtro de turbulência, que
+ * custaria a cada quadro.
  */
 
 /** Sorteio com semente (mulberry32): o mesmo texto dá sempre o mesmo tremor. */
@@ -47,4 +48,41 @@ export function tracoDeCaneta(texto: string, outro = 0, amplitude = 0.9) {
     pontos.push([1 + (98 * i) / n, y]);
   }
   return curva(pontos);
+}
+
+/**
+ * O colchete na margem de um artigo da lista (D49, protótipo E2): gancho em cima, a descida levemente
+ * torta e o gancho embaixo, numa caixa de 14 × `altura`. O SVG estica até a altura do item (o traço
+ * sem escala), e o tremor é o de cada título.
+ */
+export function colcheteDeCaneta(texto: string, altura = 170) {
+  const r = sorteio(sementeDe(texto));
+  const j = () => (r() - 0.5) * 1.2;
+  const p: [number, number][] = [
+    [11, 1.5],
+    [6 + j() * 0.4, 2.6],
+    [4 + j() * 0.3, 7],
+  ];
+  const n = Math.max(2, Math.round((altura - 14) / 22));
+  for (let i = 1; i < n; i++) p.push([4 + j(), 7 + ((altura - 14) * i) / n]);
+  p.push([4.3 + j() * 0.3, altura - 7], [6.2, altura - 2.4], [11, altura - 1.2]);
+  return curva(p);
+}
+
+/**
+ * O círculo à mão numa caixa de 48 × 48 (D49, protótipo E2: a paginação e os perfis do cabeçalho):
+ * começa um pouco antes do topo e passa do ponto de partida (uma volta e 8%), como quem circula.
+ */
+export function circuloDeCaneta(texto: string, rx = 18.5, ry = 17.5) {
+  const r = sorteio(sementeDe(texto));
+  const p: [number, number][] = [];
+  const n = 16;
+  const inicio = -Math.PI * 0.62;
+  const voltas = 1.08;
+  for (let i = 0; i <= n; i++) {
+    const a = inicio + (voltas * 2 * Math.PI * i) / n;
+    const k = 1 + (r() - 0.5) * 0.07 + (i / n) * 0.06;
+    p.push([24 + Math.cos(a) * rx * k, 24 + Math.sin(a) * ry * k]);
+  }
+  return curva(p);
 }

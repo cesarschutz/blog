@@ -5,12 +5,18 @@
  * à direita, a miniatura quadrada da ilustração num painel tingido. A linha inteira é clicável e
  * ganha um fundo leve ao passar o mouse, com o título em azul-tinta. A lista fica numa folha
  * (.lista-artigos.folha, D26). O `data-livro` serve ao filtro por livro do arquivo e das tags (D33).
+ *
+ * O colchete na margem (D49, protótipo E2): com o mouse (ou o foco no título), a caneta escreve um
+ * colchete na margem esquerda, de cima para baixo (0,34s), em azul-tinta, o mesmo gesto das marcações
+ * do texto dizendo "este aqui"; ao sair, ele termina de passar e some por baixo (0,2s). O tremor é o
+ * de cada título (src/lib/traco.ts), e o SVG estica até a altura do item. Só CSS.
  */
 import Ilustracao from "./Ilustracao.astro";
 import MetaItem from "./MetaItem.astro";
 import { mdEmLinha, tituloEmPartes } from "../lib/formato";
 import { temIlustracao } from "../lib/ilustracoes";
 import { urlTag, type Resumo } from "../lib/posts";
+import { colcheteDeCaneta } from "../lib/traco";
 
 interface Props {
   post: Resumo;
@@ -21,9 +27,14 @@ interface Props {
 const { post, nivel = "h3" } = Astro.props;
 const Titulo = nivel;
 const comMiniatura = temIlustracao(post.slug);
+// A altura típica de um item; o SVG estica até a de verdade.
+const ALTURA = 170;
 ---
 
 <li class:list={["item", "completo", { "com-miniatura": comMiniatura }]} data-livro={post.livro}>
+  <svg class="colchete" viewBox={`0 0 14 ${ALTURA}`} preserveAspectRatio="none" aria-hidden="true" focusable="false"
+    ><path d={colcheteDeCaneta(post.tituloCompleto, ALTURA)} /></svg
+  >
   <div class="texto">
     <MetaItem post={post} />
     <Titulo class="titulo">
@@ -74,6 +85,58 @@ const comMiniatura = temIlustracao(post.slug);
 
   .item:hover .titulo a {
     color: var(--acento);
+  }
+
+  /* O colchete: escondido por cima (clip-path, com a folga de 4px da espessura do traço); ao chegar, se
+     escreve para baixo; ao sair, a ponta de cima desce até sumir. */
+  .colchete {
+    position: absolute;
+    top: 14px;
+    left: 4px;
+    width: 14px;
+    height: calc(100% - 28px);
+    overflow: visible;
+    pointer-events: none;
+    clip-path: inset(calc(100% + 4px) -4px -4px -4px);
+    transition: clip-path 0.2s cubic-bezier(0.55, 0.085, 0.68, 0.53);
+  }
+
+  .colchete path {
+    fill: none;
+    stroke: var(--acento);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  @media (hover: hover) {
+    .item:hover .colchete {
+      clip-path: inset(-4px);
+      transition: none;
+      animation: colchete-escreve 0.34s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+  }
+
+  .item:has(.titulo a:focus-visible) .colchete {
+    clip-path: inset(-4px);
+    transition: none;
+    animation: colchete-escreve 0.34s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  @keyframes colchete-escreve {
+    from {
+      clip-path: inset(-4px -4px calc(100% + 4px) -4px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .colchete,
+    .item:hover .colchete,
+    .item:has(.titulo a:focus-visible) .colchete {
+      transition: none;
+      animation: none;
+    }
   }
 
   /* ---------- home, arquivo, categorias, tags e séries ---------- */

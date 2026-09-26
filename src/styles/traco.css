@@ -68,7 +68,7 @@
  * ponto, um depois do outro (0,18s cada, 0,1s entre eles).
  */
 a:is(:hover, :focus-visible) .arco-rss {
-  stroke-dasharray: 1;
+  stroke-dasharray: 1 2;
   animation: sinal-rss 0.18s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.05s backwards;
 }
 
@@ -78,7 +78,7 @@ a:is(:hover, :focus-visible) .arco-rss + .arco-rss {
 
 @keyframes sinal-rss {
   from {
-    stroke-dashoffset: 1;
+    stroke-dashoffset: 1.001;
   }
 
   to {
@@ -88,6 +88,60 @@ a:is(:hover, :focus-visible) .arco-rss + .arco-rss {
 
 @media (prefers-reduced-motion: reduce) {
   a:is(:hover, :focus-visible) .arco-rss {
+    animation: none;
+  }
+}
+
+/*
+ * O círculo à mão (D49, protótipo E2; o caminho sai de circuloDeCaneta): nos números da paginação e
+ * nos perfis do cabeçalho. Parado, ele já saiu pela ponta; com o mouse ou o foco no link, se escreve do
+ * começo, passando um pouco do ponto de partida (0,42s), e ao sair some pela ponta (0,2s). O traçado
+ * tem comprimento 1 e o vão, 2: parado, o caminho fica no meio do vão, longe da ponta do traço (se
+ * ficasse encostado nela, a ponta redonda deixava um ponto no começo do círculo).
+ */
+.circulo {
+  position: absolute;
+  inset: -5px;
+  width: calc(100% + 10px);
+  height: calc(100% + 10px);
+  overflow: visible;
+  pointer-events: none;
+}
+
+.circulo path {
+  fill: none;
+  stroke: var(--acento);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: -1.5;
+  transition: stroke-dashoffset 0.2s cubic-bezier(0.55, 0.085, 0.68, 0.53);
+}
+
+@media (hover: hover) {
+  a:hover > .circulo path {
+    stroke-dashoffset: 0;
+    transition: none;
+    animation: circular 0.42s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+  }
+}
+
+a:focus-visible > .circulo path {
+  stroke-dashoffset: 0;
+  transition: none;
+  animation: circular 0.42s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+
+@keyframes circular {
+  from {
+    stroke-dashoffset: 1.001;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .circulo path,
+  a:is(:hover, :focus-visible) > .circulo path {
+    transition: none;
     animation: none;
   }
 }

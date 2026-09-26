@@ -1368,4 +1368,19 @@ nada muda.
      passar o mouse, tocar ou focar o botão. No rodapé, o RSS dá o sinal (os arcos se escrevem a partir
      do ponto, um depois do outro) e os links ganham o mesmo traço leve do menu. Com movimento
      reduzido, os traços aparecem prontos e o ícone troca seco.
+  6. **E2** (lista, cards e paginação; `SeletorModo.astro`, `ItemLista.astro`, `Paginacao.astro`,
+     `ListaFiltrada.astro`, `src/scripts/contador.ts`): no seletor Lista / Cards, o azul virou uma
+     **tinta só**, atrás dos dois botões, que **escorre** de um para o outro (a borda da frente corre
+     em 0,2s e a de trás alcança em 0,28s; só CSS, o script mede). No hover de um artigo da lista (ou
+     com o foco no título), a caneta escreve um **colchete na margem** (0,34s, de cima para baixo) e,
+     ao sair, ele some por baixo; o tremor é o de cada título. Na paginação, a caneta **circula o
+     número** (uma volta e 8%, 0,42s) e a seta de "Mais artigos" e de "Anteriores" avança 3px no hover
+     e, no clique, sai pela frente e volta por trás. O mesmo círculo foi para o **GitHub e o LinkedIn
+     do cabeçalho**, no lugar do fundo cinza (o Cesar deixou a meu critério; ficou bom e une o
+     cabeçalho à paginação). No filtro por livro, o total e o de cada ano **rodam como contador**, já
+     no clique, cada algarismo numa fita (0,55s; as dezenas fecham quando o número perde um
+     algarismo); o leitor de tela ouve só o valor final. O colchete e o círculo só aparecem com mouse
+     (ou foco); com movimento reduzido, tudo troca seco. Correção em relação ao protótipo: o traço
+     parado fica no meio do vão (`stroke-dasharray: 1 2`), longe da ponta, senão a ponta redonda
+     deixava um ponto no começo do círculo (o mesmo acerto foi para o sinal do RSS).
 - **Motivo:** o Cesar revisou os protótipos um a um e escolheu o que entra.

@@ -178,7 +178,8 @@ livro aparece na estante e na lateral, mesmo sem artigos; o número de artigos, 
 - **Acabamento**: busca como campo (ícone, "Buscar" e ⌘K), GitHub e LinkedIn só com os ícones e o
   botão de tema (claro ou escuro, D39; o som dos livros saiu) no cabeçalho;
   destaque com a descrição do post, tags em pílulas e "Ler artigo"; cards que sobem 4px ao passar o
-  mouse (parados com `prefers-reduced-motion`); linhas da lista com fundo leve ao passar o mouse;
+  mouse (parados com `prefers-reduced-motion`); linhas da lista com fundo leve e um colchete à
+  caneta na margem ao passar o mouse (D49);
   chip de categoria com quadradinho da cor e nome tingido (no claro, a cor com 34% de tinta, para o
   dourado do SRE passar de 4,5:1; no escuro, com 50% de branco).
 - **Artigo**: o corpo é lido sobre a folha; em telas ≥ 1300px, o sumário fica à esquerda, numa
@@ -243,7 +244,7 @@ Referência: aba "Home" do protótipo.
   altura do texto; até 960px, vai para cima), categoria, data e tempo de leitura com os ícones, o
   **título inteiro**, a descrição e as tags (D33). O post em destaque **não se repete** na lista abaixo.
 - **Artigos recentes**: alternância **Lista / Cards** (guardada no navegador; a troca esmaece uma
-  forma e traz a outra, D42), no formato do blog
+  forma e traz a outra, D42, e o azul escorre de um botão para o outro, D49), no formato do blog
   atual (D27). Em cima, categoria, data e tempo de leitura com relógio; o **título inteiro**, grande;
   a **descrição completa** (fonte da interface); até 4 tags em `#tag` (fonte de código), que levam à
   página da tag (D38). O item inteiro é clicável.
@@ -251,7 +252,8 @@ Referência: aba "Home" do protótipo.
   Cards: grade de até 3 colunas, com a ilustração em 3:2 no topo e as tags no pé do card.
   Mesmo formato de lista nas páginas de categoria, tag e série; o arquivo por ano continua compacto.
 - **Paginação**: 12 artigos por página, como no blog atual: `/`, `/2/`, `/3/`… Embaixo da lista,
-  "Anteriores", os números (a atual em azul-tinta) e "Mais artigos"; no celular, só os dois botões.
+  "Anteriores", os números (a atual em azul-tinta; nas outras, a caneta circula o número ao passar o
+  mouse, D49) e "Mais artigos"; no celular, só os dois botões.
   Da página 2 em diante, só a lista ("Artigos — página N", em h1) e a paginação. O destaque nunca
   entra na lista.
 - **Painel lateral** (D28): **saiu da home na D44** (a lista e os cards ocupam a largura toda). Fica
@@ -288,7 +290,8 @@ que têm artigos na página (e o número deles): clicar num livro mostra só os 
 (`?livro=<slug>` na URL). Para não confundir com a lombada que leva ao livro (D38): o rótulo "Filtrar
 por livro" acima da estante, a lombada escolhida um pouco acima da prateleira e as outras
 escurecidas (sem contorno azul, D39), "Limpar filtro" e as
-lombadas como botões com `aria-pressed`; sem JavaScript, a estante de filtro não aparece. A tag
+lombadas como botões com `aria-pressed`; sem JavaScript, a estante de filtro não aparece. Ao
+filtrar, o total e o de cada ano rodam como contador (D49). A tag
 mostra também as tags que aparecem junto com ela.
 
 **Categorias** (`/categories/`, D31) e **Séries** (`/series/`, D31): os livros lado a lado, grandes,

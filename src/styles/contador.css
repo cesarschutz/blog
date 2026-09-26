@@ -1,0 +1,47 @@
+/*
+ * O contador que rola (D49, src/scripts/contador.ts): uma janela da altura da linha por algarismo, com
+ * a fita de 0 a 9 (e um espaço, para a coluna vazia) andando por baixo. A fita anda em `--rola`
+ * (0,55s no filtro por livro; 0,4s nos minutos do sumário), com `power3.out`; a coluna vazia fecha a
+ * largura em 0,4s. Com movimento reduzido, troca seco.
+ */
+.contador .fitas {
+  display: inline-flex;
+  vertical-align: top;
+  font-variant-numeric: tabular-nums lining-nums;
+  user-select: none;
+}
+
+.contador .coluna {
+  display: inline-block;
+  width: 1ch;
+  height: 1lh;
+  overflow: hidden;
+  transition: width 0.4s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.contador .coluna.vazia {
+  width: 0;
+}
+
+.contador .fita {
+  display: block;
+  transform: translateY(calc(var(--d, 0) * -1lh));
+  transition: transform var(--rola, 0.55s) cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.contador .coluna:not(:last-child) .fita {
+  transition-delay: 0.05s;
+}
+
+.contador .fita > span {
+  display: block;
+  height: 1lh;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contador .coluna,
+  .contador .fita {
+    transition: none;
+  }
+}

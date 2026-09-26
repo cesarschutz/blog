@@ -2,9 +2,16 @@
 /**
  * Paginação da home, como no blog atual (D27): "Anteriores", os números das páginas e "Mais
  * artigos". A página atual fica em azul-tinta. No celular, só os dois botões.
+ *
+ * A caneta circula o número (D49, protótipo E2): com o mouse (ou o foco), os outros números ganham um
+ * círculo à mão, que começa um pouco antes do topo e passa do ponto de partida (0,42s); ao sair, ele
+ * some pela ponta (0,2s; traco.css). Nos botões, a seta avança 3px no hover e, no clique, sai pela frente e volta
+ * por trás (0,32s) enquanto a página nova chega. Só CSS, fora a classe do clique.
  */
 import { ICONES } from "../lib/icones";
+import { circuloDeCaneta } from "../lib/traco";
 import { url } from "../lib/url";
+import "../styles/traco.css";
 
 interface Props {
   atual: number;
@@ -21,8 +28,10 @@ const endereco = (n: number) => url(n === 1 ? "/" : `/${n}/`);
   ultima > 1 && (
     <nav class="paginacao" aria-label="Paginação">
       {anterior ? (
-        <a class="botao anterior" href={anterior} rel="prev">
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
+        <a class="botao anterior" href={anterior} rel="prev" data-seta>
+          <span class="seta">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
+          </span>
           Anteriores
         </a>
       ) : (
@@ -34,14 +43,21 @@ const endereco = (n: number) => url(n === 1 ? "/" : `/${n}/`);
             <a href={endereco(n)} aria-current={n === atual ? "page" : undefined}>
               <span class="sr">Página </span>
               {n}
+              {n !== atual && (
+                <svg class="circulo" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                  <path pathLength="1" d={circuloDeCaneta(`pagina${n}`)} />
+                </svg>
+              )}
             </a>
           </li>
         ))}
       </ol>
       {proxima ? (
-        <a class="botao proxima" href={proxima} rel="next">
+        <a class="botao proxima" href={proxima} rel="next" data-seta>
           Mais artigos
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
+          <span class="seta">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
+          </span>
         </a>
       ) : (
         <span />
@@ -49,6 +65,18 @@ const endereco = (n: number) => url(n === 1 ? "/" : `/${n}/`);
     </nav>
   )
 }
+
+<script>
+  // No clique, a seta sai pela frente e volta por trás (a animação é do CSS, .indo).
+  document.querySelectorAll<HTMLElement>(".paginacao [data-seta]").forEach((botao) => {
+    botao.addEventListener("pointerdown", () => {
+      botao.classList.remove("indo");
+      void botao.offsetWidth;
+      botao.classList.add("indo");
+    });
+    botao.addEventListener("animationend", () => botao.classList.remove("indo"));
+  });
+</script>
 
 <style>
   .paginacao {
@@ -68,6 +96,20 @@ const endereco = (n: number) => url(n === 1 ? "/" : `/${n}/`);
     justify-self: end;
   }
 
+  /* A seta numa janela: sai por um lado e volta pelo outro sem aparecer fora dela. A margem negativa
+     devolve o espaço da folga, que só existe para a ponta arredondada não ser cortada. */
+  .seta {
+    --rumo: 1;
+    display: inline-grid;
+    margin-inline: -3px;
+    padding-inline: 3px;
+    overflow: hidden;
+  }
+
+  .anterior .seta {
+    --rumo: -1;
+  }
+
   .botao svg {
     width: 16px;
     height: 16px;
@@ -76,10 +118,41 @@ const endereco = (n: number) => url(n === 1 ? "/" : `/${n}/`);
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
+    transition: translate 0.25s cubic-bezier(0.2, 0.75, 0.2, 1);
   }
 
   .anterior svg {
     rotate: 180deg;
+  }
+
+  .botao:is(:hover, :focus-visible) svg {
+    translate: calc(3px * var(--rumo));
+  }
+
+  .indo svg {
+    animation: seta-vai 0.32s both;
+  }
+
+  /* Sai pela frente (0,14s, power2.in) e volta por trás (0,18s, power2.out). */
+  @keyframes seta-vai {
+    0% {
+      translate: calc(3px * var(--rumo));
+      animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+    }
+
+    43.7% {
+      translate: calc(130% * var(--rumo));
+      animation-timing-function: steps(1, end);
+    }
+
+    43.8% {
+      translate: calc(-130% * var(--rumo));
+      animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    100% {
+      translate: 0;
+    }
   }
 
   .numeros {
@@ -91,6 +164,7 @@ const endereco = (n: number) => url(n === 1 ? "/" : `/${n}/`);
   }
 
   .numeros a {
+    position: relative;
     display: grid;
     place-items: center;
     width: 38px;
@@ -103,7 +177,6 @@ const endereco = (n: number) => url(n === 1 ? "/" : `/${n}/`);
   }
 
   .numeros a:hover {
-    background: var(--paper-hi);
     color: var(--acento);
   }
 
@@ -111,6 +184,16 @@ const endereco = (n: number) => url(n === 1 ? "/" : `/${n}/`);
     background: var(--acento);
     color: var(--sobre-acento);
     font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .botao svg {
+      transition: none;
+    }
+
+    .indo svg {
+      animation: none;
+    }
   }
 
   @media (max-width: 480px) {
