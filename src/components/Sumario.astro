@@ -79,7 +79,10 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
           <span class="barra"><span class="feito"></span></span>
           <p class="numeros">
             <span class="lido">0% lido</span>
-            <span class="falta">faltam {minutos} min</span>
+            <span class="falta" data-falta>
+              <span class="faltam">faltam <span data-minutos-falta>{minutos}</span> min</span>
+              <span class="chegou">chegou ao fim</span>
+            </span>
           </p>
         </div>
       </div>
@@ -379,6 +382,65 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     font-family: var(--font-codigo);
     font-size: 12px;
     color: var(--ink-3);
+  }
+
+  /*
+   * Os minutos que faltam (D49, protótipo E4): o número roda como contador quando muda (0,4s,
+   * contador.ts); no fim, "faltam 1 min" sobe e some e "chegou ao fim" sobe de baixo (0,3s), e o
+   * contrário ao voltar. A porcentagem acompanha a rolagem a cada quadro, parada (rodar seria ruído).
+   */
+  .falta {
+    display: inline-grid;
+    justify-items: end;
+    overflow: hidden;
+  }
+
+  .falta > span {
+    grid-area: 1 / 1;
+    white-space: nowrap;
+  }
+
+  .falta :global([data-minutos-falta]) {
+    --rola: 0.4s;
+  }
+
+  /* Antes do fim: "faltam" à vista (e, ao voltar, chegando de cima); "chegou" embaixo, escondido. */
+  .falta > .faltam {
+    transition:
+      transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0.08s,
+      opacity 0.3s 0.08s;
+  }
+
+  .falta > .chegou {
+    opacity: 0;
+    transform: translateY(110%);
+    transition:
+      transform 0.2s cubic-bezier(0.55, 0.085, 0.68, 0.53),
+      opacity 0.2s;
+  }
+
+  /* No fim: "faltam" sobe e some, e "chegou ao fim" sobe de baixo. */
+  .falta:global(.no-fim) > .faltam {
+    opacity: 0;
+    transform: translateY(-110%);
+    transition:
+      transform 0.2s cubic-bezier(0.55, 0.085, 0.68, 0.53),
+      opacity 0.2s;
+  }
+
+  .falta:global(.no-fim) > .chegou {
+    opacity: 1;
+    transform: none;
+    transition:
+      transform 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) 0.08s,
+      opacity 0.3s 0.08s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .falta > span,
+    .falta:global(.no-fim) > span {
+      transition: none !important;
+    }
   }
 
   /*

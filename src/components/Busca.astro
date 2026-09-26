@@ -6,7 +6,13 @@
  * abre. O índice sai no build (`pagefind --site dist`, no postbuild), então no `npm run dev` a busca
  * avisa que não há índice. Marca o tempo até o primeiro resultado (performance "busca:aberta" e
  * "busca:resultado") para a medição de scripts/bench-busca.
+ *
+ * D49 (protótipo E4): nos resultados, um marcador só (o fundo e o fio azul) desliza até o item da vez,
+ * seguindo as setas, o foco e o mouse (0,28s; seguindo depressa, ele só muda de destino); o primeiro
+ * já vem marcado, e o Enter no campo abre o marcado. Sem resultado, o termo ganha a ondinha de revisor
+ * (na cor de Cuidado: é aviso, não erro do leitor), e embaixo vem uma saída: termo mais curto ou as tags.
  */
+import { url } from "../lib/url";
 ---
 
 <dialog class="busca" data-busca aria-labelledby="busca-titulo">
@@ -27,19 +33,53 @@
     </div>
     <p class="estado" data-busca-estado aria-live="polite">A busca ignora acentos. Use # para procurar por tag.</p>
     <ul class="resultados" data-busca-resultados></ul>
+    <p class="dica-vazia" data-busca-dica hidden>Tente um termo mais curto ou veja <a href={url("/tags/")}>todas as tags</a>.</p>
   </form>
 </dialog>
 
 <script>
   import type { MotorDeBusca, ResultadoBusca } from "../lib/busca/tipos";
   import { escaparHtml } from "../lib/busca/tipos";
+  import { ondaDeCaneta } from "../lib/traco";
   import { adiantar, carregarFlip, movimentoReduzido } from "../scripts/gsap";
 
   const dialogo = document.querySelector<HTMLDialogElement>("[data-busca]")!;
   const campo = dialogo.querySelector<HTMLInputElement>("[data-busca-campo]")!;
   const estado = dialogo.querySelector<HTMLElement>("[data-busca-estado]")!;
   const lista = dialogo.querySelector<HTMLUListElement>("[data-busca-resultados]")!;
+  const dicaVazia = dialogo.querySelector<HTMLElement>("[data-busca-dica]")!;
   const DICA = estado.textContent ?? "";
+
+  // O marcador (D49): um fundo só, que desliza até o resultado da vez (a transição é do CSS).
+  const marcador = document.createElement("li");
+  marcador.className = "marcador";
+  marcador.setAttribute("aria-hidden", "true");
+  const resultadosNaTela = () => [...lista.querySelectorAll<HTMLAnchorElement>(".resultado")];
+  function marcar(alvo: HTMLAnchorElement | undefined, direto = false) {
+    const itens = resultadosNaTela();
+    if (!alvo || !itens.includes(alvo)) return;
+    itens.forEach((a) => a.classList.toggle("ativo", a === alvo));
+    if (!marcador.isConnected) lista.prepend(marcador);
+    const li = alvo.parentElement!;
+    marcador.classList.toggle("direto", direto);
+    marcador.style.transform = `translateY(${li.offsetTop}px)`;
+    marcador.style.height = `${li.offsetHeight}px`;
+    if (direto) {
+      void marcador.offsetWidth;
+      marcador.classList.remove("direto");
+    }
+  }
+
+  // Sem resultado (D49): o termo com a ondinha de revisor, escrita da esquerda para a direita.
+  function ondinha(consulta: string) {
+    const termo = estado.querySelector<HTMLElement>(".termo");
+    const onda = termo?.querySelector("svg");
+    if (!termo || !onda) return;
+    const largura = termo.getBoundingClientRect().width;
+    onda.setAttribute("viewBox", `0 0 ${largura.toFixed(1)} 6`);
+    onda.style.width = `${largura}px`;
+    onda.querySelector("path")!.setAttribute("d", ondaDeCaneta(largura, consulta));
+  }
 
   const FALHOU = import.meta.env.DEV
     ? "No npm run dev não há índice: ele sai no build (npm run build e npm run preview)."
@@ -95,17 +135,22 @@
       )
       .join("");
     const n = resultados.length;
-    estado.textContent = !n
-      ? `Nenhum artigo encontrado para “${consulta}”.`
-      : resultados[0].aproximado
-        ? `Nada exato para “${consulta}”. ${n === 1 ? "Parecido" : "Parecidos"}:`
-        : n === 1
-          ? "1 artigo"
-          : `${n} artigos`;
+    dicaVazia.hidden = n > 0;
+    if (!n) {
+      estado.innerHTML = `Nenhum artigo encontrado para “<span class="termo">${escaparHtml(consulta)}<svg class="ondinha" aria-hidden="true" focusable="false"><path pathLength="1" /></svg></span>”.`;
+      ondinha(consulta);
+      return;
+    }
+    marcar(resultadosNaTela()[0], true);
+    estado.textContent = resultados[0].aproximado
+      ? `Nada exato para “${consulta}”. ${n === 1 ? "Parecido" : "Parecidos"}:`
+      : n === 1
+        ? "1 artigo"
+        : `${n} artigos`;
     // Os resultados entram em sequência e o marca-texto passa pelo termo (D44).
     if (flip && !movimentoReduzido.matches) {
       const { gsap } = flip;
-      gsap.from([...lista.children].slice(0, 8), { opacity: 0, y: 6, duration: 0.3, stagger: 0.035, ease: "power2.out", clearProps: "opacity,transform" });
+      gsap.from([...lista.children].filter((li) => li !== marcador).slice(0, 8), { opacity: 0, y: 6, duration: 0.3, stagger: 0.035, ease: "power2.out", clearProps: "opacity,transform" });
       gsap.fromTo(lista.querySelectorAll("mark"), { backgroundSize: "0% 100%" }, { backgroundSize: "100% 100%", duration: 0.45, delay: 0.15, ease: "power2.out" });
     }
   }
@@ -118,6 +163,7 @@
     atualizarEndereco(consultaValida(consulta) ? consulta.trim() : null);
     if (!consultaValida(consulta)) {
       lista.innerHTML = "";
+      dicaVazia.hidden = true;
       estado.textContent = consulta.trim() ? "Digite ao menos 2 letras." : DICA;
       return;
     }
@@ -249,7 +295,11 @@
     }
   });
 
-  // Setas percorrem os resultados; Enter no campo abre o primeiro.
+  // O marcador segue o foco (as setas e o Tab) e o mouse (ou o dedo).
+  lista.addEventListener("focusin", (e) => marcar((e.target as HTMLElement).closest<HTMLAnchorElement>(".resultado") ?? undefined));
+  lista.addEventListener("pointerover", (e) => marcar((e.target as HTMLElement).closest<HTMLAnchorElement>(".resultado") ?? undefined));
+
+  // Setas percorrem os resultados; Enter no campo abre o marcado (o primeiro, até o leitor escolher outro).
   dialogo.addEventListener("keydown", (e) => {
     const itens = [...lista.querySelectorAll<HTMLAnchorElement>(".resultado")];
     if (!itens.length) return;
@@ -262,7 +312,7 @@
       atual <= 0 ? campo.focus() : itens[atual - 1].focus();
     } else if (e.key === "Enter" && document.activeElement === campo) {
       e.preventDefault();
-      itens[0].click();
+      (lista.querySelector<HTMLAnchorElement>(".resultado.ativo") ?? itens[0]).click();
     }
   });
 
@@ -360,6 +410,7 @@
   }
 
   .resultados {
+    position: relative;
     margin: 0;
     padding: 0 8px 10px;
     overflow-y: auto;
@@ -367,7 +418,38 @@
     overscroll-behavior: contain;
   }
 
+  /* O marcador (D49): o fundo e o fio azul, deslizando até o resultado da vez (0,28s, power3.out). */
+  .resultados :global(.marcador) {
+    position: absolute;
+    top: 0;
+    right: 8px;
+    left: 8px;
+    border-radius: var(--raio-painel);
+    background: color-mix(in oklab, var(--acento) 6%, transparent);
+    pointer-events: none;
+    transition:
+      transform 0.28s cubic-bezier(0.215, 0.61, 0.355, 1),
+      height 0.28s cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+
+  .resultados :global(.marcador::before) {
+    content: "";
+    position: absolute;
+    top: 9px;
+    bottom: 9px;
+    left: 4px;
+    width: 2px;
+    border-radius: 2px;
+    background: var(--acento);
+  }
+
+  .resultados :global(.marcador.direto) {
+    transition: none;
+  }
+
   .resultados :global(.resultado) {
+    position: relative;
+    z-index: 1;
     display: grid;
     gap: 2px;
     padding: 10px 10px;
@@ -376,14 +458,11 @@
     text-decoration: none;
   }
 
-  .resultados :global(.resultado:hover),
   .resultados :global(.resultado:focus-visible) {
-    background: color-mix(in oklab, var(--acento) 6%, transparent);
     outline-offset: 0;
   }
 
-  .resultados :global(.resultado:hover .r-titulo),
-  .resultados :global(.resultado:focus-visible .r-titulo) {
+  .resultados :global(.resultado.ativo .r-titulo) {
     color: var(--acento);
   }
 
@@ -402,6 +481,62 @@
     font-size: 14px;
     line-height: 1.5;
     color: var(--ink-2);
+  }
+
+  /* Sem resultado (D49): a ondinha de revisor sob o termo (0,45s) e a saída chegando depois. */
+  .estado :global(.termo) {
+    position: relative;
+    display: inline-block;
+    color: var(--ink);
+  }
+
+  .estado :global(.ondinha) {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    height: 6px;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .estado :global(.ondinha path) {
+    fill: none;
+    stroke: var(--aviso-cuidado);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1 2;
+    animation: ondinha 0.45s cubic-bezier(0.445, 0.05, 0.55, 0.95) 0.1s backwards;
+  }
+
+  @keyframes ondinha {
+    from {
+      stroke-dashoffset: 1.001;
+    }
+  }
+
+  .dica-vazia {
+    margin: 0;
+    padding: 4px 18px 16px;
+    font-size: 14px;
+    color: var(--ink-2);
+    animation: dica-chega 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.45s backwards;
+  }
+
+  /* Só a opacidade: deslocada, a dica passaria do fim da janela e a barra de rolagem piscaria. */
+  @keyframes dica-chega {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .resultados :global(.marcador),
+    .estado :global(.ondinha path),
+    .dica-vazia {
+      transition: none;
+      animation: none;
+    }
   }
 
   /* O marca-texto é uma camada de fundo própria, que o GSAP estica da esquerda para a direita. */

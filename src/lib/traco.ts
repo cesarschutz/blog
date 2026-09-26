@@ -1,10 +1,10 @@
 /**
  * Os traços de caneta da interface (D49): o sublinhado do menu e do rodapé (protótipo E1), o colchete
- * da lista e o círculo da paginação (E2). Cada um é sempre o mesmo para o mesmo texto: o tremor sai de
- * uma semente tirada do texto, e fica igual em toda visita. O sublinhado é uma linha quase reta, com a
- * ponta que sobe um pouco no fim, numa caixa de 100 × 8 que estica até a largura do link (o SVG com
- * preserveAspectRatio="none" e o traço sem escala, vector-effect), sem o filtro de turbulência, que
- * custaria a cada quadro.
+ * da lista e o círculo da paginação (E2), a rasura da 404 e a ondinha da busca vazia (E4). Cada um é
+ * sempre o mesmo para o mesmo texto: o tremor sai de uma semente tirada do texto, e fica igual em toda
+ * visita. O sublinhado é uma linha quase reta, com a ponta que sobe um pouco no fim, numa caixa de
+ * 100 × 8 que estica até a largura do link (o SVG com preserveAspectRatio="none" e o traço sem escala,
+ * vector-effect), sem o filtro de turbulência, que custaria a cada quadro.
  */
 
 /** Sorteio com semente (mulberry32): o mesmo texto dá sempre o mesmo tremor. */
@@ -67,6 +67,40 @@ export function colcheteDeCaneta(texto: string, altura = 170) {
   for (let i = 1; i < n; i++) p.push([4 + j(), 7 + ((altura - 14) * i) / n]);
   p.push([4.3 + j() * 0.3, altura - 7], [6.2, altura - 2.4], [11, altura - 1.2]);
   return curva(p);
+}
+
+/**
+ * A rasura sobre o endereço errado da 404 (D49, protótipo E4), numa caixa de `largura` × `altura` px:
+ * o primeiro traço vai da esquerda para a direita, descendo um nada; o segundo volta, mais curto e
+ * um pouco abaixo. O tremor é o do endereço.
+ */
+export function rasuraDeCaneta(largura: number, altura: number, texto: string): [string, string] {
+  const r = sorteio(sementeDe(texto));
+  const j = () => (r() - 0.5) * 1.6;
+  const n = Math.max(4, Math.round(largura / 40));
+  const m = Math.ceil(n * 0.6);
+  const ida: [number, number][] = [];
+  const volta: [number, number][] = [];
+  for (let i = 0; i <= n; i++) ida.push([2 + ((largura - 4) * i) / n, altura * 0.5 - (i / n) * 2 + j()]);
+  for (let i = 0; i <= m; i++) volta.push([largura - 3 - (largura * 0.62 * i) / m, altura * 0.6 + j() * 0.8]);
+  return [curva(ida), curva(volta)];
+}
+
+/**
+ * A ondinha de revisor sob o termo que a busca não achou (D49, protótipo E4), numa caixa de
+ * `largura` × 6 px: meias-ondas de 3,2px, cada crista com a altura um pouco diferente.
+ */
+export function ondaDeCaneta(largura: number, texto: string) {
+  const r = sorteio(sementeDe(texto));
+  const passo = 3.2;
+  let d = `M0 ${f(3 + (r() - 0.5) * 0.4)}`;
+  let cima = true;
+  for (let x = 0; x < largura; x += passo) {
+    const proximo = Math.min(largura, x + passo);
+    d += ` Q${f(x + passo / 2)} ${f(cima ? 0.4 + r() * 0.5 : 5.2 + r() * 0.5)} ${f(proximo)} 3`;
+    cima = !cima;
+  }
+  return d;
 }
 
 /**

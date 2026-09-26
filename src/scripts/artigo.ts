@@ -7,6 +7,7 @@
  * copiar do site (E3, D49).
  */
 import { ICONES } from "../lib/icones";
+import { criarContador, mudarContador } from "./contador";
 import { mostrarCopiado } from "./copiado";
 
 const reduzir = matchMedia("(prefers-reduced-motion: reduce)");
@@ -20,8 +21,12 @@ const barra = document.querySelector<HTMLElement>("[data-barra-leitura]");
 const progresso = document.querySelector<HTMLElement>("[data-progresso-sumario]");
 const progressoFeito = progresso?.querySelector<HTMLElement>(".feito");
 const progressoTexto = progresso?.querySelector<HTMLElement>(".lido");
-const progressoFalta = progresso?.querySelector<HTMLElement>(".falta");
+const progressoFalta = progresso?.querySelector<HTMLElement>("[data-falta]");
+const minutosFalta = progresso?.querySelector<HTMLElement>("[data-minutos-falta]");
 const minutosDoArtigo = Number(progresso?.dataset.minutos ?? 0);
+// Os minutos que faltam rodam como contador quando mudam (E4, D49; contador.ts).
+if (minutosFalta && minutosDoArtigo) criarContador(minutosFalta, minutosDoArtigo);
+let minutosNaTela = minutosDoArtigo;
 if (progresso) progresso.hidden = false;
 const secoes = [...document.querySelectorAll<HTMLAnchorElement>("[data-secao]")].flatMap((link) => {
   const titulo = document.getElementById(link.dataset.secao!);
@@ -123,9 +128,10 @@ function aoRolar() {
       progressoFeito.style.transform = `scaleX(${lido.toFixed(4)})`;
       progressoTexto.textContent = `${Math.round(lido * 100)}% lido`;
     }
-    if (progressoFalta && minutosDoArtigo) {
+    if (progressoFalta && minutosFalta && minutosDoArtigo) {
       const resto = Math.max(1, Math.ceil(minutosDoArtigo * (1 - lido)));
-      progressoFalta.textContent = lido > 0.995 ? "chegou ao fim" : `faltam ${resto} min`;
+      if (resto !== minutosNaTela) mudarContador(minutosFalta, (minutosNaTela = resto));
+      progressoFalta.classList.toggle("no-fim", lido > 0.995);
     }
   }
   if (!secoes.length) return;

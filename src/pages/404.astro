@@ -1,32 +1,239 @@
 ---
-/** Página não encontrada. O GitHub Pages serve este 404.html sozinho. */
+/**
+ * Página não encontrada. O GitHub Pages serve este 404.html sozinho (os redirecionamentos da D7 vêm
+ * antes dela).
+ *
+ * D49 (protótipo E4, e o pedido do Cesar de uma página "menos morta", com algo dos livros): a folha
+ * da abertura da home, com o erro de um lado e a estante do outro, porque os livros continuam no lugar.
+ * Com JS, a caneta rasura o endereço pedido (dois traços, 0,3s depois de a página abrir) e, quando ele
+ * se parece com o de um artigo, de um livro ou de uma tag (erro de digitação, hífen que faltou), a
+ * página diz qual é: "Talvez seja este". A lista dos endereços vem na página (poucos KB) e a
+ * comparação é por distância de edição. Sem JS, ficam o texto, os caminhos e a estante.
+ */
 import Base from "../layouts/Base.astro";
+import Estante from "../components/Estante.astro";
+import { montarLivros } from "../lib/estante";
+import { getResumos, getTags, urlTag } from "../lib/posts";
 import { url } from "../lib/url";
+
+const livros = await montarLivros();
+const resumos = await getResumos();
+const tags = await getTags();
+// O que a 404 pode sugerir: o endereço (para comparar) e o que mostrar.
+const enderecos = [
+  ...resumos.map((p) => ({ tipo: "artigo", chave: p.slug, nome: p.tituloCompleto, titulo: p.titulo, sub: p.subtitulo, href: p.url, livro: p.rotulo, cor: p.cor })),
+  ...livros.map((l) => ({ tipo: "livro", chave: l.slug ?? l.id.replace(/^serie-/, ""), nome: l.nome, href: l.href, cor: l.cores.destaque })),
+  ...tags.map((t) => ({ tipo: "tag", chave: t.nome, nome: `#${t.nome}`, href: urlTag(t.nome) })),
+];
 ---
 
 <Base titulo="Página não encontrada" descricao="Esta página não existe ou mudou de endereço." semIndice>
   <div class="wrap nao-encontrada">
     <div class="folha caixa">
-      <p class="codigo">Erro 404</p>
-      <h1>Página não encontrada</h1>
-      <p>O endereço pode ter mudado ou nunca ter existido. Tente a busca, a lista de artigos ou a página inicial.</p>
-      <p class="caminhos">
-        <a href={url("/archive/")}>Todos os artigos</a>
-        <a href={url("/")}>Página inicial</a>
-        <button type="button" class="pilula" data-busca-abrir>Buscar</button>
-      </p>
+      <div class="erro">
+        <p class="endereco" data-endereco hidden>
+          <span data-texto-endereco></span><svg class="rasura" aria-hidden="true" focusable="false"></svg>
+        </p>
+        <p class="codigo">Erro 404</p>
+        <h1>Página não encontrada</h1>
+        <p class="explica">
+          O endereço pode ter mudado ou nunca ter existido. Os livros continuam no lugar: escolha um na estante, ou procure
+          pela busca.
+        </p>
+        <div class="talvez" data-talvez hidden>
+          <p class="rotulo-talvez">Talvez seja este:</p>
+          <a class="sugestao" data-sugestao href="">
+            <span class="de-onde" data-de-onde></span>
+            <span class="nome-sugestao"><span class="titulo-principal" data-nome-sugestao></span><span class="titulo-sub" data-sub-sugestao hidden></span></span>
+            <span class="ir-sugestao" data-ir-sugestao></span>
+          </a>
+        </div>
+        <p class="caminhos">
+          <a href={url("/archive/")}>Todos os artigos</a>
+          <a href={url("/")}>Página inicial</a>
+          <button type="button" class="pilula" data-busca-abrir>Buscar</button>
+        </p>
+      </div>
+      <div class="cena">
+        <Estante livros={livros} />
+      </div>
     </div>
   </div>
+  <script is:inline type="application/json" data-enderecos set:html={JSON.stringify(enderecos).replace(/</g, "\\u003c")} />
 </Base>
+
+<script>
+  import { rasuraDeCaneta } from "../lib/traco";
+
+  interface Endereco {
+    tipo: "artigo" | "livro" | "tag";
+    chave: string;
+    nome: string;
+    titulo?: string;
+    sub?: string;
+    href: string;
+    livro?: string;
+    cor?: string;
+  }
+
+  const semAcento = (t: string) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const comoEndereco = (t: string) => semAcento(t).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+  /** Distância de edição (Levenshtein) entre dois textos. */
+  function distancia(a: string, b: string) {
+    let antes = Array.from({ length: b.length + 1 }, (_, j) => j);
+    for (let i = 1; i <= a.length; i++) {
+      const linha = [i];
+      for (let j = 1; j <= b.length; j++)
+        linha[j] = Math.min(antes[j] + 1, linha[j - 1] + 1, antes[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      antes = linha;
+    }
+    return antes[b.length];
+  }
+
+  /** O endereço mais parecido com o pedido, se houver um parecido o bastante. */
+  function sugerir(caminho: string, enderecos: Endereco[]) {
+    const partes = decodeURIComponent(caminho).split("/").filter(Boolean);
+    const pedido = comoEndereco(partes.at(-1) ?? "");
+    if (pedido.length < 3) return null;
+    // Se o pedido diz onde procurar (/posts/, /categories/, /series/, /tags/), procura só ali.
+    const onde = partes[0] === "posts" ? "artigo" : ["categories", "series"].includes(partes[0]) ? "livro" : partes[0] === "tags" ? "tag" : null;
+    let melhor: Endereco | null = null;
+    let nota = Infinity;
+    for (const e of enderecos) {
+      if (onde && e.tipo !== onde) continue;
+      const chave = comoEndereco(e.chave);
+      const nome = comoEndereco(e.nome);
+      let n = Math.min(distancia(pedido, chave), distancia(pedido, nome));
+      if (chave.includes(pedido) || nome.includes(pedido)) n = Math.min(n, 1);
+      if (n < nota) [nota, melhor] = [n, e];
+    }
+    return nota <= Math.max(2, Math.round(pedido.length * 0.25)) ? melhor : null;
+  }
+
+  const endereco = document.querySelector<HTMLElement>("[data-endereco]");
+  const texto = document.querySelector<HTMLElement>("[data-texto-endereco]");
+  const rasura = document.querySelector<SVGSVGElement>(".rasura");
+  if (endereco && texto && rasura) {
+    texto.textContent = location.host + decodeURI(location.pathname);
+    endereco.hidden = false;
+    // A rasura na medida do endereço, uma por linha quando ele quebra (depois das fontes, para a
+    // largura ser a de verdade): cada linha ganha o traço que vai e o que volta.
+    document.fonts.ready.then(() => {
+      const caixa = endereco.getBoundingClientRect();
+      rasura.setAttribute("viewBox", `0 0 ${(caixa.width + 8).toFixed(1)} ${caixa.height.toFixed(1)}`);
+      const svg = "http://www.w3.org/2000/svg";
+      [...texto.getClientRects()].forEach((linha, i) => {
+        const tracos = rasuraDeCaneta(linha.width + 8, linha.height, location.pathname + i);
+        tracos.forEach((d, k) => {
+          const traco = document.createElementNS(svg, "path");
+          traco.setAttribute("d", d);
+          traco.setAttribute("pathLength", "1");
+          traco.setAttribute("transform", `translate(${(linha.left - caixa.left).toFixed(1)} ${(linha.top - caixa.top).toFixed(1)})`);
+          traco.classList.add(k === 0 ? "vai" : "volta");
+          traco.style.setProperty("--linha", String(i));
+          rasura.append(traco);
+        });
+      });
+      rasura.classList.add("escrevendo");
+    });
+  }
+
+  const dados = document.querySelector("[data-enderecos]")?.textContent;
+  const achado = dados ? sugerir(location.pathname, JSON.parse(dados) as Endereco[]) : null;
+  const talvez = document.querySelector<HTMLElement>("[data-talvez]");
+  const sugestao = document.querySelector<HTMLAnchorElement>("[data-sugestao]");
+  if (achado && talvez && sugestao) {
+    sugestao.href = achado.href;
+    if (achado.cor) sugestao.style.setProperty("--cor", achado.cor);
+    sugestao.querySelector("[data-de-onde]")!.textContent =
+      achado.tipo === "artigo" ? (achado.livro ?? "") : achado.tipo === "livro" ? "Livro da coleção" : "Tag";
+    sugestao.querySelector("[data-nome-sugestao]")!.textContent = achado.titulo ?? achado.nome;
+    const sub = sugestao.querySelector<HTMLElement>("[data-sub-sugestao]")!;
+    sub.textContent = achado.sub ?? "";
+    sub.hidden = !achado.sub;
+    sugestao.querySelector("[data-ir-sugestao]")!.textContent =
+      achado.tipo === "artigo" ? "Ler o artigo" : achado.tipo === "livro" ? "Ver o livro" : "Ver os artigos da tag";
+    sugestao.classList.toggle("com-cor", Boolean(achado.cor));
+    talvez.hidden = false;
+  }
+</script>
 
 <style>
   .nao-encontrada {
-    max-width: calc(var(--coluna) + 96px + 2 * var(--pad));
-    padding-top: 56px;
+    padding-top: 26px;
   }
 
+  /* A folha da abertura da home (D33): o erro de um lado e a estante do outro, no centro da altura. */
   .caixa {
-    padding: 36px 48px 40px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 30px 52px;
+    align-items: center;
+    padding: 34px 44px 30px;
+  }
+
+  .erro {
+    min-width: 0;
+    max-width: 62ch;
+  }
+
+  .cena {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  /* O endereço pedido, na fonte do código, com a rasura por cima (legível por baixo). */
+  .endereco {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+    margin: 0 0 14px;
+    font-family: var(--font-codigo);
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--ink-2);
+    overflow-wrap: anywhere;
+  }
+
+  .rasura {
+    position: absolute;
+    top: 0;
+    left: -4px;
+    width: calc(100% + 8px);
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .rasura :global(path) {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1 2;
+    stroke-dashoffset: 1.001;
+  }
+
+  /* O primeiro traço vai (0,35s, 0,3s depois de abrir); o segundo volta, mais curto (0,25s). Quando
+     o endereço quebra, cada linha começa 0,1s depois da anterior. */
+  .rasura.escrevendo :global(path) {
+    stroke-dashoffset: 0;
+  }
+
+  .rasura.escrevendo :global(.vai) {
+    animation: rasurar 0.35s cubic-bezier(0.455, 0.03, 0.515, 0.955) calc(0.3s + var(--linha) * 0.1s) backwards;
+  }
+
+  .rasura.escrevendo :global(.volta) {
+    animation: rasurar 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) calc(0.69s + var(--linha) * 0.1s) backwards;
+  }
+
+  @keyframes rasurar {
+    from {
+      stroke-dashoffset: 1.001;
+    }
   }
 
   .codigo {
@@ -42,6 +249,96 @@ import { url } from "../lib/url";
     font-size: clamp(34px, 5vw, 52px);
   }
 
+  .explica {
+    margin: 0;
+  }
+
+  /* A sugestão chega depois da rasura (0,3s). */
+  .talvez {
+    margin-top: 22px;
+    animation: chegar 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1s backwards;
+  }
+
+  @keyframes chegar {
+    from {
+      opacity: 0;
+      translate: 0 6px;
+    }
+  }
+
+  .rotulo-talvez {
+    margin: 0 0 8px;
+    font-family: var(--font-ui);
+    font-size: 14.5px;
+    color: var(--ink-2);
+  }
+
+  /* O cartão da sugestão: de onde é (o livro, com o quadradinho na cor dele), o nome e o caminho. */
+  .sugestao {
+    display: inline-grid;
+    gap: 4px;
+    max-width: 100%;
+    padding: 14px 18px;
+    border: 1px solid var(--rule);
+    border-radius: var(--raio-painel);
+    color: var(--ink);
+    text-decoration: none;
+    transition:
+      border-color 0.15s,
+      background-color 0.15s;
+  }
+
+  .sugestao:hover {
+    border-color: var(--acento);
+    background: color-mix(in oklab, var(--acento) 5%, transparent);
+  }
+
+  .de-onde {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-ui);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--ink-2);
+  }
+
+  .com-cor .de-onde {
+    color: color-mix(in oklab, color-mix(in oklab, var(--cor), #fff var(--chip-branco)), var(--ink) var(--chip-tinta));
+  }
+
+  .com-cor .de-onde::before {
+    content: "";
+    flex: none;
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    background: color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro));
+  }
+
+  .nome-sugestao {
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    font-size: 19px;
+    line-height: 1.25;
+    text-wrap: balance;
+  }
+
+  .sugestao:hover .nome-sugestao {
+    color: var(--acento);
+  }
+
+  .ir-sugestao {
+    font-family: var(--font-ui);
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--acento);
+  }
+
+  .ir-sugestao::after {
+    content: " →";
+  }
+
   .caminhos {
     display: flex;
     flex-wrap: wrap;
@@ -52,9 +349,32 @@ import { url } from "../lib/url";
     font-size: 15px;
   }
 
-  @media (max-width: 760px) {
+  @media (prefers-reduced-motion: reduce) {
+    .rasura.escrevendo :global(path),
+    .talvez {
+      animation: none;
+    }
+  }
+
+  /* Tablet e celular: a estante desce para baixo do erro, no centro (como na home). */
+  @media (max-width: 1100px) {
     .caixa {
-      padding: 24px 22px 28px;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 30px;
+    }
+
+    .cena {
+      justify-self: center;
+    }
+  }
+
+  @media (max-width: 860px) {
+    .nao-encontrada {
+      padding-top: 20px;
+    }
+
+    .caixa {
+      padding: 26px 22px 24px;
     }
   }
 </style>

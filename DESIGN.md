@@ -757,7 +757,13 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   (`power3.out`), o conteúdo aparece depois de 0,2s e o véu escurece junto (`@starting-style`). Os
   resultados entram em sequência (0,3s, `stagger` 0,035s) e o termo buscado ganha um marca-texto que
   se estica em 0,45s, também no título do resultado. Esc, "Fechar" ou clique fora encolhem a janela
-  de volta para o campo (0,35s, `power2.in`), e o foco volta para ele.
+  de volta para o campo (0,35s, `power2.in`), e o foco volta para ele. Um marcador só (o fundo e o
+  fio azul) desliza até o resultado da vez com as setas, o foco e o mouse (0,28s, `power3.out`, D49).
+  Sem resultado, o termo ganha a ondinha de revisor na cor de Cuidado (0,45s) e a saída chega depois.
+- **A 404** (D49): a folha da abertura da home, com o erro e a estante; a caneta rasura o endereço
+  (0,35s e 0,25s, 0,3s depois de abrir) e, quando dá, a sugestão chega depois (0,3s).
+- **Os minutos que faltam** (D49, sumário): rodam como contador quando mudam (0,4s); no fim, "faltam
+  1 min" sobe e some e "chegou ao fim" sobe de baixo (0,3s).
 - **O artigo de perto** (D49, protótipo E3, só CSS e Web Animations): nos links do texto, a tinta
   azul sobe de baixo até 42% da linha (0,3s, `--link-tinta`); o Copiar do código e o "Copiar link"
   fazem o mesmo gesto (a folha da frente do ícone desliza sobre a de trás em 0,16s, ou os elos se

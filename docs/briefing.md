@@ -330,6 +330,11 @@ depois, o guia e as versões, como antes.
   troca como em todo o site (D47): o cabeçalho fica parado, a folha antiga sai e a nova chega
   subindo. Sem suporte do navegador, ou com `prefers-reduced-motion`, a página só abre.
 
+**Página não encontrada** (404, D49): a folha da abertura da home, com o erro de um lado e a estante
+do outro (os livros continuam no lugar, cada lombada leva ao livro). A caneta rasura o endereço
+pedido e, quando ele se parece com o de um artigo, de um livro ou de uma tag, a página sugere
+"Talvez seja este:". Embaixo, "Todos os artigos", "Página inicial" e a busca.
+
 ### 5.3 Artigo
 Referência: aba "Artigo" do protótipo.
 - **Topo**: a ilustração vem **antes do título** (recorte largo no computador, 3:2 no celular),
@@ -352,7 +357,7 @@ Referência: aba "Artigo" do protótipo.
   início do texto nas menores. Só aparece com 3 ou mais seções. No lateral (D33), um trilho: um ponto
   em cada seção, sem número (D36; o "3. " do título sai do nome, nas duas variantes), o fio das lidas, o ponto atual e a barra de porcentagem na cor do livro do post (D39), as
   subseções da atual abertas, e a atual sempre à vista. Embaixo, a barra fina com "19% lido" e o tempo
-  que falta (em fonte de código), que soma à barra do topo; só com JS. A coluna da esquerda começa
+  que falta (em fonte de código; os minutos rodam como contador, D49), que soma à barra do topo; só com JS. A coluna da esquerda começa
   **no topo da página, ao lado da ilustração** (D46), e a folha do topo e a do corpo têm a mesma
   largura, com o texto na mesma margem. Embaixo do sumário, **o livro do artigo, grande e de lado**
   (D46, como o da gaveta da home), num painel tingido, com a lupa que o amplia, o nome e "Ver o

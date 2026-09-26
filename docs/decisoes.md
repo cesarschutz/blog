@@ -1403,4 +1403,21 @@ nada muda.
      em CSS e Web Animations, sem GSAP (o artigo não o carrega): o SplitText do protótipo virou letras
      em `span` com a animação no CSS, que voltam a ser um texto só no fim (as letras soltas perdem o
      kerning). Com movimento reduzido, tudo troca seco.
+  8. **E4** (busca, 404 e números; `src/pages/404.astro`, `Busca.astro`, `Sumario.astro` e
+     `artigo.ts`): **a 404 ganhou vida com os livros**, como o Cesar pediu: é a folha da abertura da
+     home, com o erro de um lado e a estante inteira do outro ("os livros continuam no lugar"; cada
+     lombada leva ao livro). A caneta rasura o endereço pedido (dois traços, 0,3s depois de abrir;
+     um par por linha quando ele quebra) e, quando ele se parece com o de um artigo, de um livro ou de
+     uma tag (`/posts/java21`, `/posts/idempotencia/`, `/categories/Arquitetura de Sofware/`), a
+     página diz "Talvez seja este:" num cartão com o livro (o quadradinho na cor dele), o título e
+     "Ler o artigo →". A lista dos endereços vem na página e a comparação é por distância de edição e
+     por trecho do título. **Na busca**, um marcador só (o fundo e o fio azul) desliza até o resultado
+     da vez, seguindo as setas, o foco e o mouse (0,28s); o primeiro já vem marcado e o Enter no campo
+     abre o marcado. Sem resultado, o termo ganha **a ondinha de revisor** na cor de Cuidado (0,45s) e
+     embaixo vem a saída: "Tente um termo mais curto ou veja todas as tags". **No sumário**, os
+     minutos que faltam rodam como contador (o mesmo do filtro, 0,4s) e, no fim, "faltam 1 min" sobe e
+     dá lugar a "chegou ao fim". Correção em relação ao protótipo: a dica da busca vazia chega só por
+     opacidade (deslocada, passava do fim da janela e a barra de rolagem piscava). Nada disso usa
+     GSAP (a rasura e a ondinha são traçados de comprimento 1 com animação de CSS; o marcador, uma
+     transição que só muda de destino). Com movimento reduzido, tudo aparece pronto.
 - **Motivo:** o Cesar revisou os protótipos um a um e escolheu o que entra.
