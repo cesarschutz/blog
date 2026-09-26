@@ -520,6 +520,50 @@ a:hover > .titulo-sub,
   opacity: 0;
 }
 
+/*
+ * O traço da seção atual do menu (D49, Cabecalho.astro): entre duas seções, desliza de um item para o
+ * outro, por cima do cabeçalho; sem par (de uma página fora do menu, ou para uma), se escreve da
+ * esquerda para a direita, ou some pela direita, como a caneta que segue adiante.
+ */
+::view-transition-group(traco-do-menu) {
+  z-index: 101;
+  animation-duration: 0.42s;
+  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+::view-transition-old(traco-do-menu),
+::view-transition-new(traco-do-menu) {
+  height: 100%;
+}
+
+::view-transition-new(traco-do-menu):only-child {
+  animation: traco-vt-escreve 0.38s cubic-bezier(0.2, 0.75, 0.2, 1) both;
+}
+
+::view-transition-old(traco-do-menu):only-child {
+  animation: traco-vt-apaga 0.2s cubic-bezier(0.55, 0, 1, 0.45) both;
+}
+
+@keyframes traco-vt-escreve {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes traco-vt-apaga {
+  from {
+    clip-path: inset(0 0 0 0);
+  }
+
+  to {
+    clip-path: inset(0 0 0 100%);
+  }
+}
+
 /* Sem par na página nova (ou na antiga), o livro e o desenho saem e chegam com a folha. */
 ::view-transition-old(.livro):only-child,
 ::view-transition-old(desenho-do-post):only-child {
@@ -548,6 +592,27 @@ a:hover > .titulo-sub,
 
 :root.trocando-tema {
   view-transition-name: root !important;
+}
+
+/*
+ * O botão de tema (D49, SeletorTema.astro) fica fora da página que vira: por cima do círculo, com a
+ * imagem nova (viva), onde a lua vira sol (ou o contrário) enquanto o tema troca.
+ */
+.trocando-tema .botao-tema {
+  view-transition-name: botao-tema !important;
+}
+
+::view-transition-group(botao-tema) {
+  z-index: 102;
+  animation: none;
+}
+
+::view-transition-old(botao-tema) {
+  display: none;
+}
+
+::view-transition-new(botao-tema) {
+  animation: none;
 }
 
 :root:active-view-transition-type(tema)::view-transition-new(root) {

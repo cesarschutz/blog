@@ -5,27 +5,106 @@
  * vale até fechar o site (`cs-theme`, em sessionStorage), e o script do <head> (Base.astro) a aplica
  * antes da primeira pintura. A troca se espalha em círculo a partir do botão (D42). Sem JS, o botão
  * some e o tema segue o sistema.
+ *
+ * O sol e a lua (D49, protótipo E1, propostas A e B; a B reabre a D44, em que o ícone só trocava):
+ * - A: no hover, o sol gira 22° e a lua balança 14° (0,5s, só CSS);
+ * - B: a troca anima o ícone. Para o escuro, a lua se enche até virar o miolo do sol (MorphSVG, 0,4s)
+ *   e os raios se escrevem de dentro para fora, um depois do outro (DrawSVG, 0,03s entre eles); para o
+ *   claro, os raios recolhem primeiro e o círculo é "mordido" de volta. O botão fica por cima do
+ *   círculo da troca (base.css, `botao-tema`). O MorphSVG só é baixado ao passar o mouse, tocar ou
+ *   focar o botão; sem ele ainda, ou com movimento reduzido, o ícone troca seco.
  */
 import { ICONES } from "../lib/icones";
+
+// O miolo do sol (um círculo como caminho, para virar a lua) e os raios, cada um de dentro para fora.
+const SOL = "M12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8z";
+const RAIOS = [
+  "M12 4.5V2.5",
+  "M18 6l1.4-1.4",
+  "M19.5 12h2",
+  "M18 18l1.4 1.4",
+  "M12 19.5v2",
+  "M6 18l-1.4 1.4",
+  "M4.5 12h-2",
+  "M6 6 4.6 4.6",
+];
+const LUA = ICONES.lua.match(/d="([^"]+)"/)![1];
 ---
 
-<button type="button" class="botao-tema" aria-label="Usar o tema escuro" title="Tema escuro" data-botao-tema hidden>
-  <svg class="i-lua" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.lua} />
-  <svg class="i-sol" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.sol} />
+<button type="button" class="botao-tema" aria-label="Usar o tema escuro" title="Tema escuro" data-botao-tema data-sol={SOL} data-lua={LUA} hidden>
+  <svg class="icone-tema" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <g class="raios">{RAIOS.map((d) => <path d={d} />)}</g>
+    <path class="corpo" d={LUA} />
+  </svg>
 </button>
 
 <script>
+  import { carregarMorfo, movimentoReduzido, type GSAP } from "../scripts/gsap";
   import { aoMudarTema, temaNaTela, trocarTema } from "../scripts/tema";
 
   const botao = document.querySelector<HTMLButtonElement>("[data-botao-tema]");
   if (botao) {
-    botao.addEventListener("click", () => trocarTema(temaNaTela() === "dark" ? "light" : "dark", botao));
+    const corpo = botao.querySelector<SVGPathElement>(".corpo")!;
+    const grupoRaios = botao.querySelector<SVGGElement>(".raios")!;
+    const raios = [...grupoRaios.querySelectorAll<SVGPathElement>("path")];
+    const SOL = botao.dataset.sol!;
+    const LUA = botao.dataset.lua!;
+    let gsap: GSAP | null = null;
+    let animando: gsap.core.Timeline | null = null;
+
+    /** O ícone parado: a lua no claro, o sol (com os raios) no escuro. */
+    function desenharIcone() {
+      const escuro = temaNaTela() === "dark";
+      botao!.dataset.tela = escuro ? "escuro" : "claro";
+      corpo.setAttribute("d", escuro ? SOL : LUA);
+    }
+
+    /** A troca animada (B): o ícone vai para o do tema novo enquanto o círculo se espalha. */
+    function animarIcone(para: "light" | "dark") {
+      if (!gsap || movimentoReduzido.matches) return;
+      const g = gsap;
+      animando?.kill();
+      const tl = g.timeline({
+        onComplete: () => {
+          animando = null;
+          g.set([grupoRaios, ...raios], { clearProps: "all" });
+          desenharIcone();
+        },
+      });
+      animando = tl;
+      // Os raios à vista durante a troca (parados, só no escuro).
+      g.set(grupoRaios, { visibility: "visible" });
+      if (para === "dark") {
+        tl.to(corpo, { morphSVG: SOL, duration: 0.4, ease: "power2.inOut" })
+          .fromTo(grupoRaios, { rotation: -30, svgOrigin: "12 12" }, { rotation: 0, duration: 0.5, ease: "power3.out" }, 0.12)
+          .fromTo(raios, { drawSVG: "0% 0%" }, { drawSVG: "0% 100%", duration: 0.22, stagger: 0.03, ease: "power2.out" }, 0.18);
+      } else {
+        tl.fromTo(raios, { drawSVG: "0% 100%" }, { drawSVG: "0% 0%", duration: 0.15, stagger: 0.02, ease: "power2.in" }).to(
+          corpo,
+          { morphSVG: LUA, duration: 0.4, ease: "power2.inOut" },
+          0.1,
+        );
+      }
+    }
+
+    botao.addEventListener("click", () => {
+      const para = temaNaTela() === "dark" ? "light" : "dark";
+      animarIcone(para);
+      trocarTema(para, botao);
+    });
     aoMudarTema(() => {
       const escuro = temaNaTela() === "dark";
-      botao.dataset.tela = escuro ? "escuro" : "claro";
       botao.setAttribute("aria-label", escuro ? "Usar o tema claro" : "Usar o tema escuro");
       botao.title = escuro ? "Tema claro" : "Tema escuro";
+      // No meio da troca animada, quem desenha é ela; ao terminar, volta ao ícone parado.
+      if (!animando) desenharIcone();
+      else botao.dataset.tela = escuro ? "escuro" : "claro";
     });
+    // O MorphSVG vem só quando o botão vai ser usado: ao passar o mouse, tocar ou focar.
+    const trazer = () => void carregarMorfo().then((g) => (gsap = g));
+    if (!movimentoReduzido.matches) {
+      for (const evento of ["pointerenter", "pointerdown", "focusin"]) botao.addEventListener(evento, trazer, { once: true, passive: true });
+    }
     botao.hidden = false;
   }
 </script>
@@ -55,19 +134,48 @@ import { ICONES } from "../lib/icones";
   }
 
   svg {
-    display: none;
-    grid-area: 1 / 1;
     width: 17px;
     height: 17px;
+    overflow: visible;
     fill: none;
     stroke: currentColor;
     stroke-width: 1.8;
     stroke-linecap: round;
     stroke-linejoin: round;
+    transition: rotate 0.5s cubic-bezier(0.2, 0.75, 0.2, 1);
   }
 
-  [data-tela="claro"] .i-lua,
-  [data-tela="escuro"] .i-sol {
-    display: block;
+  /* A lua no claro (sem os raios); o sol, com eles, no escuro. */
+  [data-tela="claro"] .raios {
+    visibility: hidden;
+  }
+
+  /* A (D49): no hover (ou com o foco), o sol gira 22° e a lua balança 14°. */
+  @media (hover: hover) {
+    [data-tela="escuro"]:hover svg {
+      rotate: 22deg;
+    }
+
+    [data-tela="claro"]:hover svg {
+      rotate: -14deg;
+    }
+  }
+
+  [data-tela="escuro"]:focus-visible svg {
+    rotate: 22deg;
+  }
+
+  [data-tela="claro"]:focus-visible svg {
+    rotate: -14deg;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    svg {
+      transition: none;
+    }
+
+    [data-tela]:is(:hover, :focus-visible) svg {
+      rotate: none;
+    }
   }
 </style>

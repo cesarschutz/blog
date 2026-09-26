@@ -1351,4 +1351,21 @@ nada muda.
      conta), ele sai, espera ao lado enquanto o aberto é guardado e a página abre; antes, volta
      perdendo velocidade. No celular, sem arrasto; se o topo estiver fora da tela, o livro aberto só
      chega por cima da pilha. Voltar pelo histórico devolve a pilha e o topo como estavam.
+  5. **E1** (cabeçalho e rodapé; `src/lib/traco.ts`, `traco.css`, `Cabecalho.astro`,
+     `Rodape.astro`, `SeletorTema.astro`): o sublinhado reto da seção atual virou um **traço de
+     caneta**, torto de um jeito próprio em cada item (o tremor sai de uma semente tirada do nome, e
+     fica igual em toda visita), e **desliza de um item para o outro** na troca de página (View
+     Transition `traco-do-menu`); de uma página fora do menu, ele se escreve, e para uma, some pela
+     direita. O mouse escreve um traço leve (0,32s) que, ao sair, termina de passar e some pela
+     direita, como a caneta que segue adiante. No celular, o traço da seção atual se escreve quando a
+     folha do menu termina de descer (no lugar do tracinho de 14px). A lupa inclina no hover; a tecla
+     ⌘K afunda 1,5px por 120ms quando é usada (pelo atalho ou pelo clique) e o campo dá um toque
+     quando a busca nasce dele. **Sol e lua** (propostas A e B; **a B reabre a D44**, em que o ícone só
+     trocava): no hover, o sol gira 22° e a lua balança 14°; na troca, a lua se enche até virar o miolo
+     do sol (MorphSVG, 0,4s) e os raios se escrevem de dentro para fora; de volta ao claro, os raios
+     recolhem e a lua é "mordida" de volta. O botão fica por cima do círculo da troca, com o ícone
+     animando. O MorphSVG e o DrawSVG vêm no pacote do GSAP (sem instalar nada) e só são baixados ao
+     passar o mouse, tocar ou focar o botão. No rodapé, o RSS dá o sinal (os arcos se escrevem a partir
+     do ponto, um depois do outro) e os links ganham o mesmo traço leve do menu. Com movimento
+     reduzido, os traços aparecem prontos e o ícone troca seco.
 - **Motivo:** o Cesar revisou os protótipos um a um e escolheu o que entra.

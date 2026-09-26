@@ -731,7 +731,20 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   (0,55s); voltando ao claro, o escuro se fecha de fora para dentro até sumir no botão (a mesma curva,
   ao contrário). View Transition do próprio documento (tipos "tema" e "tema-fecha", `trocarTema` em
   `tema.ts`); a página inteira vira de uma vez (os livros perdem o nome de transição durante a troca).
-  O ícone só troca, sem animar. A faixa de luz da estante em repouso saiu (D44).
+  O botão fica por cima do círculo, e o ícone anima (D49, reabre a D44): indo para o escuro, a lua se
+  enche até virar o miolo do sol (MorphSVG, 0,4s, `power2.inOut`) e os raios giram de -30° a 0° e se
+  escrevem de dentro para fora (DrawSVG, 0,22s, 0,03s entre eles); voltando ao claro, os raios
+  recolhem (0,15s) e a lua é "mordida" de volta. No hover, o sol gira 22° e a lua balança 14° (0,5s).
+  A faixa de luz da estante em repouso saiu (D44).
+- **A caneta que navega** (D49, `traco.css`, `src/lib/traco.ts`): a seção atual do menu é sublinhada
+  por um traço de caneta (2,2px, azul-tinta), torto de um jeito próprio em cada item e sempre igual;
+  na troca de página, ele desliza de um item para o outro (View Transition `traco-do-menu`, 0,42s);
+  sem par, se escreve (0,38s) ou some pela direita (0,2s). O mouse escreve um traço leve (1,5px, 50%)
+  da esquerda para a direita (0,32s) e, ao sair, ele termina de passar e some pela direita (0,22s). Os
+  links do rodapé usam o mesmo traço leve. No celular, o traço da seção atual se escreve quando a
+  folha do menu termina de descer. A lupa inclina 14° no hover, a tecla ⌘K afunda 1,5px por 120ms
+  quando é usada e o campo dá um toque (98,5% para 100%) quando a busca nasce dele. No rodapé, os
+  arcos do RSS se escrevem a partir do ponto, um depois do outro (0,18s cada).
 - **Caneta da leitura** (D45, `BarraLeitura.astro`): o traço do progresso corre sobre o fio do
   cabeçalho e a caneta acompanha a ponta, ligada à rolagem (sem animação própria; só a caneta aparece
   por opacidade, 0,2s). No celular, o traço acompanha o cabeçalho que some e volta (`top`, 0,25s).

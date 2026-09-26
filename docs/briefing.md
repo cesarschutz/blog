@@ -123,7 +123,8 @@ camada visual: estrutura, conteúdo, rotas e comportamento seguem as seções 5 
 - Tema: o site **sempre abre no tema do sistema** (D33). O botão do cabeçalho alterna direto entre
   claro e escuro (lua ou sol, sem menu, D39), e a escolha vale até fechar o site (`sessionStorage`),
   com script anti-piscada no `<head>`. Trocar o tema só muda as cores: nenhum tamanho depende do
-  tema, e a página não sai do lugar. A troca se espalha em círculo a partir do botão (D42).
+  tema, e a página não sai do lugar. A troca se espalha em círculo a partir do botão (D42), e o ícone
+  anima: a lua vira sol e o sol vira lua (D49, que reabre a D44).
 - **Categorias = livros de uma coleção numerada, no estilo "edição de estudo"; séries = revistas
   técnicas** (D30, D32). A regra visual de capas, lombadas, estante, livros e séries novos está em
   **`docs/capas/CAPAS.md`**, com as imagens de referência em `docs/capas/referencia/`. Os dados de
@@ -191,8 +192,9 @@ Referência: aba "Home" do protótipo.
 - **Cabeçalho** (D31): **fixo no alto** enquanto a página rola, com o fundo da página levemente
   translúcido e um **fio embaixo sempre à vista** (D44), que ganha uma sombra suave depois de rolar. A marca à esquerda (D33); à direita
   **Artigos, Categorias, Séries e Tags**, a busca como campo (com ⌘K; só o ícone até 1100px), os ícones
-  do GitHub e do LinkedIn e o botão de tema (§4.3, D39). O RSS saiu do menu (fica no painel lateral e no
-  rodapé). Até 860px (D46), **sempre à vista** e numa linha só: a marca, a busca (só o ícone), o tema
+  do GitHub e do LinkedIn e o botão de tema (§4.3, D39). A seção atual é sublinhada por um traço de
+  caneta, que desliza de um item para o outro na troca de página (D49). O RSS saiu do menu (fica no
+  painel lateral e no rodapé). Até 860px (D46), **sempre à vista** e numa linha só: a marca, a busca (só o ícone), o tema
   e o **botão de menu** (dois traços que viram um X), que abre Artigos, Categorias, Séries e Tags numa
   folha que desce do cabeçalho, cada um com uma nota curta ("Os livros da coleção"), e o GitHub e o
   LinkedIn embaixo, com um véu sobre a página. A altura dele (`--altura-topo`, 60px) é descontada

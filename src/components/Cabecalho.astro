@@ -12,12 +12,19 @@
  * o lugar da marca depois que a leitura chega à primeira seção: a seção nova entra por baixo ao descer
  * e por cima ao subir, e o toque abre o sumário numa folha (Sumario.astro, variante "folha"). O
  * script que acompanha a leitura é o do artigo (src/scripts/artigo.ts).
+ *
+ * A caneta também navega (D49, protótipo E1): a seção atual é sublinhada por um traço de caneta, torto
+ * de um jeito próprio em cada item, que desliza de um item para o outro na troca de página (View
+ * Transition); o mouse escreve um traço leve (traco.css). A lupa da busca se inclina no hover, e a
+ * tecla ⌘K afunda quando é usada (Busca.astro).
  */
 import Marca from "./Marca.astro";
 import SeletorTema from "./SeletorTema.astro";
 import { AUTOR } from "../data/site";
 import { ICONES } from "../lib/icones";
+import { tracoDeCaneta } from "../lib/traco";
 import { url } from "../lib/url";
+import "../styles/traco.css";
 
 interface Props {
   atual?: "artigos" | "categorias" | "series" | "tags";
@@ -53,7 +60,19 @@ const ITENS = [
     {
       ITENS.map((item, i) => (
         <a href={item.href} aria-current={atual === item.chave ? "page" : undefined} style={`--i:${i}`}>
-          <span class="nome">{item.nome}</span>
+          <span class="nome">
+            {item.nome}
+            <svg class="traco traco-leve" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"
+              ><path d={tracoDeCaneta(item.nome, 101)} /></svg
+            >
+            {
+              atual === item.chave && (
+                <svg class="traco traco-atual" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"
+                  ><path d={tracoDeCaneta(item.nome)} /></svg
+                >
+              )
+            }
+          </span>
           <span class="nota">{item.nota}</span>
         </a>
       ))
@@ -327,12 +346,20 @@ const ITENS = [
     color: var(--ink);
   }
 
+  /* A seção atual: o nome em azul-tinta, sublinhado pelo traço de caneta (traco.css). */
   .menu [aria-current="page"] {
     color: var(--acento);
-    text-decoration: underline;
-    text-decoration-color: var(--acento);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.4em;
+  }
+
+  .menu .nome {
+    position: relative;
+  }
+
+  /* Entre as páginas, o traço da seção atual desliza para o item novo (base.css). */
+  @media (min-width: 860.02px) {
+    .traco-atual {
+      view-transition-name: traco-do-menu;
+    }
   }
 
   /* A busca parece um campo, mas é um botão: abre o diálogo (Busca.astro). */
@@ -374,8 +401,40 @@ const ITENS = [
     height: 16px;
   }
 
+  /* A lupa inclina e sobe um nada no hover, como quem pega a lupa (D49). */
+  .campo-busca svg {
+    transform-box: fill-box;
+    transform-origin: 40% 40%;
+    transition: transform 0.28s cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  .campo-busca:is(:hover, :focus-visible) svg {
+    transform: rotate(-14deg) translateY(-1px);
+  }
+
+  /* A tecla desenhada responde à de verdade: afunda 1,5px e perde a sombra (Busca.astro, .apertada). */
   .campo-busca kbd {
     margin-left: auto;
+    box-shadow: 0 1.5px 0 var(--rule);
+    transition:
+      transform 0.09s,
+      box-shadow 0.09s;
+  }
+
+  .campo-busca kbd:global(.apertada) {
+    transform: translateY(1.5px);
+    box-shadow: 0 0 0 var(--rule);
+  }
+
+  /* O campo dá um toque (98,5% para 100%) no instante em que a janela da busca nasce dele. */
+  .campo-busca:global(.tocado) {
+    animation: campo-tocado 0.35s cubic-bezier(0.2, 0.75, 0.2, 1) 0.1s backwards;
+  }
+
+  @keyframes campo-tocado {
+    from {
+      scale: 0.985;
+    }
   }
 
   /* GitHub e LinkedIn: só os ícones, sem borda, colados ao botão de tema. */
@@ -571,14 +630,13 @@ const ITENS = [
       color: var(--acento);
     }
 
-    .menu [aria-current="page"] .nome::before {
-      content: "";
-      display: inline-block;
-      width: 14px;
-      height: 2px;
-      margin-right: 10px;
-      vertical-align: 0.32em;
-      background: var(--acento);
+    /* O traço da seção atual se escreve quando a folha termina de descer (D49). */
+    :global(:root[data-menu-aberto]) .menu .traco-atual {
+      animation: traco-escreve 0.38s cubic-bezier(0.2, 0.75, 0.2, 1) 0.42s backwards;
+    }
+
+    .menu .traco {
+      bottom: -6px;
     }
 
     .menu-perfis {
@@ -642,8 +700,19 @@ const ITENS = [
     .tracos span,
     .lugar-marca > :global(.marca),
     .vaga,
-    .vaga svg {
+    .vaga svg,
+    .campo-busca svg,
+    .campo-busca kbd {
       transition: none !important;
+    }
+
+    .campo-busca:is(:hover, :focus-visible) svg {
+      transform: none;
+    }
+
+    :global(:root[data-menu-aberto]) .menu .traco-atual,
+    .campo-busca:global(.tocado) {
+      animation: none;
     }
   }
 

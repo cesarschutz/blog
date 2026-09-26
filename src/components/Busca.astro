@@ -176,10 +176,25 @@
     Flip.fit(dialogo, botao, { duration: 0.35, ease: "power2.in", scale: true, onComplete: fim });
   }
 
+  // A tecla desenhada responde à de verdade (D49): afunda por 120ms, e o campo dá um toque no instante
+  // em que a janela nasce dele (Cabecalho.astro, .apertada e .tocado). Pelo atalho ou pelo clique.
+  function apertarTecla() {
+    const botao = botaoAVista();
+    if (!botao || movimentoReduzido.matches) return;
+    const tecla = botao.querySelector<HTMLElement>("[data-atalho]");
+    tecla?.classList.add("apertada");
+    setTimeout(() => tecla?.classList.remove("apertada"), 120);
+    botao.classList.remove("tocado");
+    void botao.offsetWidth;
+    botao.classList.add("tocado");
+    botao.addEventListener("animationend", () => botao.classList.remove("tocado"), { once: true });
+  }
+
   function abrir(consulta?: string) {
     if (!dialogo.open) {
       primeiroResultadoMarcado = false;
       performance.mark("busca:aberta");
+      apertarTecla();
       dialogo.showModal();
       nascer();
       obterMotor()

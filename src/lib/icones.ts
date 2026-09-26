@@ -18,7 +18,8 @@ export const ICONES = {
   lua: '<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
   sol: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4"/>',
   seta: '<path d="M5 12h14M13 6l6 6-6 6"/>',
-  rss: '<path d="M5 5a14 14 0 0 1 14 14M5 11a8 8 0 0 1 8 8"/><circle cx="6" cy="18" r="1.4"/>',
+  // Os dois arcos separados, do de dentro para o de fora: o sinal se escreve no hover (traco.css, D49).
+  rss: '<path class="arco-rss" pathLength="1" d="M5 11a8 8 0 0 1 8 8"/><path class="arco-rss" pathLength="1" d="M5 5a14 14 0 0 1 14 14"/><circle cx="6" cy="18" r="1.4"/>',
   relogio: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   // Blog atual (D33): calendário da data, os dois modos da lista, GitHub e LinkedIn do cabeçalho.
   calendario: '<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',

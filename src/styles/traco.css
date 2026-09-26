@@ -1,0 +1,93 @@
+/*
+ * O traço de caneta do cabeçalho e do rodapé (D49, protótipo E1; o caminho sai de src/lib/traco.ts).
+ * - O traço leve (azul-tinta a 50%) se escreve da esquerda para a direita quando o mouse ou o foco
+ *   chega (0,32s) e, ao sair, termina de passar e some pela direita (0,22s), como a caneta que segue
+ *   adiante. Só CSS: a escrita é uma animação que começa sempre do início; a saída, uma transição.
+ * - O traço da seção atual (2,2px) fica parado; entre as páginas, desliza de um item para o outro
+ *   (View Transition, `traco-do-menu`, base.css).
+ * Com movimento reduzido, os traços aparecem prontos, sem desenhar.
+ */
+.traco {
+  position: absolute;
+  left: -2px;
+  bottom: -7px;
+  width: calc(100% + 4px);
+  height: 8px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.traco path {
+  fill: none;
+  stroke: var(--acento);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.traco-atual {
+  clip-path: inset(-4px 0 -4px 0);
+}
+
+.traco-atual path {
+  stroke-width: 2.2;
+}
+
+.traco-leve {
+  opacity: 0.5;
+  clip-path: inset(-4px 0 -4px 100%);
+  transition: clip-path 0.22s cubic-bezier(0.55, 0, 1, 0.45);
+}
+
+.traco-leve path {
+  stroke-width: 1.5;
+}
+
+:is(a:hover, a:focus-visible):not([aria-current]) .traco-leve {
+  clip-path: inset(-4px 0 -4px 0);
+  transition: none;
+  animation: traco-escreve 0.32s cubic-bezier(0.2, 0.75, 0.2, 1);
+}
+
+@keyframes traco-escreve {
+  from {
+    clip-path: inset(-4px 100% -4px 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .traco-leve,
+  :is(a:hover, a:focus-visible):not([aria-current]) .traco-leve {
+    transition: none;
+    animation: none;
+  }
+}
+
+/*
+ * O sinal do RSS (D49): ao passar o mouse, os dois arcos somem e se escrevem de novo a partir do
+ * ponto, um depois do outro (0,18s cada, 0,1s entre eles).
+ */
+a:is(:hover, :focus-visible) .arco-rss {
+  stroke-dasharray: 1;
+  animation: sinal-rss 0.18s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.05s backwards;
+}
+
+a:is(:hover, :focus-visible) .arco-rss + .arco-rss {
+  animation-delay: 0.15s;
+}
+
+@keyframes sinal-rss {
+  from {
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a:is(:hover, :focus-visible) .arco-rss {
+    animation: none;
+  }
+}

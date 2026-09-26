@@ -57,6 +57,18 @@ export function carregarTraco() {
   return traco;
 }
 
+/** O GSAP com MorphSVG e DrawSVG (o sol e a lua do botão de tema, D49). */
+let morfo: Promise<GSAP> | undefined;
+export function carregarMorfo() {
+  morfo ??= Promise.all([carregarGsap(), import("gsap/MorphSVGPlugin"), import("gsap/DrawSVGPlugin")]).then(
+    ([gsap, { MorphSVGPlugin }, { DrawSVGPlugin }]) => {
+      gsap.registerPlugin(MorphSVGPlugin, DrawSVGPlugin);
+      return gsap;
+    },
+  );
+  return morfo;
+}
+
 /**
  * Começa o download antes do uso: no primeiro mouse, toque ou foco em `alvo`, ou quando a página
  * fica ociosa (no máximo em 4s).

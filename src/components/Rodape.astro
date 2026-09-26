@@ -3,11 +3,16 @@
  * Rodapé (D33), como no blog atual: à esquerda a marca, a frase do blog e "Assinar via RSS"; à
  * direita, Conteúdo (Artigos, Categorias, Séries e Tags) e Autor (LinkedIn e GitHub); embaixo, o ano,
  * o nome e a licença. O tema saiu daqui: fica no botão de tema do cabeçalho.
+ *
+ * O rodapé fala a língua do cabeçalho (D49, protótipo E1): os links ganham o mesmo traço leve de
+ * caneta no hover, e o sinal do RSS se escreve de novo, arco por arco (traco.css).
  */
 import Marca from "./Marca.astro";
 import { AUTOR, TEXTOS } from "../data/site";
 import { ICONES } from "../lib/icones";
+import { tracoDeCaneta } from "../lib/traco";
 import { url } from "../lib/url";
+import "../styles/traco.css";
 
 const ano = new Date().getFullYear();
 const grupos = [
@@ -48,6 +53,9 @@ const grupos = [
               <li>
                 <a href={l.href} rel={"externo" in l ? "me" : undefined}>
                   {l.nome}
+                  <svg class="traco traco-leve" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"
+                    ><path d={tracoDeCaneta(l.nome, 5)} /></svg
+                  >
                 </a>
               </li>
             ))}
@@ -127,8 +135,13 @@ const grupos = [
   }
 
   .grupo a {
+    position: relative;
     color: var(--ink-2);
     text-decoration: none;
+  }
+
+  .grupo a .traco {
+    bottom: -6px;
   }
 
   .grupo a:hover {
