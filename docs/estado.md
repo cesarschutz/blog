@@ -127,9 +127,8 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
 
 ## Próximos passos
 
-0. Publicar a D39 e a D40: o Cesar dá o push quando revisar. Na D40, aguardam o OK dele: como mostrar
-   os artigos além dos 6 na página do livro aberto (proposta: virar a página) e se a capa entreaberta
-   da ideia 5 deve abrir mais que -28° para as páginas aparecerem melhor.
+0. Publicar a D39 e a D40: o Cesar dá o push quando revisar. Os ajustes pedidos depois da D40 já
+   entraram: "Próximas ▸" virando a folha, capa entreaberta a -40° e a pilha mais grossa.
 0.1. Publicar a auditoria de acabamento (D37, D38): o Cesar dá o push quando revisar. Fora dela ficou
    o lote 7 (topo do post e miniatura da lista mais compactos no celular), que mexe na densidade da
    D27 e da D33.
