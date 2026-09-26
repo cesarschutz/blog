@@ -1017,3 +1017,11 @@ nada muda.
      ao post pela transição do cartão (lote 2) já traz o desenho pronto e ele não se redesenha
      (`data-chegada`, posto pelo `pagereveal` no `<head>`). Nos cartões das listas, passar o mouse ou
      focar refaz o traço em 0,5s, uma vez por cartão por visita. Na impressão, sempre inteiro.
+  4. **A busca nasce do campo** (`Busca.astro`, Flip): com clique, ⌘K, Ctrl+K ou "/", a janela
+     cresce a partir do campo do cabeçalho (o botão à vista; no celular, o ícone) em 0,5s
+     (`power3.out`), o conteúdo aparece depois de 0,2s e o véu escurece junto (CSS,
+     `@starting-style`). Os resultados entram em sequência (0,3s, `stagger` 0,035s) e o termo buscado
+     ganha um marca-texto que se estica em 0,45s, também no título do resultado (sem acento e sem
+     caixa, como a busca). Esc, "Fechar" ou clique fora encolhem a janela de volta para o campo
+     (0,35s, `power2.in`), e o foco volta para ele (também quando a busca abriu pelo teclado). O
+     primeiro Esc com texto no campo só limpa o texto (comportamento do navegador, como antes).

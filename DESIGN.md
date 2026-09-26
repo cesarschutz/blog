@@ -635,6 +635,10 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
     hachura (0,6s) e os textos (0,4s). Tracejados só por opacidade. Chegando pela transição do
     cartão, o desenho já vem pronto. Nos cartões, o mouse (ou o foco) refaz o traço em 0,5s, uma vez
     por cartão por visita.
+  - **A busca nasce do campo**: a janela cresce do campo do cabeçalho (Flip, 0,5s, `power3.out`),
+    o conteúdo entra depois de 0,2s, os resultados em sequência (0,3s, `stagger` 0,035s) e o termo
+    ganha um marca-texto que se estica (0,45s). Fechar encolhe de volta para o campo (0,35s,
+    `power2.in`), com o foco voltando a ele.
 - **Lousa de passos** (D39): com a rolagem só na tela de 1024px ou mais e sem movimento reduzido
   (passos a 40% da tela, o atual inteiro e os outros esmaecidos); fora disso, passo a passo com
   "◀ 2 de 5 ▶", pontos e deslizar.
