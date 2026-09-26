@@ -1,3 +1,18 @@
 {
-  "buildPath": "code"
+  "buildPath": "code",
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          ".impeccable/review/caneta/index.html"
+        ],
+        "createdAt": "2026-09-26T20:41:26.218Z",
+        "reason": "D26 e DESIGN.md: #F1F0EB é o papel da página do blog (neutral, Folhas claras), decidido pelo Cesar; a página de revisão (fora do git) usa a paleta do próprio blog"
+      }
+    ]
+  }
 }
