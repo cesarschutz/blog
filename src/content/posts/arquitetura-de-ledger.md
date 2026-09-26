@@ -8,7 +8,7 @@ category: Arquitetura de Software
 draft: false
 ---
 
-Todo sistema que movimenta valor — dinheiro, créditos, pontos — esbarra nos mesmos problemas: como garantir que nada seja criado nem destruído por acidente, como responder "qual era o saldo naquela data" e como perceber quando o número exibido divergiu da verdade. Os artigos resumidos aqui chegam à mesma resposta: **ledger append-only + saldo materializado + conciliação**.
+Todo sistema que movimenta valor — dinheiro, créditos, pontos — esbarra nos mesmos problemas: como garantir que nada seja criado nem destruído por acidente, como responder "qual era o saldo naquela data" e como perceber quando o número exibido divergiu da verdade. Os artigos resumidos aqui chegam à mesma resposta: :marca[**ledger append-only + saldo materializado + conciliação**].
 
 Este post resume 12 artigos sobre o assunto — as séries *How to Scale a Ledger* e *Accounting for Developers*, da Modern Treasury, e mais três textos independentes —, com os exemplos de código convertidos para Java. Cada seção traz a ideia central do artigo, os pontos importantes e o link para o original. Se contabilidade é novidade para você, vale ler antes as seções 8 a 10 (os fundamentos) e depois voltar ao começo.
 
@@ -23,7 +23,7 @@ Os termos abaixo aparecem o tempo todo no post:
 - **Ledger (livro-razão):** o registro de todos os movimentos de valor de um sistema.
 - **Double-entry (partidas dobradas):** todo movimento tem pelo menos um débito e um crédito, e a soma dos débitos é igual à soma dos créditos. Dinheiro sempre sai de algum lugar e entra em outro.
 - **Débito e crédito:** não significam "tira" e "põe". O efeito de cada um depende do tipo da conta (a *normalidade*, explicada nas seções 3 e 8).
-- **Append-only:** só se acrescentam registros; nada é alterado nem apagado. Um erro se corrige com um novo lançamento, que compensa o anterior.
+- **Append-only:** só se acrescentam registros; nada é alterado nem apagado. :marca[Um erro se corrige com um novo lançamento], que compensa o anterior.
 - **Saldo materializado:** saldo pré-calculado e guardado para leitura rápida, mas sempre derivado dos lançamentos.
 - **Drift:** divergência entre o saldo guardado e a soma dos lançamentos.
 - **Conciliação:** comparar dois registros que deveriam bater (saldo guardado × lançamentos, ou ledger × extrato do banco) e tratar as diferenças.
@@ -32,17 +32,17 @@ Os termos abaixo aparecem o tempo todo no post:
 
 ## 1. Ledger confiável em sistema event-driven, sem transações gigantes
 
-**Visão geral:** como construir um ledger de grau financeiro num sistema distribuído e orientado a eventos **sem** envolver cada operação numa transação de banco gigante. A consistência vem de concorrência otimista, particionamento e restrições de unicidade — não de locks globais.
+**Visão geral:** como construir um ledger de grau financeiro num sistema distribuído e orientado a eventos **sem** envolver cada operação numa transação de banco gigante. :marca[A consistência vem de concorrência otimista, particionamento e restrições de unicidade] — não de locks globais.
 
 **Pontos importantes:**
 
 - **Event sourcing:** cada mudança vira um evento imutável (depósito, saque, bloqueio de valor). Em vez de guardar só o saldo final, você guarda todos os eventos, e o saldo pode ser reconstruído a partir deles. Isso dá trilha de auditoria completa e permite reprocessar tudo (*replay*) se a lógica mudar.
 - **CQRS (separação entre comando e consulta):** o lado de comando recebe "Sacar \$30" e, se o comando for válido, emite o evento `FundsWithdrawn`. O lado de consulta assina os eventos e atualiza um *read model* (uma tabela otimizada para leitura, como `account_balances`). A consulta de saldo lê essa tabela em vez de reprocessar todos os eventos.
-- **O problema de concorrência:** dois eventos quase simultâneos na mesma conta (depósito de \$50 e saque de \$30) podem ler dados desatualizados e perder ou contar dinheiro em dobro se não houver controle.
+- **O problema de concorrência:** dois eventos quase simultâneos na mesma conta (depósito de \$50 e saque de \$30) podem ler dados desatualizados e :marca[perder ou contar dinheiro em dobro] se não houver controle.
 - **Três técnicas para resolver sem transação gigante:**
-  1. **Controle de concorrência otimista (OCC):** cada conta — o *aggregate*, no vocabulário de DDD — tem uma `version` inteira. Ao gravar um evento, você informa a versão que leu; se ela mudou porque outro evento entrou antes, a gravação falha e você recarrega o estado e tenta de novo (*compare-and-swap*). O assunto é aprofundado em [Bloqueio otimista e pessimista](/posts/bloqueio-otimista-e-pessimista/).
+  1. **Controle de concorrência otimista (OCC):** cada conta — o *aggregate*, no vocabulário de DDD — tem uma `version` inteira. Ao gravar um evento, você informa a versão que leu; se ela mudou porque outro evento entrou antes, :marca[a gravação falha e você recarrega o estado e tenta de novo] (*compare-and-swap*). O assunto é aprofundado em [Bloqueio otimista e pessimista](/posts/bloqueio-otimista-e-pessimista/).
   2. **Particionamento por conta:** sistemas como o Kafka particionam as mensagens por uma chave, aqui o `account_id`. Cada partição é consumida em sequência por uma única thread, o que garante ordem serial dentro da mesma conta e paralelismo entre contas diferentes.
-  3. **Restrição de unicidade** em `(aggregate_id, version)`: o próprio banco rejeita a segunda inserção com a mesma versão. É a salvaguarda do *compare-and-swap* no nível do banco.
+  3. **Restrição de unicidade** em `(aggregate_id, version)`: :marca[o próprio banco rejeita a segunda inserção com a mesma versão]. É a salvaguarda do *compare-and-swap* no nível do banco.
 - **Idempotência no replay:** ao reprocessar eventos, guarde o `aggregate_id` e a versão já aplicados; se o evento já foi aplicado, pule. Assim nada é contado duas vezes.
 - **Saldo bloqueado × disponível:** ledgers reais precisam de estados como valores reservados (por exemplo, a autorização de um cartão, que bloqueia o valor antes de liquidar). Modele eventos `FundsHeld`, `FundsReleased` e `FundsSettled` e mantenha uma projeção com `held_balance` e `available_balance`.
 
@@ -60,7 +60,7 @@ CREATE TABLE events (
 );
 ```
 
-O `append` confere a versão esperada e grava os eventos numa transação curta, que envolve só os eventos daquela conta. A conferência sozinha não basta: dois escritores podem ler a mesma versão ao mesmo tempo. Quem fecha essa brecha é a restrição de unicidade — o segundo `INSERT` falha com o código `23505` (`unique_violation`) e vira um conflito de versão:
+O `append` confere a versão esperada e grava os eventos numa transação curta, que envolve só os eventos daquela conta. A conferência sozinha :sublinhado[não basta]: dois escritores podem ler a mesma versão ao mesmo tempo. Quem fecha essa brecha é a restrição de unicidade — o segundo `INSERT` falha com o código `23505` (`unique_violation`) e vira um conflito de versão:
 
 ```java title="EventStore.java"
 // Event store com checagem de versão esperada (compare-and-swap)
@@ -125,7 +125,7 @@ public class EventStore {
 }
 ```
 
-Quem chama trata o conflito recarregando o estado e revalidando o comando — o saldo pode não ser mais suficiente depois do evento que entrou antes:
+Quem chama trata o conflito recarregando o estado e revalidando o comando — :marca[o saldo pode não ser mais suficiente depois do evento que entrou antes]:
 
 ```java title="WithdrawHandler.java"
 // Retry em caso de conflito de versão
@@ -173,7 +173,7 @@ public void handleWithdrawCommand(String accountId, BigDecimal withdrawAmount)
   3. **Controle de concorrência** — o mesmo dinheiro não pode ser gasto duas vezes, mesmo com escritas paralelas ou fora de ordem.
   4. **Agregações eficientes** — somar eventos financeiros de um período é rápido.
 - **O problema da "tradução":** engenheiros de produto falam a língua do domínio (pedidos, corridas, reservas), mas precisam traduzi-la para a língua de finanças (débitos, créditos, ativos, passivos) — com eventos que chegam fragmentados, de APIs diferentes e de registros que mudam.
-- **Consequência real de erros:** um líder de produto de uma grande empresa de pagamentos contou que, todo mês, o time financeiro notava "alguns milhões de dólares" sumidos do ledger. O dinheiro continuava no banco; o que se perdia era a **atribuição** (o registro de a quem ele pertence).
+- **Consequência real de erros:** um líder de produto de uma grande empresa de pagamentos contou que, todo mês, o time financeiro notava "alguns milhões de dólares" sumidos do ledger. O dinheiro continuava no banco; :marca[o que se perdia era a **atribuição**] (o registro de a quem ele pertence).
 - **Por que não construir do zero:** um ledger double-entry performático e confiável leva anos de esforço e dezenas de engenheiros sênior; hoje há bancos de dados de ledger prontos.
 
 **Fonte:** [How to Scale a Ledger, Part I](https://www.moderntreasury.com/journal/how-to-scale-a-ledger-part-i)
@@ -184,13 +184,13 @@ public void handleWithdrawCommand(String accountId, BigDecimal withdrawAmount)
 
 **Pontos importantes:**
 
-- **Dois princípios básicos:** todo evento monetário é registrado num modelo double-entry consistente, e **todos os saldos** mostrados a usuários e sistemas são **lidos desse modelo** (nunca de um campo mutável solto).
+- **Dois princípios básicos:** todo evento monetário é registrado num modelo double-entry consistente, e :marca[**todos os saldos** mostrados a usuários e sistemas são **lidos desse modelo**] (nunca de um campo mutável solto).
 - **Account = porção separada de valor**, numa moeda. Ela deve informar três saldos:
   - **Posted (lançado):** apenas o que já liquidou.
   - **Pending (pendente):** o que já liquidou mais o que deve liquidar.
   - **Available (disponível):** o que pode sair agora — desconta as saídas previstas e não conta as entradas ainda não liquidadas.
 - **O ciclo de vida de um cartão de crédito** ilustra como cada ação afeta esses saldos: compra de passagem (pendente), liquidação, pagamento da fatura, pré-autorização de hotel e sua liberação.
-- **Entry = registro imutável de movimento.** Saldos nunca são alterados diretamente; toda mudança entra como uma entry. Os campos centrais (`amount`, `direction`) são imutáveis; o único campo mutável é `discarded_at`, usado só para substituir entries pendentes.
+- **Entry = registro imutável de movimento.** :marca[Saldos nunca são alterados diretamente; toda mudança entra como uma entry.] Os campos centrais (`amount`, `direction`) são imutáveis; o único campo mutável é `discarded_at`, usado só para substituir entries pendentes.
 - **Descartar × reverter:** só entries `pending` podem ser substituídas; entries `posted` e `archived` são permanentes. Descartar a pendente, em vez de criar uma entry de reversão, mantém o histórico limpo — os débitos reais do cliente não se misturam com débitos criados só para reverter.
 - **Normalidade da conta (ponto-chave):** cada conta é **debit normal** (usos de recursos: ativos e despesas — aumentam com débito) ou **credit normal** (fontes de recursos: passivos, patrimônio líquido e receita — aumentam com crédito). Com números positivos e negativos, um depósito não conseguiria aumentar as duas contas envolvidas ao mesmo tempo, porque uma delas teria de ficar negativa para a soma fechar.
 - **Cinco campos para calcular qualquer saldo:** `posted_debits`, `posted_credits`, `pending_debits`, `pending_credits` e `normal_balance`. O ledger deve buscar esses cinco campos rapidamente e só calcular os saldos quando alguém pedir.
@@ -240,13 +240,13 @@ public class BalanceCalculator {
 
 ## 4. Part III — o modelo de transaction
 
-**Visão geral:** a **transaction**, que agrupa as entries, é o que garante movimento de dinheiro atômico e obriga o double-entry. Sem ela, dá para deixar o ledger inconsistente registrando só parte de um movimento.
+**Visão geral:** a **transaction**, que agrupa as entries, é o que :marca[garante movimento de dinheiro atômico e obriga o double-entry]. Sem ela, dá para deixar o ledger inconsistente registrando só parte de um movimento.
 
 **Pontos importantes:**
 
 - **Uma transaction garante:** **atomicidade** (todas as entries têm sucesso ou falham juntas), **consistência** (nada de mudanças parciais) e **double-entry** (entries sempre balanceadas).
 - **O risco sem transaction:** se a entry de débito grava, mas a de crédito falha (por exemplo, por um problema de rede), um lado foi debitado e o outro não recebeu nada — o dinheiro se perdeu.
-- **A API só deve permitir criar transactions, nunca entries avulsas.** Assim o cliente não consegue deixar um movimento pela metade; as entries são gerenciadas internamente.
+- :marca[**A API só deve permitir criar transactions, nunca entries avulsas.**] Assim o cliente não consegue deixar um movimento pela metade; as entries são gerenciadas internamente.
 - **Três estados da transaction:**
   1. **Pending** (estado inicial): grava débito e crédito como `pending`, ainda não finalizados.
   2. **Posted** (finalizado): como entries são imutáveis, as pendentes são descartadas e novas entries `posted` são criadas.
@@ -257,17 +257,17 @@ public class BalanceCalculator {
 
 ## 5. Part IV — registrar × autorizar
 
-**Visão geral:** um ledger opera em dois modos. No **recording** (registro), ele só anota o que já aconteceu em outros sistemas; no **authorizing** (autorização), aprova ou nega transactions ativamente. A maioria das implementações só escala bem em um dos dois; o ideal é escolher o modo no nível da entry.
+**Visão geral:** um ledger opera em dois modos. No **recording** (registro), ele só anota o que já aconteceu em outros sistemas; no **authorizing** (autorização), aprova ou nega transactions ativamente. A maioria das implementações só escala bem em um dos dois; :marca[o ideal é escolher o modo no nível da entry].
 
 **Pontos importantes:**
 
-- **Recording:** alto volume de escrita (milhares por segundo ou mais), processamento assíncrono (as leituras podem ficar alguns segundos defasadas, com consistência eventual) e suporte a consultas complexas. Aqui o ledger **não é** a fonte da verdade — ele reflete o que já aconteceu em outro lugar (banco, processadora de cartão).
+- **Recording:** alto volume de escrita (milhares por segundo ou mais), processamento assíncrono (as leituras podem ficar alguns segundos defasadas, com consistência eventual) e suporte a consultas complexas. Aqui o ledger :sublinhado[**não é**] a fonte da verdade — ele reflete o que já aconteceu em outro lugar (banco, processadora de cartão).
   - **`effective_at`:** data e hora informadas pelo cliente para retroagir a transaction ao momento em que o dinheiro realmente se moveu. Todas as entries herdam o `effective_at` da transaction.
   - **Versões do saldo da conta:** como saldos passados podem mudar, cada conta tem uma `version` incrementada sempre que uma entry é criada ou modificada. Cada entry guarda o `account_version` correspondente, o que permite saber exatamente quais entries compõem um saldo.
   - **Casos de uso:** exibir detalhes da conta, repasses (payouts), gestão de empréstimos, cripto.
 - **Authorizing:** consistência *read-after-write* (a leitura logo após a escrita já enxerga o novo saldo), volume menor (a performance degrada perto de 100 entries por segundo numa mesma conta), verificações de saldo e controle de concorrência. É o modo para mover dinheiro em tempo real, validando se há saldo — carteiras digitais e autorização de cartão.
   - **Version locking:** o cliente envia a versão da conta junto com o pedido, e o ledger rejeita se a versão no banco for outra (bloqueio otimista). O algoritmo: inicia a transação de banco → grava a entry → atualiza a versão da conta com condição na versão atual → faz commit se a atualização aconteceu, senão rollback.
-  - **Balance locking:** o version locking sofre com *hot accounts* — contas com tanta escrita que a versão muda antes de o cliente conseguir usá-la. A alternativa é condicionar a escrita ao **saldo** (por exemplo, `gte: 0`: só grava se o saldo não ficar negativo). No exemplo do artigo, o mesmo resultado sai em 2 chamadas em vez de 6, e a API expressa melhor a intenção.
+  - **Balance locking:** o version locking sofre com *hot accounts* — contas com tanta escrita que a versão muda antes de o cliente conseguir usá-la. A alternativa é :marca[condicionar a escrita ao **saldo**] (por exemplo, `gte: 0`: só grava se o saldo não ficar negativo). No exemplo do artigo, o mesmo resultado sai em 2 chamadas em vez de 6, e a API expressa melhor a intenção.
 - **Modo misto (o ideal):** decidir entre recording e authorizing **por entry**, não por conta. Numa autorização de cartão, a entry da conta do cliente precisa de balance lock e consistência forte, enquanto a entry da conta da processadora (liquidada uma vez por dia) pode ter consistência eventual e alto volume. As duas continuam atômicas na mesma transaction.
 
 **Fonte:** [How to Scale a Ledger, Part IV](https://www.moderntreasury.com/journal/how-to-scale-a-ledger-part-iv)
@@ -278,11 +278,11 @@ public class BalanceCalculator {
 
 **Pontos importantes:**
 
-- **Imutabilidade apesar de campos mutáveis:** o saldo das accounts muda, transactions passam de pending para posted ou archived, entries podem ser descartadas — mas tudo é construído sobre um **log append-only imutável**. Nada é apagado de fato.
+- **Imutabilidade apesar de campos mutáveis:** o saldo das accounts muda, transactions passam de pending para posted ou archived, entries podem ser descartadas — mas :marca[tudo é construído sobre um **log append-only imutável**]. Nada é apagado de fato.
 - **Como consultar estados passados:** as entries de uma conta num dado instante são as que têm `effective_at` menor ou igual a esse instante e não tinham sido descartadas até lá (consulta abaixo).
 - **Versões para precisão:** só a data e hora não bastam, porque várias entries podem ter o mesmo `effective_at` ou `discarded_at`. As versões da conta gravadas nas entries dizem exatamente quais entries formam um saldo, e as versões passadas da transaction permitem reconstruir estados anteriores.
 - **Log de auditoria:** além do estado, registre **o que** mudou, **quem** mudou e **quando** (várias chaves de API, usuários internos pelo painel administrativo). O artigo recomenda um log de auditoria ao lado do ledger.
-- **Validação do double-entry:** toda transaction precisa de pelo menos uma entry de débito e uma de crédito, e **débitos = créditos em cada moeda**.
+- **Validação do double-entry:** toda transaction precisa de pelo menos uma entry de débito e uma de crédito, e :marca[**débitos = créditos em cada moeda**].
 - **Por que balancear por moeda:** numa compra de 1 ETH com dólares, validar só o total quebra — dá para creditar ETH criado do nada e debitar dólares que simplesmente somem. O certo é **agrupar as entries por moeda** e validar cada grupo. Uma conversão de moeda sempre envolve pelo menos 4 contas (a plataforma precisa de uma conta em ETH de onde sai a cripto e de uma em dólar onde entra o dinheiro do cliente); modelar com só 2 contas e uma taxa de câmbio não funciona, porque a taxa varia no tempo e não existe uma taxa única aceita por todos.
 
 ```java title="EntryRepository.java"
@@ -317,11 +317,11 @@ public List<Entry> findEntriesAt(String accountId, Instant timestamp) throws SQL
 
 **Pontos importantes:**
 
-- **Chaves de idempotência:** o cenário clássico — o cliente envia o pedido, o ledger demora, o cliente estoura o timeout e tenta de novo; o pedido original termina e o ledger cria a transaction duas vezes. A solução é deduplicar com uma chave de idempotência: uma string enviada pelo cliente e **gerada fora do loop de retry**, para que todas as tentativas usem a mesma. Se o ledger recebe uma chave que já conhece, devolve a resposta da primeira requisição. As chaves ficam guardadas por 24 horas.
+- **Chaves de idempotência:** o cenário clássico — o cliente envia o pedido, o ledger demora, o cliente estoura o timeout e tenta de novo; o pedido original termina e o ledger cria a transaction duas vezes. A solução é deduplicar com uma chave de idempotência: uma string enviada pelo cliente e :marca[**gerada fora do loop de retry**], para que todas as tentativas usem a mesma. Se o ledger recebe uma chave que já conhece, devolve a resposta da primeira requisição. As chaves ficam guardadas por 24 horas.
 - **Performance — cache de saldo:** calcular o saldo somando as entries é O(n) e fica lento com dezenas ou centenas de milhares de entries. A solução é **cachear** `pending_debits`, `pending_credits`, `posted_debits` e `posted_credits` numa linha da conta.
   - **Cache do saldo atual:** reflete todas as entries e é atualizado **de forma síncrona** quando entries de autorização são gravadas, porque é ele que sustenta o balance locking. Quem faz a conta de forma atômica é o banco.
   - **Cache de saldo por data efetiva:** mais complexo, com duas abordagens — *anchoring* (guarda o saldo do fim de cada dia e aplica as entries do dia por cima) e *resulting balances* (guarda o saldo resultante após cada entry, útil para contas com muitas entries no mesmo dia). No anchoring, a atualização é assíncrona: as entries entram numa fila e o cache é atualizado em lotes.
-- **Monitorando o drift do cache (o job de conciliação):** ler o saldo do cache melhora a performance, mas o cache pode divergir das entries, que são a fonte da verdade. O tratamento tem três passos:
+- **Monitorando o drift do cache (o job de conciliação):** ler o saldo do cache melhora a performance, mas :marca[o cache pode divergir das entries, que são a fonte da verdade]. O tratamento tem três passos:
   1. **Verificar regularmente** se o saldo em cache de cada conta bate com a **soma das entries**.
   2. **Desligar automaticamente** a leitura do cache nas contas com drift.
   3. Oferecer **ferramentas de backfill** (recalcular o cache a partir das entries) e um runbook para o plantão investigar e corrigir o drift.
@@ -368,7 +368,7 @@ public void reconcileAccount(String accountId) throws SQLException {
 - **Princípio central:** toda transaction registra **de onde o dinheiro veio** e **em que foi usado**. Com isso você reconstrói saldos em qualquer data, rastreia o movimento com auditabilidade total e alinha a lógica do sistema com as finanças reais.
 - **Falha mais comum:** o software criar ou destruir registros de dinheiro por acidente. Os sintomas: registros internos diferentes do extrato do banco, ferramentas de conciliação apontando divergências, saldos que não fazem sentido diante das transactions. Uber, Square e Airbnb são citadas como empresas que adotaram double-entry.
 - **Conceitos:** **account** (porção separada de valor), **transaction** (evento atômico que afeta saldos; tem pelo menos duas entries, afeta duas ou mais contas e mantém o ledger balanceado) e **ledger** (log de eventos com impacto monetário).
-- **Não altere saldos diretamente:** guarde transactions imutáveis e **sempre calcule o saldo a partir delas**. Alterar o saldo direto parece mais simples e eficiente, mas gera um sistema propenso a erros difíceis de detectar e de conciliar.
+- **Não altere saldos diretamente:** guarde transactions imutáveis e :marca[**sempre calcule o saldo a partir delas**]. Alterar o saldo direto parece mais simples e eficiente, mas gera um sistema propenso a erros difíceis de detectar e de conciliar.
 - **Debit normal × credit normal:** contas debit normal representam o que você tem ou os usos do dinheiro (ativos, despesas) e aumentam com débito; contas credit normal representam o que você deve ou as fontes do dinheiro (passivos, patrimônio líquido, receita) e aumentam com crédito.
 
 | Tipo de conta | Débito | Crédito |
@@ -380,7 +380,7 @@ public void reconcileAccount(String accountId) throws SQLException {
 | Despesa (expense) | + | − |
 
 - **Ledger balanceado:** a soma dos saldos das contas credit normal é igual à soma dos saldos das contas debit normal. Se não bate, o sistema criou ou perdeu dinheiro do nada.
-- **Detalhe contraintuitivo:** duas contas podem aumentar **ao mesmo tempo**. No exemplo do artigo, a Modern Bagelry, uma loja on-line de bagels, recebe um aporte de \$1 milhão: o caixa (ativo, debit normal) sobe com um débito e o patrimônio líquido (credit normal) sobe com um crédito.
+- **Detalhe contraintuitivo:** duas contas podem aumentar :sublinhado[**ao mesmo tempo**]. No exemplo do artigo, a Modern Bagelry, uma loja on-line de bagels, recebe um aporte de \$1 milhão: o caixa (ativo, debit normal) sobe com um débito e o patrimônio líquido (credit normal) sobe com um crédito.
 
 **Fonte:** [Accounting for Developers, Part I](https://www.moderntreasury.com/journal/accounting-for-developers-part-i)
 
@@ -458,7 +458,7 @@ Com várias moedas, a mesma checagem deve ser feita em cada moeda, como mostra a
 **Pontos importantes:**
 
 - **Componentes centrais:** motor de regras (avalia as ações do cliente e decide o que disparar), **ledger de pontos** (cada ponto ganho, resgatado, transferido ou expirado, com trilha de auditoria completa), serviço de entrega das recompensas (*fulfillment*), camada de API, camada de eventos e mensageria e camada de dados do cliente.
-- **O ledger de pontos é um dos componentes mais exigentes:** quando o cliente conclui uma compra, **os pontos devem ser creditados exatamente uma vez**, mesmo que a requisição seja repetida ou processada duas vezes. Um ledger que erra isso produz erros de saldo difíceis de detectar e caros de corrigir. Plataformas modernas o tratam como **serviço independente**, e não como um campo no cadastro do cliente.
+- **O ledger de pontos é um dos componentes mais exigentes:** quando o cliente conclui uma compra, :marca[**os pontos devem ser creditados exatamente uma vez**], mesmo que a requisição seja repetida ou processada duas vezes. Um ledger que erra isso produz erros de saldo difíceis de detectar e caros de corrigir. Plataformas modernas o tratam como **serviço independente**, e não como um campo no cadastro do cliente.
 - **Idempotência na API é essencial** — concessão ou resgate duplicado de pontos é um risco operacional real.
 - **Fluxo ponta a ponta:** compra → chamada de API → a camada de eventos roteia para o motor de regras → o motor avalia campanhas e categoria do cliente → o fulfillment gera a recompensa → **o ledger é atualizado com registro de auditoria** → o evento "recompensa emitida" segue para os outros sistemas. As falhas ficam contidas: se o fulfillment atrasa, a atualização do ledger ainda termina.
 - **Quando essa complexidade não é necessária:** num programa simples, no início ou em um único canal, uma plataforma tudo-em-um é mais pragmática. A arquitetura deve seguir as necessidades reais do programa.
@@ -472,11 +472,11 @@ Com várias moedas, a mesma checagem deve ser feita em cada moeda, como mostra a
 **Os 6 fatores:**
 
 1. **Double-entry como invariante do banco, não da aplicação:** débito, crédito e metadados da mesma entry são gravados numa **única transação atômica de banco**. Uma CHECK constraint ou uma validação antes do commit confirma que a entry soma zero. Errar isso gera drift de saldo silencioso.
-   Um cuidado prático: no PostgreSQL, uma CHECK constraint só enxerga a linha que está sendo gravada. Se débito e crédito ficam em linhas separadas, a soma precisa ser validada por um *constraint trigger* adiado para o fim da transação (`DEFERRABLE INITIALLY DEFERRED`) ou pela aplicação antes do commit.
-2. **Derivar saldos das entries, nunca guardar um saldo corrente:** uma coluna `balance` mutável **sofre drift** com escrita concorrente, falha parcial, correção manual ou migração. Em escala, fazer `SUM()` a cada leitura fica caro, então crie um **saldo materializado**: uma visão em cache, otimizada para leitura, recalculada quando novas entries são lançadas — e **sempre conferida contra as entries na conciliação**.
-3. **Journals imutáveis com reversões explícitas (sem UPDATE nem DELETE):** o *journal* é a tabela de lançamentos, e ela precisa ser inalterável para valer em auditorias (SOC 2, PCI DSS, exames de AML/KYC). Reverter = lançar uma **nova** entry compensatória. O usuário de banco usado pelo posting engine (o serviço que grava os lançamentos) **não deve ter permissão** de UPDATE ou DELETE nas tabelas de journal.
+   Um cuidado prático: no PostgreSQL, :marca[uma CHECK constraint só enxerga a linha que está sendo gravada]. Se débito e crédito ficam em linhas separadas, a soma precisa ser validada por um *constraint trigger* adiado para o fim da transação (`DEFERRABLE INITIALLY DEFERRED`) ou pela aplicação antes do commit.
+2. **Derivar saldos das entries, nunca guardar um saldo corrente:** :marca[uma coluna `balance` mutável **sofre drift**] com escrita concorrente, falha parcial, correção manual ou migração. Em escala, fazer `SUM()` a cada leitura fica caro, então crie um **saldo materializado**: uma visão em cache, otimizada para leitura, recalculada quando novas entries são lançadas — e **sempre conferida contra as entries na conciliação**.
+3. **Journals imutáveis com reversões explícitas (sem UPDATE nem DELETE):** o *journal* é a tabela de lançamentos, e ela precisa ser inalterável para valer em auditorias (SOC 2, PCI DSS, exames de AML/KYC). :marca[Reverter = lançar uma **nova** entry compensatória.] O usuário de banco usado pelo posting engine (o serviço que grava os lançamentos) **não deve ter permissão** de UPDATE ou DELETE nas tabelas de journal.
 4. **Modelo de três saldos:** **ledger balance** (liquidado), **pending** (em trânsito) e **available** (o que pode ser gasto agora). Juntar os três num só aumenta o risco de o cliente gastar mais do que tem, inclusive valores bloqueados ou ainda em trânsito.
-5. **CQRS — separar escrita e leitura:** a escrita é fortemente consistente, atômica e durável; a leitura é rápida, via saldo materializado. Quando o saldo alimenta uma **decisão financeira**, o posting engine valida contra o journal, não contra a visão materializada, que pode estar defasada.
+5. **CQRS — separar escrita e leitura:** a escrita é fortemente consistente, atômica e durável; a leitura é rápida, via saldo materializado. Quando o saldo alimenta uma **decisão financeira**, :marca[o posting engine valida contra o journal, não contra a visão materializada], que pode estar defasada.
 6. **Conciliação como entregável de engenharia, não planilha do financeiro:** há a correção **interna** (entries balanceadas, saldos derivados batendo com o journal) e a **externa** (o ledger batendo com processadora, bandeira, banco parceiro e câmara de compensação). O caminho é um **pipeline automatizado** que roda todo dia ou após cada janela de liquidação, compara linha a linha e expõe as divergências com classificação de severidade (diferença de prazo × divergência real), alertas e acompanhamento das exceções. Segundo o artigo, o colapso da Synapse em 2024 foi em grande parte uma falha de conciliação do ledger.
 
 **A stack de referência:**
