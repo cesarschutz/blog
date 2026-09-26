@@ -369,7 +369,8 @@ Referência: aba "Artigo" do protótipo.
 - **Código**: como o blog atual (Expressive Code): nome do arquivo no topo, linguagem, botão
   Copiar, linhas destacadas, números de linha opcionais, seções recolhíveis e **diff**
   (`ins`/`del`) com fundo tingido e `+`/`−` na margem. "Copiar" leva a versão final, sem as
-  linhas removidas. Tema de cores feito com os tokens do blog nos dois temas.
+  linhas removidas, e diz "Copiado" no próprio botão, com o visto da caneta (D49). Tema de cores feito
+  com os tokens do blog nos dois temas. A barra do bloco tem sempre a mesma altura, com ou sem título.
 - **Lousas** (seção 7) sempre que houver fluxo ou sequência a explicar.
 - **Caneta do caderno** (D48, decidido; substitui o caderno marcado da D41): o texto vem marcado à
   caneta, **estático**, como se tivesse sido riscado antes de publicar (sem animação). Caneta **azul
@@ -393,7 +394,9 @@ Referência: aba "Artigo" do protótipo.
   (sem o "Saiba mais" desde a D33); o cartão **"Do livro"** (o livro 3D da categoria ou a revista da
   série, que leva à página do livro; no desktop com o sumário lateral, ele fica embaixo do sumário,
   D39); depois a navegação **Artigo anterior / Próximo artigo** (ou anterior/próxima dentro da
-  série), com o título inteiro. Sem bloco de "artigos relacionados".
+  série), com o título inteiro; ao passar o mouse, a seta aponta a direção e o canto do cartão dobra
+  (D49). Sem bloco de "artigos relacionados". Os links do texto ganham a tinta azul por baixo ao
+  passar o mouse (D49).
 - Botão "voltar ao topo" depois de uma tela de rolagem, **em toda página longa** (D49), não só no
   artigo. O sumário acompanha a leitura (D49): fio de tinta, visto nas seções lidas e marca-texto na
   seção atual; abaixo de 1300px, o cabeçalho mostra "N de M · seção" e abre o sumário numa folha.

@@ -4,6 +4,12 @@
  * WhatsApp e o compartilhar nativo quando existir); aviso sobre IA; o livro do artigo (o livro 3D da
  * categoria ou da série, que voa até a página do livro ao clicar; no desktop com o sumário lateral,
  * ele fica embaixo do sumário, D39); anterior e próximo (ou dentro da série), com o título inteiro.
+ *
+ * Os gestos pequenos (D49, protótipo E3): "Copiar link" faz o gesto de copiar do site, o mesmo do
+ * código (os elos se juntam, a caneta faz o visto e o rótulo rola até "Link copiado", com a pílula
+ * crescendo sem pular; copiado.ts). Em anterior e próximo, a seta abre o próprio espaço apontando para
+ * onde o leitor vai, e o canto de fora da folha dobra (a orelha), como quem vira a página. Só CSS; no
+ * toque, aparecem enquanto o dedo está no cartão.
  */
 import LivroEmPe from "./LivroEmPe.astro";
 import { ICONES } from "../lib/icones";
@@ -53,9 +59,12 @@ const rotulos = naSerie
 
   <div class="compartilhar" data-compartilhar data-titulo={tituloCompleto} data-endereco={endereco}>
     <span class="rotulo">Compartilhar</span>
-    <button type="button" class="pilula" data-copiar hidden>
-      <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ICONES.link} /><span>Copiar link</span>
+    <button type="button" class="pilula gesto-copiar" data-copiar aria-label="Copiar link" hidden>
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"
+        ><g class="frente" set:html={ICONES.link} /><path class="visto" pathLength="1" d="M4.5 12.8 9.4 17.4 19.5 6.6" /></svg
+      ><span class="rotulo-rola" aria-hidden="true"><span>Copiar link</span></span>
     </button>
+    <span class="sr" aria-live="polite" data-aviso-copiar></span>
     <a class="pilula" href={linkedin} target="_blank" rel="noopener">LinkedIn</a>
     <a class="pilula" href={whatsapp} target="_blank" rel="noopener">WhatsApp</a>
     <button type="button" class="pilula" data-nativo hidden>
@@ -100,8 +109,11 @@ const rotulos = naSerie
   (anterior || proximo) && (
     <nav class="vizinhos" aria-label={naSerie ? `Na série ${naSerie.nome}` : "Outros artigos"}>
       {anterior ? (
-        <a href={anterior.url} rel="prev">
-          <span class="dir">{rotulos.anterior}</span>
+        <a href={anterior.url} rel="prev" class="anterior">
+          <span class="dir">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
+            {rotulos.anterior}
+          </span>
           <span class="nome" set:html={tituloComQuebras(anterior.tituloCompleto)} />
         </a>
       ) : (
@@ -109,7 +121,10 @@ const rotulos = naSerie
       )}
       {proximo && (
         <a href={proximo.url} rel="next" class="proximo">
-          <span class="dir">{rotulos.proximo}</span>
+          <span class="dir">
+            {rotulos.proximo}
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
+          </span>
           <span class="nome" set:html={tituloComQuebras(proximo.tituloCompleto)} />
         </a>
       )}
@@ -118,6 +133,8 @@ const rotulos = naSerie
 }
 
 <script>
+  import { mostrarCopiado } from "../scripts/copiado";
+
   const caixa = document.querySelector<HTMLElement>("[data-compartilhar]");
   if (caixa) {
     const { titulo = "", endereco = location.href } = caixa.dataset;
@@ -125,16 +142,18 @@ const rotulos = naSerie
     const nativo = caixa.querySelector<HTMLButtonElement>("[data-nativo]");
 
     if (copiar && navigator.clipboard) {
-      const texto = copiar.querySelector("span")!;
+      const aviso = caixa.querySelector<HTMLElement>("[data-aviso-copiar]")!;
       copiar.hidden = false;
       copiar.addEventListener("click", async () => {
+        let ok = true;
         try {
           await navigator.clipboard.writeText(endereco);
-          texto.textContent = "Link copiado";
         } catch {
-          texto.textContent = "Não deu para copiar";
+          ok = false;
         }
-        setTimeout(() => (texto.textContent = "Copiar link"), 1600);
+        const texto = ok ? "Link copiado" : "Não deu para copiar";
+        aviso.textContent = texto;
+        mostrarCopiado(copiar, texto, "Copiar link", ok);
       });
     }
 
@@ -188,6 +207,11 @@ const rotulos = naSerie
     .compartilhar.com-nativo .no-celular {
       display: inline;
     }
+  }
+
+  /* No link, o decalque é os elos se juntando (copiado.css). */
+  [data-copiar] {
+    --decalque: scale(0.8);
   }
 
   .rotulo {
@@ -321,6 +345,7 @@ const rotulos = naSerie
   }
 
   .vizinhos a {
+    position: relative;
     display: grid;
     gap: 4px;
     padding: 14px 16px;
@@ -347,9 +372,107 @@ const rotulos = naSerie
   }
 
   .dir {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-family: var(--font-ui);
     font-size: 14px;
     color: var(--ink-2);
+  }
+
+  .proximo .dir {
+    justify-content: flex-end;
+  }
+
+  /* A seta (D49): parada, não ocupa lugar (a margem negativa come o espaço entre ela e o texto); com o
+     mouse, o foco ou o dedo, abre o próprio espaço e empurra o rótulo, apontando para onde se vai. */
+  .dir svg {
+    flex: none;
+    width: 0;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0;
+    transition:
+      opacity 0.2s,
+      width 0.3s cubic-bezier(0.2, 0.75, 0.2, 1),
+      margin 0.3s cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  .anterior .dir svg {
+    margin-right: -6px;
+    rotate: 180deg;
+  }
+
+  .proximo .dir svg {
+    margin-left: -6px;
+  }
+
+  /* A orelha: o canto de fora da folha dobra (0 a 16px), com o verso levemente azul e o fio azul. */
+  .vizinhos a::after {
+    content: "";
+    position: absolute;
+    top: -1px;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    transition:
+      width 0.26s cubic-bezier(0.2, 0.75, 0.2, 1),
+      height 0.26s cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  .proximo::after {
+    right: -1px;
+    border-bottom-left-radius: 3px;
+    border-left: 1px solid var(--acento);
+    border-bottom: 1px solid var(--acento);
+    background: linear-gradient(to bottom left, var(--paper-hi) 50%, color-mix(in oklab, var(--acento) 12%, var(--paper-hi)) 50%);
+  }
+
+  .anterior::after {
+    left: -1px;
+    border-bottom-right-radius: 3px;
+    border-right: 1px solid var(--acento);
+    border-bottom: 1px solid var(--acento);
+    background: linear-gradient(to bottom right, var(--paper-hi) 50%, color-mix(in oklab, var(--acento) 12%, var(--paper-hi)) 50%);
+  }
+
+  .vizinhos a:not(:hover, :focus-visible, :active)::after {
+    border-color: transparent;
+  }
+
+  @media (hover: hover) {
+    .vizinhos a:hover .dir svg {
+      width: 14px;
+      margin: 0;
+      opacity: 1;
+    }
+
+    .vizinhos a:hover::after {
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .vizinhos a:is(:focus-visible, :active) .dir svg {
+    width: 14px;
+    margin: 0;
+    opacity: 1;
+  }
+
+  .vizinhos a:is(:focus-visible, :active)::after {
+    width: 16px;
+    height: 16px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dir svg,
+    .vizinhos a::after {
+      transition: none;
+    }
   }
 
   .nome {
@@ -367,6 +490,10 @@ const rotulos = naSerie
 
     .proximo {
       text-align: left;
+    }
+
+    .proximo .dir {
+      justify-content: flex-start;
     }
   }
 </style>

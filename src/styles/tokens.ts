@@ -146,6 +146,14 @@ export const MARCA_TEXTO = { claro: { cor: "#FFE27A", alfa: 1 }, escuro: { cor: 
 export const SUMARIO_MARCA = { claro: { branco: 0, forca: 32 }, escuro: { branco: 60, forca: 36 } };
 
 /**
+ * A tinta do link no texto do artigo (E3, D49): com o mouse ou o foco, o azul-tinta a essa força sobe
+ * de baixo até perto da metade da letra. No escuro, um pouco mais forte, para se ver sobre a folha
+ * escura, mas não os 24% do protótipo: com eles, o link passava a 4,1:1 sobre os avisos. O link
+ * continua em azul-tinta por cima, com pelo menos 4,5:1 (`npm run contraste` confere).
+ */
+export const LINK_TINTA = { claro: 16, escuro: 18 };
+
+/**
  * O que a lousa tem de diferente em cada tema, além das cores: quanto da mistura entra no destaque,
  * quanto de caneta o destaque leva no traço e no texto para passar de 3:1 e 4,5:1 em todas as
  * categorias (no quadro branco, Observabilidade pede 20% e 45%; `npm run contraste` confere), a
@@ -222,7 +230,8 @@ export function cssDosTokens(): string {
   const proporcoes = (t: "claro" | "escuro") =>
     `--painel-mistura:${PAINEL[t]}%;--chip-tinta:${CHIP[t].tinta}%;--chip-branco:${CHIP[t].branco}%;` +
     `--marca-texto:${rgba(MARCA_TEXTO[t].cor, MARCA_TEXTO[t].alfa)};` +
-    `--sumario-marca-branco:${SUMARIO_MARCA[t].branco}%;--sumario-marca-forca:${SUMARIO_MARCA[t].forca}%;`;
+    `--sumario-marca-branco:${SUMARIO_MARCA[t].branco}%;--sumario-marca-forca:${SUMARIO_MARCA[t].forca}%;` +
+    `--link-tinta:${LINK_TINTA[t]}%;`;
   const temaEscuro = `${variaveis(escuro)}${lousa(LOUSA.escuro)}${proporcoes("escuro")}--branco-no-escuro:${BRANCO_NO_ESCURO}%;color-scheme:dark;`;
   return (
     `:root{${variaveis(claro)}${lousa(LOUSA.claro)}${proporcoes("claro")}--branco-no-escuro:0%;color-scheme:light;}` +

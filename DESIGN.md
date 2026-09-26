@@ -457,7 +457,9 @@ pequeno da série. Hoje isso vale para as lombadas, em pé e deitadas (`corTexto
   páginas de lista e da 404 vai de 34 a 52px; o do artigo, até os 50px de
   `headline-artigo`; o título de cada artigo na lista, de 21 a 25px (D27).
 - **Código:** JetBrains Mono, pelo Expressive Code. Na barra do bloco, o título à esquerda e a
-  linguagem numa etiqueta (pílula fina, IBM Plex Sans) à direita (D39).
+  linguagem numa etiqueta (pílula fina, IBM Plex Sans) à direita (D39). Sem título, a barra tem a
+  mesma altura, com a etiqueta no meio dela (D49). O Copiar é uma pílula de papel com as duas folhas
+  do ícone; ao copiar, vira "✓ Copiado" (D49).
 - **Quebras (D39):** títulos com `text-wrap: balance`, o travessão preso à palavra seguinte e, no
   celular, o h1 do artigo encolhe com a tela (até 24px) para o pedaço mais longo caber sem quebrar
   no meio. Código em linha (texto, tabelas, sumário) quebra depois dos pontos (`<wbr>`), nunca no
@@ -756,6 +758,14 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   resultados entram em sequência (0,3s, `stagger` 0,035s) e o termo buscado ganha um marca-texto que
   se estica em 0,45s, também no título do resultado. Esc, "Fechar" ou clique fora encolhem a janela
   de volta para o campo (0,35s, `power2.in`), e o foco volta para ele.
+- **O artigo de perto** (D49, protótipo E3, só CSS e Web Animations): nos links do texto, a tinta
+  azul sobe de baixo até 42% da linha (0,3s, `--link-tinta`); o Copiar do código e o "Copiar link"
+  fazem o mesmo gesto (a folha da frente do ícone desliza sobre a de trás em 0,16s, ou os elos se
+  juntam; o visto da caneta em 0,3s; o rótulo rola letra por letra, 12ms entre elas, e a largura
+  acompanha em 0,35s; em 1,6s, tudo volta); em anterior e próximo, a seta abre o próprio espaço
+  (0,3s) e o canto de fora dobra (a orelha, 0,26s); o voltar ao topo entra subindo 14px e assenta
+  (0,4s, a curva do back.out em `linear()`), sai em 0,25s e, no clique, a seta sai por cima e volta
+  por baixo (0,44s).
 - **Troca Lista / Cards** (D42): a forma atual esmaece (0,12s) e a nova aparece subindo 8px (0,22s),
   com a Web Animations API (`SeletorModo`). Sem Flip e sem cascata nos cards. O azul do botão ativo
   é uma tinta só que escorre de um botão para o outro (D49): a borda da frente corre (0,2s,

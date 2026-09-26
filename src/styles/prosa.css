@@ -7,6 +7,40 @@
   margin-top: 0;
 }
 
+/*
+ * A tinta do link (D49, protótipo E3): em repouso, o sublinhado mais leve (55%, o link continua com
+ * cara de link); com o mouse ou o foco, a tinta azul sobe de baixo até 42% da linha (0,3s), na mesma
+ * camada de fundo do marca-texto, mas em azul-tinta, porque é clicável (--link-tinta: 16%, 18% no
+ * escuro). O link que quebra ganha a tinta nas duas linhas. Só nos links do texto (sem classe, e sem
+ * as chamadas das notas).
+ */
+.prose a:not([class], [data-ref-nota]) {
+  text-decoration-color: color-mix(in oklab, var(--acento) 55%, transparent);
+  background-image: linear-gradient(
+    color-mix(in oklab, var(--acento) var(--link-tinta), transparent),
+    color-mix(in oklab, var(--acento) var(--link-tinta), transparent)
+  );
+  background-repeat: no-repeat;
+  background-position: 0 94%;
+  background-size: 100% 0;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  transition:
+    background-size 0.3s cubic-bezier(0.2, 0.75, 0.2, 1),
+    text-decoration-color 0.2s;
+}
+
+.prose a:not([class], [data-ref-nota]):is(:hover, :focus-visible) {
+  background-size: 100% 42%;
+  text-decoration-color: var(--acento);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prose a:not([class], [data-ref-nota]) {
+    transition: none;
+  }
+}
+
 .prose h2,
 .prose h3,
 .prose h4 {

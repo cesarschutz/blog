@@ -10,7 +10,7 @@
  *
  * Uso: npm run contraste. Lê os tokens e os cadastros direto dos .ts (Node 24).
  */
-import { claro, escuro, misturar, BRANCO_NO_ESCURO, CHIP, LOUSA, MARCA_TEXTO, PAINEL, SUMARIO_MARCA } from "../src/styles/tokens.ts";
+import { claro, escuro, misturar, BRANCO_NO_ESCURO, CHIP, LINK_TINTA, LOUSA, MARCA_TEXTO, PAINEL, SUMARIO_MARCA } from "../src/styles/tokens.ts";
 import { CATEGORIAS } from "../src/data/taxonomia.ts";
 import { SERIES } from "../src/data/series.ts";
 import { PAPEL, TINTA_PAPEL } from "../docs/capas/cores.js";
@@ -153,6 +153,17 @@ for (const [tema, p] of Object.entries({ claro, escuro })) {
   }
 }
 
+// A tinta do link no texto do artigo (E3, D49): o link em --acento sobre a tinta azul que sobe no
+// hover, com a transparência por cima da folha (e do fundo dos avisos, o mais escuro por onde o texto passa).
+for (const [tema, p] of Object.entries({ claro, escuro })) {
+  const grupo = `Tinta do link, tema ${tema} (4,5:1)`;
+  const forca = LINK_TINTA[tema] / 100;
+  conferir(grupo, "--acento sobre a tinta / --paper-hi", p.acento, sobre(p["paper-hi"], p.acento, forca), 4.5, true);
+  for (const a of AVISOS) {
+    const fundoAviso = misturar(p["paper-hi"], p[a], 7);
+    conferir(grupo, `--acento sobre a tinta / fundo do ${a}`, p.acento, sobre(fundoAviso, p.acento, forca), 4.5, true);
+  }
+}
 
 // Visor e marca (D33): texto de verdade, com o mínimo de 4,5:1 (falha o script).
 for (const [tema, p] of Object.entries({ claro, escuro })) {

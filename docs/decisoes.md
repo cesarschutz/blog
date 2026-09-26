@@ -1383,4 +1383,24 @@ nada muda.
      (ou foco); com movimento reduzido, tudo troca seco. Correção em relação ao protótipo: o traço
      parado fica no meio do vão (`stroke-dasharray: 1 2`), longe da ponta, senão a ponta redonda
      deixava um ponto no começo do círculo (o mesmo acerto foi para o sinal do RSS).
+  7. **E3** (o artigo de perto; `prosa.css`, `src/lib/codigo.ts`, `copiado.ts` e `copiado.css`,
+     `RodapeArtigo.astro`, `VoltarTopo.astro`): **a tinta do link**: nos links do texto, o sublinhado
+     em repouso fica mais leve e, com o mouse ou o foco, a tinta azul sobe de baixo até 42% da linha
+     (0,3s; `--link-tinta`, 16% no claro e 18% no escuro, e não os 24% do protótipo: com eles, o link
+     passava a 4,1:1 sobre os avisos; `npm run contraste` confere). **O Copiar do código**: no lugar
+     do ícone e do balão preto do Expressive Code, as duas folhas do ícone se decalcam, somem e a
+     caneta faz o visto, enquanto o botão abre para a esquerda e "Copiado" sobe letra por letra; em
+     1,6s, tudo volta. Quem copia continua sendo o Expressive Code (o aviso dele vai para o leitor de
+     tela, escondido da tela). **A etiqueta da linguagem**, pedido do Cesar: nos blocos sem título, a
+     barra ficava da altura da etiqueta (21px, contra 35px da barra com título) e o "Java" ficava
+     espremido no alto, à direita, como no segundo bloco do post do Jackson; agora a barra tem sempre
+     a mesma altura, com a etiqueta no meio dela. **Copiar link**: o mesmo gesto (os elos se juntam,
+     o visto, "Link copiado" rolando), e a pílula cresce sem pular, com as vizinhas andando junto.
+     **Anterior e próximo**: a seta abre o próprio espaço apontando para onde se vai, e o canto de
+     fora do cartão dobra (a orelha de 16px, com o verso levemente azul). **Voltar ao topo**: entra
+     subindo 14px e assenta (a curva do back.out, em CSS `linear()`), sai mais depressa e, no
+     clique, a seta sai por cima e volta por baixo enquanto a página sobe; escondido, sai do Tab. Tudo
+     em CSS e Web Animations, sem GSAP (o artigo não o carrega): o SplitText do protótipo virou letras
+     em `span` com a animação no CSS, que voltam a ser um texto só no fim (as letras soltas perdem o
+     kerning). Com movimento reduzido, tudo troca seco.
 - **Motivo:** o Cesar revisou os protótipos um a um e escolheu o que entra.

@@ -3,9 +3,11 @@
  * que acompanha a leitura (C2, D49: o fio escrito por seção, a seção atual com o marca-texto, os
  * vistos e, sem a lateral, a seção no cabeçalho com a folha do sumário), notas laterais que abrem no
  * lugar nas telas menores, visor de imagens e a apresentação (setas, contador e tela cheia). Sem JS o artigo continua inteiro: as
- * notas abrem por âncora, a apresentação rola de lado e o PDF baixa.
+ * notas abrem por âncora, a apresentação rola de lado e o PDF baixa. O Copiar do código faz o gesto de
+ * copiar do site (E3, D49).
  */
 import { ICONES } from "../lib/icones";
+import { mostrarCopiado } from "./copiado";
 
 const reduzir = matchMedia("(prefers-reduced-motion: reduce)");
 const rolagem = (): ScrollBehavior => (reduzir.matches ? "auto" : "smooth");
@@ -420,3 +422,19 @@ document.querySelector("[data-corpo]")?.addEventListener("click", (e) => {
   if (ampliar) ampliar([...faixa.querySelectorAll("img")].indexOf(img));
   else abrirVisor([{ src: img.currentSrc || img.src, alt: img.alt }]);
 });
+
+// ---------- o Copiar do código (E3, D49) ----------
+
+// Quem copia é o Expressive Code, que avisa numa região viva (escondida da tela, pluginCopiar em
+// src/lib/codigo.ts); quando o aviso chega, o botão faz o gesto de copiar do site (copiado.ts).
+const corpoDoArtigo = document.querySelector("[data-corpo]");
+if (corpoDoArtigo?.querySelector(".expressive-code .copy")) {
+  new MutationObserver((mudancas) => {
+    for (const mudanca of mudancas)
+      for (const no of mudanca.addedNodes) {
+        if (!(no instanceof HTMLElement) || !no.classList.contains("feedback")) continue;
+        const botao = no.closest(".copy")?.querySelector<HTMLElement>("button.gesto-copiar");
+        if (botao) mostrarCopiado(botao, "Copiado", "");
+      }
+  }).observe(corpoDoArtigo, { childList: true, subtree: true });
+}

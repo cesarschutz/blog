@@ -4,6 +4,11 @@
  * uma tela de rolagem, no canto de baixo, e leva ao topo (suave, sem movimento reduzido), com o foco
  * no título da página. Numa página curta, nunca aparece. Começa escondido: sem JS, não aparece (o
  * Home do teclado continua valendo).
+ *
+ * Chega assentando e a seta sobe junto (D49, protótipo E3): entra subindo 14px com um nada de
+ * passada (0,4s, como o back.out do GSAP) e sai mais depressa (0,25s, power2.in), invertendo do ponto
+ * em que estiver quando a rolagem vai e volta. No clique, a seta sai por cima (0,18s) e volta por
+ * baixo (0,26s) enquanto a página sobe. Escondido, fica fora do Tab. Só CSS, fora a classe do clique.
  */
 import { ICONES } from "../lib/icones";
 ---
@@ -32,7 +37,11 @@ import { ICONES } from "../lib/icones";
     );
     botao.hidden = false;
     atualizar();
+    botao.addEventListener("animationend", () => botao.classList.remove("subindo"));
     botao.addEventListener("click", () => {
+      botao.classList.remove("subindo");
+      void botao.offsetWidth;
+      botao.classList.add("subindo");
       scrollTo({ top: 0, behavior: reduzir.matches ? "auto" : "smooth" });
       // O foco volta ao título da página (ou ao conteúdo), para o teclado recomeçar do alto.
       const alvo = document.querySelector<HTMLElement>("main h1") ?? document.querySelector<HTMLElement>("main");
@@ -59,18 +68,64 @@ import { ICONES } from "../lib/icones";
     background: var(--paper-hi);
     box-shadow: var(--ergue);
     cursor: pointer;
+    overflow: hidden;
     opacity: 0;
-    transform: translateY(8px);
+    visibility: hidden;
+    transform: translateY(14px);
     pointer-events: none;
     transition:
-      opacity 0.2s,
-      transform 0.2s;
+      opacity 0.25s cubic-bezier(0.55, 0.085, 0.68, 0.53),
+      transform 0.25s cubic-bezier(0.55, 0.085, 0.68, 0.53),
+      visibility 0s 0.25s;
   }
 
+  /* A entrada assenta: a curva do back.out(1.4) do GSAP, passando 7% do ponto e voltando. */
   .voltar-topo:global(.visivel) {
     opacity: 1;
+    visibility: visible;
     transform: none;
     pointer-events: auto;
+    transition:
+      opacity 0.2s,
+      transform 0.4s linear(0, 0.384, 0.667, 0.863, 0.986, 1.05, 1.07, 1.061, 1.037, 1.012, 1),
+      visibility 0s;
+  }
+
+  .voltar-topo:global(.subindo) svg {
+    animation: seta-sobe 0.44s both;
+  }
+
+  /* Sai por cima (0,18s, power2.in) e volta por baixo (0,26s, power3.out). */
+  @keyframes seta-sobe {
+    0% {
+      translate: 0 0;
+      animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+    }
+
+    40.8% {
+      translate: 0 -160%;
+      animation-timing-function: steps(1, end);
+    }
+
+    40.9% {
+      translate: 0 160%;
+      animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+    }
+
+    100% {
+      translate: 0 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .voltar-topo,
+    .voltar-topo:global(.visivel) {
+      transition: visibility 0s;
+    }
+
+    .voltar-topo:global(.subindo) svg {
+      animation: none;
+    }
   }
 
   svg {

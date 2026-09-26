@@ -1,0 +1,106 @@
+/*
+ * O gesto de copiar (D49, protótipo E3; quem move é src/scripts/copiado.ts): o Copiar do código e o
+ * "Copiar link" do artigo dizem "copiado" do mesmo jeito. No botão com `.copiado`, a folha da frente do
+ * ícone desliza sobre a de trás (o decalque, 0,16s; no link, os elos se juntam), as duas somem e a
+ * caneta faz o visto (0,3s). O rótulo rola letra por letra, numa janela que muda de largura junto.
+ * Ao voltar, o visto se apaga e as folhas reaparecem, mais depressa. Com movimento reduzido, troca seco.
+ */
+.gesto-copiar svg {
+  overflow: visible;
+}
+
+.gesto-copiar .frente,
+.gesto-copiar .tras {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    transform 0s 0.16s,
+    opacity 0.18s 0.16s;
+}
+
+.gesto-copiar.copiado .frente {
+  transform: var(--decalque, translate(6px, 6px));
+  opacity: 0;
+  transition:
+    transform 0.16s cubic-bezier(0.55, 0.085, 0.68, 0.53),
+    opacity 0.1s 0.16s;
+}
+
+.gesto-copiar.copiado .tras {
+  opacity: 0;
+  transition: opacity 0.1s 0.16s;
+}
+
+/* O visto: parado, o traço fica no meio do vão (comprimento 1, vão 2), e se apaga do começo ao voltar. */
+.gesto-copiar .visto {
+  stroke-width: 2.1;
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: -1.001;
+  transition: stroke-dashoffset 0.16s cubic-bezier(0.55, 0.085, 0.68, 0.53);
+}
+
+.gesto-copiar.copiado .visto {
+  stroke-dashoffset: 0;
+  transition: none;
+  animation: visto-da-caneta 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.16s backwards;
+}
+
+@keyframes visto-da-caneta {
+  from {
+    stroke-dashoffset: 1.001;
+  }
+}
+
+/*
+ * O rótulo que rola: o texto que sai e o que chega empilhados numa janela da altura da linha. Os
+ * seletores começam no botão (.gesto-copiar) para vencer o reset do Expressive Code, que devolve
+ * tudo ao padrão dentro do bloco de código (`.expressive-code :not(:is(svg, svg *))`).
+ */
+.gesto-copiar .rotulo-rola {
+  display: inline-grid;
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: 1.4;
+  padding-block: 1px;
+}
+
+.gesto-copiar .rotulo-rola > span {
+  grid-area: 1 / 1;
+  justify-self: start;
+}
+
+.gesto-copiar .rotulo-rola .letra {
+  display: inline-block;
+}
+
+.gesto-copiar .rotulo-rola .entrando .letra {
+  animation: letra-entra 0.3s cubic-bezier(0.215, 0.61, 0.355, 1) calc(0.1s + var(--i) * 12ms) backwards;
+}
+
+.gesto-copiar .rotulo-rola .saindo .letra {
+  animation: letra-sai 0.2s cubic-bezier(0.55, 0.085, 0.68, 0.53) calc(var(--i) * 10ms) forwards;
+}
+
+@keyframes letra-entra {
+  from {
+    transform: translateY(120%);
+    opacity: 0;
+  }
+}
+
+@keyframes letra-sai {
+  to {
+    transform: translateY(-120%);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gesto-copiar .frente,
+  .gesto-copiar .tras,
+  .gesto-copiar .visto,
+  .gesto-copiar .rotulo-rola .letra {
+    transition: none !important;
+    animation: none !important;
+  }
+}

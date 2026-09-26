@@ -1,6 +1,7 @@
 /**
  * Blocos de código (Expressive Code): temas feitos com os tokens do blog (briefing §5.3), o nome da
- * linguagem na barra do bloco e o botão Copiar levando a versão final, sem as linhas removidas (`del`).
+ * linguagem na barra do bloco e o botão Copiar levando a versão final, sem as linhas removidas (`del`),
+ * com o gesto de copiar do site (D49).
  */
 import { ExpressiveCodeTheme, pluginFramesTexts, setAlpha, type ExpressiveCodePlugin } from "astro-expressive-code";
 import { claro, escuro, misturar, type Paleta } from "../styles/tokens";
@@ -148,8 +149,9 @@ interface NoHast {
 
 /**
  * Nome da linguagem à direita da barra do bloco (briefing §5.3 e protótipo), como uma etiqueta
- * separada do título, que fica à esquerda (D39). Blocos sem título ganham a barra só com a etiqueta;
- * terminal e texto puro ficam como estão.
+ * separada do título, que fica à esquerda (D39). Blocos sem título ganham a barra só com a etiqueta,
+ * da mesma altura da barra com título (D49: sem ela, a barra ficava da altura da etiqueta e a
+ * etiqueta, espremida no alto); terminal e texto puro ficam como estão.
  */
 export function pluginLinguagem(): ExpressiveCodePlugin {
   const classes = (no: NoHast) => (no.properties?.className as string[] | undefined) ?? [];
@@ -161,7 +163,7 @@ export function pluginLinguagem(): ExpressiveCodePlugin {
       .header .linguagem { flex: none; margin-inline: auto 0.75rem; align-self: center; padding: 0.05rem 0.55rem;
         border: 1px solid color-mix(in oklab, currentColor 28%, transparent); border-radius: 999px;
         font-family: var(--ec-uiFontFml); font-size: 0.75rem; line-height: 1.5; color: var(--ec-frm-edTabBarFg, currentColor); }
-      .frame.sem-titulo .header::before { content: none; }
+      .frame.sem-titulo .header { min-height: calc(var(--ec-uiFontSize) * var(--ec-uiLineHt) + 2 * (var(--ec-uiPadBlk) + var(--ec-frm-edActTabIndHt)) + 1px); }
     `,
     hooks: {
       postprocessRenderedBlock: ({ codeBlock, renderData }) => {
@@ -177,6 +179,65 @@ export function pluginLinguagem(): ExpressiveCodePlugin {
           ...(cabecalho.children ?? []),
           { type: "text", value: " " },
           { type: "element", tagName: "span", properties: { className: ["linguagem"] }, children: [{ type: "text", value: LINGUAGENS[id] ?? id }] },
+        ];
+      },
+    },
+  };
+}
+
+/**
+ * O Copiar do código com o gesto de copiar do site (D49, protótipo E3; copiado.css e copiado.ts): no
+ * lugar do ícone e do balão preto do Expressive Code, as duas folhas do ícone, o visto da caneta e o
+ * rótulo "Copiado", que rola no próprio botão, no papel e na tinta do site. Quem copia continua sendo
+ * o Expressive Code (com o texto sem as linhas removidas, pluginCopiarSemRemovidas), e o aviso dele
+ * segue para o leitor de tela, escondido da tela; o artigo (artigo.ts) ouve o aviso e faz o gesto.
+ * Com mouse, o botão aparece ao passar pelo bloco; no toque, fica sempre à vista.
+ */
+export function pluginCopiar(): ExpressiveCodePlugin {
+  const achar = (no: NoHast): NoHast | undefined =>
+    no.tagName === "button" && no.properties && "dataCode" in no.properties ? no : no.children?.map(achar).find(Boolean);
+  const el = (tagName: string, properties: Record<string, unknown>, children: NoHast[] = []): NoHast => ({
+    type: "element",
+    tagName,
+    properties,
+    children,
+  });
+  return {
+    name: "copiar",
+    baseStyles: `
+      .copy button { display: inline-flex; align-items: center; width: auto; height: 30px; padding: 0 7px;
+        border: 1px solid var(--rule); border-radius: 8px; background: var(--paper-hi); color: var(--ink-2); opacity: 1;
+        font-family: var(--font-ui); font-weight: 500; font-size: 12.5px; transition: border-color 0.15s, color 0.15s, opacity 0.2s; }
+      .copy button::before, .copy button::after { content: none; }
+      .copy button:hover, .copy button:focus-visible { border-color: var(--acento); color: var(--acento); }
+      .copy button:active { opacity: 1; }
+      .copy .copiar-icone { flex: none; width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.8;
+        stroke-linecap: round; stroke-linejoin: round; }
+      .copy .rotulo-rola > span { padding-left: 6px; }
+      .copy .feedback { position: absolute; width: 1px; height: 1px; padding: 0; margin: 0; overflow: hidden;
+        clip-path: inset(50%); white-space: nowrap; }
+      .copy .feedback::after { content: none; }
+      @media (hover: hover) {
+        .copy button { width: auto; height: 30px; opacity: 0; }
+        .frame:hover .copy button:not(:hover),
+        .frame:focus-within :focus-visible ~ .copy button:not(:hover),
+        .frame .copy .feedback.show ~ button:not(:hover),
+        .copy button.copiado { opacity: 1; }
+      }
+    `,
+    hooks: {
+      postprocessRenderedBlock: ({ renderData }) => {
+        const botao = achar(renderData.blockAst as NoHast);
+        if (!botao) return;
+        const classes = (botao.properties!.className as string[] | undefined) ?? [];
+        botao.properties!.className = [...classes, "gesto-copiar"];
+        botao.children = [
+          el("svg", { className: ["copiar-icone"], viewBox: "0 0 24 24", ariaHidden: "true", focusable: "false" }, [
+            el("rect", { className: ["tras"], x: 9, y: 9, width: 12, height: 12, rx: 2 }),
+            el("rect", { className: ["frente"], x: 3, y: 3, width: 12, height: 12, rx: 2 }),
+            el("path", { className: ["visto"], pathLength: 1, d: "M4.5 12.8 9.4 17.4 19.5 6.6" }),
+          ]),
+          el("span", { className: ["rotulo-rola"], ariaHidden: "true" }),
         ];
       },
     },
