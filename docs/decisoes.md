@@ -980,3 +980,26 @@ nada muda.
 - **Consequência técnica:** o `Livro3D` passa a ser o livro inteiro, como no protótipo (contracapa,
   lombada, bordas das páginas, página de dentro e capa com verso), para a capa poder abrir e
   entreabrir. Continua sendo o único componente de livro 3D.
+
+## D41 · O resto do site em movimento, com GSAP e View Transitions
+- **Data:** 25/09/2026 · **Status:** aplicada em lotes, um commit por ideia, sem push.
+- **Pedido do Cesar:** animar o resto do site tendo como guia de movimento, tempos e aparência os
+  protótipos `docs/prototipos/site-em-movimento.html` e `docs/prototipos/caderno-marcado.html` (não é
+  código para copiar). Vale a regra de Movimento do `DESIGN.md`: o movimento responde a uma ação ou
+  acompanha a leitura; nada de cada cartão surgir ao rolar a página.
+- **Regras gerais:** GSAP e plugins (Flip, DrawSVG, MorphSVG, ScrollTrigger) só nos componentes que
+  usam, baixados sob demanda um pouco antes do uso (`src/scripts/gsap.ts`); só transformações,
+  opacidade, desenho de traço e fundo; com `prefers-reduced-motion` e na impressão, tudo direto no
+  estado final; um trace no celular (CPU 4×) por lote.
+- **Os lotes:**
+  1. **Lista, cards e filtro** (home, arquivo, tags e páginas de livro, `lista-viva.ts`): Lista ⇄
+     Cards não transforma um formato no outro: os artigos à vista somem (0,16s cada, em sequência),
+     o formato muda e eles reaparecem subindo 10px (0,38s, `stagger` 0,04s). No filtro por livro, com
+     Flip, os que ficam deslizam até o lugar novo sem mudar de tamanho (`scale`), os que saem encolhem
+     e somem, os que entram crescem. A área da lista guarda a altura do começo e só no fim fica com a
+     nova, sem animar a altura. Ajustes técnicos, medidos no trace: só anima o que está perto da tela
+     (antes ou depois); os que ficam deslizam no fluxo e só os que saem ficam soltos
+     (`absoluteOnLeave`), senão os artigos longe da tela subiam para o lugar deles no meio da
+     animação; quem sai some ao fim do próprio tween, perto do clique, para não contar como CLS. Os
+     artigos e grupos fora do filtro passam a usar `data-fora` (o `hidden` tem `!important`, e o Flip
+     não conseguiria mostrá-los enquanto somem).

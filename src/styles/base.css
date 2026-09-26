@@ -447,3 +447,20 @@ kbd {
 :root[data-post-view="cards"] .cartoes-modo {
   display: grid;
 }
+
+/*
+ * Lista, cards e filtro em movimento (D41, lista-viva.ts). Durante a animação, as transições de CSS
+ * dos artigos (o card que sobe no hover) saem do caminho do GSAP, e a folha da lista corta os artigos
+ * que deslizam para dentro ou para fora dela.
+ */
+.lista-modo {
+  position: relative;
+}
+
+.movendo :is(.lista-modo, .cartoes-modo) > li {
+  transition: none;
+}
+
+.movendo .lista-modo {
+  overflow: clip;
+}

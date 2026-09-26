@@ -616,6 +616,16 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
     -12° e -18° do protótipo, aberta mais para as páginas aparecerem). No toque, o primeiro toque
     entreabre e o segundo abre o link. No livro ampliado, arrastar gira com embalo (Draggable +
     InertiaPlugin) e, ao soltar, o livro volta a 18° com `elastic.out(1, 0.6)`.
+- **O resto do site em movimento (D41)**, com as mesmas regras (GSAP e plugins sob demanda; só
+  transformações, opacidade, traço e fundo; movimento reduzido e impressão no estado final):
+  - **Lista ⇄ Cards** (`lista-viva.ts`): um formato não vira o outro. Os artigos à vista somem
+    (opacidade e 6px, 0,16s cada, `stagger` 0,02s, `power1.in`), o formato muda e eles reaparecem
+    subindo 10px (0,38s, `stagger` 0,04s, `power2.out`).
+  - **Filtro por livro** (arquivo e tags): Flip, 0,55s, `power2.inOut`, `stagger` 0,02s. Os que ficam
+    deslizam sem mudar de tamanho; os que saem encolhem para 0,94 e somem (0,25s); os que entram
+    crescem de 0,94 e aparecem (0,4s, depois de 0,2s). Só o que está perto da tela anima.
+  - **A área da lista nunca encolhe no meio da animação** (o painel e a página pulariam): guarda a
+    altura do começo e fica com a nova no fim, sem animar a altura.
 - **Lousa de passos** (D39): com a rolagem só na tela de 1024px ou mais e sem movimento reduzido
   (passos a 40% da tela, o atual inteiro e os outros esmaecidos); fora disso, passo a passo com
   "◀ 2 de 5 ▶", pontos e deslizar.

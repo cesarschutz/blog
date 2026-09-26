@@ -28,6 +28,46 @@ export function carregarArrastar() {
   return arrastar;
 }
 
+/** O GSAP com Flip (lista, cards e filtro; a busca que nasce do campo, D41). */
+let flip: Promise<{ gsap: GSAP; Flip: typeof import("gsap/Flip").Flip }> | undefined;
+export function carregarFlip() {
+  flip ??= Promise.all([carregarGsap(), import("gsap/Flip")]).then(([gsap, { Flip }]) => {
+    gsap.registerPlugin(Flip);
+    return { gsap, Flip };
+  });
+  return flip;
+}
+
+/** O GSAP com DrawSVG (o desenho que se desenha, D41). */
+let traco: Promise<GSAP> | undefined;
+export function carregarTraco() {
+  traco ??= Promise.all([carregarGsap(), import("gsap/DrawSVGPlugin")]).then(([gsap, { DrawSVGPlugin }]) => {
+    gsap.registerPlugin(DrawSVGPlugin);
+    return gsap;
+  });
+  return traco;
+}
+
+/** O GSAP com MorphSVG (lua e sol, o visto do Copiar, D41). */
+let morph: Promise<GSAP> | undefined;
+export function carregarMorph() {
+  morph ??= Promise.all([carregarGsap(), import("gsap/MorphSVGPlugin")]).then(([gsap, { MorphSVGPlugin }]) => {
+    gsap.registerPlugin(MorphSVGPlugin);
+    return gsap;
+  });
+  return morph;
+}
+
+/** O GSAP com ScrollTrigger e DrawSVG (o caderno marcado, D41). */
+let rolagem: Promise<{ gsap: GSAP; ScrollTrigger: typeof import("gsap/ScrollTrigger").ScrollTrigger }> | undefined;
+export function carregarRolagem() {
+  rolagem ??= Promise.all([carregarTraco(), import("gsap/ScrollTrigger")]).then(([gsap, { ScrollTrigger }]) => {
+    gsap.registerPlugin(ScrollTrigger);
+    return { gsap, ScrollTrigger };
+  });
+  return rolagem;
+}
+
 /**
  * Começa o download antes do uso: no primeiro mouse, toque ou foco em `alvo`, ou quando a página
  * fica ociosa (no máximo em 4s).

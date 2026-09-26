@@ -58,7 +58,7 @@ const nivelDoItem = porAno ? "h3" : "h2";
   {livros.length > 0 && <script is:inline>document.querySelector("[data-lado-estante]").hidden = false;</script>}
 </div>
 
-<section class="lista-filtrada" aria-label="Artigos" data-lista-filtrada>
+<section class="lista-filtrada" aria-label="Artigos" data-lista-filtrada data-area-lista>
   <div class="barra-lista">
     <p class="status" aria-live="polite" data-status data-total={posts.length}>{plural(posts.length)}</p>
     <button type="button" class="pilula limpar" data-limpar hidden>Limpar filtro</button>
@@ -95,6 +95,7 @@ const nivelDoItem = porAno ? "h3" : "h2";
 </section>
 
 <script>
+  import { adiantarLista, filtrarComFlip } from "../scripts/lista-viva";
 
   const lista = document.querySelector<HTMLElement>("[data-lista-filtrada]");
   const estante = document.querySelector<HTMLElement>("[data-estante-filtro]");
@@ -110,19 +111,23 @@ const nivelDoItem = porAno ? "h3" : "h2";
     const nome = (b: HTMLButtonElement) => b.dataset.nome!;
     let atual = "";
 
-    function aplicar(id: string) {
+    // Os artigos e grupos fora do filtro ganham `data-fora` (e não `hidden`), para o Flip poder
+    // mostrá-los enquanto somem (D41). Num grupo que some inteiro, os artigos ficam como estão.
+    function mudar(id: string) {
       atual = id;
-      for (const item of itens()) item.hidden = Boolean(id) && item.dataset.livro !== id;
       for (const grupo of grupos) {
-        const n = grupo.querySelectorAll(".lista-modo > [data-livro]:not([hidden])").length;
-        grupo.hidden = n === 0;
+        const dele = [...grupo.querySelectorAll<HTMLElement>("[data-livro]")];
+        const fica = (i: HTMLElement) => !id || i.dataset.livro === id;
+        const n = dele.filter((i) => fica(i) && i.matches(".lista-modo > *")).length;
+        grupo.toggleAttribute("data-fora", n === 0);
+        for (const item of dele) item.toggleAttribute("data-fora", n > 0 && !fica(item));
         const contagem = grupo.querySelector("[data-contagem]");
         if (contagem) contagem.textContent = plural(n);
       }
       for (const livro of livros) livro.setAttribute("aria-pressed", String(livro.dataset.filtro === id));
       estante!.classList.toggle("filtrando", Boolean(id));
       const escolhido = livros.find((l) => l.dataset.filtro === id);
-      const n = itens().filter((i) => !i.hidden && i.matches(".lista-modo > *")).length;
+      const n = itens().filter((i) => !i.closest("[data-fora]") && i.matches(".lista-modo > *")).length;
       status.textContent = escolhido ? `${plural(n)} em ${nome(escolhido)}` : plural(total);
       limpar.hidden = !escolhido;
       const endereco = new URL(location.href);
@@ -130,16 +135,18 @@ const nivelDoItem = porAno ? "h3" : "h2";
       else endereco.searchParams.delete("livro");
       history.replaceState(history.state, "", endereco);
     }
+    const aplicar = (id: string) => filtrarComFlip(lista!, () => mudar(id));
 
     livros.forEach((livro) => {
       livro.addEventListener("click", () => aplicar(atual === livro.dataset.filtro ? "" : livro.dataset.filtro!));
     });
     limpar.addEventListener("click", () => aplicar(""));
-    addEventListener("cartoes:prontos", () => aplicar(atual));
+    addEventListener("cartoes:prontos", () => mudar(atual));
+    adiantarLista(estante);
 
     const pedido = new URL(location.href).searchParams.get("livro");
     const inicial = pedido && livros.find((l) => l.dataset.filtro!.replace(/^(livro|serie)-/, "") === pedido);
-    if (inicial) aplicar(inicial.dataset.filtro!);
+    if (inicial) mudar(inicial.dataset.filtro!);
   }
 </script>
 
@@ -239,7 +246,8 @@ const nivelDoItem = porAno ? "h3" : "h2";
     margin-left: auto;
   }
 
-  .grupo[hidden] {
+  .grupo[data-fora],
+  .lista-filtrada :global(li[data-fora]) {
     display: none;
   }
 
