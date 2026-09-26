@@ -25,8 +25,10 @@ Cesar acompanhar. Ele revisa tudo no fim.
 - O **`DESIGN.md`** (raiz) é a fonte de verdade do visual. Ele vence qualquer ferramenta, inclusive o
   Impeccable (sem "go all out", redesign ou troca do `DESIGN.md`).
 - Todo trabalho em post (criar, escrever, adaptar, importar, migrar, revisar) segue a skill **`post`**.
-- **Caderno marcado (D41):** todo post novo ou revisado propõe no plano as marcações à caneta (trecho,
-  tipo, motivo), pelo guia `docs/marcacoes.md`, e elas só entram com o OK do Cesar.
+- **Caneta do caderno (D48):** a última etapa de todo post é a passada de caneta (skill **`caneta`**):
+  ler o guia vivo `docs/marcacoes.md` inteiro, propor as marcações (trecho, tipo, motivo), aplicar só
+  com o OK do Cesar e testar em 320, 390, 768, 1280 e 1600px nos dois temas. Ajuste que o Cesar pedir
+  nas marcações vai na hora para "Ajustes do Cesar" no guia, com a data.
 - Posts para adaptar ficam em **`entrada/`** (fora do git).
 - **Nunca** instalar skill, MCP ou pacote de terceiros sem ler o código antes e reportar ao Cesar o que
   for suspeito (rede, variáveis de ambiente, credenciais, comandos destrutivos).
@@ -45,8 +47,8 @@ Cesar acompanhar. Ele revisa tudo no fim.
   sem prender a tela.
 - JavaScript só onde há interação (estante, gaveta, busca, lousas, apresentação, lista/cards, menu de
   tema, filtro por livro, livro ampliado, o nome de transição do livro
-  do painel e o menu do celular, D29, D33, D46; o caderno marcado e o desenho do
-  destaque da home, D41). Artigo sem esses componentes funciona sem JS (as marcações aparecem prontas).
+  do painel e o menu do celular, D29, D33, D46; o desenho do destaque da home, D41; o lugar das notas
+  da caneta, D48). Artigo sem esses componentes funciona sem JS (as marcações da caneta são estáticas).
 - Fontes servidas pelo próprio site (`@fontsource`). Nunca Google Fonts nem CDN em produção.
 - Para verificar o blog no navegador (visual, console, performance), use sempre o MCP
   `chrome-devtools`, nunca o `claude-in-chrome`.
@@ -111,7 +113,7 @@ Aprovada em 23/09/2026. Detalhes em `docs/decisoes.md`.
 - CSS próprio com tokens, sem Tailwind e sem framework de UI. Visual "Folhas claras" (D26): folhas
   (`.folha`), painéis dos desenhos (`.painel`) e azul-tinta (`--acento`) no que é clicável
 - Fontes: Besley (títulos), Literata com `opsz` (texto), IBM Plex Sans (interface), JetBrains Mono
-  (código); nos livros, Bitter e Newsreader itálico (D30)
+  (código); nos livros, Bitter e Newsreader itálico (D30); nas notas da caneta, Caveat (D48)
 - Busca com Pagefind e interface própria (D2, por medição): índice gerado no `postbuild`
 - Node 24 (`.node-version`, instalado pelo fnm) e npm
 - Publicado por GitHub Actions no GitHub Pages, em `blog.cesarschutz.com.br` (D34): o `deploy.yml`
@@ -141,7 +143,8 @@ node scripts/marca.mjs                    # a marca e os ícones do navegador (p
 
 A porta 4321 desta máquina está ocupada por outra ferramenta do Cesar, que não deve ser tocada. O
 Astro usa a próxima livre (4322). Só no dev: `/amostra/` (tokens, fontes, avisos),
-`/amostra/markdown/` (recursos de Markdown, de `src/amostra/recursos.md`), `/amostra/desenhos/` e
+`/amostra/markdown/` (recursos de Markdown, de `src/amostra/recursos.md`), `/amostra/caneta/` (os 20
+tipos da caneta, de `src/amostra/caneta.md`), `/amostra/desenhos/` e
 `/amostra/livros/` (as capas planas, para comparar com `docs/capas/referencia/`).
 
 Medição da busca (D2): `scripts/bench-busca/` (construir, conferir, medir), com o dev parado.
@@ -160,7 +163,7 @@ docs/briefing.md         decisões de produto e design (fonte da verdade)
 docs/estado.md           painel: fase, pronto, próximos passos, perguntas
 docs/decisoes.md         registro de decisões (data, decisão, motivo, alternativas)
 docs/estilo-desenho.md   estilo das ilustrações e das lousas
-docs/marcacoes.md        guia editorial das marcações do caderno marcado (D41)
+docs/marcacoes.md        guia vivo da caneta do caderno: 20 tipos, limites, tela, ajustes do Cesar (D48)
 docs/capas/              os livros: CAPAS.md (regra), livros.json, cores.js, desenhos, ícones, referência
 docs/virada.md           plano para o domínio passar ao blog novo (só com OK do Cesar)
 docs/referencias/        protótipos aprovados
@@ -200,6 +203,8 @@ src/lousas/<slug>/       desenhos das lousas de cada post .mdx
   (`.claude/revisao-posts.md`)
 - `desenho`: a ilustração de cada post (o que desenhar, regras técnicas, recortes, validação)
 - `lousa`: diagramas na lousa (passo a passo, linha do tempo, loop) e frase em destaque
+- `caneta`: a passada de caneta num post (a última etapa da skill `post`, ou sozinha: "passa a caneta
+  no post X"), pelo guia `docs/marcacoes.md`
 - `apresentacao`: PowerPoint do NotebookLM → slides WebP e PDF
 - `serie-java`: série "Atualizações do Java" (só LTS)
 - De terceiros, lidas antes de instalar (D35): `impeccable` (revisão de design; o motor fica em

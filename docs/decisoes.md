@@ -982,7 +982,8 @@ nada muda.
   entreabrir. Continua sendo o único componente de livro 3D.
 
 ## D41 · Caderno marcado, o desenho do destaque e a marca que abre
-- **Data:** 25/09/2026 · **Status:** aplicada, sem push.
+- **Data:** 25/09/2026 · **Status:** aplicada, sem push. O caderno marcado (item 3) foi **substituído
+  pela D48** (a caneta do caderno, estática e azul).
 - **Pedido do Cesar:** animar o resto do site a partir de `docs/prototipos/site-em-movimento.html` e
   `docs/prototipos/caderno-marcado.html` (lista, cards e filtro com Flip; do cartão ao artigo com View
   Transitions; o desenho que se desenha; a busca que nasce do campo; o caderno marcado; o tema em
@@ -1197,3 +1198,62 @@ nada muda.
 - **Movimento reduzido:** sem abertura, sem transição de página, a gaveta e o livro ampliado abrem
   direto, o filtro troca direto.
 
+
+## D48 · A caneta do caderno: marcações estáticas, azuis e com 20 tipos
+- **Data:** 26/09/2026 · **Status:** aplicada **só local, com commit e sem push** (pedido do Cesar).
+  Substitui a parte do caderno marcado da D41 (a marca "cs" e o desenho do destaque da D41 continuam).
+- **Pedido do Cesar:** refazer o caderno marcado a partir de `docs/prototipos/caneta-do-caderno.html`,
+  o catálogo com todas as marcações nos dois temas, já com a caneta azul escolhida.
+- **Decisão:**
+  1. **Estáticas:** as marcações já vêm feitas, como se o texto tivesse sido riscado à caneta antes
+     de publicar. Saíram a animação por rolagem (`src/scripts/caderno.ts`, ScrollTrigger e DrawSVG
+     do caderno; o `carregarRolagem` do `gsap.ts`) e a variável `--caneta-livro` do artigo.
+  2. **Caneta azul fixa** em todos os livros: token `caneta`, #1F4FB5 no claro e #8FA8FF no escuro.
+     Para não confundir com os links, **a caneta nunca pinta o texto**: o texto marcado fica na cor
+     normal; só os traços e as notas à mão ficam azuis, e as notas não têm sublinhado.
+  3. **Marca-texto amarelo** (`--marca-texto`: #FFE27A; no escuro, rgb(255 214 90 / 0.3)), no lugar
+     da cor do livro, com o texto sempre em `--ink`; no máximo uma ou duas vezes por post.
+  4. **20 tipos**, cada um com um papel (`docs/marcacoes.md`): marca-texto, ondulado, círculo,
+     colchete, duplo, caixa, nota na margem, riscado com correção, asterisco, certo e errado, números
+     circulados, chave, riscado simples, seta ligando, exclamação, interrogação com nota, sinal entre
+     termos, anotação no código, linhas marcadas no código e comentário do autor (só com frase dele).
+     A "caixa numa definição" do catálogo ficou de fora da lista do Cesar e não entrou.
+  5. **A pintura dos termos das listas (`:::termos`) saiu**; no lugar, a caixa à mão (`:::caixas`).
+  6. **Letra à mão:** Caveat 600, auto-hospedada, declarada só nos posts com nota escrita.
+  7. **Limites cobrados no build:** até 12 marcações por post (o guia pede de 6 a 12), marca-texto
+     até 2, o mesmo tipo até 3 (fora os de lista), nunca duas no mesmo parágrafo, nada em títulos,
+     traço sem quebra até 32 caracteres e nota até 40.
+  8. **Telas:** marcas de margem no respiro da folha a partir de 940px e no recuo do parágrafo abaixo
+     disso; notas acima da palavra abrem espaço na própria linha e vão para depois da palavra quando
+     não cabem; notas no código ao lado da linha quando cabem e embaixo dela (paradas na esquerda do
+     bloco) quando não, e sempre no celular.
+  9. **A caneta é a última etapa** de todo post: skill nova `caneta` (ler o guia, ler o post, propor,
+     aplicar, testar em 320, 390, 768, 1280 e 1600px nos dois temas, relatório). A skill `post` a
+     chama no fim (passo 9); o Cesar também pode chamá-la sozinha. As marcações saíram do plano do
+     passo 2 da skill `post`.
+  10. **Guia vivo:** `docs/marcacoes.md` reescrito, com a seção "Ajustes do Cesar", onde entra, com a
+      data, todo ajuste que ele pedir nas marcações.
+  11. **As marcações da D41 saíram dos 27 posts** (texto idêntico, conferido pelo Markdown antes e
+      depois). Os pilotos (JWT e chave de idempotência) recebem a caneta nova depois do OK à
+      proposta; os outros, na revisão pelo `.claude/revisao-posts.md` (coluna "Caneta").
+- **Motivo:** o Cesar escolheu o catálogo; a cor do livro no marca-texto escondia o texto em algumas
+  cores, a animação chamava atenção demais, e as marcações da D41 (de 12 a 30 por post) eram
+  densas demais para destacar o que importa.
+- **Técnica:**
+  - `src/plugins/marcacoes.mjs` gera o HTML dos 20 tipos direto no remark (nós com `hName`,
+    `hProperties` e `hChildren`), sem o passo de rehype da D41; os nomes antigos (`:sublinhado`,
+    `:::termos`) dão erro no build. `src/lib/codigo.ts` ganhou o `pluginCaneta` do Expressive Code
+    (atributos `anotar` e `linhas` da cerca); o Copiar continua levando só o código.
+  - `src/styles/caneta.css` (novo) tem o visual; `src/scripts/caneta.ts` só decide se a nota acima
+    da palavra cabe (sem JS, ela fica acima). Traços SVG decorativos (`aria-hidden`); notas lidas
+    entre parênteses; sinal ≠ lido "diferente de"; riscado em `<s>`; alto contraste e impressão
+    cobertos.
+  - `npm run contraste` confere o texto sobre o amarelo (folha e fundo) e a caneta sobre a folha, o
+    fundo e o código, a 4,5:1, nos dois temas: 12,75:1 e 5,92:1 no amarelo; a caneta, de 6,47:1 a
+    8,00:1.
+  - Catálogo no dev em `/amostra/caneta/` (`src/amostra/caneta.md`, fora dos limites de propósito).
+- **Biblioteca nova:** `@fontsource/caveat` 5.3.0 (pedida pelo Cesar: Caveat auto-hospedada). Código
+  lido antes de instalar: só CSS, woff2, metadados e a licença OFL; sem scripts de instalação, rede,
+  variáveis de ambiente ou comandos. Um peso só (600, 51 KB no latim), em vez da variável (75 KB).
+- **Alternativas:** manter a animação só no marca-texto (o Cesar pediu tudo estático); a caneta na
+  cor do livro, vermelha ou grafite (comparadas no catálogo; ficou o azul); a Caveat variável.

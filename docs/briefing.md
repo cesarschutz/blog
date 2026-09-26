@@ -96,7 +96,9 @@ camada visual: estrutura, conteúdo, rotas e comportamento seguem as seções 5 
   lados, na mesma largura do código, das tabelas, das lousas e da apresentação (D46, pedido do
   Cesar; antes, uma coluna de 720px no meio, D39); no celular, o corpo não fica num cartão.
   Números em estilo antigo (`oldstyle-nums`) no texto corrido.
-- Sem fonte de "letra de mão" em lugar nenhum, inclusive nos desenhos e nas lousas.
+- Sem fonte de "letra de mão" em lugar nenhum, inclusive nos desenhos e nas lousas. **Exceção
+  decidida (D48):** as notas escritas à caneta nos artigos usam a **Caveat** (600), auto-hospedada e
+  carregada só nos posts que têm nota.
 
 ### 4.2 Cores (tokens em variáveis CSS)
 | Token | Claro | Escuro |
@@ -355,6 +357,16 @@ Referência: aba "Artigo" do protótipo.
   (`ins`/`del`) com fundo tingido e `+`/`−` na margem. "Copiar" leva a versão final, sem as
   linhas removidas. Tema de cores feito com os tokens do blog nos dois temas.
 - **Lousas** (seção 7) sempre que houver fluxo ou sequência a explicar.
+- **Caneta do caderno** (D48, decidido; substitui o caderno marcado da D41): o texto vem marcado à
+  caneta, **estático**, como se tivesse sido riscado antes de publicar (sem animação). Caneta **azul
+  fixa** em todos os livros (#1F4FB5 no claro, #8FA8FF no escuro), que **nunca pinta o texto**: só os
+  riscos, círculos, caixas, setas e notas à mão ficam azuis, e as notas não parecem link.
+  **Marca-texto amarelo** (#FFE27A; no escuro, rgba(255, 214, 90, .30)), no máximo uma ou duas vezes
+  por post. **20 tipos**, cada um com um papel (catálogo `docs/prototipos/caneta-do-caderno.html`;
+  guia vivo em `docs/marcacoes.md`, com os critérios, os limites, as regras de tela e os "Ajustes do
+  Cesar"): de 6 a 12 marcações por post, marcadas como um arquiteto experiente marcaria. A pintura
+  dos termos das listas saiu; no lugar, a caixa à mão. É a **última etapa** de todo post (skill
+  `caneta`), com a proposta (trecho, tipo, motivo) aprovada pelo Cesar antes de aplicar.
 - **Apresentação** (quando existir): seção logo antes de "Fontes", com o título
   "Apresentação" e sem frase de apoio. Carrossel com setas e contador, tela cheia (galeria
   com ←/→) e botão **Baixar PDF**.
@@ -491,7 +503,8 @@ com a rolagem. Use no máximo de vez em quando; o Cesar pode removê-la.
   dentro do escopo do blog, com cor distinta, e avise o Cesar.
 - **Fluxo** (vale para post do zero e para texto que o Cesar traz pronto): classificar →
   escrever ou melhorar → revisar contra fontes → desenhar ilustração e lousas → validar
-  (build, claro e escuro, celular) → mostrar ao Cesar. **Nunca** commitar nem publicar sem
+  (build, claro e escuro, celular) → mostrar ao Cesar → **passada de caneta** (skill `caneta`, D48),
+  com a proposta aprovada por ele. **Nunca** commitar nem publicar sem
   pedido explícito dele.
 
 ### 8.3 Apresentação do NotebookLM

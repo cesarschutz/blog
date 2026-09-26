@@ -125,12 +125,9 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
   bordas, página e capa com verso); 5 capas com profundidade e o livro ampliado com embalo. Capturas e
   traces do celular (CPU 4×) em `.impeccable/review/movimento/index.html` (fora do git).
 
-- **Caderno marcado, desenho do destaque e marca que abre (D41, 25/09/2026), só local, sem push:** do
-  pedido de animar o resto do site, o Cesar viu os lotes e pediu para desfazer tudo menos três coisas:
-  a marca "cs" que abre como livro (só CSS), o desenho que se desenha só no destaque da home e o
-  caderno marcado (diretivas `:marca`, `:sublinhado`, `:circulo`, `:::termos`, `:::colchete`, com
-  `remark-directive`). Em 26/09/2026, marcações aplicadas nos 27 posts (de 12 a 30 cada, densidade de estudo; ficam depois de marcadas); posts novos as recebem pelo plano
-  da skill `post` (guia em `docs/marcacoes.md`; coluna "Marcações" na revisão).
+- **Desenho do destaque e marca que abre (D41, 25/09/2026):** do pedido de animar o resto do site
+  ficaram a marca "cs" que abre como livro (só CSS) e o desenho que se desenha só no destaque da
+  home. O caderno marcado da D41 foi substituído pela caneta do caderno (D48).
 
 - **Tema em círculo e Lista / Cards com esmaecer (D42, 26/09/2026), só local, sem commit:** o tema
   novo se espalha em círculo a partir do botão (View Transition do documento) e a troca Lista / Cards
@@ -153,7 +150,19 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
   agora com a linha do tempo de arrastar), artigo com a coluna da esquerda desde o topo, texto na
   largura da folha e o livro grande embaixo do sumário.
 
+- **Caneta do caderno (D48, 26/09/2026), só local, com commit e sem push:** marcações estáticas, caneta
+  azul fixa que não pinta o texto, marca-texto amarelo, os 20 tipos do catálogo
+  `docs/prototipos/caneta-do-caderno.html` em diretivas e nos blocos de código, Caveat só nos posts
+  com nota, limites cobrados no build, `npm run contraste` com a caneta e o amarelo, catálogo em
+  `/amostra/caneta/`, skill `caneta` (a última etapa da skill `post`) e o guia vivo
+  `docs/marcacoes.md` com "Ajustes do Cesar". As marcações da D41 saíram dos 27 posts (texto
+  idêntico). Os pilotos (JWT e chave de idempotência) aguardam o OK do Cesar à proposta.
+
 ## Próximos passos
+
+00. **Caneta (D48):** o OK do Cesar à proposta dos pilotos (JWT e chave de idempotência); depois,
+    aplicar, testar nos cinco tamanhos e nos dois temas e mostrar o antes e depois. Os outros 25 posts
+    recebem a caneta na revisão (`.claude/revisao-posts.md`, coluna "Caneta"). Push só quando ele pedir.
 
 0. A D42 a D45 foram publicadas junto com a D46 (26/09/2026). Pendente de resposta: as cores da capa na gaveta (a referência dele tinha a cor do livro em cima;
    hoje, pela D39, o papel fica em cima) e se o título em duas partes vale também na gaveta e no

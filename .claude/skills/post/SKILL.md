@@ -52,11 +52,8 @@ Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
   - A **ilustração do post** (sempre existe): o que ela vai mostrar.
   - Onde entram **desenhos e animações novos**: lousa de passo a passo, linha do tempo, loop, frase
     em destaque (rara) ou animação GSAP, cada um com o trecho do texto que ele explica.
-- **Marcações (caderno marcado, D41), nos dois modos:** uma tabela com **trecho**, **tipo**
-  (marca-texto, sublinhado, só o termo, círculo, colchete) e **motivo**, seguindo
-  `docs/marcacoes.md` (o que marcar, o que nunca marcar, densidade de estudo, ~uma por parágrafo que ensina algo, nunca duas no mesmo
-  parágrafo, nada em títulos e código). Entram no Markdown só depois da aprovação, junto com o resto
-  do plano.
+- **Caneta (D48):** as marcações **não entram no plano**. Elas são a última etapa (passo 9), pela
+  skill `caneta`, depois que texto, desenhos e animações estiverem prontos e aprovados.
 - **Modo Adaptar:** a lista de **sugestões de conteúdo**, separadas do plano (passo 3).
 
 ### 3. Texto
@@ -154,11 +151,19 @@ MCP `chrome-devtools`:
 - **Projeto:** `npm run check` com 0 erros, `npm run build`, `npm run links` (0 quebrados) e
   `npm run contraste` (0 falhas), sempre com `fnm exec --using=24`.
 
-### 9. Relatório final (curto)
+### 9. Caneta (a última etapa)
+
+Com o texto, os desenhos e as animações prontos e aprovados, chame a skill **`caneta`** (a passada de
+caneta, D48): ela lê o guia `docs/marcacoes.md` inteiro, propõe as marcações (trecho, tipo e motivo)
+para o Cesar aprovar, aplica, testa em 320, 390, 768, 1280 e 1600px nos dois temas e entrega o
+relatório. Nada de marcação antes disso.
+
+### 10. Relatório final (curto)
 
 - O que mudou (arquivos e URL).
 - Desenhos **criados**, **refeitos** e **removidos**.
 - O que foi verificado (e com que resultado): navegador, trace, Impeccable, web quality, comandos.
+- As marcações da caneta (o relatório da skill `caneta`).
 - O que ficou pendente e as sugestões de conteúdo ainda não aprovadas.
 
 Nunca commite nem publique sem pedido explícito do Cesar. Push na `main` publica o site.
@@ -197,6 +202,7 @@ Todos aparecem juntos em `src/amostra/recursos.md`, que o dev mostra em `/amostr
 - `<details>` com `<summary>`, tabelas e KaTeX (`$…$`, `$$…$$`; `$` de texto escapado).
 - **Imagens:** `alt` descritivo; abrem no visor ao clicar.
 - **Sumário:** automático com 3 ou mais seções `##`.
-- **Marcações** (D41, guia em `docs/marcacoes.md`): `:marca[…]`, `:sublinhado[…]`, `:circulo[…]`,
-  `:::termos` em volta de uma lista e `:::colchete` em volta de um parágrafo. O build recusa mais de 30
-  por artigo, duas no mesmo parágrafo e marcação em título.
+- **Caneta** (D48, guia em `docs/marcacoes.md`, skill `caneta`): os 20 tipos de marcação em
+  diretivas (`:marca[…]`, `:ondulado[…]`, `:::colchete`…) e nos atributos da cerca de código
+  (`anotar="…"`, `linhas="…"`). O build recusa mais de 12 por post, mais de 2 marca-textos, mais de 3
+  do mesmo tipo, duas no mesmo parágrafo e marcação em título. Catálogo no dev: `/amostra/caneta/`.

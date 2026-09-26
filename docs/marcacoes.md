@@ -1,115 +1,156 @@
-# Marcações: o caderno marcado
+# Marcações: a caneta do caderno
 
-Guia editorial das marcações à caneta dos artigos (D41). Vale em todas as sessões: todo post novo ou
-revisado propõe as marcações no plano (skill `post`, passo 2), seguindo este guia, e o Cesar aprova
-junto com o resto. O visual está no `DESIGN.md` (seção Movimento, "Caderno marcado"); o código, em
-`src/plugins/marcacoes.mjs` (Markdown) e `src/scripts/caderno.ts` (movimento).
+Guia editorial das marcações à caneta dos artigos (D48, que substitui o caderno marcado da D41). É
+**vivo**: a skill `caneta` lê este guia inteiro antes de marcar qualquer post, e todo ajuste que o
+Cesar pedir entra na seção "Ajustes do Cesar", no fim, com a data. O visual está no `DESIGN.md`
+("Caneta do caderno"); o código, em `src/plugins/marcacoes.mjs` (Markdown), `src/lib/codigo.ts`
+(blocos de código), `src/styles/caneta.css` e `src/scripts/caneta.ts`. O catálogo de referência é
+`docs/prototipos/caneta-do-caderno.html`; no dev, `/amostra/caneta/` mostra os 20 tipos no blog.
 
-A ideia é a de um caderno de alguém **estudando de verdade** (pedido do Cesar depois do piloto, que
-achou 7 marcações pouco): quase todo parágrafo que ensina algo tem a sua caneta, sempre no pedaço que
-vale reler. A marcação acontece quando o trecho entra na tela e **fica**: voltar a rolagem não apaga;
-a página só volta limpa ao entrar de novo ou atualizar. Se tudo está marcado, nada está: marque o
-pedaço, nunca o parágrafo inteiro.
+## A ideia
 
-## Os cinco tipos
+As marcações são **estáticas**: já vêm feitas, como se o texto tivesse sido riscado à caneta antes de
+publicar. Nada se desenha ao rolar. A caneta é **azul, igual em todos os livros**, e **nunca pinta o
+texto** (os links também são azuis): o texto marcado fica na cor normal; só os riscos, círculos,
+caixas, setas e notas à mão ficam azuis. As notas à mão não têm sublinhado nem cara de link.
 
-| Tipo | Escrita | Papel | Use em |
+Marque como **um arquiteto experiente** marcaria lendo o texto: o que muda uma decisão, o erro que
+custa caro, a distinção que confunde, o valor que precisa ser lembrado. Nada de marcar por marcar,
+nem frase solta sem importância. A caneta é a **última etapa** do post: entra depois que texto,
+desenhos e animações estão prontos e aprovados (skill `caneta`).
+
+## Os 20 tipos
+
+Cada tipo tem um papel. Escolha o tipo **pelo papel dele no texto**, nunca por rodízio: posts
+diferentes pedem marcas diferentes, e a variedade vem do conteúdo.
+
+| # | Tipo | Papel | Escrita |
 |---|---|---|---|
-| Marca-texto | `:marca[trecho]` | a ideia principal de uma seção | uma frase curta (ou parte dela) que resume o que a seção ensina |
-| Sublinhado | `:sublinhado[palavra]` | a palavra exata que muda o sentido | "não", "basta", "antes", "a partir de", um quantificador |
-| Só o termo | `:::termos` em volta de uma lista | os campos de uma lista de definição, um por vez | listas em que cada item começa com um `código` (claims, parâmetros, flags) |
-| Círculo | `:circulo[P-521]` | o número ou nome que costuma ser confundido | valores que o leitor erraria de memória (P-521, não P-512) |
-| Colchete na margem | `:::colchete` em volta de um parágrafo | o parágrafo que resume uma seção | o parágrafo que a pessoa copiaria para uma anotação |
+| 1 | Marca-texto amarelo | o essencial do post; **raro** | `:marca[trecho]` |
+| 2 | Sublinhado ondulado | a palavra exata que muda o sentido | `:ondulado[não basta]` |
+| 3 | Círculo | o número ou nome que costuma ser confundido | `:circulo[P-521]` |
+| 4 | Colchete na margem | o parágrafo que resume uma seção | `:::colchete` em volta do parágrafo |
+| 5 | Sublinhado duplo | a ideia mais importante de uma seção | `:duplo[confira as claims]` |
+| 6 | Caixa à mão | nomes de campos, parâmetros e comandos | `:caixa[`kid`]`; numa lista de definição, `:::caixas` |
+| 7 | Nota na margem | um comentário curto com seta: o que um arquiteto diria em voz alta ao ler | `:nota[palavra]{texto="não é cifrado!"}` |
+| 8 | Riscado com correção | o erro comum riscado e o certo escrito por cima | `:riscado[P-512]{correcao="P-521"}` |
+| 9 | Asterisco na margem | um ponto que vale reler | `:::asterisco` em volta do parágrafo |
+| 10 | Certo e errado | listas de práticas: o que fazer e o que evitar | `:::certo-errado`, itens com `:certo` e `:errado` |
+| 11 | Números circulados | passos em ordem, quando a ordem importa | `:::passos` em volta de uma lista numerada |
+| 12 | Chave agrupando | itens de lista agrupados com um comentário ao lado | `:::chave{nota="…"}` em volta da lista |
+| 13 | Riscado simples | algo que não vale mais | `:riscado[trecho]` |
+| 14 | Seta ligando | causa e consequência dentro da mesma frase | `:liga[timeout, então reenvio]` |
+| 15 | Exclamação na margem | a armadilha, o erro que derruba produção | `:::exclamacao` em volta do parágrafo |
+| 16 | Interrogação com nota | a pergunta que o leitor faria, respondida logo depois | `:::pergunta{nota="…"}` em volta do parágrafo |
+| 17 | Sinal entre termos | dois conceitos que parecem iguais e não são | `**codificado** :sinal[≠] **criptografado**` |
+| 18 | Anotação no código | um valor dentro de um bloco de código, explicado ao lado | na cerca: `anotar="1789564500\|15 min depois"` |
+| 19 | Linhas marcadas no código | o trecho do código que importa, com o motivo | na cerca: `linhas="2-3\|o banco decide"` |
+| 20 | Comentário do autor | opinião em primeira pessoa | `:::comentario` em volta da frase |
 
-```markdown
-A defesa é :marca[configurar no validador a lista de algoritmos aceitos] e rejeitar qualquer outro.
+~~~markdown
+O parâmetro `alg` é o :ondulado[único obrigatório] do header.
 
-**Assinatura válida :sublinhado[não basta]: valide as claims.**
+O payload está apenas :nota[codificado]{texto="não é cifrado!"} em Base64URL.
 
-:::termos
-- **`iss`** (*Issuer*): quem emitiu o token.
-- **`sub`** (*Subject*): de quem o token fala.
+:::exclamacao
+Um validador que confia no `alg` do token aceita um token sem assinatura.
 :::
 
-ECDSA com as curvas P-256, P-384 e :circulo[P-521] (não P-512)
-
-:::colchete
-**O payload não é criptografado.** Ele só está codificado em Base64URL…
+:::certo-errado
+- :certo Fixe no servidor a lista de algoritmos aceitos.
+- :errado Confiar no `alg` que vem no token.
 :::
+
+:::chave{nota="não confie cegamente"}
+- `jku`: URL das chaves
+- `jwk`: a chave embutida
+:::
+
+```json title="payload" anotar="1789564500|15 min depois"
+{ "exp": 1789564500 }
 ```
+~~~
 
-No `:::termos`, o termo marcado é o **primeiro `código`** de cada item (dentro de negrito também
-vale). No `:::colchete`, o contêiner envolve um parágrafo inteiro (o colchete ocupa a altura dele).
+Detalhes de cada tipo:
 
-## O que marcar
-
-- A frase que **responde à pergunta do título** da seção.
-- A palavra que **inverte** a leitura rápida ("não basta", "a partir desse instante", "antes de").
-- O nome ou número que **costuma sair errado** (curva P-521, porta, código de status).
-- Numa lista de campos, **os campos** (e não as descrições).
-- O parágrafo que **resume a seção**, quando ele existe e é curto.
+- **Marca-texto** (1): amarelo clássico, chama muita atenção. **No máximo uma ou duas vezes por
+  post**, só no que for realmente essencial (a premissa, a regra que resume o post). O trecho pode
+  quebrar linha, mas fique em uma linha e meia.
+- **Ondulado, duplo, círculo, caixa, riscado, seta ligando e a palavra da nota** não quebram linha:
+  o trecho tem **até 32 caracteres** (o build recusa mais), para caber numa linha de 320px.
+- **Caixa** (6): em `:::caixas`, a caixa vai no **primeiro `código`** de cada item. É o que substitui
+  a pintura dos termos da D41.
+- **Nota na margem** (7) e **riscado com correção** (8): a nota tem até 40 caracteres, em letra
+  minúscula de quem anota ("não é cifrado!", "15 min depois"), sem ponto final.
+- **Certo e errado** (10): cada item começa com `:certo` ou `:errado`; o texto do item continua
+  dizendo o que fazer ou evitar (quem ouve o leitor de tela escuta "Certo:" e "Errado:").
+- **Números circulados** (11): só quando a **ordem importa** (fazer o 2 antes do 1 dá errado).
+- **Chave** (12): nota curta (até 40 caracteres) que vale para todos os itens juntos.
+- **Seta ligando** (14): o trecho vai da causa à consequência, curto ("timeout, então reenvio").
+- **Interrogação** (16): a nota é a pergunta que o leitor faria; o parágrafo seguinte a responde.
+- **Sinal** (17): só `≠`, entre os dois termos (de preferência em negrito).
+- **Código** (18, 19): o valor de `anotar` precisa aparecer inteiro numa cor só do código (um número,
+  uma string); se o build reclamar, circule um trecho menor. A nota fica ao lado da linha quando
+  cabe e embaixo dela quando a linha é longa; no celular, sempre embaixo.
+- **Comentário do autor** (20): **só com uma frase escrita ou aprovada pelo Cesar**, nunca inventada.
+  Na proposta, deixe o lugar e o assunto; a frase vem dele.
 
 ## O que nunca marcar
 
-- **Títulos**, legendas, tabelas de referência inteiras e **código** (bloco ou em linha sozinho). O
-  build recusa marcação dentro de título.
-- Frases de efeito, opinião, transições ("Vamos ver…") e o que já está em negrito só por ênfase.
-- A mesma ideia duas vezes (no texto e no resumo do fim), nem a introdução inteira.
+- **Títulos** (o build recusa), legendas e tabelas de referência inteiras.
 - Aviso (`> [!NOTA]`), nota lateral, frase em destaque ou lousa: eles já chamam atenção.
-- Trecho longo: marca-texto passa de uma linha e meia só em caso raro; colchete, um parágrafo só.
+- Frases de efeito, transições ("Vamos ver…") e o que já está em negrito só por ênfase.
+- A mesma ideia duas vezes (no texto e no resumo do fim).
+- Trecho longo: a caneta marca **o pedaço**, nunca o parágrafo inteiro (fora o colchete e as marcas
+  de margem, que são do parágrafo).
 
 ## Limites
 
-- **Densidade de estudo:** em torno de **uma marcação por parágrafo que ensina algo** (conceito,
-  regra, armadilha, consequência). Parágrafo de transição, de exemplo ("Saída:") ou de contexto fica
-  sem. Referência: o post do Jackson, longo, tem 24; um post curto fica em 8 a 12. O build recusa
-  mais de 30 (`:::termos` e `:::colchete` contam uma cada).
-- **Nunca duas no mesmo parágrafo** (o build recusa).
-- No máximo **um colchete** e **um `:::termos`** por seção.
-- Nada em títulos nem em código sozinho (código dentro de um trecho marcado pode).
-- Varie os tipos: a maioria é marca-texto; sublinhado para a palavra que vira o sentido; círculo e
-  colchete são raros.
+- **De 6 a 12 marcações por post** (o build recusa mais de 12). Cada contêiner (`:::colchete`,
+  `:::caixas`, `:::chave`…) e cada `anotar` ou `linhas` conta como uma.
+- **Marca-texto: no máximo 2** por post (o build recusa o terceiro).
+- **O mesmo tipo no máximo 3 vezes** por post, fora os de lista (`:::caixas`, `:::certo-errado`,
+  `:::passos`, `:::chave`); o build recusa a quarta.
+- **Nunca duas marcações no mesmo parágrafo** (o build recusa). Exceções: as de lista (cada item é um
+  parágrafo) e as de código. Marca de margem já é a marcação do parágrafo: nada em linha dentro dela.
+- Nada em títulos; nada dentro de outra marcação.
+
+## Tela e acessibilidade
+
+- **Marcas de margem** (colchete, asterisco, exclamação, interrogação) ficam no respiro da folha
+  quando ele tem ao menos 30px (tela ≥ 940px); abaixo disso, o parágrafo recua e a marca fica no
+  recuo. **Certo e errado** e **números** ficam no recuo da própria lista. Nunca cortam nem criam
+  rolagem lateral.
+- **Notas acima da palavra** (nota na margem, riscado com correção) abrem espaço na própria linha,
+  sem cobrir a de cima. Quando não cabem (celular, ≤ 640px, ou a nota passaria da margem direita),
+  vão logo depois da palavra, na mesma letra.
+- **Notas no código** não são cortadas pela rolagem do bloco: embaixo da linha, ficam paradas na
+  esquerda do bloco.
+- Os traços (SVG) são decorativos (`aria-hidden`); as notas escritas são texto de verdade, lido pelo
+  leitor de tela entre parênteses ("(nota: …)"). O sinal ≠ é lido "diferente de"; o riscado, como
+  texto riscado (`<s>`). Na impressão, tudo aparece; em alto contraste, os traços seguem a cor do texto.
+- **Teste de todo post marcado** pelo `chrome-devtools`, em **320, 390, 768, 1280 e 1600px**, nos dois
+  temas, antes de mostrar ao Cesar (passo 5 da skill `caneta`).
+
+## Como propor
+
+Na proposta, uma tabela com **trecho**, **tipo** e **motivo** (uma linha por marcação), mais a
+contagem por tipo. O motivo diz o que a marca ensina ("a premissa do post", "todo mundo escreve
+P-512"). Só depois do OK do Cesar as marcações entram no Markdown. Na revisão em lote, a coluna
+"Caneta" do `.claude/revisao-posts.md` registra quantas entraram e quando.
 
 ## Exemplos
 
-**Aplicado: Jackson (`jackson-filtros-mascarando-cartao`), o piloto (25/09/2026)**, com 24 marcações
-(15 marca-textos, 6 sublinhados, 1 círculo, 2 colchetes). Algumas delas:
+Os pilotos da D48 são o JWT (`jwt-estrutura-e-campos`) e a chave de idempotência
+(`cobranca-duplicada-no-retry`); as marcações aprovadas deles ficam como referência aqui depois do
+OK do Cesar.
 
-- `:marca[a mesma classe pode ser serializada com filtros diferentes, dependendo do mapper]`: a ideia
-  da seção 1, que o resto do post usa.
-- `:sublinhado[**todo**]` em "todo mapper que serializar essa classe precisa conhecer o filtro": o
-  efeito colateral que quebra a API.
-- `:marca[toda classe ganha o `@JsonFilter`, mas só dentro deste mapper]`: por que o mixin em
-  `Object` resolve.
-- `:sublinhado[só]` em "o Spring Boot só cria o mapper padrão dele quando…": a palavra que explica
-  por que o `@Primary` não pode faltar.
-- `:marca[a regra é logar sempre via `logJson.toJson(...)`]`: a regra prática dos cuidados.
-- `:sublinhado[se remove]` em "CVV não se mascara, se remove": remover, e não mascarar.
-- `:::colchete` no Resumo.
+## Ajustes do Cesar
 
-**Só como exemplo (os outros posts recebem marcações quando forem revisados):**
+Toda vez que o Cesar pedir um ajuste nas marcações, em qualquer sessão, a regra entra aqui com a data,
+para os próximos posts já saírem certos. Regra que muda o visual vai também para o `DESIGN.md`.
 
-**JWT (`jwt-estrutura-e-campos`)**
-
-- `:marca[três partes separadas por ponto]`: a ideia que o resto do post detalha.
-- `:::termos` nas claims registradas (`iss`, `sub`, `aud`, `exp`…): o leitor volta ao post para achar
-  um campo.
-- `:sublinhado[único]` em "É o único **obrigatório**" do `alg`: a palavra que responde "o que é
-  obrigatório?".
-- `:circulo[P-521]` na tabela de algoritmos: todo mundo escreve P-512.
-- `:::colchete` em "O payload não é criptografado…": o parágrafo que resume o maior mal-entendido.
-- `:sublinhado[não basta]` em "Assinatura válida não basta".
-
-**Chave de idempotência (`cobranca-duplicada-no-retry`)**
-
-- `:marca[Um timeout não diz se a operação aconteceu]`: a premissa do post.
-- `:sublinhado[onde]` em "O problema é **onde** a verificação acontece".
-- `:marca[verificar e gravar passam a ser a mesma operação]`: por que a solução funciona.
-- `:circulo[422 Unprocessable Content]`: o código de status que se confunde com 409.
-- `:::colchete` no parágrafo do "pelo menos uma vez" com consumidor idempotente.
-
-## Como propor (skill `post`)
-
-No plano, uma tabela com **trecho**, **tipo** e **motivo** (uma linha cada), seguindo este guia. O
-Cesar aprova junto com o resto do plano; só então as diretivas entram no Markdown. Na revisão em lote,
-a coluna "Marcações" do `.claude/revisao-posts.md` registra quantas entraram.
+- **26/09/2026 (D48):** marcações estáticas, sem animação; caneta azul fixa (#1F4FB5 no claro,
+  #8FA8FF no escuro) que nunca pinta o texto; marca-texto amarelo, no máximo uma ou duas vezes por
+  post; a pintura dos termos das listas sai (no lugar, a caixa à mão); de 6 a 12 marcações por post;
+  comentário do autor só com frase dele.

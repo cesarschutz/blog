@@ -36,6 +36,8 @@ colors:
   marca-fita: "#C24D1C"
   veu: "#0C0F11"
   veu-tinta: "#EEF1EE"
+  caneta: "#1F4FB5"
+  marca-texto: "#FFE27A"
   # Interface, tema escuro (tokens.ts, escuro)
   primary-escuro: "#93AEFF"
   on-primary-escuro: "#0D1530"
@@ -50,6 +52,8 @@ colors:
   lousa-borda-escuro: "#8F989D"
   lousa-caneta-escuro: "#16212B"
   lousa-mistura-escuro: "#0B6F58"
+  caneta-escuro: "#8FA8FF"
+  marca-texto-escuro: "#FFD65A" # a 30% sobre a folha (rgba(255, 214, 90, .30))
   # Livros (docs/capas/livros.json e cores.js): a cor principal de cada categoria
   arquitetura-de-software: "#2d4b46"
   desenvolvimento-de-software: "#7a4430"
@@ -398,6 +402,14 @@ mexer na página. O site não tem som.
 - **Lousa:** sempre o contrário da página. No tema claro é vidro escuro (#15191C) com caneta clara;
   no escuro, quadro branco suavizado (#CFD5D1, nunca branco puro) com caneta escura.
 - **Marca e véu** (D33): o livro "cs" e o fundo do visor de imagens.
+- **Caneta do caderno** (D48, `caneta`, #1F4FB5; #8FA8FF no escuro): o azul de caneta das marcações
+  dos artigos, **igual em todos os livros**. Não é cor de interação: fica só nos traços (riscos,
+  círculos, caixas, setas, marcas de margem) e nas notas à mão, **nunca no texto marcado**, que
+  continua na cor normal, para não se confundir com os links (azul-tinta). As notas à mão não têm
+  sublinhado nem cara de link. Passa de 4,5:1 sobre a folha, o fundo e o código nos dois temas.
+- **Marca-texto** (D48, `marca-texto`, #FFE27A; no escuro, o mesmo amarelo a 30% sobre a folha):
+  amarelo clássico, igual em todos os livros, com o texto sempre em `on-surface` por cima (12,75:1
+  no claro, 5,92:1 no escuro). Chama muita atenção: no máximo uma ou duas vezes por post.
 
 **Livros (cor principal de cada categoria, `docs/capas/livros.json`).** A mesma cor pinta a capa, a
 lombada, o chip da categoria (quadradinho e nome tingido), a barra de leitura e o **painel dos
@@ -454,6 +466,11 @@ pequeno da série. Hoje isso vale para as lombadas, em pé e deitadas (`corTexto
   títulos da lateral. A caixa alta com espaçamento largo ("VOLUME 01", "CESAR SCHUTZ",
   "BLOG.CESARSCHUTZ.COM.BR") existe só aqui, como tipografia de livro.
 - **Anotações dos desenhos e rótulos das lousas:** Literata itálica. **Nunca letra de mão.**
+- **Notas da caneta do caderno** (D48): **Caveat 600**, a única letra de mão do blog, só nas notas
+  escritas à caneta dos artigos (nota na margem, correção, pergunta, chave, números circulados,
+  anotações no código e comentário do autor). Auto-hospedada (`@fontsource/caveat`, um peso só,
+  51 KB no latim) e declarada só nos posts que têm nota escrita. Tamanho: 1,2em do texto (1,3em na
+  correção e nas notas do código, que é menor), sem sublinhado.
 - Todas as fontes são servidas pelo próprio site (`@fontsource`). Nunca Google Fonts nem CDN.
 
 ## Layout
@@ -510,6 +527,21 @@ têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm can
 - **Diagramas antigos** (SVG com fundo branco, `public/posts/`): num quadro claro no tema claro e,
   no escuro, na versão escura feita por filtro (luz invertida e matiz de volta, D39), nunca um bloco
   branco na página escura.
+- **Caneta do caderno** (D48; guia em `docs/marcacoes.md`, catálogo em
+  `docs/prototipos/caneta-do-caderno.html` e, no dev, `/amostra/caneta/`): 20 tipos de marcação,
+  todos **estáticos** (já vêm feitos, como se o texto tivesse sido riscado antes de publicar). Traço
+  à mão de 1,9px na `caneta`, com as pontas redondas, em SVG decorativo (`aria-hidden`); notas em
+  Caveat; marca-texto amarelo cobrindo de 18% a 94% da linha. Medidas (`src/styles/caneta.css`):
+  - **Margem:** colchete, asterisco, exclamação e interrogação ficam no respiro da folha, 1,45rem à
+    esquerda do texto, quando a folha tem ao menos 30px de margem (tela ≥ 940px); abaixo disso, o
+    parágrafo marcado recua 1,6rem e a marca fica no recuo. Certo e errado e números circulados
+    usam o recuo da própria lista (1,9em). Nada corta nem cria rolagem lateral.
+  - **Notas acima da palavra** (nota na margem, riscado com correção): a palavra abre 1em de espaço
+    na própria linha, e a nota fica ali, sem cobrir a linha de cima. No celular (≤ 640px) ou quando
+    a nota passaria da margem direita (`src/scripts/caneta.ts`), ela vai logo depois da palavra.
+  - **Código:** a nota fica ao lado da linha quando cabe e embaixo dela (com "↑", parada na esquerda
+    do bloco) quando a linha é longa e sempre no celular, para a rolagem do bloco não cortá-la.
+  - Na impressão, tudo aparece; em alto contraste, os traços seguem a cor do texto.
 - **Aviso de conteúdo feito com ajuda de IA:** no fim do artigo, antes do cartão "Do livro", num bloco
   levemente tingido (a cor de Atenção) com o ícone de Nota, sem "Saiba mais" (D33, D37).
 
@@ -615,17 +647,8 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
     passar o mouse (0,5s). A capa que seguia o mouse, com a luz e a capa entreaberta (`capa-viva.ts`,
     D40), saiu na D46. No livro ampliado, arrastar gira com embalo (Draggable + InertiaPlugin) e, ao
     soltar, o livro volta a 38° com `elastic.out(1, 0.6)`.
-- **Caderno marcado (D41)**, nos artigos, na cor do livro (guia editorial em `docs/marcacoes.md`):
-  - **Marca-texto** (`:marca[…]`): a metade de baixo da linha (52% a 92%), a cor do livro a 32% no
-    claro e clareada (60% de branco) a 36% no escuro; estica da esquerda para a direita em 0,8s
-    (`power2.inOut`).
-  - **Só o termo** (`:::termos` em volta de uma lista): o fundo do primeiro código de cada item, um
-    por vez (0,45s, `stagger` 0,12s); a cor do código fica embaixo.
-  - **Sublinhado, círculo e colchete na margem**: traço à mão de 2,2px na cor do sumário (o destaque
-    do livro, com o branco dos desenhos no escuro), desenhado com DrawSVG (0,6s; o círculo, 0,9s).
-  - Marca uma vez, quando o topo do trecho chega a 80% da tela, e fica: voltar a rolagem não apaga.
-    A página sempre abre limpa (entrar de novo ou atualizar recomeça). A pintura é uma camada de fundo própria (`background-image`,
-    animada pelo `background-size`), nunca o atalho `background`.
+- **Caneta do caderno (D48):** **não anima.** As marcações já vêm feitas (a animação por rolagem do
+  caderno marcado da D41, com ScrollTrigger e DrawSVG, saiu).
 - **O desenho do destaque da home** (D41, só ali): ao entrar na tela, os traços aparecem em sequência
   com DrawSVG (1,1s cada, sequência de até ~1,2s), depois a cor, a hachura (0,6s) e os textos (0,4s);
   tracejados só por opacidade.
@@ -688,7 +711,9 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
 - Faça: cores por token (`var(--ink)`, `var(--cat)`, papéis `--cima`/`--baixo` nos livros).
 - Faça: conferir os dois temas, a largura de 390px e `prefers-reduced-motion`.
 - Não faça: gradiente decorativo, sombra em painel ou caixa, animação de entrada, emoji, caixa alta
-  na interface, fonte de letra de mão, fonte de CDN.
+  na interface, fonte de letra de mão (a exceção é a Caveat das notas da caneta, D48), fonte de CDN.
+- Não faça: pintar o texto marcado na cor da caneta, ou marcar em rodízio de tipos (a caneta segue o
+  guia `docs/marcacoes.md`).
 - Não faça: mais de uma cor num desenho, fundo pintado no SVG, `<image>` dentro de ilustração.
 - Não faça: livro caindo ou texto mudando de cor na home.
 - Não faça: seguir uma sugestão de ferramenta (Impeccable ou outra) que contradiga este arquivo.
