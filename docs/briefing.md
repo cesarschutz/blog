@@ -317,11 +317,13 @@ depois, o guia e as versões, como antes.
   quadradinho da cor e as 6 tags mais usadas na categoria.
 - Embaixo, "Artigos" com a contagem e a alternância Lista / Cards, no mesmo formato da home (D27),
   sem paginação.
-- **Transição**: ao clicar num livro do painel, ele sai da pilha e vira o livro em pé do topo da
-  página nova (View Transitions entre documentos). Entre duas categorias, o livro antigo volta para
-  a pilha enquanto o novo sobe. O resto da página troca como em todo o site (D47): o cabeçalho fica
-  parado, a folha antiga sai e a nova chega subindo. Sem suporte do navegador, ou com
-  `prefers-reduced-motion`, a página só abre.
+- **Transição** (D49, a pilha com peso): ao clicar num livro do painel, **primeiro o livro aberto no
+  topo vira de lado e é guardado em cima da pilha** (a pilha guarda, em cima, o espaço dele), e **só
+  depois** o escolhido é puxado, com o peso dos de cima (vão junto um nada, tombam sobre a quina e
+  caem no lugar com um baque); aí a página nova abre, e a View Transition leva só o puxado até o topo
+  (nenhum livro passa por cima do outro). Com mouse, dá para puxar o livro devagar. O resto da página
+  troca como em todo o site (D47): o cabeçalho fica parado, a folha antiga sai e a nova chega
+  subindo. Sem suporte do navegador, ou com `prefers-reduced-motion`, a página só abre.
 
 ### 5.3 Artigo
 Referência: aba "Artigo" do protótipo.

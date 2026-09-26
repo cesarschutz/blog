@@ -1338,4 +1338,17 @@ nada muda.
      relação ao protótipo: o link das páginas em tinta de papel (o azul do escuro não passava no papel),
      a duração da inércia dentro do `inertia` (fora dele, valia 1,2s) e a emenda das duas metades num
      pixel inteiro (as letras que a cruzavam se partiam).
+  4. **D3** (a pilha com peso, `PainelHome.astro`; é também o pedido do D1 para os livros das
+     categorias): trocar de livro pela pilha agora **guarda o aberto antes de puxar o outro**. O livro
+     do topo da página vira de lado (a lombada para o leitor), voa até a pilha deitando-se e é pousado
+     em cima dela (vem por cima, desce por gravidade, afunda 1px e para), no espaço que a pilha passou a
+     guardar em cima (`--folga`, a espessura do livro aberto). Só então o escolhido é puxado: os de cima
+     vão junto nos primeiros 6px pelo atrito; quando a ponta dele passa do centro de massa do bloco, o
+     bloco tomba sobre a quina (até 25°, apoiado no livro de baixo); quando ele sai inteiro, o bloco cai
+     no lugar com um baque. Aí a página nova abre, e a View Transition leva só o puxado ao topo (o antigo
+     já está na pilha: nada se cruza no ar). O mouse em cima tira o livro 8px e arrasta o bloco 1,5px
+     (sem a mola de antes). Com mouse, dá para puxar o livro: solto depois da metade (a velocidade
+     conta), ele sai, espera ao lado enquanto o aberto é guardado e a página abre; antes, volta
+     perdendo velocidade. No celular, sem arrasto; se o topo estiver fora da tela, o livro aberto só
+     chega por cima da pilha. Voltar pelo histórico devolve a pilha e o topo como estavam.
 - **Motivo:** o Cesar revisou os protótipos um a um e escolheu o que entra.

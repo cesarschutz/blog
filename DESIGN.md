@@ -668,11 +668,16 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
     o lugar; sem chegar a 22°, cai de volta em pé. Só clicar faz o gesto inteiro sozinho.
   - Com **movimento reduzido**, o livro aparece na gaveta, o lugar dele fica vazio e o vizinho já
     aparece tombado; guardar devolve tudo na hora.
-  - **Pilha lateral** (D46): ao passar o mouse (ou com o foco), o livro sai 14px da pilha (0,35s,
-    `power3.out`) e volta com `elastic.out(1, 0.55)`. O livro aberto no topo não está na pilha. Ao
-    clicar, o livro é puxado para a direita (62% da largura da pilha, 0,34s, `power2.inOut`), o lugar
-    dele fecha (0,26s, `power2.in`: os de cima caem) com um baque de 2px, e a página nova abre; a View
-    Transition nativa leva o puxado até o topo e o livro que estava aberto até o topo da pilha.
+  - **A pilha com peso** (a pilha lateral, D46, D49): ao passar o mouse (ou com o foco), o livro sai
+    8px (0,3s, `power2.out`) e o bloco de cima vai junto 1,5px pelo atrito (0,4s); volta sem mola
+    (0,32s, `power3.out`). O livro aberto no topo não está na pilha, e a pilha guarda em cima o espaço
+    dele (`--folga`). Ao clicar, **primeiro o aberto é guardado**: vira de lado (0,3s, `power2.in`),
+    voa até a pilha deitando-se (0,7s, `power3.inOut`), desce por gravidade (0,22s, `power2.in`),
+    afunda 1px e para; **depois o escolhido é puxado** (até sair inteiro, `power2.in`, 0,12 a 0,54s),
+    com o bloco de cima indo junto 3px, tombando sobre a quina quando a ponta do puxado passa do centro
+    de massa dele (até 25°) e caindo no lugar com um baque de 1px. Aí a página nova abre, e a View
+    Transition leva só o puxado até o topo. Com mouse, dá para puxar devagar (Draggable): solto depois
+    da metade, sai; antes, volta perdendo velocidade. No celular, 20% mais rápido e sem arrasto.
   - **Livro que gira** (D46, `data-livro-gira`, só CSS): na grade de categorias e séries, no topo da
     página do livro, no destaque de Séries e no livro do artigo, o livro vira de 38° para 24° ao
     passar o mouse (0,5s). A capa que seguia o mouse, com a luz e a capa entreaberta (`capa-viva.ts`,

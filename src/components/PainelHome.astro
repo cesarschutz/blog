@@ -9,9 +9,10 @@
  * (`cs-pilha-<tipo>`), com o livro da página anterior (o que estava aberto) em cima. Assim, ao trocar
  * de livro, o que estava aberto volta para o topo da pilha.
  *
- * Trocar de livro pela pilha (D46): o livro escolhido é puxado para fora, os de cima caem no lugar
- * dele e a página nova abre; a transição de página (Base.astro, base.css) leva o livro puxado até o
- * topo e o livro que estava aberto até o topo da pilha. Com movimento reduzido, a página só abre.
+ * Trocar de livro pela pilha (D46, D49): primeiro o livro aberto no topo da página é guardado em cima
+ * da pilha (a pilha guarda, em cima, o espaço dele: --folga), depois o escolhido é puxado para fora,
+ * com o peso dos de cima (o bloco tomba e cai no lugar), e a página nova abre; a transição de página
+ * (Base.astro, base.css) leva só o livro puxado até o topo. Com movimento reduzido, a página só abre.
  * Uma série só: a pilha fica vazia, com um texto curto.
  */
 import { ICONES } from "../lib/icones";
@@ -34,6 +35,8 @@ const pilha = livros
   .filter((l) => (tipo === "series" ? l.serie : !l.serie))
   .sort((a, b) => (b.volume ?? 0) - (a.volume ?? 0));
 const outros = pilha.filter((l) => l.id !== atual).length;
+// O espaço em cima da pilha para o livro aberto voltar para ela (D49): a espessura dele, deitado.
+const aberto = pilha.find((l) => l.id === atual);
 // O deslocamento de cada livro na pilha (livros.json), em unidades da lombada em pé.
 const estilo = (l: Livro) =>
   [coresDoLivroCss(l), `--w:${l.emPe.largura}`, `--h:${l.emPe.altura}`, `--recuo:${10 + l.deitada.deslocamento}`].join(";");
@@ -48,7 +51,7 @@ const rotulo = (l: Livro) => {
   <section class="bloco">
     <h2 class="titulo-bloco">{titulo}</h2>
     <div class="pilha" data-pilha={tipo}>
-      <ol>
+      <ol style={aberto && outros > 0 ? `--folga:${aberto.emPe.largura}` : undefined}>
         {
           pilha.map((l) => (
             <li data-id={l.id} hidden={l.id === atual}>
@@ -108,66 +111,310 @@ const rotulo = (l: Livro) => {
 </aside>
 
 <script>
-  // A pilha viva (D40, D46): ao passar o mouse (ou com o foco do teclado), o livro sai 14px da pilha e
-  // volta com um balanço. Ao clicar, o livro é puxado para fora e os de cima caem no lugar dele; só
-  // então a página nova abre. Com movimento reduzido, fica tudo parado e o clique só abre a página.
-  import { adiantar, carregarGsap, movimentoReduzido, type GSAP } from "../scripts/gsap";
+  /*
+   * A pilha com peso (D46, D49, protótipo D3), com GSAP sob demanda:
+   *
+   * - O mouse em cima (ou o foco do teclado): o livro sai 8px, e o bloco de cima vai junto 1,5px, pelo
+   *   atrito; volta sem mola.
+   * - Trocar de livro (clique, toque ou Enter): primeiro o livro aberto no topo da página vira de lado
+   *   e é pousado em cima da pilha (vem por cima, desce e assenta), no espaço que a pilha guarda para
+   *   ele; só então o escolhido é puxado. Os de cima vão junto nos primeiros milímetros, pelo atrito;
+   *   quando a ponta do livro puxado passa do centro de massa deles, o bloco tomba sobre a quina, com a
+   *   ponta apoiada no livro de baixo; quando o livro sai inteiro, o bloco cai deitado no lugar, com
+   *   um baque. Aí a página nova abre, e a transição (base.css) leva só o puxado até o topo: o antigo
+   *   já está na pilha, onde a página nova o mostra (nenhum livro passa por cima do outro).
+   * - Com mouse, dá para puxar o livro devagar e ver o bloco de cima reagir. Solto depois da metade (a
+   *   velocidade conta), o livro sai, espera ao lado da pilha enquanto o aberto é guardado, e a página
+   *   abre; antes disso, volta para o lugar, perdendo velocidade, e o bloco se endireita sobre ele.
+   * - Com movimento reduzido, fica tudo parado e o clique só abre a página.
+   *
+   * As medidas vêm da pilha (comprimento, espessura e recuo de cada livro, livros.json), em px da tela.
+   */
+  import { adiantar, carregarArrastar, carregarGsap, movimentoReduzido, temMouse, type GSAP } from "../scripts/gsap";
 
   for (const pilha of document.querySelectorAll<HTMLElement>(".pilha")) {
     if (movimentoReduzido.matches) continue;
     const ol = pilha.querySelector("ol")!;
+    const celular = matchMedia("(max-width: 760px)");
+    // No celular, tudo um pouco mais rápido.
+    const DUR = () => (celular.matches ? 0.8 : 1);
     let gsap: GSAP | null = null;
-    let puxando = false;
+    let ocupado = false;
+    let pressionado: HTMLElement | null = null;
+    // A pilha e o livro do topo como a página abriu (para voltar a eles pelo histórico).
+    const ordemInicial = [...ol.children] as HTMLElement[];
+    const escondido = ol.querySelector<HTMLElement>(":scope > li[hidden]");
+    const topoInicial = document.querySelector<HTMLElement>(".topo-livro .livro-em-pe");
+    const nomeDoTopo = topoInicial?.style.viewTransitionName ?? "";
 
+    const visiveis = () => [...ol.querySelectorAll<HTMLElement>(":scope > li:not([hidden]) > .deitado")];
+    /** O bloco em cima de um livro, de baixo para cima: o primeiro é o que está logo acima dele. */
+    const blocoDe = (el: HTMLElement) => {
+      const livros = visiveis();
+      return livros.slice(0, livros.indexOf(el)).reverse();
+    };
+
+    // ---------- a física do bloco de cima ----------
+    type Geo = { L: number; R: number; topo: number; t: number; m: number };
+    let geo = new Map<HTMLElement, Geo>();
+    /** Onde está cada livro parado (sem o deslocamento do GSAP), em px da tela: pontas, topo, espessura e massa. */
+    function medir() {
+      geo = new Map();
+      for (const el of visiveis()) {
+        const r = el.getBoundingClientRect();
+        const x = Number(gsap?.getProperty(el, "x")) || 0;
+        const y = Number(gsap?.getProperty(el, "y")) || 0;
+        geo.set(el, { L: r.left - x, R: r.right - x, topo: r.top - y, t: r.height, m: r.width * r.height });
+      }
+    }
+
+    type Estado = { arrasto: number; graus: number; cai: number; pivo: { x: number; y: number } | null };
+    /**
+     * Puxando o livro k `dx` px para a direita:
+     * - atrito: nos primeiros 6px, o bloco de cima vai junto pela metade (no máximo 3px) e depois fica;
+     * - enquanto a ponta esquerda do livro puxado não passa do centro de massa do bloco, ele fica apoiado;
+     * - passou: o bloco gira em volta da quina de cima do livro puxado, até a ponta esquerda dele
+     *   encostar no livro de baixo (sen θ = espessura do puxado / distância da quina até a ponta);
+     * - o livro saiu inteiro: o bloco cai deitado, a espessura do puxado abaixo.
+     */
+    function estadoDoBloco(k: HTMLElement, dx: number): Estado | null {
+      const cima = blocoDe(k);
+      const g = geo.get(k);
+      if (!cima.length || !g) return null;
+      const arrasto = Math.min(dx, 6) * 0.5;
+      const massa = cima.reduce((s, c) => s + geo.get(c)!.m, 0);
+      const cm = cima.reduce((s, c) => s + geo.get(c)!.m * ((geo.get(c)!.L + geo.get(c)!.R) / 2), 0) / massa + arrasto;
+      const baixo = geo.get(cima[0])!;
+      const quina = g.L + dx;
+      if (quina >= baixo.R + arrasto) return { arrasto, graus: 0, cai: g.t, pivo: null };
+      if (quina <= cm) return { arrasto, graus: 0, cai: 0, pivo: null };
+      const dist = Math.max(g.t * 1.2, quina - (baixo.L + arrasto));
+      const graus = Math.min(25, (Math.asin(Math.min(1, g.t / dist)) * 180) / Math.PI);
+      return { arrasto, graus, cai: 0, pivo: { x: quina, y: g.topo } };
+    }
+
+    /** O bloco inteiro gira em volta do mesmo ponto (corpo rígido): a origem de cada livro, em px dele. */
+    function aplicarBloco(k: HTMLElement, e: Estado | null) {
+      if (!e || !gsap) return;
+      for (const c of blocoDe(k)) {
+        const gc = geo.get(c)!;
+        const vars: gsap.TweenVars = { x: e.arrasto, y: e.cai, rotation: -e.graus };
+        if (e.pivo) vars.transformOrigin = `${e.pivo.x - e.arrasto - gc.L}px ${e.pivo.y - gc.topo}px`;
+        gsap.to(c, { ...vars, duration: e.cai ? 0.16 : 0.14, ease: "power2.in", overwrite: "auto" });
+      }
+    }
+
+    function puxar(k: HTMLElement, dx: number) {
+      gsap!.set(k, { x: dx });
+      aplicarBloco(k, estadoDoBloco(k, dx));
+    }
+
+    /** Termina de puxar, na velocidade de quem puxa, sem mola; o bloco tomba e cai no caminho, com um baque. */
+    async function puxarAteSair(k: HTMLElement, dx0: number) {
+      const g = gsap!;
+      const gk = geo.get(k)!;
+      const saida = gk.R - gk.L + 12;
+      const obj = { dx: dx0 };
+      k.parentElement!.classList.add("no-ar");
+      await g
+        .to(obj, { dx: saida, duration: 0.42 * DUR() * (1 - dx0 / saida) + 0.12, ease: "power2.in", onUpdate: () => puxar(k, obj.dx) })
+        .then();
+      const e = estadoDoBloco(k, saida);
+      if (!e) return 0;
+      const cima = blocoDe(k);
+      await g
+        .timeline()
+        .to(cima, { y: e.cai + 1, duration: 0.05, ease: "power1.out", delay: 0.16 })
+        .to(cima, { y: e.cai, duration: 0.1, ease: "power1.in" })
+        .then();
+      return e.cai;
+    }
+
+    // ---------- guardar o livro aberto ----------
+    /** O livro aberto: o 3D do topo da página e, escondida na pilha, a lombada dele. */
+    function aberto() {
+      const li = ol.querySelector<HTMLElement>(":scope > li[hidden]");
+      const topo = document.querySelector<HTMLElement>(".topo-livro .livro-em-pe");
+      return li && topo ? { li, deitado: li.querySelector<HTMLElement>(".deitado")!, topo } : null;
+    }
+    const centro = (r: DOMRect) => ({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
+    const naTela = (r: DOMRect) => r.bottom > 0 && r.top < innerHeight && r.width > 0;
+
+    /**
+     * O livro aberto vira de lado (a lombada para o leitor) e é pousado em cima da pilha: vem por cima,
+     * desce por gravidade até encostar, afunda 1px e para. `queda`: o quanto a pilha já desceu (o
+     * bloco que caiu quando o livro puxado saiu). Longe da tela (no celular, a pilha fica embaixo do
+     * conteúdo), ele só chega por cima da pilha e assenta.
+     */
+    async function guardarOAberto(queda = 0) {
+      const g = gsap!;
+      const a = aberto();
+      if (!a) return;
+      const livro = a.topo.querySelector<HTMLElement>(".livro-3d");
+      const lombada = a.topo.querySelector<HTMLElement>(".face-lombada");
+      const voa = !!livro && !!lombada && naTela(a.topo.getBoundingClientRect());
+      if (voa) await g.to(livro, { rotationY: 90, duration: 0.3 * DUR(), ease: "power2.in" }).then();
+      const rl = lombada?.getBoundingClientRect();
+      // O livro do topo sai da página (e da transição dela): quem tem o nome agora é a lombada na pilha.
+      a.topo.style.visibility = "hidden";
+      a.topo.style.viewTransitionName = "none";
+      ol.prepend(a.li);
+      a.li.hidden = false;
+      a.li.classList.add("no-ar");
+      a.deitado.style.viewTransitionName = a.deitado.dataset.vt ?? "";
+      const rd = a.deitado.getBoundingClientRect();
+      const acima = queda - Math.max(24, rd.height * 2);
+      const tl = g.timeline();
+      if (voa && rl) {
+        const de = centro(rl);
+        const para = centro(rd);
+        g.set(a.deitado, {
+          x: de.x - para.x,
+          y: de.y - para.y,
+          rotation: 90,
+          scaleX: rl.height / rd.width,
+          scaleY: rl.width / rd.height,
+          transformOrigin: "50% 50%",
+        });
+        tl.to(a.deitado, { x: 0, y: acima, rotation: 0, scaleX: 1, scaleY: 1, duration: 0.7 * DUR(), ease: "power3.inOut" });
+      } else {
+        g.set(a.deitado, { y: acima, opacity: 0 });
+        tl.to(a.deitado, { opacity: 1, duration: 0.15, ease: "none" });
+      }
+      await tl
+        .to(a.deitado, { y: queda, duration: 0.22, ease: "power2.in" }, ">-0.02")
+        .to(a.deitado, { y: queda + 1, duration: 0.04, ease: "power1.out" })
+        .to(a.deitado, { y: queda, duration: 0.09, ease: "power1.in" })
+        .then();
+      a.li.classList.remove("no-ar");
+    }
+
+    // ---------- trocar de livro ----------
+    /** A pilha fica com a altura de agora e encostada embaixo: o livro guardado entra no espaço de cima. */
+    function segurarPilha() {
+      gsap!.set(ol, { height: ol.offsetHeight, justifyContent: "flex-end" });
+    }
+
+    /** Clique, toque ou Enter: guarda o aberto, puxa o escolhido e abre a página dele. */
+    async function trocar(k: HTMLAnchorElement) {
+      if (ocupado || !gsap) return;
+      ocupado = true;
+      segurarPilha();
+      const dx = Number(gsap.getProperty(k, "x")) || 0;
+      await guardarOAberto();
+      // Com o livro guardado em cima, o bloco sobre o escolhido mudou: mede de novo.
+      medir();
+      await puxarAteSair(k, dx);
+      location.assign(k.href);
+    }
+
+    /** Arrastado e solto depois da metade: sai inteiro, espera ao lado da pilha, o aberto é guardado, e a página abre. */
+    async function tirarArrastado(k: HTMLAnchorElement, dx: number) {
+      ocupado = true;
+      segurarPilha();
+      const queda = await puxarAteSair(k, dx);
+      await guardarOAberto(queda);
+      location.assign(k.href);
+    }
+
+    // ---------- mouse, arrasto, toque e teclado ----------
     const ligar = (g: GSAP) => {
       if (gsap) return;
       gsap = g;
       pilha.classList.add("viva");
-      for (const livro of pilha.querySelectorAll<HTMLElement>(".deitado")) {
-        const sair = () => !puxando && g.to(livro, { x: 14, duration: 0.35, ease: "power3.out", overwrite: true });
-        const voltar = () => !puxando && g.to(livro, { x: 0, duration: 0.5, ease: "elastic.out(1, 0.55)", overwrite: true });
-        livro.addEventListener("pointerenter", (e) => e.pointerType === "mouse" && sair());
-        livro.addEventListener("pointerleave", (e) => e.pointerType === "mouse" && voltar());
-        livro.addEventListener("focus", () => livro.matches(":focus-visible") && sair());
-        livro.addEventListener("blur", voltar);
+      for (const k of visiveis()) {
+        const sair = () => {
+          if (ocupado || pressionado) return;
+          g.to(k, { x: 8, duration: 0.3, ease: "power2.out", overwrite: "auto" });
+          g.to(blocoDe(k), { x: 1.5, duration: 0.4, ease: "power2.out", overwrite: "auto" });
+        };
+        const voltar = () => {
+          if (ocupado || pressionado) return;
+          g.to(k, { x: 0, duration: 0.32, ease: "power3.out", overwrite: "auto" });
+          g.to(blocoDe(k), { x: 0, duration: 0.4, ease: "power3.out", overwrite: "auto" });
+        };
+        k.addEventListener("pointerenter", (e) => e.pointerType === "mouse" && sair());
+        k.addEventListener("pointerleave", (e) => e.pointerType === "mouse" && voltar());
+        k.addEventListener("focus", () => k.matches(":focus-visible") && sair());
+        k.addEventListener("blur", voltar);
       }
+      if (temMouse.matches) ligarArrasto();
     };
-    adiantar(pilha, () => carregarGsap().then(ligar));
 
-    // Puxar o livro: ele sai para a direita, por cima do conteúdo; os de cima caem juntos, com um
-    // baque curto, e a pilha fica como a página nova vai mostrar (sem o puxado).
-    function puxar(li: HTMLElement, destino: string) {
+    /** Puxar com o mouse (Draggable + InertiaPlugin), só na horizontal: o toque precisa rolar a página. */
+    async function ligarArrasto() {
+      const { Draggable, InertiaPlugin } = await carregarArrastar();
       const g = gsap!;
-      puxando = true;
-      const visiveis = [...ol.children].filter((el): el is HTMLElement => !(el as HTMLElement).hidden);
-      const acima = visiveis.slice(0, visiveis.indexOf(li));
-      const livro = li.querySelector<HTMLElement>(".deitado")!;
-      const altura = li.offsetHeight;
-      const largura = pilha.clientWidth;
-
-      const tl = g.timeline({ onComplete: () => location.assign(destino) });
-      // A pilha fica com a altura de agora e encostada embaixo: o lugar que fecha puxa os de cima.
-      tl.set(ol, { height: ol.offsetHeight, justifyContent: "flex-end" }, 0)
-        .to(livro, { x: largura * 0.62, duration: 0.34, ease: "power2.inOut", overwrite: true }, 0)
-        // Fora da pilha, o lugar dele fecha: os de cima caem a altura dele.
-        .set(li, { height: altura, overflow: "visible" }, 0)
-        .to(li, { height: 0, duration: 0.26, ease: "power2.in" }, 0.2)
-        .to(acima, { y: -2, duration: 0.07, ease: "power1.out" }, ">")
-        .to(acima, { y: 0, duration: 0.09, ease: "power1.in" }, ">");
+      for (const k of visiveis() as HTMLAnchorElement[]) {
+        k.draggable = false;
+        const proxy = document.createElement("div");
+        let x0 = 0;
+        let arrastou = false;
+        Draggable.create(proxy, {
+          trigger: k,
+          type: "x",
+          minimumMovement: 3,
+          cursor: "pointer",
+          activeCursor: "grabbing",
+          onPress() {
+            arrastou = false;
+            if (ocupado) return;
+            pressionado = k;
+            x0 = this.x - (Number(g.getProperty(k, "x")) || 0);
+            // A pilha medida parada (o livro sob o mouse pode estar 8px para fora).
+            medir();
+          },
+          onDrag() {
+            if (ocupado) return;
+            arrastou = true;
+            puxar(k, Math.max(0, this.x - x0));
+          },
+          onRelease() {
+            pressionado = null;
+            if (ocupado || !arrastou) return;
+            const dx = Number(g.getProperty(k, "x")) || 0;
+            const gk = geo.get(k)!;
+            const vx = InertiaPlugin.getVelocity(proxy, "x") || 0;
+            if (dx + vx * 0.2 > (gk.R - gk.L) * 0.5) return void tirarArrastado(k, dx);
+            // Não saiu: volta empurrado, perdendo velocidade (atrito), e o bloco se endireita sobre ele.
+            const obj = { dx };
+            g.to(obj, {
+              dx: 0,
+              duration: 0.3 + dx / 900,
+              ease: "power2.out",
+              onUpdate: () => puxar(k, obj.dx),
+              onComplete: () => void g.to(blocoDe(k), { x: 0, duration: 0.3, ease: "power2.out" }),
+            });
+          },
+        });
+      }
     }
+    adiantar(pilha, () => carregarGsap().then(ligar));
 
     ol.addEventListener("click", (e) => {
       const link = (e.target as HTMLElement).closest<HTMLAnchorElement>("a.deitado");
-      if (!link || !gsap || puxando || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+      if (!link || !gsap || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
       e.preventDefault();
-      puxar(link.closest("li")!, link.href);
+      trocar(link);
     });
 
-    // Voltar pelo histórico (bfcache) traz a página como ficou: a pilha volta ao lugar.
+    // Voltar pelo histórico (bfcache) traz a página como ficou: a pilha e o livro do topo voltam ao lugar.
     addEventListener("pageshow", (e) => {
       if (!e.persisted || !gsap) return;
-      puxando = false;
-      gsap.set([ol, ...ol.querySelectorAll("li, .deitado")], { clearProps: "all" });
+      ocupado = false;
+      pressionado = null;
+      for (const li of ordemInicial) {
+        ol.append(li);
+        li.classList.remove("no-ar");
+        li.querySelector<HTMLElement>(".deitado")?.style.removeProperty("view-transition-name");
+      }
+      if (escondido) escondido.hidden = true;
+      if (topoInicial) {
+        topoInicial.style.removeProperty("visibility");
+        topoInicial.style.viewTransitionName = nomeDoTopo;
+      }
+      const livroDoTopo = topoInicial?.querySelector(".livro-3d");
+      gsap.set([ol, ...ol.querySelectorAll(".deitado"), ...(livroDoTopo ? [livroDoTopo] : [])], { clearProps: "all" });
     });
   }
 </script>
@@ -208,6 +455,11 @@ const rotulo = (l: Livro) => {
     list-style: none;
   }
 
+  /* O espaço em cima da pilha, do tamanho do livro aberto: é para lá que ele volta (D49). */
+  .pilha ol[style*="--folga"] {
+    padding-top: max(18px, calc(var(--folga) * var(--u)));
+  }
+
   .deitado {
     position: relative;
     display: block;
@@ -220,9 +472,13 @@ const rotulo = (l: Livro) => {
     view-transition-class: livro;
   }
 
-  /* O puxado passa por cima do conteúdo ao lado. */
+  /* O puxado passa por cima do conteúdo ao lado; o que está no ar, por cima dos outros livros. */
   .pilha li {
     position: relative;
+  }
+
+  .pilha li.no-ar {
+    z-index: 2;
   }
 
   .deitado > .lombada-visual {
