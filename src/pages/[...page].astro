@@ -1,8 +1,8 @@
 ---
 /**
  * Home (briefing §5.1): abertura com a estante, a gaveta do livro aberto, o destaque (post mais
- * recente, que não se repete na lista), os artigos recentes (Lista / Cards) e, ao lado deles, o
- * painel com séries e categorias em pilhas de livros, tags e RSS (D28).
+ * recente, que não se repete na lista) e os artigos recentes (Lista / Cards), na largura toda: o
+ * painel lateral da D28 saiu da home na D44 (continua na página de categoria e na da série).
  * O nome do arquivo, `[...page]`, é exigência do paginate do Astro.
  * Paginada como no blog atual (D27): 12 artigos por página em /, /2/, /3/…; da página 2 em diante,
  * só a lista e a paginação.
@@ -13,7 +13,6 @@ import Estante from "../components/Estante.astro";
 import Gaveta from "../components/Gaveta.astro";
 import Destaque from "../components/Destaque.astro";
 import Recentes from "../components/Recentes.astro";
-import ComPainel from "../components/ComPainel.astro";
 import Marca from "../components/Marca.astro";
 import { TEXTOS } from "../data/site";
 import { montarLivros } from "../lib/estante";
@@ -77,11 +76,7 @@ const jsonLd = {
       </>
     )
   }
-  {/*
-    Os artigos e, à esquerda, o painel com séries, categorias e tags (D28). O painel começa na altura
-    do título "Artigos recentes" e do seletor Lista / Cards (D33).
-  */}
-  <ComPainel>
+  <div class="wrap artigos-home">
     <Recentes
       posts={page.data}
       titulo={primeira ? "Artigos recentes" : `Artigos — página ${page.currentPage}`}
@@ -89,7 +84,7 @@ const jsonLd = {
       nivel={primeira ? "h2" : "h1"}
       pagina={{ atual: page.currentPage, ultima: page.lastPage, anterior: page.url.prev, proxima: page.url.next }}
     />
-  </ComPainel>
+  </div>
 </Base>
 
 <style>
@@ -97,8 +92,8 @@ const jsonLd = {
     padding-top: 26px;
   }
 
-  /* Espaço entre o destaque (ou o cabeçalho) e os artigos com o painel. */
-  :global(.com-painel) {
+  /* Espaço entre o destaque (ou o cabeçalho) e os artigos. */
+  .artigos-home {
     padding-top: 56px;
   }
 

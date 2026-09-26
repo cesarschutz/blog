@@ -1078,3 +1078,31 @@ nada muda.
 - **Mantido:** o `Livro3D` inteiro (usado também pela capa viva e pelo livro ampliado); a página
   dele (slot "pagina") e o verso da capa só não aparecem mais na gaveta.
 - **Movimento reduzido:** o livro aparece direto na gaveta e o lugar fica vazio, sem voo.
+
+## D44 · Ajustes da home: títulos em duas partes, busca que nasce do campo e mais
+- **Data:** 26/09/2026 · **Status:** aplicada, sem push.
+- **Pedido do Cesar** (lista de ajustes na home), e o que mudou:
+  1. **Sem o brilho da estante:** a faixa de luz que atravessava as lombadas em repouso saiu
+     (`estante-viva.ts` e o CSS `.luz-lombada`). As espiadinhas (um livro que sobe de leve) ficam.
+  2. **Tema que abre e fecha:** indo para o escuro, o círculo abre a partir do botão (como na D42);
+     voltando ao claro, o escuro se fecha de fora para dentro até o botão (tipo "tema-fecha": a
+     imagem antiga fica por cima e o `clip-path` encolhe, com a mesma curva ao contrário).
+  3. **Sem o painel lateral na home:** séries, categorias e tags saíram da esquerda da lista; a lista
+     e os cards ocupam a largura toda. O painel continua na página de categoria e na da série (o livro
+     da pilha que vira o topo da página, D29, depende dele).
+  4. **Títulos em duas partes:** "Assunto — complemento" vira o assunto, como estava, e o complemento
+     na linha de baixo, sem o travessão, menor (dois terços; 0,56 no topo do artigo), na fonte do texto
+     (Literata, sem negrito, `--ink-2`), nunca abaixo de 17px, para ficar maior que o resumo. Na
+     lista, nos cards (em todas as páginas que os mostram), no destaque e no topo do artigo
+     (`tituloEmPartes` em `formato.ts`, `.titulo-sub` em `base.css`). O texto continua o original,
+     letra por letra: o travessão fica escondido (leitor de tela e busca leem o título inteiro) e a
+     inicial maiúscula do complemento é só visual (`::first-letter`); a primeira versão usava o
+     subtítulo já com maiúscula, e o título indexado pela busca saía "— Como…".
+  5. **A busca nasce do campo** (protótipo `docs/prototipos/site-em-movimento.html`): o lote 4 da
+     D41, que tinha sido desfeito, voltou como era (janela com Flip a partir do campo, resultados em
+     sequência, marca-texto no termo, fechar de volta para o campo). `carregarFlip` voltou ao
+     `gsap.ts`.
+  6. **Fio embaixo do cabeçalho:** um fio fino na largura toda, na cor `--rule`, sempre à vista (por
+     `box-shadow` por dentro, sem mudar a altura do cabeçalho); depois de rolar, soma-se a sombra
+     suave que já existia.
+- **Movimento reduzido:** o tema e a busca abrem e fecham direto; o resto não anima.

@@ -37,6 +37,20 @@ export function tituloComQuebras(texto: string): string {
     .replace(/ — /g, " —&nbsp;");
 }
 
+/**
+ * O título do post em duas partes (D44): "Assunto — complemento" vira o assunto, grande, e o
+ * complemento numa linha própria, menor (`.titulo-sub`, base.css), sem o travessão à vista. Para o
+ * leitor de tela e para a busca, o travessão continua lá (escondido), e o título se lê inteiro.
+ * O texto é o do título original, letra por letra: a inicial maiúscula do complemento é só visual
+ * (`::first-letter`), para a busca e o leitor de tela lerem o título como ele é.
+ */
+export function tituloEmPartes(tituloCompleto: string): string {
+  const [assunto, ...resto] = tituloCompleto.split(" — ");
+  const principal = `<span class="titulo-principal">${tituloComQuebras(assunto)}</span>`;
+  if (!resto.length) return principal;
+  return `${principal}<span class="sr"> — </span><span class="titulo-sub">${tituloComQuebras(resto.join(" — "))}</span>`;
+}
+
 /** Descrição sem marcação, para meta tags, RSS e JSON-LD. */
 export function semMd(texto: string): string {
   return texto.replace(/`([^`]+)`/g, "$1").replace(/\*\*([^*]+)\*\*/g, "$1");

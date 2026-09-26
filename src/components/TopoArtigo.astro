@@ -12,7 +12,7 @@ import DataLeitura from "./DataLeitura.astro";
 import Ilustracao from "./Ilustracao.astro";
 import { AUTOR } from "../data/site";
 import { temIlustracao } from "../lib/ilustracoes";
-import { mdEmLinha, tituloComQuebras } from "../lib/formato";
+import { mdEmLinha, tituloEmPartes } from "../lib/formato";
 import { url } from "../lib/url";
 import type { Resumo } from "../lib/posts";
 
@@ -43,7 +43,7 @@ const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "
       <span aria-hidden="true">›</span>
       <Chip cor={post.cor} nome={post.rotulo} href={post.urlRotulo} />
     </nav>
-    <h1 data-pagefind-meta="title" tabindex="-1" set:html={tituloComQuebras(post.tituloCompleto)} />
+    <h1 data-pagefind-meta="title" tabindex="-1" set:html={tituloEmPartes(post.tituloCompleto)} />
     <p class="lede" set:html={mdEmLinha(post.descricao)} />
     <div class="assinatura" data-pagefind-ignore>
       <span class="autor">
@@ -120,6 +120,11 @@ const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "
     line-height: 1.06;
     letter-spacing: -0.014em;
     text-wrap: balance;
+  }
+
+  /* O complemento do título (D44): no título grande do artigo, um pouco mais contido que nas listas. */
+  h1 :global(.titulo-sub) {
+    font-size: max(0.56em, 20px);
   }
 
   /*

@@ -593,9 +593,7 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
     0,6s, `power3.out`); ao sair, `elastic.out(1, 0.45)` em 1,1s. Embaixo, a legenda com o nome e a
     contagem (`estante-viva.ts`).
   - **Estante em repouso** (só a home): depois de 3s sem mouse, toque, tecla ou rolagem, com a estante
-    ao menos metade visível e a aba ativa, uma luz suave (`soft-light`) passa pelas lombadas em 3,6s,
-    a cada ~9s (uma faixa dentro de cada lombada, para não acender o fundo entre os livros), e a cada 4
-    a 7s um livro sorteado sobe 10px, inclina 1,2°, espera 0,6s e volta com `elastic`. Qualquer
+    ao menos metade visível e a aba ativa, a cada 4 a 7s um livro sorteado sobe 10px, inclina 1,2°, espera 0,6s e volta com `elastic`. Qualquer
     interação para tudo e devolve os livros ao lugar. Desligada com movimento reduzido.
   - **Tirar da estante** (a gaveta da home, `Gaveta.astro`, D43): no clique ou toque, o livro 3D
     aparece exatamente sobre a lombada (lombada de frente, mesma altura), e o lugar na estante fica
@@ -645,9 +643,17 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
 - **Cabeçalho no celular** (até 860px, D38): some ao rolar para baixo e volta ao rolar para cima,
   subindo por `translate` (a página não muda de altura); com o foco nele ou o menu aberto, fica. **Nenhum livro cai** (o tombo do livro
   inclinado saiu na D35) e **nenhum texto muda de cor**. Sem animação de entrada nas seções.
-- **Troca de tema** (D42): o tema novo se espalha em círculo a partir do botão (0,55s), com a View
-  Transition do próprio documento (tipo "tema", `trocarTema` em `tema.ts`); a página inteira vira de
-  uma vez (os livros perdem o nome de transição durante a troca). O ícone só troca, sem animar.
+- **Troca de tema** (D42, D44): indo para o escuro, o escuro se espalha em círculo a partir do botão
+  (0,55s); voltando ao claro, o escuro se fecha de fora para dentro até sumir no botão (a mesma curva,
+  ao contrário). View Transition do próprio documento (tipos "tema" e "tema-fecha", `trocarTema` em
+  `tema.ts`); a página inteira vira de uma vez (os livros perdem o nome de transição durante a troca).
+  O ícone só troca, sem animar. A faixa de luz da estante em repouso saiu (D44).
+- **A busca nasce do campo** (D44, `Busca.astro`, GSAP com Flip sob demanda): com clique, ⌘K,
+  Ctrl+K ou "/", a janela cresce a partir do campo do cabeçalho (no celular, do ícone) em 0,5s
+  (`power3.out`), o conteúdo aparece depois de 0,2s e o véu escurece junto (`@starting-style`). Os
+  resultados entram em sequência (0,3s, `stagger` 0,035s) e o termo buscado ganha um marca-texto que
+  se estica em 0,45s, também no título do resultado. Esc, "Fechar" ou clique fora encolhem a janela
+  de volta para o campo (0,35s, `power2.in`), e o foco volta para ele.
 - **Troca Lista / Cards** (D42): a forma atual esmaece (0,12s) e a nova aparece subindo 8px (0,22s),
   com a Web Animations API (`SeletorModo`). Sem Flip e sem cascata nos cards.
 - Toda animação respeita `prefers-reduced-motion`: tudo aparece no estado final, sem prender a

@@ -8,7 +8,7 @@ import Chip from "./Chip.astro";
 import DataLeitura from "./DataLeitura.astro";
 import Ilustracao from "./Ilustracao.astro";
 import { ICONES } from "../lib/icones";
-import { mdEmLinha, tituloComQuebras } from "../lib/formato";
+import { mdEmLinha, tituloEmPartes } from "../lib/formato";
 import { temIlustracao } from "../lib/ilustracoes";
 import { urlTag, type Resumo } from "../lib/posts";
 
@@ -34,7 +34,7 @@ const { post } = Astro.props;
         <Chip cor={post.cor} nome={post.rotulo} href={post.urlRotulo} />
         <DataLeitura data={post.publicado} minutos={post.minutos} longo />
       </p>
-      <h3><a href={post.url} set:html={tituloComQuebras(post.tituloCompleto)} /></h3>
+      <h3><a href={post.url} set:html={tituloEmPartes(post.tituloCompleto)} /></h3>
       <p class="descricao" set:html={mdEmLinha(post.descricao)} />
       <ul class="tags" aria-label="Tags">
         {

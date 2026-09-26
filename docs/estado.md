@@ -140,6 +140,9 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
   lugar fica vazio) e voa fechado até a gaveta, ao lado do sumário de antes da D40 (filtro e lista
   por ano). Conferido no dev: voo medido quadro a quadro, troca de livro, clique durante o fechamento,
   a mesma lombada guardando, celular (390px) e mudança de largura com o livro aberto.
+- **Ajustes da home (D44, 26/09/2026), só local, sem commit:** sem o brilho da estante, tema que
+  fecha ao voltar ao claro, home sem o painel lateral, títulos em duas partes (lista, cards, destaque
+  e artigo), a busca que nasce do campo e o fio embaixo do cabeçalho. Conferido no dev e no preview.
 
 ## Próximos passos
 

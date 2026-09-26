@@ -187,7 +187,7 @@ livro aparece na estante e na lateral, mesmo sem artigos; o número de artigos, 
 ### 5.1 Home
 Referência: aba "Home" do protótipo.
 - **Cabeçalho** (D31): **fixo no alto** enquanto a página rola, com o fundo da página levemente
-  translúcido e um fio embaixo que aparece depois de rolar. A marca à esquerda (D33); à direita
+  translúcido e um **fio embaixo sempre à vista** (D44), que ganha uma sombra suave depois de rolar. A marca à esquerda (D33); à direita
   **Artigos, Categorias, Séries e Tags**, a busca como campo (com ⌘K; só o ícone até 1100px), os ícones
   do GitHub e do LinkedIn e o botão de tema (§4.3, D39). O RSS saiu do menu (fica no painel lateral e no
   rodapé). Até 860px, duas linhas: marca, busca, perfis (somem abaixo de 520px) e tema numa; o
@@ -237,8 +237,9 @@ Referência: aba "Home" do protótipo.
   "Anteriores", os números (a atual em azul-tinta) e "Mais artigos"; no celular, só os dois botões.
   Da página 2 em diante, só a lista ("Artigos — página N", em h1) e a paginação. O destaque nunca
   entra na lista.
-- **Painel lateral** (D28), à esquerda da lista em telas ≥ 1100px e depois dela nas menores, em todas
-  as páginas da home, no lugar da antiga nuvem de tags no pé. Inspirado na barra lateral do blog
+- **Painel lateral** (D28): **saiu da home na D44** (a lista e os cards ocupam a largura toda). Fica
+  na página de categoria e na da série, à esquerda do conteúdo em telas ≥ 1100px e depois dele nas
+  menores. Inspirado na barra lateral do blog
   atual, numa folha que **fica parada enquanto a lista rola** (como no antigo; em tela baixa, rola por
   dentro):
   - **Séries** e **Categorias** como **pilhas de livros deitados** (D30, D32, `CAPAS.md`): a mesma
@@ -307,8 +308,12 @@ Referência: aba "Artigo" do protótipo.
   "Atualizado em" quando houver e o tempo de leitura com o relógio. A marca d'água do livro saiu do
   topo (D39): fica no fim do artigo, atrás de "anterior / próximo", e no topo das páginas de
   categoria e de série, grande e bem suave, cortada pela borda da folha.
-- **Título**: aparece inteiro, como no `title` do frontmatter, no topo, nas listas, nos cards e na
-  navegação. A divisão em título e subtítulo pelo " — " fica só na imagem de compartilhamento (D33).
+- **Título** (D44): na lista, nos cards (em todas as páginas), no destaque e no topo do artigo, o
+  título "Assunto — complemento" aparece em duas partes: o assunto como sempre, e o complemento na
+  linha de baixo, sem o travessão, na fonte do texto, sem negrito, em `--ink-2`, a dois terços do
+  tamanho do título (no topo do artigo, 0,56), nunca abaixo de 17px (maior que o resumo). O texto
+  continua o original (o travessão fica escondido para leitor de tela e busca). Na navegação
+  (anterior / próximo), na gaveta e na busca, o título segue inteiro, numa linha.
 - **Barra de progresso de leitura**: faixa de 3px no topo, na cor da categoria.
 - **Sumário**: em telas ≥ 1300px, à esquerda do texto, numa folha própria e fixa; recolhível no
   início do texto nas menores. Só aparece com 3 ou mais seções. No lateral (D33), um trilho: um ponto

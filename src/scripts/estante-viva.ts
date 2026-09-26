@@ -7,9 +7,9 @@
  *   Só com mouse; no toque, a lombada abre o livro direto (Gaveta.astro).
  *
  * - ideia 2, a estante em repouso (só a home, `emRepouso`): depois de 3s sem mouse, toque, tecla ou
- *   rolagem, com a estante ao menos metade visível e a aba ativa, uma faixa de luz suave atravessa as
- *   lombadas (3,6s, a cada ~9s) e, a cada 4 a 7s, um livro sorteado dá uma espiadinha. Qualquer
- *   interação para tudo na hora e devolve os livros ao lugar. Desligada com movimento reduzido.
+ *   rolagem, com a estante ao menos metade visível e a aba ativa, a cada 4 a 7s um livro sorteado dá
+ *   uma espiadinha (a faixa de luz que atravessava as lombadas saiu na D44). Qualquer interação para
+ *   tudo na hora e devolve os livros ao lugar. Desligada com movimento reduzido.
  *
  * A posição de repouso de cada lombada (o livro inclinado da home, 6°; a lombada escolhida no filtro,
  * 10px acima) é lida a cada movimento, porque o GSAP escreve o `transform` e o CSS não manda mais.
@@ -103,41 +103,15 @@ export function estanteViva(raiz: HTMLElement, { emRepouso = false } = {}) {
   }
 
   // ---------- ideia 2: em repouso ----------
-  // A luz: uma faixa dentro de cada lombada, deslocada pela posição dela na estante.
-  let luzes: HTMLElement[] = [];
-  const criarLuzes = () => {
-    if (luzes.length || !emRepouso) return;
-    luzes = lombadas.map((el) => {
-      const caixa = document.createElement("span");
-      caixa.className = "luz-lombada";
-      caixa.setAttribute("aria-hidden", "true");
-      const faixa = document.createElement("span");
-      caixa.append(faixa);
-      el.append(caixa);
-      return faixa;
-    });
-  };
   let relogio = 0;
   let visivel = false;
   let ativo = false;
-  let luz: gsap.core.Timeline | null = null;
   let espiada: gsap.core.Tween | null = null;
 
   function iniciarRepouso() {
     if (!gsap || ativo || !visivel || document.hidden || movimentoReduzido.matches || sobAtual) return;
     const g = gsap;
     ativo = true;
-    criarLuzes();
-    const estante = raiz.getBoundingClientRect();
-    const faixa = Math.round(estante.width * 0.38);
-    raiz.style.setProperty("--largura-luz", `${faixa}px`);
-    // Cada luz anda a mesma distância no mesmo tempo, a partir da posição da lombada: é uma faixa só.
-    const inicio = luzes.map((l) => -faixa - (l.parentElement!.parentElement!.getBoundingClientRect().left - estante.left));
-    luz = g
-      .timeline({ repeat: -1, repeatDelay: 5.4 })
-      .set(luzes, { x: (i: number) => inicio[i], opacity: 1 })
-      .to(luzes, { x: (i: number) => inicio[i] + estante.width + faixa, duration: 3.6, ease: "sine.inOut" })
-      .set(luzes, { opacity: 0 });
     const espiar = () => {
       const el = lombadas[Math.floor(Math.random() * lombadas.length)];
       const r = repouso(el);
@@ -153,10 +127,8 @@ export function estanteViva(raiz: HTMLElement, { emRepouso = false } = {}) {
   function pararRepouso() {
     if (!ativo || !gsap) return;
     ativo = false;
-    luz?.kill();
     espiada?.kill();
-    luz = espiada = null;
-    if (luzes.length) gsap.set(luzes, { opacity: 0 });
+    espiada = null;
     if (!sobAtual) for (const el of lombadas) gsap.to(el, { ...repouso(el), duration: 0.35, overwrite: true });
     quickVelho = true;
   }

@@ -8,7 +8,7 @@
  */
 import Ilustracao from "./Ilustracao.astro";
 import MetaItem from "./MetaItem.astro";
-import { mdEmLinha, tituloComQuebras } from "../lib/formato";
+import { mdEmLinha, tituloEmPartes } from "../lib/formato";
 import { temIlustracao } from "../lib/ilustracoes";
 import { urlTag, type Resumo } from "../lib/posts";
 
@@ -27,7 +27,7 @@ const comMiniatura = temIlustracao(post.slug);
   <div class="texto">
     <MetaItem post={post} />
     <Titulo class="titulo">
-      <a href={post.url} set:html={tituloComQuebras(post.tituloCompleto)} />
+      <a href={post.url} set:html={tituloEmPartes(post.tituloCompleto)} />
     </Titulo>
     <p class="descricao" set:html={mdEmLinha(post.descricao)} />
     {post.tags.length > 0 && (

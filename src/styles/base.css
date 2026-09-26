@@ -332,6 +332,40 @@ kbd {
   white-space: nowrap;
 }
 
+/*
+ * O título do post em duas partes (D44, tituloEmPartes em formato.ts): o assunto fica como sempre, e
+ * o complemento desce para a linha de baixo, na fonte do texto, sem negrito e num tom mais suave. O
+ * tamanho acompanha o do título (dois terços), mas nunca fica abaixo de 17px, para continuar maior
+ * que o resumo que vem embaixo (15 a 19px). Na lista e nos cards, ao passar o mouse, o complemento
+ * acompanha o azul do título.
+ */
+.titulo-principal {
+  display: block;
+}
+
+.titulo-sub {
+  display: block;
+  margin-top: 0.3em;
+  font-family: var(--font-texto);
+  font-weight: 400;
+  font-size: max(0.66em, 17px);
+  font-variation-settings: normal;
+  line-height: 1.32;
+  letter-spacing: 0;
+  color: var(--ink-2);
+  transition: color 0.15s;
+}
+
+.titulo-sub::first-letter {
+  text-transform: uppercase;
+}
+
+a:hover > .titulo-sub,
+.item:hover .titulo-sub,
+.cartao:hover .titulo-sub {
+  color: inherit;
+}
+
 .pular {
   position: absolute;
   top: 8px;
@@ -423,9 +457,10 @@ kbd {
 }
 
 /*
- * Tema que se espalha em círculo (D42, trocarTema em tema.ts): a página antiga fica parada e a nova
- * cresce num círculo a partir do botão. Enquanto isso, nenhum outro elemento tem nome de transição:
- * a página vira inteira, de uma vez.
+ * Tema em círculo (D42, D44, trocarTema em tema.ts): indo para o escuro, a página nova cresce num
+ * círculo a partir do botão; voltando ao claro, a antiga (escura) fica por cima e encolhe de fora
+ * para dentro até o botão. Enquanto isso, nenhum outro elemento tem nome de transição: a página vira
+ * inteira, de uma vez.
  */
 .trocando-tema,
 .trocando-tema * {
@@ -438,6 +473,15 @@ kbd {
 
 :root:active-view-transition-type(tema)::view-transition-new(root) {
   animation: espalhar-tema 0.55s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+:root:active-view-transition-type(tema-fecha)::view-transition-old(root) {
+  z-index: 1;
+  animation: espalhar-tema 0.55s cubic-bezier(0.65, 0, 0.35, 1) reverse both;
+}
+
+:root:active-view-transition-type(tema-fecha)::view-transition-new(root) {
+  animation: none;
 }
 
 @keyframes espalhar-tema {

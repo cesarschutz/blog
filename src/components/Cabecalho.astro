@@ -81,8 +81,9 @@ const { atual } = Astro.props;
 
 <style>
   /*
-   * Fixo no alto: fundo da página translúcido, com desfoque. O fio embaixo aparece depois dos
-   * primeiros pixels de rolagem (animação ligada à rolagem, onde houver; sem ela, fica sem fio).
+   * Fixo no alto: fundo da página translúcido, com desfoque, e um fio embaixo (D44). Depois dos
+   * primeiros pixels de rolagem, uma sombra suave se junta ao fio (animação ligada à rolagem, onde
+   * houver; sem ela, fica só o fio).
    */
   .topo-fixo {
     position: sticky;
@@ -92,7 +93,8 @@ const { atual } = Astro.props;
     background: color-mix(in oklab, var(--paper) 94%, transparent);
     -webkit-backdrop-filter: saturate(1.4) blur(12px);
     backdrop-filter: saturate(1.4) blur(12px);
-    box-shadow: 0 1px 0 transparent;
+    /* O fio que separa o cabeçalho da página (D44), sempre à vista; por dentro, sem mudar a altura. */
+    box-shadow: inset 0 -1px 0 var(--rule);
   }
 
   @supports (animation-timeline: scroll()) {
@@ -109,10 +111,11 @@ const { atual } = Astro.props;
     }
   }
 
+  /* Com a página rolada, o fio ganha uma sombra suave embaixo. */
   @keyframes fio-do-topo {
     to {
       box-shadow:
-        0 1px 0 var(--rule),
+        inset 0 -1px 0 var(--rule),
         0 8px 20px -16px rgb(0 0 0 / 0.35);
     }
   }

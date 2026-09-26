@@ -28,6 +28,16 @@ export function carregarArrastar() {
   return arrastar;
 }
 
+/** O GSAP com Flip (a busca que nasce do campo, D44). */
+let flip: Promise<{ gsap: GSAP; Flip: typeof import("gsap/Flip").Flip }> | undefined;
+export function carregarFlip() {
+  flip ??= Promise.all([carregarGsap(), import("gsap/Flip")]).then(([gsap, { Flip }]) => {
+    gsap.registerPlugin(Flip);
+    return { gsap, Flip };
+  });
+  return flip;
+}
+
 /** O GSAP com DrawSVG (o desenho do destaque que se desenha, D41). */
 let traco: Promise<GSAP> | undefined;
 export function carregarTraco() {
