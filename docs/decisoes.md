@@ -998,10 +998,12 @@ nada muda.
   3. **O caderno marcado** nos artigos (`src/plugins/marcacoes.mjs`, `src/scripts/caderno.ts`):
      marca-texto, sublinhado à caneta, só o termo, círculo e colchete na margem, na cor do livro,
      escritos em Markdown com diretivas. A marcação acontece quando o topo do trecho chega a 80% da
-     tela e se desfaz ao rolar de volta, com folga de 10% (desfaz só abaixo de 90%). Guia editorial em
+     tela e fica (ajuste do Cesar: voltar a rolagem não apaga; a página abre sempre limpa). Guia em
      `docs/marcacoes.md`; a skill `post` propõe as marcações no plano (trecho, tipo, motivo), nos dois
      modos; a revisão em lote ganhou a coluna "Marcações". **Aplicado só no post do Jackson** (o mais
-     recente), a pedido do Cesar; os outros recebem quando forem revisados ou escritos.
+     recente), a pedido do Cesar; os outros recebem quando forem revisados ou escritos. Depois do
+     piloto com 7, o Cesar achou pouco e pediu marcação "como alguém estudando mesmo": o Jackson ficou
+     com 24, e a regra passou a ser ~uma por parágrafo que ensina algo (o build recusa mais de 30).
 - **Desfeito** (o código dos lotes fica no histórico do git, nos commits entre `e30c0ec` e este):
   lista ⇄ cards e filtro com Flip, View Transitions do cartão ao artigo, desenho no topo do post e no
   hover dos cards, busca com Flip e marca-texto, tema em círculo com a lua virando sol, e o Copiar
@@ -1021,5 +1023,5 @@ nada muda.
   - As diretivas de texto pegariam coisas como "03:00" (vira a diretiva `00`): as que não são
     marcações voltam a ser texto, e o texto alternativo das imagens é refeito do Markdown original.
     Conferido: os outros 26 posts saem com o texto idêntico ao de antes.
-  - O build recusa mais de 8 marcações por artigo, duas no mesmo parágrafo e marcação em título.
+  - O build recusa mais de 30 marcações por artigo, duas no mesmo parágrafo e marcação em título.
   - Com movimento reduzido, sem JS ou na impressão, tudo aparece já marcado (e o desenho, inteiro).

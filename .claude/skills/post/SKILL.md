@@ -54,7 +54,7 @@ Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
     em destaque (rara) ou animação GSAP, cada um com o trecho do texto que ele explica.
 - **Marcações (caderno marcado, D41), nos dois modos:** uma tabela com **trecho**, **tipo**
   (marca-texto, sublinhado, só o termo, círculo, colchete) e **motivo**, seguindo
-  `docs/marcacoes.md` (o que marcar, o que nunca marcar, no máximo ~8 por artigo, nunca duas no mesmo
+  `docs/marcacoes.md` (o que marcar, o que nunca marcar, densidade de estudo, ~uma por parágrafo que ensina algo, nunca duas no mesmo
   parágrafo, nada em títulos e código). Entram no Markdown só depois da aprovação, junto com o resto
   do plano.
 - **Modo Adaptar:** a lista de **sugestões de conteúdo**, separadas do plano (passo 3).
@@ -198,5 +198,5 @@ Todos aparecem juntos em `src/amostra/recursos.md`, que o dev mostra em `/amostr
 - **Imagens:** `alt` descritivo; abrem no visor ao clicar.
 - **Sumário:** automático com 3 ou mais seções `##`.
 - **Marcações** (D41, guia em `docs/marcacoes.md`): `:marca[…]`, `:sublinhado[…]`, `:circulo[…]`,
-  `:::termos` em volta de uma lista e `:::colchete` em volta de um parágrafo. O build recusa mais de 8
+  `:::termos` em volta de uma lista e `:::colchete` em volta de um parágrafo. O build recusa mais de 30
   por artigo, duas no mesmo parágrafo e marcação em título.

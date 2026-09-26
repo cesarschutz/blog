@@ -1,9 +1,8 @@
 /**
- * O caderno marcado (D41, ideia 5; versão B do protótipo docs/prototipos/caderno-marcado.html): cada
- * marcação do artigo (src/plugins/marcacoes.mjs) acontece quando o trecho entra na tela, com o topo
- * dele a 80% da altura, e se desfaz se a pessoa rolar de volta para cima dele. Entre marcar e desfazer
- * há uma folga de 10% da tela (desfaz só quando o topo desce além de 90%), para não piscar quando a
- * rolagem para perto do limite.
+ * O caderno marcado (D41; como a versão A do protótipo docs/prototipos/caderno-marcado.html): cada
+ * marcação do artigo (src/plugins/marcacoes.mjs) acontece uma vez, quando o trecho entra na tela,
+ * com o topo dele a 80% da altura, e fica: rolar de volta não apaga. A página sempre abre limpa
+ * (atualizar ou entrar de novo recomeça), e o que já passou do ponto é marcado ao abrir.
  *
  * A pintura do marca-texto e do termo é uma camada de fundo própria (`background-image`), animada pelo
  * `background-size`; os traços da caneta (sublinhado, círculo, colchete), pelo DrawSVG. Sem JS, com
@@ -15,7 +14,6 @@ import { carregarRolagem, movimentoReduzido } from "./gsap";
 type Rolagem = Awaited<ReturnType<typeof carregarRolagem>>;
 
 const MARCA = 0.8;
-const DESFAZ = 0.9;
 
 function animacao({ gsap }: Rolagem, el: HTMLElement) {
   const tipo = el.dataset.marcacao;
@@ -33,13 +31,11 @@ function animacao({ gsap }: Rolagem, el: HTMLElement) {
 
 function ligar(rolagem: Rolagem, alvos: HTMLElement[]) {
   const { ScrollTrigger } = rolagem;
-  const longe = () => "+=" + document.documentElement.scrollHeight;
   for (const el of alvos) {
     const anim = animacao(rolagem, el);
-    // O que já passou do ponto (a página abriu no meio do artigo) fica marcado; o resto começa em branco.
-    anim.progress(el.getBoundingClientRect().top < innerHeight * MARCA ? 1 : 0);
-    ScrollTrigger.create({ trigger: el, start: `top ${MARCA * 100}%`, end: longe, onEnter: () => anim.play() });
-    ScrollTrigger.create({ trigger: el, start: `top ${DESFAZ * 100}%`, end: longe, onLeaveBack: () => anim.reverse() });
+    // Tudo começa em branco; o que já passou do ponto (a página abriu no meio do artigo) marca na hora.
+    anim.progress(0);
+    ScrollTrigger.create({ trigger: el, start: `top ${MARCA * 100}%`, once: true, onEnter: () => anim.play() });
   }
 }
 

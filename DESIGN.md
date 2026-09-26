@@ -624,8 +624,8 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
     por vez (0,45s, `stagger` 0,12s); a cor do código fica embaixo.
   - **Sublinhado, círculo e colchete na margem**: traço à mão de 2,2px na cor do sumário (o destaque
     do livro, com o branco dos desenhos no escuro), desenhado com DrawSVG (0,6s; o círculo, 0,9s).
-  - Marca quando o topo do trecho chega a 80% da tela e desfaz ao rolar de volta, só abaixo de 90%
-    (folga de 10%, para não piscar). A pintura é uma camada de fundo própria (`background-image`,
+  - Marca uma vez, quando o topo do trecho chega a 80% da tela, e fica: voltar a rolagem não apaga.
+    A página sempre abre limpa (entrar de novo ou atualizar recomeça). A pintura é uma camada de fundo própria (`background-image`,
     animada pelo `background-size`), nunca o atalho `background`.
 - **O desenho do destaque da home** (D41, só ali): ao entrar na tela, os traços aparecem em sequência
   com DrawSVG (1,1s cada, sequência de até ~1,2s), depois a cor, a hachura (0,6s) e os textos (0,4s);

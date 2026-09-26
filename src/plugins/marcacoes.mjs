@@ -10,14 +10,14 @@
  *   :::colchete … :::                         em volta do parágrafo que resume a seção
  *
  * O remark valida e dá as classes; o rehype põe os traços (SVG) da caneta. Regras que o build cobra
- * (docs/marcacoes.md): no máximo 8 marcações por artigo, nunca duas no mesmo parágrafo, nada em
+ * (docs/marcacoes.md): no máximo 30 marcações por artigo, nunca duas no mesmo parágrafo, nada em
  * títulos. Diretiva de texto com outro nome volta a ser texto (um "a:b" no meio da frase não some).
  */
 import { el } from "./hast.mjs";
 
 const EM_LINHA = { marca: "marca-texto", sublinhado: "sublinhado", circulo: "circulo" };
 const BLOCO = { termos: "termos", colchete: "margem" };
-const MAXIMO = 8;
+const MAXIMO = 30;
 
 /** Um nó de texto de volta, para diretivas de texto que não são marcações. */
 function comoTexto(no) {

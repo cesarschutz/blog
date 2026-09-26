@@ -5,9 +5,11 @@ revisado propõe as marcações no plano (skill `post`, passo 2), seguindo este 
 junto com o resto. O visual está no `DESIGN.md` (seção Movimento, "Caderno marcado"); o código, em
 `src/plugins/marcacoes.mjs` (Markdown) e `src/scripts/caderno.ts` (movimento).
 
-A ideia é a de um caderno de estudo: quem já leu o assunto passou a caneta **só** onde vale a pena
-voltar. A marcação acontece quando o trecho entra na tela e se desfaz se a pessoa rolar de volta para
-cima dele. Se tudo está marcado, nada está.
+A ideia é a de um caderno de alguém **estudando de verdade** (pedido do Cesar depois do piloto, que
+achou 7 marcações pouco): quase todo parágrafo que ensina algo tem a sua caneta, sempre no pedaço que
+vale reler. A marcação acontece quando o trecho entra na tela e **fica**: voltar a rolagem não apaga;
+a página só volta limpa ao entrar de novo ou atualizar. Se tudo está marcado, nada está: marque o
+pedaço, nunca o parágrafo inteiro.
 
 ## Os cinco tipos
 
@@ -58,16 +60,20 @@ vale). No `:::colchete`, o contêiner envolve um parágrafo inteiro (o colchete 
 
 ## Limites
 
-- **No máximo umas 8 marcações por artigo** (o build recusa mais de 8; `:::termos` e `:::colchete`
-  contam uma cada). Post curto: 3 a 5.
+- **Densidade de estudo:** em torno de **uma marcação por parágrafo que ensina algo** (conceito,
+  regra, armadilha, consequência). Parágrafo de transição, de exemplo ("Saída:") ou de contexto fica
+  sem. Referência: o post do Jackson, longo, tem 24; um post curto fica em 8 a 12. O build recusa
+  mais de 30 (`:::termos` e `:::colchete` contam uma cada).
 - **Nunca duas no mesmo parágrafo** (o build recusa).
 - No máximo **um colchete** e **um `:::termos`** por seção.
-- Nada em títulos nem em código.
-- Marcações longe umas das outras: se duas aparecem na mesma tela, provavelmente uma sobra.
+- Nada em títulos nem em código sozinho (código dentro de um trecho marcado pode).
+- Varie os tipos: a maioria é marca-texto; sublinhado para a palavra que vira o sentido; círculo e
+  colchete são raros.
 
 ## Exemplos
 
-**Aplicado: Jackson (`jackson-filtros-mascarando-cartao`), o piloto (25/09/2026)**, 7 marcações:
+**Aplicado: Jackson (`jackson-filtros-mascarando-cartao`), o piloto (25/09/2026)**, com 24 marcações
+(15 marca-textos, 6 sublinhados, 1 círculo, 2 colchetes). Algumas delas:
 
 - `:marca[a mesma classe pode ser serializada com filtros diferentes, dependendo do mapper]`: a ideia
   da seção 1, que o resto do post usa.

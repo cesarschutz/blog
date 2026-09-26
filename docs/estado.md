@@ -129,7 +129,7 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
   pedido de animar o resto do site, o Cesar viu os lotes e pediu para desfazer tudo menos três coisas:
   a marca "cs" que abre como livro (só CSS), o desenho que se desenha só no destaque da home e o
   caderno marcado (diretivas `:marca`, `:sublinhado`, `:circulo`, `:::termos`, `:::colchete`, com
-  `remark-directive`). Marcações aplicadas só no post do Jackson; os outros recebem quando forem
+  `remark-directive`). Marcações aplicadas só no post do Jackson (24, densidade de estudo; ficam depois de marcadas); os outros recebem quando forem
   revisados (guia em `docs/marcacoes.md`, plano da skill `post`, coluna "Marcações" na revisão).
 
 ## Próximos passos
