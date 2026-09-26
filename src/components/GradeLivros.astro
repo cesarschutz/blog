@@ -3,8 +3,8 @@
  * Grade de livros (D31): as páginas de categorias e de séries mostram os livros lado a lado, grandes,
  * abertos em três quartos, como o livro do topo da página de cada um. Cada cartão é uma folha com o
  * livro num painel tingido pela cor dele, o nome, o subtítulo e a contagem. Ao passar o mouse, o
- * cartão sobe e a capa acompanha o mouse e entreabre (D40, src/scripts/capa-viva.ts). Ao clicar, o livro voa até o topo da página
- * dele (transição de página, D29).
+ * cartão sobe e o livro gira um pouco para o leitor (`data-livro-gira`, livro.css; o efeito de antes
+ * da D40, de volta na D46). Ao clicar, o livro voa até o topo da página dele (transição de página, D29).
  */
 import LivroEmPe from "./LivroEmPe.astro";
 import type { Livro } from "../lib/estante";
@@ -24,7 +24,7 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.vo
   {
     livros.map((l) => (
       <li>
-        <a class="cartao-livro folha" href={l.href} data-capa-viva>
+        <a class="cartao-livro folha" href={l.href} data-livro-gira>
           <span class="palco painel" style={`--cor:${l.cores.cor}`}>
             <LivroEmPe livro={l} altura={270} transicao="ao-clicar" />
           </span>
@@ -42,11 +42,6 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.vo
   }
 </ul>
 
-<script>
-  import { capasVivas } from "../scripts/capa-viva";
-
-  capasVivas();
-</script>
 
 <style>
   .grade-livros {

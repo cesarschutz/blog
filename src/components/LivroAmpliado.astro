@@ -52,7 +52,7 @@ import "../styles/visor.css";
     }
 
     // Arrastar com embalo (Draggable + InertiaPlugin): o livro continua girando depois de soltar e
-    // volta sozinho a 18° com um balanço. O Draggable mexe num elemento de mentira (o proxy).
+    // volta sozinho ao giro de sempre (GIRO) com um balanço. O Draggable mexe num elemento de mentira (o proxy).
     let arrasto: { kill(): void } | null = null;
     let gsapNoAr: Awaited<ReturnType<typeof carregarArrastar>>["gsap"] | null = null;
     async function ligarArrasto() {
@@ -128,7 +128,7 @@ import "../styles/visor.css";
       ir.href = destino || "#";
 
       dialogo!.showModal();
-      // Abre quase de frente, como o livro de origem (D39); arrastar gira o livro, com embalo.
+      // Abre de lado, como o livro de origem (GIRO, D46); arrastar gira o livro, com embalo.
       ligarArrasto();
     }
 

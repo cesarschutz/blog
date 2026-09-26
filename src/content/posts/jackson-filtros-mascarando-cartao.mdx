@@ -7,8 +7,7 @@ category: Desenvolvimento de Software
 draft: false
 ---
 
-import LousaPassos from "../../components/LousaPassos.astro";
-import Passo from "../../components/Passo.astro";
+import LousaTempo from "../../components/LousaTempo.astro";
 
 Logar o payload de uma requisição ou de um evento é uma das formas mais práticas de investigar problemas. Num sistema de cartões, o risco é óbvio: :marca[o JSON que vai pro log carrega número do cartão, CVV, CPF]. Ao mesmo tempo, a resposta da API precisa continuar trazendo esses dados completos.
 
@@ -138,12 +137,23 @@ public class MascaraCartaoFilter extends SimpleBeanPropertyFilter {
 }
 ```
 
-<LousaPassos desenho="jackson-filtros-mascarando-cartao/passos" rotulo="Diagrama: um Cartao com titular, numero e cvv passa pelo MascaraCartaoFilter, uma propriedade por vez. O cvv é omitido, o numero sai mascarado como 550209******7890 e o titular segue o fluxo normal para o JSON do log.">
-  <Passo>O `writer` representa a propriedade que está sendo escrita, e `writer.getName()` é o nome dela no JSON. A partir daí, o filtro segue um de três caminhos.</Passo>
-  <Passo>Para **remover**, chama `serializeAsOmittedProperty`, que é o mesmo que os filtros prontos fazem. Em JSON, isso simplesmente não escreve nada.</Passo>
-  <Passo>Para **mascarar**, lê o valor original e, em vez de delegar ao `writer`, escreve ele mesmo o par nome/valor com `g.writeStringProperty(...)`.</Passo>
-  <Passo>Para **qualquer outro campo**, chama `writer.serializeAsProperty(...)`, o fluxo normal.</Passo>
-</LousaPassos>
+Cada propriedade do `Cartao` passa pelo filtro, uma de cada vez. Aperte o play ou arraste sobre a lousa:
+
+<LousaTempo
+  desenho="jackson-filtros-mascarando-cartao/passos"
+  rotulo="Diagrama: um Cartao com titular, numero e cvv passa pelo MascaraCartaoFilter, uma propriedade por vez. O cvv é omitido, o numero sai mascarado como 550209******7890 e o titular segue o fluxo normal para o JSON do log."
+  estados={[
+    { de: 0, texto: "O writer é a propriedade da vez" },
+    { de: 0.263, texto: "cvv: removido" },
+    { de: 0.526, texto: "numero: mascarado" },
+    { de: 0.789, texto: "titular: o fluxo normal" },
+  ]}
+/>
+
+1. O `writer` representa a propriedade que está sendo escrita, e `writer.getName()` é o nome dela no JSON. A partir daí, o filtro segue um de três caminhos.
+2. Para **remover**, chama `serializeAsOmittedProperty`, que é o mesmo que os filtros prontos fazem. Em JSON, isso simplesmente não escreve nada.
+3. Para **mascarar**, lê o valor original e, em vez de delegar ao `writer`, escreve ele mesmo o par nome/valor com `g.writeStringProperty(...)`.
+4. Para **qualquer outro campo**, chama `writer.serializeAsProperty(...)`, o fluxo normal.
 
 O método `valorDe` trata dois tipos de `writer`: `BeanPropertyWriter` para campos de objetos e records, e `MapProperty` para entradas de um `Map` (o filtro também é aplicado a mapas, como aparece na seção 4). A função `mascarar` remove espaços e hífens, mantém :marca[os 6 primeiros e os 4 últimos dígitos] e, se o valor for curto demais para ser um número de cartão, mascara tudo.
 

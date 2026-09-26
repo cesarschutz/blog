@@ -7,11 +7,14 @@
  * também do nome, nas duas variantes. O script (src/scripts/artigo.ts) pinta o trilho até a
  * seção atual, marca as já lidas e a atual (em azul-tinta), abre as subseções da atual e mantém a
  * atual à vista quando a lista rola. Embaixo, a barra de quanto já foi lido, com "NN% lido" e o tempo
- * que falta; só com JS. Embaixo, o "Do livro" compacto (D39).
+ * que falta; só com JS. Embaixo, o livro do artigo, grande e de lado, como o da gaveta da home (D46):
+ * gira um pouco ao passar o mouse, a lupa abre o livro ampliado e o link leva à página dele. Sem
+ * seções (menos de 3), a coluna tem só o livro.
  *
  * "recolhivel": no início do texto, nas telas menores.
  */
-import Capa from "./Capa.astro";
+import LivroAmpliado from "./LivroAmpliado.astro";
+import LivroEmPe from "./LivroEmPe.astro";
 import { ICONES } from "../lib/icones";
 import { coresDoLivroCss, type Livro } from "../lib/estante";
 import type { SecaoDoSumario } from "../lib/posts";
@@ -23,7 +26,7 @@ interface Props {
   variante: "lateral" | "recolhivel";
   /** Tempo de leitura do artigo, para o "faltam N min". */
   minutos?: number;
-  /** O livro do artigo: o "Do livro" compacto embaixo do sumário lateral (D39). */
+  /** O livro do artigo, grande, embaixo do sumário lateral (D46). */
   livro?: Livro;
 }
 
@@ -35,6 +38,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
 {
   variante === "lateral" ? (
     <aside class="lateral" data-pagefind-ignore style={livro ? coresDoLivroCss(livro) : undefined}>
+      {secoes.length > 0 && (
       <div class="folha folha-sumario">
         <nav aria-label="Neste artigo" data-trilho>
           <p class="titulo">Neste artigo</p>
@@ -68,21 +72,22 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
           </p>
         </div>
       </div>
+      )}
       {
         livro && (
-          <a class="folha do-livro" href={livro.href}>
-            <span class="capa-mini" style={coresDoLivroCss(livro)}>
-              <Capa livro={livro} desenho="adiado" />
-            </span>
-            <span class="sobre">
+          <div class="folha do-livro">
+            <div class="palco-livro painel" style={`--cor:${livro.cores.cor}`} data-livro-gira>
+              <LivroEmPe livro={livro} altura={204} ampliavel />
+            </div>
+            <a class="sobre" href={livro.href}>
               <span class="rotulo">{livro.serie ? "Da série" : "Do livro"}</span>
               <span class="nome-livro">{livro.nome}</span>
               <span class="ver">
                 {livro.serie ? "Ver a série" : "Ver o livro"}
                 <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
               </span>
-            </span>
-          </a>
+            </a>
+          </div>
         )
       }
     </aside>
@@ -101,6 +106,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     </details>
   )
 }
+{variante === "lateral" && livro && <LivroAmpliado />}
 
 <style>
   /*
@@ -275,30 +281,44 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     color: var(--ink-3);
   }
 
-  /* ---------- "Do livro" compacto (D39) ---------- */
-
+  /*
+   * ---------- o livro do artigo (D46) ----------
+   * Grande e de lado (38°, como na gaveta da home), num painel tingido pela cor dele; embaixo, o nome e
+   * o link. A lupa (LivroEmPe) abre o livro ampliado.
+   */
   .do-livro {
-    display: flex;
     flex: none;
-    gap: 14px;
-    align-items: center;
-    padding: 14px 16px;
-    color: var(--ink);
-    text-decoration: none;
-    transition: box-shadow 0.2s;
+    overflow: hidden;
+    padding: 10px;
   }
 
-  .capa-mini {
-    flex: none;
-    width: 46px;
+  .palco-livro {
+    display: grid;
+    place-items: center;
+    padding: 22px 10px 26px;
+  }
+
+  /* Tela baixa: o livro encolhe para o sumário continuar à vista; bem baixa, fica só o sumário. */
+  @media (max-height: 820px) {
+    .palco-livro {
+      zoom: 0.8;
+    }
+  }
+
+  @media (max-height: 660px) {
+    .do-livro {
+      display: none;
+    }
   }
 
   .sobre {
     display: flex;
     flex-direction: column;
     gap: 2px;
-    min-width: 0;
+    padding: 12px 6px 4px;
+    color: var(--ink);
     font-family: var(--font-ui);
+    text-decoration: none;
   }
 
   .rotulo {
@@ -309,7 +329,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
   .nome-livro {
     font-family: var(--font-titulo);
     font-weight: 700;
-    font-size: 15px;
+    font-size: 17px;
     line-height: 1.25;
   }
 
@@ -317,7 +337,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    margin-top: 2px;
+    margin-top: 4px;
     font-size: 13.5px;
     color: var(--acento);
   }
@@ -330,16 +350,25 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     stroke-width: 1.8;
     stroke-linecap: round;
     stroke-linejoin: round;
+    transition: translate 0.2s;
   }
 
-  @media (hover: hover) {
-    .do-livro:hover {
-      box-shadow: var(--sombra-folha-alta);
-    }
+  .sobre:hover .nome-livro {
+    color: var(--acento);
+  }
 
-    .do-livro:hover .ver {
-      text-decoration: underline;
-      text-underline-offset: 0.18em;
+  .sobre:hover .ver {
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+
+  .sobre:hover .ver svg {
+    translate: 3px 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ver svg {
+      transition: none;
     }
   }
 

@@ -2,7 +2,7 @@
 /**
  * Barra de progresso da leitura (briefing §5.3, D45): um traço de 2px sobre o fio embaixo do cabeçalho,
  * na cor da categoria (no escuro, clareada como os chips), escrito por uma caneta pequena que vai na
- * ponta dele. Quando o cabeçalho se esconde (celular, D38), o traço sobe junto para o alto da tela.
+ * ponta dele. O cabeçalho fica sempre à vista, também no celular (D46).
  * Quem move é src/scripts/artigo.ts (a variável --lido, de 0 a 1, e a classe "escrevendo", que mostra
  * a caneta depois do início); sem JS, fica vazia.
  */
@@ -25,15 +25,14 @@ const { cor } = Astro.props;
 <style>
   .barra-leitura {
     position: fixed;
-    /* Sobre o fio do cabeçalho; com ele escondido, no alto da tela. */
-    top: max(env(safe-area-inset-top, 0px), calc(env(safe-area-inset-top, 0px) + var(--altura-topo) - 2px));
+    /* Sobre o fio do cabeçalho. */
+    top: calc(env(safe-area-inset-top, 0px) + var(--altura-topo) - 2px);
     left: 0;
     right: 0;
     z-index: 40;
     height: 2px;
     container-type: inline-size;
     pointer-events: none;
-    transition: top 0.25s cubic-bezier(0.2, 0.75, 0.2, 1);
   }
 
   .traco {
@@ -82,7 +81,6 @@ const { cor } = Astro.props;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .barra-leitura,
     .caneta {
       transition: none;
     }

@@ -45,7 +45,7 @@ Cesar acompanhar. Ele revisa tudo no fim.
   sem prender a tela.
 - JavaScript só onde há interação (estante, gaveta, busca, lousas, apresentação, lista/cards, menu de
   tema, filtro por livro, livro ampliado, o nome de transição do livro
-  do painel e o cabeçalho que se esconde no celular, D29, D33, D38; o caderno marcado e o desenho do
+  do painel e o menu do celular, D29, D33, D46; o caderno marcado e o desenho do
   destaque da home, D41). Artigo sem esses componentes funciona sem JS (as marcações aparecem prontas).
 - Fontes servidas pelo próprio site (`@fontsource`). Nunca Google Fonts nem CDN em produção.
 - Para verificar o blog no navegador (visual, console, performance), use sempre o MCP

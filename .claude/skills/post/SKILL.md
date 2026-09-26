@@ -115,8 +115,8 @@ Siga a skill `desenho` (ilustração) e a skill `lousa` (diagramas), no estilo d
 
 - **Só onde há fluxo** (sequência, passo a passo, antes e depois, linha do tempo). Post sem fluxo não
   tem animação.
-- **Primeiro, os componentes da lousa** (`LousaPassos`, `LousaTempo`, `LousaLoop`, `FraseDestaque`):
-  eles já avançam com a rolagem ou têm play/pause, respeitam `prefers-reduced-motion` e funcionam sem
+- **Primeiro, os componentes da lousa** (`LousaTempo`, `LousaLoop`, `FraseDestaque`; a lousa de
+  passos com a rolagem saiu na D46 e não volta): eles têm play/pause, respeitam `prefers-reduced-motion` e funcionam sem
   JS. A frase em destaque é rara.
 - **GSAP** só para uma animação que os componentes não cobrem: em SVG, avançando com a rolagem
   (ScrollTrigger) ou com play/pause, **importado só no post que a usa** (script do componente ou do

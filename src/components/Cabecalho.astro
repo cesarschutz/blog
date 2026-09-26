@@ -3,11 +3,10 @@
  * Cabeçalho (briefing §5.1, D26, D31, D33): a marca à esquerda; à direita Artigos, Categorias,
  * Séries e Tags, a busca como campo (ícone, "Buscar" e ⌘K), o GitHub e o LinkedIn (só os ícones, como
  * no blog atual) e o botão de tema (D39). Fica fixo no alto enquanto a página rola
- * (sticky), com fundo translúcido e um fio embaixo que aparece depois de rolar. No celular, marca,
- * busca (só o ícone) e aparência na primeira linha; o menu na segunda. A altura dele fica em
+ * (sticky), com fundo translúcido e um fio embaixo que aparece depois de rolar. A altura dele fica em
  * --altura-cabecalho e o quanto as outras peças fixas e as âncoras descontam, em --altura-topo
- * (base.css). No celular (até 860px), ele some ao rolar para baixo e volta ao rolar para cima (D38):
- * sobe por translate, sem mudar a altura da página, e --altura-topo vai a 0 enquanto isso.
+ * (base.css). No celular (até 860px, D46), fica sempre à vista, numa linha só: a marca, a busca (só o
+ * ícone), o tema e o botão do menu, que abre as seções numa folha que desce do cabeçalho.
  */
 import Marca from "./Marca.astro";
 import SeletorTema from "./SeletorTema.astro";
@@ -20,16 +19,35 @@ interface Props {
 }
 
 const { atual } = Astro.props;
+// As seções; a nota só aparece no menu do celular (D46).
+const ITENS = [
+  { chave: "artigos", nome: "Artigos", nota: "Todos, do mais novo ao mais antigo", href: url("/archive/") },
+  { chave: "categorias", nome: "Categorias", nota: "Os livros da coleção", href: url("/categories/") },
+  { chave: "series", nome: "Séries", nota: "Para ler em ordem", href: url("/series/") },
+  { chave: "tags", nome: "Tags", nota: "Por assunto", href: url("/tags/") },
+] as const;
 ---
 
 <div class="topo-fixo">
 <header class="cabecalho wrap">
   <Marca />
-  <nav class="menu" aria-label="Principal">
-    <a href={url("/archive/")} aria-current={atual === "artigos" ? "page" : undefined}>Artigos</a>
-    <a href={url("/categories/")} aria-current={atual === "categorias" ? "page" : undefined}>Categorias</a>
-    <a href={url("/series/")} aria-current={atual === "series" ? "page" : undefined}>Séries</a>
-    <a href={url("/tags/")} aria-current={atual === "tags" ? "page" : undefined}>Tags</a>
+  <nav class="menu" id="menu-principal" aria-label="Principal">
+    {
+      ITENS.map((item, i) => (
+        <a href={item.href} aria-current={atual === item.chave ? "page" : undefined} style={`--i:${i}`}>
+          <span class="nome">{item.nome}</span>
+          <span class="nota">{item.nota}</span>
+        </a>
+      ))
+    }
+    <div class="menu-perfis" style={`--i:${ITENS.length}`}>
+      <a href={AUTOR.github} rel="me">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.github} />GitHub
+      </a>
+      <a href={AUTOR.linkedin} rel="me">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.linkedin} />LinkedIn
+      </a>
+    </div>
   </nav>
   <button type="button" class="campo-busca" data-busca-abrir aria-label="Buscar" aria-keyshortcuts="Meta+K Control+K">
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.busca} />
@@ -45,31 +63,46 @@ const { atual } = Astro.props;
     </a>
   </div>
   <SeletorTema />
+  <button type="button" class="botao-menu" aria-expanded="false" aria-controls="menu-principal" aria-label="Abrir o menu" data-botao-menu>
+    <span class="tracos" aria-hidden="true"><span></span><span></span></span>
+  </button>
 </header>
 </div>
+<div class="veu-menu" data-veu-menu aria-hidden="true"></div>
 
 <script>
-  // No celular, o cabeçalho some ao rolar para baixo e volta ao rolar para cima (D38). Volta também
-  // perto do topo, com o foco dentro dele (teclado) e com algum menu aberto.
+  // O menu do celular (D46): o botão abre as seções numa folha que desce do cabeçalho, com o véu
+  // sobre a página. Fecha no botão, com Esc, num toque fora, ao escolher um item e se a tela alargar.
   {
     const raiz = document.documentElement;
+    const botao = document.querySelector<HTMLButtonElement>("[data-botao-menu]")!;
+    const menu = document.getElementById("menu-principal")!;
+    const veu = document.querySelector<HTMLElement>("[data-veu-menu]")!;
     const celular = matchMedia("(max-width: 860px)");
-    const topo = document.querySelector<HTMLElement>(".topo-fixo")!;
-    let ultimo = scrollY;
-    let pedido = 0;
-    const mostrar = () => delete raiz.dataset.topoOculto;
-    const conferir = () => {
-      pedido = 0;
-      const y = scrollY;
-      const aberto = topo.contains(document.activeElement) || topo.querySelector("[aria-expanded='true']");
-      if (!celular.matches || y < 120 || aberto) mostrar();
-      else if (y > ultimo + 8) raiz.dataset.topoOculto = "";
-      else if (y < ultimo - 8) mostrar();
-      if (Math.abs(y - ultimo) > 8 || y < 120) ultimo = y;
+    const aberto = () => botao.getAttribute("aria-expanded") === "true";
+    // Aberto pelo teclado, o foco vai para o primeiro item; pelo toque, fica no botão.
+    const alternar = (abrir: boolean, devolverFoco = false, focarItem = false) => {
+      botao.setAttribute("aria-expanded", String(abrir));
+      botao.setAttribute("aria-label", abrir ? "Fechar o menu" : "Abrir o menu");
+      if (abrir) raiz.dataset.menuAberto = "";
+      else delete raiz.dataset.menuAberto;
+      if (abrir && focarItem) menu.querySelector<HTMLElement>("a")?.focus({ preventScroll: true });
+      else if (!abrir && devolverFoco) botao.focus({ preventScroll: true });
     };
-    addEventListener("scroll", () => (pedido ||= requestAnimationFrame(conferir)), { passive: true });
-    topo.addEventListener("focusin", mostrar);
-    celular.addEventListener("change", mostrar);
+    botao.addEventListener("click", (e) => alternar(!aberto(), false, e.detail === 0));
+    veu.addEventListener("click", () => alternar(false));
+    menu.addEventListener("click", (e) => (e.target as HTMLElement).closest("a") && alternar(false));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && aberto()) alternar(false, true);
+    });
+    // O foco que sai do menu aberto (Tab depois do último item) fecha.
+    menu.addEventListener("focusout", (e) => {
+      const para = e.relatedTarget as Node | null;
+      if (aberto() && para && !menu.contains(para) && para !== botao) alternar(false);
+    });
+    celular.addEventListener("change", () => alternar(false));
+    // Voltar pelo histórico (bfcache) não pode trazer o menu aberto.
+    addEventListener("pageshow", () => alternar(false));
   }
 
   // Fora do macOS e do iOS, o atalho é Ctrl+K.
@@ -89,7 +122,6 @@ const { atual } = Astro.props;
     position: sticky;
     top: 0;
     z-index: 30;
-    transition: translate 0.25s cubic-bezier(0.2, 0.75, 0.2, 1);
     background: color-mix(in oklab, var(--paper) 94%, transparent);
     -webkit-backdrop-filter: saturate(1.4) blur(12px);
     backdrop-filter: saturate(1.4) blur(12px);
@@ -102,12 +134,6 @@ const { atual } = Astro.props;
       animation: fio-do-topo linear both;
       animation-timeline: scroll(root);
       animation-range: 0 24px;
-    }
-  }
-
-  @media (max-width: 860px) {
-    :global(:root[data-topo-oculto]) .topo-fixo {
-      translate: 0 -100%;
     }
   }
 
@@ -147,6 +173,13 @@ const { atual } = Astro.props;
     padding: 6px 0;
     color: var(--ink-2);
     text-decoration: none;
+  }
+
+  /* A nota de cada seção e os perfis só existem no menu do celular. */
+  .menu .nota,
+  .menu-perfis,
+  .botao-menu {
+    display: none;
   }
 
   .menu a:hover {
@@ -250,46 +283,227 @@ const { atual } = Astro.props;
     }
   }
 
-  /* Até 860px, duas linhas: marca, busca, perfis e aparência na primeira; o menu na segunda (o
-     pseudo-elemento força a quebra). */
+  /*
+   * Até 860px (D46): uma linha só, sempre à vista. A marca, a busca, o tema e o botão do menu; as
+   * seções vão para uma folha que desce do cabeçalho (recorte de cima para baixo, com os itens
+   * chegando em sequência) e um véu escurece a página por baixo.
+   */
   @media (max-width: 860px) {
     .cabecalho {
-      gap: 6px 12px;
-      padding-top: 8px;
-      padding-bottom: 6px;
+      flex-wrap: nowrap;
+      gap: 8px;
+      padding-top: 10px;
+      padding-bottom: 10px;
     }
 
-    .cabecalho::after {
-      content: "";
-      order: 2;
-      flex-basis: 100%;
-      height: 0;
+    .perfis {
+      display: none;
     }
 
-    .cabecalho > :global(.marca) {
-      order: 1;
+    .botao-menu {
+      display: grid;
+      flex: none;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      border: 1px solid var(--rule);
+      border-radius: 50%;
+      background: var(--paper-hi);
+      color: var(--ink);
+      cursor: pointer;
     }
 
-    .campo-busca,
-    .perfis,
-    .cabecalho > :global(.botao-tema) {
-      order: 1;
+    .botao-menu:hover {
+      border-color: var(--ink-3);
+    }
+
+    /* Dois traços que viram um X. */
+    .tracos {
+      position: relative;
+      width: 16px;
+      height: 10px;
+    }
+
+    .tracos span {
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 1.6px;
+      border-radius: 1px;
+      background: currentColor;
+      transition:
+        translate 0.3s cubic-bezier(0.2, 0.75, 0.2, 1),
+        rotate 0.3s cubic-bezier(0.2, 0.75, 0.2, 1);
+    }
+
+    .tracos span:first-child {
+      top: 0;
+    }
+
+    .tracos span:last-child {
+      bottom: 0;
+    }
+
+    [aria-expanded="true"] .tracos span:first-child {
+      translate: 0 4.2px;
+      rotate: 45deg;
+    }
+
+    [aria-expanded="true"] .tracos span:last-child {
+      translate: 0 -4.2px;
+      rotate: -45deg;
     }
 
     .menu {
-      order: 3;
-      gap: 4px 18px;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      left: 0;
+      display: block;
+      padding: 4px var(--pad) 20px;
+      border-bottom: 1px solid var(--rule);
+      background: var(--paper-hi);
+      box-shadow: 0 28px 40px -30px rgb(0 0 0 / 0.45);
+      clip-path: inset(0 0 100% 0);
+      visibility: hidden;
+      transition:
+        clip-path 0.34s cubic-bezier(0.6, 0, 0.8, 0.4),
+        visibility 0s linear 0.34s;
+    }
+
+    :global(:root[data-menu-aberto]) .menu {
+      clip-path: inset(0 0 -60px 0);
+      visibility: visible;
+      transition: clip-path 0.46s cubic-bezier(0.2, 0.75, 0.2, 1);
+    }
+
+    .menu a {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 15px 2px 14px;
+      border-bottom: 1px solid var(--rule);
+      color: var(--ink);
+    }
+
+    .menu a,
+    .menu-perfis {
+      opacity: 0;
+      translate: 0 -8px;
+      transition:
+        opacity 0.2s,
+        translate 0.2s;
+    }
+
+    :global(:root[data-menu-aberto]) .menu :is(a, .menu-perfis) {
+      opacity: 1;
+      translate: 0 0;
+      transition:
+        opacity 0.4s calc(0.08s + var(--i) * 0.05s),
+        translate 0.5s cubic-bezier(0.2, 0.75, 0.2, 1) calc(0.08s + var(--i) * 0.05s);
+    }
+
+    .menu .nome {
+      font-family: var(--font-titulo);
+      font-weight: 700;
+      font-size: 24px;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+    }
+
+    .menu .nota {
+      display: block;
+      font-family: var(--font-ui);
+      font-size: 13.5px;
+      color: var(--ink-2);
+      text-align: right;
+    }
+
+    /* A seção atual: o nome em azul-tinta, com um traço à esquerda. */
+    .menu [aria-current="page"] {
+      text-decoration: none;
+    }
+
+    .menu [aria-current="page"] .nome {
+      color: var(--acento);
+    }
+
+    .menu [aria-current="page"] .nome::before {
+      content: "";
+      display: inline-block;
+      width: 14px;
+      height: 2px;
+      margin-right: 10px;
+      vertical-align: 0.32em;
+      background: var(--acento);
+    }
+
+    .menu-perfis {
+      display: flex;
+      gap: 22px;
+      padding-top: 16px;
+    }
+
+    .menu-perfis a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+      border: 0;
+      font-family: var(--font-ui);
+      font-size: 14.5px;
+      color: var(--ink-2);
+    }
+
+    .menu-perfis svg {
+      width: 17px;
+      height: 17px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* O véu sobre a página, abaixo do cabeçalho. */
+    .veu-menu {
+      position: fixed;
+      inset: 0;
+      z-index: 29;
+      background: rgb(20 22 24 / 0.32);
+      opacity: 0;
+      visibility: hidden;
+      transition:
+        opacity 0.3s,
+        visibility 0s linear 0.3s;
+    }
+
+    :global(:root[data-menu-aberto]) .veu-menu {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.35s;
     }
   }
 
-  /* Telefones estreitos: o GitHub e o LinkedIn ficam só no rodapé, para a primeira linha caber. */
-  @media (max-width: 520px) {
-    .perfis {
+  @media (min-width: 860.02px) {
+    .veu-menu {
       display: none;
     }
   }
 
-  /* Telefones de 320px: a marca encolhe um pouco para a primeira linha não quebrar. */
+  @media (prefers-reduced-motion: reduce) {
+    .menu,
+    .menu a,
+    .menu-perfis,
+    .veu-menu,
+    .tracos span {
+      transition: none !important;
+    }
+  }
+
+  /* Telefones de 320px: a marca encolhe um pouco para a linha caber. */
   @media (max-width: 400px) {
     .cabecalho > :global(.marca) {
       font-size: 18px;

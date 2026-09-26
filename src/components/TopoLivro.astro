@@ -33,7 +33,7 @@ const tags = [...contagem]
 
 <header class="topo-livro folha" style={`--cor:${livro.cores.cor}`}>
   <MarcaDagua livro={livro} />
-  <div class="palco painel" data-capa-viva>
+  <div class="palco painel" data-livro-gira>
     <LivroEmPe livro={livro} ampliavel />
   </div>
   <div class="texto">
@@ -60,11 +60,6 @@ const tags = [...contagem]
 
 <LivroAmpliado />
 
-<script>
-  import { capasVivas } from "../scripts/capa-viva";
-
-  capasVivas();
-</script>
 
 <style>
   .topo-livro {

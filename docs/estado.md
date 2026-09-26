@@ -146,11 +146,16 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
 - **Caneta da leitura (D45, 26/09/2026), só local, sem commit:** o progresso do post passou para o fio
   do cabeçalho, escrito por uma caneta. Conferido nos dois temas e no celular (cabeçalho escondido).
 
+- **Parte 1 da lista de 26/09/2026 (D46), publicada:** controle em `docs/controle-parte1.md`. Livro
+  3D a 38° em todo lugar, sem a capa que segue o mouse, pilha lateral só do tipo da página (o livro
+  aberto fora dela, puxar e os de cima caírem, ordem na sessão), livros deitados mais finos,
+  cabeçalho do celular sempre à vista com botão de menu, sem a lousa de passos (cobrança e Jackson
+  agora com a linha do tempo de arrastar), artigo com a coluna da esquerda desde o topo, texto na
+  largura da folha e o livro grande embaixo do sumário.
+
 ## Próximos passos
 
-0. Publicar a D42 a D45 (tema em círculo, Lista / Cards, gaveta com o livro que sai da estante,
-   ajustes da home e caneta da leitura): commitadas pelo Cesar em 26/09/2026, na `main`, sem push.
-   Pendente de resposta: as cores da capa na gaveta (a referência dele tinha a cor do livro em cima;
+0. A D42 a D45 foram publicadas junto com a D46 (26/09/2026). Pendente de resposta: as cores da capa na gaveta (a referência dele tinha a cor do livro em cima;
    hoje, pela D39, o papel fica em cima) e se o título em duas partes vale também na gaveta e no
    "anterior / próximo".
 0.0. Publicar a D39, a D40 e a D41: o Cesar dá o push quando revisar. Os ajustes pedidos depois da D40 já

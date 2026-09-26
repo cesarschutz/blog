@@ -32,7 +32,7 @@ const DESCRICAO =
   atual="series"
   jsonLd={paginaDeColecao("Atualizações do Java", DESCRICAO, Astro.url.pathname, Astro.site)}
 >
-  <ComPainel atual={livro.id}>
+  <ComPainel tipo="series" atual={livro.id}>
   <div class="java" style={`--cor:${java.destaque};--cor-texto:${java.destaqueTexto ?? java.destaque}`}>
     <TopoLivro
       livro={livro}

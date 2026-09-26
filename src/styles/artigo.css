@@ -4,14 +4,27 @@
  * §5.3; medidas dos protótipos aprovados.
  */
 
-/* ---------- grade: folha do corpo e, em telas ≥ 1300px, o sumário à esquerda (D26) ---------- */
+/*
+ * ---------- grade (D26, D46) ----------
+ * À direita, a coluna principal: o topo (desenho e título) e a folha do corpo, da mesma largura, com
+ * o texto começando na mesma margem (--margem-folha). Em telas ≥ 1300px, à esquerda, a coluna fixa
+ * desde o topo: o "Neste artigo" e o livro do artigo (Sumario.astro).
+ */
+.artigo {
+  --margem-folha: clamp(22px, 3.2vw, 46px);
+}
 
 .artigo-grade {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 28px;
   align-items: start;
-  margin-top: 28px;
+}
+
+.artigo-principal {
+  display: grid;
+  gap: 28px;
+  min-width: 0;
 }
 
 /*
@@ -25,7 +38,7 @@
   isolation: isolate;
   container-type: inline-size;
   min-width: 0;
-  padding: 36px 30px 44px;
+  padding: 40px var(--margem-folha) 44px;
 }
 
 .artigo-folha > .marca-dagua {
@@ -39,16 +52,13 @@
 }
 
 /*
- * Blocos largos (D39): código, tabelas, diagramas, lousas e a apresentação usam a largura toda da
- * folha (até 1000px), centrados na coluna do texto. Com notas na margem, ficam na coluna.
+ * O texto ocupa a folha, com a margem pequena dela, na mesma largura do código, das tabelas, das lousas
+ * e da apresentação (D46; antes, 720px no meio, com os blocos largos saindo da coluna, D39).
  */
-.artigo-corpo:not(:has(.nota-lateral))
-  .prose
-  > :is(.expressive-code, .tabela, .lousa-tempo, .lousa-loop, .apresentacao, p:has(> img:only-child)) {
-  --bloco: min(100cqw, 1000px);
-  width: var(--bloco);
+.prose > :is(.expressive-code, .tabela, .lousa-tempo, .lousa-loop, .apresentacao, p:has(> img:only-child)) {
+  width: 100%;
   max-width: none;
-  margin-inline: calc((100% - var(--bloco)) / 2);
+  margin-inline: 0;
 }
 
 .prose > p:has(> img:only-child) > img {
@@ -61,37 +71,40 @@
 }
 
 .artigo-corpo {
-  max-width: var(--coluna);
   min-width: 0;
-  margin-inline: auto;
 }
 
-/* O sumário lateral (Sumario.astro), numa folha fixa, fica na coluna da esquerda. */
+/* No artigo, o texto, o rodapé e o "anterior / próximo" vão até a margem da folha (D46). */
+.artigo .artigo-corpo :is(.prose, .rodape-artigo, .vizinhos) {
+  max-width: none;
+}
+
+/* A coluna da esquerda (Sumario.astro), fixa desde o topo. */
 @media (min-width: 1300px) {
-  .artigo-grade.com-sumario {
-    grid-template-columns: 240px minmax(0, 1fr);
+  .artigo-grade.com-lateral {
+    grid-template-columns: 250px minmax(0, 1fr);
   }
 
-  /* Com o sumário lateral, o "Do livro" fica embaixo dele e sai do fim do artigo (D39). */
-  .artigo-grade.com-sumario .fim-do-artigo {
+  /* Com a coluna da esquerda, o livro fica embaixo do sumário e sai do fim do artigo (D39, D46). */
+  .artigo-grade.com-lateral .fim-do-artigo {
     display: none;
   }
 }
 
 /*
- * Com notas na margem, o texto encosta à esquerda e as notas ocupam a direita da folha. Pela largura
- * da própria folha (contêiner), não da tela: com o sumário ao lado, a folha pode não ter espaço para
- * a coluna do texto e a nota (D33).
+ * Com notas na margem, o texto deixa a direita da folha para elas. Pela largura da própria folha
+ * (contêiner), não da tela (D33).
  */
 @container (min-width: 940px) {
   .artigo-corpo:has(.nota-lateral) {
-    margin-left: 0;
+    margin-right: 208px;
   }
 }
 
 @media (max-width: 760px) {
-  .artigo-grade {
-    margin-top: 18px;
+  .artigo-grade,
+  .artigo-principal {
+    gap: 18px;
   }
 
   .artigo-folha {
@@ -112,9 +125,6 @@
     box-shadow: none;
   }
 
-  .artigo-corpo:not(:has(.nota-lateral)) .prose > * {
-    --bloco: 100%;
-  }
 }
 
 /* ---------- notas laterais ---------- */

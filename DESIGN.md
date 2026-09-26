@@ -459,14 +459,15 @@ pequeno da série. Hoje isso vale para as lombadas, em pé e deitadas (`corTexto
 ## Layout
 
 Conteúdo de até 1320px, com margem lateral de 16 a 32px (`clamp`). O cabeçalho é fixo, e toda
-âncora ou peça `sticky` desconta `--altura-topo` (60px; 104px no celular). No artigo, a coluna de
-texto tem até 720px (uns 72 caracteres), o cartão do corpo tem 30px de respiro dos lados, e código,
-tabelas, diagramas, lousas e a apresentação usam a largura toda do cartão, até 1000px (D39). No
+âncora ou peça `sticky` desconta `--altura-topo` (60px, também no celular, D46). No artigo, o texto
+ocupa a folha do corpo, com margem pequena (`--margem-folha`, de 22 a 46px), na mesma largura do
+código, das tabelas, dos diagramas, das lousas e da apresentação (D46); o topo (ilustração e título)
+tem a mesma largura e a mesma margem. No
 celular, o corpo do artigo não fica num cartão: o texto usa a largura da página, com a margem normal.
-A partir de 1300px, o sumário fica à esquerda numa folha própria e fixa,
+A partir de 1300px, a coluna da esquerda começa no topo da página: o sumário numa folha própria e fixa,
 com a barra "NN% lido" embaixo; o fio das seções lidas, o ponto atual e a barra usam **a cor do
 livro do post** (o destaque do livro; no escuro, com 42% de branco), e embaixo da folha do sumário
-fica o **"Do livro" compacto** (capa pequena, nome e "Ver o livro", D39). A home é paginada de 12 em 12. A estante tem 6px entre os livros.
+fica **o livro do artigo, grande e de lado** (D46), num painel tingido, com a lupa, o nome e "Ver o livro". A home é paginada de 12 em 12. A estante tem 6px entre os livros.
 Nada pode rolar para o lado em 390px nem em 320px. O sumário nunca rola para o lado. Toda área que
 rola por dentro (sumário, código, tabelas, gaveta, busca, painel) usa a **barra fina** do site, na
 tinta do tema com 24% (40% ao passar o mouse), por `scrollbar-width`, `scrollbar-color` e
@@ -524,14 +525,15 @@ frase e desenho; medidas em `docs/capas/CAPAS.md`):
   temas.** No pé, a assinatura **BLOG.CESARSCHUTZ.COM.BR**.
 - **Lombada:** ícone no papel de cima, título na vertical e número de artigos na cor do livro, com a
   divisão à mesma altura em todos, formando uma linha contínua na estante. **É uma lombada só em
-  todo lugar** (D39): a pilha lateral usa a mesma, girada 90° e, só ali, 12% mais grossa, para o
-  título chegar a uns 11 ou 12px (D40).
+  todo lugar** (D39): a pilha lateral usa a mesma, girada 90° e **mais fina** (a espessura a 62% da
+  escala do comprimento, D46), com o título e o número em corpo próprio, de uns 10px.
 - **Livro escolhido:** o da página atual na pilha e os não escolhidos do filtro aparecem
   **escurecidos** (opacidade 0,4 e metade da saturação), nunca com contorno azul. A exceção é o livro
   que foi para a gaveta da home (D43): ele sai da estante, e o lugar dele fica **vazio**. O foco do teclado é um anel fino e discreto.
-- **Livro aberto grande** (topo da categoria e da série, livro ampliado): **quase de frente**,
-  a 72° da lombada (a capa a 18° da frente e a lombada numa faixa, `GIRO` em `lib/livro-3d.ts`).
-  Na gaveta da home, mais de lado: a 38° da frente (D43).
+- **Livro 3D em todo lugar** (gaveta, grade de categorias e séries, topo da página do livro, livro
+  do artigo e livro ampliado): **de lado, a 38° da frente**, com a lombada bem à vista (`GIRO` em
+  `lib/livro-3d.ts`, D46; era 18° fora da gaveta). A perspectiva acompanha a altura do livro
+  (4,7 vezes, a da gaveta), para o pequeno e o grande terem a mesma cara.
 - O número nas lombadas é o total de artigos, contado pelos posts (some quando é zero). O
   "VOLUME 0N" é a posição na coleção.
 
@@ -602,17 +604,16 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
     lombada bem à vista. Ao pousar, o sumário ao lado aparece subindo 8px (0,35s) e a lupa, por opacidade.
     O livro que voa é o próprio livro da gaveta, levado por transformações da lombada até o lugar
     dele. Fechar faz o caminho de volta 1,5× mais rápido, e o livro volta à estante.
-  - **Pilha lateral**: ao passar o mouse (ou com o foco), o livro sai 14px da pilha (0,35s,
-    `power3.out`) e volta com `elastic.out(1, 0.55)`. O clique leva à página do livro pela View
-    Transition nativa (a lombada da pilha vira o livro do topo). Na chegada (ou quando a pilha
-    aparece, no celular), o livro atual é puxado 46px e volta a 10px com `back.out(2)`, escurecido.
-  - **Capas com profundidade** (grade de categorias e séries, "Do livro", topo da página do livro e
-    destaque de Séries, `capa-viva.ts`): com o mouse em cima, o livro vira para 8° e acompanha o
-    cursor (até 11° em Y e 7° em X), com uma luz radial suave que anda por `transform`; a capa
-    entreabre -40°, com três camadas de página a -8,6°, -17,1° e -25,7° (a proporção dos -28°, -6°,
-    -12° e -18° do protótipo, aberta mais para as páginas aparecerem). No toque, o primeiro toque
-    entreabre e o segundo abre o link. No livro ampliado, arrastar gira com embalo (Draggable +
-    InertiaPlugin) e, ao soltar, o livro volta a 18° com `elastic.out(1, 0.6)`.
+  - **Pilha lateral** (D46): ao passar o mouse (ou com o foco), o livro sai 14px da pilha (0,35s,
+    `power3.out`) e volta com `elastic.out(1, 0.55)`. O livro aberto no topo não está na pilha. Ao
+    clicar, o livro é puxado para a direita (62% da largura da pilha, 0,34s, `power2.inOut`), o lugar
+    dele fecha (0,26s, `power2.in`: os de cima caem) com um baque de 2px, e a página nova abre; a View
+    Transition nativa leva o puxado até o topo e o livro que estava aberto até o topo da pilha.
+  - **Livro que gira** (D46, `data-livro-gira`, só CSS): na grade de categorias e séries, no topo da
+    página do livro, no destaque de Séries e no livro do artigo, o livro vira de 38° para 24° ao
+    passar o mouse (0,5s). A capa que seguia o mouse, com a luz e a capa entreaberta (`capa-viva.ts`,
+    D40), saiu na D46. No livro ampliado, arrastar gira com embalo (Draggable + InertiaPlugin) e, ao
+    soltar, o livro volta a 38° com `elastic.out(1, 0.6)`.
 - **Caderno marcado (D41)**, nos artigos, na cor do livro (guia editorial em `docs/marcacoes.md`):
   - **Marca-texto** (`:marca[…]`): a metade de baixo da linha (52% a 92%), a cor do livro a 32% no
     claro e clareada (60% de branco) a 36% no escuro; estica da esquerda para a direita em 0,8s
@@ -630,9 +631,8 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
 - **Marca "cs"** (D41, só CSS): no hover ou foco, a capa entreabre 38° sobre as páginas (0,5s) e a fita
   balança até 14° com `elastic.out(1.2, 0.3)` (0,9s) e volta com `elastic.out(1, 0.3)` (1s), as curvas
   do GSAP em `linear()`.
-- **Lousa de passos** (D39): com a rolagem só na tela de 1024px ou mais e sem movimento reduzido
-  (passos a 40% da tela, o atual inteiro e os outros esmaecidos); fora disso, passo a passo com
-  "◀ 2 de 5 ▶", pontos e deslizar.
+- **Sem lousa de passos** (D46): a lousa que a caneta desenha enquanto o texto rola saiu. Nos posts,
+  só a linha do tempo de arrastar e a animação curta em loop.
 - **Diagrama que avança com a rolagem só em posts que explicam um fluxo** (passo a passo, linha do
   tempo, antes e depois). Em outros casos, desenho parado. Animações novas desse tipo usam GSAP em
   SVG, carregado só no post que as usa. Com play/pause quando não seguem a rolagem.
@@ -640,8 +640,9 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   vez em quando.
 - **Na home, só coisas discretas:** um livro que sobe ao passar o mouse, a gaveta com o livro
   tirado da estante (clicar nele o amplia; "Ver o livro" leva à página dele, D43).
-- **Cabeçalho no celular** (até 860px, D38): some ao rolar para baixo e volta ao rolar para cima,
-  subindo por `translate` (a página não muda de altura); com o foco nele ou o menu aberto, fica. **Nenhum livro cai** (o tombo do livro
+- **Cabeçalho no celular** (até 860px, D46): sempre à vista. O botão de menu abre as seções numa
+  folha que desce do cabeçalho por `clip-path` (0,46s), com os itens chegando em sequência (8px, 50ms
+  entre eles) e um véu de 32% sobre a página; fecha mais rápido (0,34s). **Nenhum livro cai** (o tombo do livro
   inclinado saiu na D35) e **nenhum texto muda de cor**. Sem animação de entrada nas seções.
 - **Troca de tema** (D42, D44): indo para o escuro, o escuro se espalha em círculo a partir do botão
   (0,55s); voltando ao claro, o escuro se fecha de fora para dentro até sumir no botão (a mesma curva,

@@ -1,37 +1,39 @@
 ---
 /**
- * Painel ao lado dos artigos (D28), inspirado na barra lateral do blog atual: séries, categorias,
- * tags e RSS. Séries e categorias são os livros deitados e empilhados: a mesma lombada da estante
- * (MioloLombada, com as mesmas proporções, ícone, tipografia e contagem), só que deitada (D39). A
- * pilha escala com a largura (container query), e o volume 1 fica embaixo. O número é o total de
- * artigos e some quando não há nenhum. Ao passar o mouse, o livro sai um pouco da pilha. Na tela
- * larga, o painel fica parado enquanto a lista rola (o `sticky` está em ComPainel.astro).
+ * Painel ao lado da página de um livro (D28, D46): a pilha dos livros do mesmo tipo (na página de uma
+ * categoria, só as categorias; na de uma série, só as séries) e o RSS. Os livros são a lombada da
+ * estante (MioloLombada) deitada, mais fina que a lombada em pé (D46), e o volume 1 fica embaixo.
  *
- * Transição (D29): o livro em pé do topo da página do livro tem `view-transition-name` igual ao id
- * do livro; o script do <head> (Base.astro) dá o mesmo nome, em `data-vt`, só ao livro da pilha que
- * leva à página nova ou que veio da anterior, e o navegador leva um ao outro. Na página do próprio
- * livro (`atual`), ele continua na pilha, escurecido, sem nome (D39).
+ * O livro aberto no topo da página não está na pilha (D46): ele fica no HTML, escondido, e o script
+ * da ordem, logo depois da lista, monta a pilha da visita: a ordem guardada na sessão
+ * (`cs-pilha-<tipo>`), com o livro da página anterior (o que estava aberto) em cima. Assim, ao trocar
+ * de livro, o que estava aberto volta para o topo da pilha.
+ *
+ * Trocar de livro pela pilha (D46): o livro escolhido é puxado para fora, os de cima caem no lugar
+ * dele e a página nova abre; a transição de página (Base.astro, base.css) leva o livro puxado até o
+ * topo e o livro que estava aberto até o topo da pilha. Com movimento reduzido, a página só abre.
+ * Uma série só: a pilha fica vazia, com um texto curto.
  */
 import { ICONES } from "../lib/icones";
 import { coresDoLivroCss, type Livro } from "../lib/estante";
 import MioloLombada from "./MioloLombada.astro";
-import { urlTag, type Grupo } from "../lib/posts";
 import { url } from "../lib/url";
 import "../styles/livro.css";
 
 interface Props {
   livros: Livro[];
-  tags: Grupo[];
-  /** Id do livro que está aberto na página (o da categoria atual). */
+  tipo: "categorias" | "series";
+  /** Id do livro que está aberto na página. */
   atual?: string;
 }
 
-const { livros, tags, atual } = Astro.props;
+const { livros, tipo, atual } = Astro.props;
+const titulo = tipo === "series" ? "Séries" : "Categorias";
 // De cima para baixo: o último volume em cima e o volume 1 embaixo.
-const pilhas = [
-  { titulo: "Séries", livros: livros.filter((l) => l.serie) },
-  { titulo: "Categorias", livros: livros.filter((l) => !l.serie).sort((a, b) => (b.volume ?? 0) - (a.volume ?? 0)) },
-].filter((p) => p.livros.length > 0);
+const pilha = livros
+  .filter((l) => (tipo === "series" ? l.serie : !l.serie))
+  .sort((a, b) => (b.volume ?? 0) - (a.volume ?? 0));
+const outros = pilha.filter((l) => l.id !== atual).length;
 // O deslocamento de cada livro na pilha (livros.json), em unidades da lombada em pé.
 const estilo = (l: Livro) =>
   [coresDoLivroCss(l), `--w:${l.emPe.largura}`, `--h:${l.emPe.altura}`, `--recuo:${10 + l.deitada.deslocamento}`].join(";");
@@ -40,54 +42,65 @@ const rotulo = (l: Livro) => {
   if (l.serie) return `${l.nome}, ${n} ${n === 1 ? "parte" : "partes"}`;
   return n === 0 ? `${l.nome}, ainda sem artigos` : `${l.nome}, ${n} ${n === 1 ? "artigo" : "artigos"}`;
 };
-const TAGS_NO_PAINEL = 10;
 ---
 
-<aside class="painel-home folha" aria-label="Séries, categorias e tags">
-  {
-    pilhas.map((p) => (
-      <section class="bloco">
-        <h2 class="titulo-bloco">{p.titulo}</h2>
-        <div class="pilha">
-          <ol>
-            {p.livros.map((l) => (
-              <li>
-                <a
-                  class:list={["deitado", { retirado: l.id === atual }]}
-                  href={l.href}
-                  aria-label={rotulo(l)}
-                  aria-current={l.id === atual ? "page" : undefined}
-                  data-vt={l.id === atual ? undefined : l.id}
-                  style={estilo(l)}
-                >
-                  <span class:list={["lombada-visual", { "de-serie": l.serie }]}>
-                    <MioloLombada livro={l} />
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ol>
-          <div class="tampo" aria-hidden="true" />
-        </div>
-      </section>
-    ))
-  }
+<aside class="painel-home folha" aria-label={titulo}>
   <section class="bloco">
-    <h2 class="titulo-bloco">Tags</h2>
-    <ul class="tags">
-      {
-        tags.slice(0, TAGS_NO_PAINEL).map((t) => (
-          <li>
-            <a class="pilula" href={urlTag(t.nome)}>
-              {t.nome}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
-    <a class="mais" href={url("/tags/")}
-      >Todas as tags <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} /></a
-    >
+    <h2 class="titulo-bloco">{titulo}</h2>
+    <div class="pilha" data-pilha={tipo}>
+      <ol>
+        {
+          pilha.map((l) => (
+            <li data-id={l.id} hidden={l.id === atual}>
+              <a class="deitado" href={l.href} aria-label={rotulo(l)} data-vt={l.id} style={estilo(l)}>
+                <span class:list={["lombada-visual", { "de-serie": l.serie }]}>
+                  <MioloLombada livro={l} />
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+      {/* A ordem da visita, antes da primeira pintura (ver o comentário do topo). */}
+      <script is:inline>
+        (function () {
+          var pilha = document.currentScript.parentElement;
+          var ol = pilha.querySelector("ol");
+          var chave = "cs-pilha-" + pilha.dataset.pilha;
+          var itens = {};
+          var padrao = [];
+          [].forEach.call(ol.children, function (li) {
+            itens[li.dataset.id] = li;
+            padrao.push(li.dataset.id);
+          });
+          var ordem = padrao;
+          try {
+            var guardada = JSON.parse(sessionStorage.getItem(chave) || "null");
+            if (Array.isArray(guardada)) {
+              ordem = guardada.filter(function (id) { return itens[id]; });
+              padrao.forEach(function (id) { if (ordem.indexOf(id) < 0) ordem.push(id); });
+            }
+          } catch (e) {}
+          // O livro da página anterior (o que estava aberto) vai para o topo da pilha.
+          try {
+            var de = document.referrer && new URL(document.referrer);
+            if (de && de.origin === location.origin && de.pathname !== location.pathname) {
+              for (var id in itens) {
+                var link = itens[id].querySelector("a");
+                if (new URL(link.href).pathname === de.pathname) {
+                  ordem.splice(ordem.indexOf(id), 1);
+                  ordem.unshift(id);
+                }
+              }
+            }
+          } catch (e) {}
+          ordem.forEach(function (id) { ol.appendChild(itens[id]); });
+          try { sessionStorage.setItem(chave, JSON.stringify(ordem)); } catch (e) {}
+        })();
+      </script>
+      {outros === 0 && <p class="pilha-vazia">Outras séries aparecem aqui.</p>}
+      <div class="tampo" aria-hidden="true"></div>
+    </div>
   </section>
   <a class="rss" href={url("/rss.xml")}
     ><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.rss} />Assinar via RSS</a
@@ -95,57 +108,73 @@ const TAGS_NO_PAINEL = 10;
 </aside>
 
 <script>
-  // A pilha viva (D40): ao passar o mouse (ou com o foco do teclado), o livro sai 14px da pilha e volta
-  // com um balanço; na chegada à página de um livro, o livro atual é puxado 46px e volta a 10px,
-  // escurecido, marcando o livro aberto. Com movimento reduzido, fica tudo no lugar final (CSS).
-  import { adiantar, carregarGsap, movimentoReduzido } from "../scripts/gsap";
+  // A pilha viva (D40, D46): ao passar o mouse (ou com o foco do teclado), o livro sai 14px da pilha e
+  // volta com um balanço. Ao clicar, o livro é puxado para fora e os de cima caem no lugar dele; só
+  // então a página nova abre. Com movimento reduzido, fica tudo parado e o clique só abre a página.
+  import { adiantar, carregarGsap, movimentoReduzido, type GSAP } from "../scripts/gsap";
 
   for (const pilha of document.querySelectorAll<HTMLElement>(".pilha")) {
     if (movimentoReduzido.matches) continue;
-    const livros = [...pilha.querySelectorAll<HTMLElement>(".deitado")];
-    const atual = pilha.querySelector<HTMLElement>(".retirado");
-    const ligar = (gsap: Awaited<ReturnType<typeof carregarGsap>>) => {
-      if (pilha.classList.contains("viva")) return;
+    const ol = pilha.querySelector("ol")!;
+    let gsap: GSAP | null = null;
+    let puxando = false;
+
+    const ligar = (g: GSAP) => {
+      if (gsap) return;
+      gsap = g;
       pilha.classList.add("viva");
-      for (const livro of livros) {
-        if (livro === atual) continue;
-        const sair = () => gsap.to(livro, { x: 14, duration: 0.35, ease: "power3.out", overwrite: true });
-        const voltar = () => gsap.to(livro, { x: 0, duration: 0.5, ease: "elastic.out(1, 0.55)", overwrite: true });
+      for (const livro of pilha.querySelectorAll<HTMLElement>(".deitado")) {
+        const sair = () => !puxando && g.to(livro, { x: 14, duration: 0.35, ease: "power3.out", overwrite: true });
+        const voltar = () => !puxando && g.to(livro, { x: 0, duration: 0.5, ease: "elastic.out(1, 0.55)", overwrite: true });
         livro.addEventListener("pointerenter", (e) => e.pointerType === "mouse" && sair());
         livro.addEventListener("pointerleave", (e) => e.pointerType === "mouse" && voltar());
         livro.addEventListener("focus", () => livro.matches(":focus-visible") && sair());
         livro.addEventListener("blur", voltar);
       }
     };
-    if (atual) {
-      // Na chegada (ou quando a pilha aparece, no celular, onde ela fica no fim da página): o livro
-      // atual é puxado, volta com back.out e escurece junto.
-      const gsapPronto = carregarGsap().then((gsap) => (ligar(gsap), gsap));
-      const observador = new IntersectionObserver(([e]) => {
-        if (!e.isIntersecting) return;
-        observador.disconnect();
-        gsapPronto.then((gsap) =>
-          gsap
-            .timeline({ delay: 0.25 })
-            .fromTo(atual, { x: 0, opacity: 1 }, { x: 46, duration: 0.32, ease: "power2.out" })
-            .to(atual, { opacity: 0.4, duration: 0.3 }, "<0.1")
-            .to(atual, { x: 10, duration: 0.55, ease: "back.out(2)" }),
-        );
-      }, { threshold: 1 });
-      observador.observe(atual);
-    } else adiantar(pilha, () => carregarGsap().then(ligar));
+    adiantar(pilha, () => carregarGsap().then(ligar));
+
+    // Puxar o livro: ele sai para a direita, por cima do conteúdo; os de cima caem juntos, com um
+    // baque curto, e a pilha fica como a página nova vai mostrar (sem o puxado).
+    function puxar(li: HTMLElement, destino: string) {
+      const g = gsap!;
+      puxando = true;
+      const visiveis = [...ol.children].filter((el): el is HTMLElement => !(el as HTMLElement).hidden);
+      const acima = visiveis.slice(0, visiveis.indexOf(li));
+      const livro = li.querySelector<HTMLElement>(".deitado")!;
+      const altura = li.offsetHeight;
+      const largura = pilha.clientWidth;
+
+      const tl = g.timeline({ onComplete: () => location.assign(destino) });
+      // A pilha fica com a altura de agora e encostada embaixo: o lugar que fecha puxa os de cima.
+      tl.set(ol, { height: ol.offsetHeight, justifyContent: "flex-end" }, 0)
+        .to(livro, { x: largura * 0.62, duration: 0.34, ease: "power2.inOut", overwrite: true }, 0)
+        // Fora da pilha, o lugar dele fecha: os de cima caem a altura dele.
+        .set(li, { height: altura, overflow: "visible" }, 0)
+        .to(li, { height: 0, duration: 0.26, ease: "power2.in" }, 0.2)
+        .to(acima, { y: -2, duration: 0.07, ease: "power1.out" }, ">")
+        .to(acima, { y: 0, duration: 0.09, ease: "power1.in" }, ">");
+    }
+
+    ol.addEventListener("click", (e) => {
+      const link = (e.target as HTMLElement).closest<HTMLAnchorElement>("a.deitado");
+      if (!link || !gsap || puxando || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+      e.preventDefault();
+      puxar(link.closest("li")!, link.href);
+    });
+
+    // Voltar pelo histórico (bfcache) traz a página como ficou: a pilha volta ao lugar.
+    addEventListener("pageshow", (e) => {
+      if (!e.persisted || !gsap) return;
+      puxando = false;
+      gsap.set([ol, ...ol.querySelectorAll("li, .deitado")], { clearProps: "all" });
+    });
   }
 </script>
 
 <style>
   .painel-home {
     padding: 22px 18px 18px;
-  }
-
-  .bloco + .bloco {
-    margin-top: 22px;
-    padding-top: 20px;
-    border-top: 1px solid var(--rule);
   }
 
   .titulo-bloco {
@@ -161,9 +190,9 @@ const TAGS_NO_PAINEL = 10;
   /*
    * A lombada em pé da estante (livro.css), girada 90° para a esquerda: o ícone fica na ponta
    * esquerda e o título e o número passam a correr na horizontal. --u-comprimento faz o livro mais
-   * longo com o recuo caber na largura da pilha, com o teto da estante da home (0,42px). Só na pilha,
-   * a lombada é 12% mais grossa que isso (--u, que também dá o corpo do título e do número), para o
-   * título chegar a uns 11 ou 12px (D40); o comprimento e a divisão do papel não mudam.
+   * longo com o recuo caber na largura da pilha, com o teto da estante da home (0,42px). Deitado, o
+   * livro é mais fino que a lombada em pé (D46): a espessura (--u) é 62% do comprimento, e o título e
+   * o número têm corpo próprio, de uns 10px, para continuar legíveis.
    */
   .pilha {
     container-type: inline-size;
@@ -171,7 +200,7 @@ const TAGS_NO_PAINEL = 10;
 
   .pilha ol {
     --u-comprimento: min(0.42px, 100cqw / 680);
-    --u: min(0.42px, var(--u-comprimento) * 1.12);
+    --u: calc(var(--u-comprimento) * 0.62);
     display: flex;
     flex-direction: column;
     margin: 0;
@@ -183,26 +212,41 @@ const TAGS_NO_PAINEL = 10;
     position: relative;
     display: block;
     width: calc(var(--h) * var(--u-comprimento));
-    height: calc(var(--w) * var(--u));
+    height: max(18px, calc(var(--w) * var(--u)));
     margin-left: calc(var(--recuo) * var(--u-comprimento));
     border-radius: max(1.5px, calc(3 * var(--u)));
     text-decoration: none;
-    transition:
-      transform 0.25s cubic-bezier(0.2, 0.75, 0.2, 1),
-      opacity 0.25s;
+    transition: transform 0.25s cubic-bezier(0.2, 0.75, 0.2, 1);
     view-transition-class: livro;
+  }
+
+  /* O puxado passa por cima do conteúdo ao lado. */
+  .pilha li {
+    position: relative;
   }
 
   .deitado > .lombada-visual {
     position: absolute;
     top: 100%;
     left: 0;
-    width: calc(var(--w) * var(--u));
+    width: max(18px, calc(var(--w) * var(--u)));
     height: calc(var(--h) * var(--u-comprimento));
     transform-origin: 0 0;
     rotate: -90deg;
     /* Girada, a sombra da lombada cai para baixo, como a de um livro deitado. */
     box-shadow: -1px 0 0 rgb(0 0 0 / 0.18);
+  }
+
+  /* O título e o número, com corpo próprio (a espessura encolheu, eles não). */
+  .deitado > .lombada-visual :global(.titulo-lombada) {
+    top: calc(100% - var(--papel-h) + 14 * var(--u-comprimento));
+    font-size: calc(28 * var(--u-comprimento));
+    line-height: calc(29 * var(--u-comprimento));
+  }
+
+  .deitado > .lombada-visual :global(.numero-lombada) {
+    bottom: calc(18 * var(--u-comprimento));
+    font-size: calc(26 * var(--u-comprimento));
   }
 
   /* Foco só para quem navega pelo teclado, discreto (D39). */
@@ -216,21 +260,31 @@ const TAGS_NO_PAINEL = 10;
     --papel-h: calc(400 * var(--u-comprimento));
   }
 
-  /* O título da revista, que na estante é menor que o das categorias, também chega aos 11px na pilha. */
+  /* A revista: o emblema cabe na espessura, e o título fica mais perto dele. */
   .deitado > .lombada-visual.de-serie :global(.titulo-lombada) {
-    font-size: calc(29 * var(--u));
+    top: calc(110 * var(--u-comprimento));
+    font-size: calc(27 * var(--u-comprimento));
   }
 
-  /* O livro da página atual continua na pilha, escurecido, como os não escolhidos do filtro (D39). */
-  .retirado {
-    opacity: 0.4;
-    filter: saturate(0.5);
-    transform: translateX(10px);
+  .deitado > .lombada-visual.de-serie :global(.emblema-lombada) {
+    top: calc(22 * var(--u-comprimento));
+    height: calc(70 * var(--u-comprimento));
   }
 
   /* Com o GSAP no ar (D40), é ele que move os livros da pilha. */
   .pilha.viva .deitado {
     transition: none;
+  }
+
+  /* Uma série só: o lugar vazio da prateleira, com um texto curto. */
+  .pilha-vazia {
+    margin: 0 0 6px;
+    padding: 22px 4px 8px;
+    font-family: var(--font-livro-italico);
+    font-style: italic;
+    font-size: 16px;
+    font-variation-settings: "opsz" 16;
+    color: var(--ink-2);
   }
 
   /* A prateleira sob a pilha: 5 na cor da estante e 2 de borda. */
@@ -245,10 +299,6 @@ const TAGS_NO_PAINEL = 10;
     .deitado:hover {
       transform: translateX(8px);
     }
-
-    .retirado:hover {
-      transform: translateX(10px);
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -259,67 +309,28 @@ const TAGS_NO_PAINEL = 10;
     .deitado:hover {
       transform: none;
     }
-
-    .retirado,
-    .retirado:hover {
-      transform: translateX(10px);
-    }
   }
 
-  /* ---------- tags e RSS ---------- */
+  /* ---------- RSS ---------- */
 
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .tags .pilula {
-    min-height: 30px;
-    padding: 3px 11px;
-    font-size: 13.5px;
-  }
-
-  .mais,
   .rss {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     gap: 6px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
     font-family: var(--font-ui);
     font-size: 14px;
+    color: var(--ink-2);
     text-decoration: none;
   }
 
-  .mais {
-    margin-top: 14px;
-    color: var(--acento);
-  }
-
-  .mais:hover,
   .rss:hover {
     text-decoration: underline;
     text-underline-offset: 0.18em;
   }
 
-  .rss {
-    display: flex;
-    margin-top: 20px;
-    padding-top: 16px;
-    border-top: 1px solid var(--rule);
-    color: var(--ink-2);
-  }
-
-  /* Abaixo de 1100px o painel vem depois da lista, logo antes do rodapé, que já tem o RSS (D37). */
-  @media (max-width: 1099.98px) {
-    .rss {
-      display: none;
-    }
-  }
-
-  .mais svg,
   .rss svg {
     width: 15px;
     height: 15px;

@@ -3,7 +3,8 @@
  * este cálculo diz como ela está num instante t. Serve ao servidor (o quadro parado, que vale sem
  * JS, com movimento reduzido e no RSS) e ao script que anima (src/scripts/lousa.ts).
  *
- * Atributos, com t em passos no passo a passo (0 a N) e de 0 a 1 na linha do tempo e no loop:
+ * Atributos, com t na escala do desenho (0 a 1, ou 0 a N nos desenhos feitos em passos, D46), que o
+ * componente estica para a linha do tempo e o loop:
  *   data-traco="a b"      traça o caminho de a até b; a caneta vai na ponta (não serve para tracejado)
  *   data-escrita="a b"    escreve o texto da esquerda para a direita, com a caneta seguindo
  *   data-revela="a b"     descobre da esquerda para a direita (tracejados, grupos); data-de="direita" inverte

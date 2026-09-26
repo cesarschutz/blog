@@ -36,7 +36,7 @@ const livro = (await montarLivros()).find((l) => !l.serie && l.nome === categori
   atual="categorias"
   jsonLd={paginaDeColecao(categoria.nome, `Artigos de ${categoria.nome}: ${categoria.descricao}`, Astro.url.pathname, Astro.site)}
 >
-  <ComPainel atual={livro.id}>
+  <ComPainel tipo="categorias" atual={livro.id}>
     <TopoLivro livro={livro} />
     <div class="artigos">
       {

@@ -92,9 +92,9 @@ camada visual: estrutura, conteúdo, rotas e comportamento seguem as seções 5 
   tempo de leitura, categoria, tags, botões, trilha, sumário, legendas e o aviso curto de IA da home.
 - Livros (capas, lombadas e os títulos Séries e Categorias da lateral, D30): **Bitter** e
   **Newsreader** itálico (com o eixo de tamanho óptico, D32), servidas pelo próprio site, pela regra de `docs/capas/CAPAS.md`.
-- Artigo: corpo 18,5px, entrelinha 1,72, coluna de texto com no máximo 720px, uns 72 caracteres
-  (D39; era 760px desde a D33 e 680px antes). Código, tabelas, diagramas, lousas e a apresentação
-  usam a largura toda do cartão (até 1000px); no celular, o corpo não fica num cartão.
+- Artigo: corpo 18,5px, entrelinha 1,72. **O texto ocupa a folha do corpo**, com margem pequena dos
+  lados, na mesma largura do código, das tabelas, das lousas e da apresentação (D46, pedido do
+  Cesar; antes, uma coluna de 720px no meio, D39); no celular, o corpo não fica num cartão.
   Números em estilo antigo (`oldstyle-nums`) no texto corrido.
 - Sem fonte de "letra de mão" em lugar nenhum, inclusive nos desenhos e nas lousas.
 
@@ -190,10 +190,11 @@ Referência: aba "Home" do protótipo.
   translúcido e um **fio embaixo sempre à vista** (D44), que ganha uma sombra suave depois de rolar. A marca à esquerda (D33); à direita
   **Artigos, Categorias, Séries e Tags**, a busca como campo (com ⌘K; só o ícone até 1100px), os ícones
   do GitHub e do LinkedIn e o botão de tema (§4.3, D39). O RSS saiu do menu (fica no painel lateral e no
-  rodapé). Até 860px, duas linhas: marca, busca, perfis (somem abaixo de 520px) e tema numa; o
-  menu na outra. A altura dele (`--altura-topo`) é descontada pelas âncoras, pelo sumário do
-  artigo, pelo painel lateral e pelas lousas fixas. Até 860px, ele some ao rolar para baixo e volta
-  ao rolar para cima (D38).
+  rodapé). Até 860px (D46), **sempre à vista** e numa linha só: a marca, a busca (só o ícone), o tema
+  e o **botão de menu** (dois traços que viram um X), que abre Artigos, Categorias, Séries e Tags numa
+  folha que desce do cabeçalho, cada um com uma nota curta ("Os livros da coleção"), e o GitHub e o
+  LinkedIn embaixo, com um véu sobre a página. A altura dele (`--altura-topo`, 60px) é descontada
+  pelas âncoras, pelo sumário do artigo e pelo painel lateral. (Até a D46, ele sumia ao rolar, D38.)
 - **Abertura** (D33): a identidade (a marca e a apresentação do blog atual, "Publico aqui o que ando
   estudando — …") e a **estante**. A partir de 1360px, identidade à esquerda e estante à direita;
   até 1359px, a estante desce para baixo do texto, no centro; até 640px, a marca grande sai (fica a
@@ -240,14 +241,19 @@ Referência: aba "Home" do protótipo.
 - **Painel lateral** (D28): **saiu da home na D44** (a lista e os cards ocupam a largura toda). Fica
   na página de categoria e na da série, à esquerda do conteúdo em telas ≥ 1100px e depois dele nas
   menores. Inspirado na barra lateral do blog
-  atual, numa folha que **fica parada enquanto a lista rola** (como no antigo; em tela baixa, rola por
-  dentro):
-  - **Séries** e **Categorias** como **pilhas de livros deitados** (D30, D32, `CAPAS.md`): a mesma
-    lombada da estante, girada 90° (D39), com o ícone na ponta esquerda, o título e o número; o
-    deslocamento de `livros.json`; o volume 1 embaixo; todos retos; a pilha sobre uma prateleira da cor da estante. A pilha escala com a largura da lateral.
-    Ao passar o mouse, o livro sai 14px da pilha e volta com um balanço; o livro da página atual é puxado na chegada e fica 10px para fora, escurecido (D40; sem movimento com `prefers-reduced-motion`).
-  - **Tags**: as 10 mais usadas em pílulas (o clique leva à página da tag, D33) e "Todas as
-    tags →".
+  atual, numa folha que **fica parada enquanto a lista rola** (sem rolagem por dentro, D46):
+  - **Só a pilha do tipo da página** (D46): na página de uma categoria, as categorias; na de uma
+    série, as séries. Sem tags. Uma série só: a prateleira vazia, com "Outras séries aparecem aqui."
+  - A pilha de **livros deitados** (D30, D32, `CAPAS.md`): a mesma lombada da estante, girada 90°
+    (D39), **mais fina que a em pé** (D46: a espessura é 62% da escala do comprimento, e o título e o
+    número têm corpo próprio, de uns 10px), com o ícone na ponta esquerda; o deslocamento de
+    `livros.json`; o volume 1 embaixo; a pilha sobre uma prateleira da cor da estante.
+  - **O livro aberto não está na pilha** (D46): ele está no topo da página. Ao trocar de livro, o que
+    estava aberto volta para **o topo da pilha** (a ordem fica na sessão, `cs-pilha-<tipo>`).
+  - Ao passar o mouse, o livro sai 14px da pilha e volta com um balanço (D40). Ao clicar, o livro é
+    **puxado para fora** (para a direita, por cima do conteúdo, 0,34s), **os de cima caem** no lugar
+    dele com um baque curto, e a página nova abre (~0,65s); a transição de página leva o puxado até o
+    topo e o que estava aberto até o topo da pilha. Com `prefers-reduced-motion`, a página só abre.
   - "Assinar via RSS" no pé.
   - Cada livro de categoria leva à página do livro (§5.2, D29), com a transição do livro. Os chips de
     categoria da lista, dos cards e do destaque também levam à página da categoria (D33); na home, só
@@ -286,11 +292,13 @@ esquerda (o livro da série fora da pilha) e o livro da série aberto no topo, c
 depois, o guia e as versões, como antes.
 
 **Categoria** (`/categories/<Nome>/`, D29):
-- O painel lateral da home à esquerda (parado enquanto a página rola; depois do conteúdo no celular).
-  O livro desta categoria continua na pilha, escurecido (D39).
+- O painel lateral à esquerda, só com as categorias (parado enquanto a página rola; depois do
+  conteúdo no celular). O livro desta categoria sai da pilha (D46).
 - Todo livro tem página, mesmo sem artigos ("Este livro ainda não tem artigos.").
 - No topo, uma folha com o **livro aberto** num painel tingido pela cor da categoria: o mesmo livro
-  3D da gaveta, quase de frente (D39), com a capa da coleção (D30). Ao lado: "Categorias" (trilha), o
+  3D da gaveta, **de lado, a 38°, como na gaveta da home** (D46), com a capa da coleção (D30). Ao
+  passar o mouse, ele gira um pouco para o leitor (o efeito de antes da D40; a capa que seguia o mouse
+  saiu na D46). Ao lado: "Categorias" (trilha), o
   nome grande (Besley 800, do tamanho que couber numa linha), o subtítulo do livro, a contagem com o
   quadradinho da cor e as 6 tags mais usadas na categoria.
 - Embaixo, "Artigos" com a contagem e a alternância Lista / Cards, no mesmo formato da home (D27),
@@ -316,14 +324,18 @@ Referência: aba "Artigo" do protótipo.
   (anterior / próximo), na gaveta e na busca, o título segue inteiro, numa linha.
 - **Barra de progresso de leitura** (D45): um traço de 2px sobre o fio embaixo do cabeçalho, na cor
   da categoria, escrito por uma **caneta** pequena (22px, corpo na cor do papel, ponta na cor da
-  categoria) que vai na ponta dele; a caneta aparece depois que a leitura começa. Com o cabeçalho
-  escondido (celular), o traço sobe para o alto da tela.
+  categoria) que vai na ponta dele; a caneta aparece depois que a leitura começa. O cabeçalho fica
+  sempre à vista, também no celular (D46).
 - **Sumário**: em telas ≥ 1300px, à esquerda do texto, numa folha própria e fixa; recolhível no
   início do texto nas menores. Só aparece com 3 ou mais seções. No lateral (D33), um trilho: um ponto
   em cada seção, sem número (D36; o "3. " do título sai do nome, nas duas variantes), o fio das lidas, o ponto atual e a barra de porcentagem na cor do livro do post (D39), as
   subseções da atual abertas, e a atual sempre à vista. Embaixo, a barra fina com "19% lido" e o tempo
-  que falta (em fonte de código), que soma à barra do topo; só com JS. Embaixo da folha do sumário, o **"Do livro" compacto** (D39):
-  a capa pequena, o nome e "Ver o livro"; com ele, o cartão do fim do artigo some no desktop.
+  que falta (em fonte de código), que soma à barra do topo; só com JS. A coluna da esquerda começa
+  **no topo da página, ao lado da ilustração** (D46), e a folha do topo e a do corpo têm a mesma
+  largura, com o texto na mesma margem. Embaixo do sumário, **o livro do artigo, grande e de lado**
+  (D46, como o da gaveta da home), num painel tingido, com a lupa que o amplia, o nome e "Ver o
+  livro"; em tela baixa ele encolhe. Com ele, o cartão do fim do artigo some no desktop; no celular,
+  fica no fim do artigo, como antes.
 - **Notas laterais**: notas de rodapé do Markdown viram notas na margem direita da folha do corpo
   quando ela tem espaço (a folha, e não a tela, decide, D33) e abrem no lugar, ao tocar no número,
   nas outras.
@@ -419,14 +431,11 @@ Os diagramas de explicação dentro do post aparecem numa **lousa**. A lousa é 
 - Os rótulos e caixas iniciais do cenário podem já estar desenhados ("o professor montou o
   quadro antes da aula").
 
-Três componentes, todos na lousa, com a mesma linguagem:
+Dois componentes, todos na lousa, com a mesma linguagem (eram três até a D46):
 
-1. **Passo a passo** (D39): na tela de 1024px ou mais, sem movimento reduzido, com a rolagem: a
-   lousa fica fixa à direita e avança um passo por parágrafo; os parágrafos ficam a uns 40% da
-   tela um do outro, todos à vista, o atual inteiro e os outros esmaecidos, sem trecho vazio grande.
-   No celular, no tablet e com movimento reduzido, sem rolagem guiada: a lousa em cima, o texto do
-   passo atual embaixo e "◀ 2 de 5 ▶" com pontos, aceitando deslizar o dedo na lousa. Sem JS, o
-   desenho completo e todos os passos.
+1. ~~Passo a passo com a rolagem~~: **saiu na D46** (26/09/2026, a pedido do Cesar: "a caneta
+   desenhando enquanto o texto rola ficou ruim"). Sequência de passos vira linha do tempo de
+   arrastar, com um estado por passo e os passos numa lista logo abaixo da lousa.
 2. **Linha do tempo de arrastar**: comparação que avança no tempo (ex.: "com e sem a chave").
    Controle deslizante + **botão play/pausa** à esquerda (percorre em ~7 s, para 1,5 s no
    resultado e recomeça). Também responde a arrastar sobre o desenho e à roda do mouse (com

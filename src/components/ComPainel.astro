@@ -1,30 +1,31 @@
 ---
 /**
- * Conteúdo com o painel lateral (D28): o painel à esquerda em telas ≥ 1100px, parado enquanto o
+ * Conteúdo com o painel lateral (D28, D46): o painel à esquerda em telas ≥ 1100px, parado enquanto o
  * conteúdo rola (como no blog atual), e depois do conteúdo nas menores. No HTML o painel vem depois,
- * porque o conteúdo é o principal. Usado na home e na página de categoria.
+ * porque o conteúdo é o principal (e o livro puxado da pilha passa por cima dele). Usado nas páginas
+ * de categoria e de série, cada uma com a pilha do seu tipo.
  */
 import PainelHome from "./PainelHome.astro";
 import { montarLivros } from "../lib/estante";
-import { getTags } from "../lib/posts";
 
 interface Props {
-  /** Id do livro aberto na página (a categoria atual), que sai da pilha. */
+  /** A pilha do painel: as categorias ou as séries. */
+  tipo: "categorias" | "series";
+  /** Id do livro aberto na página, que sai da pilha. */
   atual?: string;
   /** Distância do topo até a primeira folha do conteúdo, para o painel começar alinhado com ela. */
   recuo?: number;
 }
 
-const { atual, recuo = 0 } = Astro.props;
+const { tipo, atual, recuo = 0 } = Astro.props;
 const livros = await montarLivros();
-const tags = await getTags();
 ---
 
 <div class="wrap com-painel" style={`--recuo-painel:${recuo}px`}>
   <div class="conteudo">
     <slot />
   </div>
-  <PainelHome livros={livros} tags={tags} atual={atual} />
+  <PainelHome livros={livros} tipo={tipo} atual={atual} />
 </div>
 
 <style>
@@ -49,16 +50,14 @@ const tags = await getTags();
       grid-column: 2;
     }
 
-    /* Em tela baixa, o painel rola por dentro. */
+    /* Sem rolagem por dentro (só uma pilha e o RSS): o livro puxado sai por cima do conteúdo, e o
+       painel não ganha rolagem lateral (D46). */
     .com-painel > :global(.painel-home) {
       grid-row: 1;
       grid-column: 1;
       position: sticky;
       top: calc(var(--altura-topo) + 20px);
-      max-height: calc(100vh - var(--altura-topo) - 40px);
       margin-top: var(--recuo-painel);
-      overflow-y: auto;
-      scrollbar-width: thin;
     }
   }
 </style>

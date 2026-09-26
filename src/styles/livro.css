@@ -573,7 +573,7 @@
 /*
  * O livro é um bloco de --cw × --bh com --sw de espessura, centrado na caixa e girando em volta do
  * próprio centro. De frente, a capa fica em z = +sw/2 e a contracapa em -sw/2; a lombada é a face da
- * esquerda. Parado, o livro fica a --giro (18°) da frente. Tudo com `backface-visibility: hidden`, e
+ * esquerda. Parado, o livro fica a --giro (38°, GIRO em lib/livro-3d.ts) da frente. Tudo com `backface-visibility: hidden`, e
  * nenhuma peça usa `filter`, que achataria o 3D.
  */
 .livro-3d-caixa {
@@ -581,11 +581,13 @@
   justify-self: center;
   width: var(--cw);
   height: var(--bh);
-  perspective: 1700px;
+  /* A perspectiva acompanha o tamanho do livro (a da gaveta: 1700px para 360px de altura), para o
+     livro pequeno da grade e o grande do visor ficarem com a mesma cara do da gaveta (D46). */
+  perspective: calc(var(--bh, 360px) * 4.7);
 }
 
 .livro-3d {
-  --giro: 18deg;
+  --giro: 38deg;
   position: absolute;
   inset: 0;
   transform: rotateY(var(--giro));
@@ -695,22 +697,25 @@
   backface-visibility: hidden;
 }
 
-/* A luz que segue o mouse na capa (capa-viva.ts, D40): maior que a capa, anda por transform. */
-.capa-frente {
-  overflow: hidden;
-}
+/*
+ * O livro que gira ao passar o mouse (D46; o efeito de antes da D40): na grade de categorias e séries,
+ * no topo da página do livro, no destaque de Séries e no livro do artigo. Parado a --giro (38°), vira
+ * um pouco para o leitor. Só CSS; com movimento reduzido, fica parado.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  [data-livro-gira] .livro-3d {
+    transition: transform 0.5s cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
 
-.luz-capa {
-  position: absolute;
-  z-index: 4;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  opacity: 0;
-  background: radial-gradient(circle at center, rgb(255 255 255 / 0.75), transparent 28%);
-  mix-blend-mode: soft-light;
-  pointer-events: none;
+  @media (hover: hover) {
+    [data-livro-gira]:hover .livro-3d {
+      --giro: 24deg;
+    }
+  }
+
+  [data-livro-gira]:focus-visible .livro-3d {
+    --giro: 24deg;
+  }
 }
 
 /* No livro 3D, a sombra é do livro inteiro (a contracapa), e não da capa. */

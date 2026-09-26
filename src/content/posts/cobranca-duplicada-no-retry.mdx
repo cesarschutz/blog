@@ -9,9 +9,7 @@ draft: false
 ---
 
 import LousaLoop from "../../components/LousaLoop.astro";
-import LousaPassos from "../../components/LousaPassos.astro";
 import LousaTempo from "../../components/LousaTempo.astro";
-import Passo from "../../components/Passo.astro";
 import FraseDestaque from "../../components/FraseDestaque.astro";
 
 
@@ -64,15 +62,25 @@ A ordem se inverte:
 
 <FraseDestaque texto="Em vez de verificar e depois gravar, você grava e deixa o banco recusar." />
 
-A janela some porque :marca[verificar e gravar passam a ser a mesma operação]. Role devagar: a lousa acompanha a leitura e avança um passo a cada parágrafo.
+A janela some porque :marca[verificar e gravar passam a ser a mesma operação]. Aperte o play ou arraste sobre a lousa para ver os cinco passos, contados logo abaixo dela.
 
-<LousaPassos desenho="cobranca-duplicada-no-retry/passos" rotulo="Diagrama: o app, o serviço, o adquirente e a tabela cobranca. A segunda tentativa, com a mesma chave, bate na restrição única e recebe a resposta guardada, sem nova cobrança.">
-  <Passo>O app pede a cobrança de R\$ 250 e manda junto a chave de idempotência que ele gerou, `5b0e7a52…`. A chave é a mesma em todas as tentativas desse pedido.</Passo>
-  <Passo>Antes de cobrar, o serviço grava a chave na tabela `cobranca`, que tem restrição `UNIQUE` sobre ela. Quem grava primeiro fica com a chave, e o status começa como `PROCESSANDO`.</Passo>
-  <Passo>O serviço confirma o registro, cobra no adquirente e guarda a resposta junto da chave: `CAPTURADA`, com o `201` que devolveu ao app.</Passo>
-  <Passo>A resposta se perde no caminho de volta. Para o app, é como se nada tivesse acontecido, então ele tenta de novo, com a mesma chave.</Passo>
-  <Passo>O `INSERT` da segunda tentativa bate na restrição `UNIQUE`. Em vez de cobrar de novo, o serviço devolve a resposta que já estava guardada.</Passo>
-</LousaPassos>
+<LousaTempo
+  desenho="cobranca-duplicada-no-retry/passos"
+  rotulo="Diagrama: o app, o serviço, o adquirente e a tabela cobranca. A segunda tentativa, com a mesma chave, bate na restrição única e recebe a resposta guardada, sem nova cobrança."
+  estados={[
+    { de: 0, texto: "1 de 5 · O app pede, com a chave" },
+    { de: 0.2, texto: "2 de 5 · O serviço grava a chave antes de cobrar" },
+    { de: 0.4, texto: "3 de 5 · Cobra e guarda a resposta" },
+    { de: 0.6, texto: "4 de 5 · A resposta se perde, e o app tenta de novo" },
+    { de: 0.8, texto: "5 de 5 · A restrição recusa e a resposta guardada volta" },
+  ]}
+/>
+
+1. O app pede a cobrança de R\$ 250 e manda junto a chave de idempotência que ele gerou, `5b0e7a52…`. A chave é a mesma em todas as tentativas desse pedido.
+2. Antes de cobrar, o serviço grava a chave na tabela `cobranca`, que tem restrição `UNIQUE` sobre ela. Quem grava primeiro fica com a chave, e o status começa como `PROCESSANDO`.
+3. O serviço confirma o registro, cobra no adquirente e guarda a resposta junto da chave: `CAPTURADA`, com o `201` que devolveu ao app.
+4. A resposta se perde no caminho de volta. Para o app, é como se nada tivesse acontecido, então ele tenta de novo, com a mesma chave.
+5. O `INSERT` da segunda tentativa bate na restrição `UNIQUE`. Em vez de cobrar de novo, o serviço devolve a resposta que já estava guardada.
 
 ### Na prática, com SQL
 

@@ -66,7 +66,7 @@ const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "
     border-radius: 0;
   }
 
-  /* Com o site em até 1320px, o painel ocupa a folha toda e o desenho fica em até 1100px, no centro. */
+  /* O painel ocupa a folha toda e o desenho fica em até 1100px, no centro. */
   .largo {
     max-width: 1100px;
     margin-inline: auto;
@@ -88,11 +88,10 @@ const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "
     }
   }
 
+  /* O texto do topo usa a folha inteira, com a mesma margem do corpo embaixo (D46). */
   .topo {
     position: relative;
-    max-width: calc(var(--coluna) + 184px);
-    margin-inline: auto;
-    padding: 32px 32px 30px;
+    padding: 32px var(--margem-folha, 32px) 30px;
   }
 
   .trilha {
@@ -138,7 +137,6 @@ const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "
   }
 
   .lede {
-    max-width: 66ch;
     margin: 16px 0 0;
     font-family: var(--font-ui);
     font-size: clamp(17px, 1.6vw, 19px);

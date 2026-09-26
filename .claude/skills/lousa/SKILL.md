@@ -1,6 +1,6 @@
 ---
 name: lousa
-description: Monta os diagramas de explicação na lousa (passo a passo com a rolagem, linha do tempo de arrastar, animação curta em loop) e a frase em destaque, em posts .mdx. Use quando o post tiver fluxo, sequência, antes e depois ou linha do tempo para explicar.
+description: Monta os diagramas de explicação na lousa (linha do tempo de arrastar e animação curta em loop; a lousa de passos com a rolagem saiu na D46) e a frase em destaque, em posts .mdx. Use quando o post tiver fluxo, sequência, antes e depois ou linha do tempo para explicar.
 ---
 
 # Lousa
@@ -14,23 +14,22 @@ desenhos em `src/lousas/cobranca-duplicada-no-retry/`. O estilo (cores, traço, 
 Sempre que houver fluxo, sequência, antes e depois ou linha do tempo. Post simples fica sem lousa.
 A frase em destaque é rara: use só de vez em quando.
 
-## Os três componentes (briefing §7)
+## Os dois componentes (briefing §7)
 
-1. **Passo a passo** (D39).
-   - Na tela de 1024px ou mais, sem movimento reduzido: o texto rola à esquerda, em parágrafos a uns
-     40% da tela um do outro; a lousa fica fixa à direita e avança um passo por parágrafo, com o atual
-     inteiro e os outros esmaecidos.
-   - No celular, no tablet e com movimento reduzido: passo a passo, com a lousa em cima, o texto do
-     passo embaixo e "◀ 2 de 5 ▶" com pontos (e deslizar o dedo). Cada passo tem de caber num
-     parágrafo curto, que faça sentido sozinho embaixo da lousa.
-2. **Linha do tempo de arrastar.**
+**Nunca a lousa de passos com a rolagem** (a caneta desenhando enquanto o texto rola): ela saiu na
+D46, a pedido do Cesar, e o componente foi apagado. Uma sequência de passos vira **linha do tempo de
+arrastar** com um estado por passo ("2 de 5 · …") e os passos, completos, numa lista numerada logo
+abaixo da lousa (é o texto do diagrama para quem não vê o desenho). Exemplos: a lousa de passos do
+post de cobrança duplicada e a do Jackson, convertidas assim.
+
+1. **Linha do tempo de arrastar.**
    - Controle deslizante com botão play/pausa à esquerda. A reprodução percorre tudo em ~7 s, para
      1,5 s no resultado e recomeça.
    - Responde a arrastar sobre o desenho e à roda do mouse, com ou sem Shift. Nas pontas, a roda
      volta a rolar a página.
    - Qualquer gesto manual pausa a reprodução.
    - O texto do estado atual fica num `aria-live`.
-3. **Animação curta em loop.**
+2. **Animação curta em loop.**
    - Dura poucos segundos, com uma barra de tempo por baixo marcando início, eventos e fim.
    - Botões Recomeçar e Pausar.
    - Pausa perceptível no fim, antes de reiniciar.
@@ -40,14 +39,14 @@ Há ainda a **frase em destaque**: uma citação cujas palavras acendem com a ro
 ## Comportamento comum
 
 - **A caneta desenha.** Fica na ponta do traço, escreve os textos da esquerda para a direita e
-  assume a cor do que desenha. Se a rolagem para, a caneta para. Se a pessoa rola para cima, o desenho se apaga.
+  assume a cor do que desenha, enquanto a linha do tempo ou o loop andam.
 - O cenário inicial (rótulos e caixas) pode já estar desenhado.
 - **`prefers-reduced-motion`:** estado final, sem caneta, com todos os passos visíveis. Nada prende a tela.
 - **Sem JavaScript:** a lousa mostra o desenho completo, parado, como no estado final.
 - **Vários desenhos na página:** os ids de que o componente precisar (por exemplo, `clipPath` da
   escrita) são gerados por instância e nunca ficam no arquivo do desenho.
 - **Acessibilidade:** controles por teclado, com foco visível. O conteúdo do diagrama também existe
-  em texto: os parágrafos do passo a passo e o `aria-live` da linha do tempo.
+  em texto: a lista dos passos abaixo da lousa e o `aria-live` da linha do tempo.
 - Usa a mesma geometria e as mesmas convenções da ilustração (hachura, linha fantasma), mas com o estilo da lousa.
 
 ## Uso no post
@@ -55,19 +54,12 @@ Há ainda a **frase em destaque**: uma citação cujas palavras acendem com a ro
 Post com lousa é `.mdx`. Importe os componentes logo depois do frontmatter:
 
 ```mdx
-import LousaPassos from "../../components/LousaPassos.astro";
-import Passo from "../../components/Passo.astro";
 import LousaTempo from "../../components/LousaTempo.astro";
 import LousaLoop from "../../components/LousaLoop.astro";
 import FraseDestaque from "../../components/FraseDestaque.astro";
 ```
 
 ```mdx
-<LousaPassos desenho="<slug>/passos" rotulo="Diagrama: o que o desenho mostra.">
-  <Passo>Primeiro parágrafo, com `código` e **negrito** se precisar.</Passo>
-  <Passo>Segundo parágrafo.</Passo>
-</LousaPassos>
-
 <LousaTempo desenho="<slug>/tempo" rotulo="…" estados={[{ de: 0, texto: "Antes do pedido" }, { de: 0.5, texto: "…" }]} />
 
 <LousaLoop desenho="<slug>/loop" rotulo="…" duracao={5.2} legenda="…"
@@ -76,11 +68,10 @@ import FraseDestaque from "../../components/FraseDestaque.astro";
 <FraseDestaque texto="Uma frase curta, que merece ser lida duas vezes." />
 ```
 
-- Cada `<Passo>` em **uma linha só** (senão o MDX abre um parágrafo dentro do outro).
 - `rotulo` diz o que o desenho mostra; é o texto dos leitores de tela e do RSS.
 - `parado` (loop) é o instante do quadro parado, sem JS ou com movimento reduzido; nos outros, o fim.
 - A cor de destaque vem sozinha da categoria do post.
-- No RSS, as lousas viram o rótulo com um link para o post, e os passos entram como parágrafos.
+- No RSS, as lousas viram o rótulo com um link para o post.
 - **Títulos de seção migrados não mudam** ao virar MDX (as âncoras dependem deles, D7).
 
 ## O desenho (`src/lousas/<slug>/<nome>.svg`)
@@ -99,8 +90,8 @@ Raiz só com `xmlns` e `viewBox` (560×430 é a referência). Traços dentro de 
 | `cheio` | forma preenchida com a tinta (ou o destaque, com `destaque`) |
 | `secundario`, `codigo` | texto menor e atenuado; código em mono |
 
-Quando cada parte aparece fica no próprio elemento, com `t` em passos no passo a passo (0 a N, um
-por parágrafo) e de 0 a 1 na linha do tempo e no loop:
+Quando cada parte aparece fica no próprio elemento, com `t` de 0 a 1 (os desenhos antigos em passos,
+de 0 a N, também servem: o componente estica a escala até o fim):
 
 | Atributo | Efeito |
 |---|---|

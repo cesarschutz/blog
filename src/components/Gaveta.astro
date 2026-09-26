@@ -97,7 +97,7 @@ function linhas(l: Livro): Linha[] {
 }
 
 <script>
-  import { medidasDoLivro3D } from "../lib/livro-3d";
+  import { GIRO, medidasDoLivro3D } from "../lib/livro-3d";
   import { carregarGsap, movimentoReduzido, type GSAP } from "../scripts/gsap";
 
   const gaveta = document.querySelector<HTMLElement>("[data-gaveta]");
@@ -105,9 +105,6 @@ function linhas(l: Livro): Linha[] {
   if (gaveta && estante) {
     const lombadas = [...estante.querySelectorAll<HTMLElement>("[data-livro]")];
     const pequeno = matchMedia("(max-width: 760px)");
-    // Na gaveta, o livro fica mais de lado que no resto do site (D43): a 38° da frente, com a lombada
-    // bem à vista, como antes da D39.
-    const GIRO = 38;
 
     // O desenho da capa (ou o emblema da revista) só vem quando o livro abre (D30, D32).
     const desenhos = new Map<string, Promise<string>>();

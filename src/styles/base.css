@@ -15,7 +15,8 @@
   --largura: 1320px;
   /* Altura do cabeçalho fixo (D31): as âncoras, o sumário, o painel e as lousas fixas descontam. */
   --altura-topo: 60px;
-  /* A altura do próprio cabeçalho; --altura-topo é o quanto as peças fixas descontam (0 quando ele se esconde, D38). */
+  /* A altura do próprio cabeçalho; --altura-topo é o quanto as peças fixas descontam. No celular, o
+     cabeçalho também tem uma linha só e fica sempre à vista (D46). */
   --altura-cabecalho: 60px;
   /* ~72 caracteres por linha no corpo do artigo (D39; era 760px, ~76). */
   --coluna: 720px;
@@ -52,19 +53,6 @@
 
 [hidden] {
   display: none !important;
-}
-
-/* O cabeçalho vai para duas linhas até 860px (Cabecalho.astro). */
-@media (max-width: 860px) {
-  :root {
-    --altura-topo: 104px;
-    --altura-cabecalho: 104px;
-  }
-
-  /* No celular, o cabeçalho some ao rolar para baixo e volta ao subir (D38, Cabecalho.astro). */
-  :root[data-topo-oculto] {
-    --altura-topo: 0px;
-  }
 }
 
 html {

@@ -1122,3 +1122,44 @@ nada muda.
   marcado (D41), sem uma faixa solta no topo da tela.
 - **Movimento reduzido:** o traço e a caneta seguem a rolagem (não são animação); só as transições
   curtas saem.
+
+## D46 · Livros de lado, pilha que troca de livro, menu do celular e o artigo mais largo
+- **Data:** 26/09/2026 · **Status:** aplicada e publicada (parte 1 da lista de 26/09/2026,
+  `docs/controle-parte1.md`).
+- **Pedido do Cesar e o que mudou:**
+  1. **Lista:** a descrição dos artigos ia só até 68ch e deixava um vão até a miniatura; agora vai até
+     perto dela, em toda lista (`ItemLista`).
+  2. **Livro de lado em todo lugar:** o livro 3D fica a **38°** da frente (era 18° fora da gaveta),
+     com a perspectiva proporcional à altura do livro (`calc(var(--bh) * 4.7)`, a da gaveta), para a
+     grade, o topo da página do livro, o livro do artigo e o livro ampliado terem a cara do da gaveta.
+  3. **Sem a capa que segue o mouse** (`capa-viva.ts`, D40, apagado): volta o efeito de antes, só CSS
+     (`data-livro-gira`): o livro gira de 38° para 24° ao passar o mouse. A capa entreaberta e a luz
+     saíram junto.
+  4. **Painel lateral só do tipo da página:** na categoria, só as categorias; na série, só as séries;
+     sem tags (o RSS fica). O livro aberto sai da pilha. Com uma série só, a prateleira fica vazia com
+     "Outras séries aparecem aqui." (escolha do Cesar entre três opções). O painel perdeu a rolagem
+     por dentro (e com ela a rolagem lateral que aparecia na página da série).
+  5. **Pilha que troca de livro:** clicar puxa o livro para fora e os de cima caem no lugar dele; a
+     página nova abre e a transição leva o que estava aberto ao topo da pilha. A ordem da pilha fica
+     na sessão (`cs-pilha-categorias`, `cs-pilha-series`): um script inline, logo depois da lista, a
+     aplica antes da primeira pintura e põe no topo o livro da página anterior (pelo `referrer`).
+  6. **Livros deitados menos gordos:** a espessura passou de 112% para 62% da escala do comprimento;
+     o título e o número ganharam corpo próprio (~10px) para continuarem legíveis.
+  7. **Cabeçalho do celular sempre à vista** (desfaz o esconder da D38), numa linha, com um botão de
+     menu que abre as seções numa folha com nota curta em cada uma, os perfis e um véu.
+  8. **Sem a lousa de passos** (a caneta desenhando enquanto o texto rola): os dois posts que a
+     tinham (`cobranca-duplicada-no-retry` e `jackson-filtros-mascarando-cartao`) passaram a usar a
+     linha do tempo de arrastar, com um estado por passo e os passos numa lista embaixo. Os
+     componentes `LousaPassos` e `Passo` e o CSS deles foram apagados; a skill `lousa` proíbe a volta.
+     A caneta do fio do cabeçalho (D45) fica (confirmado pelo Cesar).
+  9. **Artigo:** a coluna da esquerda ("Neste artigo") começa no topo, ao lado da ilustração; o topo e
+     o corpo têm a mesma largura; o texto ocupa a folha, na largura do código (fim da coluna de
+     720px da D39); o topo usa a largura toda para o título e o resumo; embaixo do sumário, o livro do
+     artigo grande e de lado, com a lupa (no lugar do "Do livro" compacto); posts com menos de 3
+     seções têm a coluna só com o livro.
+- **Por quê:** pedidos diretos do Cesar ao revisar o site; o livro de lado e o efeito antigo já tinham
+  sido aprovados na gaveta e antes da D40.
+- **Alternativas:** para a série única, mostrar a própria série puxada ou tirar a lateral (recusadas).
+- **Movimento reduzido:** a pilha não anima (o clique só abre a página), o livro não gira, o menu
+  abre e fecha direto.
+

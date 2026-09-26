@@ -1,6 +1,6 @@
 /**
  * Desenhos das lousas (briefing §7, D11): src/lousas/<slug>/<nome>.svg, usados pelos componentes
- * LousaPassos, LousaTempo e LousaLoop dentro de posts .mdx. Aqui o SVG ganha rótulo acessível e o
+ * LousaTempo e LousaLoop dentro de posts .mdx (a lousa de passos saiu na D46). Aqui o SVG ganha rótulo acessível e o
  * quadro parado (estilos do instante escolhido), que é o que aparece sem JS, com movimento reduzido
  * e no RSS; com JS, src/scripts/lousa.ts assume a partir dele.
  */
