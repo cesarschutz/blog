@@ -1025,3 +1025,10 @@ nada muda.
      caixa, como a busca). Esc, "Fechar" ou clique fora encolhem a janela de volta para o campo
      (0,35s, `power2.in`), e o foco volta para ele (também quando a busca abriu pelo teclado). O
      primeiro Esc com texto no campo só limpa o texto (comportamento do navegador, como antes).
+  6. **Tema que se revela em círculo** (`SeletorTema.astro`, `trocarTema` em `tema.ts`): a lua vira
+     sol, e vice-versa, com MorphSVG (0,45s; os raios crescem e giram); a troca usa
+     `document.startViewTransition` com o tipo "tema", e o tema novo se espalha em círculo a partir do
+     botão (`clip-path` no `::view-transition-new(root)`, 0,6s). Durante a troca, os outros nomes de
+     transição (livros, desenhos, títulos) saem (`.trocando-tema`), para a página virar inteira de uma
+     vez. Sem View Transitions com tipos, ou com movimento reduzido, a troca é direta. A página não sai
+     do lugar (conferido: `scrollY` igual antes e depois).

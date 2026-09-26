@@ -466,6 +466,34 @@ kbd {
   animation: none;
 }
 
+/*
+ * Tema que se revela em círculo (D41, trocarTema em tema.ts): a página antiga fica parada e a nova
+ * cresce num círculo a partir do botão. Enquanto isso, nenhum outro elemento tem nome de transição
+ * (o `!important` vence o nome posto no `style` dos cartões): a página vira inteira, de uma vez.
+ */
+.trocando-tema,
+.trocando-tema * {
+  view-transition-name: none !important;
+}
+
+:root.trocando-tema {
+  view-transition-name: root !important;
+}
+
+:root:active-view-transition-type(tema)::view-transition-new(root) {
+  animation: revelar-tema 0.6s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+@keyframes revelar-tema {
+  from {
+    clip-path: circle(0 at var(--tema-x) var(--tema-y));
+  }
+
+  to {
+    clip-path: circle(var(--tema-raio) at var(--tema-x) var(--tema-y));
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   @view-transition {
     navigation: none;

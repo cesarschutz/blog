@@ -9,21 +9,56 @@ import { ICONES } from "../lib/icones";
 ---
 
 <button type="button" class="botao-tema" aria-label="Usar o tema escuro" title="Tema escuro" data-botao-tema hidden>
-  <svg class="i-lua" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.lua} />
-  <svg class="i-sol" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.sol} />
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <g class="raios"><path d="M12 2.5v2M12 19.5v2M4.6 4.6 6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4 6 18M18 6l1.4-1.4" /></g>
+    <path class="astro" d="M20 14.5A8 8 0 0 1 9.5 4A8 8 0 1 0 20 14.5Z" />
+  </svg>
 </button>
 
 <script>
-  import { aoMudarTema, aplicarTema, temaNaTela } from "../scripts/tema";
+  import { aoMudarTema, temaNaTela, trocarTema } from "../scripts/tema";
+  import { adiantar, carregarMorph, movimentoReduzido } from "../scripts/gsap";
 
+  // A lua (no claro) vira o sol (no escuro) e vice-versa, com MorphSVG (D41). O ícone mostra o tema
+  // para onde o botão leva.
+  const LUA = "M20 14.5A8 8 0 0 1 9.5 4A8 8 0 1 0 20 14.5Z";
+  const SOL = "M16 12A4 4 0 1 1 8 12A4 4 0 1 1 16 12Z";
   const botao = document.querySelector<HTMLButtonElement>("[data-botao-tema]");
   if (botao) {
-    botao.addEventListener("click", () => aplicarTema(temaNaTela() === "dark" ? "light" : "dark"));
+    const astro = botao.querySelector<SVGPathElement>(".astro")!;
+    const raios = botao.querySelector<SVGGElement>(".raios")!;
+    let gsap: Awaited<ReturnType<typeof carregarMorph>> | null = null;
+    if (!movimentoReduzido.matches) adiantar(botao, () => carregarMorph().then((g) => (gsap = g)));
+
+    const pintarIcone = (animar: boolean) => {
+      const escuro = temaNaTela() === "dark";
+      if (animar && gsap && !movimentoReduzido.matches) {
+        gsap.to(astro, { morphSVG: escuro ? SOL : LUA, duration: 0.45, ease: "power2.inOut" });
+        // No fim, o CSS (pelo data-tela) assume o mesmo estado.
+        gsap.fromTo(
+          raios,
+          { scale: escuro ? 0 : 1, opacity: escuro ? 0 : 1, rotation: escuro ? -45 : 0 },
+          { scale: escuro ? 1 : 0, opacity: escuro ? 1 : 0, rotation: escuro ? 0 : -45, transformOrigin: "50% 50%", duration: 0.45, ease: "power2.inOut", clearProps: "all" },
+        );
+        return;
+      }
+      gsap?.killTweensOf([astro, raios]);
+      raios.removeAttribute("style");
+      astro.setAttribute("d", escuro ? SOL : LUA);
+    };
+
+    let clicou = false;
+    botao.addEventListener("click", () => {
+      clicou = true;
+      trocarTema(temaNaTela() === "dark" ? "light" : "dark", botao);
+    });
     aoMudarTema(() => {
       const escuro = temaNaTela() === "dark";
       botao.dataset.tela = escuro ? "escuro" : "claro";
       botao.setAttribute("aria-label", escuro ? "Usar o tema claro" : "Usar o tema escuro");
       botao.title = escuro ? "Tema claro" : "Tema escuro";
+      pintarIcone(clicou);
+      clicou = false;
     });
     botao.hidden = false;
   }
@@ -54,7 +89,6 @@ import { ICONES } from "../lib/icones";
   }
 
   svg {
-    display: none;
     grid-area: 1 / 1;
     width: 17px;
     height: 17px;
@@ -65,8 +99,12 @@ import { ICONES } from "../lib/icones";
     stroke-linejoin: round;
   }
 
-  [data-tela="claro"] .i-lua,
-  [data-tela="escuro"] .i-sol {
-    display: block;
+  .raios {
+    transform-origin: 12px 12px;
+  }
+
+  .botao-tema[data-tela="claro"] .raios {
+    transform: scale(0);
+    opacity: 0;
   }
 </style>
