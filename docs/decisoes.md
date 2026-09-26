@@ -1004,6 +1004,10 @@ nada muda.
      recente), a pedido do Cesar; os outros recebem quando forem revisados ou escritos. Depois do
      piloto com 7, o Cesar achou pouco e pediu marcação "como alguém estudando mesmo": o Jackson ficou
      com 24, e a regra passou a ser ~uma por parágrafo que ensina algo (o build recusa mais de 30).
+     Em 26/09/2026, o Cesar pediu as marcações em **todos os posts**, um de cada vez, aplicadas direto
+     (sem o plano prévio da skill): os 27 posts têm de 12 a 30 marcações (um commit por post), com
+     o texto visível de cada um conferido letra a letra contra o de antes. Os demais passos da revisão
+     em lote (`.claude/revisao-posts.md`) continuam pendentes.
 - **Desfeito** (o código dos lotes fica no histórico do git, nos commits entre `e30c0ec` e este):
   lista ⇄ cards e filtro com Flip, View Transitions do cartão ao artigo, desenho no topo do post e no
   hover dos cards, busca com Flip e marca-texto, tema em círculo com a lua virando sol, e o Copiar
