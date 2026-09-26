@@ -8,7 +8,7 @@ series: java
 draft: false
 ---
 
-Este guia é para quem precisa **planejar e executar a troca de versão do Java** num sistema real: o desenvolvedor que vai conduzir a migração e o arquiteto que precisa justificar prazo, custo e risco. Ele não repete o que mudou em cada versão. Isso fica nos posts da série [Atualizações do Java](/series/java/), um por LTS. :marca[Aqui fica o **como migrar**]: ciclo de releases e prazos de suporte, escolha da distribuição e da licença, versões mínimas de frameworks e ferramentas de build, um processo em cinco fases, critérios de avanço e rollback, ferramentas de análise e os cuidados com segurança, desempenho, containers e CI.
+Este guia é para quem precisa **planejar e executar a troca de versão do Java** num sistema real: o desenvolvedor que vai conduzir a migração e o arquiteto que precisa justificar prazo, custo e risco. Ele não repete o que mudou em cada versão. Isso fica nos posts da série [Atualizações do Java](/series/java/), um por LTS. Aqui fica o **como migrar**: ciclo de releases e prazos de suporte, escolha da distribuição e da licença, versões mínimas de frameworks e ferramentas de build, um processo em cinco fases, critérios de avanço e rollback, ferramentas de análise e os cuidados com segurança, desempenho, containers e CI.
 
 Para usar o guia junto com a série:
 
@@ -16,14 +16,14 @@ Para usar o guia junto com a série:
 2. Abra o post de **cada LTS entre a sua versão e a de destino**. Quem sai do Java 11 para o 25 lê os posts do [17](/posts/java-17/), do [21](/posts/java-21/) e do [25](/posts/java-25/), com atenção à seção "O que observar na migração" de cada um.
 3. Volte ao guia para montar o plano: [processo em cinco fases](#o-processo-de-migração-em-cinco-fases), [ambientes e rollback](#ambientes-critérios-de-avanço-e-rollback) e o [checklist](#checklist-da-migração).
 
-Situação em 16 de setembro de 2026: :marca[o **Java 25** é a LTS mais recente], o Java 27 saiu no dia anterior e a próxima LTS prevista é o **Java 29**, em setembro de 2027.
+Situação em 16 de setembro de 2026: o **Java 25** é a LTS mais recente, o Java 27 saiu no dia anterior e a próxima LTS prevista é o **Java 29**, em setembro de 2027.
 
 ## Como funciona o ciclo de releases
 
 Até o Java 9, cada versão esperava seus grandes recursos ficarem prontos: foram três anos e meio entre o Java 8 (março de 2014) e o Java 9 (setembro de 2017). Em setembro de 2017, Mark Reinhold, arquiteto-chefe da plataforma na Oracle, propôs [uma *feature release* a cada seis meses](https://mreinhold.org/blog/forward-faster), em março e setembro, a partir de março de 2018. O Java 10 foi a primeira versão desse calendário, e a [JEP 322](https://openjdk.org/jeps/322) adaptou o número de versão a ele. Na prática:
 
-- **O calendário é fixo.** :marca[O que não fica pronto a tempo entra na versão seguinte.] Pela [JEP 3](https://openjdk.org/jeps/3), o conjunto de recursos de cada versão é congelado cerca de três meses antes do lançamento, na fase chamada *Rampdown Phase One*.
-- **Recursos grandes chegam em etapas.** Um recurso em **preview** está completo, mas pode mudar ou sair; só funciona com `--enable-preview` na compilação e na execução ([JEP 12](https://openjdk.org/jeps/12)). Uma API em **incubadora** fica num módulo `jdk.incubator.*`, adicionado com `--add-modules` ([JEP 11](https://openjdk.org/jeps/11)). :marca[Nenhum dos dois deve ir para produção.]
+- **O calendário é fixo.** O que não fica pronto a tempo entra na versão seguinte. Pela [JEP 3](https://openjdk.org/jeps/3), o conjunto de recursos de cada versão é congelado cerca de três meses antes do lançamento, na fase chamada *Rampdown Phase One*.
+- **Recursos grandes chegam em etapas.** Um recurso em **preview** está completo, mas pode mudar ou sair; só funciona com `--enable-preview` na compilação e na execução ([JEP 12](https://openjdk.org/jeps/12)). Uma API em **incubadora** fica num módulo `jdk.incubator.*`, adicionado com `--add-modules` ([JEP 11](https://openjdk.org/jeps/11)). Nenhum dos dois deve ir para produção.
 - **Correções de segurança saem em datas conhecidas.** As atualizações do OpenJDK seguem o calendário de *Critical Patch Updates* (CPU) da Oracle: terceira terça-feira de janeiro, abril, julho e outubro ([JDK 25 Updates](https://wiki.openjdk.org/display/JDKUpdates/JDK+25u)). Em 2026 a Oracle passou a publicar também atualizações mensais de segurança; detalhes em [Patches de segurança](#patches-de-segurança).
 
 O post do [Java 11](/posts/java-11/#uma-versão-nova-a-cada-seis-meses) conta essa mudança em detalhe, com o novo formato do número de versão.
@@ -41,7 +41,7 @@ Nem toda versão recebe atualizações por muito tempo. A diferença que importa
 
 A proposta de 2017 previa uma LTS a cada três anos (11 e 17). Em 2021, Reinhold propôs [encurtar esse intervalo para dois anos](https://mreinhold.org/blog/forward-even-faster), e o [roadmap da Oracle](https://www.oracle.com/java/technologies/java-se-support-roadmap.html) adotou: 21, 25 e, previsto, 29.
 
-Um detalhe que costuma confundir: :marca[**LTS é uma promessa do fornecedor do JDK, não do projeto OpenJDK**]. O projeto mantém repositórios de atualização para as versões antigas ([JDK Updates](https://openjdk.org/projects/jdk-updates/)), mas quem publica binários atualizados, e por quanto tempo, é cada fornecedor: Oracle, Eclipse Adoptium, Amazon, Azul, Red Hat, Microsoft e outros. Os prazos de cada um estão em [Distribuições de JDK](#distribuições-de-jdk).
+Um detalhe que costuma confundir: **LTS é uma promessa do fornecedor do JDK, não do projeto OpenJDK**. O projeto mantém repositórios de atualização para as versões antigas ([JDK Updates](https://openjdk.org/projects/jdk-updates/)), mas quem publica binários atualizados, e por quanto tempo, é cada fornecedor: Oracle, Eclipse Adoptium, Amazon, Azul, Red Hat, Microsoft e outros. Os prazos de cada um estão em [Distribuições de JDK](#distribuições-de-jdk).
 
 ### Linha do tempo e janelas de suporte
 
@@ -50,7 +50,7 @@ Um detalhe que costuma confundir: :marca[**LTS é uma promessa do fornecedor do 
 O diagrama usa as datas do [Oracle Java SE Support Roadmap](https://www.oracle.com/java/technologies/java-se-support-roadmap.html), atualizado em 15/09/2026. *Premier Support* é o suporte padrão da assinatura da Oracle; *Extended Support* é a extensão paga depois dele. Três leituras para o planejamento:
 
 - **Java 8 e 11** seguem com Extended Support até dezembro de 2030 e janeiro de 2032, mas só para quem paga. Atualizações gratuitas dependem de outro fornecedor.
-- **Java 17** tem Premier Support da Oracle até setembro de 2026, e várias distribuições gratuitas encerram as atualizações dele em 2027. :marca[Quem está nele deve planejar o salto, de preferência direto para o 25.]
+- **Java 17** tem Premier Support da Oracle até setembro de 2026, e várias distribuições gratuitas encerram as atualizações dele em 2027. Quem está nele deve planejar o salto, de preferência direto para o 25.
 - **Java 25** é o destino natural hoje: Premier Support até setembro de 2030. O Java 29 está previsto para setembro de 2027, e a própria Oracle avisa que a classificação LTS e as datas podem mudar.
 
 ### O que cada LTS mudou
@@ -70,7 +70,7 @@ As datas de lançamento vêm das páginas do OpenJDK para o [JDK 8](https://open
 
 ## Distribuições de JDK
 
-As distribuições são construídas a partir do **mesmo código-fonte do OpenJDK**, e as principais são certificadas pelo TCK (*Technology Compatibility Kit*, a bateria oficial de testes de compatibilidade com o Java SE). :marca[A diferença está no prazo de atualização, no suporte comercial e na licença, não nos recursos da linguagem.]
+As distribuições são construídas a partir do **mesmo código-fonte do OpenJDK**, e as principais são certificadas pelo TCK (*Technology Compatibility Kit*, a bateria oficial de testes de compatibilidade com o Java SE). A diferença está no prazo de atualização, no suporte comercial e na licença, não nos recursos da linguagem.
 
 ### Prazos por fornecedor
 
@@ -93,29 +93,29 @@ Três observações sobre a tabela:
 - **Microsoft** não publica build do Java 8; na própria página de suporte, indica o Temurin para essa versão.
 - **IBM Semeru** usa a JVM [Eclipse OpenJ9](https://eclipse.dev/openj9/) em vez da HotSpot. As flags de GC e o comportamento de memória são diferentes; avalie com testes próprios antes de trocar.
 
-Os builds do OpenJDK que a Oracle publica em [jdk.java.net](https://jdk.java.net/) são gratuitos, mas cada versão recebe só as atualizações publicadas até a versão seguinte: para o Java 25, até janeiro de 2026 ([Oracle Java SE Licensing FAQ](https://www.oracle.com/java/technologies/javase/jdk-faqs.html)). :marca[Não servem para produção de longo prazo.]
+Os builds do OpenJDK que a Oracle publica em [jdk.java.net](https://jdk.java.net/) são gratuitos, mas cada versão recebe só as atualizações publicadas até a versão seguinte: para o Java 25, até janeiro de 2026 ([Oracle Java SE Licensing FAQ](https://www.oracle.com/java/technologies/javase/jdk-faqs.html)). Não servem para produção de longo prazo.
 
 ### Como escolher
 
 ![Fluxo de decisão para escolher a distribuição: sem necessidade de SLA, Amazon Corretto na AWS, Microsoft Build of OpenJDK no Azure e Eclipse Temurin nos demais casos; com SLA, Red Hat build of OpenJDK para clientes RHEL, Oracle JDK com assinatura para clientes Oracle e Azul, BellSoft ou IBM para os demais; em destaque, evitar em produção os builds do jdk.java.net e o Oracle JDK sem assinatura após o prazo da NFTC](/posts/guia-atualizacoes-java/escolha-da-distribuicao.svg)
 
-O fluxo começa pela pergunta que mais pesa no custo: :marca[**a empresa precisa de um contrato com SLA**] (*Service Level Agreement*, prazo garantido de atendimento) para o JDK? Se não precisa, qualquer distribuição gratuita serve, e a escolha segue a infraestrutura: Corretto na AWS e Microsoft no Azure, que são os JDKs mantidos pelos próprios provedores dessas nuvens, e Temurin nos demais casos, por ter imagens oficiais no Docker Hub e o prazo mínimo publicado. Se precisa de SLA, o caminho mais barato costuma ser aproveitar um contrato que já existe.
+O fluxo começa pela pergunta que mais pesa no custo: **a empresa precisa de um contrato com SLA** (*Service Level Agreement*, prazo garantido de atendimento) para o JDK? Se não precisa, qualquer distribuição gratuita serve, e a escolha segue a infraestrutura: Corretto na AWS e Microsoft no Azure, que são os JDKs mantidos pelos próprios provedores dessas nuvens, e Temurin nos demais casos, por ter imagens oficiais no Docker Hub e o prazo mínimo publicado. Se precisa de SLA, o caminho mais barato costuma ser aproveitar um contrato que já existe.
 
 A caixa vermelha lista as duas armadilhas mais comuns: usar em produção os builds do jdk.java.net, que param de receber correções, e continuar com o Oracle JDK depois que a licença gratuita daquela versão expirou, assunto da próxima seção.
 
 ## Custos e licenças
 
-A resposta curta para "Java é pago?" é **não**: :marca[dá para rodar Java em produção sem pagar licença]. O custo aparece em dois casos, ao usar o **Oracle JDK** fora das condições gratuitas ou ao **contratar suporte**.
+A resposta curta para "Java é pago?" é **não**: dá para rodar Java em produção sem pagar licença. O custo aparece em dois casos, ao usar o **Oracle JDK** fora das condições gratuitas ou ao **contratar suporte**.
 
 - **OpenJDK** usa a licença [GPLv2 com Classpath Exception](https://openjdk.org/legal/gplv2+ce.html). A exceção garante que rodar a sua aplicação sobre o JDK não obriga a publicar o código dela sob a GPL. O Temurin, por exemplo, é distribuído sob essa licença, sem custo ([FAQ do Adoptium](https://adoptium.net/docs/faq/)).
-- **Oracle JDK 8 (a partir do 8u211, de abril de 2019), Oracle JDK 11 e Oracle JDK 17 a partir do 17.0.13** usam a licença **OTN** (*Oracle Technology Network*), que permite, sem custo, uso pessoal, desenvolvimento, testes, prototipação e demonstração. :marca[**Uso em produção exige assinatura**] ([Oracle Java SE Licensing FAQ](https://www.oracle.com/java/technologies/javase/jdk-faqs.html)).
-- **Oracle JDK 21 e 25** usam a **NFTC** (*Oracle No-Fee Terms and Conditions*), que permite uso gratuito inclusive em produção, mas com prazo: as atualizações de uma LTS ficam sob a NFTC :marca[só **até um ano depois do lançamento da LTS seguinte**]. Depois disso, as novas atualizações passam para a OTN. Para o 17, a NFTC valeu até setembro de 2024; para o 21, vale até **setembro de 2026**, e as atualizações a partir do CPU de outubro de 2026 estão planejadas sob a OTN ([roadmap da Oracle](https://www.oracle.com/java/technologies/java-se-support-roadmap.html)); para o 25, até setembro de 2028. As versões não LTS ficam sob a NFTC durante os seis meses de vida.
+- **Oracle JDK 8 (a partir do 8u211, de abril de 2019), Oracle JDK 11 e Oracle JDK 17 a partir do 17.0.13** usam a licença **OTN** (*Oracle Technology Network*), que permite, sem custo, uso pessoal, desenvolvimento, testes, prototipação e demonstração. **Uso em produção exige assinatura** ([Oracle Java SE Licensing FAQ](https://www.oracle.com/java/technologies/javase/jdk-faqs.html)).
+- **Oracle JDK 21 e 25** usam a **NFTC** (*Oracle No-Fee Terms and Conditions*), que permite uso gratuito inclusive em produção, mas com prazo: as atualizações de uma LTS ficam sob a NFTC só **até um ano depois do lançamento da LTS seguinte**. Depois disso, as novas atualizações passam para a OTN. Para o 17, a NFTC valeu até setembro de 2024; para o 21, vale até **setembro de 2026**, e as atualizações a partir do CPU de outubro de 2026 estão planejadas sob a OTN ([roadmap da Oracle](https://www.oracle.com/java/technologies/java-se-support-roadmap.html)); para o 25, até setembro de 2028. As versões não LTS ficam sob a NFTC durante os seis meses de vida.
 
 Quem roda Oracle JDK 21 em produção sem assinatura precisa decidir agora: trocar para uma distribuição OpenJDK, migrar para o Oracle JDK 25 (gratuito até setembro de 2028) ou contratar a assinatura.
 
 ### Java SE Universal Subscription
 
-Desde 23 de janeiro de 2023, a assinatura da Oracle é a **Java SE Universal Subscription**, :marca[cobrada **por funcionário**], e não por processador ou por usuário do Java ([FAQ da assinatura](https://www.oracle.com/java/technologies/java-se-subscription-faq.html)). A lista de preços define "funcionário" como todos os empregados em tempo integral, parcial e temporários da empresa, mais os de agentes, terceirizados e consultores que apoiam as operações internas, contando todos, e não só quem usa Java ([lista de preços](https://www.oracle.com/assets/java-se-subscription-pricelist-5028356.pdf)):
+Desde 23 de janeiro de 2023, a assinatura da Oracle é a **Java SE Universal Subscription**, cobrada **por funcionário**, e não por processador ou por usuário do Java ([FAQ da assinatura](https://www.oracle.com/java/technologies/java-se-subscription-faq.html)). A lista de preços define "funcionário" como todos os empregados em tempo integral, parcial e temporários da empresa, mais os de agentes, terceirizados e consultores que apoiam as operações internas, contando todos, e não só quem usa Java ([lista de preços](https://www.oracle.com/assets/java-se-subscription-pricelist-5028356.pdf)):
 
 | Funcionários | US\$ por funcionário por mês |
 |---|---|
@@ -128,18 +128,18 @@ Desde 23 de janeiro de 2023, a assinatura da Oracle é a **Java SE Universal Sub
 | 40.000 a 49.999 | 5,25 |
 | 50.000 ou mais | sob consulta |
 
-O exemplo da própria lista: uma empresa com 28.000 funcionários paga 28.000 × US\$ 6,75 × 12 = :circulo[**US\$ 2.268.000 por ano**], mesmo que poucos sistemas usem Java. Por isso o levantamento de onde roda Oracle JDK é o primeiro passo de qualquer revisão de custo.
+O exemplo da própria lista: uma empresa com 28.000 funcionários paga 28.000 × US\$ 6,75 × 12 = **US\$ 2.268.000 por ano**, mesmo que poucos sistemas usem Java. Por isso o levantamento de onde roda Oracle JDK é o primeiro passo de qualquer revisão de custo.
 
 Duas mudanças recentes na oferta da Oracle:
 
 - **GraalVM saiu dos produtos Java SE.** O GraalVM for JDK 24 foi a última versão licenciada e suportada como parte da assinatura Java SE ([roadmap da Oracle](https://www.oracle.com/java/technologies/java-se-support-roadmap.html)). O GraalVM continua sendo lançado em calendário próprio, sob a licença GFTC ([FAQ do GraalVM](https://www.graalvm.org/faq/)).
 - **A assinatura passou a incluir atualizações mensais de segurança** (*Critical Security Patch Updates*), além das trimestrais ([página da assinatura](https://www.oracle.com/java/java-se-subscription/)).
 
-Em resumo: :marca[**a licença é evitável em praticamente todos os cenários**] com uma distribuição OpenJDK. O que se compra com dinheiro é SLA, prazo estendido e responsabilidade contratual.
+Em resumo: **a licença é evitável em praticamente todos os cenários** com uma distribuição OpenJDK. O que se compra com dinheiro é SLA, prazo estendido e responsabilidade contratual.
 
 ## Quando migrar
 
-A pergunta útil não é "qual a versão mais nova?", e sim :marca[**"quanto custa ficar parado?"**]. Uma versão sem atualizações deixa de receber correções de segurança, frameworks passam a exigir versões mais novas (veja a tabela abaixo) e cada LTS pulada acumula mais mudanças para tratar de uma vez. Um bom gatilho é o fim das atualizações gratuitas da sua distribuição, visto na [tabela de prazos](#prazos-por-fornecedor).
+A pergunta útil não é "qual a versão mais nova?", e sim **"quanto custa ficar parado?"**. Uma versão sem atualizações deixa de receber correções de segurança, frameworks passam a exigir versões mais novas (veja a tabela abaixo) e cada LTS pulada acumula mais mudanças para tratar de uma vez. Um bom gatilho é o fim das atualizações gratuitas da sua distribuição, visto na [tabela de prazos](#prazos-por-fornecedor).
 
 ### Estratégia por perfil
 
@@ -149,7 +149,7 @@ A pergunta útil não é "qual a versão mais nova?", e sim :marca[**"quanto cus
 | **Balanceado** | quando os frameworks e agentes que você usa declaram suporte oficial | suíte automatizada confiável | e-commerce, backoffice, a maioria dos serviços |
 | **Ágil** | a cada versão, inclusive as não LTS | CI forte e dependências sempre atualizadas | ferramentas internas, protótipos, times de produto |
 
-O mesmo portfólio pode misturar estratégias. Não faz sentido segurar um protótipo no Java 17 "por padrão corporativo", nem levar o core de pagamentos para cada versão de seis meses. Quem está duas ou mais LTS atrás deve ir :marca[**direto para a LTS mais recente**] que as dependências suportam; parar numa LTS intermediária repete todo o ciclo de testes e implantação.
+O mesmo portfólio pode misturar estratégias. Não faz sentido segurar um protótipo no Java 17 "por padrão corporativo", nem levar o core de pagamentos para cada versão de seis meses. Quem está duas ou mais LTS atrás deve ir **direto para a LTS mais recente** que as dependências suportam; parar numa LTS intermediária repete todo o ciclo de testes e implantação.
 
 ### Versões mínimas do ecossistema
 
@@ -183,11 +183,11 @@ Cada post da série termina com uma seção de cuidados de migração. O resumo 
 - **Java 21 → 25**: o Security Manager foi desativado permanentemente ([JEP 486](https://openjdk.org/jeps/486)), e a JVM não inicia se uma opção de linha de comando tentar ativá-lo; métodos de acesso a memória de `sun.misc.Unsafe` passam a emitir aviso ([JEP 498](https://openjdk.org/jeps/498)), assim como o uso de JNI ([JEP 472](https://openjdk.org/jeps/472)); o ZGC ficou só geracional ([JEP 490](https://openjdk.org/jeps/490)). Detalhes em [O que observar na migração a partir do Java 21](/posts/java-25/#o-que-observar-na-migração-a-partir-do-java-21).
 - **Java 25 → 29**: o que já saiu no 26 e no 27, como avisos ao alterar campos `final` por reflexão ([JEP 500](https://openjdk.org/jeps/500)), G1 como coletor padrão em qualquer ambiente ([JEP 523](https://openjdk.org/jeps/523)) e compact object headers ligados por padrão ([JEP 534](https://openjdk.org/jeps/534)), está em [O que observar vindo do Java 25](/posts/java-29/#o-que-observar-vindo-do-java-25).
 
-Na prática, :marca[o que quebra costuma estar nas **dependências**, e não no código da aplicação]. Bibliotecas que geram ou manipulam bytecode (ASM, Byte Buddy, cglib), agentes de APM e frameworks que usam reflexão profunda são os primeiros lugares para olhar, porque dependem de detalhes internos da JVM.
+Na prática, o que quebra costuma estar nas **dependências**, e não no código da aplicação. Bibliotecas que geram ou manipulam bytecode (ASM, Byte Buddy, cglib), agentes de APM e frameworks que usam reflexão profunda são os primeiros lugares para olhar, porque dependem de detalhes internos da JVM.
 
 ## O processo de migração em cinco fases
 
-O processo abaixo vale para qualquer salto. :marca[A ideia central é **separar variáveis**]: primeiro se descobre o que vai quebrar, depois se resolve o que dá para resolver ainda na versão atual, e só então se troca o JDK.
+O processo abaixo vale para qualquer salto. A ideia central é **separar variáveis**: primeiro se descobre o que vai quebrar, depois se resolve o que dá para resolver ainda na versão atual, e só então se troca o JDK.
 
 ![Processo de migração em cinco fases: análise e preparação na versão atual; migração do build, testes e implantação gradual na versão alvo; para cada fase, o que fazer e com que resultado se sai dela; impedimentos novos nas fases 3 a 5 voltam para o backlog](/posts/guia-atualizacoes-java/processo-em-fases.svg)
 
@@ -195,7 +195,7 @@ A coluna da direita do diagrama é o critério para encerrar cada fase. Se um im
 
 ### Fase 1 — Análise
 
-O objetivo é :marca[sair com uma **lista concreta de impedimentos**], não com uma impressão. As ferramentas estão detalhadas em [Ferramentas de migração](#ferramentas-de-migração):
+O objetivo é sair com uma **lista concreta de impedimentos**, não com uma impressão. As ferramentas estão detalhadas em [Ferramentas de migração](#ferramentas-de-migração):
 
 1. Rodar `jdeps --jdk-internals` **com o JDK de destino** nos JARs da aplicação e das dependências, para listar usos de APIs internas do JDK.
 2. Rodar `jdeprscan --for-removal` também com o JDK de destino, para listar usos de APIs marcadas para remoção.
@@ -218,7 +218,7 @@ O resultado é o **backlog da migração**: bibliotecas a atualizar, trechos de 
 
 Acontece **ainda na versão atual do Java**. O objetivo é reduzir o risco antes de trocar qualquer coisa:
 
-1. **Atualize as dependências** para versões que suportam o Java de destino, uma de cada vez, rodando a suíte a cada passo. :marca[Atualizar biblioteca e JVM ao mesmo tempo mistura duas variáveis] e torna qualquer regressão difícil de atribuir.
+1. **Atualize as dependências** para versões que suportam o Java de destino, uma de cada vez, rodando a suíte a cada passo. Atualizar biblioteca e JVM ao mesmo tempo mistura duas variáveis e torna qualquer regressão difícil de atribuir.
 2. **Zere os avisos de depreciação** apontados na análise e deixe o compilador avisar os novos usos:
 
 ```xml title="pom.xml"
@@ -235,13 +235,13 @@ Acontece **ainda na versão atual do Java**. O objetivo é reduzir o risco antes
 ```
 
 3. **Crie um job de CI com o JDK de destino** (veja [CI com as duas versões](#ci-com-as-duas-versões)), mesmo que ele ainda falhe. Ele mostra o progresso a cada commit.
-4. **Meça a linha de base de desempenho**: latência (p50, p99), throughput, heap após GC, pausas de GC e tempo de inicialização, com a mesma carga que será usada na fase 4. :marca[Sem linha de base, "ficou mais lento?" vira opinião.]
+4. **Meça a linha de base de desempenho**: latência (p50, p99), throughput, heap após GC, pausas de GC e tempo de inicialização, com a mesma carga que será usada na fase 4. Sem linha de base, "ficou mais lento?" vira opinião.
 
 ### Fase 3 — Migração do build
 
 Com o terreno preparado, a troca tende a ser pequena: mudar a versão no build e na imagem, resolver o que sobrar e revisar as flags de JVM.
 
-:marca[**Compile com `--release`, e não com `-source`/`-target`.**] As opções `-source` e `-target` definem só a sintaxe aceita e o formato do bytecode; o código continua sendo compilado contra a API do JDK instalado, e uma chamada a um método que não existe na versão alvo só falha em execução. A opção `--release` valida sintaxe **e** API contra a versão escolhida ([documentação do javac](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html)):
+**Compile com `--release`, e não com `-source`/`-target`.** As opções `-source` e `-target` definem só a sintaxe aceita e o formato do bytecode; o código continua sendo compilado contra a API do JDK instalado, e uma chamada a um método que não existe na versão alvo só falha em execução. A opção `--release` valida sintaxe **e** API contra a versão escolhida ([documentação do javac](https://docs.oracle.com/en/java/javase/25/docs/specs/man/javac.html)):
 
 ```xml title="pom.xml"
 <properties>
@@ -317,18 +317,18 @@ O diagrama mostra a ordem dos ambientes e o que cada um precisa provar antes de 
 
 1. **Build e CI**: a suíte passa nas duas versões, o `jdeps` não aponta uso novo de API interna e o build não tem avisos novos de depreciação.
 2. **Homologação**: o teste de carga fica dentro da meta combinada em relação à linha de base; pausas de GC e heap após GC são comparáveis; o scan de dependências não aponta vulnerabilidade nova.
-3. **Canário**: uma parte das instâncias, ou do tráfego, roda a versão nova. Observe por :sublinhado[**dias, e não minutos**]: problemas de memória e de GC aparecem com carga acumulada. Para avançar, erro e latência p99 precisam ficar na meta, sem `OutOfMemoryError`, restart em loop ou aviso novo da JVM nos logs.
+3. **Canário**: uma parte das instâncias, ou do tráfego, roda a versão nova. Observe por **dias, e não minutos**: problemas de memória e de GC aparecem com carga acumulada. Para avançar, erro e latência p99 precisam ficar na meta, sem `OutOfMemoryError`, restart em loop ou aviso novo da JVM nos logs.
 4. **Produção**: todas as instâncias migradas, o [alerta de frota mista](#métricas-e-alerta-de-frota-mista) zerado e a imagem anterior guardada por algumas semanas.
 
 ### Gatilhos de rollback
 
-Rollback é voltar para a imagem anterior. :marca[Primeiro se restaura o serviço, depois se investiga.] Gatilhos típicos:
+Rollback é voltar para a imagem anterior. Primeiro se restaura o serviço, depois se investiga. Gatilhos típicos:
 
 - latência p99 ou taxa de erro acima do limite combinado, de forma sustentada;
 - erro novo e recorrente atribuível à JVM: flag removida, agente incompatível, reflexão bloqueada;
 - `OutOfMemoryError`, container morto por falta de memória, restart em loop ou pausas de GC fora do padrão da linha de base.
 
-:marca[O rollback só é confiável se tiver sido **ensaiado**]: a imagem anterior precisa estar a um comando de distância, e alguém precisa ter feito a volta pelo menos uma vez em homologação.
+O rollback só é confiável se tiver sido **ensaiado**: a imagem anterior precisa estar a um comando de distância, e alguém precisa ter feito a volta pelo menos uma vez em homologação.
 
 ### Checklist da migração
 
@@ -451,13 +451,13 @@ Parte do argumento para migrar é segurança. Cada post detalha as mudanças; em
 
 As atualizações de segurança do JDK saem em datas conhecidas. Os *Critical Patch Updates* da Oracle são publicados na **terceira terça-feira de janeiro, abril, julho e outubro** ([Oracle Security Alerts](https://www.oracle.com/security-alerts/)), e os repositórios de atualização do OpenJDK seguem o mesmo calendário ([JDK 25 Updates](https://wiki.openjdk.org/display/JDKUpdates/JDK+25u)). O próximo é em 20 de outubro de 2026.
 
-Em 2026 a Oracle criou os *Critical Security Patch Updates*, correções de segurança menores publicadas na terceira terça-feira dos outros oito meses ([Oracle Security Alerts](https://www.oracle.com/security-alerts/)). Para o Java, a Oracle publicou uma atualização mensal de segurança em 18 de agosto de 2026 e planeja outras ([Inside Java: Transitioning Java to More Frequent Security Updates](https://web.archive.org/web/2026/https://blogs.oracle.com/java/transitioning-java-to-more-frequent-security-updates)); no OpenJDK, essa data corresponde ao 25.0.4.1. Na prática, :marca[**a atualização do JDK precisa ser tão rotineira quanto a de dependências**]: imagem base atualizada no pipeline e implantação sem cerimônia.
+Em 2026 a Oracle criou os *Critical Security Patch Updates*, correções de segurança menores publicadas na terceira terça-feira dos outros oito meses ([Oracle Security Alerts](https://www.oracle.com/security-alerts/)). Para o Java, a Oracle publicou uma atualização mensal de segurança em 18 de agosto de 2026 e planeja outras ([Inside Java: Transitioning Java to More Frequent Security Updates](https://web.archive.org/web/2026/https://blogs.oracle.com/java/transitioning-java-to-more-frequent-security-updates)); no OpenJDK, essa data corresponde ao 25.0.4.1. Na prática, **a atualização do JDK precisa ser tão rotineira quanto a de dependências**: imagem base atualizada no pipeline e implantação sem cerimônia.
 
 ### Restringir algoritmos sem enfraquecer os padrões
 
 O arquivo `conf/security/java.security` do JDK define, entre outras coisas, quais algoritmos o TLS e a validação de certificados recusam. Para endurecer a política sem editar o arquivo do JDK (a edição se perde a cada atualização), aponte um arquivo próprio com `-Djava.security.properties`.
 
-O cuidado principal: :marca[**uma propriedade no seu arquivo substitui o valor padrão inteiro**], não acrescenta itens a ele. Um arquivo com `jdk.tls.disabledAlgorithms=SSLv3, RC4, DES` **reabilita** TLS 1.0, TLS 1.1, 3DES e as suítes anônimas que o JDK já bloqueia. Parta sempre do valor padrão da versão que você usa:
+O cuidado principal: **uma propriedade no seu arquivo substitui o valor padrão inteiro**, não acrescenta itens a ele. Um arquivo com `jdk.tls.disabledAlgorithms=SSLv3, RC4, DES` **reabilita** TLS 1.0, TLS 1.1, 3DES e as suítes anônimas que o JDK já bloqueia. Parta sempre do valor padrão da versão que você usa:
 
 ```bash
 # mostra o padrão do JDK em uso
@@ -631,7 +631,7 @@ ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75.0", "-XX:+ExitOnOutOfMemoryError", 
 
 As duas flags do `ENTRYPOINT`:
 
-- `-XX:MaxRAMPercentage=75.0` define o heap máximo como percentual da memória disponível. A JVM enxerga o limite de memória do container desde o Java 10 ([JVM ciente de contêineres](/posts/java-11/#jvm-ciente-de-contêineres)), mas :marca[o padrão é só 25%] ([documentação do comando java](https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html)). A folga de 25% é para o que fica **fora** do heap: metaspace, pilhas das threads, buffers diretos e o próprio código da JVM. Sem folga, o container é encerrado por falta de memória sem nenhum erro Java no log.
+- `-XX:MaxRAMPercentage=75.0` define o heap máximo como percentual da memória disponível. A JVM enxerga o limite de memória do container desde o Java 10 ([JVM ciente de contêineres](/posts/java-11/#jvm-ciente-de-contêineres)), mas o padrão é só 25% ([documentação do comando java](https://docs.oracle.com/en/java/javase/25/docs/specs/man/java.html)). A folga de 25% é para o que fica **fora** do heap: metaspace, pilhas das threads, buffers diretos e o próprio código da JVM. Sem folga, o container é encerrado por falta de memória sem nenhum erro Java no log.
 - `-XX:+ExitOnOutOfMemoryError` encerra a JVM no primeiro `OutOfMemoryError`, em vez de deixá-la funcionando pela metade. Num orquestrador, morrer rápido e ser reiniciado é o comportamento certo.
 
 A imagem `eclipse-temurin:25-jre` não inclui `curl` nem `wget` ([Dockerfiles das imagens](https://github.com/adoptium/containers/tree/main/25/jre/ubuntu)), então um `HEALTHCHECK` baseado em `curl` falharia. Em Kubernetes, a verificação de saúde fica nas probes do manifesto. Hoje, as tags sem sufixo, como `25-jre`, usam o Ubuntu 26.04; para fixar a versão do sistema, use tags como `25-jre-noble`, com Ubuntu 24.04 ([tags no Docker Hub](https://hub.docker.com/_/eclipse-temurin)).

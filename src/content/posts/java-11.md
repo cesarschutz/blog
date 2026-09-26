@@ -8,9 +8,9 @@ series: java
 draft: false
 ---
 
-O Java 11 chegou à disponibilidade geral (GA) em **25 de setembro de 2018** ([página do JDK 11](https://openjdk.org/projects/jdk/11/)) e :marca[foi a primeira versão de suporte de longo prazo (LTS, *long-term support*) depois do Java 8]. Entre as duas saíram o Java 9, em 21 de setembro de 2017 ([JDK 9](https://openjdk.org/projects/jdk9/)), e o Java 10, em 20 de março de 2018 ([JDK 10](https://openjdk.org/projects/jdk/10/)). Nenhum dos dois é LTS: pelo [roadmap de suporte da Oracle](https://www.oracle.com/java/technologies/java-se-support-roadmap.html), o 9 foi substituído pelo 10 e o 10 pelo 11 assim que saíram.
+O Java 11 chegou à disponibilidade geral (GA) em **25 de setembro de 2018** ([página do JDK 11](https://openjdk.org/projects/jdk/11/)) e foi a primeira versão de suporte de longo prazo (LTS, *long-term support*) depois do Java 8. Entre as duas saíram o Java 9, em 21 de setembro de 2017 ([JDK 9](https://openjdk.org/projects/jdk9/)), e o Java 10, em 20 de março de 2018 ([JDK 10](https://openjdk.org/projects/jdk/10/)). Nenhum dos dois é LTS: pelo [roadmap de suporte da Oracle](https://www.oracle.com/java/technologies/java-se-support-roadmap.html), o 9 foi substituído pelo 10 e o 10 pelo 11 assim que saíram.
 
-Este artigo é para quem vem do Java 8 e reúne o que mudou do 9 ao 11. Ele começa pelo novo ciclo de releases e pelo :marca[sistema de módulos, a mudança que mais pesa na migração]; passa por linguagem, concorrência, APIs, JVM, ferramentas e segurança; e termina com o que foi removido, um roteiro de migração e a lista completa de JEPs (*JDK Enhancement Proposals*, as propostas formais de mudança do OpenJDK). Cada recurso indica a versão e a JEP em que apareceu, porque vários passaram por estágios: o HTTP Client, por exemplo, foi incubadora no 9 e no 10 antes de virar API padrão no 11.
+Este artigo é para quem vem do Java 8 e reúne o que mudou do 9 ao 11. Ele começa pelo novo ciclo de releases e pelo sistema de módulos, a mudança que mais pesa na migração; passa por linguagem, concorrência, APIs, JVM, ferramentas e segurança; e termina com o que foi removido, um roteiro de migração e a lista completa de JEPs (*JDK Enhancement Proposals*, as propostas formais de mudança do OpenJDK). Cada recurso indica a versão e a JEP em que apareceu, porque vários passaram por estágios: o HTTP Client, por exemplo, foi incubadora no 9 e no 10 antes de virar API padrão no 11.
 
 Sobre suporte, o roadmap da Oracle informa Premier Support do Oracle JDK 11 até setembro de 2023 e Extended Support até janeiro de 2032. Distribuições do OpenJDK têm calendários próprios: a Adoptium informa disponibilidade do Eclipse Temurin 11 até pelo menos outubro de 2027 ([Adoptium](https://adoptium.net/support/)), e a AWS, fim de vida do Amazon Corretto 11 em janeiro de 2032 ([Corretto FAQ](https://aws.amazon.com/corretto/faqs/)).
 
@@ -22,13 +22,13 @@ O diagrama mostra os principais recursos de cada versão e o estágio em que che
 
 ### Uma versão nova a cada seis meses
 
-Foram três anos e meio entre o Java 8 (março de 2014) e o Java 9 (setembro de 2017), porque cada versão esperava seus grandes recursos ficarem prontos. Em setembro de 2017, Mark Reinhold, da Oracle, propôs [inverter a lógica](https://mreinhold.org/blog/forward-faster): uma *feature release* (versão com recursos novos) a cada seis meses, atualizações trimestrais (janeiro, abril, julho e outubro) e uma LTS a cada três anos. O calendário passa a ser fixo, e :marca[o recurso que não fica pronto a tempo simplesmente vai para a versão seguinte]. Pelo processo descrito na [JEP 3](https://openjdk.org/jeps/3), em junho e dezembro o repositório principal é bifurcado para estabilizar a próxima versão, que chega em março ou setembro, como mostram as datas do diagrama. O [guia de atualizações do Java](/posts/guia-atualizacoes-java/#como-funciona-o-ciclo-de-releases) detalha esse ciclo.
+Foram três anos e meio entre o Java 8 (março de 2014) e o Java 9 (setembro de 2017), porque cada versão esperava seus grandes recursos ficarem prontos. Em setembro de 2017, Mark Reinhold, da Oracle, propôs [inverter a lógica](https://mreinhold.org/blog/forward-faster): uma *feature release* (versão com recursos novos) a cada seis meses, atualizações trimestrais (janeiro, abril, julho e outubro) e uma LTS a cada três anos. O calendário passa a ser fixo, e o recurso que não fica pronto a tempo simplesmente vai para a versão seguinte. Pelo processo descrito na [JEP 3](https://openjdk.org/jeps/3), em junho e dezembro o repositório principal é bifurcado para estabilizar a próxima versão, que chega em março ou setembro, como mostram as datas do diagrama. O [guia de atualizações do Java](/posts/guia-atualizacoes-java/#como-funciona-o-ciclo-de-releases) detalha esse ciclo.
 
 ![Linha do tempo das versões 8 a 17 mostrando lançamentos a cada seis meses a partir do 9, as LTS 8, 11 e 17 e o período de Premier Support da Oracle de cada uma: 9 e 10 cobertas só até a versão seguinte, 11 com Premier até set/2023 e Extended até jan/2032](/posts/java-11/modelo-de-releases.svg)
 
 No diagrama, cada barra é o Premier Support da Oracle para uma versão. Três consequências para quem mantém sistemas:
 
-- :marca[**Versões não-LTS têm vida curta.**] O Premier Support do 9 terminou em março de 2018 e o do 10 em setembro de 2018, quando saiu a versão seguinte.
+- **Versões não-LTS têm vida curta.** O Premier Support do 9 terminou em março de 2018 e o do 10 em setembro de 2018, quando saiu a versão seguinte.
 - **As LTS são o alvo natural de produção.** A Oracle define 8, 11, 17, 21 e 25 como LTS e hoje pretende lançar uma a cada dois anos ([roadmap](https://www.oracle.com/java/technologies/java-se-support-roadmap.html)); o salto de 11 para 17 vem do intervalo de três anos da proposta original.
 - **Recursos grandes chegam em etapas.** Uma API pode sair antes como *módulo incubadora*, ainda não final e fora da resolução padrão ([JEP 11](https://openjdk.org/jeps/11)); a partir do Java 12, recursos de linguagem e da JVM também podem sair em *preview*, completos mas desligados por padrão ([JEP 12](https://openjdk.org/jeps/12)). O [post do Java 17](/posts/java-17/#recursos-em-preview-ou-incubadora-nesta-lts) mostra esse mecanismo em uso.
 
@@ -36,7 +36,7 @@ No diagrama, cada barra é o Premier Support da Oracle para uma versão. Três c
 
 **Chegou em:** Java 9 (final, [JEP 223](https://openjdk.org/jeps/223)) → Java 10 (final, [JEP 322](https://openjdk.org/jeps/322))
 
-No Java 8, a propriedade `java.version` tinha a forma `1.8.0_nnn`. A [JEP 223](https://openjdk.org/jeps/223) abandonou o prefixo `1.` e definiu `$MAJOR.$MINOR.$SECURITY`. A [JEP 322](https://openjdk.org/jeps/322) adaptou o esquema ao calendário de seis meses: `$FEATURE.$INTERIM.$UPDATE.$PATCH`. `$FEATURE` sobe a cada versão semestral (10 em março de 2018, 11 em setembro de 2018), `$INTERIM` fica em zero, `$UPDATE` conta as atualizações e `$PATCH` é reservado para correções emergenciais. O [guia de migração da Oracle](https://docs.oracle.com/en/java/javase/11/migrate/index.html) avisa que :marca[código que interpreta a string de versão pode precisar de ajuste]:
+No Java 8, a propriedade `java.version` tinha a forma `1.8.0_nnn`. A [JEP 223](https://openjdk.org/jeps/223) abandonou o prefixo `1.` e definiu `$MAJOR.$MINOR.$SECURITY`. A [JEP 322](https://openjdk.org/jeps/322) adaptou o esquema ao calendário de seis meses: `$FEATURE.$INTERIM.$UPDATE.$PATCH`. `$FEATURE` sobe a cada versão semestral (10 em março de 2018, 11 em setembro de 2018), `$INTERIM` fica em zero, `$UPDATE` conta as atualizações e `$PATCH` é reservado para correções emergenciais. O [guia de migração da Oracle](https://docs.oracle.com/en/java/javase/11/migrate/index.html) avisa que código que interpreta a string de versão pode precisar de ajuste:
 
 ```java title="Versao.java"
 public class Versao {
@@ -63,20 +63,20 @@ public class Versao {
 Junto com o ciclo novo mudou a distribuição, e isso pesa na escolha do JDK para produção:
 
 - **Oracle JDK 11**: licença OTN, que permite sem custo uso pessoal, desenvolvimento, testes, prototipação, demonstração e alguns outros usos limitados ([Oracle Java SE Licensing FAQ](https://www.oracle.com/java/technologies/javase/jdk-faqs.html)).
-- **Builds do OpenJDK publicados pela Oracle**: licença GPLv2 com Classpath Exception, mas, para o Java 11, :marca[só até o **11.0.2, de janeiro de 2019**] (mesma FAQ). As atualizações seguintes do OpenJDK 11 vêm de outros distribuidores, como o [Eclipse Temurin](https://adoptium.net/support/) e o [Amazon Corretto](https://aws.amazon.com/corretto/faqs/).
-- **Diferenças técnicas pequenas.** As [release notes do JDK 11](https://www.oracle.com/java/technologies/javase/11-relnote-issues.html) listam, entre outras: instaladores e Solaris só no Oracle JDK, Alpine Linux só no OpenJDK, saída diferente de `java -version` e assinatura obrigatória de provedores criptográficos de terceiros só no Oracle JDK. Recursos antes comerciais, como o Flight Recorder, entraram no OpenJDK ([JEP 328](https://openjdk.org/jeps/328)); por isso a flag `-XX:+UnlockCommercialFeatures` só gera aviso no Oracle JDK 11, mas :marca[impede a JVM de iniciar nos builds do OpenJDK].
+- **Builds do OpenJDK publicados pela Oracle**: licença GPLv2 com Classpath Exception, mas, para o Java 11, só até o **11.0.2, de janeiro de 2019** (mesma FAQ). As atualizações seguintes do OpenJDK 11 vêm de outros distribuidores, como o [Eclipse Temurin](https://adoptium.net/support/) e o [Amazon Corretto](https://aws.amazon.com/corretto/faqs/).
+- **Diferenças técnicas pequenas.** As [release notes do JDK 11](https://www.oracle.com/java/technologies/javase/11-relnote-issues.html) listam, entre outras: instaladores e Solaris só no Oracle JDK, Alpine Linux só no OpenJDK, saída diferente de `java -version` e assinatura obrigatória de provedores criptográficos de terceiros só no Oracle JDK. Recursos antes comerciais, como o Flight Recorder, entraram no OpenJDK ([JEP 328](https://openjdk.org/jeps/328)); por isso a flag `-XX:+UnlockCommercialFeatures` só gera aviso no Oracle JDK 11, mas impede a JVM de iniciar nos builds do OpenJDK.
 
 O [guia de atualizações do Java](/posts/guia-atualizacoes-java/#distribuições-de-jdk) compara as distribuições atuais e seus custos.
 
 ## Sistema de módulos (JPMS)
 
-O sistema de módulos da plataforma Java (JPMS, *Java Platform Module System*) é a maior mudança do período. :marca[Mesmo que você nunca escreva um `module-info.java`, ele afeta a sua aplicação], porque o próprio JDK foi dividido em módulos.
+O sistema de módulos da plataforma Java (JPMS, *Java Platform Module System*) é a maior mudança do período. Mesmo que você nunca escreva um `module-info.java`, ele afeta a sua aplicação, porque o próprio JDK foi dividido em módulos.
 
 ### Módulos e module-info.java
 
 **Chegou em:** Java 9 (final, [JEP 261](https://openjdk.org/jeps/261) e [JEP 200](https://openjdk.org/jeps/200))
 
-No Java 8, o classpath é uma lista plana de JARs: nada declara que um JAR depende de outro, qualquer classe `public` é visível para todos e uma dependência ausente só aparece quando alguma classe tenta carregá-la. O JPMS, especificado pela JSR 376 e implementado pela [JEP 261](https://openjdk.org/jeps/261), cria o **módulo**: um conjunto nomeado de pacotes que :marca[declara do que depende (`requires`) e o que expõe (`exports`)]. A [JEP 200](https://openjdk.org/jeps/200) usou esse mecanismo para dividir o próprio JDK em módulos como `java.base`, `java.sql` e `java.logging`.
+No Java 8, o classpath é uma lista plana de JARs: nada declara que um JAR depende de outro, qualquer classe `public` é visível para todos e uma dependência ausente só aparece quando alguma classe tenta carregá-la. O JPMS, especificado pela JSR 376 e implementado pela [JEP 261](https://openjdk.org/jeps/261), cria o **módulo**: um conjunto nomeado de pacotes que declara do que depende (`requires`) e o que expõe (`exports`). A [JEP 200](https://openjdk.org/jeps/200) usou esse mecanismo para dividir o próprio JDK em módulos como `java.base`, `java.sql` e `java.logging`.
 
 ![Comparação entre classpath do Java 8, uma lista plana de JARs em que tudo é visível e dependências ausentes só falham em execução, e module path do Java 9, um grafo em que com.exemplo.pedidos requer com.exemplo.estoque e java.logging, só o pacote api do estoque é exportado e o pacote interno fica inacessível](/posts/java-11/classpath-x-module-path.svg)
 
@@ -164,7 +164,7 @@ Se `pedidos` importar `com.exemplo.estoque.interno.EstoqueEmMemoria`, a compila�
 | `opens P` / `open module` | libera reflexão profunda (membros privados) em tempo de execução |
 | `uses S` / `provides S with I` | consumo e oferta de serviços via `ServiceLoader` |
 
-:marca[**Não é obrigatório modularizar a aplicação.**] Código no classpath continua funcionando: ele pertence ao *unnamed module* (módulo sem nome), que lê todos os módulos observáveis ([JLS 7.7.5](https://docs.oracle.com/javase/specs/jls/se11/html/jls-7.html#jls-7.7.5)). Um JAR sem `module-info` colocado no module path vira um *automatic module*, cujo nome vem do atributo `Automatic-Module-Name` do manifesto ou, na falta dele, do nome do arquivo ([Javadoc de `ModuleFinder`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/module/ModuleFinder.html)). Os dois mecanismos permitem migrar aos poucos: primeiro rodar tudo no classpath, depois modularizar o que fizer sentido.
+**Não é obrigatório modularizar a aplicação.** Código no classpath continua funcionando: ele pertence ao *unnamed module* (módulo sem nome), que lê todos os módulos observáveis ([JLS 7.7.5](https://docs.oracle.com/javase/specs/jls/se11/html/jls-7.html#jls-7.7.5)). Um JAR sem `module-info` colocado no module path vira um *automatic module*, cujo nome vem do atributo `Automatic-Module-Name` do manifesto ou, na falta dele, do nome do arquivo ([Javadoc de `ModuleFinder`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/module/ModuleFinder.html)). Os dois mecanismos permitem migrar aos poucos: primeiro rodar tudo no classpath, depois modularizar o que fizer sentido.
 
 ### Encapsulamento das APIs internas do JDK
 
@@ -175,7 +175,7 @@ Muitas bibliotecas usavam classes internas do JDK, como `sun.misc.BASE64Encoder`
 - **Não críticas**, com substituto suportado (por exemplo, `java.util.Base64`): ficam encapsuladas por padrão.
 - **Críticas**, sem substituto no Java 8, como `sun.misc.Unsafe` e `sun.reflect.ReflectionFactory`: continuam acessíveis pelo módulo `jdk.unsupported`.
 
-:marca[Usar um pacote encapsulado diretamente no código-fonte vira erro de compilação.] Já o acesso por reflexão (por exemplo, `setAccessible(true)` em um campo privado do JDK) continua funcionando do Java 9 ao 11, com aviso: pela [JEP 261](https://openjdk.org/jeps/261), o padrão `--illegal-access=permit` abre ao classpath os pacotes internos que já existiam no Java 8 e avisa uma única vez, no primeiro acesso ilegal. A mesma JEP anunciava que `deny` viraria o padrão, e foi o que aconteceu: o Java 16 mudou o padrão ([JEP 396](https://openjdk.org/jeps/396)) e o Java 17 tirou o efeito da opção ([JEP 403](https://openjdk.org/jeps/403)), como detalha o [post do Java 17](/posts/java-17/#encapsulamento-forte-dos-internos-do-jdk). No Java 11, o aviso tem esta forma:
+Usar um pacote encapsulado diretamente no código-fonte vira erro de compilação. Já o acesso por reflexão (por exemplo, `setAccessible(true)` em um campo privado do JDK) continua funcionando do Java 9 ao 11, com aviso: pela [JEP 261](https://openjdk.org/jeps/261), o padrão `--illegal-access=permit` abre ao classpath os pacotes internos que já existiam no Java 8 e avisa uma única vez, no primeiro acesso ilegal. A mesma JEP anunciava que `deny` viraria o padrão, e foi o que aconteceu: o Java 16 mudou o padrão ([JEP 396](https://openjdk.org/jeps/396)) e o Java 17 tirou o efeito da opção ([JEP 403](https://openjdk.org/jeps/403)), como detalha o [post do Java 17](/posts/java-17/#encapsulamento-forte-dos-internos-do-jdk). No Java 11, o aviso tem esta forma:
 
 ```text
 WARNING: An illegal reflective access operation has occurred
@@ -202,7 +202,7 @@ java --illegal-access=deny -jar app.jar
 
 **Chegou em:** Java 9 (final, [JEP 220](https://openjdk.org/jeps/220))
 
-A [JEP 220](https://openjdk.org/jeps/220) reestruturou o JDK instalado: :marca[somem `rt.jar` e `tools.jar`], cujo conteúdo passa para um formato interno em `lib/`, e as classes e recursos da plataforma passam a ser endereçados pelo esquema de URI `jrt:`. Também saíram o mecanismo de extensões (`lib/ext`, `java.ext.dirs`) e o de *endorsed standards* (`lib/endorsed`, `java.endorsed.dirs`), que permitia substituir APIs do JDK por versões mais novas. Ferramentas antigas que abriam `rt.jar` diretamente precisam de versões atualizadas.
+A [JEP 220](https://openjdk.org/jeps/220) reestruturou o JDK instalado: somem `rt.jar` e `tools.jar`, cujo conteúdo passa para um formato interno em `lib/`, e as classes e recursos da plataforma passam a ser endereçados pelo esquema de URI `jrt:`. Também saíram o mecanismo de extensões (`lib/ext`, `java.ext.dirs`) e o de *endorsed standards* (`lib/endorsed`, `java.endorsed.dirs`), que permitia substituir APIs do JDK por versões mais novas. Ferramentas antigas que abriam `rt.jar` diretamente precisam de versões atualizadas.
 
 Outra consequência: a partir do 11, a Oracle só distribui o JDK, sem JRE separado, e indica o `jlink` para montar runtimes menores ([JDK 11 Release Notes](https://www.oracle.com/java/technologies/javase/11-relnote-issues.html)).
 
@@ -230,7 +230,7 @@ runtime/bin/pedidos
 
 ![Diagrama do jlink: a partir dos jmods do JDK 11 e dos módulos da aplicação, o jlink gera uma pasta runtime com bin/java, o script pedidos e apenas os módulos com.exemplo.pedidos, com.exemplo.estoque, java.logging e java.base](/posts/java-11/jlink-runtime-enxuto.svg)
 
-Como mostra o diagrama, só entram os módulos alcançados pelos `requires`. :marca[O cuidado está nos provedores de serviço], que são carregados via `ServiceLoader` e não aparecem em nenhum `requires`: o módulo `jdk.crypto.ec` (provedor `SunEC`, de curvas elípticas), por exemplo, precisa ser adicionado com `--add-modules`, ou com `--bind-services`, que inclui todos os provedores disponíveis e aumenta a imagem. Para uma aplicação não modular, `jdeps --print-module-deps app.jar` lista os módulos da plataforma que ela usa.
+Como mostra o diagrama, só entram os módulos alcançados pelos `requires`. O cuidado está nos provedores de serviço, que são carregados via `ServiceLoader` e não aparecem em nenhum `requires`: o módulo `jdk.crypto.ec` (provedor `SunEC`, de curvas elípticas), por exemplo, precisa ser adicionado com `--add-modules`, ou com `--bind-services`, que inclui todos os provedores disponíveis e aumenta a imagem. Para uma aplicação não modular, `jdeps --print-module-deps app.jar` lista os módulos da plataforma que ela usa.
 
 ## Linguagem
 
@@ -298,7 +298,7 @@ public class Linguagem9 {
 
 **Chegou em:** Java 10 (final, [JEP 286](https://openjdk.org/jeps/286))
 
-No Java 8, uma variável local sempre exige o tipo escrito por inteiro, mesmo quando ele já aparece no lado direito da atribuição. Com `var`, o compilador infere o tipo da variável local a partir do inicializador. :marca[O tipo continua estático: `var` não é tipagem dinâmica.] Pela [JEP 286](https://openjdk.org/jeps/286), vale para variáveis locais com inicializador e variáveis do `for` aprimorado e do `for` tradicional; não vale para campos, parâmetros de método ou construtor, tipos de retorno ou parâmetros de `catch`. Tecnicamente, `var` é um *nome de tipo reservado*, não uma palavra-chave, então variáveis ou métodos chamados `var` continuam compilando.
+No Java 8, uma variável local sempre exige o tipo escrito por inteiro, mesmo quando ele já aparece no lado direito da atribuição. Com `var`, o compilador infere o tipo da variável local a partir do inicializador. O tipo continua estático: `var` não é tipagem dinâmica. Pela [JEP 286](https://openjdk.org/jeps/286), vale para variáveis locais com inicializador e variáveis do `for` aprimorado e do `for` tradicional; não vale para campos, parâmetros de método ou construtor, tipos de retorno ou parâmetros de `catch`. Tecnicamente, `var` é um *nome de tipo reservado*, não uma palavra-chave, então variáveis ou métodos chamados `var` continuam compilando.
 
 ```java title="Var10.java" {7,11,12}
 import java.util.HashMap;
@@ -342,7 +342,7 @@ Regra prática: use `var` quando o tipo fica evidente no lado direito (`new`, f�
 
 **Chegou em:** Java 11 (final, [JEP 323](https://openjdk.org/jeps/323))
 
-O Java 11 permite `var` nos parâmetros de lambdas implicitamente tipadas: `(var a, var b) -> a + b` equivale a `(a, b) -> a + b`. A vantagem é poder aplicar modificadores e anotações sem escrever o tipo completo. Pela [JEP 323](https://openjdk.org/jeps/323), :marca[ou todos os parâmetros usam `var`, ou nenhum].
+O Java 11 permite `var` nos parâmetros de lambdas implicitamente tipadas: `(var a, var b) -> a + b` equivale a `(a, b) -> a + b`. A vantagem é poder aplicar modificadores e anotações sem escrever o tipo completo. Pela [JEP 323](https://openjdk.org/jeps/323), ou todos os parâmetros usam `var`, ou nenhum.
 
 ```java title="VarLambda.java"
 import java.util.function.BiFunction;
@@ -431,7 +431,7 @@ public class Timeouts {
 }
 ```
 
-Use `completeOnTimeout` quando existe um valor aceitável de reserva e `orTimeout` quando o atraso deve virar erro. Nos dois casos, o timeout só completa o `CompletableFuture`: :marca[a tarefa original não é interrompida] e continua ocupando a thread do pool até terminar, porque essa classe não usa interrupção para controlar o processamento (veja `cancel` no Javadoc).
+Use `completeOnTimeout` quando existe um valor aceitável de reserva e `orTimeout` quando o atraso deve virar erro. Nos dois casos, o timeout só completa o `CompletableFuture`: a tarefa original não é interrompida e continua ocupando a thread do pool até terminar, porque essa classe não usa interrupção para controlar o processamento (veja `cancel` no Javadoc).
 
 ## APIs da biblioteca padrão
 
@@ -490,8 +490,8 @@ Diferenças em relação a `Arrays.asList` e aos wrappers antigos, documentadas 
 
 - elementos, chaves e valores `null` são rejeitados com `NullPointerException`;
 - `Set.of` e `Map.of` rejeitam duplicatas com `IllegalArgumentException`;
-- a ordem de iteração de `Set.of` e `Map.of` :sublinhado[**não é especificada e pode mudar**], então não escreva testes que dependam dela;
-- :marca[`copyOf` devolve uma coleção desconectada da origem], diferente de `Collections.unmodifiableList`, que é só uma visão.
+- a ordem de iteração de `Set.of` e `Map.of` **não é especificada e pode mudar**, então não escreva testes que dependam dela;
+- `copyOf` devolve uma coleção desconectada da origem, diferente de `Collections.unmodifiableList`, que é só uma visão.
 
 ### Optional e Stream
 
@@ -545,7 +545,7 @@ public class OptionalEStream {
 }
 ```
 
-:marca[`takeWhile` não é um `filter`]: o `5` depois do `30` fica de fora, porque a leitura para no primeiro elemento que não satisfaz a condição. Use-o em sequências ordenadas ou quando a regra de parada é justamente "até o primeiro que falhar". Os coletores `Collectors.filtering` e `Collectors.flatMapping`, úteis como coletores de segundo nível em `groupingBy`, também são do Java 9 ([Javadoc de `Collectors`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Collectors.html)).
+`takeWhile` não é um `filter`: o `5` depois do `30` fica de fora, porque a leitura para no primeiro elemento que não satisfaz a condição. Use-o em sequências ordenadas ou quando a regra de parada é justamente "até o primeiro que falhar". Os coletores `Collectors.filtering` e `Collectors.flatMapping`, úteis como coletores de segundo nível em `groupingBy`, também são do Java 9 ([Javadoc de `Collectors`](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/stream/Collectors.html)).
 
 ### String, Files e Predicate.not
 
@@ -656,7 +656,7 @@ HttpRequest post = HttpRequest.newBuilder(URI.create("https://api.example.com/pe
         .build();
 ```
 
-Dois cuidados. Os padrões de `HttpClient.newHttpClient()` são preferência por HTTP/2 (com HTTP/1.1 quando o servidor não aceita), **nenhum redirecionamento** (`NEVER`), o seletor de proxy padrão e o `SSLContext` padrão ([Javadoc de `HttpClient`](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpClient.html)). E, :marca[sem `timeout` na requisição, a espera pela resposta não tem limite] ([Javadoc de `HttpRequest.Builder`](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html)). Como o cliente é imutável e serve para várias requisições, reaproveite a mesma instância em vez de criar uma por chamada.
+Dois cuidados. Os padrões de `HttpClient.newHttpClient()` são preferência por HTTP/2 (com HTTP/1.1 quando o servidor não aceita), **nenhum redirecionamento** (`NEVER`), o seletor de proxy padrão e o `SSLContext` padrão ([Javadoc de `HttpClient`](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpClient.html)). E, sem `timeout` na requisição, a espera pela resposta não tem limite ([Javadoc de `HttpRequest.Builder`](https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/HttpRequest.Builder.html)). Como o cliente é imutável e serve para várias requisições, reaproveite a mesma instância em vez de criar uma por chamada.
 
 ### Outras APIs do período
 
@@ -673,17 +673,17 @@ As mudanças desta seção não aparecem no código, mas aparecem em produção:
 
 **Chegou em:** Java 9 (final, [JEP 248](https://openjdk.org/jeps/248)) → Java 10 (final, [JEP 307](https://openjdk.org/jeps/307))
 
-No Java 8, o coletor padrão em servidores era o Parallel GC, voltado a throughput. A [JEP 248](https://openjdk.org/jeps/248) :marca[tornou o G1 o padrão em configurações de servidor] de 32 e 64 bits, partindo da premissa de que limitar pausas costuma importar mais do que maximizar throughput. A JEP registra o risco: o G1 consome recursos de forma diferente do Parallel, e quem precisa minimizar esse overhead deve escolher outro coletor explicitamente.
+No Java 8, o coletor padrão em servidores era o Parallel GC, voltado a throughput. A [JEP 248](https://openjdk.org/jeps/248) tornou o G1 o padrão em configurações de servidor de 32 e 64 bits, partindo da premissa de que limitar pausas costuma importar mais do que maximizar throughput. A JEP registra o risco: o G1 consome recursos de forma diferente do Parallel, e quem precisa minimizar esse overhead deve escolher outro coletor explicitamente.
 
 O G1 evita coletas completas, mas quando elas acontecem, a implementação do Java 9 usava uma única thread. A [JEP 307](https://openjdk.org/jeps/307) paralelizou o full GC do G1, que passou a usar o mesmo número de threads das coletas young e mixed ([JDK 10 Release Notes](https://www.oracle.com/java/technologies/javase/10-relnote-issues.html)).
 
-Na migração, :marca[uma aplicação que roda no 8 sem flags de GC muda de coletor ao subir para o 11]. Se você depende do comportamento do Parallel, declare `-XX:+UseParallelGC`; caso contrário, meça latência e throughput com o G1 antes de ir para produção. Atenção também ao tamanho da máquina: o G1 é o padrão em máquinas *server-class*, que o [guia de ergonomia do GC](https://docs.oracle.com/javase/10/gctuning/ergonomics.htm) define como duas ou mais CPUs e 2 GB ou mais de memória. Em contêineres pequenos isso muda o resultado: no Temurin 11.0.32, um contêiner com 1 CPU ou 1 GB de memória recebe o Serial GC, e um com 2 CPUs e 2 GB recebe o G1.
+Na migração, uma aplicação que roda no 8 sem flags de GC muda de coletor ao subir para o 11. Se você depende do comportamento do Parallel, declare `-XX:+UseParallelGC`; caso contrário, meça latência e throughput com o G1 antes de ir para produção. Atenção também ao tamanho da máquina: o G1 é o padrão em máquinas *server-class*, que o [guia de ergonomia do GC](https://docs.oracle.com/javase/10/gctuning/ergonomics.htm) define como duas ou mais CPUs e 2 GB ou mais de memória. Em contêineres pequenos isso muda o resultado: no Temurin 11.0.32, um contêiner com 1 CPU ou 1 GB de memória recebe o Serial GC, e um com 2 CPUs e 2 GB recebe o G1.
 
 ### Compact Strings e concatenação com invokedynamic
 
 **Chegou em:** Java 9 (final, [JEP 254](https://openjdk.org/jeps/254) e [JEP 280](https://openjdk.org/jeps/280))
 
-Até o Java 8, `String` guardava os caracteres em um `char[]`, com dois bytes por caractere. A [JEP 254](https://openjdk.org/jeps/254) cita dados de aplicações reais indicando que strings ocupam boa parte do heap e que a maioria contém apenas caracteres Latin-1. A representação passou a ser um `byte[]` com um campo de codificação: :marca[Latin-1 (um byte por caractere) quando possível] e UTF-16 quando necessário. É uma mudança só de implementação: o código não muda, e a [documentação do comando `java`](https://docs.oracle.com/en/java/javase/11/tools/java.html) indica `-XX:-CompactStrings` para desligá-la se a aplicação usar sobretudo texto fora do Latin-1 ou se uma regressão de desempenho for atribuída a ela.
+Até o Java 8, `String` guardava os caracteres em um `char[]`, com dois bytes por caractere. A [JEP 254](https://openjdk.org/jeps/254) cita dados de aplicações reais indicando que strings ocupam boa parte do heap e que a maioria contém apenas caracteres Latin-1. A representação passou a ser um `byte[]` com um campo de codificação: Latin-1 (um byte por caractere) quando possível e UTF-16 quando necessário. É uma mudança só de implementação: o código não muda, e a [documentação do comando `java`](https://docs.oracle.com/en/java/javase/11/tools/java.html) indica `-XX:-CompactStrings` para desligá-la se a aplicação usar sobretudo texto fora do Latin-1 ou se uma regressão de desempenho for atribuída a ela.
 
 A [JEP 280](https://openjdk.org/jeps/280) mudou o bytecode que o `javac` gera para `a + b + c`: em vez da sequência de `StringBuilder.append`, o compilador emite um `invokedynamic` para `java.lang.invoke.StringConcatFactory`, e a estratégia de concatenação passa a ser decidida em tempo de execução, o que permite otimizações futuras sem recompilar. Ferramentas que inspecionam ou reescrevem bytecode precisam entender esse formato.
 
@@ -704,7 +704,7 @@ java -Xlog:gc*:file=gc.log:time,uptime,level,tags -jar app.jar
 java -Xlog:help
 ```
 
-As flags antigas não se comportam todas do mesmo jeito. No Temurin 11.0.32, `-XX:+PrintGCDetails` e `-Xloggc` ainda são aceitas, com aviso de depreciação e conversão para `-Xlog`, mas `-XX:+PrintGCDateStamps` gera `Unrecognized VM option` e :marca[**a JVM não inicia**]. Revise os scripts de inicialização antes da migração.
+As flags antigas não se comportam todas do mesmo jeito. No Temurin 11.0.32, `-XX:+PrintGCDetails` e `-Xloggc` ainda são aceitas, com aviso de depreciação e conversão para `-Xlog`, mas `-XX:+PrintGCDateStamps` gera `Unrecognized VM option` e **a JVM não inicia**. Revise os scripts de inicialização antes da migração.
 
 ### Application Class-Data Sharing (AppCDS)
 
@@ -729,7 +729,7 @@ Com `-Xlog:class+load`, as classes vindas do arquivo aparecem com `source: share
 
 **Chegou em:** Java 10 (final, [JDK-8146115](https://bugs.openjdk.org/browse/JDK-8146115))
 
-Esta melhoria não tem JEP, mas é uma das mais relevantes para quem roda em Docker ou Kubernetes. Segundo as [release notes do JDK 10](https://www.oracle.com/java/technologies/javase/10-relnote-issues.html), a JVM passou a detectar que está em um contêiner Linux e :marca[a usar o número de CPUs e a memória alocados ao contêiner, em vez dos valores do host]. O suporte é ligado por padrão (`-XX:-UseContainerSupport` desliga). Vieram junto:
+Esta melhoria não tem JEP, mas é uma das mais relevantes para quem roda em Docker ou Kubernetes. Segundo as [release notes do JDK 10](https://www.oracle.com/java/technologies/javase/10-relnote-issues.html), a JVM passou a detectar que está em um contêiner Linux e a usar o número de CPUs e a memória alocados ao contêiner, em vez dos valores do host. O suporte é ligado por padrão (`-XX:-UseContainerSupport` desliga). Vieram junto:
 
 - `-XX:ActiveProcessorCount=n`, que fixa o número de CPUs visto pela JVM;
 - `-XX:InitialRAMPercentage`, `-XX:MaxRAMPercentage` e `-XX:MinRAMPercentage` ([JDK-8186248](https://bugs.openjdk.org/browse/JDK-8186248)), que substituem as formas `...RAMFraction` e dimensionam o heap como porcentagem da memória disponível.
@@ -739,7 +739,7 @@ Esta melhoria não tem JEP, mas é uma das mais relevantes para quem roda em Doc
 java -XX:MaxRAMPercentage=75 -jar app.jar
 ```
 
-Sem configuração, o heap máximo padrão é :circulo[1/4] da memória física ([guia de ergonomia do GC](https://docs.oracle.com/en/java/javase/11/gctuning/ergonomics.html)); em um contêiner, essa memória é o limite do contêiner.
+Sem configuração, o heap máximo padrão é 1/4 da memória física ([guia de ergonomia do GC](https://docs.oracle.com/en/java/javase/11/gctuning/ergonomics.html)); em um contêiner, essa memória é o limite do contêiner.
 
 ### Flight Recorder no OpenJDK
 
@@ -898,7 +898,7 @@ Esta seção reúne as mudanças que costumam quebrar builds e scripts na migra�
 
 **Chegou em:** Java 9 (depreciado para remoção) → Java 11 (removido, [JEP 320](https://openjdk.org/jeps/320))
 
-JAX-WS, JAXB, JAF e Common Annotations entraram no Java SE 6 por conveniência, mas evoluíam no Java EE, e manter cópias dentro do Java SE ficou cada vez mais difícil. A [JEP 320](https://openjdk.org/jeps/320) conta a trajetória: no Java 9, esses módulos foram depreciados para remoção e deixaram de ser resolvidos por padrão para código do classpath (`--add-modules` os reativava). :marca[No Java 11, foram removidos, e nenhuma flag os traz de volta.]
+JAX-WS, JAXB, JAF e Common Annotations entraram no Java SE 6 por conveniência, mas evoluíam no Java EE, e manter cópias dentro do Java SE ficou cada vez mais difícil. A [JEP 320](https://openjdk.org/jeps/320) conta a trajetória: no Java 9, esses módulos foram depreciados para remoção e deixaram de ser resolvidos por padrão para código do classpath (`--add-modules` os reativava). No Java 11, foram removidos, e nenhuma flag os traz de volta.
 
 | Módulo removido no Java 11 | Tecnologia |
 | --- | --- |
@@ -985,10 +985,10 @@ Graal é um compilador JIT escrito em Java, conectado à JVM pela JVMCI (*JVM Co
 O [guia de migração da Oracle](https://docs.oracle.com/en/java/javase/11/migrate/index.html) sugere primeiro rodar a aplicação no JDK 11 sem recompilar e, em paralelo, atualizar bibliotecas e ferramentas de build, recompilar e rodar o `jdeps`. Mesmo que tudo pareça funcionar, revise os pontos abaixo. O [guia de atualizações do Java](/posts/guia-atualizacoes-java/#o-processo-de-migração-em-cinco-fases) descreve o processo completo de migração.
 
 1. **Dependências Java EE e CORBA.** Qualquer uso de `javax.xml.bind`, `javax.xml.ws`, `javax.activation`, `javax.annotation` (Common Annotations), `javax.transaction` ou CORBA precisa de dependência explícita ([JEP 320](https://openjdk.org/jeps/320)).
-2. **APIs internas do JDK.** Rode `jdeps --jdk-internals` no código e nas bibliotecas. :marca[Uso estático de pacotes internos encapsulados não compila]; uso reflexivo gera o aviso de *illegal reflective access* no 11 e passa a falhar por padrão no 16 e no 17 ([JEP 260](https://openjdk.org/jeps/260), [JEP 396](https://openjdk.org/jeps/396), [JEP 403](https://openjdk.org/jeps/403)). Atualize as bibliotecas para versões que suportam o 11 e teste com `--illegal-access=deny` para antecipar o comportamento do 17.
+2. **APIs internas do JDK.** Rode `jdeps --jdk-internals` no código e nas bibliotecas. Uso estático de pacotes internos encapsulados não compila; uso reflexivo gera o aviso de *illegal reflective access* no 11 e passa a falhar por padrão no 16 e no 17 ([JEP 260](https://openjdk.org/jeps/260), [JEP 396](https://openjdk.org/jeps/396), [JEP 403](https://openjdk.org/jeps/403)). Atualize as bibliotecas para versões que suportam o 11 e teste com `--illegal-access=deny` para antecipar o comportamento do 17.
 3. **Parsing da versão.** Código que lê `java.version` esperando `1.8` quebra; use `Runtime.version()` ([JEP 223](https://openjdk.org/jeps/223), [JEP 322](https://openjdk.org/jeps/322)).
 4. **Flags da JVM.** Flags de log de GC mudaram e algumas impedem a JVM de iniciar ([JEP 271](https://openjdk.org/jeps/271)); combinações de GC antigas foram removidas ([JEP 214](https://openjdk.org/jeps/214)); o coletor padrão passou a ser o G1 ([JEP 248](https://openjdk.org/jeps/248)). Opções da permanent generation, como `-XX:MaxPermSize`, geram aviso e devem sair dos scripts ([Migration Guide](https://docs.oracle.com/en/java/javase/11/migrate/index.html)).
-5. **Formatação de datas e números.** A partir do Java 9, :marca[os formatos regionais vêm por padrão do CLDR] (*Common Locale Data Repository*, a base de dados de locales mantida pelo Unicode Consortium) ([JEP 252](https://openjdk.org/jeps/252)), e o guia de migração cita datas e moedas formatadas de outro jeito. Saída do mesmo código no Temurin 8 (8u502) e no Temurin 11 (11.0.32):
+5. **Formatação de datas e números.** A partir do Java 9, os formatos regionais vêm por padrão do CLDR (*Common Locale Data Repository*, a base de dados de locales mantida pelo Unicode Consortium) ([JEP 252](https://openjdk.org/jeps/252)), e o guia de migração cita datas e moedas formatadas de outro jeito. Saída do mesmo código no Temurin 8 (8u502) e no Temurin 11 (11.0.32):
 
    ```java title="Formatos.java"
    import java.time.LocalDate;
@@ -1016,7 +1016,7 @@ O [guia de migração da Oracle](https://docs.oracle.com/en/java/javase/11/migra
 
    Para manter o comportamento do 8 enquanto ajusta testes e relatórios, use `-Djava.locale.providers=COMPAT,CLDR`.
 6. **`rt.jar`, `lib/ext` e `lib/endorsed`.** Ferramentas que leem `rt.jar` e instalações que colocam JARs em `lib/ext` ou `lib/endorsed` precisam mudar: esses JARs devem ir para o classpath ([JEP 220](https://openjdk.org/jeps/220)). No Temurin 11.0.32, `-Djava.ext.dirs` e `-Djava.endorsed.dirs` impedem a JVM de iniciar, e o guia de migração avisa que `java` e `javac` encerram ao encontrar `lib/endorsed`.
-7. **Class loaders.** :marca[O class loader da aplicação deixou de ser um `URLClassLoader`], então código que faz cast para adicionar JARs ao classpath em tempo de execução quebra. O antigo *extension class loader* virou o *platform class loader* ([Migration Guide](https://docs.oracle.com/en/java/javase/11/migrate/index.html)).
+7. **Class loaders.** O class loader da aplicação deixou de ser um `URLClassLoader`, então código que faz cast para adicionar JARs ao classpath em tempo de execução quebra. O antigo *extension class loader* virou o *platform class loader* ([Migration Guide](https://docs.oracle.com/en/java/javase/11/migrate/index.html)).
 8. **`_` como identificador.** Vira erro de compilação a partir do 9 ([JEP 213](https://openjdk.org/jeps/213)).
 9. **Aplicações desktop.** JavaFX, Web Start e applets não vêm mais no Oracle JDK 11 ([JDK 11 Release Notes](https://www.oracle.com/java/technologies/javase/11-relnote-issues.html)).
 10. **TLS.** Teste integrações com o TLS 1.3 habilitado, principalmente se a aplicação fixa cipher suites ou depende do fechamento duplex da conexão ([JDK 11 Release Notes](https://www.oracle.com/java/technologies/javase/11-relnote-issues.html)).

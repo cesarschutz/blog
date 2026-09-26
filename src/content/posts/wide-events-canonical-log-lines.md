@@ -10,15 +10,15 @@ draft: false
 
 Quando um cliente reclama de uma falha, o contexto para entender o que aconteceu costuma estar espalhado em dezenas de linhas de log, em vários serviços. Este post mostra um padrão que resolve isso: **wide events** (eventos "largos"), também chamados de **canonical log lines**, nome popularizado pela Stripe.
 
-A ideia é simples: em vez de espalhar `log.info` pelo código, :marca[cada requisição emite **um único evento estruturado, rico em contexto, ao final do processamento**]. Esse evento reúne dezenas de campos (o exemplo de Boris Tane passa de 50) com tudo que ajuda a investigar um problema: ID da requisição, dados do usuário (plano, idade da conta, valor já gasto), medidas (latência, queries, acertos de cache), feature flags ativas, contexto de negócio e o erro detalhado, quando houver.
+A ideia é simples: em vez de espalhar `log.info` pelo código, cada requisição emite **um único evento estruturado, rico em contexto, ao final do processamento**. Esse evento reúne dezenas de campos (o exemplo de Boris Tane passa de 50) com tudo que ajuda a investigar um problema: ID da requisição, dados do usuário (plano, idade da conta, valor já gasto), medidas (latência, queries, acertos de cache), feature flags ativas, contexto de negócio e o erro detalhado, quando houver.
 
 A seguir: o problema que o padrão resolve, o vocabulário, a anatomia de um evento, uma implementação em Spring Boot, o controle de custo com tail sampling e a relação com OpenTelemetry e com o logging estruturado do Spring Boot.
 
 ## 1. O problema que o padrão resolve
 
-Como argumenta Boris Tane em *Logging Sucks*, :marca[o logging tradicional foi pensado para a era dos monólitos rodando em um único servidor]. Hoje, uma única requisição pode passar por 15 serviços, 3 bancos de dados, 2 caches e uma fila. Mesmo assim, os logs continuam no modelo antigo: várias linhas espalhadas, cada uma com um pedaço do contexto. Quando um usuário reclama, você gasta horas fazendo `grep` em texto e montando o quebra-cabeça com expressões regulares frágeis.
+Como argumenta Boris Tane em *Logging Sucks*, o logging tradicional foi pensado para a era dos monólitos rodando em um único servidor. Hoje, uma única requisição pode passar por 15 serviços, 3 bancos de dados, 2 caches e uma fila. Mesmo assim, os logs continuam no modelo antigo: várias linhas espalhadas, cada uma com um pedaço do contexto. Quando um usuário reclama, você gasta horas fazendo `grep` em texto e montando o quebra-cabeça com expressões regulares frágeis.
 
-:marca[**Logging estruturado (JSON) é necessário, mas não suficiente.**] Sem uma disciplina de *o que* registrar e *quando*, logs em JSON ainda geram vários eventos parciais por requisição, em vez de um evento completo.
+**Logging estruturado (JSON) é necessário, mas não suficiente.** Sem uma disciplina de *o que* registrar e *quando*, logs em JSON ainda geram vários eventos parciais por requisição, em vez de um evento completo.
 
 ![Logging tradicional com vários logs parciais e grep, contra um wide event com dezenas de campos emitido uma vez, no final da requisição](/posts/wide-events-canonical-log-lines/tradicional-vs-wide-event.svg)
 
@@ -26,11 +26,11 @@ O diagrama resume a diferença: à esquerda, cada etapa escreve sua própria lin
 
 ## 2. Vocabulário fundamental
 
-- **Cardinalidade** — quantidade de valores distintos que um campo pode ter. `user_id` (milhões de valores) tem alta cardinalidade; `http_method` (GET, POST, PUT, DELETE) tem baixa. :marca[**Campos de alta cardinalidade são os que mais ajudam a depurar**], porque permitem filtrar e agrupar por entidades reais (este usuário, este carrinho, este build).
-- **Dimensionalidade** — quantos campos cada evento carrega. 5 campos é baixa; 50 é alta. :marca[Quanto mais dimensões, mais perguntas você responde sem precisar mudar o código] e fazer novo deploy.
+- **Cardinalidade** — quantidade de valores distintos que um campo pode ter. `user_id` (milhões de valores) tem alta cardinalidade; `http_method` (GET, POST, PUT, DELETE) tem baixa. **Campos de alta cardinalidade são os que mais ajudam a depurar**, porque permitem filtrar e agrupar por entidades reais (este usuário, este carrinho, este build).
+- **Dimensionalidade** — quantos campos cada evento carrega. 5 campos é baixa; 50 é alta. Quanto mais dimensões, mais perguntas você responde sem precisar mudar o código e fazer novo deploy.
 - **Wide event** — evento de log denso, emitido uma vez por requisição em cada serviço, com todo o contexto relevante.
-- **Canonical log line** — :marca[outro nome para wide event]. O padrão foi descrito por Brandur Leach, engenheiro da Stripe, em 2016, e detalhado no blog de engenharia da Stripe em 2019. "Canônica" porque é a linha de referência daquela requisição.
-- **Observability 2.0** — termo de Charity Majors (cofundadora e CTO da Honeycomb) para a arquitetura com :marca[**uma única fonte de verdade**]: eventos estruturados arbitrariamente largos, guardados em banco colunar. Métricas e SLOs passam a ser derivados desses eventos na hora da consulta. Contrasta com a Observability 1.0, baseada nos "três pilares" (métricas, logs e traces), cada um com sua própria fonte de verdade em ferramentas separadas.
+- **Canonical log line** — outro nome para wide event. O padrão foi descrito por Brandur Leach, engenheiro da Stripe, em 2016, e detalhado no blog de engenharia da Stripe em 2019. "Canônica" porque é a linha de referência daquela requisição.
+- **Observability 2.0** — termo de Charity Majors (cofundadora e CTO da Honeycomb) para a arquitetura com **uma única fonte de verdade**: eventos estruturados arbitrariamente largos, guardados em banco colunar. Métricas e SLOs passam a ser derivados desses eventos na hora da consulta. Contrasta com a Observability 1.0, baseada nos "três pilares" (métricas, logs e traces), cada um com sua própria fonte de verdade em ferramentas separadas.
 
 ## 3. Anatomia de um wide event
 
@@ -79,11 +79,11 @@ Um único evento JSON descrevendo uma falha de checkout:
 }
 ```
 
-Uma única consulta por `user.id = "user_456"` já mostra: cliente premium, mais de 2 anos de conta, falha na 3ª tentativa de pagamento, motivo real da recusa (`insufficient_funds`) e uso do novo fluxo de checkout. :marca[Sem `grep` e sem buscas em vários serviços.] O `trace_id` liga o evento ao trace distribuído da operação (veja [W3C Trace Context](/posts/w3c-trace-context/)).
+Uma única consulta por `user.id = "user_456"` já mostra: cliente premium, mais de 2 anos de conta, falha na 3ª tentativa de pagamento, motivo real da recusa (`insufficient_funds`) e uso do novo fluxo de checkout. Sem `grep` e sem buscas em vários serviços. O `trace_id` liga o evento ao trace distribuído da operação (veja [W3C Trace Context](/posts/w3c-trace-context/)).
 
 ## 4. Implementação prática com um filtro HTTP
 
-O segredo é :marca[**construir o evento ao longo da requisição** em um ponto central (middleware) e **emiti-lo uma única vez, no final**]. No Spring Boot, isso cabe em um `OncePerRequestFilter`: ele cria o evento, deixa os services o enriquecerem com contexto de negócio e escreve o log no `finally`.
+O segredo é **construir o evento ao longo da requisição** em um ponto central (middleware) e **emiti-lo uma única vez, no final**. No Spring Boot, isso cabe em um `OncePerRequestFilter`: ele cria o evento, deixa os services o enriquecerem com contexto de negócio e escreve o log no `finally`.
 
 ```java title="CanonicalLogFilter.java"
 @Component
@@ -140,35 +140,33 @@ Nos services, o enriquecimento é uma linha, por exemplo `CanonicalLogFilter.add
 {"message":"request.completed","logger_name":"canonical","level":"INFO","request_id":"29bd9de2-e60c-45ff-bc95-4ea87c339183","method":"POST","path":"/api/checkout","status_code":500,"error.type":"IllegalStateException","error.message":"boom","duration_ms":0}
 ```
 
-As duas proteções do código vêm da implementação original da Stripe, em Ruby: a linha é emitida num bloco `ensure` (o equivalente ao `finally`), para sair mesmo quando uma exceção sobe pela pilha, e a própria montagem do log fica dentro de um `begin`/`rescue`, para que :marca[um erro ao construir a linha nunca derrube a requisição].
+As duas proteções do código vêm da implementação original da Stripe, em Ruby: a linha é emitida num bloco `ensure` (o equivalente ao `finally`), para sair mesmo quando uma exceção sobe pela pilha, e a própria montagem do log fica dentro de um `begin`/`rescue`, para que um erro ao construir a linha nunca derrube a requisição.
 
 **Cuidados:**
 
-- `RequestContextHolder` guarda a requisição na thread atual. :marca[Trabalho feito em outra thread (`@Async`, `CompletableFuture`) não enxerga o evento], a menos que você passe o contexto adiante.
-- :marca[Um evento com dados de usuário é um bom lugar para vazar dados pessoais.] Registre identificadores e atributos úteis para investigação, não documentos, e-mails ou dados de cartão.
+- `RequestContextHolder` guarda a requisição na thread atual. Trabalho feito em outra thread (`@Async`, `CompletableFuture`) não enxerga o evento, a menos que você passe o contexto adiante.
+- Um evento com dados de usuário é um bom lugar para vazar dados pessoais. Registre identificadores e atributos úteis para investigação, não documentos, e-mails ou dados de cartão.
 
 ## 5. Tail sampling para controlar o custo
 
-Dezenas de campos por evento, multiplicados por milhares de requisições por segundo, podem estourar o orçamento de observabilidade. A saída óbvia, descartar uma fração aleatória das requisições logo na entrada (*head sampling*), é arriscada: :marca[pode jogar fora justamente a requisição que explica o incidente].
+Dezenas de campos por evento, multiplicados por milhares de requisições por segundo, podem estourar o orçamento de observabilidade. A saída óbvia, descartar uma fração aleatória das requisições logo na entrada (*head sampling*), é arriscada: pode jogar fora justamente a requisição que explica o incidente.
 
-:marca[**Tail sampling** decide *depois* que a requisição termina, olhando o resultado.] As regras sugeridas por Boris Tane:
+**Tail sampling** decide *depois* que a requisição termina, olhando o resultado. As regras sugeridas por Boris Tane:
 
-- Guardar :circulo[100% dos erros] (status 5xx, exceções, falhas).
+- Guardar 100% dos erros (status 5xx, exceções, falhas).
 - Guardar todas as requisições lentas, acima do p99 de latência.
 - Guardar sempre usuários específicos: clientes VIP, contas internas de teste, sessões marcadas para investigação.
 - Guardar uma amostra aleatória de 1% a 5% do restante.
 
-:marca[Com wide events, a decisão pode ficar no próprio filtro, antes de emitir o log.] Para traces, o OpenTelemetry Collector oferece o *tail sampling processor*, que aplica regras desse tipo (erros, latência, atributos) no pipeline de telemetria.
+Com wide events, a decisão pode ficar no próprio filtro, antes de emitir o log. Para traces, o OpenTelemetry Collector oferece o *tail sampling processor*, que aplica regras desse tipo (erros, latência, atributos) no pipeline de telemetria.
 
 ## 6. Por que OpenTelemetry sozinho não resolve
 
-O OpenTelemetry (OTel) é um framework para **gerar, coletar e exportar** telemetria: APIs, SDKs, o protocolo OTLP e o Collector. Ele padroniza *como* a telemetria é produzida e transportada, mas não decide *o que* entra no evento nem acrescenta contexto de negócio. Se você não registrar o plano do usuário, o valor do carrinho ou as feature flags ativas, :marca[o OTel não vai adivinhar]. Idealmente, **seus wide events são os próprios spans do trace**, enriquecidos com todo o contexto necessário, em vez de dados duplicados em formatos separados.
+O OpenTelemetry (OTel) é um framework para **gerar, coletar e exportar** telemetria: APIs, SDKs, o protocolo OTLP e o Collector. Ele padroniza *como* a telemetria é produzida e transportada, mas não decide *o que* entra no evento nem acrescenta contexto de negócio. Se você não registrar o plano do usuário, o valor do carrinho ou as feature flags ativas, o OTel não vai adivinhar. Idealmente, **seus wide events são os próprios spans do trace**, enriquecidos com todo o contexto necessário, em vez de dados duplicados em formatos separados.
 
 ## 7. Conexão com o logging estruturado do Spring Boot
 
-:::colchete
 O `LogstashEncoder` e o structured logging nativo do Spring Boot 3.4 entregam a **infraestrutura**: JSON, campos do MDC e pares chave-valor como campos indexáveis (detalhes em [Logging estruturado em Spring Boot](/posts/logging-estruturado-spring-boot/)). Wide events são a **disciplina** construída sobre essa base: em vez de espalhar `log.info` pelo código de negócio, você concentra a emissão num filtro que acumula contexto durante o processamento e emite um único evento completo no final. O JSON sai pelo mesmo pipeline (ECS, Logstash, GELF); muda *o que* e *quando* você emite, não *como*.
-:::
 
 ## Fontes
 

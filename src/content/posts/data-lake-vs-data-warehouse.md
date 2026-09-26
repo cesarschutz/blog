@@ -8,24 +8,24 @@ category: Dados
 draft: false
 ---
 
-Quando uma empresa quer analisar os próprios dados, a pergunta aparece cedo: :marca[guardar tudo já organizado em tabelas, pronto para relatório, ou guardar tudo do jeito que chega e decidir depois?] A primeira resposta é o **Data Warehouse**; a segunda, o **Data Lake**. Este post compara os dois, explica as ideias por trás da diferença (*schema-on-write* x *schema-on-read*, ETL x ELT), mostra por que costumam trabalhar juntos e onde entra o **Lakehouse**.
+Quando uma empresa quer analisar os próprios dados, a pergunta aparece cedo: guardar tudo já organizado em tabelas, pronto para relatório, ou guardar tudo do jeito que chega e decidir depois? A primeira resposta é o **Data Warehouse**; a segunda, o **Data Lake**. Este post compara os dois, explica as ideias por trás da diferença (*schema-on-write* x *schema-on-read*, ETL x ELT), mostra por que costumam trabalhar juntos e onde entra o **Lakehouse**.
 
 ## As duas arquiteturas
 
-**Data Warehouse (DW)** é um banco otimizado para análise. Recebe dados **estruturados** (tabelas relacionais), vindos de sistemas transacionais e aplicações de negócio, :marca[já limpos e transformados para servir de "versão oficial" da informação]. É a base de relatórios e dashboards de BI (*business intelligence*).
+**Data Warehouse (DW)** é um banco otimizado para análise. Recebe dados **estruturados** (tabelas relacionais), vindos de sistemas transacionais e aplicações de negócio, já limpos e transformados para servir de "versão oficial" da informação. É a base de relatórios e dashboards de BI (*business intelligence*).
 
-**Data Lake** é um repositório central que :marca[guarda dados **brutos** em qualquer formato]: estruturados (tabelas), semiestruturados (como JSON) e não estruturados (imagens, áudio, documentos). Em geral fica em armazenamento de objetos barato, como Amazon S3, e atende exploração de dados, machine learning e big data.
+**Data Lake** é um repositório central que guarda dados **brutos** em qualquer formato: estruturados (tabelas), semiestruturados (como JSON) e não estruturados (imagens, áudio, documentos). Em geral fica em armazenamento de objetos barato, como Amazon S3, e atende exploração de dados, machine learning e big data.
 
 ## Schema-on-write x schema-on-read
 
-*Schema* é a estrutura do dado: quais campos existem e de que tipo são. A grande diferença entre as duas arquiteturas é :sublinhado[**quando**] essa estrutura é definida.
+*Schema* é a estrutura do dado: quais campos existem e de que tipo são. A grande diferença entre as duas arquiteturas é **quando** essa estrutura é definida.
 
-- **Schema-on-write (DW):** :marca[a estrutura é definida **antes** de gravar]. Todo dado que entra precisa caber nela.
-- **Schema-on-read (Data Lake):** o dado é gravado como chegou, e :marca[a estrutura é aplicada **na hora da leitura**], por quem vai consultar.
+- **Schema-on-write (DW):** a estrutura é definida **antes** de gravar. Todo dado que entra precisa caber nela.
+- **Schema-on-read (Data Lake):** o dado é gravado como chegou, e a estrutura é aplicada **na hora da leitura**, por quem vai consultar.
 
 Um exemplo: o sistema de pedidos passa a enviar um campo novo, `cupom`. No DW, a tabela `pedidos` precisa ganhar a coluna `cupom` (e a carga precisa ser ajustada) antes que esse dado possa ser gravado. No Data Lake, o arquivo JSON com o campo novo é salvo como está; quem quiser analisar cupons declara o campo na consulta.
 
-O preço da flexibilidade é que :marca[a qualidade e a governança do dado ficam para depois]: sem cuidado, ninguém sabe mais o que está guardado no lake nem se dá para confiar. A fronteira também não é rígida: alguns DWs modernos aceitam schema-on-read em parte dos dados.
+O preço da flexibilidade é que a qualidade e a governança do dado ficam para depois: sem cuidado, ninguém sabe mais o que está guardado no lake nem se dá para confiar. A fronteira também não é rígida: alguns DWs modernos aceitam schema-on-read em parte dos dados.
 
 ## ETL x ELT
 
@@ -34,7 +34,7 @@ Os dois nomes descrevem a ordem das etapas de um pipeline de dados:
 - **ETL** (*Extract, Transform, Load*): extrai da origem, **transforma** em um servidor intermediário e só então **carrega** no destino. É o modelo clássico dos DWs.
 - **ELT** (*Extract, Load, Transform*): extrai, **carrega** o dado como está e **transforma depois**, conforme a necessidade de análise. É o modelo natural do Data Lake.
 
-Com a nuvem, :marca[o ELT virou o padrão também em muitos DWs]: o dado é carregado primeiro e transformado dentro do próprio warehouse, que tem capacidade de processamento para isso.
+Com a nuvem, o ELT virou o padrão também em muitos DWs: o dado é carregado primeiro e transformado dentro do próprio warehouse, que tem capacidade de processamento para isso.
 
 ## O comparativo
 
@@ -50,21 +50,21 @@ Com a nuvem, :marca[o ELT virou o padrão também em muitos DWs]: o dado é carr
 
 ## Por que costumam trabalhar juntos
 
-Na prática, a pergunta raramente é "um ou outro". :marca[Uma arquitetura muito comum nas empresas tem **duas camadas**]: todo o dado bruto vai para o Data Lake, que funciona como camada de ingestão e histórico completo, e um subconjunto curado segue por ELT para o Data Warehouse, que atende o BI. Times de machine learning e exploração leem direto do lake, onde está o dado completo.
+Na prática, a pergunta raramente é "um ou outro". Uma arquitetura muito comum nas empresas tem **duas camadas**: todo o dado bruto vai para o Data Lake, que funciona como camada de ingestão e histórico completo, e um subconjunto curado segue por ELT para o Data Warehouse, que atende o BI. Times de machine learning e exploração leem direto do lake, onde está o dado completo.
 
 ![Fontes (apps, logs, eventos) alimentam o Data Lake com dado bruto; um processo ELT leva o dado ao Data Warehouse estruturado, que atende BI e dashboards; ML e exploração leem direto do Data Lake](/posts/data-lake-vs-data-warehouse/lake-para-warehouse.svg)
 
 Essa divisão funciona, mas tem custo:
 
-- **Dado duplicado:** o que vai para o DW :marca[é armazenado (e pago) duas vezes].
+- **Dado duplicado:** o que vai para o DW é armazenado (e pago) duas vezes.
 - **Mais pipelines:** cada etapa de ETL/ELT entre lake e warehouse é mais um ponto de falha e de divergência entre os dois sistemas.
 - **Dado defasado:** o DW só vê o dado depois da carga, que muitas vezes leva dias.
 
 ## Onde entra o Lakehouse
 
-O **Lakehouse** ataca exatamente esses problemas. A ideia é :marca[manter uma **única cópia** dos dados no armazenamento barato do lake], em formatos abertos de arquivo (como Apache Parquet), e acrescentar por cima uma **camada de metadados** que dá aos arquivos recursos típicos de um warehouse.
+O **Lakehouse** ataca exatamente esses problemas. A ideia é manter uma **única cópia** dos dados no armazenamento barato do lake, em formatos abertos de arquivo (como Apache Parquet), e acrescentar por cima uma **camada de metadados** que dá aos arquivos recursos típicos de um warehouse.
 
-Essa camada é o que se chama de *table format* (formato de tabela). Os mais conhecidos são o **Delta Lake** e o **Apache Iceberg**. :marca[Eles registram quais arquivos formam cada versão de uma tabela] e, com isso, oferecem:
+Essa camada é o que se chama de *table format* (formato de tabela). Os mais conhecidos são o **Delta Lake** e o **Apache Iceberg**. Eles registram quais arquivos formam cada versão de uma tabela e, com isso, oferecem:
 
 - **Transações ACID:** uma escrita entra inteira ou não entra, e quem lê nunca vê uma escrita pela metade.
 - **Versões e *time travel*:** é possível consultar a tabela como ela estava em um momento anterior, para auditoria ou para desfazer uma carga errada.
@@ -72,7 +72,7 @@ Essa camada é o que se chama de *table format* (formato de tabela). Os mais con
 
 ![Consumidores de SQL/BI e de ML leem a mesma camada de tabela (Delta Lake ou Apache Iceberg), que oferece transações ACID, versões e schema validado sobre arquivos Parquet e metadados guardados em armazenamento de objetos (S3, ADLS, GCS)](/posts/data-lake-vs-data-warehouse/lakehouse.svg)
 
-Assim, BI e machine learning leem as **mesmas tabelas**, sem copiar dados para um warehouse separado. Um cuidado: :marca[o Lakehouse não elimina o trabalho de curadoria]. Ainda é preciso escrever ETL/ELT para transformar dado bruto em dado confiável; a diferença é que há menos etapas e menos cópias.
+Assim, BI e machine learning leem as **mesmas tabelas**, sem copiar dados para um warehouse separado. Um cuidado: o Lakehouse não elimina o trabalho de curadoria. Ainda é preciso escrever ETL/ELT para transformar dado bruto em dado confiável; a diferença é que há menos etapas e menos cópias.
 
 ## Resumo prático
 

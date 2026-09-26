@@ -10,7 +10,7 @@ draft: false
 
 O Java 25 chegou à disponibilidade geral (GA, a versão final para produção) em **16 de setembro de 2025** e é uma release de suporte de longo prazo (LTS) na maioria dos fornecedores ([página do JDK 25](https://openjdk.org/projects/jdk/25/)). Para o Java 25, a Oracle informa Premier Support até setembro de 2030 e Extended Support até setembro de 2033; a próxima LTS planejada é o Java 29, em setembro de 2027 ([Oracle Java SE Support Roadmap](https://www.oracle.com/java/technologies/java-se-support-roadmap.html)). Outros fornecedores de builds do OpenJDK publicam seus próprios prazos.
 
-Este artigo é para quem está no **Java 21**, a LTS anterior, e quer saber o que muda ao subir para o 25. :marca[Ele cobre tudo o que foi integrado nas releases **22, 23, 24 e 25**]: 66 JEPs no total (12 + 12 + 24 + 18). Uma JEP (JDK Enhancement Proposal) é a proposta formal de mudança do OpenJDK; cada recurso deste artigo aponta a sua. Quem ainda está no Java 17 deve ler antes o [post do Java 21](/posts/java-21/). O que veio depois do 25 está no [post do Java 29](/posts/java-29/), e a visão geral de ciclo de releases e estratégia de migração está no [guia de atualizações do Java](/posts/guia-atualizacoes-java/).
+Este artigo é para quem está no **Java 21**, a LTS anterior, e quer saber o que muda ao subir para o 25. Ele cobre tudo o que foi integrado nas releases **22, 23, 24 e 25**: 66 JEPs no total (12 + 12 + 24 + 18). Uma JEP (JDK Enhancement Proposal) é a proposta formal de mudança do OpenJDK; cada recurso deste artigo aponta a sua. Quem ainda está no Java 17 deve ler antes o [post do Java 21](/posts/java-21/). O que veio depois do 25 está no [post do Java 29](/posts/java-29/), e a visão geral de ciclo de releases e estratégia de migração está no [guia de atualizações do Java](/posts/guia-atualizacoes-java/).
 
 **Como o artigo está organizado.** Primeiro vem uma linha do tempo com a trajetória dos principais recursos. Depois, os recursos finais, agrupados por tema: linguagem, concorrência, APIs, JVM, ferramentas, segurança e remoções. Cada recurso começa com a linha **Chegou em**, que mostra as versões e JEPs por onde ele passou, e segue com o problema que resolve, o que mudou, um exemplo e os cuidados. No fim estão os recursos que continuam em preview, o que observar na migração e a tabela com todas as JEPs.
 
@@ -26,7 +26,7 @@ Todos os exemplos de código Java deste artigo foram compilados e executados no 
 
 ![Linha do tempo do Java 21 ao Java 25 mostrando, por recurso, em quais versões ele foi preview, experimental, final, depreciado ou removido](/posts/java-25/linha-do-tempo.svg)
 
-Cada linha do diagrama é um recurso, e cada pílula mostra a situação dele naquela versão: laranja para preview, azul para experimental, verde para final, cinza para depreciado e vermelho para removido. O padrão que se repete é claro: :marca[boa parte do que era preview no Java 21 amadureceu ao longo de três ou quatro releases e ficou final no 25]. As datas de cada release vêm das páginas oficiais: Java 22 em 19/03/2024 ([JDK 22](https://openjdk.org/projects/jdk/22/)), Java 23 em 17/09/2024 ([JDK 23](https://openjdk.org/projects/jdk/23/)), Java 24 em 18/03/2025 ([JDK 24](https://openjdk.org/projects/jdk/24/)) e Java 25 em 16/09/2025 ([JDK 25](https://openjdk.org/projects/jdk/25/)).
+Cada linha do diagrama é um recurso, e cada pílula mostra a situação dele naquela versão: laranja para preview, azul para experimental, verde para final, cinza para depreciado e vermelho para removido. O padrão que se repete é claro: boa parte do que era preview no Java 21 amadureceu ao longo de três ou quatro releases e ficou final no 25. As datas de cada release vêm das páginas oficiais: Java 22 em 19/03/2024 ([JDK 22](https://openjdk.org/projects/jdk/22/)), Java 23 em 17/09/2024 ([JDK 23](https://openjdk.org/projects/jdk/23/)), Java 24 em 18/03/2025 ([JDK 24](https://openjdk.org/projects/jdk/24/)) e Java 25 em 16/09/2025 ([JDK 25](https://openjdk.org/projects/jdk/25/)).
 
 Em resumo, o que muda para quem vem do Java 21:
 
@@ -47,12 +47,12 @@ Em resumo, o que muda para quem vem do Java 21:
 
 Um programa pequeno em Java sempre exigiu construções pensadas para sistemas grandes: classe, `public`, `static`, `String[] args` e `System.out.println`. A [JEP 512](https://openjdk.org/jeps/512) reduz essa cerimônia sem criar um dialeto separado da linguagem. São quatro mudanças:
 
-1. **Métodos `main` de instância.** :marca[O `main` pode deixar de ser `public` e `static` e pode não receber parâmetros.] O launcher (o comando `java`) prefere um `main(String[])`; se não houver, usa um `main()` sem parâmetros. Se o método escolhido não for estático, o launcher instancia a classe pelo construtor sem argumentos e chama o método.
-2. **Arquivos-fonte compactos.** Se um arquivo tem campos e métodos fora de qualquer classe, :marca[o compilador declara uma classe implícita]: `final`, no pacote sem nome, com esses campos e métodos como membros. Essa classe não tem nome utilizável no código e precisa ter um `main` executável.
+1. **Métodos `main` de instância.** O `main` pode deixar de ser `public` e `static` e pode não receber parâmetros. O launcher (o comando `java`) prefere um `main(String[])`; se não houver, usa um `main()` sem parâmetros. Se o método escolhido não for estático, o launcher instancia a classe pelo construtor sem argumentos e chama o método.
+2. **Arquivos-fonte compactos.** Se um arquivo tem campos e métodos fora de qualquer classe, o compilador declara uma classe implícita: `final`, no pacote sem nome, com esses campos e métodos como membros. Essa classe não tem nome utilizável no código e precisa ter um `main` executável.
 3. **Classe `java.lang.IO`.** Traz `print`, `println` e `readln` para entrada e saída no console. Por estar em `java.lang`, está disponível em qualquer programa, não só em arquivos compactos.
 4. **Import automático de `java.base`.** Todo arquivo compacto se comporta como se começasse com `import module java.base;`, a declaração explicada na [próxima seção](#import-de-módulos). Por isso `List`, `Map` e as demais classes básicas ficam disponíveis sem nenhum import.
 
-A versão final mudou um detalhe em relação às previews: os métodos de `IO` :sublinhado[**não**] são mais importados estaticamente de forma implícita. É preciso escrever `IO.println(...)`. A classe também saiu de `java.io` e foi para `java.lang` ([JEP 512, seção History](https://openjdk.org/jeps/512)). Exemplos antigos com `println("...")` solto, como os da primeira preview mostrada no [post do Java 21](/posts/java-21/#classes-sem-nome-e-métodos-main-de-instância), não compilam no Java 25.
+A versão final mudou um detalhe em relação às previews: os métodos de `IO` **não** são mais importados estaticamente de forma implícita. É preciso escrever `IO.println(...)`. A classe também saiu de `java.io` e foi para `java.lang` ([JEP 512, seção History](https://openjdk.org/jeps/512)). Exemplos antigos com `println("...")` solto, como os da primeira preview mostrada no [post do Java 21](/posts/java-21/#classes-sem-nome-e-métodos-main-de-instância), não compilam no Java 25.
 
 Antes, no Java 21 sem preview:
 
@@ -97,7 +97,7 @@ Scala: 5
 Olá do Java 25
 ```
 
-Quando o programa crescer, :marca[basta envolver os membros em `class Tamanhos { ... }`] e adicionar `import module java.base;` para ter uma classe comum; o `main` continua igual. O recurso não serve só para quem está aprendendo: scripts, utilitários de linha de comando e protótipos também ficam mais curtos. Em código de produção organizado em pacotes, classes declaradas continuam sendo o caminho, porque a classe implícita fica no pacote sem nome e não pode ser referenciada por outras classes.
+Quando o programa crescer, basta envolver os membros em `class Tamanhos { ... }` e adicionar `import module java.base;` para ter uma classe comum; o `main` continua igual. O recurso não serve só para quem está aprendendo: scripts, utilitários de linha de comando e protótipos também ficam mais curtos. Em código de produção organizado em pacotes, classes declaradas continuam sendo o caminho, porque a classe implícita fica no pacote sem nome e não pode ser referenciada por outras classes.
 
 ### Import de módulos
 
@@ -105,9 +105,9 @@ Quando o programa crescer, :marca[basta envolver os membros em `class Tamanhos {
 
 Um arquivo que usa coleções, streams, datas e I/O costuma começar com uma dúzia de imports de pacotes diferentes. Desde o Java 9, porém, o JDK é organizado em **módulos** (o sistema de módulos da plataforma, JPMS, explicado no [post do Java 11](/posts/java-11/#sistema-de-módulos-jpms)): cada módulo agrupa pacotes e declara quais exporta e de quais outros módulos depende. A [JEP 511](https://openjdk.org/jeps/511) aproveita essa organização para importar tudo de uma vez.
 
-A declaração `import module M;` importa sob demanda todas as classes e interfaces públicas de nível superior dos pacotes que o módulo `M` exporta. Também entram os pacotes exportados pelos módulos que `M` requer de forma transitiva (`requires transitive`, isto é, dependências que o módulo repassa a quem o usa). `import module java.base` equivale a 54 imports do tipo `pacote.*`. :marca[O código que usa a declaração **não precisa ser modular**]: funciona no class path normalmente.
+A declaração `import module M;` importa sob demanda todas as classes e interfaces públicas de nível superior dos pacotes que o módulo `M` exporta. Também entram os pacotes exportados pelos módulos que `M` requer de forma transitiva (`requires transitive`, isto é, dependências que o módulo repassa a quem o usa). `import module java.base` equivale a 54 imports do tipo `pacote.*`. O código que usa a declaração **não precisa ser modular**: funciona no class path normalmente.
 
-Como vários pacotes entram de uma vez, nomes simples podem ficar ambíguos: `java.util.Date` e `java.sql.Date`, por exemplo. :marca[O uso de um nome ambíguo gera erro de compilação.] Para resolver, acrescente um import mais específico; a precedência, do mais forte para o mais fraco, é:
+Como vários pacotes entram de uma vez, nomes simples podem ficar ambíguos: `java.util.Date` e `java.sql.Date`, por exemplo. O uso de um nome ambíguo gera erro de compilação. Para resolver, acrescente um import mais específico; a precedência, do mais forte para o mais fraco, é:
 
 1. import de tipo único (`import java.sql.Date;`);
 2. import sob demanda de pacote (`import java.sql.*;`);
@@ -148,7 +148,7 @@ Desde o início da linguagem, a primeira instrução de um construtor tinha de s
 - **Falta de expressividade:** não dava para validar argumentos antes de chamar o construtor da superclasse; o jeito era esconder a validação em um método estático dentro da chamada `super(verificar(x))`.
 - **Integridade:** se o construtor da superclasse chama um método sobrescrito, esse método roda antes de a subclasse inicializar seus campos e enxerga valores padrão (`null`, `0`), inclusive em campos `final`.
 
-Agora o corpo do construtor tem duas fases. O **prólogo** é o código antes de `super(...)`/`this(...)`; o **epílogo** é o código depois. No prólogo não se pode usar a instância em construção (ler campos, chamar métodos de instância, passar `this` adiante), mas :marca[é permitido validar argumentos, calcular valores e **atribuir campos da própria classe**] que não tenham inicializador.
+Agora o corpo do construtor tem duas fases. O **prólogo** é o código antes de `super(...)`/`this(...)`; o **epílogo** é o código depois. No prólogo não se pode usar a instância em construção (ler campos, chamar métodos de instância, passar `this` adiante), mas é permitido validar argumentos, calcular valores e **atribuir campos da própria classe** que não tenham inicializador.
 
 ```java title="Construtores.java" {19-25}
 class Pessoa {
@@ -205,13 +205,13 @@ Falhou cedo: idade fora da faixa: 15
 
 No Java 21, `super(idade)` teria de ser a primeira linha e a atribuição de `escritorio` viria depois. Como `Pessoa` chama `mostrar()` dentro do próprio construtor, a saída seria `Idade: 42, escritório: null`. A validação, por sua vez, só rodaria depois do construtor da superclasse, ou teria de ir para um método estático chamado dentro de `super(...)`.
 
-Na prática, use o prólogo para validar e preparar argumentos e para inicializar campos que a superclasse possa enxergar. :marca[Ler campos ou chamar métodos da instância antes de `super(...)` continua proibido] e gera erro de compilação. Na primeira preview, no Java 22, o recurso se chamava "Statements before super(...)".
+Na prática, use o prólogo para validar e preparar argumentos e para inicializar campos que a superclasse possa enxergar. Ler campos ou chamar métodos da instância antes de `super(...)` continua proibido e gera erro de compilação. Na primeira preview, no Java 22, o recurso se chamava "Statements before super(...)".
 
 ### Variáveis e padrões sem nome
 
 **Chegou em:** Java 21 (preview, [JEP 443](https://openjdk.org/jeps/443)) → Java 22 (final, [JEP 456](https://openjdk.org/jeps/456))
 
-Muitas vezes a sintaxe obriga a declarar uma variável que não será usada: o parâmetro de um lambda, a exceção de um `catch`, um componente de record em um padrão. Dar nome a ela confunde quem lê, e ferramentas de análise estática costumam reclamar de variável não usada. Com a [JEP 456](https://openjdk.org/jeps/456), :marca[o caractere `_` indica essa variável ou esse padrão sem nome]. O ganho é de legibilidade: fica explícito que o valor é descartado. O recurso era preview no Java 21 ([post do Java 21](/posts/java-21/#padrões-e-variáveis-sem-nome)) e ficou final sem mudanças.
+Muitas vezes a sintaxe obriga a declarar uma variável que não será usada: o parâmetro de um lambda, a exceção de um `catch`, um componente de record em um padrão. Dar nome a ela confunde quem lê, e ferramentas de análise estática costumam reclamar de variável não usada. Com a [JEP 456](https://openjdk.org/jeps/456), o caractere `_` indica essa variável ou esse padrão sem nome. O ganho é de legibilidade: fica explícito que o valor é descartado. O recurso era preview no Java 21 ([post do Java 21](/posts/java-21/#padrões-e-variáveis-sem-nome)) e ficou final sem mudanças.
 
 ```java title="Unnamed.java"
 import java.util.List;
@@ -263,7 +263,7 @@ círculo de raio 2.5
 
 **Chegou em:** Java 21 (preview, [JEP 430](https://openjdk.org/jeps/430)) → Java 22 (2ª preview, [JEP 459](https://openjdk.org/jeps/459)) → Java 23 (removido)
 
-Quem experimentou `STR."Olá \{nome}"` com `--enable-preview` no Java 21 ([post do Java 21](/posts/java-21/#string-templates)) precisa reescrever esse código. As [notas de release do JDK 23](https://www.oracle.com/java/technologies/javase/23-relnote-issues.html) informam que, após feedback e discussão, o recurso foi considerado inadequado na forma atual e retirado, sem consenso ainda sobre um desenho melhor. :marca[Não há substituto no Java 25]; continue com concatenação, `String.format`/`formatted` ou `StringBuilder`.
+Quem experimentou `STR."Olá \{nome}"` com `--enable-preview` no Java 21 ([post do Java 21](/posts/java-21/#string-templates)) precisa reescrever esse código. As [notas de release do JDK 23](https://www.oracle.com/java/technologies/javase/23-relnote-issues.html) informam que, após feedback e discussão, o recurso foi considerado inadequado na forma atual e retirado, sem consenso ainda sobre um desenho melhor. Não há substituto no Java 25; continue com concatenação, `String.format`/`formatted` ou `StringBuilder`.
 
 ## Concorrência
 
@@ -275,9 +275,9 @@ A API `StructuredTaskScope` mudou bastante desde o Java 21 e **ainda não é fin
 
 Uma virtual thread não tem thread do sistema operacional própria: para executar, ela é **montada** sobre uma thread de plataforma do scheduler, chamada **carrier**. Quando bloqueia em I/O, ela normalmente **desmonta** e libera a carrier para outra virtual thread (o modelo está no [post do Java 21](/posts/java-21/#virtual-threads)).
 
-No Java 21, havia uma exceção importante. Uma virtual thread que bloqueasse dentro de um método ou bloco `synchronized` (em I/O, em `Object.wait()` ou esperando um monitor ocupado) não desmontava: ficava **presa** (pinned) à carrier. O motivo, descrito na [JEP 491](https://openjdk.org/jeps/491): :marca[a JVM registrava a carrier como dona do monitor, e não a virtual thread]. Se a virtual thread desmontasse, outra virtual thread montada na mesma carrier pareceria dona do monitor e a exclusão mútua se perderia. Como o scheduler tem poucas carriers, algumas virtual threads presas bastavam para limitar severamente quantas tarefas a aplicação conseguia atender.
+No Java 21, havia uma exceção importante. Uma virtual thread que bloqueasse dentro de um método ou bloco `synchronized` (em I/O, em `Object.wait()` ou esperando um monitor ocupado) não desmontava: ficava **presa** (pinned) à carrier. O motivo, descrito na [JEP 491](https://openjdk.org/jeps/491): a JVM registrava a carrier como dona do monitor, e não a virtual thread. Se a virtual thread desmontasse, outra virtual thread montada na mesma carrier pareceria dona do monitor e a exclusão mútua se perderia. Como o scheduler tem poucas carriers, algumas virtual threads presas bastavam para limitar severamente quantas tarefas a aplicação conseguia atender.
 
-A partir do Java 24, a JVM permite que :marca[virtual threads adquiram, segurem e liberem monitores independentemente da carrier]. Ao bloquear para adquirir um monitor ou em `Object.wait()`, a virtual thread desmonta e libera a carrier; quando pode continuar, volta ao scheduler e remonta, possivelmente em outra carrier.
+A partir do Java 24, a JVM permite que virtual threads adquiram, segurem e liberem monitores independentemente da carrier. Ao bloquear para adquirir um monitor ou em `Object.wait()`, a virtual thread desmonta e libera a carrier; quando pode continuar, volta ao scheduler e remonta, possivelmente em outra carrier.
 
 ![Comparação entre Java 21 a 23, em que a virtual thread bloqueada em synchronized prende a carrier, e Java 24 e 25, em que ela desmonta e libera a carrier](/posts/java-25/synchronized-sem-pinning.svg)
 
@@ -285,7 +285,7 @@ O diagrama acompanha a mesma situação nas duas versões: à esquerda, as carri
 
 Consequências práticas para quem migra:
 
-- :marca[A recomendação de trocar `synchronized` por `ReentrantLock` só por causa de pinning deixa de ser necessária.] A JEP recomenda usar `synchronized` onde for prático, por ser mais conveniente e menos sujeito a erro, e reservar `ReentrantLock` para quando for preciso mais flexibilidade. Código que já foi migrado não precisa ser revertido.
+- A recomendação de trocar `synchronized` por `ReentrantLock` só por causa de pinning deixa de ser necessária. A JEP recomenda usar `synchronized` onde for prático, por ser mais conveniente e menos sujeito a erro, e reservar `ReentrantLock` para quando for preciso mais flexibilidade. Código que já foi migrado não precisa ser revertido.
 - A propriedade `jdk.tracePinnedThreads` foi removida; defini-la não tem efeito.
 - Ainda há pinning em casos menos comuns: código nativo que chama de volta código Java e bloqueia, e bloqueios durante carregamento ou inicialização de classe. O evento `jdk.VirtualThreadPinned` do JFR (JDK Flight Recorder, o gravador de eventos embutido na JVM) continua existindo para esses casos. No Java 26, um deles deixou de prender a carrier: a espera pela inicialização de uma classe ([post do Java 29](/posts/java-29/#virtual-threads-liberam-a-carrier-enquanto-esperam-a-inicialização-de-uma-classe)).
 
@@ -326,10 +326,10 @@ Para passar contexto (usuário autenticado, ID de transação) a métodos distan
 - **tempo de vida ilimitado:** o valor fica associado à thread até alguém chamar `remove`, o que causa vazamentos em pools de threads;
 - **herança cara:** com `InheritableThreadLocal`, cada thread filha recebe cópia dos valores da mãe, custo que pesa com milhares de virtual threads.
 
-Um `ScopedValue` :marca[compartilha um valor **imutável**] com os métodos chamados, direta ou indiretamente, durante um escopo bem delimitado. Depois de uma incubadora e quatro previews (a versão do Java 21 aparece no [post do Java 21](/posts/java-21/#scoped-values)), a API final funciona assim:
+Um `ScopedValue` compartilha um valor **imutável** com os métodos chamados, direta ou indiretamente, durante um escopo bem delimitado. Depois de uma incubadora e quatro previews (a versão do Java 21 aparece no [post do Java 21](/posts/java-21/#scoped-values)), a API final funciona assim:
 
 - `ScopedValue.where(CHAVE, valor).run(...)` ou `.call(...)` associa o valor apenas durante a execução do lambda;
-- :marca[não existe `set`]; um método chamado pode criar uma **reassociação aninhada**, que vale só para quem ele chamar;
+- não existe `set`; um método chamado pode criar uma **reassociação aninhada**, que vale só para quem ele chamar;
 - ao sair do escopo, o valor deixa de estar associado, sem `remove`;
 - subtarefas criadas com `StructuredTaskScope` herdam as associações.
 
@@ -384,7 +384,7 @@ O diagrama mostra os escopos do exemplo como caixas aninhadas: cada `get()` devo
 
 A única mudança da versão final em relação à quarta preview: `ScopedValue.orElse` não aceita mais `null` como argumento ([JEP 506](https://openjdk.org/jeps/506)). A API está documentada no [Javadoc de `ScopedValue`](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ScopedValue.html).
 
-:marca[`ThreadLocal` continua existindo] e continua sendo a escolha quando o valor precisa ser mutável ou quando há cache por thread. Scoped Values são para o caso de passar contexto adiante sem parâmetro, como usuário autenticado, ID de transação ou contexto de framework, e combinam com virtual threads e com `StructuredTaskScope`, que ainda está em preview.
+`ThreadLocal` continua existindo e continua sendo a escolha quando o valor precisa ser mutável ou quando há cache por thread. Scoped Values são para o caso de passar contexto adiante sem parâmetro, como usuário autenticado, ID de transação ou contexto de framework, e combinam com virtual threads e com `StructuredTaskScope`, que ainda está em preview.
 
 ## APIs da biblioteca padrão
 
@@ -392,7 +392,7 @@ A única mudança da versão final em relação à quarta preview: `ScopedValue.
 
 **Chegou em:** Java 22 (preview, [JEP 461](https://openjdk.org/jeps/461)) → Java 23 (2ª preview, [JEP 473](https://openjdk.org/jeps/473)) → Java 24 (final, [JEP 485](https://openjdk.org/jeps/485))
 
-A Stream API tem um conjunto fixo de operações intermediárias (`map`, `filter`, `flatMap`, `distinct`...). Operações como agrupar em lotes de N, janela deslizante ou soma acumulada exigiam truques com estado externo ou coletar tudo em uma lista antes. A [JEP 485](https://openjdk.org/jeps/485) adiciona `Stream::gather(Gatherer)`, que aceita :marca[**operações intermediárias personalizadas**], com estado, capazes de transformar um-para-um, um-para-muitos, muitos-para-um ou muitos-para-muitos e de encerrar o stream mais cedo.
+A Stream API tem um conjunto fixo de operações intermediárias (`map`, `filter`, `flatMap`, `distinct`...). Operações como agrupar em lotes de N, janela deslizante ou soma acumulada exigiam truques com estado externo ou coletar tudo em uma lista antes. A [JEP 485](https://openjdk.org/jeps/485) adiciona `Stream::gather(Gatherer)`, que aceita **operações intermediárias personalizadas**, com estado, capazes de transformar um-para-um, um-para-muitos, muitos-para-um ou muitos-para-muitos e de encerrar o stream mais cedo.
 
 A classe [`java.util.stream.Gatherers`](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/Gatherers.html) traz cinco gatherers prontos: `fold`, `mapConcurrent`, `scan`, `windowFixed` e `windowSliding`.
 
@@ -436,7 +436,7 @@ public class Janelas {
 }
 ```
 
-`mapConcurrent` é especialmente útil para chamadas de I/O em paralelo com limite de concorrência: o Javadoc de `Gatherers` informa que :marca[ele usa virtual threads e preserva a ordem dos elementos]. Para operações próprias, implemente a interface `Gatherer` com `initializer`, `integrator`, `combiner` e `finisher`.
+`mapConcurrent` é especialmente útil para chamadas de I/O em paralelo com limite de concorrência: o Javadoc de `Gatherers` informa que ele usa virtual threads e preserva a ordem dos elementos. Para operações próprias, implemente a interface `Gatherer` com `initializer`, `integrator`, `combiner` e `finisher`.
 
 ### Foreign Function & Memory API
 
@@ -476,7 +476,7 @@ public class Strlen {
 }
 ```
 
-:marca[Métodos como `Linker::downcallHandle` são **restritos**.] Sem `--enable-native-access`, o Java 25 executa, mas imprime um aviso de que chamadas assim serão bloqueadas no futuro (veja [Avisos no uso de JNI](#avisos-no-uso-de-jni)). Rode com `java --enable-native-access=ALL-UNNAMED Strlen.java` ou declare o atributo `Enable-Native-Access` no manifesto do JAR executável.
+Métodos como `Linker::downcallHandle` são **restritos**. Sem `--enable-native-access`, o Java 25 executa, mas imprime um aviso de que chamadas assim serão bloqueadas no futuro (veja [Avisos no uso de JNI](#avisos-no-uso-de-jni)). Rode com `java --enable-native-access=ALL-UNNAMED Strlen.java` ou declare o atributo `Enable-Native-Access` no manifesto do JAR executável.
 
 ### Class-File API
 
@@ -513,7 +513,7 @@ No Temurin 25, a primeira linha impressa é `java/lang/Object (versão 69)`: 69 
 
 **Chegou em:** Java 24 (final, [JEP 483](https://openjdk.org/jeps/483)) → Java 25 (final, [JEP 514](https://openjdk.org/jeps/514) e [JEP 515](https://openjdk.org/jeps/515))
 
-Toda vez que uma aplicação Java sobe, a JVM lê, analisa, carrega e linka (conecta às classes de que dependem) milhares de classes. Depois, o compilador JIT (just-in-time, que compila para código de máquina durante a execução) ainda precisa observar o programa por um tempo antes de otimizar os métodos mais usados. Esse período até a aplicação atingir o desempenho normal é o **warmup**. O Projeto Leyden, do OpenJDK, desloca parte desse trabalho para antes da execução e o grava em um **cache AOT** (ahead-of-time), reaproveitado nas execuções seguintes. :marca[Não é preciso mudar o código.]
+Toda vez que uma aplicação Java sobe, a JVM lê, analisa, carrega e linka (conecta às classes de que dependem) milhares de classes. Depois, o compilador JIT (just-in-time, que compila para código de máquina durante a execução) ainda precisa observar o programa por um tempo antes de otimizar os métodos mais usados. Esse período até a aplicação atingir o desempenho normal é o **warmup**. O Projeto Leyden, do OpenJDK, desloca parte desse trabalho para antes da execução e o grava em um **cache AOT** (ahead-of-time), reaproveitado nas execuções seguintes. Não é preciso mudar o código.
 
 O cache é uma evolução do CDS (Class Data Sharing), que desde uma atualização do JDK 5 guarda classes já lidas e analisadas ([post do Java 17](/posts/java-17/#class-data-sharing-padrão-e-dinâmico)). Segundo a [JEP 483](https://openjdk.org/jeps/483), o cache AOT vai além e guarda as classes já carregadas e linkadas. O recurso chegou em duas etapas:
 
@@ -535,7 +535,7 @@ java -XX:AOTCache=app.aot -cp app.jar com.exemplo.App
 
 O treino deve exercitar os caminhos comuns da aplicação, por exemplo, um conjunto de testes de integração ou uma carga sintética. Pontos de atenção da [JEP 483](https://openjdk.org/jeps/483):
 
-- :marca[treino e produção precisam usar a mesma release do JDK, o mesmo sistema operacional e a mesma arquitetura];
+- treino e produção precisam usar a mesma release do JDK, o mesmo sistema operacional e a mesma arquitetura;
 - o class path de produção deve ser igual ao do treino, podendo só acrescentar entradas no fim, e conter apenas JARs (diretórios não são aceitos);
 - as opções de módulo precisam ser as mesmas, e algumas, como `--add-opens` e `--patch-module`, não podem ser usadas;
 - classes carregadas por class loaders customizados não entram no cache;
@@ -547,13 +547,13 @@ No Java 26, o cache passou a funcionar com qualquer coletor de lixo, inclusive o
 
 **Chegou em:** Java 24 (experimental, [JEP 450](https://openjdk.org/jeps/450)) → Java 25 (final, [JEP 519](https://openjdk.org/jeps/519))
 
-Cada objeto no heap tem um cabeçalho com metadados que a JVM usa internamente. Ele tem duas partes: o **mark word**, com hash de identidade, idade do objeto para o GC e estado de lock, e o **class pointer**, que aponta para a classe do objeto. Na HotSpot de 64 bits, esse cabeçalho ocupa entre 96 bits (12 bytes) e 128 bits (16 bytes). Segundo a [JEP 450](https://openjdk.org/jeps/450), experimentos do Projeto Lilliput (o projeto do OpenJDK dedicado a reduzir o cabeçalho) mostram objetos médios de 32 a 64 bytes em muitas cargas, o que faz o cabeçalho representar mais de 20% dos dados vivos. Com headers compactos, o cabeçalho cai para :circulo[**64 bits (8 bytes)**]: o class pointer comprimido passa para dentro do mark word e é reduzido de 32 para 22 bits.
+Cada objeto no heap tem um cabeçalho com metadados que a JVM usa internamente. Ele tem duas partes: o **mark word**, com hash de identidade, idade do objeto para o GC e estado de lock, e o **class pointer**, que aponta para a classe do objeto. Na HotSpot de 64 bits, esse cabeçalho ocupa entre 96 bits (12 bytes) e 128 bits (16 bytes). Segundo a [JEP 450](https://openjdk.org/jeps/450), experimentos do Projeto Lilliput (o projeto do OpenJDK dedicado a reduzir o cabeçalho) mostram objetos médios de 32 a 64 bytes em muitas cargas, o que faz o cabeçalho representar mais de 20% dos dados vivos. Com headers compactos, o cabeçalho cai para **64 bits (8 bytes)**: o class pointer comprimido passa para dentro do mark word e é reduzido de 32 para 22 bits.
 
 ![Layout do cabeçalho de objeto: padrão de 96 bits com mark word e class pointer comprimido, e compacto de 64 bits com class pointer de 22 bits, hash, bits reservados para Valhalla, idade, self-forwarding e tag](/posts/java-25/object-headers-compactos.svg)
 
 O diagrama compara os dois layouts bit a bit: no compacto, o class pointer divide os mesmos 64 bits com os demais campos, e sobram 4 bits reservados para o Projeto Valhalla, o projeto do OpenJDK que prepara os value objects.
 
-No Java 25 a opção deixou de ser experimental e :marca[**continua desligada por padrão**] ([JEP 519](https://openjdk.org/jeps/519), [notas de release do JDK 25](https://www.oracle.com/java/technologies/javase/25-relnote-issues.html)):
+No Java 25 a opção deixou de ser experimental e **continua desligada por padrão** ([JEP 519](https://openjdk.org/jeps/519), [notas de release do JDK 25](https://www.oracle.com/java/technologies/javase/25-relnote-issues.html)):
 
 ```bash
 # Java 24 (experimental)
@@ -579,7 +579,7 @@ java -XX:+UseShenandoahGC -XX:ShenandoahGCMode=generational -jar app.jar
 
 **Chegou em:** Java 23 (depreciado, [JEP 474](https://openjdk.org/jeps/474)) → Java 24 (removido, [JEP 490](https://openjdk.org/jeps/490))
 
-No Java 21, o ZGC geracional existia ([JEP 439](https://openjdk.org/jeps/439), veja o [post do Java 21](/posts/java-21/#zgc-geracional)), mas precisava de `-XX:+ZGenerational`. O Java 23 tornou o modo geracional o padrão e depreciou o não geracional; o Java 24 removeu o não geracional para reduzir o custo de manter dois modos. Quem usa `-XX:+UseZGC` já recebe o modo geracional. No Temurin 25.0.4, passar `-XX:+ZGenerational` ou `-XX:-ZGenerational` gera o aviso `Ignoring option ZGenerational; support was removed in 24.0` e a JVM segue com o modo geracional. :marca[Remova a opção dos scripts.]
+No Java 21, o ZGC geracional existia ([JEP 439](https://openjdk.org/jeps/439), veja o [post do Java 21](/posts/java-21/#zgc-geracional)), mas precisava de `-XX:+ZGenerational`. O Java 23 tornou o modo geracional o padrão e depreciou o não geracional; o Java 24 removeu o não geracional para reduzir o custo de manter dois modos. Quem usa `-XX:+UseZGC` já recebe o modo geracional. No Temurin 25.0.4, passar `-XX:+ZGenerational` ou `-XX:-ZGenerational` gera o aviso `Ignoring option ZGenerational; support was removed in 24.0` e a JVM segue com o modo geracional. Remova a opção dos scripts.
 
 ### Melhorias no G1
 
@@ -764,7 +764,7 @@ assinatura válida? true
 
 O Security Manager era o mecanismo para restringir, em tempo de execução, o que o código Java podia fazer (ler arquivos, abrir conexões e assim por diante). Pouco usado e caro de manter, ele foi depreciado para remoção no Java 17 ([post do Java 17](/posts/java-17/#removidos-e-depreciados)). A partir do Java 24 não é mais possível ativá-lo ([JEP 486](https://openjdk.org/jeps/486)):
 
-- iniciar a JVM com `-Djava.security.manager` (vazio, `allow`, `default` ou nome de classe) é :marca[**erro fatal na inicialização**], sem opção de rebaixar para aviso;
+- iniciar a JVM com `-Djava.security.manager` (vazio, `allow`, `default` ou nome de classe) é **erro fatal na inicialização**, sem opção de rebaixar para aviso;
 - `System.setSecurityManager(...)` lança `UnsupportedOperationException`;
 - a API continua existindo, mas se comporta como se nenhum Security Manager estivesse ativo; `-Djava.security.manager=disallow` continua aceito.
 
@@ -780,7 +780,7 @@ A JEP não oferece substituto para sandboxing; para isolar código, recomenda me
 
 Remoções que afetam recursos já citados estão nas próprias seções: [String Templates](#string-templates-foram-retirados), [ZGC não geracional](#zgc-passa-a-ser-só-geracional) e [Security Manager](#security-manager-desativado-permanentemente). A lista completa de APIs e opções removidas está em [O que observar na migração](#o-que-observar-na-migração-a-partir-do-java-21).
 
-As duas mudanças abaixo fazem parte de um movimento do OpenJDK chamado :marca[**integridade por padrão**]: operações que podem quebrar as garantias da JVM, como acessar memória sem verificação ou carregar código nativo, passam a exigir permissão explícita de quem executa a aplicação. No Java 25, por padrão, elas só geram avisos no log e afetam principalmente **bibliotecas** que sua aplicação usa.
+As duas mudanças abaixo fazem parte de um movimento do OpenJDK chamado **integridade por padrão**: operações que podem quebrar as garantias da JVM, como acessar memória sem verificação ou carregar código nativo, passam a exigir permissão explícita de quem executa a aplicação. No Java 25, por padrão, elas só geram avisos no log e afetam principalmente **bibliotecas** que sua aplicação usa.
 
 ### Métodos de acesso a memória de `sun.misc.Unsafe`
 
@@ -811,7 +811,7 @@ java --illegal-native-access=deny -jar app.jar           # teste antecipado da r
 
 ## Recursos em preview ou incubadora nesta LTS
 
-:marca[Os recursos abaixo **não são finais no Java 25**.] APIs e sintaxe ainda podem mudar em releases seguintes, e isso já aconteceu: os exemplos de Structured Concurrency e de Stable Values desta seção não compilam no Java 26. Não os use em código de produção que precise compilar em versões futuras sem ajustes. Cada seção indica, em uma linha, o que mudou depois; os detalhes estão no [post do Java 29](/posts/java-29/#ainda-em-preview-ou-incubadora).
+Os recursos abaixo **não são finais no Java 25**. APIs e sintaxe ainda podem mudar em releases seguintes, e isso já aconteceu: os exemplos de Structured Concurrency e de Stable Values desta seção não compilam no Java 26. Não os use em código de produção que precise compilar em versões futuras sem ajustes. Cada seção indica, em uma linha, o que mudou depois; os detalhes estão no [post do Java 29](/posts/java-29/#ainda-em-preview-ou-incubadora).
 
 | Recurso | Situação no Java 25 | JEP | Como habilitar |
 | --- | --- | --- | --- |
@@ -1087,7 +1087,7 @@ A lista abaixo reúne mudanças que podem quebrar build ou execução, ou gerar 
 
 **Build e compilação**
 
-- :marca[**Annotation processing desligado por padrão (Java 23).**] O `javac` só executa processadores de anotação com configuração explícita (`-processor`, `--processor-path`, `-proc:full` etc.). Builds que dependiam da descoberta automática de processadores no class path deixam de executá-los e, portanto, de gerar o código correspondente. Configure o processor path no Maven/Gradle ou passe `-proc:full` ([notas do JDK 23](https://www.oracle.com/java/technologies/javase/23-relnote-issues.html)).
+- **Annotation processing desligado por padrão (Java 23).** O `javac` só executa processadores de anotação com configuração explícita (`-processor`, `--processor-path`, `-proc:full` etc.). Builds que dependiam da descoberta automática de processadores no class path deixam de executá-los e, portanto, de gerar o código correspondente. Configure o processor path no Maven/Gradle ou passe `-proc:full` ([notas do JDK 23](https://www.oracle.com/java/technologies/javase/23-relnote-issues.html)).
 - **Código escrito para previews do Java 21 precisa ser revisado:** [String Templates](#string-templates-foram-retirados) foram retirados; `StructuredTaskScope` [mudou de API](#structured-concurrency); o `main` implícito agora [exige `IO.println`](#arquivos-compactos-e-métodos-main-de-instância) em vez de `println` solto. Classes compiladas com `--enable-preview` no Java 21 também precisam ser recompiladas, porque a JVM não carrega classes compiladas com os previews de outra versão e falha com `UnsupportedClassVersionError` ([JEP 12](https://openjdk.org/jeps/12)).
 - **Suporte a 32 bits x86 acabou:** o port Windows 32 bits foi removido no Java 24 ([JEP 479](https://openjdk.org/jeps/479)) e o port 32 bits x86 restante (Linux) foi depreciado no 24 ([JEP 501](https://openjdk.org/jeps/501)) e removido no 25 ([JEP 503](https://openjdk.org/jeps/503)). Para rodar Java em x86 de 32 bits, resta o port Zero, que não depende de arquitetura ([JEP 501](https://openjdk.org/jeps/501)).
 

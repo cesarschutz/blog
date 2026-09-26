@@ -8,26 +8,26 @@ category: Arquitetura de Software
 draft: false
 ---
 
-Em discussões de arquitetura, "isso tem muito overhead" e "isso é overkill" costumam ser usados como sinônimos. Não são, e :marca[confundir os dois leva a decisões ruins nos dois sentidos]: rejeitar algo necessário porque "tem overhead" ou adotar algo exagerado porque "o overhead de runtime é baixo".
+Em discussões de arquitetura, "isso tem muito overhead" e "isso é overkill" costumam ser usados como sinônimos. Não são, e confundir os dois leva a decisões ruins nos dois sentidos: rejeitar algo necessário porque "tem overhead" ou adotar algo exagerado porque "o overhead de runtime é baixo".
 
-- **Overhead** é o **custo extra** (operacional ou de esforço) que uma escolha cobra além do trabalho essencial. :marca[É o "imposto" da escolha.]
-- **Overkill** (ou *overengineering*) é aplicar uma **solução complexa ou desproporcional** a um problema simples. :marca[É o "exagero" da escolha.]
+- **Overhead** é o **custo extra** (operacional ou de esforço) que uma escolha cobra além do trabalho essencial. É o "imposto" da escolha.
+- **Overkill** (ou *overengineering*) é aplicar uma **solução complexa ou desproporcional** a um problema simples. É o "exagero" da escolha.
 
-A diferença de fundo: overhead é **descritivo** (toda escolha tem algum), enquanto overkill é um **juízo de valor** sobre a proporção entre a complexidade da solução e o tamanho real do problema. Bom design não elimina overhead: :marca[**aceita o overhead certo pelos motivos certos**]. Overkill é quando essa proporção quebra.
+A diferença de fundo: overhead é **descritivo** (toda escolha tem algum), enquanto overkill é um **juízo de valor** sobre a proporção entre a complexidade da solução e o tamanho real do problema. Bom design não elimina overhead: **aceita o overhead certo pelos motivos certos**. Overkill é quando essa proporção quebra.
 
 Neste post você vai ver as seis dimensões em que o overhead aparece (e por que olhar só CPU e memória engana), exemplos de overhead que compensa e de overkill clássico, e um critério prático para decidir.
 
 ## 1. Overhead — o "imposto" inevitável de toda escolha
 
-Overhead é o custo que uma decisão técnica cobra além do trabalho essencial. Adicionar um cache, por exemplo, reduz a latência, mas cobra memória extra, regras de invalidação, um componente a mais para monitorar e uma classe nova de bugs (dado desatualizado). Toda escolha tem overhead: :marca[o objetivo não é zerá-lo, é decidir conscientemente onde gastá-lo].
+Overhead é o custo que uma decisão técnica cobra além do trabalho essencial. Adicionar um cache, por exemplo, reduz a latência, mas cobra memória extra, regras de invalidação, um componente a mais para monitorar e uma classe nova de bugs (dado desatualizado). Toda escolha tem overhead: o objetivo não é zerá-lo, é decidir conscientemente onde gastá-lo.
 
 ## 2. As seis dimensões do overhead
 
-O erro clássico é avaliar overhead só pelo runtime (CPU, memória, latência). Hardware costuma ser barato perto do custo de gente; :marca[o que sai caro é o que não aparece no dashboard de APM] (*Application Performance Monitoring*, ferramentas que medem latência, erros e consumo de recursos da aplicação).
+O erro clássico é avaliar overhead só pelo runtime (CPU, memória, latência). Hardware costuma ser barato perto do custo de gente; o que sai caro é o que não aparece no dashboard de APM (*Application Performance Monitoring*, ferramentas que medem latência, erros e consumo de recursos da aplicação).
 
 ![As seis dimensões do overhead ao redor de um centro: runtime, desenvolvimento, cognitivo, manutenção, operacional e organizacional](/posts/overhead-vs-overkill/seis-dimensoes-overhead.svg)
 
-O diagrama resume as seis dimensões. :marca[Só a primeira aparece com facilidade em métricas]; as outras cinco se manifestam em prazo, em bugs e em pessoas.
+O diagrama resume as seis dimensões. Só a primeira aparece com facilidade em métricas; as outras cinco se manifestam em prazo, em bugs e em pessoas.
 
 **a) Runtime** (o mais óbvio)
 
@@ -45,8 +45,8 @@ O diagrama resume as seis dimensões. :marca[Só a primeira aparece com facilida
 
 - Quantos conceitos alguém precisa ter em mente para entender um fluxo simples?
 - Indireção excessiva: para entender o que um endpoint faz, é preciso navegar por 7 camadas, 3 interfaces e 2 design patterns.
-- Abstrações prematuras, que escondem mais do que revelam. Sandi Metz resume bem: :marca[duplicação sai muito mais barata que a abstração errada].
-- É o tipo de custo que faz uma pessoa sênior :marca[levar uma tarde numa mudança que deveria levar 15 minutos].
+- Abstrações prematuras, que escondem mais do que revelam. Sandi Metz resume bem: duplicação sai muito mais barata que a abstração errada.
+- É o tipo de custo que faz uma pessoa sênior levar uma tarde numa mudança que deveria levar 15 minutos.
 
 **d) Manutenção**
 
@@ -70,17 +70,17 @@ O diagrama resume as seis dimensões. :marca[Só a primeira aparece com facilida
 
 ## 3. Overhead que costuma compensar (e quando deixa de compensar)
 
-Ter overhead não é problema. :marca[A pergunta é se o que se ganha paga o que se gasta]:
+Ter overhead não é problema. A pergunta é se o que se ganha paga o que se gasta:
 
-- **HTTPS** — cobra handshake TLS e criptografia. Compensa quase sempre: quando o Gmail passou a usar HTTPS por padrão em 2010, o Google relatou que SSL/TLS respondia por :circulo[menos de 1%] da CPU dos servidores de frontend, sem máquinas adicionais.
+- **HTTPS** — cobra handshake TLS e criptografia. Compensa quase sempre: quando o Gmail passou a usar HTTPS por padrão em 2010, o Google relatou que SSL/TLS respondia por menos de 1% da CPU dos servidores de frontend, sem máquinas adicionais.
 - **Garbage collector** — cobra pausas e CPU. É o preço de não gerenciar memória manualmente; para muitas aplicações é irrelevante, mas em sistemas com muitos gigabytes de heap, muitas threads e alto volume de transações a escolha e o ajuste do coletor passam a importar.
 - **ORM** — cobra uma camada de abstração e, às vezes, queries subótimas. Costuma compensar em sistemas com muito CRUD, porque elimina boa parte do código repetitivo de mapeamento; nas queries críticas, dá para descer ao SQL.
-- **Microsserviços** — cobram rede, serialização, observabilidade distribuída e coordenação entre times. Compensam quando há vários times e partes do sistema que precisam evoluir e escalar de forma independente; :marca[num sistema pequeno, esse custo fixo atrasa o projeto] (o que Martin Fowler chama de *microservice premium*).
+- **Microsserviços** — cobram rede, serialização, observabilidade distribuída e coordenação entre times. Compensam quando há vários times e partes do sistema que precisam evoluir e escalar de forma independente; num sistema pequeno, esse custo fixo atrasa o projeto (o que Martin Fowler chama de *microservice premium*).
 - **Reuniões diárias** — cobram tempo do time. Compensam quando cumprem o propósito que o Scrum Guide dá à Daily Scrum (15 minutos para inspecionar o progresso e ajustar o plano); viram puro overhead quando se estendem e não mudam decisão nenhuma.
 
 ## 4. Overkill — a escolha desproporcional
 
-Overkill é o julgamento de que a solução é grande demais para o problema. O foco não é o custo em si, mas :marca[a relação entre a complexidade da solução e o tamanho real do problema].
+Overkill é o julgamento de que a solução é grande demais para o problema. O foco não é o custo em si, mas a relação entre a complexidade da solução e o tamanho real do problema.
 
 Exemplos clássicos:
 
@@ -88,13 +88,11 @@ Exemplos clássicos:
 - Quebrar uma API CRUD com 3 endpoints em 8 microsserviços.
 - Implementar CQRS (separar os modelos de escrita e de leitura) com Event Sourcing (guardar a sequência de eventos em vez do estado atual) num cadastro simples de clientes. O próprio Fowler alerta que, para a maioria dos sistemas, CQRS adiciona complexidade arriscada. Em domínios em que a trilha completa de eventos é requisito, como um [ledger financeiro](/posts/arquitetura-de-ledger/), a conta é outra.
 - Usar Kafka para trocar 10 eventos por hora entre dois serviços, quando uma fila gerenciada (como o SQS) ou até uma chamada HTTP resolveria.
-- Criar uma abstração genérica "para trocar de banco no futuro" num sistema :sublinhado[que nunca vai trocar].
+- Criar uma abstração genérica "para trocar de banco no futuro" num sistema que nunca vai trocar.
 
 ## 5. Como os dois se relacionam
 
-:::colchete
 **Toda solução overkill carrega overhead desnecessário, mas nem todo overhead é overkill.**
-:::
 
 | Cenário | Tem overhead? | É overkill? |
 | --- | --- | --- |
@@ -112,23 +110,23 @@ Olhando só CPU e memória, muita coisa parece "barata o suficiente". Mas imagin
 - um incidente em produção que leva 4 horas para ser depurado porque a requisição passa por 8 serviços;
 - um dev novo que leva 1 mês para abrir o primeiro PR útil.
 
-Nesse cenário, :marca[o overhead "invisível" supera com folga qualquer ganho] de performance ou de escalabilidade prometido.
+Nesse cenário, o overhead "invisível" supera com folga qualquer ganho de performance ou de escalabilidade prometido.
 
-É isso que John Ousterhout captura em *A Philosophy of Software Design*, ao definir :marca[**complexidade como tudo, na estrutura de um sistema, que dificulta entendê-lo e modificá-lo**]. E ela é incremental: não vem de um único erro catastrófico, mas se acumula em pequenas decisões, até o sistema ficar "pesado" para evoluir, mesmo rodando rápido na máquina. Fowler descreve o mesmo efeito com a metáfora da dívida técnica: o esforço extra que cada mudança passa a exigir são os juros.
+É isso que John Ousterhout captura em *A Philosophy of Software Design*, ao definir **complexidade como tudo, na estrutura de um sistema, que dificulta entendê-lo e modificá-lo**. E ela é incremental: não vem de um único erro catastrófico, mas se acumula em pequenas decisões, até o sistema ficar "pesado" para evoluir, mesmo rodando rápido na máquina. Fowler descreve o mesmo efeito com a metáfora da dívida técnica: o esforço extra que cada mudança passa a exigir são os juros.
 
 ## 7. A analogia que fixa
 
-Todo carro tem overhead (combustível, manutenção, estacionamento). :marca[Usar uma Ferrari para comprar pão na esquina é overkill]: você paga todo o overhead de um carro caro **e** a escolha em si é desproporcional ao problema.
+Todo carro tem overhead (combustível, manutenção, estacionamento). Usar uma Ferrari para comprar pão na esquina é overkill: você paga todo o overhead de um carro caro **e** a escolha em si é desproporcional ao problema.
 
 ## 8. Critério prático
 
-Na avaliação de overkill, a pergunta útil não é "isso tem overhead?" :sublinhado[(sempre tem)], mas:
+Na avaliação de overkill, a pergunta útil não é "isso tem overhead?" (sempre tem), mas:
 
 > **"O custo total de propriedade dessa escolha pelos próximos 2–3 anos, somando runtime, desenvolvimento, carga cognitiva, manutenção, operação e organização, é proporcional ao problema que estou resolvendo?"**
 
-:marca[Quando a resposta é não, é overengineering.]
+Quando a resposta é não, é overengineering.
 
-:marca[E desconfie de construir "para o futuro".] É o que o princípio YAGNI (*You Aren't Gonna Need It*) combate: uma funcionalidade construída por presunção cobra o custo de construí-la, atrasa o que realmente importa e, mesmo que nunca seja usada, deixa complexidade que encarece toda mudança seguinte (o *cost of carry*, na expressão de Fowler). Fowler ressalta que YAGNI depende de práticas que mantêm o código fácil de mudar, como testes automatizados e refatoração contínua: com elas, construir quando a necessidade for real sai mais barato do que carregar o que foi construído à toa.
+E desconfie de construir "para o futuro". É o que o princípio YAGNI (*You Aren't Gonna Need It*) combate: uma funcionalidade construída por presunção cobra o custo de construí-la, atrasa o que realmente importa e, mesmo que nunca seja usada, deixa complexidade que encarece toda mudança seguinte (o *cost of carry*, na expressão de Fowler). Fowler ressalta que YAGNI depende de práticas que mantêm o código fácil de mudar, como testes automatizados e refatoração contínua: com elas, construir quando a necessidade for real sai mais barato do que carregar o que foi construído à toa.
 
 ## Fontes
 
