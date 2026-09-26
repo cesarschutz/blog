@@ -20,39 +20,34 @@ import { ICONES } from "../lib/icones";
 </div>
 
 <script>
-  import { adiantarLista, trocarModo } from "../scripts/lista-viva";
-
   const CHAVE = "cs-post-view";
   const raiz = document.documentElement;
   const seletores = [...document.querySelectorAll<HTMLElement>("[data-modo]")];
-  const marcar = (atual: string) => {
+  const marcar = () => {
+    const atual = raiz.dataset.postView === "cards" ? "cards" : "list";
     for (const s of seletores)
       s.querySelectorAll<HTMLButtonElement>("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.valor === atual)));
   };
   for (const seletor of seletores) {
     seletor.querySelectorAll<HTMLButtonElement>("button").forEach((b) =>
       b.addEventListener("click", () => {
-        const valor = b.dataset.valor!;
-        if ((raiz.dataset.postView === "cards" ? "cards" : "list") === valor) return;
-        if (valor === "cards") {
+        if (b.dataset.valor === "cards") {
           const moldes = document.querySelectorAll<HTMLTemplateElement>("template[data-cartoes]");
           moldes.forEach((t) => t.replaceWith(t.content));
           if (moldes.length) dispatchEvent(new Event("cartoes:prontos"));
         }
-        marcar(valor);
+        raiz.dataset.postView = b.dataset.valor!;
         try {
-          localStorage.setItem(CHAVE, valor);
+          localStorage.setItem(CHAVE, b.dataset.valor!);
         } catch {
           // Sem armazenamento: o modo vale só nesta página.
         }
-        // Os artigos somem, o formato muda e eles reaparecem (D41, lista-viva.ts).
-        trocarModo(() => (raiz.dataset.postView = valor));
+        marcar();
       }),
     );
     seletor.hidden = false;
-    adiantarLista(seletor);
   }
-  marcar(raiz.dataset.postView === "cards" ? "cards" : "list");
+  marcar();
 </script>
 
 <style>

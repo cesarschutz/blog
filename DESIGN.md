@@ -616,39 +616,23 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
     -12° e -18° do protótipo, aberta mais para as páginas aparecerem). No toque, o primeiro toque
     entreabre e o segundo abre o link. No livro ampliado, arrastar gira com embalo (Draggable +
     InertiaPlugin) e, ao soltar, o livro volta a 18° com `elastic.out(1, 0.6)`.
-- **O resto do site em movimento (D41)**, com as mesmas regras (GSAP e plugins sob demanda; só
-  transformações, opacidade, traço e fundo; movimento reduzido e impressão no estado final):
-  - **Lista ⇄ Cards** (`lista-viva.ts`): um formato não vira o outro. Os artigos à vista somem
-    (opacidade e 6px, 0,16s cada, `stagger` 0,02s, `power1.in`), o formato muda e eles reaparecem
-    subindo 10px (0,38s, `stagger` 0,04s, `power2.out`).
-  - **Filtro por livro** (arquivo e tags): Flip, 0,55s, `power2.inOut`, `stagger` 0,02s. Os que ficam
-    deslizam sem mudar de tamanho; os que saem encolhem para 0,94 e somem (0,25s); os que entram
-    crescem de 0,94 e aparecem (0,4s, depois de 0,2s). Só o que está perto da tela anima.
-  - **A área da lista nunca encolhe no meio da animação** (o painel e a página pulariam): guarda a
-    altura do começo e fica com a nova no fim, sem animar a altura.
-  - **Do cartão ao artigo** (View Transitions nativas, sem JS): o desenho e o título do cartão
-    viram o topo do post (0,6s, `cubic-bezier(0.65, 0, 0.35, 1)`); o desenho cobre a caixa enquanto
-    troca de recorte, o título cresce preso ao canto de cima, à esquerda. Voltar faz o inverso. Os
-    cartões sem par trocam na hora.
-  - **O desenho se desenha** (destaque da home e topo do post): ao entrar na tela, os traços aparecem
-    em sequência com DrawSVG (1,1s cada, `power1.inOut`, sequência de até ~1,2s); depois a cor, a
-    hachura (0,6s) e os textos (0,4s). Tracejados só por opacidade. Chegando pela transição do
-    cartão, o desenho já vem pronto. Nos cartões, o mouse (ou o foco) refaz o traço em 0,5s, uma vez
-    por cartão por visita.
-  - **A busca nasce do campo**: a janela cresce do campo do cabeçalho (Flip, 0,5s, `power3.out`),
-    o conteúdo entra depois de 0,2s, os resultados em sequência (0,3s, `stagger` 0,035s) e o termo
-    ganha um marca-texto que se estica (0,45s). Fechar encolhe de volta para o campo (0,35s,
-    `power2.in`), com o foco voltando a ele.
-  - **Tema em círculo**: a lua vira sol (e o contrário) com MorphSVG em 0,45s; o tema novo se
-    espalha em círculo a partir do botão (View Transition do documento, tipo "tema", `clip-path`,
-    0,6s, `cubic-bezier(0.65, 0, 0.35, 1)`). Sem suporte, troca direta; a página não sai do lugar.
-  - **Copiar**: o retângulo da frente vira um visto (MorphSVG, 0,35s, `back.out(2)`) por 1,6s, com o
-    "Copiado" do Expressive Code.
-  - **Marca "cs"** (só CSS): no hover ou foco, a capa entreabre 38° sobre as páginas (0,5s) e a fita
-    balança até 14° com `elastic.out(1.2, 0.3)` (0,9s) e volta com `elastic.out(1, 0.3)` (1s), as
-    curvas do GSAP em `linear()`.
-  - Peças presentes em todas as páginas (tema, busca, Copiar) não baixam o GSAP com a página ociosa,
-    só quando o leitor chega perto delas.
+- **Caderno marcado (D41)**, nos artigos, na cor do livro (guia editorial em `docs/marcacoes.md`):
+  - **Marca-texto** (`:marca[…]`): a metade de baixo da linha (52% a 92%), a cor do livro a 32% no
+    claro e clareada (60% de branco) a 36% no escuro; estica da esquerda para a direita em 0,8s
+    (`power2.inOut`).
+  - **Só o termo** (`:::termos` em volta de uma lista): o fundo do primeiro código de cada item, um
+    por vez (0,45s, `stagger` 0,12s); a cor do código fica embaixo.
+  - **Sublinhado, círculo e colchete na margem**: traço à mão de 2,2px na cor do sumário (o destaque
+    do livro, com o branco dos desenhos no escuro), desenhado com DrawSVG (0,6s; o círculo, 0,9s).
+  - Marca quando o topo do trecho chega a 80% da tela e desfaz ao rolar de volta, só abaixo de 90%
+    (folga de 10%, para não piscar). A pintura é uma camada de fundo própria (`background-image`,
+    animada pelo `background-size`), nunca o atalho `background`.
+- **O desenho do destaque da home** (D41, só ali): ao entrar na tela, os traços aparecem em sequência
+  com DrawSVG (1,1s cada, sequência de até ~1,2s), depois a cor, a hachura (0,6s) e os textos (0,4s);
+  tracejados só por opacidade.
+- **Marca "cs"** (D41, só CSS): no hover ou foco, a capa entreabre 38° sobre as páginas (0,5s) e a fita
+  balança até 14° com `elastic.out(1.2, 0.3)` (0,9s) e volta com `elastic.out(1, 0.3)` (1s), as curvas
+  do GSAP em `linear()`.
 - **Lousa de passos** (D39): com a rolagem só na tela de 1024px ou mais e sem movimento reduzido
   (passos a 40% da tela, o atual inteiro e os outros esmaecidos); fora disso, passo a passo com
   "◀ 2 de 5 ▶", pontos e deslizar.

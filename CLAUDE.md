@@ -25,6 +25,8 @@ Cesar acompanhar. Ele revisa tudo no fim.
 - O **`DESIGN.md`** (raiz) é a fonte de verdade do visual. Ele vence qualquer ferramenta, inclusive o
   Impeccable (sem "go all out", redesign ou troca do `DESIGN.md`).
 - Todo trabalho em post (criar, escrever, adaptar, importar, migrar, revisar) segue a skill **`post`**.
+- **Caderno marcado (D41):** todo post novo ou revisado propõe no plano as marcações à caneta (trecho,
+  tipo, motivo), pelo guia `docs/marcacoes.md`, e elas só entram com o OK do Cesar.
 - Posts para adaptar ficam em **`entrada/`** (fora do git).
 - **Nunca** instalar skill, MCP ou pacote de terceiros sem ler o código antes e reportar ao Cesar o que
   for suspeito (rede, variáveis de ambiente, credenciais, comandos destrutivos).
@@ -43,8 +45,8 @@ Cesar acompanhar. Ele revisa tudo no fim.
   sem prender a tela.
 - JavaScript só onde há interação (estante, gaveta, busca, lousas, apresentação, lista/cards, menu de
   tema, filtro por livro, livro ampliado, o nome de transição do livro
-  do painel e o cabeçalho que se esconde no celular, D29, D33, D38).
-  Artigo sem esses componentes funciona sem JS.
+  do painel e o cabeçalho que se esconde no celular, D29, D33, D38; o caderno marcado e o desenho do
+  destaque da home, D41). Artigo sem esses componentes funciona sem JS (as marcações aparecem prontas).
 - Fontes servidas pelo próprio site (`@fontsource`). Nunca Google Fonts nem CDN em produção.
 - Para verificar o blog no navegador (visual, console, performance), use sempre o MCP
   `chrome-devtools`, nunca o `claude-in-chrome`.
@@ -158,6 +160,7 @@ docs/briefing.md         decisões de produto e design (fonte da verdade)
 docs/estado.md           painel: fase, pronto, próximos passos, perguntas
 docs/decisoes.md         registro de decisões (data, decisão, motivo, alternativas)
 docs/estilo-desenho.md   estilo das ilustrações e das lousas
+docs/marcacoes.md        guia editorial das marcações do caderno marcado (D41)
 docs/capas/              os livros: CAPAS.md (regra), livros.json, cores.js, desenhos, ícones, referência
 docs/virada.md           plano para o domínio passar ao blog novo (só com OK do Cesar)
 docs/referencias/        protótipos aprovados

@@ -33,7 +33,6 @@
 <script>
   import type { MotorDeBusca, ResultadoBusca } from "../lib/busca/tipos";
   import { escaparHtml } from "../lib/busca/tipos";
-  import { adiantar, carregarFlip, movimentoReduzido } from "../scripts/gsap";
 
   const dialogo = document.querySelector<HTMLDialogElement>("[data-busca]")!;
   const campo = dialogo.querySelector<HTMLInputElement>("[data-busca-campo]")!;
@@ -64,31 +63,11 @@
     history.replaceState(history.state, "", endereco);
   }
 
-  // O termo buscado também ganha o marca-texto no título (sem acento e sem caixa, como a busca).
-  const semAcento = (t: string) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-  function marcarTitulo(titulo: string, consulta: string) {
-    const termos = semAcento(consulta.replace(/^#/, "")).split(/\s+/).filter((t) => t.length >= 2);
-    const base = semAcento(titulo);
-    // Cada letra de `titulo` vira uma só em `base` (NFD + remover acentos mantém o comprimento em pt-BR).
-    if (!termos.length || base.length !== titulo.length) return escaparHtml(titulo);
-    const marcado = new Array<boolean>(titulo.length).fill(false);
-    for (const t of termos) for (let i = base.indexOf(t); i >= 0; i = base.indexOf(t, i + t.length)) marcado.fill(true, i, i + t.length);
-    let html = "";
-    for (let i = 0; i < titulo.length; ) {
-      let j = i;
-      while (j < titulo.length && marcado[j] === marcado[i]) j++;
-      const pedaco = escaparHtml(titulo.slice(i, j));
-      html += marcado[i] ? `<mark>${pedaco}</mark>` : pedaco;
-      i = j;
-    }
-    return html;
-  }
-
   function desenhar(resultados: ResultadoBusca[], consulta: string) {
     lista.innerHTML = resultados
       .map(
         (r) => `<li><a class="resultado" href="${r.url}">
-          <span class="r-titulo">${marcarTitulo(r.titulo, consulta)}</span>
+          <span class="r-titulo">${escaparHtml(r.titulo)}</span>
           <span class="r-meta">${escaparHtml([r.rotulo, r.data].filter(Boolean).join(", "))}</span>
           <span class="r-trecho">${r.trecho}</span>
         </a></li>`,
@@ -102,12 +81,6 @@
         : n === 1
           ? "1 artigo"
           : `${n} artigos`;
-    // Os resultados entram em sequência e o marca-texto passa pelo termo (D41).
-    if (flip && !movimentoReduzido.matches) {
-      const { gsap } = flip;
-      gsap.from([...lista.children].slice(0, 8), { opacity: 0, y: 6, duration: 0.3, stagger: 0.035, ease: "power2.out", clearProps: "opacity,transform" });
-      gsap.fromTo(lista.querySelectorAll("mark"), { backgroundSize: "0% 100%" }, { backgroundSize: "100% 100%", duration: 0.45, delay: 0.15, ease: "power2.out" });
-    }
   }
 
   let vez = 0;
@@ -138,56 +111,11 @@
     dispatchEvent(new CustomEvent("busca:resultado", { detail: { consulta, n: resultados.length, ms: performance.now() - inicio } }));
   }
 
-  // A janela nasce do campo do cabeçalho e volta para ele (D41, Flip). O campo é o botão à vista
-  // (no celular, só o ícone). Sem o GSAP ainda, ou com movimento reduzido, abre e fecha direto.
-  let flip: Awaited<ReturnType<typeof carregarFlip>> | null = null;
-  const botoes = [...document.querySelectorAll<HTMLElement>("[data-busca-abrir]")];
-  const trazerFlip = () => carregarFlip().then((f) => (flip = f));
-  // A busca está em todas as páginas: o Flip vem só quando o leitor chega perto (mouse, toque, foco
-  // no campo ou ao apertar ⌘ ou Ctrl), nunca com a página ociosa.
-  if (!movimentoReduzido.matches) {
-    botoes.forEach((b) => adiantar(b, trazerFlip, { ocioso: false }));
-    addEventListener("keydown", (e) => (e.key === "Meta" || e.key === "Control") && trazerFlip(), { passive: true });
-  }
-  const botaoAVista = () => botoes.find((b) => b.getBoundingClientRect().width > 0);
-  const conteudo = () => [...dialogo.querySelectorAll<HTMLElement>(".campo, .estado, .resultados")];
-
-  function nascer() {
-    const botao = botaoAVista();
-    if (!flip || !botao || movimentoReduzido.matches) return;
-    const { gsap, Flip } = flip;
-    botao.dataset.flipId = dialogo.dataset.flipId = "busca";
-    gsap.killTweensOf([dialogo, ...conteudo()]);
-    gsap.set(dialogo, { clearProps: "transform,opacity" });
-    Flip.from(Flip.getState(botao), { targets: dialogo, duration: 0.5, ease: "power3.out", scale: true, clearProps: "transform" });
-    gsap.from(conteudo(), { opacity: 0, duration: 0.3, delay: 0.2, clearProps: "opacity" });
-  }
-
-  let fechando = false;
-  function fechar() {
-    if (!dialogo.open || fechando) return;
-    const botao = botaoAVista();
-    const fim = () => {
-      fechando = false;
-      dialogo.classList.remove("fechando");
-      dialogo.close();
-      flip?.gsap.set([dialogo, ...conteudo()], { clearProps: "transform,opacity,width,height" });
-      botao?.focus();
-    };
-    if (!flip || !botao || movimentoReduzido.matches) return fim();
-    const { gsap, Flip } = flip;
-    fechando = true;
-    dialogo.classList.add("fechando");
-    gsap.to(conteudo(), { opacity: 0, duration: 0.15 });
-    Flip.fit(dialogo, botao, { duration: 0.35, ease: "power2.in", scale: true, onComplete: fim });
-  }
-
   function abrir(consulta?: string) {
     if (!dialogo.open) {
       primeiroResultadoMarcado = false;
       performance.mark("busca:aberta");
       dialogo.showModal();
-      nascer();
       obterMotor()
         .then((m) => m.preparar())
         .catch(() => (estado.textContent = FALHOU));
@@ -202,16 +130,7 @@
 
   dialogo.addEventListener("close", () => atualizarEndereco(null));
   dialogo.addEventListener("click", (e) => {
-    if (e.target === dialogo) fechar();
-  });
-  // Esc e "Fechar" também encolhem de volta para o campo.
-  dialogo.addEventListener("cancel", (e) => {
-    e.preventDefault();
-    fechar();
-  });
-  dialogo.addEventListener("submit", (e) => {
-    e.preventDefault();
-    fechar();
+    if (e.target === dialogo) dialogo.close();
   });
   // Espera uma pausa curta na digitação: buscar cada prefixo ("id", "ide"…) só baixaria índice à toa.
   let pausa: ReturnType<typeof setTimeout> | undefined;
@@ -233,7 +152,7 @@
     const digitando = (e.target as HTMLElement).closest("input, textarea, select, [contenteditable]");
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
       e.preventDefault();
-      dialogo.open ? fechar() : abrir();
+      dialogo.open ? dialogo.close() : abrir();
     } else if (e.key === "/" && !digitando && !dialogo.open) {
       e.preventDefault();
       abrir();
@@ -279,25 +198,6 @@
 
   .busca::backdrop {
     background: rgb(20 26 28 / 0.45);
-    transition: opacity 0.3s;
-  }
-
-  /* O véu acompanha a janela: aparece ao abrir e some enquanto ela volta para o campo (D41). */
-  @starting-style {
-    .busca[open]::backdrop {
-      opacity: 0;
-    }
-  }
-
-  .busca.fechando::backdrop {
-    opacity: 0;
-    transition-duration: 0.25s;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .busca::backdrop {
-      transition: none;
-    }
   }
 
   /* Desconta a borda do diálogo: sem isso ele rola 2px e aparece uma segunda barra ao lado da lista. */
@@ -395,12 +295,9 @@
     color: var(--ink-2);
   }
 
-  /* O marca-texto é uma camada de fundo própria, que o GSAP estica da esquerda para a direita. */
   .resultados :global(mark) {
-    background: linear-gradient(color-mix(in oklab, var(--aviso-atencao) 28%, transparent), color-mix(in oklab, var(--aviso-atencao) 28%, transparent)) no-repeat 0 0 / 100% 100%;
+    background: color-mix(in oklab, var(--aviso-atencao) 28%, transparent);
     color: var(--ink);
     border-radius: 2px;
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
   }
 </style>

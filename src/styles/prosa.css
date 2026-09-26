@@ -225,21 +225,111 @@
   contain-intrinsic-size: auto calc(var(--linhas, 10) * 23.1px + 72px);
 }
 
-/* O ícone do Copiar é um SVG (D41, copiar.ts), para o retângulo da frente virar um visto. */
-.expressive-code .copy button.com-icone::after {
-  display: none;
+/*
+ * O caderno marcado (D41): as marcações à caneta, na cor do livro (docs/marcacoes.md, o guia; o
+ * movimento em src/scripts/caderno.ts). O marca-texto é a cor do livro transparente sobre a folha
+ * (no escuro, clareada e mais forte: tokens MARCA_TEXTO, conferidos pelo `npm run contraste`); a
+ * caneta é a cor do sumário (o destaque do livro, com o branco dos desenhos no escuro).
+ *
+ * A pintura é uma camada de fundo própria, animada pelo `background-size`: só as propriedades longas
+ * (`background-image`, `-size`, `-repeat`, `-position`), nunca o atalho `background`, que apagaria a
+ * camada. No termo de código, a cor do código fica no `background-color` (base.css) e a pintura no
+ * `background-image`. Sem JS, tudo aparece marcado.
+ */
+.prose {
+  --marca-texto: color-mix(in oklab, color-mix(in oklab, var(--cor, var(--acento)), #fff var(--marca-texto-branco)) var(--marca-texto-forca), transparent);
+  --caneta: color-mix(in oklab, var(--caneta-livro, var(--cor, var(--acento))), #fff var(--branco-no-escuro, 0%));
 }
 
-.expressive-code .copy .icone-copiar {
+/* Marca-texto: a metade de baixo da linha, como a caneta passada de leve. */
+/* O código dentro do trecho fica sem o fundo próprio: a pintura do trecho passa por ele também. */
+.prose .marca-texto > code {
+  background-color: transparent;
+}
+
+.prose .marca-texto {
+  padding: 0 2px;
+  background-image: linear-gradient(transparent 52%, var(--marca-texto) 52%, var(--marca-texto) 92%, transparent 92%);
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-size: 100% 100%;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* Só o termo: o fundo do próprio código, um por vez. */
+.prose .termos :not(pre) > code.termo {
+  background-image: linear-gradient(var(--marca-texto), var(--marca-texto));
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-size: 100% 100%;
+}
+
+/* Sublinhado e círculo: o traço da caneta por cima da palavra, sem mexer na linha. */
+.prose :is(.sublinhado, .circulo) {
+  position: relative;
+  white-space: nowrap;
+}
+
+.prose :is(.sublinhado, .circulo) > .traco-caneta {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  padding: 0.4rem;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.prose .sublinhado > .traco-caneta {
+  left: -2px;
+  bottom: -0.3em;
+  width: calc(100% + 4px);
+  height: 0.55em;
+}
+
+.prose .circulo > .traco-caneta {
+  left: -0.32em;
+  top: -0.42em;
+  width: calc(100% + 0.64em);
+  height: calc(100% + 0.84em);
+}
+
+/* Colchete na margem: o parágrafo que resume a seção. */
+.prose .margem {
+  position: relative;
+}
+
+.prose .margem > .colchete {
+  position: absolute;
+  left: -1.3em;
+  top: 0.3em;
+  width: 0.7em;
+  /* A margem do parágrafo sai do bloco (colapsa): a altura já é só a do texto. */
+  height: calc(100% - 0.5em);
+  overflow: visible;
+}
+
+.prose :is(.traco-caneta, .colchete) path {
   fill: none;
-  stroke: var(--ec-frm-inlBtnFg);
-  stroke-width: 1.8;
+  stroke: var(--caneta);
+  stroke-width: 2.2;
   stroke-linecap: round;
   stroke-linejoin: round;
-  pointer-events: none;
+  vector-effect: non-scaling-stroke;
+}
+
+@media (max-width: 640px) {
+  .prose .margem > .colchete {
+    left: -0.75em;
+    width: 0.45em;
+  }
+}
+
+/* Na impressão, tudo marcado, mesmo no meio de uma animação. */
+@media print {
+  .prose :is(.marca-texto, .termos code.termo) {
+    background-size: 100% 100% !important;
+  }
+
+  .prose :is(.traco-caneta, .colchete) path {
+    stroke-dasharray: none !important;
+    stroke-dashoffset: 0 !important;
+  }
 }

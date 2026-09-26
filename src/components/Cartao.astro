@@ -7,7 +7,7 @@
  */
 import Ilustracao from "./Ilustracao.astro";
 import MetaItem from "./MetaItem.astro";
-import { mdEmLinha, tituloComQuebras, transicaoPost } from "../lib/formato";
+import { mdEmLinha, tituloComQuebras } from "../lib/formato";
 import { temIlustracao } from "../lib/ilustracoes";
 import { urlTag, type Resumo } from "../lib/posts";
 
@@ -24,14 +24,14 @@ const Titulo = nivel;
 <li class="cartao folha" data-livro={post.livro}>
   {
     temIlustracao(post.slug) && (
-      <div class="ilustracao-cartao painel" aria-hidden="true" style={`--cor:${post.cor};${transicaoPost(post.slug, "desenho")}`}>
+      <div class="ilustracao-cartao painel" aria-hidden="true" style={`--cor:${post.cor}`}>
         <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} tamanho="cartao" decorativa />
       </div>
     )
   }
   <div class="corpo-cartao">
     <MetaItem post={post} />
-    <Titulo class="titulo-cartao" style={transicaoPost(post.slug, "titulo")}><a href={post.url} set:html={tituloComQuebras(post.tituloCompleto)} /></Titulo>
+    <Titulo class="titulo-cartao"><a href={post.url} set:html={tituloComQuebras(post.tituloCompleto)} /></Titulo>
     <p class="descricao" set:html={mdEmLinha(post.descricao)} />
     {
       post.tags.length > 0 && (
@@ -145,9 +145,3 @@ const Titulo = nivel;
     }
   }
 </style>
-
-<script>
-  import { redesenharNoHover } from "../scripts/desenho-vivo";
-
-  redesenharNoHover();
-</script>

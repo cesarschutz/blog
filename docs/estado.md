@@ -125,9 +125,16 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
   bordas, página e capa com verso); 5 capas com profundidade e o livro ampliado com embalo. Capturas e
   traces do celular (CPU 4×) em `.impeccable/review/movimento/index.html` (fora do git).
 
+- **Caderno marcado, desenho do destaque e marca que abre (D41, 25/09/2026), só local, sem push:** do
+  pedido de animar o resto do site, o Cesar viu os lotes e pediu para desfazer tudo menos três coisas:
+  a marca "cs" que abre como livro (só CSS), o desenho que se desenha só no destaque da home e o
+  caderno marcado (diretivas `:marca`, `:sublinhado`, `:circulo`, `:::termos`, `:::colchete`, com
+  `remark-directive`). Marcações aplicadas só no post do Jackson; os outros recebem quando forem
+  revisados (guia em `docs/marcacoes.md`, plano da skill `post`, coluna "Marcações" na revisão).
+
 ## Próximos passos
 
-0. Publicar a D39 e a D40: o Cesar dá o push quando revisar. Os ajustes pedidos depois da D40 já
+0. Publicar a D39, a D40 e a D41: o Cesar dá o push quando revisar. Os ajustes pedidos depois da D40 já
    entraram: "Próximas ▸" virando a folha, capa entreaberta a -40° e a pilha mais grossa.
 0.1. Publicar a auditoria de acabamento (D37, D38): o Cesar dá o push quando revisar. Fora dela ficou
    o lote 7 (topo do post e miniatura da lista mais compactos no celular), que mexe na densidade da

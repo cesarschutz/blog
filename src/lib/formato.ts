@@ -49,12 +49,3 @@ export function descricaoCurta(texto: string, limite = 155): string {
   const corte = limpo.slice(0, limite + 1).replace(/\s+\S*$/, "");
   return `${corte.replace(/[,;:.—-]+$/, "")}…`;
 }
-
-/**
- * Nome da View Transition do desenho ou do título de um post (D41): o mesmo no cartão, na lista, no
- * destaque e no topo do post, para o navegador levar um ao outro ao trocar de página. A classe
- * (`desenho-post` ou `titulo-post`) dá o tempo e o jeito da animação, em base.css.
- */
-export function transicaoPost(slug: string, parte: "desenho" | "titulo"): string {
-  return `view-transition-name:${parte}-${slug.replace(/[^a-z0-9-]/gi, "-")};view-transition-class:${parte}-post`;
-}

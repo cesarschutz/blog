@@ -9,7 +9,9 @@ import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-s
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
+import remarkDirective from "remark-directive";
 import { remarkTemMatematica } from "./src/plugins/remark-tem-matematica.mjs";
+import { rehypeMarcacoes, remarkMarcacoes } from "./src/plugins/marcacoes.mjs";
 import { rehypeTabela } from "./src/plugins/rehype-tabela.mjs";
 import { rehypeAvisos } from "./src/plugins/rehype-avisos.mjs";
 import { rehypeNotasLaterais } from "./src/plugins/rehype-notas-laterais.mjs";
@@ -118,8 +120,8 @@ export default defineConfig({
   ],
   markdown: {
     processor: unified({
-      remarkPlugins: [remarkMath, remarkTemMatematica],
-      rehypePlugins: [rehypeKatex, rehypeTabela, rehypeAvisos, rehypeNotasLaterais, [rehypeApresentacao, { base: comBase("/") }]],
+      remarkPlugins: [remarkMath, remarkTemMatematica, remarkDirective, remarkMarcacoes],
+      rehypePlugins: [rehypeKatex, rehypeMarcacoes, rehypeTabela, rehypeAvisos, rehypeNotasLaterais, [rehypeApresentacao, { base: comBase("/") }]],
     }),
   },
 });

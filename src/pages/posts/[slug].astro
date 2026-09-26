@@ -95,7 +95,7 @@ const jsonLd = {
 >
   {remarkPluginFrontmatter?.temMatematica && <link slot="head" rel="stylesheet" href={url("/katex/katex.min.css")} />}
   <BarraLeitura cor={resumo.cor} />
-  <article class="artigo wrap" data-artigo data-pagefind-body style={`--cor:${resumo.cor}`}>
+  <article class="artigo wrap" data-artigo data-pagefind-body style={`--cor:${resumo.cor};--caneta-livro:${livroDoPost?.cores.destaque ?? resumo.cor}`}>
     <TopoArtigo post={resumo} />
     <div class:list={["artigo-grade", { "com-sumario": temSumario }]}>
       {temSumario && <Sumario secoes={secoes} variante="lateral" minutos={resumo.minutos} livro={livroDoPost} />}
@@ -130,9 +130,9 @@ const jsonLd = {
 
 <script>
   import "../../scripts/artigo.ts";
-  import { copiarVivo } from "../../scripts/copiar";
+  import { cadernoMarcado } from "../../scripts/caderno";
 
-  copiarVivo();
+  cadernoMarcado();
 </script>
 
 <style>

@@ -160,11 +160,10 @@
 
 /*
  * O desenho que se desenha (D41, desenho-vivo.ts): com JS, na tela e sem movimento reduzido, o
- * desenho do destaque e do topo do post fica escondido até o script preparar a sequência (ou, no
- * máximo, 2,5s). Quem chega pela transição do cartão já vê o desenho pronto.
+ * desenho do destaque da home fica escondido até o script preparar a sequência (ou, no máximo, 2,5s).
  */
 @media screen and (prefers-reduced-motion: no-preference) {
-  :root[data-js]:not([data-chegada="transicao"]) [data-desenhar]:not([data-desenhado]) .ilustracao {
+  :root[data-js] [data-desenhar]:not([data-desenhado]) .ilustracao {
     visibility: hidden;
   }
 }

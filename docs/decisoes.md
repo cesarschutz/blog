@@ -981,67 +981,45 @@ nada muda.
   lombada, bordas das páginas, página de dentro e capa com verso), para a capa poder abrir e
   entreabrir. Continua sendo o único componente de livro 3D.
 
-## D41 · O resto do site em movimento, com GSAP e View Transitions
-- **Data:** 25/09/2026 · **Status:** aplicada em lotes, um commit por ideia, sem push.
-- **Pedido do Cesar:** animar o resto do site tendo como guia de movimento, tempos e aparência os
-  protótipos `docs/prototipos/site-em-movimento.html` e `docs/prototipos/caderno-marcado.html` (não é
-  código para copiar). Vale a regra de Movimento do `DESIGN.md`: o movimento responde a uma ação ou
-  acompanha a leitura; nada de cada cartão surgir ao rolar a página.
-- **Regras gerais:** GSAP e plugins (Flip, DrawSVG, MorphSVG, ScrollTrigger) só nos componentes que
-  usam, baixados sob demanda um pouco antes do uso (`src/scripts/gsap.ts`); só transformações,
-  opacidade, desenho de traço e fundo; com `prefers-reduced-motion` e na impressão, tudo direto no
-  estado final; um trace no celular (CPU 4×) por lote.
-- **Os lotes:**
-  1. **Lista, cards e filtro** (home, arquivo, tags e páginas de livro, `lista-viva.ts`): Lista ⇄
-     Cards não transforma um formato no outro: os artigos à vista somem (0,16s cada, em sequência),
-     o formato muda e eles reaparecem subindo 10px (0,38s, `stagger` 0,04s). No filtro por livro, com
-     Flip, os que ficam deslizam até o lugar novo sem mudar de tamanho (`scale`), os que saem encolhem
-     e somem, os que entram crescem. A área da lista guarda a altura do começo e só no fim fica com a
-     nova, sem animar a altura. Ajustes técnicos, medidos no trace: só anima o que está perto da tela
-     (antes ou depois); os que ficam deslizam no fluxo e só os que saem ficam soltos
-     (`absoluteOnLeave`), senão os artigos longe da tela subiam para o lugar deles no meio da
-     animação; quem sai some ao fim do próprio tween, perto do clique, para não contar como CLS. Os
-     artigos e grupos fora do filtro passam a usar `data-fora` (o `hidden` tem `!important`, e o Flip
-     não conseguiria mostrá-los enquanto somem).
-  2. **Do cartão ao artigo** (View Transitions nativas, sem JavaScript e sem `ClientRouter`): o
-     desenho e o título do cartão (lista, cards e destaque) têm o mesmo `view-transition-name` que o
-     topo do post (`transicaoPost`, em `src/lib/formato.ts`: `desenho-<slug>` e `titulo-<slug>`), e o
-     navegador leva um ao outro em 0,6s; voltar pelo botão do navegador faz o caminho inverso. O nome
-     fica no título (bloco), não no link, porque um elemento em linha partido em linhas cancelaria a
-     transição. Os cartões sem par na outra página trocam na hora (`:only-child`), como o resto.
-  3. **O desenho se desenha** (`desenho-vivo.ts`, DrawSVG): no destaque da home e no topo do post,
-     quando o desenho entra na tela (30% dele), os traços aparecem uma vez, em sequência (1,1s cada,
-     sequência de no máximo ~1,2s), e depois vêm a cor, a hachura e os textos; os tracejados
-     (`.fantasma`) aparecem por opacidade. Até o script preparar a sequência, o CSS esconde o desenho
-     (só com JS, na tela e sem movimento reduzido; no máximo 2,5s, depois aparece inteiro). Quem chega
-     ao post pela transição do cartão (lote 2) já traz o desenho pronto e ele não se redesenha
-     (`data-chegada`, posto pelo `pagereveal` no `<head>`). Nos cartões das listas, passar o mouse ou
-     focar refaz o traço em 0,5s, uma vez por cartão por visita. Na impressão, sempre inteiro.
-  4. **A busca nasce do campo** (`Busca.astro`, Flip): com clique, ⌘K, Ctrl+K ou "/", a janela
-     cresce a partir do campo do cabeçalho (o botão à vista; no celular, o ícone) em 0,5s
-     (`power3.out`), o conteúdo aparece depois de 0,2s e o véu escurece junto (CSS,
-     `@starting-style`). Os resultados entram em sequência (0,3s, `stagger` 0,035s) e o termo buscado
-     ganha um marca-texto que se estica em 0,45s, também no título do resultado (sem acento e sem
-     caixa, como a busca). Esc, "Fechar" ou clique fora encolhem a janela de volta para o campo
-     (0,35s, `power2.in`), e o foco volta para ele (também quando a busca abriu pelo teclado). O
-     primeiro Esc com texto no campo só limpa o texto (comportamento do navegador, como antes).
-  6. **Tema que se revela em círculo** (`SeletorTema.astro`, `trocarTema` em `tema.ts`): a lua vira
-     sol, e vice-versa, com MorphSVG (0,45s; os raios crescem e giram); a troca usa
-     `document.startViewTransition` com o tipo "tema", e o tema novo se espalha em círculo a partir do
-     botão (`clip-path` no `::view-transition-new(root)`, 0,6s). Durante a troca, os outros nomes de
-     transição (livros, desenhos, títulos) saem (`.trocando-tema`), para a página virar inteira de uma
-     vez. Sem View Transitions com tipos, ou com movimento reduzido, a troca é direta. A página não sai
-     do lugar (conferido: `scrollY` igual antes e depois).
-  7. **Detalhes que respondem:** o Copiar dos blocos de código ganha um ícone em SVG (dois
-     retângulos, no lugar da máscara do Expressive Code), e o da frente vira um visto (MorphSVG, 0,35s,
-     `back.out(2)`) por 1,6s, junto com o "Copiado" do próprio Expressive Code (que fica 1,5s e some em
-     0,2s: não dá para mudar sem reescrever o botão dele); só quando a cópia deu certo. A marca "cs"
-     vira um livro de duas camadas (páginas e fita atrás, capa na frente, do mesmo traçado): ao passar
-     o mouse ou focar, a capa entreabre 38° e a fita balança até 14° com `elastic`. Isso é **só CSS**
-     (regra do `DESIGN.md`: estado de hover é CSS), com as curvas `elastic.out` do GSAP amostradas em
-     `linear()`, para o cabeçalho de todas as páginas não baixar o GSAP.
-- **Download sob demanda, ajustado (D41):** peças que estão em todas as páginas (botão de tema,
-  busca e Copiar) só baixam o GSAP quando o leitor chega perto (mouse, toque, foco; na busca, também
-  ao apertar ⌘ ou Ctrl), nunca com a página ociosa (`adiantar(..., { ocioso: false })`). No primeiro
-  toque no tema, o ícone vira quando o MorphSVG chega; a primeira busca aberta por ⌘K sem ter
-  passado o mouse no campo pode abrir sem a animação.
+## D41 · Caderno marcado, o desenho do destaque e a marca que abre
+- **Data:** 25/09/2026 · **Status:** aplicada, sem push.
+- **Pedido do Cesar:** animar o resto do site a partir de `docs/prototipos/site-em-movimento.html` e
+  `docs/prototipos/caderno-marcado.html` (lista, cards e filtro com Flip; do cartão ao artigo com View
+  Transitions; o desenho que se desenha; a busca que nasce do campo; o caderno marcado; o tema em
+  círculo; o Copiar e a marca "cs"). Os lotes foram feitos e mostrados; depois de ver, o Cesar **não
+  gostou do conjunto** e pediu para desfazer tudo, ficando só três coisas:
+  1. **A marca "cs" abre como livro** (cabeçalho e rodapé, `Marca.astro`): ao passar o mouse ou
+     focar, a capa entreabre 38° sobre as páginas e a fita balança até 14° com `elastic`. Só CSS: o
+     livro são duas camadas do mesmo traçado (páginas e fita atrás, capa na frente), e as curvas
+     `elastic.out` do GSAP vão em `linear()`, sem baixar o GSAP no cabeçalho.
+  2. **O desenho se desenha só no destaque da home** (`desenho-vivo.ts`, DrawSVG): quando entra na
+     tela, os traços aparecem uma vez, em sequência, e depois a cor, a hachura e os textos; os
+     tracejados, por opacidade. Em nenhum outro lugar (nem topo do post, nem cards, nem lista).
+  3. **O caderno marcado** nos artigos (`src/plugins/marcacoes.mjs`, `src/scripts/caderno.ts`):
+     marca-texto, sublinhado à caneta, só o termo, círculo e colchete na margem, na cor do livro,
+     escritos em Markdown com diretivas. A marcação acontece quando o topo do trecho chega a 80% da
+     tela e se desfaz ao rolar de volta, com folga de 10% (desfaz só abaixo de 90%). Guia editorial em
+     `docs/marcacoes.md`; a skill `post` propõe as marcações no plano (trecho, tipo, motivo), nos dois
+     modos; a revisão em lote ganhou a coluna "Marcações". **Aplicado só no post do Jackson** (o mais
+     recente), a pedido do Cesar; os outros recebem quando forem revisados ou escritos.
+- **Desfeito** (o código dos lotes fica no histórico do git, nos commits entre `e30c0ec` e este):
+  lista ⇄ cards e filtro com Flip, View Transitions do cartão ao artigo, desenho no topo do post e no
+  hover dos cards, busca com Flip e marca-texto, tema em círculo com a lua virando sol, e o Copiar
+  virando visto.
+- **Biblioteca nova:** `remark-directive` 4.0.0 (com `mdast-util-directive` e
+  `micromark-extension-directive`), pedida pelo Cesar para as diretivas. Código lido antes de instalar:
+  sem scripts de instalação, rede, variáveis de ambiente ou comandos; dos mesmos autores do
+  unified/micromark que o Astro já usa.
+- **Cuidados técnicos:**
+  - A pintura do marca-texto e do termo é uma camada de fundo própria (`background-image`,
+    animada pelo `background-size`), só com propriedades longas; o código em linha passou a usar
+    `background-color` (e não o atalho `background`), para o termo de código ficar pintado.
+  - A cor: no claro, a cor do livro a 32%; no escuro, clareada (60% de branco) e mais forte (36%), o
+    máximo em que o texto por cima passa de 4,5:1 em todos os livros, também sobre o fundo do
+    código (SRE, o limite, dá 4,60:1). O `npm run contraste` confere o texto sobre o marca-texto
+    (folha, fundo e código) e a caneta (na cor do sumário) sobre a folha e o fundo.
+  - As diretivas de texto pegariam coisas como "03:00" (vira a diretiva `00`): as que não são
+    marcações voltam a ser texto, e o texto alternativo das imagens é refeito do Markdown original.
+    Conferido: os outros 26 posts saem com o texto idêntico ao de antes.
+  - O build recusa mais de 8 marcações por artigo, duas no mesmo parágrafo e marcação em título.
+  - Com movimento reduzido, sem JS ou na impressão, tudo aparece já marcado (e o desenho, inteiro).

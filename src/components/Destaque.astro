@@ -8,7 +8,7 @@ import Chip from "./Chip.astro";
 import DataLeitura from "./DataLeitura.astro";
 import Ilustracao from "./Ilustracao.astro";
 import { ICONES } from "../lib/icones";
-import { mdEmLinha, tituloComQuebras, transicaoPost } from "../lib/formato";
+import { mdEmLinha, tituloComQuebras } from "../lib/formato";
 import { temIlustracao } from "../lib/ilustracoes";
 import { urlTag, type Resumo } from "../lib/posts";
 
@@ -24,7 +24,7 @@ const { post } = Astro.props;
   <article class:list={["cartao-destaque", "folha", { "com-ilustracao": temIlustracao(post.slug) }]}>
     {
       temIlustracao(post.slug) && (
-        <a class="ilustracao-destaque painel" data-desenhar href={post.url} tabindex="-1" aria-hidden="true" style={`--cor:${post.cor};${transicaoPost(post.slug, "desenho")}`}>
+        <a class="ilustracao-destaque painel" data-desenhar href={post.url} tabindex="-1" aria-hidden="true" style={`--cor:${post.cor}`}>
           <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} tamanho="cartao" decorativa inteira />
         </a>
       )
@@ -34,7 +34,7 @@ const { post } = Astro.props;
         <Chip cor={post.cor} nome={post.rotulo} href={post.urlRotulo} />
         <DataLeitura data={post.publicado} minutos={post.minutos} longo />
       </p>
-      <h3 style={transicaoPost(post.slug, "titulo")}><a href={post.url} set:html={tituloComQuebras(post.tituloCompleto)} /></h3>
+      <h3><a href={post.url} set:html={tituloComQuebras(post.tituloCompleto)} /></h3>
       <p class="descricao" set:html={mdEmLinha(post.descricao)} />
       <ul class="tags" aria-label="Tags">
         {

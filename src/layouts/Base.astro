@@ -109,8 +109,6 @@ const preVisualizacao = process.env.PREVIEW === "true";
           if (e.viewTransition && e.activation && e.activation.entry) nomear(e.activation.entry.url);
         });
         addEventListener("pagereveal", function (e) {
-          // Chegou por transição (D41): o desenho do topo veio pronto do cartão e não se desenha de novo.
-          if (e.viewTransition) document.documentElement.dataset.chegada = "transicao";
           if (e.viewTransition && window.navigation && navigation.activation && navigation.activation.from) {
             nomear(navigation.activation.from.url);
           }

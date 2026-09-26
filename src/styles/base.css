@@ -371,7 +371,8 @@ kbd {
 .prose :not(pre) > code {
   padding: 0.1em 0.3em;
   border-radius: 4px;
-  background: var(--well);
+  /* Só a cor: o termo marcado (D41) pinta por cima, numa camada própria (background-image). */
+  background-color: var(--well);
   font-size: 0.84em;
   overflow-wrap: anywhere;
 }
@@ -421,79 +422,6 @@ kbd {
   animation-duration: 0.7s;
 }
 
-/*
- * Do cartão ao artigo (D41): o desenho e o título do cartão (lista, cards e destaque) têm o mesmo
- * nome que o topo do post (`transicaoPost`), e o navegador leva um ao outro; voltar faz o caminho
- * inverso. O desenho troca de recorte no caminho (as duas imagens cobrem a caixa, cruzando); o
- * título cresce preso ao canto de cima, à esquerda, sem esticar.
- */
-::view-transition-group(.desenho-post),
-::view-transition-group(.titulo-post) {
-  animation-duration: 0.6s;
-  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
-}
-
-::view-transition-old(.desenho-post),
-::view-transition-new(.desenho-post) {
-  height: 100%;
-  object-fit: cover;
-  animation-duration: 0.6s;
-}
-
-::view-transition-old(.titulo-post),
-::view-transition-new(.titulo-post) {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: left top;
-  animation-duration: 0.6s;
-}
-
-/* Os cartões sem par na outra página (todos os outros da lista) trocam na hora, como o resto. */
-::view-transition-old(.desenho-post):only-child,
-::view-transition-old(.titulo-post):only-child {
-  animation: none;
-  opacity: 0;
-}
-
-::view-transition-new(.desenho-post):only-child,
-::view-transition-new(.titulo-post):only-child {
-  animation: none;
-}
-
-::view-transition-group(.desenho-post):has(:only-child),
-::view-transition-group(.titulo-post):has(:only-child) {
-  animation: none;
-}
-
-/*
- * Tema que se revela em círculo (D41, trocarTema em tema.ts): a página antiga fica parada e a nova
- * cresce num círculo a partir do botão. Enquanto isso, nenhum outro elemento tem nome de transição
- * (o `!important` vence o nome posto no `style` dos cartões): a página vira inteira, de uma vez.
- */
-.trocando-tema,
-.trocando-tema * {
-  view-transition-name: none !important;
-}
-
-:root.trocando-tema {
-  view-transition-name: root !important;
-}
-
-:root:active-view-transition-type(tema)::view-transition-new(root) {
-  animation: revelar-tema 0.6s cubic-bezier(0.65, 0, 0.35, 1) both;
-}
-
-@keyframes revelar-tema {
-  from {
-    clip-path: circle(0 at var(--tema-x) var(--tema-y));
-  }
-
-  to {
-    clip-path: circle(var(--tema-raio) at var(--tema-x) var(--tema-y));
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   @view-transition {
     navigation: none;
@@ -519,21 +447,4 @@ kbd {
 
 :root[data-post-view="cards"] .cartoes-modo {
   display: grid;
-}
-
-/*
- * Lista, cards e filtro em movimento (D41, lista-viva.ts). Durante a animação, as transições de CSS
- * dos artigos (o card que sobe no hover) saem do caminho do GSAP, e a folha da lista corta os artigos
- * que deslizam para dentro ou para fora dela.
- */
-.lista-modo {
-  position: relative;
-}
-
-.movendo :is(.lista-modo, .cartoes-modo) > li {
-  transition: none;
-}
-
-.movendo .lista-modo {
-  overflow: clip;
 }

@@ -27,7 +27,7 @@ Um filtro envolve três coisas, e vale entender cada uma antes do código.
 
 **`FilterProvider`** é o registro, configurado no mapper, que liga o nome ao filtro. A implementação padrão é `SimpleFilterProvider`, usada com `addFilter("id", filtro)`.
 
-A consequência dessa separação é que a mesma classe pode ser serializada com filtros diferentes, dependendo do mapper que está sendo usado.
+A consequência dessa separação é que :marca[a mesma classe pode ser serializada com filtros diferentes, dependendo do mapper] que está sendo usado.
 
 ## 2. Primeiro exemplo: removendo o CVV
 
@@ -65,7 +65,7 @@ Também dá para passar o provider só na hora de escrever, sem configurá-lo no
 
 ### O efeito colateral de anotar a classe
 
-Com `@JsonFilter` na classe, **todo** mapper que serializar essa classe precisa conhecer o filtro. Um mapper sem provider falha:
+Com `@JsonFilter` na classe, :sublinhado[**todo**] mapper que serializar essa classe precisa conhecer o filtro. Um mapper sem provider falha:
 
 ```txt
 tools.jackson.databind.exc.InvalidDefinitionException:
@@ -172,7 +172,7 @@ Anotar cada DTO com `@JsonFilter` tem dois problemas: é fácil esquecer uma cla
 
 O **mixin** resolve os dois. Mixin é o recurso do Jackson para "colar" anotações numa classe sem alterar o código dela. Você cria uma classe auxiliar só com as anotações e registra no mapper com `addMixIn(alvo, classeComAsAnotacoes)`. Aquele mapper passa a tratar o alvo como se tivesse aquelas anotações; os outros mappers não enxergam nada.
 
-O truque é usar `Object.class` como alvo. Toda classe herda de `Object`, e o Jackson considera os mixins de `Object` ao ler as anotações de qualquer classe. Resultado: toda classe ganha o `@JsonFilter`, mas só dentro deste mapper.
+O truque é usar `Object.class` como alvo. Toda classe herda de `Object`, e o Jackson considera os mixins de `Object` ao ler as anotações de qualquer classe. Resultado: :marca[toda classe ganha o `@JsonFilter`, mas só dentro deste mapper].
 
 ```java title="LogFilterMixin.java"
 import com.fasterxml.jackson.annotation.JsonFilter;
@@ -258,7 +258,7 @@ public class JacksonConfig {
 
 O `@Primary` é o que o Spring injeta quando ninguém especifica qual mapper quer, então é ele que serializa as requisições e respostas HTTP. O `logMapper` só é usado onde for pedido pelo nome (o nome do bean é o nome do método). O `baseBuilder()` evita repetir a configuração comum nos dois.
 
-Não pule o mapper `@Primary`: o Spring Boot só cria o mapper padrão dele quando a aplicação não declara nenhum bean desse tipo. Se você declarar apenas o `logMapper`, ele vira o único mapper da aplicação e passa a ser usado também nas respostas da API, que começam a devolver cartão mascarado.
+Não pule o mapper `@Primary`: o Spring Boot :sublinhado[só] cria o mapper padrão dele quando a aplicação não declara nenhum bean desse tipo. Se você declarar apenas o `logMapper`, ele vira o único mapper da aplicação e passa a ser usado também nas respostas da API, que começam a devolver cartão mascarado.
 
 Um detalhe do `baseBuilder()`: como ele parte de `JsonMapper.builder()`, as propriedades `spring.jackson.*` do `application.yml` não valem para nenhum dos dois mappers (declarar um `JsonMapper` próprio desliga toda a configuração automática do mapper). Se a aplicação depende delas, receba o `JsonMapper.Builder` que o Spring Boot oferece. Ele já vem com as `spring.jackson.*` aplicadas e é criado de novo a cada injeção, então o mixin do `logMapper` não vaza para o mapper da API:
 
@@ -374,7 +374,7 @@ A troca é que agora os DTOs precisam da anotação. A diferença para o `@JsonF
 Cartao[titular=Cesar, numero=5502091234567890, cvv=123]
 ```
 
-Por isso a regra é logar sempre via `logJson.toJson(...)`.
+Por isso :marca[a regra é logar sempre via `logJson.toJson(...)`].
 
 **O que passa pelo filtro e o que não passa.** Com o mixin em `Object`, passam objetos, records, objetos aninhados, itens de listas e entradas de `Map` (a chave vira o nome da propriedade). Uma `String` solta não passa, inclusive uma `String` que já contém JSON: `logJson.toJson("5502091234567890")` sai inteiro. Se o sistema loga o corpo cru da requisição como texto, o filtro não protege.
 
@@ -386,7 +386,7 @@ Por isso a regra é logar sempre via `logJson.toJson(...)`.
 
 **O tipo muda.** O campo mascarado sempre sai como string no JSON, mesmo que o original seja numérico.
 
-**CVV não se mascara, se remove.** CVV não deve aparecer em log nenhum, nem parcialmente. Por isso o exemplo remove o campo em vez de mascará-lo. O PCI DSS proíbe guardar o código de verificação do cartão depois da autorização, mesmo cifrado, e um log é um lugar onde ele fica guardado.
+**CVV não se mascara, :sublinhado[se remove].** CVV não deve aparecer em log nenhum, nem parcialmente. Por isso o exemplo remove o campo em vez de mascará-lo. O PCI DSS proíbe guardar o código de verificação do cartão depois da autorização, mesmo cifrado, e um log é um lugar onde ele fica guardado.
 
 **Quantos dígitos mostrar.** O PCI DSS (requisito 3.4.1) limita o número exibido a, no máximo, o BIN e os 4 últimos dígitos. Como o BIN tem de 6 a 8 dígitos, os 6 primeiros e os 4 últimos do `mascarar` ficam dentro desse limite.
 
@@ -412,7 +412,9 @@ A ideia é a mesma nas duas versões; mudam pacotes e nomes de métodos.
 
 ## Resumo
 
+:::colchete
 `@JsonFilter` dá um nome de filtro a uma classe, o `FilterProvider` diz qual regra responde por esse nome, e o `PropertyFilter` decide campo a campo o que escrever. Para mascarar, o filtro lê o valor e escreve a versão mascarada no lugar. Com um mixin em `Object.class`, o filtro vale para todas as classes, mas só no mapper de log, e o mapper `@Primary` continua servindo a API com os dados completos.
+:::
 
 ## Fontes
 

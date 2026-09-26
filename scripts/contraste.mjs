@@ -10,7 +10,7 @@
  *
  * Uso: npm run contraste. Lê os tokens e os cadastros direto dos .ts (Node 24).
  */
-import { claro, escuro, misturar, BRANCO_NO_ESCURO, CHIP, LOUSA, PAINEL } from "../src/styles/tokens.ts";
+import { claro, escuro, misturar, BRANCO_NO_ESCURO, CHIP, LOUSA, MARCA_TEXTO, PAINEL } from "../src/styles/tokens.ts";
 import { CATEGORIAS } from "../src/data/taxonomia.ts";
 import { SERIES } from "../src/data/series.ts";
 import { PAPEL, TINTA_PAPEL } from "../docs/capas/cores.js";
@@ -122,6 +122,30 @@ for (const [tema, p] of Object.entries({ claro, escuro })) {
   const naFolha = (cor) => (tema === "escuro" ? misturar(cor, "#FFFFFF", BRANCO_NO_ESCURO) : cor);
   for (const c of CATEGORIAS) conferir(grupo, c.nome, naFolha(c.cores.destaque), p["paper-hi"], 3, true);
   for (const s of SERIES) conferir(grupo, s.nome, naFolha(s.destaque), p["paper-hi"], 3, true);
+}
+
+// Caderno marcado (D41): o texto sobre o marca-texto (a cor do livro, clareada no escuro, com a
+// transparência da força por cima da folha; a composição do navegador é em sRGB) e a caneta (o
+// sublinhado, o círculo e o colchete, na cor do sumário) sobre a folha.
+const sobre = (fundo, cor, alfa) => {
+  const [f, c] = [rgb(fundo), rgb(cor)];
+  return "#" + f.map((v, i) => Math.round((v * (1 - alfa) + c[i] * alfa) * 255).toString(16).padStart(2, "0")).join("").toUpperCase();
+};
+for (const [tema, p] of Object.entries({ claro, escuro })) {
+  const { branco, forca } = MARCA_TEXTO[tema];
+  const grupo = `Caderno marcado, tema ${tema} (texto 4,5:1; caneta 3:1)`;
+  // Na folha e, no celular, direto no fundo (o corpo do artigo fica sem cartão, D39).
+  for (const papel of ["paper-hi", "paper"]) {
+    for (const [nome, cor] of CORES) {
+      const fundo = sobre(p[papel], misturar(cor, "#FFFFFF", branco), forca / 100);
+      conferir(grupo, `--ink no marca-texto de ${nome} / --${papel}`, p.ink, fundo, 4.5, true);
+      // O termo marcado é código: a pintura vai por cima do fundo do código (--well).
+      if (papel === "paper-hi") conferir(grupo, `--ink no termo marcado de ${nome}`, p.ink, sobre(p.well, misturar(cor, "#FFFFFF", branco), forca / 100), 4.5, true);
+    }
+    const naFolha = (cor) => (tema === "escuro" ? misturar(cor, "#FFFFFF", BRANCO_NO_ESCURO) : cor);
+    for (const c of CATEGORIAS) conferir(grupo, `caneta de ${c.nome} / --${papel}`, naFolha(c.cores.destaque), p[papel], 3, true);
+    for (const s of SERIES) conferir(grupo, `caneta de ${s.nome} / --${papel}`, naFolha(s.destaque), p[papel], 3, true);
+  }
 }
 
 // Visor e marca (D33): texto de verdade, com o mínimo de 4,5:1 (falha o script).

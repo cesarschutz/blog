@@ -130,6 +130,14 @@ export const PAINEL = { claro: 11, escuro: 20 };
 export const CHIP = { claro: { tinta: 34, branco: 0 }, escuro: { tinta: 0, branco: 50 } };
 
 /**
+ * Marca-texto do caderno marcado (D41): a cor do livro com essa porcentagem de branco, a essa força
+ * (a transparência sobre a folha). No escuro, clareada e mais forte, para aparecer bem, até onde o
+ * texto por cima ainda passa de 4,5:1 em todos os livros, também no termo de código (o SRE, dourado,
+ * é o limite: 4,60:1; `npm run contraste` confere).
+ */
+export const MARCA_TEXTO = { claro: { branco: 0, forca: 32 }, escuro: { branco: 60, forca: 36 } };
+
+/**
  * O que a lousa tem de diferente em cada tema, além das cores: quanto da mistura entra no destaque,
  * quanto de caneta o destaque leva no traço e no texto para passar de 3:1 e 4,5:1 em todas as
  * categorias (no quadro branco, Observabilidade pede 20% e 45%; `npm run contraste` confere), a
@@ -201,7 +209,8 @@ export function cssDosTokens(): string {
     `--lousa-mistura-pct:${l.mistura}%;--lousa-caneta-traco:${l.canetaNoTraco}%;--lousa-caneta-texto:${l.canetaNoTexto}%;` +
     `--lousa-hachura:${l.hachura};--lousa-borda-largura:${l.borda};--lousa-reflexo:${l.reflexo};`;
   const proporcoes = (t: "claro" | "escuro") =>
-    `--painel-mistura:${PAINEL[t]}%;--chip-tinta:${CHIP[t].tinta}%;--chip-branco:${CHIP[t].branco}%;`;
+    `--painel-mistura:${PAINEL[t]}%;--chip-tinta:${CHIP[t].tinta}%;--chip-branco:${CHIP[t].branco}%;` +
+    `--marca-texto-branco:${MARCA_TEXTO[t].branco}%;--marca-texto-forca:${MARCA_TEXTO[t].forca}%;`;
   const temaEscuro = `${variaveis(escuro)}${lousa(LOUSA.escuro)}${proporcoes("escuro")}--branco-no-escuro:${BRANCO_NO_ESCURO}%;color-scheme:dark;`;
   return (
     `:root{${variaveis(claro)}${lousa(LOUSA.claro)}${proporcoes("claro")}--branco-no-escuro:0%;color-scheme:light;}` +
