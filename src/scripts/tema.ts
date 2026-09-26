@@ -56,3 +56,24 @@ export function aoMudarTema(ao: () => void) {
 }
 
 pintarBarra(lerEscolha());
+
+/**
+ * Troca o tema pelo botão (D42): o tema novo se espalha em círculo a partir do botão, com a View
+ * Transition do próprio documento (`startViewTransition`, tipo "tema"; o círculo é o `clip-path` do
+ * `::view-transition-new(root)`, em base.css). Durante a troca, os outros nomes de transição (os
+ * livros) saem, para a página inteira virar junto. Sem View Transitions com tipos, ou com movimento
+ * reduzido, a troca é direta.
+ */
+export function trocarTema(valor: Escolha, origem: Element) {
+  const podeTipos = "startViewTransition" in document && typeof ViewTransition !== "undefined" && "types" in ViewTransition.prototype;
+  if (!podeTipos || matchMedia("(prefers-reduced-motion: reduce)").matches) return aplicarTema(valor);
+  const r = origem.getBoundingClientRect();
+  const x = r.left + r.width / 2;
+  const y = r.top + r.height / 2;
+  raiz.style.setProperty("--tema-x", `${x}px`);
+  raiz.style.setProperty("--tema-y", `${y}px`);
+  raiz.style.setProperty("--tema-raio", `${Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y))}px`);
+  raiz.classList.add("trocando-tema");
+  const transicao = document.startViewTransition({ update: () => aplicarTema(valor), types: ["tema"] });
+  transicao.finished.finally(() => raiz.classList.remove("trocando-tema"));
+}

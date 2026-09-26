@@ -1029,3 +1029,22 @@ nada muda.
     Conferido: os outros 26 posts saem com o texto idêntico ao de antes.
   - O build recusa mais de 30 marcações por artigo, duas no mesmo parágrafo e marcação em título.
   - Com movimento reduzido, sem JS ou na impressão, tudo aparece já marcado (e o desenho, inteiro).
+
+## D42 · Tema em círculo e Lista / Cards com esmaecer
+- **Data:** 26/09/2026 · **Status:** aplicada, sem push.
+- **Pedido do Cesar:** as duas animações que ficaram faltando: a da troca de tema e a da troca entre
+  Lista e Cards. Ele escolheu entre três propostas para o tema (círculo a partir do botão, folha que
+  desce, esmaecer) e duas para a lista (artigos se rearrumando, esmaecer).
+- **Decisão:**
+  1. **Tema:** o tema novo se espalha em círculo a partir do botão (0,55s,
+     `cubic-bezier(0.65, 0, 0.35, 1)`), com `document.startViewTransition` do tipo "tema" e o
+     `clip-path` no `::view-transition-new(root)` (`trocarTema` em `tema.ts`, regras em `base.css`).
+     Durante a troca, nenhum outro elemento tem nome de transição, para a página virar inteira. É o
+     mesmo mecanismo do lote 6 da D41 (desfeito), **sem a lua virando sol** (o ícone só troca, sem
+     MorphSVG nem GSAP no cabeçalho).
+  2. **Lista / Cards:** a forma atual esmaece em 0,12s e a nova aparece subindo 8px em 0,22s (Web
+     Animations, no `SeletorModo`). Um clique no meio da troca cancela a anterior; o botão marca o
+     destino na hora. Não é o Flip da D41 (desfeito).
+- **Por quê:** as duas trocas eram secas. As versões escolhidas são curtas e só mexem em cor e
+  opacidade, sem biblioteca: o navegador sem View Transitions com tipos troca o tema direto.
+- **Movimento reduzido:** as duas trocas ficam diretas, como antes.

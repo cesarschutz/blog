@@ -3,7 +3,8 @@
  * Botão de tema do cabeçalho (D39): alterna direto entre claro e escuro, sem menu. Mostra a lua no
  * claro e o sol no escuro (o tema para onde vai). O site sempre abre no tema do sistema: a escolha
  * vale até fechar o site (`cs-theme`, em sessionStorage), e o script do <head> (Base.astro) a aplica
- * antes da primeira pintura. Sem JS, o botão some e o tema segue o sistema.
+ * antes da primeira pintura. A troca se espalha em círculo a partir do botão (D42). Sem JS, o botão
+ * some e o tema segue o sistema.
  */
 import { ICONES } from "../lib/icones";
 ---
@@ -14,11 +15,11 @@ import { ICONES } from "../lib/icones";
 </button>
 
 <script>
-  import { aoMudarTema, aplicarTema, temaNaTela } from "../scripts/tema";
+  import { aoMudarTema, temaNaTela, trocarTema } from "../scripts/tema";
 
   const botao = document.querySelector<HTMLButtonElement>("[data-botao-tema]");
   if (botao) {
-    botao.addEventListener("click", () => aplicarTema(temaNaTela() === "dark" ? "light" : "dark"));
+    botao.addEventListener("click", () => trocarTema(temaNaTela() === "dark" ? "light" : "dark", botao));
     aoMudarTema(() => {
       const escuro = temaNaTela() === "dark";
       botao.dataset.tela = escuro ? "escuro" : "claro";

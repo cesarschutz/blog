@@ -5,7 +5,8 @@
  * `data-post-view` no <html>, sem piscar; as listas mostram uma forma ou a outra pelo CSS
  * (.lista-artigos-modo e .cartoes-modo, em base.css). Os cards vêm num <template> (D37): viram DOM
  * na página (script logo depois dele) se o modo já for Cards, ou aqui, na primeira troca para Cards.
- * Sem JS, fica a lista e o seletor some.
+ * A troca esmaece a forma atual e traz a nova com um deslize de 8px (D42, Web Animations; direta com
+ * movimento reduzido). Sem JS, fica a lista e o seletor some.
  */
 import { ICONES } from "../lib/icones";
 ---
@@ -23,11 +24,36 @@ import { ICONES } from "../lib/icones";
   const CHAVE = "cs-post-view";
   const raiz = document.documentElement;
   const seletores = [...document.querySelectorAll<HTMLElement>("[data-modo]")];
+  // O modo para onde a página vai (durante a troca, o <html> ainda mostra o anterior).
+  let alvo = raiz.dataset.postView === "cards" ? "cards" : "list";
   const marcar = () => {
-    const atual = raiz.dataset.postView === "cards" ? "cards" : "list";
     for (const s of seletores)
-      s.querySelectorAll<HTMLButtonElement>("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.valor === atual)));
+      s.querySelectorAll<HTMLButtonElement>("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.valor === alvo)));
   };
+  const reduzir = matchMedia("(prefers-reduced-motion: reduce)");
+  const formas = () => [...document.querySelectorAll<HTMLElement>(".lista-modo, .cartoes-modo")];
+  const visiveis = () => formas().filter((f) => f.getClientRects().length > 0);
+  // Some em 0,12s, troca e a forma nova aparece em 0,22s, subindo 8px. Um clique no meio da troca
+  // cancela a anterior e começa de onde a tela está.
+  let vez = 0;
+  const trocar = async (valor: string) => {
+    if (valor === alvo) return;
+    alvo = valor;
+    marcar();
+    const minha = ++vez;
+    formas().forEach((f) => f.getAnimations().forEach((a) => a.cancel()));
+    if (!reduzir.matches) {
+      const saindo = visiveis().map((f) => f.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 120, easing: "ease-in", fill: "forwards" }));
+      await Promise.all(saindo.map((a) => a.finished.catch(() => {})));
+      if (minha !== vez) return;
+      formas().forEach((f) => f.getAnimations().forEach((a) => a.cancel()));
+    }
+    raiz.dataset.postView = valor;
+    if (reduzir.matches) return;
+    for (const f of visiveis())
+      f.animate([{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 220, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)" });
+  };
+
   for (const seletor of seletores) {
     seletor.querySelectorAll<HTMLButtonElement>("button").forEach((b) =>
       b.addEventListener("click", () => {
@@ -36,13 +62,12 @@ import { ICONES } from "../lib/icones";
           moldes.forEach((t) => t.replaceWith(t.content));
           if (moldes.length) dispatchEvent(new Event("cartoes:prontos"));
         }
-        raiz.dataset.postView = b.dataset.valor!;
+        trocar(b.dataset.valor!);
         try {
           localStorage.setItem(CHAVE, b.dataset.valor!);
         } catch {
           // Sem armazenamento: o modo vale só nesta página.
         }
-        marcar();
       }),
     );
     seletor.hidden = false;

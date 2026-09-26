@@ -646,6 +646,11 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
 - **Cabeçalho no celular** (até 860px, D38): some ao rolar para baixo e volta ao rolar para cima,
   subindo por `translate` (a página não muda de altura); com o foco nele ou o menu aberto, fica. **Nenhum livro cai** (o tombo do livro
   inclinado saiu na D35) e **nenhum texto muda de cor**. Sem animação de entrada nas seções.
+- **Troca de tema** (D42): o tema novo se espalha em círculo a partir do botão (0,55s), com a View
+  Transition do próprio documento (tipo "tema", `trocarTema` em `tema.ts`); a página inteira vira de
+  uma vez (os livros perdem o nome de transição durante a troca). O ícone só troca, sem animar.
+- **Troca Lista / Cards** (D42): a forma atual esmaece (0,12s) e a nova aparece subindo 8px (0,22s),
+  com a Web Animations API (`SeletorModo`). Sem Flip e sem cascata nos cards.
 - Toda animação respeita `prefers-reduced-motion`: tudo aparece no estado final, sem prender a
   tela.
 - Vídeo (MP4/WebM) só quando o Cesar pedir: comprimido, com poster e carregado sob demanda.

@@ -132,6 +132,11 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
   `remark-directive`). Em 26/09/2026, marcações aplicadas nos 27 posts (de 12 a 30 cada, densidade de estudo; ficam depois de marcadas); posts novos as recebem pelo plano
   da skill `post` (guia em `docs/marcacoes.md`; coluna "Marcações" na revisão).
 
+- **Tema em círculo e Lista / Cards com esmaecer (D42, 26/09/2026), só local, sem commit:** o tema
+  novo se espalha em círculo a partir do botão (View Transition do documento) e a troca Lista / Cards
+  esmaece uma forma e traz a outra subindo 8px. Conferido no dev (desktop e 390px, os dois temas,
+  cliques rápidos), `astro check` sem erros e console limpo. Aguarda o Cesar ver.
+
 ## Próximos passos
 
 0. Publicar a D39, a D40 e a D41: o Cesar dá o push quando revisar. Os ajustes pedidos depois da D40 já

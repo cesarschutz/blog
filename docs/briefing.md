@@ -121,7 +121,7 @@ camada visual: estrutura, conteúdo, rotas e comportamento seguem as seções 5 
 - Tema: o site **sempre abre no tema do sistema** (D33). O botão do cabeçalho alterna direto entre
   claro e escuro (lua ou sol, sem menu, D39), e a escolha vale até fechar o site (`sessionStorage`),
   com script anti-piscada no `<head>`. Trocar o tema só muda as cores: nenhum tamanho depende do
-  tema, e a página não sai do lugar.
+  tema, e a página não sai do lugar. A troca se espalha em círculo a partir do botão (D42).
 - **Categorias = livros de uma coleção numerada, no estilo "edição de estudo"; séries = revistas
   técnicas** (D30, D32). A regra visual de capas, lombadas, estante, livros e séries novos está em
   **`docs/capas/CAPAS.md`**, com as imagens de referência em `docs/capas/referencia/`. Os dados de
@@ -225,7 +225,8 @@ Referência: aba "Home" do protótipo.
 - **Destaque** (só na primeira página): o post mais recente, com a ilustração (o painel acompanha a
   altura do texto; até 960px, vai para cima), categoria, data e tempo de leitura com os ícones, o
   **título inteiro**, a descrição e as tags (D33). O post em destaque **não se repete** na lista abaixo.
-- **Artigos recentes**: alternância **Lista / Cards** (guardada no navegador), no formato do blog
+- **Artigos recentes**: alternância **Lista / Cards** (guardada no navegador; a troca esmaece uma
+  forma e traz a outra, D42), no formato do blog
   atual (D27). Em cima, categoria, data e tempo de leitura com relógio; o **título inteiro**, grande;
   a **descrição completa** (fonte da interface); até 4 tags em `#tag` (fonte de código), que levam à
   página da tag (D38). O item inteiro é clicável.
