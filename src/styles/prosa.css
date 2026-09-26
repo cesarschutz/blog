@@ -243,7 +243,7 @@
 
 /* Marca-texto: a metade de baixo da linha, como a caneta passada de leve. */
 /* O código dentro do trecho fica sem o fundo próprio: a pintura do trecho passa por ele também. */
-.prose .marca-texto > code {
+.prose .marca-texto code {
   background-color: transparent;
 }
 
