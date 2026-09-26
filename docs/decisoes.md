@@ -1271,3 +1271,54 @@ nada muda.
   variáveis de ambiente ou comandos. Um peso só (600, 51 KB no latim), em vez da variável (75 KB).
 - **Alternativas:** manter a animação só no marca-texto (o Cesar pediu tudo estático); a caneta na
   cor do livro, vermelha ou grafite (comparadas no catálogo; ficou o azul); a Caveat variável.
+
+## D49 · As ideias de movimento revistas: sumário, estante, livros, cabeçalho, listas e artigo
+- **Data:** 26/09/2026 · **Status:** aprovada pelo Cesar (item a item, abaixo) e **em andamento**;
+  publicar na `main` no fim, a pedido dele.
+- **Pedido do Cesar:** aplicar os protótipos revistos em `docs/prototipos/ideias/ja feitas ou
+  reprovadas/`, na ordem, a partir do C2, com as observações dele em cada um, e no fim listar o que
+  foi feito.
+- **Decisões do Cesar, item a item:**
+  - **C2, o sumário que acompanha:** aplicar. E o botão de voltar ao topo, embaixo, **em todas as
+    páginas longas** (resposta dele à pergunta).
+  - **C3, o código que responde:** **não aplicar**.
+  - **D1, a estante de verdade:** aplicar; e, se possível, levar a mesma ideia aos livros das
+    categorias, mais realista: primeiro guardar o livro aberto, depois puxar o outro.
+  - **D2, o livro que abre:** aplicar, **só no livro ampliado** (resposta dele à pergunta).
+  - **D3, a pilha com peso:** aplicar, mas sem um livro passando por cima do outro: primeiro o livro
+    aberto volta para a pilha, depois o outro é puxado, o mais realista possível.
+  - **E1, cabeçalho e rodapé:** 1, o traço de caneta do menu com a transição "desliza" (View
+    Transition); 2, a tecla ⌘K que afunda; 3, o sol e a lua, propostas A e B; 4, o sinal do RSS e os
+    fios do rodapé.
+  - **E2, lista, cards e paginação:** 1, a pílula que escorre; 2, o colchete no item da lista; 3, o
+    círculo e a seta da paginação (e, se ficar bom, o mesmo círculo nos ícones do LinkedIn e do
+    GitHub do cabeçalho); 4, o contador que rola no filtro.
+  - **E3, o artigo de perto:** 1, a tinta do link; 2, o "Copiar" do código em sequência, e corrigir a
+    etiqueta da linguagem nos blocos sem título (ela ficava colada e mal desenhada à direita, como no
+    segundo bloco do post do Jackson); 3, copiar o link do título; 4, a seta e a orelha do anterior e
+    próximo; 5, a animação do voltar ao topo.
+  - **E4, busca e 404:** 1, o 404 com a rasura e a sugestão, numa página mais elegante, com algo dos
+    livros (a de hoje está "muito morta"); 2, o sublinhado ondulado da busca vazia; 3, o marcador que
+    desliza; 4, os minutos que rolam.
+- **Feito:**
+  1. **C2** (sumário e voltar ao topo): o trilho do sumário lateral ganhou o fio de tinta que desce
+     com a leitura, o visto em cada seção lida e o marca-texto na cor do livro na seção atual; no
+     celular e no tablet, o cabeçalho mostra "N de M · seção" no lugar da marca (entra por baixo ao
+     descer e por cima ao subir) e abre o sumário numa folha que desce do cabeçalho, com as cores do
+     livro. O voltar ao topo (`VoltarTopo.astro`) saiu do artigo e foi para o `Base.astro`: aparece em
+     toda página depois de uma tela de rolagem e devolve o foco ao título. Contraste da seção atual
+     no `npm run contraste` (o menor: 4,94:1).
+  2. **D1** (a estante de verdade, `src/scripts/estante-gesto.ts`, `estante-viva.ts`,
+     `Gaveta.astro`, `estante.css`): o mouse na lombada não levanta mais o livro (16px, D47): ele tomba
+     5° para a frente pela borda de baixo e mostra a cabeça (o topo das páginas, `.cabeca`), sem mexer
+     os vizinhos; as espiadinhas da home viraram o mesmo toque. Tirar um livro (clique, toque ou
+     Enter): ele tomba pela cabeça dentro do próprio vão, vem para a frente (e o vizinho da direita,
+     sem apoio, tomba até encostar no outro, pela geometria real das lombadas) e só então vira o livro
+     3D da gaveta, que anda até ela girando. Guardar: o livro volta até a frente do lugar dele, entra
+     empurrando o vizinho de volta e assenta; a inclinada volta a se apoiar no aparador. Trocar de
+     livro guarda o aberto antes de tirar o outro. Com mouse, dá para puxar a cabeça do livro e
+     arrastá-lo (Draggable e InertiaPlugin): solto abaixo da prateleira, vai para a gaveta; no ar,
+     volta; sem chegar a 22°, cai de volta em pé. No celular, o gesto é 20% mais rápido e sem arrasto.
+     Com movimento reduzido, tudo direto no estado final (o vizinho já aparece tombado). Na estante
+     de filtro do arquivo e das tags, o mesmo toque na cabeça.
+- **Motivo:** o Cesar revisou os protótipos um a um e escolheu o que entra.

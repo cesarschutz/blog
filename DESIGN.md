@@ -484,7 +484,13 @@ celular, o corpo do artigo não fica num cartão: o texto usa a largura da pági
 A partir de 1300px, a coluna da esquerda começa no topo da página: o sumário numa folha própria e fixa,
 com a barra "NN% lido" embaixo; o fio das seções lidas, o ponto atual e a barra usam **a cor do
 livro do post** (o destaque do livro; no escuro, com 42% de branco), e embaixo da folha do sumário
-fica **o livro do artigo, grande e de lado** (D46), num painel tingido, com a lupa, o nome e "Ver o livro". A home é paginada de 12 em 12. A estante tem 6px entre os livros.
+fica **o livro do artigo, grande e de lado** (D46), num painel tingido, com a lupa, o nome e "Ver o livro".
+**O sumário acompanha a leitura (D49):** um fio de tinta à mão desce pelo trilho até a altura lida;
+cada seção lida ganha um visto desenhado no marco; a seção atual fica com o marca-texto na cor do
+livro (`--sumario-marca-*`, no `tokens.ts`; contraste no `npm run contraste`). Abaixo de 1300px, o
+cabeçalho mostra "N de M · seção" no lugar da marca e abre o sumário numa folha que desce dele, com
+as cores do livro. Toda página tem o **voltar ao topo** depois de uma tela de rolagem
+(`VoltarTopo.astro`, no `Base.astro`). A home é paginada de 12 em 12. A estante tem 6px entre os livros.
 Nada pode rolar para o lado em 390px nem em 320px. O sumário nunca rola para o lado. Toda área que
 rola por dentro (sumário, código, tabelas, gaveta, busca, painel) usa a **barra fina** do site, na
 tinta do tema com 24% (40% ao passar o mouse), por `scrollbar-width`, `scrollbar-color` e
@@ -630,21 +636,38 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   passar o mouse, tocar, receber o foco ou com a página ociosa). Só transformações e opacidade, nunca
   `filter` no livro 3D; o foco do teclado faz o mesmo que o mouse; Esc fecha; com movimento reduzido,
   tudo no estado final.
-  - **Estante que responde ao mouse** (home e filtro, só com mouse; D47): o livro sob o mouse desliza
-    16px para cima (0,42s, `power3.out`); os dois vizinhos sobem 2px pelo atrito (0,7s, `power2.out`);
-    **nada inclina** (o topo inclinado entrava no vizinho); ao sair, desce e assenta com `bounce.out`
-    (0,55s). Embaixo, a legenda com o nome e a
-    contagem (`estante-viva.ts`).
+  - **A estante de verdade (D49, `estante-gesto.ts`):** **nada flutua**: o livro ou está apoiado na
+    prateleira, ou está na mão. A prateleira tem perspectiva (o olho a 45% da altura, 1400 de
+    distância na estante cheia, proporcional nas menores), e cada lombada tem a **cabeça** (o topo das
+    páginas, `.cabeca`), que só aparece quando o livro tomba para a frente.
+  - **O toque na cabeça** (home e filtro, só com mouse; D49, no lugar da subida de 16px da D47): o
+    livro sob o mouse tomba **5°** para a frente pela borda de baixo (0,3s, `power2.out`) e cai de
+    volta em pé ao sair (0,3s, `power2.in`); os vizinhos não se mexem. Embaixo, a legenda com o nome e
+    a contagem (`estante-viva.ts`). O foco do teclado faz o mesmo.
   - **Estante em repouso** (só a home): depois de 3s sem mouse, toque, tecla ou rolagem, com a estante
-    ao menos metade visível e a aba ativa, a cada 4 a 7s um livro sorteado sobe 10px, inclina 1,2°, espera 0,6s e volta com `elastic`. Qualquer
-    interação para tudo e devolve os livros ao lugar. Desligada com movimento reduzido.
-  - **Tirar da estante** (a gaveta da home, `Gaveta.astro`, D43): no clique ou toque, o livro 3D
-    aparece exatamente sobre a lombada (lombada de frente, mesma altura), e o lugar na estante fica
-    vazio; ele sobe 40px (0,45s) e vem para a gaveta girando até **38°** da frente (1,05s,
-    `power3.inOut`), **fechado**: na gaveta, o livro fica mais de lado que no resto do site, com a
-    lombada bem à vista. Ao pousar, o sumário ao lado aparece subindo 8px (0,35s) e a lupa, por opacidade.
-    O livro que voa é o próprio livro da gaveta, levado por transformações da lombada até o lugar
-    dele. Fechar faz o caminho de volta 1,5× mais rápido, e o livro volta à estante.
+    ao menos metade visível e a aba ativa, a cada 4 a 7s um livro sorteado é tocado na cabeça (7°, 0,55s),
+    espera 0,5s e cai de volta, assentando. Qualquer interação para tudo e devolve o livro ao lugar.
+    Desligada com movimento reduzido.
+  - **Tirar da estante** (a gaveta da home, `Gaveta.astro`, D43, D49): no clique, toque ou Enter, o
+    livro tomba pela cabeça **dentro do próprio vão** (24°, 0,28s, `power2.out`; a inclinada se
+    endireita junto) e só então **vem para a frente** (a profundidade inteira do livro, voltando a 6°,
+    0,32s, `power2.inOut`), um nada erguido para o pé não passar da tábua. Aí o **vizinho da direita**,
+    sem apoio, **tomba até encostar no outro** (o ângulo sai da geometria das lombadas; acelera como
+    queda, bate e assenta); não tombam a inclinada, o primeiro da fileira nem a série sozinha. Na
+    frente dos outros, o livro 3D da gaveta toma o lugar da lombada (mesma altura e largura) e anda
+    até a gaveta girando até **38°** da frente (0,9s, `power3.inOut`), **fechado**, com a lombada bem
+    à vista; a gaveta cresce enquanto isso. Ao pousar, o sumário ao lado aparece subindo 8px (0,35s) e
+    a lupa, por opacidade. No celular, tudo 20% mais rápido.
+  - **Guardar** (Fechar livro, Esc ou a mesma lombada): o livro 3D volta até a frente do lugar dele
+    girando de volta para a lombada (0,6s), **entra na prateleira empurrando o vizinho** de volta
+    (0,4s; o vizinho sai do encosto sem quicar) e assenta (1px); a inclinada volta a se apoiar no
+    aparador. **Trocar de livro guarda o aberto antes de tirar o outro.**
+  - **Puxar pela cabeça** (só com mouse, Draggable e InertiaPlugin): arrastar a cabeça para baixo
+    tomba o livro até 30°; a partir de 22°, ele se solta, vem para a frente e segue o mouse. Solto
+    abaixo da prateleira (a velocidade do arremesso conta), vai para a gaveta; solto no ar, volta para
+    o lugar; sem chegar a 22°, cai de volta em pé. Só clicar faz o gesto inteiro sozinho.
+  - Com **movimento reduzido**, o livro aparece na gaveta, o lugar dele fica vazio e o vizinho já
+    aparece tombado; guardar devolve tudo na hora.
   - **Pilha lateral** (D46): ao passar o mouse (ou com o foco), o livro sai 14px da pilha (0,35s,
     `power3.out`) e volta com `elastic.out(1, 0.55)`. O livro aberto no topo não está na pilha. Ao
     clicar, o livro é puxado para a direita (62% da largura da pilha, 0,34s, `power2.inOut`), o lugar
@@ -685,8 +708,8 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   SVG, carregado só no post que as usa. Com play/pause quando não seguem a rolagem.
 - **Frase em destaque** (palavras que acendem com a rolagem): recurso raro dos posts, usado só de
   vez em quando.
-- **Na home, só coisas discretas:** um livro que sobe ao passar o mouse, a gaveta com o livro
-  tirado da estante (clicar nele o amplia; "Ver o livro" leva à página dele, D43).
+- **Na home, só coisas discretas:** um livro que tomba um nada para a frente ao passar o mouse, a
+  gaveta com o livro tirado da estante (clicar nele o amplia; "Ver o livro" leva à página dele, D43).
 - **Cabeçalho no celular** (até 860px, D46): sempre à vista. O botão de menu abre as seções numa
   folha que desce do cabeçalho por `clip-path` (0,46s), com os itens chegando em sequência (8px, 50ms
   entre eles) e um véu de 32% sobre a página; fecha mais rápido (0,34s). **Nenhum livro cai** (o tombo do livro

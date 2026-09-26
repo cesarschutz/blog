@@ -1,13 +1,17 @@
 ---
 /**
- * A gaveta da estante (briefing §5.1, D43): tirar o livro da estante. No clique ou toque numa lombada,
- * o livro sai da prateleira (o lugar dele fica vazio), sobe e vem para a gaveta girando da lombada até
- * os 38° (fechado, com a lombada bem à vista). Ao lado aparece o sumário, como antes da D40: "Neste
- * livro" (ou "Ordem de leitura", nas séries) e os artigos por ano, com "Ver o livro" (a página do
- * livro) e "Fechar livro". A gaveta abre crescendo, e o que está embaixo desce junto; fecha recolhendo,
- * enquanto o livro volta; na troca de livro, vai da altura de um para a do outro (D47). Clicar no livro, ou na lupa, abre o livro ampliado (D33, D43). "Fechar
- * livro", Esc ou a mesma lombada fazem o caminho de volta, 1,5× mais rápido, e o livro volta ao
- * lugar; outro livro fecha o atual e abre o novo. Com movimento reduzido, tudo direto no estado final.
+ * A gaveta da estante (briefing §5.1, D43, D49): tirar o livro da estante como numa estante de verdade
+ * (protótipo D1, src/scripts/estante-gesto.ts). No clique, toque ou Enter numa lombada, o livro tomba
+ * pela cabeça dentro do próprio vão, vem para a frente (e o vizinho da direita, sem apoio, tomba até
+ * encostar no outro) e só então anda até a gaveta, girando da lombada até os 38° (fechado, com a
+ * lombada bem à vista); o lugar dele fica vazio. Com mouse, dá também para puxar a cabeça do livro e
+ * arrastá-lo até a gaveta. Ao lado aparece o sumário, como antes da D40: "Neste livro" (ou "Ordem de
+ * leitura", nas séries) e os artigos por ano, com "Ver o livro" (a página do livro) e "Fechar livro".
+ * A gaveta abre crescendo, e o que está embaixo desce junto; fecha recolhendo, enquanto o livro volta;
+ * na troca de livro, vai da altura de um para a do outro (D47). Clicar no livro, ou na lupa, abre o
+ * livro ampliado (D33, D43). "Fechar livro", Esc ou a mesma lombada guardam o livro: ele volta até a
+ * frente do lugar dele, entra empurrando o vizinho de volta e assenta. Outro livro primeiro guarda o
+ * aberto e só depois sai da estante (D49). Com movimento reduzido, tudo direto no estado final.
  *
  * O livro que voa é o próprio livro da gaveta, já no lugar final: o GSAP o põe em cima da lombada e o
  * traz de volta ao lugar dele (só transformações). Cada livro vem pronto num <template>; o script só
@@ -99,13 +103,18 @@ function linhas(l: Livro): Linha[] {
 
 <script>
   import { GIRO, medidasDoLivro3D } from "../lib/livro-3d";
-  import { carregarGsap, movimentoReduzido, type GSAP } from "../scripts/gsap";
+  import { descanso, endireitar, levantar, profundidade, quemTomba, tombar, type Tombado } from "../scripts/estante-gesto";
+  import { prepararPrateleira } from "../scripts/estante-viva";
+  import { carregarArrastar, carregarGsap, movimentoReduzido, temMouse, type GSAP } from "../scripts/gsap";
 
   const gaveta = document.querySelector<HTMLElement>("[data-gaveta]");
   const estante = document.querySelector<HTMLElement>("[data-estante]");
-  if (gaveta && estante) {
+  const prateleira = estante?.querySelector<HTMLElement>(".prateleira-livros");
+  if (gaveta && estante && prateleira) {
     const lombadas = [...estante.querySelectorAll<HTMLElement>("[data-livro]")];
     const pequeno = matchMedia("(max-width: 760px)");
+    // No celular, o gesto é um pouco mais rápido (D49).
+    const DUR = () => (pequeno.matches ? 0.8 : 1);
 
     // O desenho da capa (ou o emblema da revista) só vem quando o livro abre (D30, D32).
     const desenhos = new Map<string, Promise<string>>();
@@ -131,11 +140,49 @@ function linhas(l: Livro): Linha[] {
       if (icone) icone.innerHTML = estante!.querySelector(`[data-livro="${id}"] :is(.icone-lombada, .emblema-lombada)`)?.innerHTML ?? "";
       gaveta!.replaceChildren(no);
       gaveta!.hidden = false;
+      // Na troca de livro, a gaveta ficou presa na altura do anterior: solta, para medir a do novo.
+      for (const p of ["height", "margin-top", "padding-top", "padding-bottom"]) gaveta!.style.removeProperty(p);
       trazerDesenho(no);
       return no;
     }
 
-    type Aberto = { id: string; lombada: HTMLElement; tl: gsap.core.Timeline };
+    const partes = (no: HTMLElement) => ({
+      voo: no.querySelector<HTMLElement>(".livro-na-gaveta")!,
+      livro: no.querySelector<HTMLElement>(".livro-3d")!,
+      caixa: no.querySelector<HTMLElement>(".livro-3d-caixa")!,
+      sumario: no.querySelector<HTMLElement>(".sumario-livro")!,
+      lupa: no.querySelector<HTMLElement>(".lupa")!,
+    });
+
+    /**
+     * Onde pôr o livro da gaveta (girado 90°, de lombada para a frente) para ele cobrir a lombada da
+     * estante: o deslocamento até o centro dela e a escala que iguala as alturas. A lombada do livro 3D
+     * fica meia capa mais perto do olho e aparece um pouco maior (a perspectiva da caixa, livro.css). Ela
+     * também é mais fina que a da estante (a altura do livro 3D é sempre a de 720, D30): a largura
+     * acompanha a da estante no começo do voo e volta à do livro enquanto ele gira.
+     */
+    function sobreALombada(caixa: HTMLElement, lombada: HTMLElement) {
+      const l = lombada.getBoundingClientRect();
+      const c = caixa.getBoundingClientRect();
+      const p = parseFloat(getComputedStyle(caixa).perspective) || c.height * 4.7;
+      const scale = l.height / ((c.height * p) / (p - c.width / 2));
+      const espessura = parseFloat(getComputedStyle(caixa).getPropertyValue("--sw")) || lombada.offsetWidth;
+      const largura = lombada.offsetWidth / lombada.offsetHeight / (espessura / caixa.offsetHeight);
+      return {
+        x: l.left + l.width / 2 - (c.left + c.width / 2),
+        y: l.top + l.height / 2 - (c.top + c.height / 2),
+        scaleX: scale * largura,
+        scaleY: scale,
+      };
+    }
+
+    /** A gaveta à vista: rola até o livro, se ele ficar fora da tela (`ate` em coordenadas da página). */
+    function rolarAte(ate: number, direto: boolean) {
+      const falta = ate - scrollY - innerHeight;
+      if (falta > 0) scrollBy({ top: falta + 24, behavior: direto || movimentoReduzido.matches ? "auto" : "smooth" });
+    }
+
+    type Aberto = { id: string; lombada: HTMLElement; no: HTMLElement; vizinho: Tombado | null; tl: gsap.core.Timeline };
     let aberto: Aberto | null = null;
     // A gaveta que cresce e recolhe (D47): altura, margem e respiros vão de zero ao natural.
     const FECHADA = { height: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 };
@@ -152,110 +199,184 @@ function linhas(l: Livro): Linha[] {
     // Na troca de livro, a altura do que estava aberto: a gaveta vai dela para a do novo.
     let alturaDaTroca = 0;
     let ocupado = false;
-    let pendente: { id: string; foco: boolean } | null = null;
+    /** O livro que já veio para a frente, na mão (arrastado pela cabeça), com o vizinho que tombou. */
+    type NaMao = { vizinho: Tombado | null };
+    /** Um pedido feito durante um movimento: abrir um livro (`id`) ou fechar o aberto (sem `id`). */
+    type Pedido = { id?: string; foco: boolean; naMao?: NaMao };
+    let pendente: Pedido | null = null;
+    let gsapNoAr: GSAP | null = null;
 
-    function abrir(gsap: GSAP, id: string, foco: boolean) {
+    /**
+     * Tira o livro da estante e leva para a gaveta. O gesto (D49): o livro tomba pela cabeça dentro do
+     * próprio vão e só então vem para a frente, quando o vizinho perde o apoio e tomba; na frente dos
+     * outros, o livro 3D da gaveta toma o lugar da lombada e anda até a gaveta, girando da lombada até
+     * os 38°. A gaveta cresce enquanto isso (do zero, ou da altura do livro anterior). `naMao`: o livro
+     * já veio para a frente, arrastado, e parte de onde foi solto. `direto`: tudo no estado final.
+     */
+    function abrir(gsap: GSAP, id: string, foco: boolean, { naMao, direto = false }: { naMao?: NaMao; direto?: boolean } = {}) {
       const lombada = lombadas.find((l) => l.dataset.livro === id)!;
-      // A posição da lombada em repouso: sem o quanto a estante viva a subiu com o mouse em cima (D40),
-      // para o livro voltar exatamente ao lugar.
-      const l = lombada.getBoundingClientRect();
-      const subida = Number(gsap.getProperty(lombada, "y")) || 0;
-      const no = montar(id);
+      prepararPrateleira(gsap, prateleira!);
       lombada.setAttribute("aria-expanded", "true");
-      const voo = no.querySelector<HTMLElement>(".livro-na-gaveta")!;
-      const livro = no.querySelector<HTMLElement>(".livro-3d")!;
-      const sumario = no.querySelector<HTMLElement>(".sumario-livro")!;
-      const lupa = no.querySelector<HTMLElement>(".lupa")!;
-      const caixa = no.querySelector<HTMLElement>(".livro-3d-caixa")!.getBoundingClientRect();
-      // De onde sai: a lombada, com a mesma altura, centrada nela (o livro gira em volta do centro).
-      const s0 = l.height / caixa.height;
-      const dx = l.left + l.width / 2 - (caixa.left + caixa.width / 2);
-      const dy = l.top - subida + l.height / 2 - (caixa.top + caixa.height / 2);
-
-      const tl = gsap.timeline({
-        defaults: { ease: "power3.inOut" },
-        onComplete: () => foco && no.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true }),
-      });
-      lombada.classList.add("retirado");
+      const no = montar(id);
+      const { voo, livro, caixa, sumario, lupa } = partes(no);
+      const dur = DUR();
+      // Onde a gaveta termina, para rolar até ela: medido agora, com ela já no tamanho final.
+      const r = no.getBoundingClientRect();
+      const ate = r.top + scrollY + Math.min(r.height, caixa.offsetHeight + 120);
       const troca = alturaDaTroca;
       alturaDaTroca = 0;
-      if (movimentoReduzido.matches) {
-        tl.set(livro, { rotationY: GIRO });
-      } else {
-        // A gaveta cresce (do zero, ou da altura do livro anterior) enquanto o livro sobe e vem.
+      const animar = !direto && !movimentoReduzido.matches;
+      if (animar) {
+        // A gaveta cresce (do zero, ou da altura do livro anterior) enquanto o livro sai da estante. Vem
+        // antes da linha do tempo do livro, para, a cada quadro, o livro medir a gaveta já no lugar.
         const fim = cheia();
         gsap.fromTo(
           gaveta!,
           troca ? { ...fim, height: troca } : FECHADA,
           { ...fim, duration: troca ? 0.55 : 0.8, ease: "power3.inOut", overwrite: true, clearProps: MEDIDAS },
         );
-        gsap.set(voo, { x: dx, y: dy, scale: s0, transformOrigin: "50% 50%", zIndex: 6 });
-        gsap.set(livro, { rotationY: 90 });
-        gsap.set([sumario, lupa], { opacity: 0 });
-        tl.to(voo, { y: dy - 40, duration: 0.45, ease: "power2.out" }, 0)
-          .to(voo, { x: 0, y: 0, scale: 1, duration: 1.05 }, 0.38)
-          .to(livro, { rotationY: GIRO, duration: 1.05 }, 0.38)
-          .set(voo, { zIndex: "auto" })
-          .fromTo(sumario, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }, "-=0.35")
-          .to(lupa, { opacity: 1, duration: 0.25, ease: "none" }, "<");
       }
-      aberto = { id, lombada, tl };
+      const tl = gsap.timeline({ onComplete: () => foco && no.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true }) });
+      const registro: Aberto = { id, lombada, no, vizinho: naMao?.vizinho ?? null, tl };
+      aberto = registro;
 
-      // A gaveta à vista: rola até o livro, se ele ficar fora da tela.
-      const r = no.getBoundingClientRect();
-      const fim = r.top + Math.min(r.height, caixa.height + 120);
-      if (fim > innerHeight) scrollBy({ top: fim - innerHeight + 24, behavior: movimentoReduzido.matches ? "auto" : "smooth" });
+      if (!animar) {
+        // O livro aparece na gaveta, o lugar dele fica vazio e o vizinho já aparece tombado.
+        if (!naMao) registro.vizinho = quemTomba(lombada);
+        gsap.killTweensOf(lombada);
+        lombada.classList.add("retirado");
+        lombada.classList.remove("segurando");
+        gsap.set(lombada, { x: 0, y: 0, z: 0, rotationX: 0, ...descanso(lombada) });
+        tombar(gsap, registro.vizinho, dur, true);
+        tl.set(livro, { rotationY: GIRO });
+        rolarAte(ate, true);
+        return tl;
+      }
+
+      lombada.classList.add("segurando");
+      gsap.killTweensOf(lombada);
+      gsap.set(voo, { autoAlpha: 0 });
+      gsap.set([sumario, lupa], { opacity: 0 });
+      gsap.set(livro, { rotationY: 90 });
+      if (!naMao) {
+        const prof = profundidade(lombada);
+        // Tomba pela cabeça dentro do próprio vão (a inclinada se endireita junto); só depois vem para
+        // a frente, e aí o vizinho perde o apoio.
+        tl.to(lombada, { rotation: 0, rotationX: -24, duration: 0.28 * dur, ease: "power2.out" })
+          .add(() => {
+            registro.vizinho = quemTomba(lombada);
+            tombar(gsap, registro.vizinho, dur);
+          })
+          .to(lombada, { rotationX: -6, z: prof, y: levantar(prateleira!, prof), duration: 0.32 * dur, ease: "power2.inOut" });
+      }
+      // Na frente dos outros, o livro da gaveta toma o lugar da lombada e anda até a gaveta.
+      tl.add(() => {
+        gsap.set(voo, { ...sobreALombada(caixa, lombada), autoAlpha: 1, transformOrigin: "50% 50%", zIndex: 6 });
+        lombada.classList.add("retirado");
+        rolarAte(ate, false);
+      })
+        .to(voo, { x: 0, y: 0, scaleX: 1, scaleY: 1, duration: 0.9 * dur, ease: "power3.inOut" })
+        .to(livro, { rotationY: GIRO, duration: 0.9 * dur, ease: "power3.inOut" }, "<")
+        .set(voo, { zIndex: "auto" })
+        .add(() => {
+          // O lugar vazio fica pronto: a lombada, escondida, volta a ficar em pé no lugar dela.
+          lombada.classList.remove("segurando");
+          gsap.set(lombada, { x: 0, y: 0, z: 0, rotationX: 0, ...descanso(lombada) });
+        })
+        .fromTo(sumario, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }, "-=0.3")
+        .to(lupa, { opacity: 1, duration: 0.25, ease: "none" }, "<");
       return tl;
     }
 
+    /**
+     * Guarda o livro (D49): o livro 3D volta até a frente do lugar dele, girando de volta para a lombada;
+     * ela entra na prateleira, empurrando o vizinho de volta, e assenta (a inclinada volta a se apoiar no
+     * aparador). Fechando de vez, a gaveta recolhe enquanto o livro entra; trocando de livro (`depois`),
+     * fica na altura de agora, e o outro livro só sai da estante depois que este estiver guardado.
+     */
     function fechar(depois?: () => void, devolverFoco = false) {
       if (!aberto) return depois?.();
-      const { lombada, tl } = aberto;
+      const { lombada, no, vizinho, tl: abertura } = aberto;
       aberto = null;
       ocupado = true;
-      tl.eventCallback("onComplete", null);
+      abertura.kill();
+      const gsap = gsapNoAr!;
+      const dur = DUR();
       const terminar = () => {
         gaveta!.replaceChildren();
         gaveta!.hidden = true;
-        if (!depois) gsapNoAr?.set(gaveta!, { clearProps: MEDIDAS });
-        lombada.classList.remove("retirado");
+        if (!depois) gsap.set(gaveta!, { clearProps: MEDIDAS });
+        lombada.classList.remove("segurando");
         lombada.setAttribute("aria-expanded", "false");
         ocupado = false;
         if (devolverFoco) lombada.focus();
         if (depois) return depois();
-        // Um livro escolhido enquanto este voltava para a estante.
-        if (pendente) {
-          const p = pendente;
-          pendente = null;
-          escolher(p.id, p.foco);
-        }
+        seguirPendente();
       };
-      // Sem movimento, fecha na hora; com, faz o caminho de volta 1,5× mais rápido. Fechando de vez, a
-      // gaveta recolhe enquanto o livro volta; trocando de livro, fica na altura de agora até o novo.
-      if (movimentoReduzido.matches) return terminar();
+      if (movimentoReduzido.matches) {
+        lombada.classList.remove("retirado");
+        gsap.set(lombada, { x: 0, y: 0, z: 0, rotationX: 0, ...descanso(lombada) });
+        endireitar(gsap, vizinho, dur, true);
+        return terminar();
+      }
       if (depois) {
         alturaDaTroca = gaveta!.offsetHeight;
-        gsapNoAr?.set(gaveta!, { height: alturaDaTroca });
-      } else {
-        gsapNoAr?.to(gaveta!, { ...FECHADA, duration: 0.7, delay: 0.2, ease: "power3.inOut", overwrite: true });
+        gsap.set(gaveta!, { height: alturaDaTroca });
       }
-      tl.eventCallback("onReverseComplete", terminar).timeScale(1.5).reverse();
+      const { voo, livro, caixa, sumario, lupa } = partes(no);
+      const { rotation, transformOrigin } = descanso(lombada);
+      // A lombada espera fora da estante, na frente do lugar dela, para o livro 3D mirar nela.
+      const prof = profundidade(lombada);
+      lombada.classList.add("segurando");
+      gsap.killTweensOf(lombada);
+      gsap.set(lombada, { x: 0, rotation: 0, rotationX: -6, z: prof, y: levantar(prateleira!, prof) });
+      const volta = gsap
+        .timeline({ onComplete: terminar })
+        .to([sumario, lupa], { opacity: 0, duration: 0.18 }, 0)
+        .set(voo, { zIndex: 6 }, 0)
+        .to(livro, { rotationY: 90, duration: 0.6 * dur, ease: "power3.inOut" }, 0)
+        .to(voo, { ...sobreALombada(caixa, lombada), duration: 0.6 * dur, ease: "power3.inOut" }, 0)
+        .add(() => {
+          gsap.set(voo, { autoAlpha: 0 });
+          lombada.classList.remove("retirado");
+        })
+        .addLabel("pouso")
+        // Entra na prateleira: volta para o plano dos outros, e o vizinho é empurrado de volta.
+        .to(lombada, { z: 0, y: 0, rotationX: 0, duration: 0.4 * dur, ease: "power2.inOut" })
+        .add(() => endireitar(gsap, vizinho, dur), "<")
+        .set(lombada, { transformOrigin })
+        .to(lombada, { rotation, duration: rotation ? 0.2 : 0.01, ease: "power2.in" })
+        .to(lombada, { y: 1, duration: 0.05, ease: "power1.out" })
+        .to(lombada, { y: 0, duration: 0.1, ease: "power1.in" });
+      if (!depois) volta.to(gaveta!, { ...FECHADA, duration: 0.5, ease: "power3.inOut", overwrite: true }, "pouso");
     }
 
-    let gsapNoAr: GSAP | null = null;
-    async function escolher(id: string, foco: boolean) {
-      if (ocupado) return void (pendente = { id, foco });
+    /** O pedido feito durante o último movimento, se houver. */
+    function seguirPendente() {
+      if (!pendente) return;
+      const p = pendente;
+      pendente = null;
+      if (!p.id) return fechar(undefined, p.foco);
+      if (p.naMao || p.id !== aberto?.id) escolher(p.id, p.foco, p.naMao);
+    }
+
+    /** Pede um movimento; durante outro, fica para depois (o último pedido vale, e o livro na mão espera). */
+    function pedir(p: Pedido) {
+      if (pendente?.naMao) return;
+      if (ocupado) return void (pendente = p);
+      if (!p.id) return fechar(undefined, p.foco);
+      escolher(p.id, p.foco, p.naMao);
+    }
+
+    async function escolher(id: string, foco: boolean, naMao?: NaMao) {
+      if (ocupado) return void (pendente = { id, foco, naMao });
       if (aberto?.id === id) return fechar(undefined, foco);
       const gsap = (gsapNoAr = await carregarGsap());
       fechar(() => {
         ocupado = true;
-        abrir(gsap, id, foco).then(() => {
+        abrir(gsap, id, foco, { naMao }).then(() => {
           ocupado = false;
-          if (pendente) {
-            const p = pendente;
-            pendente = null;
-            if (p.id !== aberto?.id) escolher(p.id, p.foco);
-          }
+          seguirPendente();
         });
       });
     }
@@ -267,23 +388,158 @@ function linhas(l: Livro): Linha[] {
       l.addEventListener("click", (e) => {
         if (!clique(e)) return;
         e.preventDefault();
-        escolher(l.dataset.livro!, e.detail === 0);
+        // O livro que o arrasto está devolvendo para a prateleira termina de entrar antes.
+        if (l.classList.contains("segurando") && !ocupado) return;
+        pedir({ id: l.dataset.livro!, foco: e.detail === 0 });
       });
     }
     gaveta.addEventListener("click", (e) => {
-      if ((e.target as HTMLElement).closest("[data-fechar-livro]")) fechar(undefined, e.detail === 0);
+      if ((e.target as HTMLElement).closest("[data-fechar-livro]")) pedir({ foco: e.detail === 0 });
     });
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && aberto && !document.querySelector("dialog[open]")) fechar(undefined, true);
+      if (e.key === "Escape" && (aberto || ocupado) && !document.querySelector("dialog[open]")) pedir({ foco: true });
     });
     // Passou do celular para a tela larga (ou o contrário) com o livro aberto: remonta no tamanho novo,
     // no estado final.
     pequeno.addEventListener("change", () => {
       if (!aberto || ocupado) return;
-      const { id } = aberto;
-      aberto.tl.kill();
+      const { id, vizinho, tl } = aberto;
+      tl.kill();
       aberto = null;
-      carregarGsap().then((gsap) => abrir(gsap, id, false).progress(1));
+      carregarGsap().then((gsap) => abrir(gsap, id, false, { direto: true, naMao: { vizinho } }));
     });
+
+    /*
+     * ---------- arrastar pela cabeça (só com mouse, D49) ----------
+     * Puxar a cabeça do livro para baixo tomba o livro para a frente, pela borda de baixo (até 30°). A
+     * partir de 22°, ele se solta da prateleira: vem para a frente, o vizinho tomba, e o livro segue o
+     * mouse. Solto abaixo da prateleira (a velocidade do arremesso conta), vai para a gaveta; solto no
+     * ar, volta para o lugar dele. Sem chegar a soltar, cai de volta em pé. Só clicar faz o gesto
+     * inteiro sozinho. No toque não há arrasto: o dedo precisa rolar a página.
+     */
+    let arrasto = false;
+    function ligarArrasto() {
+      if (arrasto || !temMouse.matches || movimentoReduzido.matches) return;
+      arrasto = true;
+      carregarArrastar().then(({ gsap, Draggable, InertiaPlugin }) => {
+        gsapNoAr ??= gsap;
+        prepararPrateleira(gsap, prateleira!);
+        prateleira!.classList.add("arrasta");
+        const tabua = estante!.querySelector<HTMLElement>(".tabua")!;
+        for (const lombada of lombadas) {
+          lombada.draggable = false;
+          const proxy = document.createElement("div");
+          let fase: "parado" | "tombando" | "saindo" | "na-mao" = "parado";
+          let arrastou = false;
+          let inicio = 0;
+          let pega = { x: 0, y: 0 };
+          let prof = 0;
+          let vizinho: Tombado | null = null;
+          let segue: { x: (v: number) => void; y: (v: number) => void } | null = null;
+          let soltou: { y: number; vy: number } | null = null;
+
+          /** Solto no ar: não fica flutuando, volta para o lugar dele, e o vizinho é empurrado de volta. */
+          const devolver = () => {
+            const { rotation, transformOrigin } = descanso(lombada);
+            const v = vizinho;
+            vizinho = null;
+            gsap.killTweensOf(lombada);
+            gsap
+              .timeline({ onComplete: () => lombada.classList.remove("segurando") })
+              .to(lombada, { x: 0, y: levantar(prateleira!, prof), duration: 0.35, ease: "power2.inOut" })
+              .to(lombada, { z: 0, y: 0, rotationX: 0, duration: 0.36, ease: "power2.inOut" })
+              .add(() => endireitar(gsap, v, DUR()), "<")
+              .set(lombada, { transformOrigin })
+              .to(lombada, { rotation, duration: rotation ? 0.18 : 0.01, ease: "power2.in" })
+              .to(lombada, { y: 1, duration: 0.05, ease: "power1.out" })
+              .to(lombada, { y: 0, duration: 0.1, ease: "power1.in" });
+          };
+
+          /** Onde o livro solto iria parar, pela velocidade no fim do arrasto: abaixo da tábua, na gaveta. */
+          const decidir = (y: number, vy: number) => {
+            fase = "parado";
+            if (y + vy * 0.25 > tabua.getBoundingClientRect().bottom + 8) {
+              const v = vizinho;
+              vizinho = null;
+              gsap.killTweensOf(lombada, "x,y");
+              escolher(lombada.dataset.livro!, false, { vizinho: v });
+            } else devolver();
+          };
+
+          Draggable.create(proxy, {
+            trigger: lombada,
+            type: "x,y",
+            minimumMovement: 4,
+            cursor: "pointer",
+            activeCursor: "grabbing",
+            onPress() {
+              arrastou = false;
+              soltou = null;
+              inicio = this.y;
+              const livre = !ocupado && !pendente && aberto?.id !== lombada.dataset.livro && !lombada.classList.contains("segurando");
+              fase = livre && !movimentoReduzido.matches ? "tombando" : "parado";
+            },
+            onDragStart() {
+              if (fase !== "tombando") return;
+              arrastou = true;
+              // O livro aberto volta para a estante enquanto este sai.
+              if (aberto) fechar();
+              lombada.classList.add("segurando");
+              prof = profundidade(lombada);
+              gsap.killTweensOf(lombada);
+              gsap.to(lombada, { rotation: 0, duration: 0.15, ease: "power2.out" });
+            },
+            onDrag() {
+              if (fase === "tombando") {
+                // Puxar a cabeça para baixo tomba o livro para a frente, pela borda de baixo.
+                const dy = Math.max(0, this.y - inicio);
+                const graus = Math.min(30, (dy / (lombada.offsetHeight * 0.45)) * 30);
+                gsap.set(lombada, { rotationX: -graus });
+                if (graus < 22) return;
+                // Solto da prateleira: sai para a frente (a profundidade inteira do livro) e só então anda.
+                fase = "saindo";
+                vizinho = quemTomba(lombada);
+                tombar(gsap, vizinho, DUR());
+                gsap.to(lombada, {
+                  rotationX: -6,
+                  z: prof,
+                  y: levantar(prateleira!, prof),
+                  duration: 0.24,
+                  ease: "power2.out",
+                  onComplete: () => {
+                    if (soltou) return decidir(soltou.y, soltou.vy);
+                    fase = "na-mao";
+                    pega = { x: this.x, y: this.y };
+                    segue = {
+                      x: gsap.quickTo(lombada, "x", { duration: 0.18, ease: "power3.out" }),
+                      y: gsap.quickTo(lombada, "y", { duration: 0.18, ease: "power3.out" }),
+                    };
+                  },
+                });
+              } else if (fase === "na-mao") {
+                segue!.x(this.x - pega.x);
+                segue!.y(this.y - pega.y + levantar(prateleira!, prof));
+              }
+            },
+            onRelease() {
+              if (!arrastou) return;
+              arrastou = false;
+              const vy = InertiaPlugin.getVelocity(proxy, "y") || 0;
+              if (fase === "tombando") {
+                // Não chegou a soltar: cai de volta em pé, acelerando, e assenta.
+                fase = "parado";
+                const { rotation } = descanso(lombada);
+                gsap
+                  .timeline({ onComplete: () => lombada.classList.remove("segurando") })
+                  .to(lombada, { rotationX: 0, duration: 0.22, ease: "power2.in" })
+                  .to(lombada, { rotation, duration: rotation ? 0.18 : 0.01, ease: "power2.in" });
+              } else if (fase === "saindo") soltou = { y: this.pointerY, vy };
+              else if (fase === "na-mao") decidir(this.pointerY, vy);
+            },
+          });
+        }
+      });
+    }
+    prateleira.addEventListener("pointerenter", (e) => e.pointerType === "mouse" && ligarArrasto());
   }
 </script>

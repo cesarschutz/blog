@@ -1,35 +1,46 @@
 /**
- * A estante viva (D40), com GSAP sob demanda:
+ * A estante viva (D40, D49), com GSAP sob demanda:
  *
- * - ideia 1, a estante responde ao mouse (home e estante de filtro): o livro sob o mouse desliza 16px
- *   para cima, como puxado pela ponta; os dois vizinhos, encostados nele, sobem só 2px, pelo atrito,
- *   e um pouco depois (D47: nada inclina, porque o topo de um livro inclinado entrava no vizinho). Ao
- *   sair, tudo desce e assenta com um quique curto. Embaixo, a legenda mostra o nome e a contagem. O
- *   foco do teclado faz o mesmo. Só com mouse; no toque, a lombada abre o livro direto (Gaveta.astro).
+ * - o toque na cabeça (home e estante de filtro; D49, protótipo D1): o livro sob o mouse tomba um nada
+ *   para a frente, 5°, pela borda de baixo, ainda apoiado na prateleira, e mostra a cabeça (o topo das
+ *   páginas). Os vizinhos não se mexem e nada flutua (antes, D47, o livro subia 16px e os vizinhos,
+ *   2px). Ao sair, ele cai de volta em pé. Embaixo, a legenda mostra o nome e a contagem. O foco do
+ *   teclado faz o mesmo. Só com mouse; no toque, a lombada abre o livro direto (Gaveta.astro, que faz o
+ *   gesto de tirar e guardar, estante-gesto.ts).
  *
- * - ideia 2, a estante em repouso (só a home, `emRepouso`): depois de 3s sem mouse, toque, tecla ou
- *   rolagem, com a estante ao menos metade visível e a aba ativa, a cada 4 a 7s um livro sorteado dá
- *   uma espiadinha (a faixa de luz que atravessava as lombadas saiu na D44). Qualquer interação para
- *   tudo na hora e devolve os livros ao lugar. Desligada com movimento reduzido.
+ * - em repouso (só a home, `emRepouso`): depois de 3s sem mouse, toque, tecla ou rolagem, com a estante
+ *   ao menos metade visível e a aba ativa, a cada 4 a 7s um livro sorteado é tocado na cabeça: tomba um
+ *   pouco e volta ao lugar. Qualquer interação para tudo na hora e devolve o livro ao lugar. Desligada
+ *   com movimento reduzido.
  *
- * A posição de repouso de cada lombada (o livro inclinado da home, 6°; a lombada escolhida no filtro,
- * 10px acima) é lida a cada movimento, porque o GSAP escreve o `transform` e o CSS não manda mais.
- * Só transformações. Com movimento reduzido, nada se move (a legenda continua).
+ * O livro fora da prateleira (na mão ou na gaveta) é da gaveta, e o vizinho tombado não espia: a
+ * estante viva não mexe neles. O repouso de cada lombada (a inclinada da home, 6°; a escolhida no
+ * filtro, 10px acima) fica com o GSAP, que escreve o `transform`, e o CSS não manda mais. Só
+ * transformações. Com movimento reduzido, nada se move (a legenda continua).
  */
+import { descanso, foraDaPrateleira } from "./estante-gesto";
 import { adiantar, carregarGsap, movimentoReduzido, temMouse, type GSAP } from "./gsap";
 
-const SOBE = 16;
-const VIZINHO_SOBE = 2;
-
-/** Onde a lombada descansa: inclinada (a última da coleção, na home) e escolhida (no filtro). */
-function repouso(el: HTMLElement) {
-  return {
-    y: el.getAttribute("aria-pressed") === "true" ? -10 : 0,
-    rotation: el.classList.contains("inclinada") ? 6 : 0,
-  };
-}
-
+/** Quanto o livro tocado na cabeça tomba para a frente. */
+const TOQUE = -5;
 const OCIOSO = 3000;
+
+const escolhida = (el: HTMLElement) => (el.getAttribute("aria-pressed") === "true" ? -10 : 0);
+
+const prontas = new WeakSet<HTMLElement>();
+/**
+ * Passa as lombadas da prateleira para o GSAP, uma vez (a gaveta chama também, antes do gesto): o CSS
+ * deixa de animar o transform (`.viva`), e cada lombada fica no repouso dela.
+ */
+export function prepararPrateleira(gsap: GSAP, prateleira: HTMLElement) {
+  if (prontas.has(prateleira)) return;
+  prontas.add(prateleira);
+  prateleira.classList.add("viva");
+  for (const el of prateleira.querySelectorAll<HTMLElement>(".lombada")) {
+    if (el.dataset.tombado !== undefined || foraDaPrateleira(el)) continue;
+    gsap.set(el, { ...descanso(el), y: escolhida(el) });
+  }
+}
 
 export function estanteViva(raiz: HTMLElement, { emRepouso = false } = {}) {
   const lombadas = [...raiz.querySelectorAll<HTMLElement>(".lombada")];
@@ -42,97 +53,83 @@ export function estanteViva(raiz: HTMLElement, { emRepouso = false } = {}) {
   };
 
   let gsap: GSAP | null = null;
-  let qy: ((v: number) => void)[] = [];
-  let qv: ((v: number) => void)[] = [];
-  let sobAtual: HTMLElement | null = null;
-
   const preparar = (g: GSAP) => {
     if (gsap) return;
     gsap = g;
-    raiz.classList.add("viva");
-    for (const el of lombadas) {
-      const r = repouso(el);
-      g.set(el, { ...r, transformOrigin: el.classList.contains("inclinada") ? "100% 100%" : "50% 100%" });
-    }
-    refazerQuick();
+    prepararPrateleira(g, raiz);
     // A lombada escolhida no filtro muda de repouso: vai para o lugar novo.
     new MutationObserver((mudancas) => {
       for (const m of mudancas) {
         const el = m.target as HTMLElement;
-        if (el !== sobAtual) g.to(el, { ...repouso(el), duration: 0.45, ease: "power3.out", overwrite: "auto" });
+        g.to(el, { y: escolhida(el), duration: 0.45, ease: "power3.out", overwrite: "auto" });
       }
     }).observe(raiz, { subtree: true, attributes: true, attributeFilter: ["aria-pressed"] });
   };
 
-  // Um tween com overwrite mata os quickTo das lombadas: refaz antes de usar de novo.
-  let quickVelho = true;
-  function refazerQuick() {
-    if (!gsap || !quickVelho) return;
-    quickVelho = false;
-    qy = lombadas.map((el) => gsap!.quickTo(el, "y", { duration: 0.42, ease: "power3.out" }));
-    // Os vizinhos vão atrás, mais devagar: o atrito leva um instante para puxar.
-    qv = lombadas.map((el) => gsap!.quickTo(el, "y", { duration: 0.7, ease: "power2.out" }));
+  // ---------- o toque na cabeça ----------
+  let sob: HTMLElement | null = null;
+
+  /** O livro tocado tomba 5° para a frente; o que estava tocado cai de volta em pé. */
+  function tocar(el: HTMLElement | null) {
+    if (el === sob) return;
+    const antes = sob;
+    sob = el;
+    mostrarLegenda(el);
+    if (!gsap || movimentoReduzido.matches) return;
+    if (antes && !foraDaPrateleira(antes)) gsap.to(antes, { rotationX: 0, duration: 0.3, ease: "power2.in", overwrite: "auto" });
+    if (el && !foraDaPrateleira(el)) gsap.to(el, { rotationX: TOQUE, duration: 0.3, ease: "power2.out", overwrite: "auto" });
   }
 
-  function mover(x: number) {
-    if (!gsap) return;
-    refazerQuick();
-    const i = lombadas.findIndex((el) => {
-      const caixa = el.getBoundingClientRect();
-      return x >= caixa.left - 3 && x <= caixa.right + 3;
-    });
-    const sob = i >= 0 ? lombadas[i] : null;
-    lombadas.forEach((el, n) => {
-      const r = repouso(el);
-      // Só sobe, na vertical; o inclinado continua apoiado no aparador, no mesmo ângulo.
-      if (n === i) qy[n](r.y - SOBE);
-      else if (i >= 0 && Math.abs(n - i) === 1) qv[n](r.y - VIZINHO_SOBE);
-      else qv[n](r.y);
-    });
-    if (sob !== sobAtual) {
-      sobAtual = sob;
-      mostrarLegenda(sob);
-    }
+  /** A lombada sob o mouse, pela coluna dela (com 3px de folga, para o vão entre dois livros não piscar). */
+  function naColuna(x: number) {
+    return (
+      lombadas.find((el) => {
+        if (el.classList.contains("segurando")) return false;
+        const caixa = el.getBoundingClientRect();
+        return x >= caixa.left - 3 && x <= caixa.right + 3;
+      }) ?? null
+    );
   }
 
-  function soltar() {
-    sobAtual = null;
-    mostrarLegenda(null);
-    if (!gsap) return;
-    // Desce e assenta: um quique curto, de livro que bate na prateleira (sem balançar de lado).
-    for (const el of lombadas) gsap.to(el, { ...repouso(el), duration: 0.55, ease: "bounce.out", overwrite: true });
-    quickVelho = true;
-  }
-
-  // ---------- ideia 2: em repouso ----------
+  // ---------- em repouso ----------
   let relogio = 0;
   let visivel = false;
   let ativo = false;
-  let espiada: gsap.core.Tween | null = null;
+  let proxima: gsap.core.Tween | null = null;
+  let espiada: gsap.core.Timeline | null = null;
+  let espiado: HTMLElement | null = null;
 
   function iniciarRepouso() {
-    if (!gsap || ativo || !visivel || document.hidden || movimentoReduzido.matches || sobAtual) return;
+    if (!gsap || ativo || !visivel || document.hidden || movimentoReduzido.matches || sob) return;
     const g = gsap;
     ativo = true;
     const espiar = () => {
-      const el = lombadas[Math.floor(Math.random() * lombadas.length)];
-      const r = repouso(el);
-      g.timeline()
-        .to(el, { y: r.y - 10, duration: 0.7, ease: "power2.out" })
-        .to(el, { y: r.y, duration: 0.55, ease: "bounce.out" }, "+=0.6");
-      quickVelho = true;
-      espiada = g.delayedCall(4 + Math.random() * 3, espiar);
+      const livres = lombadas.filter((el) => !foraDaPrateleira(el) && el.dataset.tombado === undefined);
+      const el = livres[Math.floor(Math.random() * livres.length)];
+      if (el) {
+        espiado = el;
+        espiada = g
+          .timeline()
+          .to(el, { rotationX: -7, duration: 0.55, ease: "power2.out" })
+          .to(el, { rotationX: 0, duration: 0.3, ease: "power2.in" }, "+=0.5")
+          .to(el, { rotationX: -0.8, duration: 0.07, ease: "power1.out" })
+          .to(el, { rotationX: 0, duration: 0.12, ease: "power1.in" });
+      }
+      proxima = g.delayedCall(4 + Math.random() * 3, espiar);
     };
-    espiada = g.delayedCall(1.6, espiar);
+    proxima = g.delayedCall(1.6, espiar);
   }
 
   function pararRepouso() {
     if (!ativo || !gsap) return;
     ativo = false;
+    proxima?.kill();
     espiada?.kill();
-    espiada = null;
-    if (!sobAtual) for (const el of lombadas) gsap.to(el, { ...repouso(el), duration: 0.35, overwrite: true });
-    quickVelho = true;
+    proxima = espiada = null;
+    if (espiado && espiado !== sob && !foraDaPrateleira(espiado) && espiado.dataset.tombado === undefined) {
+      gsap.to(espiado, { rotationX: 0, duration: 0.25, ease: "power2.in", overwrite: "auto" });
+    }
+    espiado = null;
   }
 
   // Qualquer interação para tudo na hora e recomeça a contar os 3 segundos.
@@ -166,34 +163,29 @@ export function estanteViva(raiz: HTMLElement, { emRepouso = false } = {}) {
   for (const el of lombadas) {
     el.addEventListener("focus", () => {
       if (!el.matches(":focus-visible")) return;
-      const caixa = el.getBoundingClientRect();
       if (movimentoReduzido.matches) return mostrarLegenda(el);
       carregarGsap().then((g) => {
         preparar(g);
-        if (document.activeElement === el) mover(caixa.left + caixa.width / 2);
+        if (document.activeElement === el) tocar(el);
       });
     });
     el.addEventListener("blur", (e) => {
-      // Indo para outra lombada, quem cuida é o foco dela: devolver tudo ao lugar atropelaria o movimento.
+      // Indo para outra lombada, quem cuida é o foco dela.
       if (lombadas.includes(e.relatedTarget as HTMLElement)) return;
-      if (gsap && !movimentoReduzido.matches) soltar();
-      else mostrarLegenda(null);
+      tocar(null);
     });
   }
 
   raiz.addEventListener("pointermove", (e) => {
     if (e.pointerType !== "mouse") return;
-    if (movimentoReduzido.matches) {
-      mostrarLegenda((e.target as HTMLElement).closest<HTMLElement>(".lombada"));
+    if (!gsap && !movimentoReduzido.matches) {
+      carregarGsap().then(preparar);
       return;
     }
-    if (gsap) mover(e.clientX);
-    else carregarGsap().then(preparar);
+    tocar(naColuna(e.clientX));
   });
   raiz.addEventListener("pointerleave", (e) => {
-    if (e.pointerType !== "mouse") return;
-    if (movimentoReduzido.matches) mostrarLegenda(null);
-    else soltar();
+    if (e.pointerType === "mouse") tocar(null);
   });
 
   if (temMouse.matches && !movimentoReduzido.matches) adiantar(raiz, () => carregarGsap().then(preparar));

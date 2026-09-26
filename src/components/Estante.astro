@@ -4,9 +4,11 @@
  * os livros de série, sobre a prateleira (docs/capas/CAPAS.md). Cada lombada é um link para a página
  * do livro (funciona sem JS).
  *
- * - "estante" (a home): com JS, a lombada abre o livro na gaveta (Gaveta.astro); o último livro da
- *   coleção fica inclinado, apoiado no alto do aparador.
- * Com mouse, a estante responde a ele (D40, src/scripts/estante-viva.ts), com a legenda embaixo.
+ * - "estante" (a home): com JS, a lombada abre o livro na gaveta (Gaveta.astro), com o gesto de tirar
+ *   o livro pela cabeça (D49, src/scripts/estante-gesto.ts); o último livro da coleção fica inclinado,
+ *   apoiado no alto do aparador.
+ * Com mouse, a estante responde a ele (D40, D49, src/scripts/estante-viva.ts): o livro tocado tomba um
+ * nada para a frente e mostra a cabeça (o topo das páginas, .cabeca), com a legenda embaixo.
  *
  * - "filtro" (o arquivo e as tags, D33): menor, sem o livro inclinado, só com os livros que têm
  *   artigos na página; com JS, cada lombada filtra a lista (ListaFiltrada.astro). O número da lombada
@@ -73,6 +75,7 @@ const conta = (l: Livro) => {
           data-conta={conta(l)}
           style={estilo(l)}
         >
+          <span class="cabeca" aria-hidden="true" />
           <MioloLombada livro={l} />
         </Lombada>
       ))
@@ -93,6 +96,7 @@ const conta = (l: Livro) => {
           data-conta={conta(l)}
           style={estilo(l)}
         >
+          <span class="cabeca" aria-hidden="true" />
           <MioloLombada livro={l} />
         </Lombada>
       ))

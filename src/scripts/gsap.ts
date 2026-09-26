@@ -10,19 +10,28 @@ import type { gsap as Gsap } from "gsap";
 export type GSAP = typeof Gsap;
 
 let nucleo: Promise<GSAP> | undefined;
-let arrastar: Promise<{ gsap: GSAP; Draggable: typeof import("gsap/Draggable").Draggable }> | undefined;
+let arrastar:
+  | Promise<{
+      gsap: GSAP;
+      Draggable: typeof import("gsap/Draggable").Draggable;
+      InertiaPlugin: typeof import("gsap/InertiaPlugin").InertiaPlugin;
+    }>
+  | undefined;
 
 export function carregarGsap(): Promise<GSAP> {
   nucleo ??= import("gsap").then((m) => m.gsap);
   return nucleo;
 }
 
-/** O GSAP com Draggable e InertiaPlugin (o livro ampliado, que gira com embalo). */
+/**
+ * O GSAP com Draggable e InertiaPlugin (o livro ampliado, que gira com embalo, e o livro puxado pela
+ * cabeça na estante da home, D49).
+ */
 export function carregarArrastar() {
   arrastar ??= Promise.all([carregarGsap(), import("gsap/Draggable"), import("gsap/InertiaPlugin")]).then(
     ([gsap, { Draggable }, { InertiaPlugin }]) => {
       gsap.registerPlugin(Draggable, InertiaPlugin);
-      return { gsap, Draggable };
+      return { gsap, Draggable, InertiaPlugin };
     },
   );
   return arrastar;

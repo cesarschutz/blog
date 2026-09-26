@@ -217,18 +217,22 @@ Referência: aba "Home" do protótipo.
     a faixa no destaque no topo, o emblema, o título com o complemento em itálico e o número.
   - O último livro da coleção fica inclinado 6°, apoiado no alto do aparador, **parado** (D35: ele
     tombava na primeira visita da sessão, e isso saiu porque na home nenhum livro cai).
-  - Ao passar o mouse, a lombada sobe alguns pixels.
+  - Ao passar o mouse, o livro tomba um nada para a frente, pela borda de baixo, e mostra a cabeça (o
+    topo das páginas): a estante de verdade (D49), em que nada flutua.
   - Na home, a lombada abre a gaveta; dentro dela, clicar no livro (ou na lupa) o amplia, e o botão
     "Ver o livro" leva à página do livro (D43, no lugar da capa como link da D38). Nas outras
     páginas, a lombada leva ao livro.
-  - **Tirar um livro da estante** (D43, no lugar do livro que abria da D40): o livro sai da
-    estante (o lugar dele fica **vazio**), sobe e vem para a gaveta, abaixo da estante, girando da
-    lombada até **38°** da frente (mais de lado que no resto do site), **fechado**. Ao lado volta o
-    sumário de antes da D40, **sem o filtro**: "Neste livro" ("Ordem de leitura" nas séries), o nome
-    e a contagem, os botões **Ver o livro** ("Ver a série"; o principal, com seta) e **Fechar livro**,
-    e os artigos por ano, com o pontilhado e a data. **Fechar livro**, Esc ou um clique no lugar vazio fazem o caminho de volta, 1,5× mais
-    rápido; **trocar de livro** fecha o atual antes de abrir o próximo. No celular, o sumário vai
-    para baixo do livro.
+  - **Tirar um livro da estante** (D43, D49, no lugar do livro que abria da D40): como numa estante
+    de verdade, com o dedo na cabeça do livro. Ele tomba sobre a borda de baixo dentro do próprio vão,
+    vem para perto do leitor (o vizinho da direita, sem apoio, tomba até encostar no outro) e só então
+    anda até a gaveta, abaixo da estante, girando da lombada até **38°** da frente (mais de lado que
+    no resto do site), **fechado**; o lugar dele fica **vazio**. Com mouse, dá também para puxar a
+    cabeça do livro e arrastá-lo até a gaveta. Ao lado volta o sumário de antes da D40, **sem o
+    filtro**: "Neste livro" ("Ordem de leitura" nas séries), o nome e a contagem, os botões **Ver o
+    livro** ("Ver a série"; o principal, com seta) e **Fechar livro**, e os artigos por ano, com o
+    pontilhado e a data. **Fechar livro**, Esc ou um clique no lugar vazio guardam o livro: ele volta
+    até a frente do lugar dele, entra empurrando o vizinho de volta e assenta. **Trocar de livro**
+    guarda o aberto antes de tirar o próximo. No celular, o sumário vai para baixo do livro.
   - No celular, as lombadas diminuem para caber todas na largura.
 - **Destaque** (só na primeira página): o post mais recente, com a ilustração (o painel acompanha a
   altura do texto; até 960px, vai para cima), categoria, data e tempo de leitura com os ícones, o
@@ -380,8 +384,10 @@ Referência: aba "Artigo" do protótipo.
   série, que leva à página do livro; no desktop com o sumário lateral, ele fica embaixo do sumário,
   D39); depois a navegação **Artigo anterior / Próximo artigo** (ou anterior/próxima dentro da
   série), com o título inteiro. Sem bloco de "artigos relacionados".
-- Botão "voltar ao topo" depois de uma tela de rolagem. Comentários (Giscus) e estatísticas
-  (GoatCounter) continuam opcionais e desligados.
+- Botão "voltar ao topo" depois de uma tela de rolagem, **em toda página longa** (D49), não só no
+  artigo. O sumário acompanha a leitura (D49): fio de tinta, visto nas seções lidas e marca-texto na
+  seção atual; abaixo de 1300px, o cabeçalho mostra "N de M · seção" e abre o sumário numa folha.
+  Comentários (Giscus) e estatísticas (GoatCounter) continuam opcionais e desligados.
 - Imagens do corpo abrem num visor sobre a página escurecida (D33), com fechar, setas e contador na
   apresentação. Tabelas rolam na horizontal no celular.
   Matemática com KaTeX, carregado só em posts que usam.

@@ -21,31 +21,74 @@
   min-width: 0;
 }
 
+/*
+ * A perspectiva do leitor (D49): o olho na altura do topo dos livros mais altos, a 1400 de distância
+ * na estante cheia (0,42px por unidade), e mais perto na estante menor, na mesma proporção. O livro que
+ * tomba para a frente mostra a cabeça (estante-gesto.ts).
+ */
 .prateleira-livros {
   --u: min(0.42px, 100cqw / var(--natural));
   display: flex;
   align-items: flex-end;
   gap: calc(6 * var(--u));
   padding: calc(12 * var(--u) + 8px) calc(16 * var(--u)) 0;
+  perspective: calc(3333 * var(--u));
+  perspective-origin: 50% 45%;
 }
 
+/*
+ * A lombada gira pela borda de baixo, apoiada na prateleira: o toque na cabeça (o mouse em cima) tomba
+ * o livro um nada para a frente, sem tirá-lo do lugar (D49; antes, D47, ele subia).
+ */
 .lombada {
   position: relative;
   flex: none;
   width: calc(var(--w) * var(--u));
   height: calc(var(--h) * var(--u));
   text-decoration: none;
-  transform: rotate(0deg) translateY(0);
+  transform: rotate(0deg) rotateX(0deg);
+  transform-origin: 50% 100%;
+  transform-style: preserve-3d;
   transition:
-    transform 0.38s cubic-bezier(0.2, 0.75, 0.2, 1),
+    transform 0.3s cubic-bezier(0.2, 0.75, 0.2, 1),
     opacity 0.25s,
     filter 0.25s;
 }
 
 @media (hover: hover) {
   .lombada:hover {
-    transform: rotate(0deg) translateY(-6px);
+    transform: rotate(0deg) rotateX(-5deg);
   }
+}
+
+/*
+ * A cabeça do livro (D49): o topo das páginas entre as duas capas, deitado para trás a partir do alto
+ * da lombada, com a profundidade do livro (480 de 720 da altura). O olho está abaixo dela, então só
+ * aparece quando o livro tomba para a frente.
+ */
+.cabeca {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  width: 100%;
+  height: calc(var(--h) * 0.6667 * var(--u));
+  border-radius: 1px;
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--livro-papel), black 18%) 0 calc(4 * var(--u)),
+      transparent calc(4 * var(--u)) calc(100% - 4 * var(--u)),
+      color-mix(in oklab, var(--livro-papel), black 18%) calc(100% - 4 * var(--u))
+    ),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--livro-papel), black 8%) 0 1px,
+      color-mix(in oklab, var(--livro-papel), white 40%) 1px 3px
+    );
+  transform: rotateX(90deg);
+  transform-origin: 50% 100%;
+  backface-visibility: hidden;
+  pointer-events: none;
 }
 
 /*
@@ -56,6 +99,25 @@
   transition:
     opacity 0.25s,
     filter 0.25s;
+}
+
+/*
+ * O livro na mão (D49): na frente dos vizinhos e sem transição nenhuma, para sumir e voltar no mesmo
+ * instante em que o livro 3D da gaveta toma o lugar dele (e o contrário). O link não é arrastado pelo
+ * navegador: quem arrasta é o GSAP (Gaveta.astro).
+ */
+.prateleira-livros.viva .lombada.segurando {
+  z-index: 5;
+  transition: none;
+}
+
+.prateleira-livros.arrasta .lombada {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+.prateleira-livros.arrasta .lombada.segurando {
+  cursor: grabbing;
 }
 
 .legenda-estante {
@@ -85,17 +147,13 @@
  * topo apoiado no alto do aparador.
  */
 .lombada.inclinada {
-  transform: rotate(6deg) translateY(0);
+  transform: rotate(6deg) rotateX(0deg);
   transform-origin: 100% 100%;
-}
-
-.lombada.inclinada.em-pe {
-  transform: rotate(0deg) translateY(0);
 }
 
 @media (hover: hover) {
   .lombada.inclinada:hover {
-    transform: rotate(6deg) translateY(-4px);
+    transform: rotate(6deg) rotateX(-5deg);
   }
 }
 
@@ -109,11 +167,11 @@
 
 @media (hover: hover) {
   .lombada.retirado:hover {
-    transform: rotate(0deg) translateY(0);
+    transform: rotate(0deg) rotateX(0deg);
   }
 
   .lombada.inclinada.retirado:hover {
-    transform: rotate(6deg) translateY(0);
+    transform: rotate(6deg) rotateX(0deg);
   }
 }
 
