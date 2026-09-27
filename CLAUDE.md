@@ -82,6 +82,11 @@ As peças usam os **papéis de cor** de `livro.css` (`--cima`, `--baixo`, `--rev
 cores cruas `--livro-*`. Os livros **não mudam com o tema** (D39): a categoria sempre com o papel em
 cima e a cor do livro embaixo, a série sempre clara. Para conferir, `/amostra/livros/` (só no dev).
 
+**Toda tag tem um ícone** (D52), no traço dos ícones das lombadas: `docs/capas/tags/<slug>.svg`,
+escrito em `scripts/desenho/tags.mjs` e embutido por `src/lib/tags-svg.ts` (`IconeTag`, `PilulaTag`).
+Tag nova num post = ícone novo, pela seção "Tags" do `CAPAS.md`; sem ele, o build quebra. Para
+conferir, `/amostra/tags/` (só no dev).
+
 A **marca** (D33) é o livro "cs": `Marca.astro` com o traçado de `src/lib/marca.ts`. Esse arquivo, o
 `favicon.svg`, o `favicon.ico` e o `apple-touch-icon.png` saem de `node scripts/marca.mjs` (usa o
 `pdftocairo`, do poppler do Homebrew, para tirar o contorno das letras da própria fonte). Não edite à
@@ -143,6 +148,7 @@ node scripts/desenho/validar.mjs [slug]   # regras da ilustração e das lousas
 node scripts/desenho/centrar.mjs <slug>   # centra os recortes no desenho (dev no ar)
 node scripts/desenho/render.mjs [slug]    # folha da ilustração, claro e escuro (dev no ar)
 node scripts/desenho/java.mjs             # as ilustrações da série Java (padrão fixo, D17)
+node scripts/desenho/tags.mjs [slug]      # os ícones das tags (docs/capas/tags/, D52)
 node scripts/marca.mjs                    # a marca e os ícones do navegador (precisa do pdftocairo)
 ```
 
@@ -150,7 +156,8 @@ A porta 4321 desta máquina está ocupada por outra ferramenta do Cesar, que nã
 Astro usa a próxima livre (4322). Só no dev: `/amostra/` (tokens, fontes, avisos),
 `/amostra/markdown/` (recursos de Markdown, de `src/amostra/recursos.md`), `/amostra/caneta/` (os 20
 tipos da caneta, de `src/amostra/caneta.md`), `/amostra/desenhos/` e
-`/amostra/livros/` (as capas planas, para comparar com `docs/capas/referencia/`).
+`/amostra/livros/` (as capas planas, para comparar com `docs/capas/referencia/`) e `/amostra/tags/`
+(os ícones das tags, lado a lado e da pílula à marca d'água).
 
 Medição da busca (D2): `scripts/bench-busca/` (construir, conferir, medir), com o dev parado.
 
@@ -169,7 +176,8 @@ docs/estado.md           painel: fase, pronto, próximos passos, perguntas
 docs/decisoes.md         registro de decisões (data, decisão, motivo, alternativas)
 docs/estilo-desenho.md   estilo das ilustrações e das lousas
 docs/marcacoes.md        guia vivo da caneta do caderno: 20 tipos, limites, tela, ajustes do Cesar (D48)
-docs/capas/              os livros: CAPAS.md (regra), livros.json, cores.js, desenhos, ícones, referência
+docs/capas/              os livros: CAPAS.md (regra), livros.json, cores.js, desenhos, ícones, referência;
+                         tags/ (um ícone por tag, D52)
 docs/virada.md           plano para o domínio passar ao blog novo (só com OK do Cesar)
 docs/referencias/        protótipos aprovados
 src/content/posts/       posts; nome do arquivo = slug da URL

@@ -1,0 +1,172 @@
+---
+/**
+ * Folha de conferência dos ícones das tags (D52, B11): os desenhos de docs/capas/tags/ lado a lado,
+ * no tamanho do cartão de /tags/, e cada um em cinco tamanhos (da pílula à marca d'água), para ver se
+ * o traço e o peso estão iguais em todos. Aponta a tag de post sem ícone e o ícone sem tag. Só no
+ * `npm run dev` (/amostra/tags/); ?tema=escuro troca o tema.
+ */
+import Base from "../../layouts/Base.astro";
+import IconeTag from "../../components/IconeTag.astro";
+import { getTags } from "../../lib/posts";
+import { slugDaTag, temIconeDaTag } from "../../lib/tags-svg";
+
+export function getStaticPaths() {
+  return import.meta.env.DEV ? [{ params: { amostra: "amostra" } }] : [];
+}
+
+const tags = await getTags();
+const fontes = import.meta.glob<string>("../../../docs/capas/tags/*.svg", { query: "?raw", import: "default", eager: true });
+// O que o desenho é, do comentário de cada arquivo ("Ícone da tag Spring: broto com duas folhas.").
+const oQueE = (nome: string) =>
+  fontes[`../../../docs/capas/tags/${slugDaTag(nome)}.svg`]?.match(/<!-- Ícone da tag [^:]+: ([^.]+)\./)?.[1] ?? "";
+const comIcone = tags.filter((t) => temIconeDaTag(t.nome));
+const semIcone = tags.filter((t) => !temIconeDaTag(t.nome));
+const usados = new Set(tags.map((t) => slugDaTag(t.nome)));
+const sobrando = Object.keys(fontes)
+  .map((f) => f.split("/").pop()!.replace(/\.svg$/, ""))
+  .filter((s) => !usados.has(s));
+const tamanhos = [18, 28, 44, 72, 160];
+---
+
+<Base titulo="Folha das tags">
+  <script is:inline slot="head">
+    (() => {
+      const tema = new URLSearchParams(location.search).get("tema");
+      if (tema) document.documentElement.dataset.theme = tema === "escuro" ? "dark" : "light";
+    })();
+  </script>
+  <div class="wrap conferencia-tags">
+    <h1>Folha das tags</h1>
+    <p class="nota">
+      Só no dev. {comIcone.length} de {tags.length} tags com ícone, em docs/capas/tags/ (gerados por
+      scripts/desenho/tags.mjs). ?tema=escuro troca o tema.
+    </p>
+    {
+      semIcone.length > 0 && (
+        <p class="falta">
+          Sem ícone (o build quebra): {semIcone.map((t) => `${t.nome} (docs/capas/tags/${slugDaTag(t.nome)}.svg)`).join(", ")}.
+        </p>
+      )
+    }
+    {sobrando.length > 0 && <p class="falta">Ícone sem tag em nenhum post: {sobrando.join(", ")}.</p>}
+
+    <h2>Lado a lado</h2>
+    <ul class="grade">
+      {
+        comIcone.map((t) => (
+          <li class="folha">
+            <IconeTag nome={t.nome} class="grande" />
+            <strong>#{t.nome}</strong>
+            <span>{oQueE(t.nome)}</span>
+            <code>{slugDaTag(t.nome)}.svg</code>
+          </li>
+        ))
+      }
+    </ul>
+
+    <h2>Da pílula à marca d'água</h2>
+    <ul class="tamanhos">
+      {
+        comIcone.map((t) => (
+          <li>
+            {tamanhos.map((px) => (
+              <span style={`--px:${px}px`}>
+                <IconeTag nome={t.nome} class={px > 100 ? "marca" : undefined} />
+              </span>
+            ))}
+            <small>#{t.nome}</small>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Base>
+
+<style>
+  .conferencia-tags {
+    padding-block: 32px 64px;
+  }
+
+  .nota {
+    color: var(--ink-2);
+  }
+
+  .falta {
+    padding: 10px 14px;
+    border: 1px solid var(--aviso-cuidado);
+    border-radius: 10px;
+    color: var(--aviso-cuidado);
+  }
+
+  .grade {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+    gap: 16px;
+    margin: 16px 0 48px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .grade li {
+    --papel-da-tag: color-mix(in oklab, var(--ink) 6%, var(--paper-hi));
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    padding: 18px 12px 14px;
+    text-align: center;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+
+  .grade :global(.grande) {
+    width: 96px;
+    height: 96px;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+
+  .grade strong {
+    font-family: var(--font-titulo);
+    font-size: 17px;
+    color: var(--ink);
+  }
+
+  .tamanhos {
+    display: grid;
+    gap: 12px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tamanhos li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 22px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink);
+  }
+
+  .tamanhos span {
+    width: var(--px);
+    height: var(--px);
+  }
+
+  .tamanhos span :global(.icone-tag) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .tamanhos :global(.marca) {
+    --traco-tag: 2.2px;
+    opacity: 0.35;
+  }
+
+  .tamanhos small {
+    font-family: var(--font-ui);
+    color: var(--ink-2);
+  }
+</style>

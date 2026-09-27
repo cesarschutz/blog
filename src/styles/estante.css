@@ -252,7 +252,7 @@
  */
 .estante-filtro .pe-estante {
   display: grid;
-  min-height: 1.6em;
+  min-height: 26px;
   margin-top: 10px;
   font-family: var(--font-ui);
   font-size: 13.5px;

@@ -1,26 +1,26 @@
 ---
 /**
- * Tags (/tags/, D39): cada tag numa folha, das mais usadas às menos usadas, com a contagem, os
- * livros em que ela aparece (o quadradinho na cor de cada um) e os três artigos mais recentes.
+ * Tags (/tags/, D39, D52): cada tag numa folha, das mais usadas às menos usadas. No alto do cartão
+ * (D52, B11), o nome, a contagem e os livros de onde vêm os artigos, numa estante em miniatura (as
+ * lombadas na ordem da coleção, com o papel em cima e a cor do livro embaixo, como as de verdade); ao
+ * lado, o ícone da tag (docs/capas/tags/), que inclina um nada quando o mouse passa pelo nome ou por
+ * ele. Embaixo, os três artigos mais recentes e "Todos os N".
  */
 import Base from "../../layouts/Base.astro";
 import CabecalhoPagina from "../../components/CabecalhoPagina.astro";
+import IconeTag from "../../components/IconeTag.astro";
 import { ICONES } from "../../lib/icones";
+import { coresDoLivroCss, montarLivros } from "../../lib/estante";
 import { getTags, urlTag, type Resumo } from "../../lib/posts";
 import { tituloComQuebras } from "../../lib/formato";
 
 const tags = await getTags();
+const colecao = await montarLivros();
 const recentes = (posts: Resumo[]) => [...posts].sort((a, b) => b.publicado.getTime() - a.publicado.getTime()).slice(0, 3);
-// Os livros da tag, do que tem mais artigos com ela para o que tem menos.
-const livrosDa = (posts: Resumo[]) => {
-  const mapa = new Map<string, { nome: string; cor: string; n: number }>();
-  for (const p of posts) {
-    const l = mapa.get(p.livro) ?? { nome: p.rotulo, cor: p.cor, n: 0 };
-    l.n++;
-    mapa.set(p.livro, l);
-  }
-  return [...mapa.values()].sort((a, b) => b.n - a.n);
-};
+// Os livros da tag, na ordem da estante, com quantos artigos da tag cada um tem.
+const livrosDa = (posts: Resumo[]) =>
+  colecao.map((l) => ({ livro: l, n: posts.filter((p) => p.livro === l.id).length })).filter((x) => x.n > 0);
+const palavra = (n: number) => (n === 1 ? "artigo" : "artigos");
 ---
 
 <Base titulo="Tags" descricao="Todas as tags do blog de Cesar Schutz, com o número de artigos de cada uma." atual="tags">
@@ -33,24 +33,35 @@ const livrosDa = (posts: Resumo[]) => {
           const livros = livrosDa(t.posts);
           return (
             <li class="tag folha">
-              <h2>
-                <a href={urlTag(t.nome)}>#{t.nome}</a>
-              </h2>
-              <p class="dados">
-                <span>
-                  {n} {n === 1 ? "artigo" : "artigos"}
-                </span>
-                <span class="livros" role="list" aria-label="Livros">
-                  {livros.map((l) => (
-                    <span role="listitem" class="livro" style={`--cor:${l.cor}`} title={`${l.nome}: ${l.n}`}>
-                      <span class="quadradinho" aria-hidden="true" />
-                      <span class="sr">
-                        {l.nome}, {l.n}
-                      </span>
+              <div class="cabeca-tag">
+                <div class="nome-tag">
+                  <h2>
+                    <a href={urlTag(t.nome)}>#{t.nome}</a>
+                  </h2>
+                  <p class="dados">
+                    <span>
+                      {n} {palavra(n)}
                     </span>
-                  ))}
-                </span>
-              </p>
+                    <span class="livros" role="list" aria-label="Livros">
+                      {livros.map(({ livro, n: k }) => (
+                        <span
+                          role="listitem"
+                          class:list={["mini-lombada", { "de-serie": livro.serie }]}
+                          style={`${coresDoLivroCss(livro)};--h:${livro.emPe.altura}`}
+                          title={`${livro.nome}: ${k} ${palavra(k)}`}
+                        >
+                          <span class="sr">
+                            {livro.nome}, {k} {palavra(k)}
+                          </span>
+                        </span>
+                      ))}
+                    </span>
+                  </p>
+                </div>
+                <a class="icone-link" href={urlTag(t.nome)} tabindex="-1" aria-hidden="true">
+                  <IconeTag nome={t.nome} class="icone-cartao" />
+                </a>
+              </div>
               <ol class="recentes">
                 {recentes(t.posts).map((p) => (
                   <li>
@@ -85,13 +96,31 @@ const livrosDa = (posts: Resumo[]) => {
   .tag {
     display: flex;
     flex-direction: column;
-    padding: 18px 20px 16px;
+    padding: 20px 20px 16px 22px;
+  }
+
+  /* O alto do cartão: o nome e os dados à esquerda, o ícone à direita, os dois na mesma linha de base. */
+  .cabeca-tag {
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+    padding-bottom: 14px;
+  }
+
+  .nome-tag {
+    flex: 1;
+    min-width: 0;
   }
 
   h2 {
     margin: 0;
     font-size: 21px;
-    line-height: 1.25;
+    line-height: 1.2;
+    overflow-wrap: break-word;
+    /* Nome longo de uma palavra só (Microsserviços) quebra com hífen, e só quando não cabe; sem o
+       balanceamento dos títulos, que hifenizava "Virtual" para igualar as linhas. */
+    text-wrap: wrap;
+    hyphens: auto;
   }
 
   h2 a {
@@ -99,36 +128,75 @@ const livrosDa = (posts: Resumo[]) => {
     text-decoration: none;
   }
 
-  h2 a:hover {
+  .cabeca-tag:has(a:hover) h2 a,
+  h2 a:focus-visible {
     color: var(--acento);
   }
 
   .dados {
     display: flex;
     flex-wrap: wrap;
+    align-items: flex-end;
     gap: 6px 12px;
-    align-items: center;
-    margin: 4px 0 0;
+    margin: 8px 0 0;
     font-family: var(--font-ui);
     font-size: 14px;
+    line-height: 1.2;
     color: var(--ink-2);
   }
 
+  /*
+   * A estante em miniatura: uma lombada por livro, na ordem da coleção, com a altura proporcional à de
+   * verdade (livros.json) e o papel em cima (a parte de cima da lombada, 400 da base fica na cor), sobre
+   * uma tábua fina. Os livros não mudam com o tema (D39).
+   */
   .livros {
     display: inline-flex;
-    gap: 4px;
+    align-items: flex-end;
+    gap: 2px;
+    padding: 0 3px;
+    border-bottom: 2px solid var(--tabua);
   }
 
-  .quadradinho {
+  .mini-lombada {
     display: block;
-    width: 9px;
-    height: 9px;
-    border-radius: 2px;
-    background: color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro));
+    width: 6px;
+    height: calc(var(--h) * 0.03px);
+    border-top: calc((var(--h) - 400) * 0.03px) solid var(--livro-papel);
+    border-radius: 1px 1px 0 0;
+    background: var(--livro-cor);
+  }
+
+  .mini-lombada.de-serie {
+    border-top: 2px solid var(--livro-destaque);
+    background: var(--livro-papel);
+  }
+
+  /* O ícone da tag: leva à tag como o nome (o link é um só para o leitor de tela e o teclado). */
+  .icone-link {
+    flex: none;
+    display: block;
+    color: var(--ink);
+  }
+
+  .tag :global(.icone-cartao) {
+    --traco-tag: 1.25px;
+    --papel-da-tag: color-mix(in oklab, var(--ink) 6%, var(--paper-hi));
+    width: 68px;
+    height: 68px;
+    margin: -6px -4px -2px 0;
+    transform-origin: 50% 90%;
+    transition: transform 0.45s cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  @media (hover: hover) {
+    .cabeca-tag:has(a:hover) :global(.icone-cartao) {
+      transform: rotate(-6deg);
+    }
   }
 
   .recentes {
-    margin: 12px 0 0;
+    margin: 0;
     padding: 0;
     list-style: none;
     border-top: 1px solid var(--rule);
@@ -155,6 +223,7 @@ const livrosDa = (posts: Resumo[]) => {
     display: inline-flex;
     gap: 4px;
     align-items: center;
+    align-self: flex-start;
     margin-top: auto;
     padding-top: 10px;
     font-family: var(--font-ui);
@@ -170,5 +239,27 @@ const livrosDa = (posts: Resumo[]) => {
     stroke-width: 1.8;
     stroke-linecap: round;
     stroke-linejoin: round;
+  }
+
+  /* No celular estreito, o ícone e o nome encolhem um pouco, para "#Microsserviços" caber inteiro. */
+  @media (max-width: 400px) {
+    .tag {
+      padding-inline: 18px 16px;
+    }
+
+    .tag :global(.icone-cartao) {
+      width: 54px;
+      height: 54px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tag :global(.icone-cartao) {
+      transition: none;
+    }
+
+    .cabeca-tag:has(a:hover) :global(.icone-cartao) {
+      transform: none;
+    }
   }
 </style>

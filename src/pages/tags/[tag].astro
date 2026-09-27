@@ -4,12 +4,16 @@
  * de filtro (os livros por onde a tag passa, com o número de artigos dela em cada um) e as tags que
  * mais aparecem junto com ela; embaixo, os artigos no formato da home, com Lista / Cards
  * (ListaFiltrada). Na troca de página (D51, protótipo 05, "desfile direto"), as folhas chegam do fundo
- * com 60 ms entre elas, e não 85: a página de uma tag é a que tem mais cards.
+ * com 60 ms entre elas, e não 85: a página de uma tag é a que tem mais cards. No topo (D52, B11), o
+ * ícone da tag grande como marca d'água, na tinta bem suave, cortado pela borda da folha, no vão entre
+ * o texto e a estante (como a marca d'água das categorias, D39, D50); as tags vizinhas com o ícone.
  */
 import Base from "../../layouts/Base.astro";
 import { paginaDeColecao } from "../../lib/seo";
 import ListaFiltrada from "../../components/ListaFiltrada.astro";
-import { getTags, urlTag, type Grupo } from "../../lib/posts";
+import IconeTag from "../../components/IconeTag.astro";
+import PilulaTag from "../../components/PilulaTag.astro";
+import { getTags, type Grupo } from "../../lib/posts";
 import { url } from "../../lib/url";
 
 export async function getStaticPaths() {
@@ -37,16 +41,15 @@ const junto = [...vizinhas]
 <Base titulo={`#${grupo.nome}`} descricao={descricao} atual="tags" jsonLd={paginaDeColecao(`#${grupo.nome}`, descricao, Astro.url.pathname, Astro.site)} chegada={{ passo: 0.06 }}>
   <div class="wrap">
     <ListaFiltrada posts={grupo.posts} titulo={`#${grupo.nome}`} descricao={descricao} trilha={{ nome: "Tags", href: url("/tags/") }}>
+      <IconeTag slot="fundo" nome={grupo.nome} class="marca-tag" />
       {
         junto.length > 0 && (
-          <div class="linha-indice junto">
+          <div class="linha-indice junto rola-no-celular">
             <span class="rotulo-indice">Aparece junto com</span>
             <ul>
               {junto.map((t) => (
                 <li>
-                  <a class="pilula" href={urlTag(t)}>
-                    #{t}
-                  </a>
+                  <PilulaTag nome={t} />
                 </li>
               ))}
             </ul>
@@ -58,9 +61,38 @@ const junto = [...vizinhas]
 </Base>
 
 <style>
-  .junto .pilula {
-    min-height: 30px;
-    padding: 3px 11px;
-    font-size: 13.5px;
+  /*
+   * A marca d'água da tag (D52): o ícone grande, na tinta bem suave, no fim da coluna do texto (junto da
+   * estante) e cortado pela borda de baixo da folha. Posicionada pela área da grade (o bloco de conter
+   * de um filho absoluto da grade é a área dele; as linhas precisam vir as duas, senão a ponta "auto"
+   * vai até a borda da folha), por baixo do texto e dos livros.
+   */
+  .wrap :global(.marca-tag) {
+    --traco-tag: 2.4px;
+    position: absolute;
+    z-index: 0;
+    grid-column: 1 / 2;
+    grid-row: 1 / -1;
+    right: -28px;
+    bottom: -128px;
+    width: 360px;
+    height: 360px;
+    color: var(--ink);
+    opacity: 0.085;
+    transform: rotate(-8deg);
+    pointer-events: none;
+  }
+
+  /* No celular, no canto de cima, atrás do título, cortada pelas bordas de cima e da direita. */
+  @media (max-width: 640px) {
+    .wrap :global(.marca-tag) {
+      --traco-tag: 1.8px;
+      grid-row: 1 / 2;
+      top: -58px;
+      right: -64px;
+      bottom: auto;
+      width: 210px;
+      height: 210px;
+    }
   }
 </style>

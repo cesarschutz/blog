@@ -40,7 +40,8 @@ Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
   subtítulo de cada livro diz o que cabe nele. Livro novo só se nenhum servir, pela seção "Livros
   novos" de `docs/capas/CAPAS.md` e com o OK do Cesar.
 - **Tags:** de 2 a 4, do vocabulário existente, sem repetir o nome do livro. Tag nova só se servir a
-  mais de um post.
+  mais de um post, e **com o ícone dela** (D52): proponha o objeto que a representa (a metáfora, nunca
+  o logotipo de uma marca) junto com a tag.
 - **Série:** se entra numa, e em que posição. Post da série Java segue a skill `serie-java`.
 - **Slug:** o nome do arquivo e a URL (`/posts/<slug>/`), curto, em pt-BR, sem acento. Adaptado de
   um post que já existiu no blog: o slug antigo, ou um redirecionamento (passo 3).
@@ -116,6 +117,9 @@ Siga a skill `desenho` (ilustração) e a skill `lousa` (diagramas), no estilo d
   "ilustração do post".
 - Antes de aceitar: `node scripts/desenho/validar.mjs <slug>`, `centrar.mjs` e o render claro e
   escuro (`render.mjs`, com o dev no ar).
+- **Tag nova:** o ícone dela, pela seção "Tags" do `docs/capas/CAPAS.md` (o desenho em
+  `scripts/desenho/tags.mjs`, gravado em `docs/capas/tags/<slug>.svg` e conferido em `/amostra/tags/`
+  ao lado dos outros, nos dois temas). Sem ele, o build quebra.
 
 ### 6. Animações
 

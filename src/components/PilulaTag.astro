@@ -1,0 +1,56 @@
+---
+/**
+ * A pílula de uma tag com o ícone dela (D52, B11): o desenho pequeno à esquerda, "#Nome" e, se vier,
+ * a contagem. Leva à página da tag. Na tinta, com o azul só ao passar o mouse, como toda pílula.
+ */
+import IconeTag from "./IconeTag.astro";
+import { urlTag } from "../lib/posts";
+
+interface Props {
+  nome: string;
+  contagem?: number;
+}
+
+const { nome, contagem } = Astro.props;
+---
+
+<a class="pilula pilula-tag" href={urlTag(nome)}>
+  <IconeTag nome={nome} class="icone-pilula" />
+  <span>#{nome}</span>
+  {contagem !== undefined && <small>{contagem}</small>}
+</a>
+
+<style>
+  .pilula-tag {
+    gap: 5px;
+    min-height: 30px;
+    padding: 3px 11px 3px 6px;
+    font-size: 13.5px;
+  }
+
+  /* O ícone pequeno: um pouco maior que a letra, com o traço mais fino, e a cor da pílula. */
+  .pilula-tag :global(.icone-pilula) {
+    --traco-tag: 1px;
+    flex: none;
+    width: 21px;
+    height: 21px;
+    margin-block: -3px;
+    transition: transform 0.35s cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  @media (hover: hover) {
+    .pilula-tag:hover :global(.icone-pilula) {
+      transform: rotate(-8deg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pilula-tag :global(.icone-pilula) {
+      transition: none;
+    }
+
+    .pilula-tag:hover :global(.icone-pilula) {
+      transform: none;
+    }
+  }
+</style>

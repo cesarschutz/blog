@@ -9,7 +9,8 @@
 import Base from "../layouts/Base.astro";
 import { paginaDeColecao } from "../lib/seo";
 import ListaFiltrada from "../components/ListaFiltrada.astro";
-import { getResumos, getTags, urlTag } from "../lib/posts";
+import PilulaTag from "../components/PilulaTag.astro";
+import { getResumos, getTags } from "../lib/posts";
 import { url } from "../lib/url";
 
 const resumos = await getResumos();
@@ -21,8 +22,9 @@ const partes = [
   series ? `${series} ${series === 1 ? "série" : "séries"}` : "",
 ].filter(Boolean);
 const descricao = `${resumos.length} artigos em ${partes.join(" e ")}, do mais recente ao mais antigo.`;
-// As tags mais usadas (D52): as cinco primeiras, com o número de artigos de cada uma (cabem numa linha).
-const assuntos = (await getTags()).slice(0, 5);
+// As tags mais usadas (D52): as quatro primeiras, com o número de artigos de cada uma (cabem numa linha
+// com o ícone e "Todas as tags").
+const assuntos = (await getTags()).slice(0, 4);
 ---
 
 <Base titulo="Todos os artigos" descricao={descricao} atual="artigos" jsonLd={paginaDeColecao("Todos os artigos", descricao, Astro.url.pathname, Astro.site)}>
@@ -34,9 +36,7 @@ const assuntos = (await getTags()).slice(0, 5);
           {
             assuntos.map((t) => (
               <li>
-                <a class="pilula" href={urlTag(t.nome)}>
-                  #{t.nome} <small>{t.posts.length}</small>
-                </a>
+                <PilulaTag nome={t.nome} contagem={t.posts.length} />
               </li>
             ))
           }
@@ -50,12 +50,6 @@ const assuntos = (await getTags()).slice(0, 5);
 </Base>
 
 <style>
-  .por-assunto .pilula {
-    min-height: 30px;
-    padding: 3px 11px;
-    font-size: 13.5px;
-  }
-
   .todas {
     margin-left: 6px;
     font-family: var(--font-ui);

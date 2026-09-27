@@ -2,15 +2,15 @@
 /**
  * Topo da página do livro, de categoria ou de série (D29, D30, D31): uma folha com o livro aberto em
  * três quartos num painel tingido pela cor dele e, ao lado, a trilha, o nome, o subtítulo, a
- * contagem e as tags mais usadas. O livro chega da pilha do painel ou da grade de livros por
- * transição de página (LivroEmPe). O slot recebe o que for próprio da página (na série Java, os
- * números das LTS). No canto de baixo, à direita, a marca d'água do livro (D39).
+ * contagem e as tags mais usadas (com o ícone de cada uma, D52). O livro chega da pilha do painel ou
+ * da grade de livros por transição de página (LivroEmPe). O slot recebe o que for próprio da página
+ * (na série Java, os números das LTS). No canto de baixo, à direita, a marca d'água do livro (D39).
  */
 import LivroAmpliado from "./LivroAmpliado.astro";
 import LivroEmPe from "./LivroEmPe.astro";
 import MarcaDagua from "./MarcaDagua.astro";
+import PilulaTag from "./PilulaTag.astro";
 import type { Livro } from "../lib/estante";
-import { urlTag } from "../lib/posts";
 import { url } from "../lib/url";
 
 interface Props {
@@ -47,9 +47,7 @@ const tags = [...contagem]
         <ul class="tags" aria-label="Tags mais usadas neste livro">
           {tags.map((t) => (
             <li>
-              <a class="pilula" href={urlTag(t)}>
-                #{t}
-              </a>
+              <PilulaTag nome={t} />
             </li>
           ))}
         </ul>
@@ -160,12 +158,6 @@ const tags = [...contagem]
     margin: 18px 0 0;
     padding: 0;
     list-style: none;
-  }
-
-  .tags .pilula {
-    min-height: 30px;
-    padding: 3px 11px;
-    font-size: 13.5px;
   }
 
   @media (max-width: 760px) {

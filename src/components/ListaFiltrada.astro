@@ -4,7 +4,7 @@
  * (/tags/<Nome>/). No topo, numa folha (D52, B07), uma composição só: à esquerda, a trilha, o título,
  * a descrição e, no pé, os índices: o que a página acrescentar (slot, em linhas `.linha-indice` com um
  * `.rotulo-indice`: as tags mais usadas no arquivo, as vizinhas na tag; `.so-no-largo` some abaixo de
- * 900px) e o índice dos anos (no arquivo); à direita, a estante de filtro, só com os livros que têm
+ * 900px e `.rola-no-celular` vira uma fileira que rola de lado no celular) e o índice dos anos (no arquivo); à direita, a estante de filtro, só com os livros que têm
  * artigos na página, cada um com o número deles, apoiada no pé da folha, na mesma linha dos índices. Embaixo da tábua, o rótulo ("Filtrar
  * por livro") e, com um livro escolhido, o nome dele e "Limpar filtro": o filtro fica à vista onde foi
  * feito. No celular, a estante encolhe e vem logo depois do texto, sem empurrar a lista para longe. O
@@ -402,7 +402,7 @@ const temIndices = Astro.slots.has("default") || indiceDosAnos.length > 0;
   .ano-numero {
     font-family: var(--font-titulo);
     font-weight: 700;
-    font-size: 22px;
+    font-size: 21px;
     line-height: 1.2;
     font-variant-numeric: lining-nums;
   }
@@ -441,6 +441,24 @@ const temIndices = Astro.slots.has("default") || indiceDosAnos.length > 0;
 
   .lado-estante[hidden] {
     display: none;
+  }
+
+  /*
+   * O pé da estante fica preso à ponta direita dela e cresce para a esquerda (no vão entre as colunas):
+   * com um livro só, a estante é estreita e "Filtrar por livro" quebraria em duas linhas. A estante
+   * guarda embaixo o espaço dele. No celular, preso à esquerda (a coluna é a folha toda).
+   */
+  .lado-estante :global(.estante-filtro) {
+    position: relative;
+    padding-bottom: 36px;
+  }
+
+  .lado-estante :global(.pe-estante) {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: max-content;
+    min-width: 100%;
   }
 
   /* O pé da estante: o rótulo, ou o livro escolhido e "Limpar filtro" (o filtro à vista). */
@@ -598,6 +616,11 @@ const temIndices = Astro.slots.has("default") || indiceDosAnos.length > 0;
       margin-top: 16px;
     }
 
+    .lado-estante :global(.pe-estante) {
+      right: auto;
+      left: 0;
+    }
+
     /* Os anos numa linha só, sem o rótulo (o leitor de tela continua ouvindo "Por ano"). */
     .indices {
       grid-template-columns: minmax(0, 1fr);
@@ -610,6 +633,19 @@ const temIndices = Astro.slots.has("default") || indiceDosAnos.length > 0;
       display: none;
     }
 
+    /* A linha que pede (`.rola-no-celular`, as tags vizinhas) vira uma fileira só que rola de lado. */
+    .indices :global(.linha-indice.rola-no-celular > ul) {
+      flex-wrap: nowrap;
+      margin-inline: -20px;
+      padding: 2px 20px 6px;
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+
+    .indices :global(.linha-indice.rola-no-celular > ul > li) {
+      flex: none;
+    }
+
     .indices:has(> :global(.linha-indice.so-no-largo):only-child) {
       display: none;
     }
@@ -619,7 +655,7 @@ const temIndices = Astro.slots.has("default") || indiceDosAnos.length > 0;
     }
 
     .ano-numero {
-      font-size: 19px;
+      font-size: 17px;
     }
 
     .indices .por-ano ol {

@@ -1,10 +1,11 @@
 ---
 /**
- * Rodapé do post (briefing §5.3, D33), nesta ordem: tags; compartilhar (copiar link, LinkedIn,
- * WhatsApp e o compartilhar nativo quando existir); aviso sobre IA; o livro do artigo (o livro 3D da
- * categoria ou da série, que voa até a página do livro ao clicar; no desktop com o sumário lateral,
- * ele fica embaixo do sumário, D39); anterior e próximo, em ordem cronológica global (D52, B03),
- * com o título inteiro e, quando o artigo tem código-fonte (D52, C03), o sinal no fim do título.
+ * Rodapé do post (briefing §5.3, D33), nesta ordem: tags (com o ícone de cada uma, D52);
+ * compartilhar (copiar link, LinkedIn, WhatsApp e o compartilhar nativo quando existir); aviso sobre
+ * IA; o livro do artigo (o livro 3D da categoria ou da série, que voa até a página do livro ao
+ * clicar; no desktop com o sumário lateral, ele fica embaixo do sumário, D39); anterior e próximo,
+ * em ordem cronológica global (D52, B03), com o título inteiro e, quando o artigo tem código-fonte
+ * (D52, C03), o sinal no fim do título.
  *
  * Os gestos pequenos (D49, protótipo E3): "Copiar link" faz o gesto de copiar do site, o mesmo do
  * código (os elos se juntam, a caneta faz o visto e o rótulo rola até "Link copiado", com a pílula
@@ -13,10 +14,11 @@
  * toque, aparecem enquanto o dedo está no cartão.
  */
 import LivroEmPe from "./LivroEmPe.astro";
+import PilulaTag from "./PilulaTag.astro";
 import SinalCodigo from "./SinalCodigo.astro";
 import { ICONES } from "../lib/icones";
 import { montarLivros } from "../lib/estante";
-import { urlTag, type Resumo } from "../lib/posts";
+import type { Resumo } from "../lib/posts";
 import { tituloComQuebras } from "../lib/formato";
 
 interface Props {
@@ -48,9 +50,7 @@ const rotulos = { anterior: "Artigo anterior", proximo: "Próximo artigo" };
     {
       post.tags.map((t) => (
         <li>
-          <a class="pilula" href={urlTag(t)}>
-            #{t}
-          </a>
+          <PilulaTag nome={t} />
         </li>
       ))
     }

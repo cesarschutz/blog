@@ -22,6 +22,7 @@ não mudam. A série continua como na referência, sempre papel claro. Nada diss
 - `desenhos/<slug>.svg`: o desenho da parte clara da capa, já posicionado (viewBox `0 300 480 420`).
 - `icones/<slug>.svg`: o ícone das lombadas (viewBox 120 × 160).
 - `serie/xicara.svg`: o emblema da série Atualizações do Java.
+- `tags/<slug>.svg`: o ícone de cada tag (D52), no mesmo traço dos ícones (seção "Tags", no fim).
 - `grao.svg`: textura de grão de papel, em ladrilho de 180px, por cima de tudo.
 
 Nos SVGs, o traço usa `currentColor`. Os preenchimentos usam `var(--capa-papel)` nos desenhos, `var(--lombada-cor)` nos ícones e `var(--serie-papel)` no emblema. Coloque os SVGs inline, porque com `<img>` a cor não é herdada. Eles são decorativos (`aria-hidden`). Títulos e números são sempre texto de verdade.
@@ -111,3 +112,41 @@ As séries têm formato de revista, para nunca serem confundidas com as categori
 
 - **Categoria:** escolha um instrumento de ofício que represente a categoria inteira e desenhe no estilo do projeto, com traço de 1,8, 1,2 e 0,7px, leve tremor, hachura nas sombras e um único elemento fantasma tracejado. Gere o ícone da lombada com só os traços principais. A frase segue o molde do subtítulo, e o volume é o próximo número.
 - **Série:** use o formato revista. Defina a cor de destaque, o título (palavra principal e complemento em itálico), o emblema no mesmo traço, o número de capa, a lista de edições e, se houver material especial, a tarja.
+
+## Tags (D52)
+
+Cada tag tem um ícone, no traço dos ícones das lombadas. Ele aparece nos cartões de `/tags/`, grande
+como marca d'água no topo da página da tag (na tinta, bem suave, cortado pela borda da folha) e
+pequeno nas pílulas de tag (`PilulaTag.astro`: as vizinhas na página da tag, "Por assunto" em "Todos
+os artigos" e as mais usadas no topo da página do livro).
+
+- **Arquivo:** `tags/<slug>.svg`, com o nome da tag sem acento, minúsculo e com hífen ("Banco de
+  Dados" → `banco-de-dados.svg`, "Concorrência" → `concorrencia.svg`). Caixa fixa de 120 × 120, com o
+  desenho centrado, mais ou menos entre 14 e 106, e o mesmo peso dos outros (o que é redondo ou largo,
+  um pouco menor).
+- **Traço:** o dos ícones das lombadas: `cz-ln` com `cz-w1` (contorno, 1,3), `cz-w2` (detalhe, 0,85)
+  e `cz-w3` (bem fino, 0,7), pontas redondas e um leve tremor gravado no próprio traço (como nos
+  ícones, e não o filtro dos desenhos dos posts: o ícone aparece muitas vezes na mesma página). O que
+  tem volume leva `style="fill: var(--tag-papel)"`, que tapa o que fica atrás; no máximo um elemento
+  fantasma (`cz-gh`). Só `currentColor` e variáveis: sem cor fixa, sem `id`, sem `defs` e sem texto.
+- **O que desenhar:** um objeto de ofício que seja a metáfora da tag, **nunca o logotipo** de um
+  produto ou de uma marca. Os de hoje: broto com duas folhas (Spring), moedor de café de manivela
+  (JVM), âncora (LTS), semáforo de ferrovia (Concorrência), carretel de linha com agulha (Virtual
+  Threads), balança de pratos (Trade-offs), pena no tinteiro (Linguagem), pilha de moedas
+  (Pagamentos), caixa de correio com a bandeira levantada (Mensageria), rolo de papel com as linhas do
+  registro (Logs), leme de navio (Kubernetes), barril (Banco de Dados), mala de viagem (Migração),
+  cadeado de segredo (Criptografia), favos de mel com uma célula por fazer (Microsserviços), chave
+  antiga com etiqueta (Idempotência), bigorna e martelo (Gradle), nuvem (AWS), espeto de notas (AOP) e
+  ingresso com canhoto (JWT).
+
+### Tags novas
+
+1. Escolha o objeto (a metáfora, no espírito dos de cima) e escreva o desenho em `DESENHOS` de
+   `scripts/desenho/tags.mjs`, à mão, em coordenadas (linhas, arcos, curvas e retângulos, na ordem de
+   pintura). O script passa a caneta, com o tremor dos ícones e uma semente tirada do nome (sai igual
+   a cada vez).
+2. Grave: `node scripts/desenho/tags.mjs <slug>` (com o Node 24: `fnm exec --using=24`).
+3. Confira em `/amostra/tags/` (só no dev): lado a lado com os outros e em cinco tamanhos, da pílula
+   à marca d'água, nos dois temas (`?tema=escuro`). O novo tem de ter o mesmo peso dos vizinhos.
+4. **Sem o ícone, o build quebra:** a página `/tags/` desenha o ícone de toda tag usada num post, e
+   `src/lib/tags-svg.ts` para com o caminho do arquivo que falta.
