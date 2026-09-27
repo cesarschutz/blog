@@ -41,7 +41,7 @@ const resumo = resumir(post);
 const { Content, headings, remarkPluginFrontmatter } = await render(post);
 const secoes = secoesDoSumario(headings);
 const temSumario = secoes.length >= 3;
-const { anterior, proximo, naSerie } = await getVizinhos(post.id);
+const { anterior, proximo } = await getVizinhos(post.id);
 // O livro do artigo (a categoria ou a série), para o "Do livro" embaixo do sumário lateral (D39).
 const livros = await montarLivros();
 const livroDoPost = resumo.serie
@@ -124,7 +124,7 @@ const jsonLd = {
             {post.data.tags.map((t) => <span data-pagefind-filter="tag">{t}</span>)}
           </div>
           <div data-pagefind-ignore>
-            <RodapeArtigo post={resumo} endereco={endereco} anterior={anterior} proximo={proximo} naSerie={naSerie} />
+            <RodapeArtigo post={resumo} endereco={endereco} anterior={anterior} proximo={proximo} />
           </div>
           {COMENTARIOS_LIGADOS && <Comentarios />}
         </div>

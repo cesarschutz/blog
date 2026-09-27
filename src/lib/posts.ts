@@ -31,6 +31,8 @@ export interface Resumo {
   /** Id do livro do post na estante ("livro-<slug>" ou "serie-<chave>"), para os filtros (D33). */
   livro: string;
   minutos: number;
+  /** O código-fonte do artigo no repositório de exemplos (frontmatter `codigo`, D52). */
+  codigo?: string;
 }
 
 /** Divide "Assunto — complemento" em título e subtítulo (com inicial maiúscula). */
@@ -89,6 +91,7 @@ export function resumir(post: Post): Resumo {
     cor: ser?.destaque ?? cat?.cor ?? "#56605E",
     livro: ser ? `serie-${ser.chave}` : cat ? `livro-${cat.slug}` : "",
     minutos: minutosDeLeitura(post.body ?? ""),
+    codigo: post.data.codigo,
   };
 }
 
@@ -136,17 +139,12 @@ export async function getPostsDaSerie(chave: string): Promise<Resumo[]> {
 }
 
 /**
- * Anterior e próximo. Dentro de uma série, segue a ordem de leitura; fora dela, a data de
- * publicação (anterior = mais antigo), considerando todos os posts, como no blog atual.
+ * Anterior e próximo: sempre a ordem cronológica global (a mesma de getResumos e de "Todos os
+ * artigos"), sem olhar o livro (categoria ou série) do post (D52, B03). Anterior = publicado antes;
+ * próximo = publicado depois.
  */
-export async function getVizinhos(slug: string): Promise<{ anterior?: Resumo; proximo?: Resumo; naSerie?: Serie }> {
+export async function getVizinhos(slug: string): Promise<{ anterior?: Resumo; proximo?: Resumo }> {
   const resumos = await getResumos();
-  const atual = resumos.find((r) => r.slug === slug);
-  if (atual?.serie) {
-    const ordem = await getPostsDaSerie(atual.serie.chave);
-    const i = ordem.findIndex((r) => r.slug === slug);
-    return { anterior: ordem[i - 1], proximo: ordem[i + 1], naSerie: atual.serie };
-  }
   const i = resumos.findIndex((r) => r.slug === slug);
   return { anterior: resumos[i + 1], proximo: resumos[i - 1] };
 }

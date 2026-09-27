@@ -3,7 +3,8 @@
  * Rodapé do post (briefing §5.3, D33), nesta ordem: tags; compartilhar (copiar link, LinkedIn,
  * WhatsApp e o compartilhar nativo quando existir); aviso sobre IA; o livro do artigo (o livro 3D da
  * categoria ou da série, que voa até a página do livro ao clicar; no desktop com o sumário lateral,
- * ele fica embaixo do sumário, D39); anterior e próximo (ou dentro da série), com o título inteiro.
+ * ele fica embaixo do sumário, D39); anterior e próximo, em ordem cronológica global (D52, B03),
+ * com o título inteiro.
  *
  * Os gestos pequenos (D49, protótipo E3): "Copiar link" faz o gesto de copiar do site, o mesmo do
  * código (os elos se juntam, a caneta faz o visto e o rótulo rola até "Link copiado", com a pílula
@@ -16,17 +17,15 @@ import { ICONES } from "../lib/icones";
 import { montarLivros } from "../lib/estante";
 import { urlTag, type Resumo } from "../lib/posts";
 import { tituloComQuebras } from "../lib/formato";
-import type { Serie } from "../data/series";
 
 interface Props {
   post: Resumo;
   endereco: string;
   anterior?: Resumo;
   proximo?: Resumo;
-  naSerie?: Serie;
 }
 
-const { post, endereco, anterior, proximo, naSerie } = Astro.props;
+const { post, endereco, anterior, proximo } = Astro.props;
 const tituloCompleto = post.tituloCompleto;
 const livros = await montarLivros();
 const livro = post.serie
@@ -39,9 +38,8 @@ const quantos = livro
   : "";
 const linkedin = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(endereco)}`;
 const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${tituloCompleto} ${endereco}`)}`;
-const rotulos = naSerie
-  ? { anterior: "Anterior na série", proximo: "Próxima na série" }
-  : { anterior: "Artigo anterior", proximo: "Próximo artigo" };
+// Sempre em ordem cronológica global, sem olhar o livro (D52, B03): os rótulos não falam mais de série.
+const rotulos = { anterior: "Artigo anterior", proximo: "Próximo artigo" };
 ---
 
 <footer class="rodape-artigo">
@@ -107,7 +105,7 @@ const rotulos = naSerie
 
 {
   (anterior || proximo) && (
-    <nav class="vizinhos" aria-label={naSerie ? `Na série ${naSerie.nome}` : "Outros artigos"}>
+    <nav class="vizinhos" aria-label="Outros artigos">
       {anterior ? (
         <a href={anterior.url} rel="prev" class="anterior">
           <span class="dir">
