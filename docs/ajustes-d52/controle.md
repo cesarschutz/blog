@@ -69,7 +69,7 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
       artigo tem fonte em todo lugar onde ele aparece (cards e lista, com elegância) e o link no
       painel do topo do artigo. Hoje: o do Jackson
       (`https://github.com/cesarschutz/blog-exemplos/tree/main/jackson-filtros-mascarando-cartao`).
-- [ ] **C04.** A caneta como identidade: o traço de caneta (o do menu do cabeçalho), também em
+- [~] **C04.** _(agente Caneta)_ A caneta como identidade: o traço de caneta (o do menu do cabeçalho), também em
       **preto**, em lugares escolhidos (menu, GitHub e LinkedIn, botão de tema e busca redesenhados
       sem perder a animação, data e tempo de leitura com os ícones, a caneca, a marca "cs", o "Cesar
       Schutz" da home…). Nada no rodapé.
