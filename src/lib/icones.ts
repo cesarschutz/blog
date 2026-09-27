@@ -2,10 +2,10 @@
  * Ícones de traço (viewBox 0 0 24 24), desenhados no protótipo. Quem usa aplica
  * `fill:none; stroke:currentColor` (ou a cor do aviso) com traço de 1.8.
  *
- * Os da caneta preta (C04 da D52: o calendário, o relógio, o código-fonte, a lua e o sol) não são
- * desenhados aqui: saem de src/lib/traco.ts, à mão, com a mesma semente em toda visita.
+ * Os da caneta preta (C04 da D52: o calendário, o relógio, o código-fonte, a lupa, a lua e o sol)
+ * não são desenhados aqui: saem de src/lib/traco.ts, à mão, com a mesma semente em toda visita.
  */
-import { calendarioDeCaneta, codigoDeCaneta, luaDeCaneta, relogioDeCaneta, solDeCaneta } from "./traco";
+import { calendarioDeCaneta, codigoDeCaneta, luaDeCaneta, lupaDeCaneta, relogioDeCaneta, solDeCaneta } from "./traco";
 
 const caminhos = (lista: string[]) => lista.map((d) => `<path d="${d}"/>`).join("");
 
@@ -21,7 +21,7 @@ export const ICONES = {
   compartilhar: '<path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 13v6h14v-6"/>',
   // Interface (D26, protótipo "mais vida"): busca, tema, a seta do "Ler artigo", o relógio do tempo
   // de leitura nas listas e o RSS do painel da home.
-  busca: '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  busca: caminhos(lupaDeCaneta()),
   // A lua e o sol do botão de tema, à caneta (C04; SeletorTema.astro usa os caminhos soltos).
   lua: caminhos([luaDeCaneta()]),
   sol: caminhos([solDeCaneta().miolo, ...solDeCaneta().raios]),

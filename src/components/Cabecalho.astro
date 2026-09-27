@@ -26,7 +26,7 @@ import Marca from "./Marca.astro";
 import SeletorTema from "./SeletorTema.astro";
 import { AUTOR } from "../data/site";
 import { ICONES, MARCAS } from "../lib/icones";
-import { circuloDeCaneta, tracoDeCaneta } from "../lib/traco";
+import { circuloDeCaneta, contornoDeCaneta, pilulaDeCaneta, tracoDeCaneta } from "../lib/traco";
 import { url } from "../lib/url";
 import "../styles/traco.css";
 
@@ -91,7 +91,10 @@ const ITENS = [
     </div>
   </nav>
   <button type="button" class="campo-busca" data-busca-abrir aria-label="Buscar" aria-keyshortcuts="Meta+K Control+K">
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.busca} />
+    <svg class="contorno contorno-pilula" viewBox="0 0 210 40" aria-hidden="true" focusable="false"><path d={pilulaDeCaneta(210, 40, "Buscar")} /></svg>
+    <svg class="contorno contorno-roda" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path d={contornoDeCaneta("Buscar")} /></svg>
+    <svg class="circulo" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path pathLength="1" d={circuloDeCaneta("Buscar")} /></svg>
+    <svg class="lupa-busca" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.busca} />
     <span>Buscar</span>
     <kbd data-atalho>⌘K</kbd>
   </button>
@@ -107,7 +110,15 @@ const ITENS = [
   </div>
   <SeletorTema />
   <button type="button" class="botao-menu" aria-expanded="false" aria-controls="menu-principal" aria-label="Abrir o menu" data-botao-menu>
-    <span class="tracos" aria-hidden="true"><span></span><span></span></span>
+    <svg class="contorno" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path d={contornoDeCaneta("menu")} /></svg>
+    <svg class="circulo" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path pathLength="1" d={circuloDeCaneta("Menu")} /></svg>
+    <span class="tracos" aria-hidden="true"
+      ><svg viewBox="0 0 100 8" preserveAspectRatio="none" focusable="false"><path d={tracoDeCaneta("menu de cima", 0, 0.45, 3)} /></svg><svg
+        viewBox="0 0 100 8"
+        preserveAspectRatio="none"
+        focusable="false"><path d={tracoDeCaneta("menu de baixo", 0, 0.45, 3)} /></svg
+      ></span
+    >
   </button>
 </header>
 </div>
@@ -368,15 +379,23 @@ const ITENS = [
     }
   }
 
-  /* A busca parece um campo, mas é um botão: abre o diálogo (Busca.astro). */
+  /*
+   * A busca parece um campo, mas é um botão: abre o diálogo (Busca.astro). À caneta (C04, D52): a
+   * pílula continua (é o que diz "campo" de longe), com o fundo de papel, mas o contorno é feito à mão,
+   * a lápis (a tinta do botão, fraca), numa volta só que passa um nada do começo; no hover, a caneta
+   * passa por cima (o contorno escurece). A lupa é da caneta preta. O tamanho é fixo (210 × 40), o
+   * mesmo da caixa do desenho, para o traço não esticar.
+   */
   .campo-busca {
+    position: relative;
     display: inline-flex;
+    flex: none;
     align-items: center;
     gap: 8px;
-    min-width: 210px;
-    min-height: 40px;
+    width: 210px;
+    height: 40px;
     padding: 7px 10px 7px 13px;
-    border: 1px solid var(--rule);
+    border: 0;
     border-radius: 999px;
     background: var(--paper-hi);
     color: var(--ink-2);
@@ -388,32 +407,59 @@ const ITENS = [
   }
 
   .campo-busca:hover {
-    border-color: var(--ink-3);
     color: var(--ink);
   }
 
-  .campo-busca svg {
-    flex: none;
+  /* O contorno a lápis dos botões do cabeçalho (a pílula da busca, a roda dela e o menu no celular). */
+  .contorno {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
     fill: none;
     stroke: currentColor;
-    stroke-width: 1.8;
+    stroke-width: 1.15;
+    stroke-linecap: round;
+    stroke-opacity: 0.42;
+    transition: stroke-opacity 0.2s;
+  }
+
+  .campo-busca:hover .contorno-pilula {
+    stroke-opacity: 0.8;
+  }
+
+  .contorno-roda,
+  .campo-busca .circulo {
+    display: none;
+  }
+
+  /* O círculo da caneta que passa por cima dos botões redondos (traco.css), na tinta do botão. */
+  :is(.campo-busca, .botao-menu) .circulo path {
+    stroke: currentColor;
+  }
+
+  .lupa-busca {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    overflow: visible;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
     stroke-linecap: round;
     stroke-linejoin: round;
   }
 
-  .campo-busca svg {
-    width: 16px;
-    height: 16px;
-  }
-
   /* A lupa inclina e sobe um nada no hover, como quem pega a lupa (D49). */
-  .campo-busca svg {
+  .lupa-busca {
     transform-box: fill-box;
     transform-origin: 40% 40%;
     transition: transform 0.28s cubic-bezier(0.2, 0.75, 0.2, 1);
   }
 
-  .campo-busca:is(:hover, :focus-visible) svg {
+  .campo-busca:is(:hover, :focus-visible) .lupa-busca {
     transform: rotate(-14deg) translateY(-1px);
   }
 
@@ -478,22 +524,33 @@ const ITENS = [
     height: 15px;
   }
 
-  /* Até 1100px, a busca vira só o ícone, redonda como o botão de tema. */
+  /*
+   * Até 1100px, a busca vira só o ícone, redonda como o botão de tema: o contorno a lápis vira uma
+   * roda, e a caneta a circula no hover.
+   */
   @media (max-width: 1100px) {
     .campo-busca {
       display: grid;
       place-items: center;
       width: 38px;
-      min-width: 0;
       height: 38px;
-      min-height: 0;
       padding: 0;
       border-radius: 50%;
     }
 
     .campo-busca span,
-    .campo-busca kbd {
+    .campo-busca kbd,
+    .contorno-pilula {
       display: none;
+    }
+
+    .contorno-roda,
+    .campo-busca .circulo {
+      display: block;
+    }
+
+    .campo-busca:hover .contorno-roda {
+      stroke-opacity: 0.2;
     }
   }
 
@@ -515,56 +572,65 @@ const ITENS = [
     }
 
     .botao-menu {
+      position: relative;
       display: grid;
       flex: none;
       place-items: center;
       width: 38px;
       height: 38px;
       padding: 0;
-      border: 1px solid var(--rule);
+      border: 0;
       border-radius: 50%;
       background: var(--paper-hi);
       color: var(--ink);
       cursor: pointer;
     }
 
-    .botao-menu:hover {
-      border-color: var(--ink-3);
+    .botao-menu:hover .contorno {
+      stroke-opacity: 0.2;
     }
 
-    /* Dois traços que viram um X. */
+    /* Dois traços de caneta (C04) que viram um X. */
     .tracos {
       position: relative;
       width: 16px;
       height: 10px;
     }
 
-    .tracos span {
+    .tracos svg {
       position: absolute;
-      left: 0;
-      width: 100%;
-      height: 1.6px;
-      border-radius: 1px;
-      background: currentColor;
+      left: -1px;
+      width: 18px;
+      height: 4px;
+      overflow: visible;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      vector-effect: non-scaling-stroke;
       transition:
         translate 0.3s cubic-bezier(0.2, 0.75, 0.2, 1),
         rotate 0.3s cubic-bezier(0.2, 0.75, 0.2, 1);
     }
 
-    .tracos span:first-child {
-      top: 0;
+    .tracos path {
+      vector-effect: non-scaling-stroke;
     }
 
-    .tracos span:last-child {
-      bottom: 0;
+    .tracos svg:first-child {
+      top: -2px;
     }
 
-    [aria-expanded="true"] .tracos span:first-child {
+    .tracos svg:last-child {
+      bottom: -2px;
+    }
+
+    [aria-expanded="true"] .tracos svg:first-child {
       translate: 0 4.2px;
       rotate: 45deg;
     }
 
-    [aria-expanded="true"] .tracos span:last-child {
+    [aria-expanded="true"] .tracos svg:last-child {
       translate: 0 -4.2px;
       rotate: -45deg;
     }
@@ -707,16 +773,17 @@ const ITENS = [
     .menu a,
     .menu-perfis,
     .veu-menu,
-    .tracos span,
+    .tracos svg,
+    .contorno,
     .lugar-marca > :global(.marca),
     .vaga,
     .vaga svg,
-    .campo-busca svg,
+    .lupa-busca,
     .campo-busca kbd {
       transition: none !important;
     }
 
-    .campo-busca:is(:hover, :focus-visible) svg {
+    .campo-busca:is(:hover, :focus-visible) .lupa-busca {
       transform: none;
     }
 
@@ -734,6 +801,28 @@ const ITENS = [
 
     .vaga .nome {
       font-size: 15.5px;
+    }
+  }
+
+  /*
+   * Abaixo de 360px (C04, D52): mesmo com a marca a 18px, o "blog" encostava na busca (a marca pedia
+   * 184px e sobravam 155, e a busca era espremida para 32px). A marca vai a 16px e os três botões, a
+   * 36px, com 6px entre eles: sobram uns 5px de folga em 320px, sem esconder nada.
+   */
+  @media (max-width: 359.98px) {
+    .cabecalho {
+      gap: 6px;
+    }
+
+    .lugar-marca > :global(.marca) {
+      font-size: 16px;
+    }
+
+    .campo-busca,
+    .botao-menu,
+    .cabecalho > :global(.botao-tema) {
+      width: 36px;
+      height: 36px;
     }
   }
 </style>
