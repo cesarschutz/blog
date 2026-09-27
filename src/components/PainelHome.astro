@@ -9,11 +9,12 @@
  * (`cs-pilha-<tipo>`), com o livro da página anterior (o que estava aberto) em cima. Assim, ao trocar
  * de livro, o que estava aberto volta para o topo da pilha.
  *
- * Trocar de livro pela pilha (D46, D49): primeiro o livro aberto no topo da página é guardado em cima
- * da pilha (a pilha guarda, em cima, o espaço dele: --folga), depois o escolhido é puxado para fora,
- * com o peso dos de cima (o bloco tomba e cai no lugar), voa em pé até o topo da página e gira até
- * ficar de lado (o livro da página nova, tirado do HTML dela), e só então a página nova abre, com ele
- * já no lugar. Com movimento reduzido, a página só abre.
+ * Trocar de livro pela pilha (D46, D49, D52): primeiro o livro aberto no topo da página é guardado em
+ * cima da pilha (a pilha guarda, em cima, o espaço dele: --folga), depois o escolhido é puxado para
+ * fora, com o peso dos de cima (o bloco tomba e cai no lugar), voa até o topo da página, se põe em pé
+ * e gira até ficar de lado (o livro da página nova, tirado do HTML dela). A página nova abre quando ele
+ * começa a girar e continua o giro (o script da ordem, abaixo, lê `cs-pilha-chegada`). Com movimento
+ * reduzido, a página só abre.
  * Uma série só: a pilha fica vazia, com um texto curto.
  */
 import { ICONES } from "../lib/icones";
@@ -100,6 +101,63 @@ const rotulo = (l: Livro) => {
           } catch (e) {}
           ordem.forEach(function (id) { ol.appendChild(itens[id]); });
           try { sessionStorage.setItem(chave, JSON.stringify(ordem)); } catch (e) {}
+
+          // Chegando pela troca da pilha (D52): a página anterior deixou o livro do topo girando e a
+          // página já montada em cima (o texto e a cor do livro novo). Aqui, a troca de página (tipo
+          // "pilha", abaixo) continua o giro de onde ele parou, e os artigos chegam esmaecendo. O
+          // livro que está sob o mouse fica quieto até o mouse andar (senão, ele saía 8px sozinho).
+          try {
+            var chegada = JSON.parse(sessionStorage.getItem("cs-pilha-chegada") || "null");
+            sessionStorage.removeItem("cs-pilha-chegada");
+            if (!chegada || chegada.para !== location.pathname || Date.now() - chegada.t > 5000) return;
+            if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+            pilha.classList.add("quieta");
+            var mouse = null;
+            addEventListener("pointermove", function andou(e) {
+              if (!mouse) return void (mouse = [e.clientX, e.clientY]);
+              if (Math.abs(e.clientX - mouse[0]) + Math.abs(e.clientY - mouse[1]) < 4) return;
+              pilha.classList.remove("quieta");
+              removeEventListener("pointermove", andou);
+            });
+            // As fontes do topo e da pilha já começam a vir (no primeiro quadro, nenhuma está pronta).
+            ["800 40px 'Besley Variable'", "400 18px 'Literata Variable'", "400 14px 'IBM Plex Sans Variable'", "700 12px 'Bitter Variable'", "italic 400 12px 'Newsreader Variable'"].forEach(function (f) {
+              try { document.fonts.load(f, "Aaçã").catch(function () {}); } catch (x) {}
+            });
+            addEventListener("pagereveal", function (e) {
+              var vt = e.viewTransition;
+              if (!vt) return;
+              try { vt.types.add("pilha"); } catch (x) {}
+              var raiz = document.documentElement;
+              var livro = document.querySelector(".topo-livro .livro-3d");
+              var lupa = document.querySelector(".topo-livro .lupa");
+              var resta = chegada.giro == null ? 0 : Math.max(0, chegada.resta);
+              // A imagem da página antiga fica até as fontes da nova ficarem prontas (no máximo 0,5s):
+              // nos primeiros quadros, a capa, a pilha e o título apareciam na fonte de reserva. Aí a
+              // página troca, e o livro continua o giro de onde parou.
+              var comecou = false;
+              function comecar() {
+                if (comecou) return;
+                comecou = true;
+                raiz.dataset.pilhaPronta = "";
+                if (livro && resta > 16) {
+                  var giro = getComputedStyle(livro).getPropertyValue("--giro").trim() || "38deg";
+                  // O resto de um power2.out (cúbico) é outro: a curva segue sem emenda.
+                  livro.animate([{ transform: "rotateY(" + chegada.giro + "deg)" }, { transform: "rotateY(" + giro + ")" }], {
+                    duration: resta,
+                    easing: "cubic-bezier(0.33, 1, 0.68, 1)",
+                  });
+                }
+                if (lupa && chegada.lupa < 1) {
+                  lupa.animate([{ opacity: chegada.lupa }, { opacity: 1 }], { duration: 220, delay: resta, easing: "linear", fill: "backwards" });
+                }
+              }
+              vt.ready.then(function () {
+                document.fonts.ready.then(comecar);
+                setTimeout(comecar, 500);
+              }, comecar);
+              vt.finished.finally(function () { delete raiz.dataset.pilhaPronta; });
+            }, { once: true });
+          } catch (e) {}
         })();
       </script>
       {outros === 0 && <p class="pilha-vazia">Outras séries aparecem aqui.</p>}
@@ -113,21 +171,31 @@ const rotulo = (l: Livro) => {
 
 <script>
   /*
-   * A pilha com peso (D46, D49, protótipo D3), com GSAP sob demanda:
+   * A pilha com peso (D46, D49, protótipo D3; revista na D52), com GSAP sob demanda:
    *
    * - O mouse em cima (ou o foco do teclado): o livro sai 8px, e o bloco de cima vai junto 1,5px, pelo
-   *   atrito; volta sem mola.
-   * - Trocar de livro (clique, toque ou Enter): primeiro o livro aberto no topo da página vira de lado
-   *   e é pousado em cima da pilha (vem por cima, desce e assenta), no espaço que a pilha guarda para
-   *   ele; só então o escolhido é puxado. Os de cima vão junto nos primeiros milímetros, pelo atrito;
-   *   quando a ponta do livro puxado passa do centro de massa deles, o bloco tomba sobre a quina, com a
-   *   ponta apoiada no livro de baixo; quando o livro sai inteiro, o bloco cai deitado no lugar, com
-   *   um baque. Aí o puxado se põe em pé, voa até o topo da página e gira até ficar de lado, como o
-   *   livro da página nova (é o elemento dela, buscado no clique), e a página abre: a transição
-   *   (base.css) encontra os dois livros onde a página nova os mostra, e nada mais se mexe.
+   *   atrito; volta sem mola. Parado um instante em cima, o livro já busca a página dele.
+   * - Trocar de livro (clique, toque ou Enter), numa sequência só, sem paradas:
+   *   1. o texto do topo e os artigos esmaecem (a página vai mudar) e, se a página estiver rolada, ela
+   *      volta ao topo (a pilha fica parada ao lado);
+   *   2. o livro aberto gira até mostrar a lombada, sai do palco subindo e voa num arco até a pilha,
+   *      deitando-se no caminho, e é pousado em cima dela (a mão desce devagar no fim), no espaço que
+   *      a pilha guarda para ele; a sombra cresce enquanto ele está no ar e some no pouso;
+   *   3. o escolhido é puxado: os de cima vão junto nos primeiros milímetros, pelo atrito; quando a
+   *      ponta dele passa do centro de massa deles, o bloco tomba sobre a quina, com a ponta apoiada no
+   *      livro de baixo; quando ele sai inteiro, o bloco cai deitado no lugar, com um baque;
+   *   4. sem parar (com o embalo do puxão), ele segue até o palco do topo, se pondo em pé no caminho;
+   *      o palco já toma a cor dele, e o texto da página nova aparece (tirado do HTML dela);
+   *   5. ele gira até ficar de lado, e a página nova abre nesse giro: ela o continua de onde parou
+   *      (`cs-pilha-chegada`, lido pelo script da ordem), e só os artigos chegam, esmaecendo.
+   *   Os livros voam numa camada própria (`.voo-da-pilha`), por cima da página e da pilha e por baixo
+   *   do cabeçalho, como o livro 3D inteiro (a lombada da pilha só aparece quando ele está deitado, do
+   *   tamanho dela). Nada se cruza no ar: o aberto está na pilha antes de o outro sair.
    * - Com mouse, dá para puxar o livro devagar e ver o bloco de cima reagir. Solto depois da metade (a
-   *   velocidade conta), o livro sai, espera ao lado da pilha enquanto o aberto é guardado, e a página
-   *   abre; antes disso, volta para o lugar, perdendo velocidade, e o bloco se endireita sobre ele.
+   *   velocidade conta), o livro sai, espera ao lado da pilha enquanto o aberto é guardado, e segue.
+   *   Antes disso, volta para o lugar, perdendo velocidade, e o bloco se endireita sobre ele.
+   * - Se o topo não estiver à vista (no celular e no tablet, a pilha fica embaixo do conteúdo), o aberto
+   *   só chega por cima da pilha, e a troca de página leva a lombada até o livro do topo (a de antes).
    * - Com movimento reduzido, fica tudo parado e o clique só abre a página.
    *
    * As medidas vêm da pilha (comprimento, espessura e recuo de cada livro, livros.json), em px da tela.
@@ -135,20 +203,175 @@ const rotulo = (l: Livro) => {
   import { adiantar, carregarArrastar, carregarGsap, movimentoReduzido, temMouse, type GSAP } from "../scripts/gsap";
 
   const raiz = document.documentElement;
+  /** O que a página nova precisa para continuar o giro (lido pelo script inline da pilha). */
+  const CHEGADA = "cs-pilha-chegada";
+
+  // ---------- a página nova, buscada antes ----------
+  type Pagina = { livro: HTMLElement; texto: HTMLElement | null; marca: HTMLElement | null; cor: string };
+  const paginas = new Map<string, Promise<Pagina | null>>();
+
+  /** O topo da página de um livro, tirado do HTML dela: o livro em pé, o texto, a marca d'água e a cor. */
+  function paginaNova(href: string) {
+    const chave = new URL(href, location.href).pathname;
+    let p = paginas.get(chave);
+    if (!p) {
+      p = buscar(href);
+      paginas.set(chave, p);
+      p.then((r) => void (r || paginas.delete(chave)));
+    }
+    return p;
+  }
+
+  async function buscar(href: string): Promise<Pagina | null> {
+    try {
+      const resposta = await fetch(href);
+      if (!resposta.ok) return null;
+      // Só o topo da página (o <header class="topo-livro">): montar o documento inteiro (uns 250 kB, com
+      // a pilha e os artigos) travava a tela no começo da troca quando o clique vinha sem o mouse parar
+      // antes no livro.
+      const html = await resposta.text();
+      const ini = html.search(/<header[^>]*class="topo-livro/);
+      const fim = ini < 0 ? -1 : html.indexOf("</header>", ini);
+      if (fim < 0) return null;
+      const doc = new DOMParser().parseFromString(html.slice(ini, fim + 9), "text/html");
+      const topo = doc.querySelector<HTMLElement>(".topo-livro");
+      const livro = topo?.querySelector<HTMLElement>(".livro-em-pe");
+      if (!topo || !livro) return null;
+      const texto = topo.querySelector<HTMLElement>(":scope > .texto");
+      const marca = topo.querySelector<HTMLElement>(":scope > .marca-dagua");
+      // A máscara da marca d'água já fica no cache (senão ela pisca ao entrar).
+      const mascara = marca?.style.getPropertyValue("--mascara").match(/url\(["']?([^"')]+)/)?.[1];
+      if (mascara) fetch(mascara).catch(() => {});
+      return {
+        livro: document.importNode(livro, true),
+        texto: texto && comEstilo(texto) ? document.importNode(texto, true) : null,
+        marca: marca ? document.importNode(marca, true) : null,
+        cor: topo.style.getPropertyValue("--cor"),
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  /** O texto só entra antes da página se o CSS de todas as peças dele já estiver aqui. */
+  function comEstilo(el: Element) {
+    const cids = new Set<string>();
+    for (const e of [el, ...el.querySelectorAll("*")]) for (const a of e.getAttributeNames()) if (a.startsWith("data-astro-cid-")) cids.add(a);
+    return [...cids].every((a) => document.querySelector(`[${a}]`));
+  }
+
+  /** O que não chegar a tempo fica de fora (a página abre do mesmo jeito). */
+  const ate = <T,>(p: Promise<T>, ms: number) => Promise.race([p, new Promise<null>((r) => setTimeout(() => r(null), ms))]);
+
+  // ---------- o voo: estado, trajeto e a camada ----------
+  /** Um livro no ar: centro, ângulo (0 = deitado, com a cabeça à esquerda; 90 = em pé), comprimento e espessura, em px da tela. */
+  type Pose = { cx: number; cy: number; ang: number; len: number; esp: number };
+  /** O centro de uma peça parada e as medidas dela na pose de partida (a lombada, no livro 3D). */
+  type Base = { x: number; y: number; w: number; h: number };
+
+  const limitar = (v: number) => Math.min(1, Math.max(0, v));
+  const bezier = (a: number, b: number, c: number, d: number, u: number) => {
+    const v = 1 - u;
+    return v * v * v * a + 3 * v * v * u * b + 3 * v * u * u * c + u * u * u * d;
+  };
+
+  /**
+   * O caminho de um voo: um arco (Bézier) de `de` a `para`, que sai na direção `saida` e chega pela
+   * direção `chegada` (px, relativos às pontas); o livro gira e muda de tamanho entre `giro[0]` e
+   * `giro[1]` do caminho, suave nas duas pontas.
+   */
+  function trajeto(g: GSAP, de: Pose, para: Pose, saida: [number, number], chegada: [number, number], giro: [number, number]) {
+    const suave = g.parseEase("power2.inOut");
+    return (u: number): Pose => {
+      const q = suave(limitar((u - giro[0]) / (giro[1] - giro[0])));
+      return {
+        cx: bezier(de.cx, de.cx + saida[0], para.cx + chegada[0], para.cx, u),
+        cy: bezier(de.cy, de.cy + saida[1], para.cy + chegada[1], para.cy, u),
+        ang: de.ang + (para.ang - de.ang) * q,
+        len: de.len + (para.len - de.len) * q,
+        esp: de.esp + (para.esp - de.esp) * q,
+      };
+    };
+  }
+
+  /** A lombada da pilha (deitada) na pose: o comprimento dela é a largura, e a espessura, a altura. */
+  function poseDeitado(g: GSAP, el: HTMLElement, b: Base, p: Pose) {
+    g.set(el, { x: p.cx - b.x, y: p.cy - b.y, rotation: p.ang, scaleX: p.len / b.w, scaleY: p.esp / b.h, transformOrigin: "50% 50%" });
+  }
+
+  /** O livro 3D (em pé, de lombada para o leitor) na pose: b.w e b.h são a espessura e a altura da lombada. */
+  function poseEmPe(g: GSAP, el: HTMLElement, b: Base, p: Pose) {
+    g.set(el, { x: p.cx - b.x, y: p.cy - b.y, rotation: p.ang - 90, scaleX: p.esp / b.w, scaleY: p.len / b.h, transformOrigin: "50% 50%" });
+  }
+
+  /** A camada dos voos: por cima da página e da pilha, por baixo do cabeçalho. */
+  function camada() {
+    let c = document.querySelector<HTMLElement>(".voo-da-pilha");
+    if (!c) {
+      c = document.createElement("div");
+      c.className = "voo-da-pilha";
+      c.setAttribute("aria-hidden", "true");
+      document.body.append(c);
+    }
+    return c;
+  }
+
+  /**
+   * A sombra do livro no ar: uma mancha suave do tamanho dele, embaixo dele, que se afasta e fica mais
+   * forte com a altura (h, de 0 a 1) e some no pouso. Só transform e opacity (um filtro de sombra na
+   * camada travava a placa de vídeo no começo do voo).
+   */
+  function sombra(p: Pose | null, h = 0) {
+    const c = camada();
+    let s = c.querySelector<HTMLElement>(":scope > .sombra-do-voo");
+    if (!s) {
+      s = document.createElement("span");
+      s.className = "sombra-do-voo";
+      c.prepend(s);
+    }
+    if (!p || h < 0.02) return void (s.style.opacity = "0");
+    const largura = p.len * 1.12 + 10 * h;
+    const altura = Math.max(p.esp, 10) * 1.8 + 8 * h;
+    s.style.opacity = (0.9 * h).toFixed(3);
+    s.style.transform = `translate(${p.cx - 50}px, ${p.cy - 50 + 4 + 12 * h}px) rotate(${p.ang}deg) scale(${largura / 100}, ${altura / 100})`;
+  }
+
+  /**
+   * Uma cópia do livro 3D na camada dos voos, no lugar dele. Devolve a cópia, o livro dela e a Base: o
+   * centro da caixa e a lombada medida a 90° (a pose em pé de partida).
+   */
+  function copiaQueVoa(g: GSAP, el: HTMLElement) {
+    const r = el.getBoundingClientRect();
+    const c = el.cloneNode(true) as HTMLElement;
+    c.style.viewTransitionName = "none";
+    c.style.removeProperty("visibility");
+    Object.assign(c.style, { position: "absolute", left: `${r.left}px`, top: `${r.top}px`, margin: "0" });
+    camada().append(c);
+    const livro = c.querySelector<HTMLElement>(".livro-3d")!;
+    const antes = Number(g.getProperty(livro, "rotationY"));
+    g.set(livro, { rotationY: 90 });
+    const rl = c.querySelector(".face-lombada")!.getBoundingClientRect();
+    g.set(livro, { rotationY: antes });
+    const base: Base = { x: r.left + r.width / 2, y: r.top + r.height / 2, w: rl.width, h: rl.height };
+    return { copia: c, livro, base, giro: antes };
+  }
+
   for (const pilha of document.querySelectorAll<HTMLElement>(".pilha")) {
     if (movimentoReduzido.matches) continue;
     const ol = pilha.querySelector("ol")!;
+    const painel = pilha.closest<HTMLElement>(".painel-home");
     const celular = matchMedia("(max-width: 760px)");
     // No celular, tudo um pouco mais rápido.
     const DUR = () => (celular.matches ? 0.8 : 1);
     let gsap: GSAP | null = null;
     let ocupado = false;
     let pressionado: HTMLElement | null = null;
-    // A pilha e o livro do topo como a página abriu (para voltar a eles pelo histórico).
+    // A pilha e o topo como a página abriu (para voltar a eles pelo histórico).
     const ordemInicial = [...ol.children] as HTMLElement[];
     const escondido = ol.querySelector<HTMLElement>(":scope > li[hidden]");
     const topoInicial = document.querySelector<HTMLElement>(".topo-livro .livro-em-pe");
     const nomeDoTopo = topoInicial?.style.viewTransitionName ?? "";
+    const estiloDaPilha = ol.getAttribute("style");
 
     const visiveis = () => [...ol.querySelectorAll<HTMLElement>(":scope > li:not([hidden]) > .deitado")];
     /** O bloco em cima de um livro, de baixo para cima: o primeiro é o que está logo acima dele. */
@@ -156,6 +379,9 @@ const rotulo = (l: Livro) => {
       const livros = visiveis();
       return livros.slice(0, livros.indexOf(el)).reverse();
     };
+    const naTela = (r: DOMRect) => r.bottom > 0 && r.top < innerHeight && r.width > 0;
+    /** Na tela grande, a pilha fica parada ao lado do conteúdo enquanto ele rola. */
+    const aoLado = () => !!painel && getComputedStyle(painel).position === "sticky";
 
     // ---------- a física do bloco de cima ----------
     type Geo = { L: number; R: number; topo: number; t: number; m: number };
@@ -189,7 +415,8 @@ const rotulo = (l: Livro) => {
       const cm = cima.reduce((s, c) => s + geo.get(c)!.m * ((geo.get(c)!.L + geo.get(c)!.R) / 2), 0) / massa + arrasto;
       const baixo = geo.get(cima[0])!;
       const quina = g.L + dx;
-      if (quina >= baixo.R + arrasto) return { arrasto, graus: 0, cai: g.t, pivo: null };
+      // Saiu: o bloco cai e assenta reto sobre o de baixo (sem o arrasto do atrito, como na página nova).
+      if (quina >= baixo.R + arrasto) return { arrasto: 0, graus: 0, cai: g.t, pivo: null };
       if (quina <= cm) return { arrasto, graus: 0, cai: 0, pivo: null };
       const dist = Math.max(g.t * 1.2, quina - (baixo.L + arrasto));
       const graus = Math.min(25, (Math.asin(Math.min(1, g.t / dist)) * 180) / Math.PI);
@@ -212,25 +439,101 @@ const rotulo = (l: Livro) => {
       aplicarBloco(k, estadoDoBloco(k, dx));
     }
 
-    /** Termina de puxar, na velocidade de quem puxa, sem mola; o bloco tomba e cai no caminho, com um baque. */
+    /**
+     * Termina de puxar, na velocidade de quem puxa, sem mola; o bloco tomba e cai no caminho e, logo
+     * depois, dá o baque (sem esperar por ele: o livro já segue). Devolve quanto o bloco caiu e a
+     * velocidade do livro na saída (px/s), para o voo seguir com o mesmo embalo.
+     */
     async function puxarAteSair(k: HTMLElement, dx0: number) {
       const g = gsap!;
       const gk = geo.get(k)!;
       const saida = gk.R - gk.L + 12;
       const obj = { dx: dx0 };
+      const dur = 0.34 * DUR() * (1 - dx0 / saida) + 0.1;
       k.parentElement!.classList.add("no-ar");
-      await g
-        .to(obj, { dx: saida, duration: 0.42 * DUR() * (1 - dx0 / saida) + 0.12, ease: "power2.in", onUpdate: () => puxar(k, obj.dx) })
-        .then();
+      // Acelera desde o começo (quadrática): o atrito segura só nos primeiros milímetros.
+      await g.to(obj, { dx: saida, duration: dur, ease: "power1.in", onUpdate: () => puxar(k, obj.dx) }).then();
       const e = estadoDoBloco(k, saida);
-      if (!e) return 0;
-      const cima = blocoDe(k);
-      await g
-        .timeline()
-        .to(cima, { y: e.cai + 1, duration: 0.05, ease: "power1.out", delay: 0.16 })
-        .to(cima, { y: e.cai, duration: 0.1, ease: "power1.in" })
+      const velocidade = (2 * (saida - dx0)) / dur;
+      if (!e) return { cai: 0, velocidade };
+      // O baque; no fim dele, se o puxado já virou o livro que voa, a pilha assenta (ainda no movimento,
+      // e não depois, parada, quando até meio pixel se nota).
+      g.timeline({ onComplete: () => void (k.style.visibility === "hidden" && assentar(k)) })
+        .to(blocoDe(k), { y: e.cai + 1, duration: 0.05, ease: "power1.out", delay: 0.16 })
+        .to(blocoDe(k), { y: e.cai, duration: 0.1, ease: "power1.in" });
+      return { cai: e.cai, velocidade };
+    }
+
+    // ---------- a página que sai (o texto e os artigos) ----------
+    type Palco = {
+      topo: HTMLElement;
+      cor: string;
+      apagados: HTMLElement[];
+      texto: HTMLElement | null;
+      marca: HTMLElement | null;
+      novoTexto?: HTMLElement | null;
+      novaMarca?: HTMLElement | null;
+    };
+    let palco: Palco | null = null;
+
+    /** O texto do topo, a marca d'água e o resto do conteúdo (os artigos) esmaecem: a página vai mudar. */
+    function apagarAPagina() {
+      const topo = document.querySelector<HTMLElement>(".topo-livro");
+      if (!topo) return;
+      const texto = topo.querySelector<HTMLElement>(":scope > .texto");
+      const marca = topo.querySelector<HTMLElement>(":scope > .marca-dagua");
+      const resto = [...(topo.parentElement?.children ?? [])].filter((el) => el !== topo && el instanceof HTMLElement) as HTMLElement[];
+      const apagados = [texto, marca, ...resto].filter((el): el is HTMLElement => !!el);
+      palco = { topo, cor: topo.style.getPropertyValue("--cor"), apagados, texto, marca };
+      gsap!.to(apagados, { opacity: 0, duration: 0.28, ease: "power1.out", overwrite: "auto" });
+    }
+
+    /**
+     * O topo toma o livro novo antes de a página abrir: a cor do palco muda devagar, e o texto e a
+     * marca d'água da página nova entram (ainda transparentes) no lugar dos antigos. Se o topo mudar de
+     * altura, ele cresce ou encolhe até ela (devolve essa animação, para começar depois de medido o voo).
+     */
+    function montarOTopo(p: Pagina) {
+      if (!palco) return () => {};
+      const { topo } = palco;
+      const antes = topo.offsetHeight;
+      const quadro = topo.querySelector<HTMLElement>(":scope > .palco");
+      if (quadro) quadro.style.transition = "background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1)";
+      if (p.cor) topo.style.setProperty("--cor", p.cor);
+      if (palco.texto && p.texto) {
+        palco.novoTexto = p.texto.cloneNode(true) as HTMLElement;
+        palco.novoTexto.style.opacity = "0";
+        palco.texto.replaceWith(palco.novoTexto);
+      }
+      if (palco.marca && p.marca) {
+        palco.novaMarca = p.marca.cloneNode(true) as HTMLElement;
+        palco.novaMarca.style.opacity = "0";
+        palco.marca.replaceWith(palco.novaMarca);
+      }
+      const depois = topo.offsetHeight;
+      return () => {
+        if (Math.abs(depois - antes) > 0.5) gsap!.fromTo(topo, { height: antes }, { height: depois, duration: 0.4, ease: "power2.inOut", clearProps: "height" });
+      };
+    }
+
+    /** O texto novo aparece (e a marca d'água, até a transparência dela). */
+    function mostrarOTopo(atraso: number) {
+      if (!palco) return;
+      const g = gsap!;
+      if (palco.novoTexto) g.to(palco.novoTexto, { opacity: 1, duration: 0.42, delay: atraso, ease: "power1.inOut", clearProps: "opacity" });
+      if (palco.novaMarca && palco.marca) {
+        const alvo = getComputedStyle(palco.marca).opacity === "0" ? 0.1 : Number(getComputedStyle(palco.marca).opacity);
+        g.to(palco.novaMarca, { opacity: alvo, duration: 0.5, delay: atraso, ease: "power1.inOut", clearProps: "opacity" });
+      }
+    }
+
+    /** Página rolada e pilha ao lado: volta ao topo antes (a pilha fica parada), para o livro ir ao lugar dele. */
+    async function subirAoTopo() {
+      if (scrollY < 1 || !aoLado()) return;
+      const obj = { y: scrollY };
+      await gsap!
+        .to(obj, { y: 0, duration: Math.min(0.55, 0.28 + scrollY / 4000), ease: "power2.inOut", onUpdate: () => scrollTo({ top: obj.y, behavior: "instant" }) })
         .then();
-      return e.cai;
     }
 
     // ---------- guardar o livro aberto ----------
@@ -240,159 +543,268 @@ const rotulo = (l: Livro) => {
       const topo = document.querySelector<HTMLElement>(".topo-livro .livro-em-pe");
       return li && topo ? { li, deitado: li.querySelector<HTMLElement>(".deitado")!, topo } : null;
     }
-    const centro = (r: DOMRect) => ({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
-    const naTela = (r: DOMRect) => r.bottom > 0 && r.top < innerHeight && r.width > 0;
+
+    /** O topo da página está (ou vai estar, depois de subir) à vista: os livros voam de e até ele. */
+    function topoAVista() {
+      const topo = document.querySelector<HTMLElement>(".topo-livro .livro-em-pe");
+      return !!topo && (aoLado() || naTela(topo.getBoundingClientRect()));
+    }
 
     /**
-     * O livro aberto vira de lado (a lombada para o leitor) e é pousado em cima da pilha: vem por cima,
-     * desce por gravidade até encostar, afunda 1px e para. `queda`: o quanto a pilha já desceu (o
-     * bloco que caiu quando o livro puxado saiu). Longe da tela (no celular, a pilha fica embaixo do
-     * conteúdo), ele só chega por cima da pilha e assenta.
+     * O livro aberto volta para a pilha: gira até mostrar a lombada, sai do palco subindo e voa num arco
+     * até em cima da pilha, deitando-se no caminho, e é pousado (a mão desce devagar no fim) no espaço
+     * que a pilha guarda para ele; lá, a lombada da pilha toma o lugar dele. `queda`: o quanto a pilha
+     * já desceu (o bloco que caiu quando o livro puxado saiu). Longe da tela, ele só chega por cima da
+     * pilha e assenta.
      */
     async function guardarOAberto(queda = 0) {
       const g = gsap!;
       const a = aberto();
       if (!a) return;
-      const livro = a.topo.querySelector<HTMLElement>(".livro-3d");
-      const lombada = a.topo.querySelector<HTMLElement>(".face-lombada");
-      const voa = !!livro && !!lombada && naTela(a.topo.getBoundingClientRect());
-      if (voa) await g.to(livro, { rotationY: 90, duration: 0.3 * DUR(), ease: "power2.in" }).then();
-      const rl = lombada?.getBoundingClientRect();
-      // O livro do topo sai da página (e da transição dela): quem tem o nome agora é a lombada na pilha.
-      a.topo.style.visibility = "hidden";
-      a.topo.style.viewTransitionName = "none";
+      const voa = !!a.topo.querySelector(".livro-3d") && naTela(a.topo.getBoundingClientRect());
+      // O livro entra no espaço que a pilha guardava em cima (--folga), e o espaço sai: a pilha não muda
+      // de altura, e nenhum livro dela se mexe (nem meio pixel).
       ol.prepend(a.li);
       a.li.hidden = false;
+      ol.style.paddingTop = "0px";
       a.li.classList.add("no-ar");
       a.deitado.style.viewTransitionName = a.deitado.dataset.vt ?? "";
       const rd = a.deitado.getBoundingClientRect();
-      const acima = queda - Math.max(24, rd.height * 2);
-      const tl = g.timeline();
-      if (voa && rl) {
-        const de = centro(rl);
-        const para = centro(rd);
-        g.set(a.deitado, {
-          x: de.x - para.x,
-          y: de.y - para.y,
-          rotation: 90,
-          scaleX: rl.height / rd.width,
-          scaleY: rl.width / rd.height,
-          transformOrigin: "50% 50%",
-        });
-        tl.to(a.deitado, { x: 0, y: acima, rotation: 0, scaleX: 1, scaleY: 1, duration: 0.7 * DUR(), ease: "power3.inOut" });
-      } else {
-        g.set(a.deitado, { y: acima, opacity: 0 });
-        tl.to(a.deitado, { opacity: 1, duration: 0.15, ease: "none" });
+      if (!voa) {
+        a.topo.style.visibility = "hidden";
+        a.topo.style.viewTransitionName = "none";
+        g.set(a.deitado, { y: queda - Math.max(24, rd.height * 2), opacity: 0 });
+        await g
+          .timeline()
+          .to(a.deitado, { opacity: 1, duration: 0.15, ease: "none" })
+          .to(a.deitado, { y: queda, duration: 0.22, ease: "power2.in" }, ">-0.02")
+          .to(a.deitado, { y: queda + 1, duration: 0.04, ease: "power1.out" })
+          .to(a.deitado, { y: queda, duration: 0.09, ease: "power1.in" })
+          .then();
+        a.li.classList.remove("no-ar");
+        return;
       }
-      await tl
-        .to(a.deitado, { y: queda, duration: 0.22, ease: "power2.in" }, ">-0.02")
-        .to(a.deitado, { y: queda + 1, duration: 0.04, ease: "power1.out" })
-        .to(a.deitado, { y: queda, duration: 0.09, ease: "power1.in" })
-        .then();
-      a.li.classList.remove("no-ar");
+      // O livro sai do palco numa cópia (idêntica, no mesmo lugar); o de verdade some junto.
+      const v = copiaQueVoa(g, a.topo);
+      a.topo.style.visibility = "hidden";
+      a.topo.style.viewTransitionName = "none";
+      g.set(a.deitado, { opacity: 0 });
+      const de: Pose = { cx: v.base.x, cy: v.base.y, ang: 90, len: v.base.h, esp: v.base.w };
+      const para: Pose = { cx: rd.left + rd.width / 2, cy: rd.top + rd.height / 2 + queda, ang: 0, len: rd.width, esp: rd.height };
+      const dx = Math.abs(para.cx - de.cx);
+      // Sai subindo; chega por cima e um pouco da direita, já quase deitado, e desce até a pilha.
+      const ir = trajeto(g, de, para, [0, -34], [Math.min(110, dx * 0.35), -Math.max(16, para.esp * 1.4)], [0.04, 0.8]);
+      const obj = { u: 0 };
+      const tl = g.timeline();
+      const lupa = v.copia.querySelector(".lupa");
+      if (lupa) tl.to(lupa, { opacity: 0, duration: 0.14, ease: "none" }, 0);
+      tl.to(v.livro, { rotationY: 90, duration: 0.26 * DUR(), ease: "power2.in" }, 0);
+      tl.to(
+        obj,
+        {
+          u: 1,
+          duration: 0.58 * DUR(),
+          ease: "power1.inOut",
+          onUpdate: () => {
+            const pose = ir(obj.u);
+            poseEmPe(g, v.copia, v.base, pose);
+            sombra(pose, Math.sin(Math.PI * obj.u));
+          },
+        },
+        0.1 * DUR(),
+      );
+      await tl.then();
+      // Pousou: a lombada da pilha (do tamanho dele, no mesmo lugar) toma o lugar da cópia.
+      sombra(null);
+      g.set(a.deitado, { y: queda, opacity: 1 });
+      g.to(v.copia, { opacity: 0, duration: 0.08, ease: "none", onComplete: () => v.copia.remove() });
+      // O baque do pouso (afunda 1px e volta) corre junto com o começo do puxão.
+      g.timeline({ onComplete: () => a.li.classList.remove("no-ar") })
+        .to(a.deitado, { y: queda + 1, duration: 0.05, ease: "power1.out" })
+        .to(a.deitado, { y: queda, duration: 0.1, ease: "power1.in" });
     }
 
     // ---------- levar o escolhido ao topo ----------
-    /** O livro em pé do topo da página nova, tirado do HTML dela (é a página que vai abrir). */
-    async function livroDoTopo(href: string) {
-      try {
-        const html = await (await fetch(href)).text();
-        const el = new DOMParser().parseFromString(html, "text/html").querySelector<HTMLElement>(".topo-livro .livro-em-pe");
-        return el ? (document.importNode(el, true) as HTMLElement) : null;
-      } catch {
-        return null;
-      }
-    }
-
-    /** O que não chegar a tempo fica de fora (a página abre do mesmo jeito). */
-    const ate = <T,>(p: Promise<T>, ms: number) => Promise.race([p, new Promise<null>((r) => setTimeout(() => r(null), ms))]);
-
     let posto: { novo: HTMLElement; velho: HTMLElement } | null = null;
+    /** O giro final, que a página nova continua (pageswap). */
+    let giroFinal: { tween: gsap.core.Tween; livro: HTMLElement; lupa: HTMLElement | null; para: string } | null = null;
 
     /**
-     * O escolhido vai até o lugar dele (D49, como na gaveta da home): sai da pilha em pé, com a lombada
-     * para o leitor, e voa até o topo da página, onde o livro da página nova (o mesmo elemento dela)
-     * aparece de lombada e gira até ficar de lado. A transição de página encontra os dois no mesmo
-     * lugar, e o livro não muda mais.
+     * O escolhido vai até o lugar dele (D49, D52): da saída da pilha, com o embalo do puxão, voa num
+     * arco até o palco do topo, se pondo em pé no caminho (a lombada deitada vira o livro 3D logo no
+     * começo, ainda pequeno, e ele cresce até o tamanho do topo), e desce no lugar. Lá, o livro da
+     * página nova (o mesmo elemento dela) toma o lugar da cópia e gira até ficar de lado. `embalo`: a
+     * velocidade com que ele saiu da pilha (0, se estava parado ao lado).
      */
-    async function levarAoTopo(k: HTMLAnchorElement, novo: HTMLElement | null) {
+    async function levarAoTopo(k: HTMLAnchorElement, p: Pagina | null, embalo: number) {
       const g = gsap!;
       const velho = document.querySelector<HTMLElement>(".topo-livro .livro-em-pe");
-      if (!novo || !velho || !naTela(velho.getBoundingClientRect())) return;
-      const livro = novo.querySelector<HTMLElement>(".livro-3d");
-      const lombada = novo.querySelector<HTMLElement>(".face-lombada");
-      if (!livro || !lombada) return;
+      if (!p || !velho || !naTela(velho.getBoundingClientRect())) return false;
+      const novo = p.livro.cloneNode(true) as HTMLElement;
       novo.style.visibility = "hidden";
+      const lupa = novo.querySelector<HTMLElement>(".lupa");
+      if (lupa) lupa.style.opacity = "0";
       velho.replaceWith(novo);
       posto = { novo, velho };
-      const giro = Number(g.getProperty(livro, "rotationY")) || 38;
+      const crescer = montarOTopo(p);
+      const livro = novo.querySelector<HTMLElement>(".livro-3d")!;
+      // O palco gira o livro por CSS (data-livro-gira): aqui, quem gira é o GSAP.
+      livro.style.transition = "none";
       g.set(livro, { rotationY: 90 });
-      const rl = lombada.getBoundingClientRect();
-      const rd = k.getBoundingClientRect();
-      const de = centro(rd);
-      const para = centro(rl);
-      const x = Number(g.getProperty(k, "x")) || 0;
-      const y = Number(g.getProperty(k, "y")) || 0;
+      const v = copiaQueVoa(g, novo);
+      v.copia.querySelector(".lupa")?.remove();
+      crescer();
+
       // Um livro só com esse nome na troca: o que está no topo (o script do <head> nomearia o da pilha).
       k.removeAttribute("data-vt");
       k.style.viewTransitionName = "none";
+      const rk = k.getBoundingClientRect();
+      const bk: Base = {
+        x: rk.left + rk.width / 2 - (Number(g.getProperty(k, "x")) || 0),
+        y: rk.top + rk.height / 2 - (Number(g.getProperty(k, "y")) || 0),
+        w: k.offsetWidth,
+        h: k.offsetHeight,
+      };
+      const de: Pose = { cx: rk.left + rk.width / 2, cy: rk.top + rk.height / 2, ang: 0, len: rk.width, esp: rk.height };
+      const para: Pose = { cx: v.base.x, cy: v.base.y, ang: 90, len: v.base.h, esp: v.base.w };
+      const T = 0.54 * DUR();
+      // Com embalo, a saída segue na direção do puxão, na mesma velocidade (power1.out começa a 2/T).
+      const saida: [number, number] = embalo > 0 ? [Math.min(140, (embalo * T) / 6), -14] : [40, -26];
+      const ir = trajeto(g, de, para, saida, [0, -Math.max(36, (para.len - de.len) * 0.25)], [0.06, 0.86]);
+      g.set(v.copia, { opacity: 0 });
+      poseEmPe(g, v.copia, v.base, de);
+      const obj = { u: 0 };
+      mostrarOTopo(T * 0.25);
+      const giro = parseFloat(getComputedStyle(livro).getPropertyValue("--giro")) || 38;
+      const D = 0.52 * DUR();
+      // O giro começa ainda na descida (na cópia): pousar e virar são um gesto só.
+      const giroDaCopia = g.to(v.livro, { rotationY: giro, duration: D, ease: "power2.out", paused: true });
       await g
         .timeline()
-        .to(k, { y: y - Math.max(10, rd.height), duration: 0.18 * DUR(), ease: "power2.out" })
-        .to(k, {
-          x: x + para.x - de.x,
-          y: y + para.y - de.y,
-          rotation: 90,
-          scaleX: rl.height / k.offsetWidth,
-          scaleY: rl.width / k.offsetHeight,
-          transformOrigin: "50% 50%",
-          duration: 0.62 * DUR(),
-          ease: "power3.inOut",
+        .to(obj, {
+          u: 1,
+          duration: T,
+          ease: embalo > 0 ? "power1.out" : "power2.inOut",
+          onUpdate: () => {
+            const pose = ir(obj.u);
+            poseEmPe(g, v.copia, v.base, pose);
+            // A lombada deitada vira o livro 3D no começo do voo, ainda do tamanho dela: o 3D aparece
+            // por cima dela (que fica inteira por baixo até ele cobrir, sem clarear no meio).
+            const troca = limitar(obj.u / 0.12);
+            g.set(v.copia, { opacity: troca });
+            if (troca < 1) poseDeitado(g, k, bk, pose);
+            else k.style.visibility = "hidden";
+            sombra(pose, Math.sin(Math.PI * obj.u) * 0.9);
+          },
         })
+        .add(() => void giroDaCopia.play(), T * 0.62)
         .then();
+      // No lugar: o livro da página nova (idêntico à cópia, no mesmo ângulo) fica e termina o giro. O resto
+      // de um power2.out é outro power2.out, no tempo que falta: a curva segue sem emenda.
+      sombra(null);
+      const feito = giroDaCopia.progress();
+      g.set(livro, { rotationY: Number(g.getProperty(v.livro, "rotationY")) });
+      giroDaCopia.kill();
       novo.style.removeProperty("visibility");
+      v.copia.remove();
       k.style.visibility = "hidden";
-      await g.to(livro, { rotationY: giro, duration: 0.5 * DUR(), ease: "power2.out" }).then();
-      g.set(livro, { clearProps: "transform" });
+      const resta = (1 - feito) * D;
+      const tween = g.to(livro, { rotationY: giro, duration: resta, ease: "power2.out" });
+      if (lupa) g.to(lupa, { opacity: 1, duration: 0.22, delay: resta, ease: "none" });
+      giroFinal = { tween, livro, lupa, para: new URL(k.href).pathname };
+      // A página nova abre perto do fim do giro: entre a página antiga parar (pageswap) e a nova pintar,
+      // a tela fica parada um instante, e isso não se nota com o livro já quase parado (a 70% do tempo,
+      // o power2.out já fez 97% do giro). A página nova faz o resto.
+      await new Promise((r) => g.delayedCall(Math.max(0, (0.7 - feito) * D), r));
+      return true;
     }
 
+    // A página nova abre no meio do giro: ele para aqui e a página nova o continua de onde parou.
+    addEventListener("pageswap", () => {
+      if (!giroFinal || !gsap) return;
+      const { tween, livro, lupa, para } = giroFinal;
+      const resta = tween.progress() < 1 ? (1 - tween.progress()) * tween.duration() * 1000 : 0;
+      tween.pause();
+      const dados = {
+        t: Date.now(),
+        para,
+        giro: resta > 0 ? Number(gsap.getProperty(livro, "rotationY")) : null,
+        resta: Math.round(resta),
+        lupa: lupa ? Number(getComputedStyle(lupa).opacity) : 1,
+      };
+      try {
+        sessionStorage.setItem(CHEGADA, JSON.stringify(dados));
+      } catch {}
+    });
+
     // ---------- trocar de livro ----------
-    /** A pilha fica com a altura de agora e encostada embaixo: o livro guardado entra no espaço de cima. */
-    function segurarPilha() {
-      gsap!.set(ol, { height: ol.offsetHeight, justifyContent: "flex-end" });
+
+    /**
+     * Tudo parado, a pilha passa a ser a da página nova de verdade: o lugar do puxado sai do layout e os
+     * livros perdem as transformações (o bloco que caiu fica onde estava). Assim, a pilha da página
+     * antiga e a da nova são iguais até no meio pixel, e a troca de página não a mexe.
+     */
+    function assentar(k: HTMLElement) {
+      const li = k.parentElement!;
+      li.hidden = true;
+      li.classList.remove("no-ar");
+      gsap?.set(visiveis(), { clearProps: "transform,opacity" });
+      // O espaço de cima passa a ser o do livro que abriu (a pilha fica com a altura de antes).
+      const largura = k.style.getPropertyValue("--w");
+      if (largura) ol.style.setProperty("--folga", largura);
+      ol.style.removeProperty("padding-top");
+    }
+
+    function abrir(k: HTMLAnchorElement, voou = false) {
+      if (voou) assentar(k);
+      // A troca é esta (troca.js não derruba as folhas: o livro já está no lugar dele).
+      raiz.dataset.trocaPropria = "";
+      location.assign(k.href);
     }
 
     /** Clique, toque ou Enter: guarda o aberto, puxa o escolhido, leva-o ao topo e abre a página dele. */
     async function trocar(k: HTMLAnchorElement) {
       if (ocupado || !gsap) return;
       ocupado = true;
-      const novo = livroDoTopo(k.href);
-      segurarPilha();
+      // Durante a troca, o livro sob o mouse não sai (o :hover do CSS voltava quando a pilha assentava).
+      pilha.classList.add("quieta");
+      const pagina = paginaNova(k.href);
+      const voa = topoAVista();
+      if (voa) apagarAPagina();
+      await subirAoTopo();
       const dx = Number(gsap.getProperty(k, "x")) || 0;
       await guardarOAberto();
       // Com o livro guardado em cima, o bloco sobre o escolhido mudou: mede de novo.
       medir();
-      await puxarAteSair(k, dx);
-      await levarAoTopo(k, await ate(novo, 1500));
-      // A troca é esta (troca.js não derruba as folhas: o livro já está no lugar dele).
-      raiz.dataset.trocaPropria = "";
-      location.assign(k.href);
+      const { velocidade } = await puxarAteSair(k, dx);
+      const voou = voa && (await levarAoTopo(k, await ate(pagina, 1200), velocidade));
+      abrir(k, voou);
     }
 
     /** Arrastado e solto depois da metade: sai inteiro, espera ao lado da pilha, o aberto é guardado, e ele vai ao topo. */
     async function tirarArrastado(k: HTMLAnchorElement, dx: number) {
       ocupado = true;
-      const novo = livroDoTopo(k.href);
-      segurarPilha();
-      const queda = await puxarAteSair(k, dx);
-      await guardarOAberto(queda);
-      await levarAoTopo(k, await ate(novo, 1500));
-      // A troca é esta (troca.js não derruba as folhas: o livro já está no lugar dele).
-      raiz.dataset.trocaPropria = "";
-      location.assign(k.href);
+      pilha.classList.add("quieta");
+      const pagina = paginaNova(k.href);
+      const voa = topoAVista();
+      if (voa) apagarAPagina();
+      const { cai } = await puxarAteSair(k, dx);
+      await subirAoTopo();
+      await guardarOAberto(cai);
+      const voou = voa && (await levarAoTopo(k, await ate(pagina, 1200), 0));
+      abrir(k, voou);
     }
 
     // ---------- mouse, arrasto, toque e teclado ----------
+    // Parado um instante sobre um livro (ou com o foco nele, ou ao tocar), a página dele já vem.
+    for (const k of visiveis() as HTMLAnchorElement[]) {
+      let espera = 0;
+      k.addEventListener("pointerenter", () => (espera = window.setTimeout(() => paginaNova(k.href), 90)));
+      k.addEventListener("pointerleave", () => clearTimeout(espera));
+      k.addEventListener("pointerdown", () => paginaNova(k.href));
+      k.addEventListener("focus", () => paginaNova(k.href));
+    }
+
     const ligar = (g: GSAP) => {
       if (gsap) return;
       gsap = g;
@@ -476,19 +888,34 @@ const rotulo = (l: Livro) => {
       else carregarGsap().then((g) => (ligar(g), trocar(link)));
     });
 
-    // Voltar pelo histórico (bfcache) traz a página como ficou: a pilha e o livro do topo voltam ao lugar.
+    // Voltar pelo histórico (bfcache) traz a página como ficou: a pilha, o topo e o texto voltam ao lugar.
     addEventListener("pageshow", (e) => {
       if (!e.persisted) return;
       delete raiz.dataset.trocaPropria;
+      pilha.classList.remove("quieta");
       if (!gsap) return;
       ocupado = false;
       pressionado = null;
+      giroFinal?.tween.kill();
+      giroFinal = null;
+      document.querySelector(".voo-da-pilha")?.replaceChildren();
+      sombra(null);
       if (posto) {
         posto.novo.replaceWith(posto.velho);
         posto = null;
       }
+      if (palco) {
+        const { topo, cor, apagados, texto, marca, novoTexto, novaMarca } = palco;
+        if (novoTexto && texto) novoTexto.replaceWith(texto);
+        if (novaMarca && marca) novaMarca.replaceWith(marca);
+        topo.style.setProperty("--cor", cor);
+        topo.querySelector<HTMLElement>(":scope > .palco")?.style.removeProperty("transition");
+        gsap.set([topo, ...apagados], { clearProps: "opacity,height" });
+        palco = null;
+      }
       for (const li of ordemInicial) {
         ol.append(li);
+        li.hidden = li === escondido;
         li.classList.remove("no-ar");
         const d = li.querySelector<HTMLElement>(".deitado");
         if (!d) continue;
@@ -496,13 +923,14 @@ const rotulo = (l: Livro) => {
         d.style.removeProperty("visibility");
         d.dataset.vt = li.dataset.id;
       }
-      if (escondido) escondido.hidden = true;
       if (topoInicial) {
         topoInicial.style.removeProperty("visibility");
         topoInicial.style.viewTransitionName = nomeDoTopo;
       }
       const livroDoTopo = topoInicial?.querySelector(".livro-3d");
       gsap.set([ol, ...ol.querySelectorAll(".deitado"), ...(livroDoTopo ? [livroDoTopo] : [])], { clearProps: "all" });
+      if (estiloDaPilha) ol.setAttribute("style", estiloDaPilha);
+      else ol.removeAttribute("style");
     });
   }
 </script>
@@ -645,6 +1073,11 @@ const rotulo = (l: Livro) => {
     }
   }
 
+  /* Na troca pela pilha e chegando por ela (D52): o livro sob o mouse só sai quando o mouse andar. */
+  .pilha.quieta .deitado:hover {
+    transform: none;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .deitado {
       transition: none;
@@ -683,5 +1116,117 @@ const rotulo = (l: Livro) => {
     stroke-width: 1.8;
     stroke-linecap: round;
     stroke-linejoin: round;
+  }
+</style>
+
+<style is:global>
+  /*
+   * A camada dos voos da troca pela pilha (D52): por cima da página e da pilha, por baixo do cabeçalho
+   * (z-index 30). O livro 3D voa aqui, fora do palco (que o cortaria) e por cima do painel.
+   */
+  .voo-da-pilha {
+    position: fixed;
+    inset: 0;
+    z-index: 25;
+    pointer-events: none;
+  }
+
+  /* A sombra do livro no ar (sombra(), no script): uma mancha de 100px, movida e esticada por transform. */
+  .voo-da-pilha > .sombra-do-voo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(0 0 0 / 0.2), rgb(0 0 0 / 0.08) 60%, transparent);
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+
+  /*
+   * A chegada pela troca da pilha (tipo "pilha", posto pelo script da ordem da pilha): a página antiga
+   * já estava montada como a nova no topo (o livro no lugar, a cor e o texto dele) e sem os artigos.
+   * Nada se move. Primeiro, as imagens da página antiga ficam à vista, e as da nova escondidas, até as
+   * fontes da nova ficarem prontas (data-pilha-pronta, posto pelo script; no primeiro quadro, nenhuma
+   * está). Aí a página esmaece de uma na outra (o que é igual fica igual, e os artigos chegam), e os
+   * que têm nome próprio (o cabeçalho, o traço do menu, o livro do topo, que continua o giro, e o
+   * guardado na pilha) trocam de uma vez, sem esmaecer. Antes (D51), a página nova subia 18px e a
+   * antiga 6px: a tela inteira tremia no fim da troca (B01, B09).
+   */
+  :root:not(.trocando-tema):active-view-transition-type(pilha)::view-transition-group(*) {
+    animation: none;
+  }
+
+  :root:not(.trocando-tema):active-view-transition-type(pilha)::view-transition-old(*) {
+    animation: pilha-segura 2s both;
+  }
+
+  :root:not(.trocando-tema):active-view-transition-type(pilha)::view-transition-new(*) {
+    animation: pilha-espera 2s both;
+  }
+
+  :root[data-pilha-pronta]:not(.trocando-tema):active-view-transition-type(pilha)::view-transition-old(*) {
+    animation: pilha-sai 1ms both;
+  }
+
+  :root[data-pilha-pronta]:not(.trocando-tema):active-view-transition-type(pilha)::view-transition-new(*) {
+    animation: none;
+  }
+
+  :root[data-pilha-pronta]:not(.trocando-tema):active-view-transition-type(pilha)::view-transition-old(root) {
+    animation: pilha-sai 0.34s cubic-bezier(0.33, 0, 0.2, 1) both;
+  }
+
+  :root[data-pilha-pronta]:not(.trocando-tema):active-view-transition-type(pilha)::view-transition-new(root) {
+    animation: pilha-surge 0.34s cubic-bezier(0.33, 0, 0.2, 1) both;
+  }
+
+  /*
+   * As duas imagens da página somam (plus-lighter), num grupo isolado: onde são iguais, a página fica
+   * como está. Quem punha isso era a animação padrão do navegador, que as regras acima trocam; sem
+   * isso, a página inteira clareava no meio da troca (as duas a meia opacidade sobre o fundo).
+   */
+  :root:active-view-transition-type(pilha)::view-transition-image-pair(root) {
+    isolation: isolate;
+  }
+
+  :root:active-view-transition-type(pilha)::view-transition-old(root),
+  :root:active-view-transition-type(pilha)::view-transition-new(root) {
+    mix-blend-mode: plus-lighter;
+  }
+
+  @keyframes pilha-segura {
+    from,
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes pilha-espera {
+    from,
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes pilha-sai {
+    from {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes pilha-surge {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
   }
 </style>
