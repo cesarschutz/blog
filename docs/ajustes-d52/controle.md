@@ -28,10 +28,10 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
 ## B. Ajustes que o Cesar identificou (e bugs que eu achar)
 
 - [~] **B01.** _(agente Pilha)_ Categorias: ao trocar de livro, depois que o livro novo vai para o lugar, a tela treme.
-- [~] **B02.** _(agente Simples)_ Livro ampliado: "Ler o artigo" e "Abrir o próximo livro" com o ponteiro de link e
+- [x] **B02.** _(agente Simples; 3774b8f, bc72023)_ Livro ampliado: "Ler o artigo" e "Abrir o próximo livro" com o ponteiro de link e
       sublinhado no hover, como na primeira página; "Ver o livro inteiro" com o sublinhado mais forte
       no hover.
-- [~] **B03.** _(agente Simples)_ Anterior / próximo (teclado e botões) em **ordem cronológica global**, a mesma de
+- [x] **B03.** _(agente Simples; c039c64, 08f5032)_ Anterior / próximo (teclado e botões) em **ordem cronológica global**, a mesma de
       "Todos os artigos", sem importar o livro.
 - [x] **B04.** _(agente Artigo; f5d4fac)_ "Neste artigo" chega marcado (risco, "V" e a última seção selecionada): sempre chegar
       zerado.
@@ -60,7 +60,7 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
 
 ## C. Novidades
 
-- [~] **C01.** _(agente Simples)_ Primeira visita: tema **claro** e artigos em **cards**. A escolha do leitor fica
+- [x] **C01.** _(agente Simples; 10912bc, f1a592d)_ Primeira visita: tema **claro** e artigos em **cards**. A escolha do leitor fica
       guardada no navegador por **3 dias**; depois disso, volta ao padrão (claro e cards).
 - [~] **C02.** _(agente Home)_ Destaque da home: em cards, **um cartão maior ocupando duas colunas** sempre que houver
       pelo menos duas lado a lado; com uma coluna só, o primeiro cartão em destaque; em lista (tela
@@ -111,6 +111,16 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
   só com ⌘K / Ctrl+K; o "?" só no artigo. A ficha dos atalhos: na tela grande (≥ 1300px), uma ficha
   pautada sai de trás da folha do sumário e pousa ao lado, sem escurecer; abaixo disso, no meio com o
   véu. Popover com papel de diálogo, foco, Esc, "Desligar". [diagnosticos/B06.md](diagnosticos/B06.md).
+
+- **B02** (3774b8f): o `:hover` nativo se perdia nas folhas empilhadas em 3D (o mesmo motivo do clique,
+  D50). Um `mousemove` no palco usa o mesmo `linkNoPonto` do clique e põe `.sob-o-mouse` no link certo,
+  com `cursor: pointer`; "Ver o livro inteiro" ganha o sublinhado mais grosso. [diagnosticos/B02.md](diagnosticos/B02.md).
+- **B03** (c039c64): posts de série usavam a ordem de leitura da série (`getPostsDaSerie`), e não a data.
+  Agora anterior e próximo vêm sempre de `getResumos()`, a mesma ordem de `/archive/`; o rodapé perdeu
+  o rótulo "na série". [diagnosticos/B03.md](diagnosticos/B03.md).
+- **C01** (10912bc): padrão claro e cards (o tema não segue mais o sistema); a escolha do leitor (tema e
+  modo) fica no `localStorage` com a data da última troca (`cs-prefs-quando`); passados 3 dias, o script
+  do `<head>` apaga as chaves antes da primeira pintura. [diagnosticos/C01.md](diagnosticos/C01.md).
 
 ## Para o Cesar decidir
 
