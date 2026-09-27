@@ -4,8 +4,15 @@
  * tingido, quando o post tem; embaixo, categoria, data e tempo de leitura, o título inteiro, a
  * descrição completa e as tags, que descem até o pé do card. O card inteiro é clicável; é uma folha
  * que sobe 4px ao passar o mouse, com o título em azul-tinta (D26).
+ *
+ * O destaque (D52, C02): o primeiro card da primeira página da home é o mais recente. Com duas colunas
+ * ou mais na grade, ele ocupa o lugar de dois cards, com o desenho no recorte largo e as anotações
+ * (como no topo do artigo); com uma coluna só, fica no lugar de sempre, com o título maior. Nos dois,
+ * o rótulo "Mais recente" e o desenho que se desenha (D41, desenho-vivo.ts). A largura da grade vem da
+ * consulta ao contêiner `cartoes` (Recentes.astro), a mesma conta das colunas de base.css.
  */
 import Ilustracao from "./Ilustracao.astro";
+import MaisRecente from "./MaisRecente.astro";
 import MetaItem from "./MetaItem.astro";
 import { mdEmLinha, tituloEmPartes } from "../lib/formato";
 import { temIlustracao } from "../lib/ilustracoes";
@@ -15,21 +22,30 @@ interface Props {
   post: Resumo;
   /** Nível do título: um abaixo do título da seção (h2 quando a página tem só o h1 em cima). */
   nivel?: "h2" | "h3";
+  /** O mais recente, na primeira página da home (D52). */
+  destaque?: boolean;
 }
 
-const { post, nivel = "h3" } = Astro.props;
+const { post, nivel = "h3", destaque = false } = Astro.props;
 const Titulo = nivel;
 ---
 
-<li class="cartao folha" data-livro={post.livro}>
+<li class:list={["cartao", "folha", { destaque }]} data-livro={post.livro}>
   {
-    temIlustracao(post.slug) && (
-      <div class="ilustracao-cartao painel" aria-hidden="true" style={`--cor:${post.cor}`}>
-        <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} tamanho="cartao" decorativa />
-      </div>
-    )
+    temIlustracao(post.slug) &&
+      (destaque ? (
+        <div class="ilustracao-cartao painel" aria-hidden="true" data-desenhar style={`--cor:${post.cor}`}>
+          <Ilustracao slug={post.slug} recorte="largo" cor={post.cor} tamanho="cartao" anotacoes decorativa class="recorte-largo" />
+          <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} tamanho="cartao" decorativa class="recorte-medio" />
+        </div>
+      ) : (
+        <div class="ilustracao-cartao painel" aria-hidden="true" style={`--cor:${post.cor}`}>
+          <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} tamanho="cartao" decorativa />
+        </div>
+      ))
   }
   <div class="corpo-cartao">
+    {destaque && <MaisRecente />}
     <MetaItem post={post} />
     <Titulo class="titulo-cartao"><a href={post.url} set:html={tituloEmPartes(post.tituloCompleto)} /></Titulo>
     <p class="descricao" set:html={mdEmLinha(post.descricao)} />
@@ -142,6 +158,60 @@ const Titulo = nivel;
   @media (prefers-reduced-motion: reduce) {
     .cartao:hover {
       transform: none;
+    }
+  }
+
+  /* ---------- o destaque (D52, C02) ---------- */
+
+  /* Uma coluna: o card de sempre, com o recorte médio, o rótulo e o título maior. */
+  .destaque :global(.recorte-largo) {
+    display: none;
+  }
+
+  .destaque .titulo-cartao {
+    font-size: clamp(24px, 7cqi, 27px);
+    line-height: 1.12;
+  }
+
+  .destaque .descricao {
+    font-size: 16px;
+  }
+
+  /*
+   * Duas colunas ou mais (a grade de base.css abre a segunda coluna a partir de 2 × 290 + 26 = 606px):
+   * o lugar de dois cards, com o desenho largo e anotado em cima e o texto mais largo embaixo.
+   */
+  @container cartoes (min-width: 606px) {
+    .destaque {
+      grid-column: span 2;
+    }
+
+    .destaque .ilustracao-cartao {
+      aspect-ratio: 1100 / 468;
+    }
+
+    .destaque :global(.recorte-largo) {
+      display: block;
+    }
+
+    .destaque :global(.recorte-medio) {
+      display: none;
+    }
+
+    .destaque .corpo-cartao {
+      padding: 22px 28px 24px;
+    }
+
+    .destaque .titulo-cartao {
+      margin-top: 10px;
+      font-size: clamp(26px, 2.5vw, 32px);
+      line-height: 1.12;
+    }
+
+    .destaque .descricao {
+      max-width: 64ch;
+      margin-top: 10px;
+      font-size: 16px;
     }
   }
 </style>

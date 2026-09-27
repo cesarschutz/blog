@@ -1,0 +1,52 @@
+---
+/**
+ * O rótulo do destaque da home (D52, C02): "Mais recente", na fonte da interface, sem caixa alta, com
+ * o traço de caneta embaixo (o mesmo sublinhado à mão do menu, src/lib/traco.ts), parado e na tinta,
+ * como quem anotou no caderno qual é o último. Vai no primeiro cartão (ou no primeiro item da lista)
+ * da primeira página; o leitor de tela lê o texto, e o traço é decorativo.
+ */
+import { tracoDeCaneta } from "../lib/traco";
+---
+
+<p class="mais-recente">
+  <span class="texto"
+    >Mais recente<svg viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"
+      ><path d={tracoDeCaneta("Mais recente", 7)} /></svg
+    ></span
+  >
+</p>
+
+<style>
+  .mais-recente {
+    margin: 0 0 10px;
+    font-family: var(--font-ui);
+    font-size: 13.5px;
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--ink);
+  }
+
+  .texto {
+    position: relative;
+    display: inline-block;
+  }
+
+  svg {
+    position: absolute;
+    left: -2px;
+    bottom: -6px;
+    width: calc(100% + 4px);
+    height: 7px;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  path {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+</style>

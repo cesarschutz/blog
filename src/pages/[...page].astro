@@ -1,17 +1,18 @@
 ---
 /**
- * Home (briefing §5.1): abertura com a estante, a gaveta do livro aberto, o destaque (post mais
- * recente, que não se repete na lista) e os artigos recentes (Lista / Cards), na largura toda: o
- * painel lateral da D28 saiu da home na D44 (continua na página de categoria e na da série).
- * O nome do arquivo, `[...page]`, é exigência do paginate do Astro.
- * Paginada como no blog atual (D27): 12 artigos por página em /, /2/, /3/…; da página 2 em diante,
- * só a lista e a paginação.
+ * Home (briefing §5.1): abertura com a estante, a gaveta do livro aberto e os artigos recentes (Lista /
+ * Cards), na largura toda: o painel lateral da D28 saiu da home na D44 (continua na página de
+ * categoria e na da série). O destaque (o post mais recente) é o primeiro deles (D52, C02): nos cards,
+ * ocupa o lugar de dois; na lista e com uma coluna só, é o primeiro, maior (Cartao e ItemLista).
+ * Paginada como no blog atual (D27), em /, /2/, /3/…: cada página tem 12 lugares na grade. Na primeira,
+ * o destaque ocupa dois, e ela mostra 11 artigos (a grade fecha certinho com 1, 2, 3 ou 4 colunas); da
+ * segunda em diante, 12 artigos, só a lista e a paginação. Nenhum post se repete nem fica de fora.
+ * O nome do arquivo, `[...page]`, é o parâmetro de resto (a página 1 é a raiz).
  */
-import type { GetStaticPaths, Page } from "astro";
+import type { GetStaticPaths } from "astro";
 import Base from "../layouts/Base.astro";
 import Estante from "../components/Estante.astro";
 import Gaveta from "../components/Gaveta.astro";
-import Destaque from "../components/Destaque.astro";
 import Recentes from "../components/Recentes.astro";
 import Marca from "../components/Marca.astro";
 import { TEXTOS } from "../data/site";
@@ -19,18 +20,24 @@ import { montarLivros } from "../lib/estante";
 import { getResumos, type Resumo } from "../lib/posts";
 import { url } from "../lib/url";
 
-export const getStaticPaths = (async ({ paginate }) => {
-  // O destaque (o mais recente) fica fora da lista, em todas as páginas. 12 por página, como no blog
-  // atual (`SITE.pageSize`). O número fica aqui dentro porque o Astro isola o getStaticPaths.
-  const [, ...demais] = await getResumos();
-  return paginate(demais, { pageSize: 12 });
+export const getStaticPaths = (async () => {
+  // 12 lugares por página, como no blog atual (`SITE.pageSize`); na primeira, o destaque vale dois. Os
+  // números ficam aqui dentro porque o Astro isola o getStaticPaths.
+  const LUGARES = 12;
+  const todos = await getResumos();
+  const paginas = [todos.slice(0, LUGARES - 1)];
+  for (let i = LUGARES - 1; i < todos.length; i += LUGARES) paginas.push(todos.slice(i, i + LUGARES));
+  return paginas.map((posts, i) => ({
+    params: { page: i === 0 ? undefined : String(i + 1) },
+    props: { posts, atual: i + 1, ultima: paginas.length },
+  }));
 }) satisfies GetStaticPaths;
 
-const { page } = Astro.props as { page: Page<Resumo> };
-const primeira = page.currentPage === 1;
+const { posts, atual, ultima } = Astro.props as { posts: Resumo[]; atual: number; ultima: number };
+const endereco = (n: number) => url(n === 1 ? "/" : `/${n}/`);
+const primeira = atual === 1;
 const livros = primeira ? await montarLivros() : [];
 const resumos = await getResumos();
-const [destaque] = resumos;
 // Como no blog atual: o total de artigos publicados abaixo do título da lista (D33).
 const total = `${resumos.length} ${resumos.length === 1 ? "artigo publicado" : "artigos publicados"}`;
 const jsonLd = {
@@ -45,8 +52,8 @@ const jsonLd = {
 ---
 
 <Base
-  titulo={primeira ? undefined : `Artigos — página ${page.currentPage}`}
-  descricao={primeira ? undefined : `Artigos do blog de Cesar Schutz, do mais recente ao mais antigo: página ${page.currentPage} de ${page.lastPage}.`}
+  titulo={primeira ? undefined : `Artigos — página ${atual}`}
+  descricao={primeira ? undefined : `Artigos do blog de Cesar Schutz, do mais recente ao mais antigo: página ${atual} de ${ultima}.`}
   jsonLd={primeira ? jsonLd : undefined}
   abertura={primeira}
 >
@@ -73,27 +80,39 @@ const jsonLd = {
             <Gaveta livros={livros} />
           </div>
         </div>
-        {destaque && <Destaque post={destaque} />}
       </>
     )
   }
   <div class="wrap artigos-home">
     <Recentes
-      posts={page.data}
-      titulo={primeira ? "Artigos recentes" : `Artigos — página ${page.currentPage}`}
+      posts={posts}
+      titulo={primeira ? "Artigos recentes" : `Artigos — página ${atual}`}
       subtitulo={total}
       nivel={primeira ? "h2" : "h1"}
-      pagina={{ atual: page.currentPage, ultima: page.lastPage, anterior: page.url.prev, proxima: page.url.next }}
+      destaque={primeira}
+      pagina={{
+        atual,
+        ultima,
+        anterior: atual > 1 ? endereco(atual - 1) : undefined,
+        proxima: atual < ultima ? endereco(atual + 1) : undefined,
+      }}
     />
   </div>
 </Base>
+
+<script>
+  // O desenho do destaque se desenha quando entra na tela, uma vez (D41; no primeiro card ou item, D52).
+  import { desenharAoEntrar } from "../scripts/desenho-vivo";
+
+  desenharAoEntrar();
+</script>
 
 <style>
   .topo-home {
     padding-top: 26px;
   }
 
-  /* Espaço entre o destaque (ou o cabeçalho) e os artigos. */
+  /* Espaço entre a abertura (ou o cabeçalho) e os artigos. */
   .artigos-home {
     padding-top: 56px;
   }

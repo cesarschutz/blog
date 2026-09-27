@@ -20,8 +20,9 @@ const FORMAS = ":is(path, rect, circle, ellipse, line, polyline, polygon)";
 const raiz = document.documentElement;
 
 function desenhar(gsap: GSAP, svg: SVGSVGElement) {
-  // O contorno: tudo o que é traço, menos cor, hachura e tracejado.
-  const tracos = [...svg.querySelectorAll<SVGElement>(`.tinta ${FORMAS}:not(.cor, .hachura, .fantasma)`)];
+  // O contorno: tudo o que é traço, menos cor, hachura e tracejado; no recorte anotado (o card largo do
+  // destaque, D52), as linhas de chamada das anotações vêm por último.
+  const tracos = [...svg.querySelectorAll<SVGElement>(`.tinta ${FORMAS}:not(.cor, .hachura, .fantasma), .com-anotacoes .anotacao .chamada`)];
   const tintas = [...svg.querySelectorAll<SVGElement>(".tinta :is(.cor, .hachura, .papel)")];
   const textos = [...svg.querySelectorAll<SVGElement>("text, .tinta .fantasma")];
   // Muitos traços não passam de ~1,2s de sequência.
@@ -93,6 +94,10 @@ function desenharPorCamadas(gsap: GSAP, svg: SVGSVGElement, celular: boolean) {
 
 const mostrar = (area: Element) => area.setAttribute("data-desenhado", "");
 
+// O destaque da home existe nas duas formas, lista e cards (D52): só a que está à vista se desenha, e
+// uma vez por página; a outra, quando aparecer (na troca Lista / Cards), já vem pronta.
+let desenhou = false;
+
 /** O desenho de `[data-desenhar]` (o destaque da home) se desenha quando entra na tela, uma vez. */
 export function desenharAoEntrar() {
   const areas = [...document.querySelectorAll("[data-desenhar]")];
@@ -112,16 +117,29 @@ export function desenharAoEntrar() {
         if (!e.isIntersecting) continue;
         olhar.unobserve(e.target);
         const area = e.target;
-        gsap.then((g) => {
-          const svg = area.querySelector<SVGSVGElement>("svg.ilustracao");
-          if (!area.hasAttribute("data-desenhado") && svg) desenhar(g, svg);
+        if (desenhou) {
           mostrar(area);
-        });
+          continue;
+        }
+        desenhou = true;
+        gsap.then(
+          (g) => {
+            // O recorte à vista (o card do destaque traz o largo e o médio, e mostra um só).
+            const svg = [...area.querySelectorAll<SVGSVGElement>("svg.ilustracao")].find((s) => s.getBoundingClientRect().width > 0);
+            if (!area.hasAttribute("data-desenhado") && svg) desenhar(g, svg);
+            mostrar(area);
+          },
+          () => mostrar(area),
+        );
       }
     },
     { threshold: 0.3 },
   );
   areas.forEach((a) => olhar.observe(a));
+  // Os cards chegam do <template> na primeira troca para Cards (SeletorModo, D37).
+  addEventListener("cartoes:prontos", () =>
+    document.querySelectorAll("[data-desenhar]:not([data-desenhado])").forEach((a) => (desenhou ? mostrar(a) : olhar.observe(a))),
+  );
 }
 
 /**
