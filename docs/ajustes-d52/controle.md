@@ -41,14 +41,14 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
 - [x] **B06.** _(agente Artigo; 2788f33)_ "?" abre a busca (em qualquer tela): a busca só com ⌘K / Ctrl+K; "?" só abre os
       atalhos, e só no artigo. O painel de atalhos está feio: no celular, pode ser centrado com o
       fundo escurecido; na tela grande, uma entrada elegante (sem cobrir tudo).
-- [~] **B07.** _(agente Listas)_ "Todos os artigos": muito espaço vazio no painel com os livros ao lado do texto; em
+- [x] **B07.** _(agente Listas; 6353c1d)_ "Todos os artigos": muito espaço vazio no painel com os livros ao lado do texto; em
       tela menor (livros embaixo do texto), pior. Repensar essa tela.
 - [x] **B08.** _(agente Livros e visor; 975885c)_ Livros de lado (3D): uma **linha branca** entre a capa e a lombada. Arrumar em todos.
 - [x] **B09.** _(agente Pilha; 2463a34)_ Troca de livro em Categorias: a animação toda mais profissional, fluida e realista,
       principalmente o fim (o livro novo no lugar, sem tremer). Junto com o B01.
 - [~] **B10.** _(agente Trocas)_ De `/categories/` para uma categoria e de volta: a animação do livro está feia.
       Melhorar ou tirar.
-- [~] **B11.** _(agente Listas)_ Tags: cartões mais bonitos; **um ícone por tag**, no padrão dos desenhos das capas, com
+- [x] **B11.** _(agente Listas; e6fd634)_ Tags: cartões mais bonitos; **um ícone por tag**, no padrão dos desenhos das capas, com
       o processo para tag nova já pedindo o ícone; na página de uma tag, o ícone grande como marca
       d'água no painel do topo, que hoje está mal aproveitado (como o de "Todos os artigos").
 - [x] **B12.** _(agente Abertura; e950bfc)_ Abertura da home: com o mouse sobre a estante, aparecem as legendas dos livros (as do
@@ -154,6 +154,22 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
   vazava nas emendas. A lombada passa 1,5px por baixo da capa (`::before`), o miolo começa 1px para
   dentro (`--recuo-miolo`) e o verso da capa passa 1px da dobradiça. Vale para todos os livros de lado.
   [diagnosticos/B08.md](diagnosticos/B08.md).
+
+- **B07** (6353c1d): o texto ficava centrado ao lado de uma estante alta, boiando no vazio; abaixo de
+  860px, a estante descia sem nada ao lado. Agora o painel é uma composição apoiada no pé da folha:
+  título e descrição no alto à esquerda; embaixo, na altura da tábua, "Por assunto" (as 4 tags mais
+  usadas e "Todas as tags") e "Por ano" (âncoras dos anos, com a contagem que rola com o filtro); a
+  estante de filtro à direita, com "Só <livro>" e "Limpar filtro" embaixo da tábua. Altura do painel:
+  380 → 324px (1280), 533 → 278px (768), ~500 → 359px (390). [diagnosticos/B07.md](diagnosticos/B07.md).
+- **B11** (e6fd634): 20 ícones de tag (`docs/capas/tags/<slug>.svg`) no traço dos ícones das lombadas,
+  objetos do dia a dia e nunca logotipo (broto para Spring, moedor de café para JVM, âncora para LTS,
+  semáforo de ferrovia para Concorrência, leme de 8 raios para Kubernetes, nuvem para AWS…), com a
+  forma escrita à mão em coordenadas (`scripts/desenho/tags.mjs` só põe o tremor da caneta). Sem
+  ícone, o build falha com o caminho e a regra (`src/lib/tags-svg.ts`); processo de tag nova no
+  `CAPAS.md`, na skill `post` e no `CLAUDE.md`. Cartões de `/tags/` com o ícone (gira 6° no hover) e
+  uma estante em miniatura dos livros de onde vêm os artigos. Topo da tag como o do B07, com o ícone
+  grande em marca d'água. `PilulaTag.astro` com ícone nas tags vizinhas, "Por assunto", topo do livro e
+  fim do artigo. Folha de conferência em `/amostra/tags/`. [diagnosticos/B11.md](diagnosticos/B11.md).
 
 ## Para o Cesar decidir
 
