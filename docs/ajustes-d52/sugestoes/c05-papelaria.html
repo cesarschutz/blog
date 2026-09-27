@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>C05 · Papelaria de estudo (sugestões)</title>
+<!--
+  Sugestões do agente de Pesquisa para o C05 (e o painel de atalhos do B06). Página autocontida: sem
+  CDN, fontes do próprio node_modules (sirva a raiz do projeto: python3 -m http.server <porta>
+  --bind 127.0.0.1 e abra /docs/ajustes-d52/sugestoes/c05-papelaria.html). Cores copiadas de
+  src/styles/tokens.ts; as que não existem lá (o amarelo do post-it) aparecem como proposta de token.
+  Textos de mentira. Nada aqui é código do site.
+-->
+<style>
+@font-face { font-family: "Besley"; src: url("../../../node_modules/@fontsource-variable/besley/files/besley-latin-wght-normal.woff2") format("woff2"); font-weight: 400 900; font-display: swap; }
+@font-face { font-family: "Literata"; src: url("../../../node_modules/@fontsource-variable/literata/files/literata-latin-opsz-normal.woff2") format("woff2"); font-weight: 200 900; font-display: swap; }
+@font-face { font-family: "Literata"; font-style: italic; src: url("../../../node_modules/@fontsource-variable/literata/files/literata-latin-opsz-italic.woff2") format("woff2"); font-weight: 200 900; font-display: swap; }
+@font-face { font-family: "IBM Plex Sans"; src: url("../../../node_modules/@fontsource-variable/ibm-plex-sans/files/ibm-plex-sans-latin-wght-normal.woff2") format("woff2"); font-weight: 100 700; font-display: swap; }
+@font-face { font-family: "JetBrains Mono"; src: url("../../../node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2") format("woff2"); font-weight: 100 800; font-display: swap; }
+@font-face { font-family: "Bitter"; src: url("../../../node_modules/@fontsource-variable/bitter/files/bitter-latin-wght-normal.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Newsreader"; font-style: italic; src: url("../../../node_modules/@fontsource-variable/newsreader/files/newsreader-latin-opsz-italic.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+@font-face { font-family: "Caveat"; src: url("../../../node_modules/@fontsource/caveat/files/caveat-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+
+/* ---------- Tokens (src/styles/tokens.ts), claro ---------- */
+:root {
+  color-scheme: light;
+  --paper: #F1F0EB; --paper-hi: #FFFFFE; --well: #F5F5F4;
+  --ink: #1A2124; --ink-2: #57605E; --ink-3: #868D8A; --rule: #E2E0D8;
+  --acento: #2549B8; --sobre-acento: #FFFFFF;
+  --aviso-nota: #3F5878; --aviso-cuidado: #A3432A;
+  --veu: #0C0F11; --caneta: #1F4FB5;
+  --marca-texto: #FFE27A;
+  --livro-dev: #7a4430; --livro-papel: #f2ede2; --livro-tinta-papel: #1f1c18; --livro-tinta-clara: #efe8d8;
+  --sombra: 0 1px 2px rgba(40,38,30,.04), 0 10px 28px -18px rgba(40,38,30,.28);
+  --sombra-baixa: rgba(40,38,30,.30);
+  /* Propostas de token (não existem no tokens.ts): */
+  --post-it: color-mix(in oklab, var(--marca-texto) 42%, var(--paper-hi));
+  --pauta: color-mix(in oklab, var(--caneta) 15%, transparent);
+  --pauta-cabeca: color-mix(in oklab, var(--aviso-cuidado) 50%, transparent);
+  --carimbo: var(--aviso-nota);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #111618; --paper-hi: #1A2124; --well: #21282A;
+    --ink: #E7E9E4; --ink-2: #A9B0AC; --ink-3: #7F8884; --rule: #2A3336;
+    --acento: #93AEFF; --sobre-acento: #0D1530;
+    --aviso-nota: #9DB3D4; --aviso-cuidado: #E7957C;
+    --veu: #050708; --caneta: #8FA8FF; --marca-texto: #FFD65A;
+    --sombra: 0 12px 30px -18px rgba(0,0,0,.8); --sombra-baixa: rgba(0,0,0,.7);
+    --post-it: color-mix(in oklab, var(--marca-texto) 11%, var(--paper-hi));
+    --pauta: color-mix(in oklab, var(--caneta) 16%, transparent);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #111618; --paper-hi: #1A2124; --well: #21282A;
+  --ink: #E7E9E4; --ink-2: #A9B0AC; --ink-3: #7F8884; --rule: #2A3336;
+  --acento: #93AEFF; --sobre-acento: #0D1530;
+  --aviso-nota: #9DB3D4; --aviso-cuidado: #E7957C;
+  --veu: #050708; --caneta: #8FA8FF; --marca-texto: #FFD65A;
+  --sombra: 0 12px 30px -18px rgba(0,0,0,.8); --sombra-baixa: rgba(0,0,0,.7);
+  --post-it: color-mix(in oklab, var(--marca-texto) 11%, var(--paper-hi));
+  --pauta: color-mix(in oklab, var(--caneta) 16%, transparent);
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 15px/1.55 "IBM Plex Sans", Arial, sans-serif; padding: 28px clamp(16px, 3vw, 32px) 80px; }
+.pagina { max-width: 1180px; margin: 0 auto; }
+h1, h2 { font-family: "Besley", Georgia, serif; font-weight: 700; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(30px, 4vw, 44px); line-height: 1.08; }
+h2 { font-size: 24px; line-height: 1.2; }
+.lede { font-family: "Literata", Georgia, serif; font-size: 17px; color: var(--ink-2); max-width: 72ch; margin: 10px 0 0; }
+a { color: var(--acento); }
+code { font: 13.5px "JetBrains Mono", monospace; background: var(--well); border-radius: 3px; padding: 1px 4px; }
+.barra { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 18px 0 8px; }
+.barra button, .barra label { font: 500 14px "IBM Plex Sans", sans-serif; color: var(--ink); background: var(--paper-hi); border: 1px solid var(--rule); border-radius: 999px; padding: 7px 14px; cursor: pointer; display: inline-flex; gap: 8px; align-items: center; }
+.barra button:hover { color: var(--acento); }
+
+.conjunto { margin: 22px 0 0; padding: 16px 22px; background: var(--paper-hi); border: 1px solid var(--rule); border-radius: 14px; box-shadow: var(--sombra); }
+.conjunto p { margin: 0 0 8px; }
+.conjunto .frase { font-family: "Besley", serif; font-weight: 700; font-size: 20px; }
+.conjunto table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+.conjunto th, .conjunto td { text-align: left; padding: 7px 10px 7px 0; border-top: 1px solid var(--rule); vertical-align: top; }
+.conjunto th { font-weight: 600; color: var(--ink-2); font-size: 13px; }
+.rolar { overflow-x: auto; }
+
+section.proposta { margin-top: 44px; }
+section.proposta > .porque { color: var(--ink-2); margin: 6px 0 14px; max-width: 80ch; }
+.comparar { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.comparar.largo { grid-template-columns: 1.7fr 1fr; }
+@media (max-width: 760px) { .comparar, .comparar.largo { grid-template-columns: 1fr; } }
+.lado { background: color-mix(in oklab, var(--paper) 70%, var(--paper-hi)); border: 1px dashed var(--rule); border-radius: 14px; padding: 16px 18px 22px; min-width: 0; position: relative; }
+.lado > .rotulo { font-size: 13px; color: var(--ink-2); margin: 0 0 14px; }
+.lado > .rotulo b { font-weight: 600; color: var(--ink); }
+.nota { font-size: 13px; color: var(--ink-2); margin: 14px 0 0; }
+.coluna { width: 262px; max-width: 100%; margin: 0 auto; display: grid; gap: 22px; }
+
+/* ---------- Hoje: o sumário e o painel do livro ---------- */
+.folha { background: var(--paper-hi); border: 1px solid var(--rule); border-radius: 14px; box-shadow: var(--sombra); }
+.sumario-hoje { padding: 18px 18px 14px; }
+.sumario-hoje h3 { font: 700 17px "Besley", serif; margin: 0 0 14px; }
+.trilho { list-style: none; margin: 0; padding: 0 0 0 26px; position: relative; font-size: 13.5px; color: var(--ink-2); display: grid; gap: 10px; }
+.trilho::before { content: ""; position: absolute; left: 8px; top: 6px; bottom: 6px; width: 1px; background: var(--rule); }
+.trilho li { position: relative; line-height: 1.4; }
+.trilho li::before { content: ""; position: absolute; left: -22px; top: 5px; width: 7px; height: 7px; border-radius: 50%; border: 1.5px solid var(--ink-3); background: var(--paper-hi); }
+.trilho li.atual::before { background: var(--livro-dev); border-color: var(--livro-dev); }
+.trilho li.atual span { background: color-mix(in oklab, var(--livro-dev) 32%, transparent); color: var(--ink); padding: 0 2px; }
+.progresso { margin: 16px 0 6px; height: 3px; background: var(--rule); border-radius: 2px; position: relative; }
+.progresso::after { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 9%; background: var(--livro-dev); border-radius: 2px; }
+.lido { display: flex; justify-content: space-between; font: 12px "JetBrains Mono", monospace; color: var(--ink-2); }
+.atalhos-botao { margin-top: 12px; display: inline-flex; gap: 6px; align-items: center; font-size: 12.5px; color: var(--ink-2); background: none; border: 0; padding: 0; cursor: pointer; font-family: inherit; }
+.atalhos-botao kbd, kbd { font: 500 11.5px "IBM Plex Sans", sans-serif; border: 1px solid var(--rule); border-radius: 4px; padding: 1px 5px; color: var(--ink-2); background: var(--paper-hi); }
+.livro-hoje { padding: 10px 10px 16px; }
+.livro-hoje .palco-livro { background: color-mix(in oklab, var(--livro-dev) 11%, var(--paper-hi)); border-radius: 10px; padding: 18px 0; display: grid; place-items: center; }
+.livro-hoje p { margin: 12px 8px 0; }
+.livro-hoje .de { font-size: 12.5px; color: var(--ink-2); margin-bottom: 2px; }
+.livro-hoje .titulo { font: 700 18px/1.15 "Besley", serif; margin-top: 0; }
+
+/* Capa simplificada (só para a comparação; no site é o Livro3D). */
+.capa { width: 104px; height: 148px; border-radius: 1px 3px 3px 1px; overflow: hidden; display: grid; grid-template-rows: 52% 48%; box-shadow: 0 6px 12px -6px var(--sombra-baixa); }
+.capa .cima { background: var(--livro-papel); color: var(--livro-dev); padding: 12px 8px 0 12px; font: 800 12px/1 "Bitter", serif; letter-spacing: -.01em; }
+.capa .baixo { background: var(--livro-dev); color: var(--livro-tinta-clara); padding: 8px 8px 0 12px; font: italic 400 8px/1.3 "Newsreader", serif; }
+
+/* ---------- Proposta: o post-it ---------- */
+.post-it-mesa { position: relative; transform: rotate(-.7deg); }
+.post-it-mesa::before { /* a borda de baixo, levantada: a sombra só nos cantos de baixo */
+  content: ""; position: absolute; left: 6%; right: 3%; bottom: 4px; height: 40%;
+  box-shadow: 0 14px 12px -8px var(--sombra-baixa); transform: rotate(1.1deg) skewX(-3deg); border-radius: 50%;
+}
+.post-it { position: relative; z-index: 1; background: var(--post-it); border-radius: 1px 1px 3px 2px; padding: 12px 16px 14px 18px; box-shadow: 0 1px 1.5px var(--sombra-baixa); }
+.a-mao { font: 600 27px/1 "Caveat", cursive; color: var(--caneta); margin: 0 0 10px; transform: rotate(-1.2deg); transform-origin: left; }
+.a-mao.preta { color: var(--ink); }
+.itens { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; font-size: 13.5px; color: var(--ink); }
+.itens li { position: relative; padding-left: 20px; line-height: 1.38; }
+.itens li.lido-item { color: var(--ink-2); }
+.itens li .visto { position: absolute; left: -2px; top: 1px; width: 16px; height: 14px; overflow: visible; }
+.itens li .visto path { fill: none; stroke: var(--caneta); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.itens li.atual span { position: relative; }
+.itens li.atual svg.sublinha { position: absolute; left: -1px; bottom: -5px; width: calc(100% + 2px); height: 7px; overflow: visible; }
+.itens li.atual svg.sublinha path { fill: none; stroke: var(--caneta); stroke-width: 2; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.progresso-caneta { margin: 16px 0 4px; height: 8px; position: relative; }
+.progresso-caneta svg { position: absolute; left: 0; top: 0; width: 100%; height: 8px; overflow: visible; }
+.progresso-caneta .fundo { fill: none; stroke: var(--ink); stroke-opacity: .16; stroke-width: 1; stroke-dasharray: 2 3; vector-effect: non-scaling-stroke; }
+.progresso-caneta .feito { fill: none; stroke: var(--caneta); stroke-width: 2; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.post-it .lido { color: var(--ink-2); }
+
+/* ---------- Proposta: a ficha com clipe ---------- */
+.ficha { position: relative; background: var(--paper-hi); border-radius: 2px; padding: 12px 0 14px; box-shadow: var(--sombra); border: 1px solid var(--rule); }
+/* A linha de cabeçalho (vermelha) e a pauta (azul) acompanham as linhas do texto. */
+.pautado-cabeca { margin: 0 0 12px; padding: 0 16px 6px; border-bottom: 1.5px solid var(--pauta-cabeca); }
+.ficha .a-mao { font-size: 25px; transform: none; }
+.pautado { background-image: repeating-linear-gradient(to bottom, transparent 0 23px, var(--pauta) 23px 24px); padding: 0 16px; }
+.ficha .corpo { display: grid; grid-template-columns: auto 1fr; gap: 14px; align-items: start; }
+.foto { position: relative; transform: rotate(-3deg); margin: 2px 0 0 4px; }
+.foto .capa { width: 78px; height: 112px; }
+.foto .capa .cima { font-size: 9.5px; padding: 9px 6px 0 9px; }
+.foto .capa .baixo { font-size: 6.5px; padding: 6px; }
+.clipe { position: absolute; left: 58px; top: -15px; width: 14px; height: 44px; overflow: visible; z-index: 2; }
+.clipe path { fill: none; stroke: var(--ink-3); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.datilo { font: 12px/24px "JetBrains Mono", monospace; color: var(--ink-2); margin: 0; }
+.datilo b { font: 700 16px/24px "Besley", serif; color: var(--ink); display: block; }
+.ficha .ver { display: inline-block; font: 14px/24px "IBM Plex Sans", sans-serif; }
+
+/* ---------- B06: a cola ---------- */
+.palco-b06 { position: relative; height: 430px; border-radius: 12px; background: var(--paper); border: 1px solid var(--rule); overflow: hidden; }
+.palco-b06 .lateral { position: absolute; left: 18px; top: 18px; width: 230px; }
+.palco-b06 .texto-falso { position: absolute; left: 272px; right: 18px; top: 18px; bottom: -20px; padding: 22px 26px; font: 15px/1.7 "Literata", serif; color: var(--ink); }
+.palco-b06 .texto-falso p { margin: 0 0 14px; }
+.cola { position: absolute; z-index: 5; width: 290px; background: var(--paper-hi); border: 1px solid var(--rule); border-radius: 3px; padding: 12px 0 8px; box-shadow: 0 2px 4px rgba(40,38,30,.06), 0 18px 36px -18px var(--sombra-baixa); }
+.cola[hidden] { display: none; }
+.cola .a-mao { font-size: 24px; transform: none; }
+.cola dl { margin: 0; display: grid; grid-template-columns: auto 1fr; column-gap: 14px; font-size: 13.5px; line-height: 28px; background-image: repeating-linear-gradient(to bottom, transparent 0 27px, var(--pauta) 27px 28px); padding: 0 16px; }
+.cola dt { white-space: nowrap; }
+.cola dd { margin: 0; color: var(--ink); }
+.cola .desligar { display: flex; gap: 8px; align-items: center; font-size: 12.5px; color: var(--ink-2); margin-top: 6px; padding: 0 16px; line-height: 28px; }
+.cola .fechar { position: absolute; right: 8px; top: 8px; width: 28px; height: 28px; border: 0; background: none; color: var(--ink-2); cursor: pointer; border-radius: 6px; font-size: 18px; line-height: 1; }
+.cola.nasce { animation: cola-nasce .18s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes cola-nasce { from { opacity: 0; transform: translate(-8px, 6px) scale(.97); } }
+.cola.some { animation: cola-some .12s cubic-bezier(.4,0,1,1) both; }
+@keyframes cola-some { to { opacity: 0; transform: translate(-6px, 4px) scale(.98); } }
+.palco-b06 .cola { left: 244px; bottom: 26px; transform-origin: 0 100%; }
+
+.celular { width: min(300px, 100%); height: 560px; margin: 0 auto; border-radius: 30px; border: 1px solid var(--rule); background: var(--paper); position: relative; overflow: hidden; box-shadow: var(--sombra); }
+.celular .topo-cel { height: 52px; border-bottom: 1px solid var(--rule); display: flex; align-items: center; padding: 0 16px; font: 800 16px "Besley", serif; }
+.celular .texto-falso { padding: 16px; font: 14px/1.65 "Literata", serif; }
+.celular .texto-falso p { margin: 0 0 12px; }
+.celular .veu { position: absolute; inset: 0; background: color-mix(in oklab, var(--veu) 42%, transparent); z-index: 4; }
+.celular .veu[hidden] { display: none; }
+.celular .veu.nasce { animation: veu-nasce .2s linear both; }
+@keyframes veu-nasce { from { opacity: 0; } }
+.celular .cola { left: 50%; top: 50%; width: calc(100% - 36px); transform: translate(-50%, -50%); }
+.celular .cola.nasce { animation: cola-centro .2s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes cola-centro { from { opacity: 0; transform: translate(-50%, -48%) scale(.96); } }
+.abrir-cel { display: block; margin: 12px auto 0; font: 500 14px "IBM Plex Sans"; border: 1px solid var(--rule); background: var(--paper-hi); color: var(--ink); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+
+/* ---------- Carimbo ---------- */
+.fim-artigo { background: var(--paper-hi); border: 1px solid var(--rule); border-radius: 14px; padding: 18px 22px 20px; box-shadow: var(--sombra); }
+.fim-artigo .cabeca { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.fim-artigo h3 { font: 700 26px "Besley", serif; margin: 0; }
+.fim-artigo ol { font: 15px/1.6 "Literata", serif; margin: 12px 0 0; padding-left: 22px; }
+.carimbo { width: 150px; height: 64px; overflow: visible; color: var(--carimbo); transform: rotate(-4deg); opacity: .88; }
+.carimbo rect { fill: none; stroke: currentColor; }
+.carimbo text { fill: currentColor; }
+
+/* ---------- Fichário ---------- */
+.fichario { position: relative; padding-right: 58px; }
+.fichario .folha-lista { background: var(--paper-hi); border: 1px solid var(--rule); border-radius: 14px; box-shadow: var(--sombra); padding: 8px 22px; position: relative; z-index: 2; }
+.fichario .ano { font: 700 20px "Besley", serif; margin: 14px 0 6px; }
+.fichario ul { list-style: none; margin: 0; padding: 0; }
+.fichario li { display: flex; gap: 14px; padding: 8px 0; border-top: 1px solid var(--rule); font-size: 14.5px; }
+.fichario li time { font: 12.5px "JetBrains Mono", monospace; color: var(--ink-2); min-width: 64px; padding-top: 2px; }
+.aba { position: absolute; right: 4px; width: 56px; height: 40px; border: 1px solid var(--rule); border-left: 0; border-radius: 0 8px 8px 0; background: var(--well); display: grid; place-items: center; font: 600 13px "IBM Plex Sans"; color: var(--ink-2); text-decoration: none; z-index: 1; }
+.aba.ativa { background: var(--paper-hi); color: var(--acento); z-index: 3; right: 3px; }
+.aba:hover { color: var(--acento); }
+
+/* ---------- Não fazer ---------- */
+.nao { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+.nao li { background: var(--paper-hi); border: 1px solid var(--rule); border-radius: 10px; padding: 12px 14px; }
+.nao li b { position: relative; display: inline-block; font-weight: 600; }
+.nao li b svg { position: absolute; left: -3px; top: 0; width: calc(100% + 6px); height: 100%; overflow: visible; }
+.nao li b svg path { fill: none; stroke: var(--caneta); stroke-width: 1.7; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.nao li span { display: block; color: var(--ink-2); font-size: 14px; margin-top: 4px; }
+
+@media (max-width: 760px) {
+  .palco-b06 .texto-falso { display: none; }
+  .palco-b06 .cola { left: 18px; bottom: 18px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="pagina">
+  <h1>C05 · A papelaria de estudo</h1>
+  <p class="lede">Um conjunto pequeno de objetos de mesa, cada um com uma função (lembrar onde estou, dizer de onde vem, confirmar que foi conferido), no lugar de enfeites. Textos de mentira; cores dos tokens.</p>
+  <div class="barra"><button type="button" id="tema">Tema: <span id="tema-nome">do sistema</span></button></div>
+
+  <div class="conjunto">
+    <p class="frase">Quatro objetos, um lugar cada.</p>
+    <p>Cada objeto aparece <b>num lugar só</b> e explica alguma coisa: é o uso "que ajuda" do skeuomorfismo (NN/g: a metáfora serve para entender, o enfeite só pesa). A caneta azul escreve no post-it; a preta, na ficha.</p>
+    <div class="rolar"><table>
+      <tr><th>Objeto</th><th>Onde</th><th>O que ele diz</th></tr>
+      <tr><td>Post-it</td><td>"Neste artigo" (sumário lateral, ≥ 1300px)</td><td>Onde estou e o que já li: o lembrete que fica colado na página.</td></tr>
+      <tr><td>Ficha pautada com clipe</td><td>O painel do livro, embaixo do post-it</td><td>De que livro é este artigo: a ficha do volume, com a capa presa.</td></tr>
+      <tr><td>A cola (outra ficha)</td><td>Atalhos do teclado (B06)</td><td>O cartão de consulta que se puxa quando precisa.</td></tr>
+      <tr><td>Carimbo</td><td>"Fontes", no fim do artigo</td><td>Conferidas em tal data: o rigor com fontes à vista (PRODUCT.md).</td></tr>
+      <tr><td>Abas de fichário (opcional)</td><td>"Todos os artigos" (junto do B07)</td><td>Os anos como divisórias: navegar pelo ano sem rolar.</td></tr>
+    </table></div>
+  </div>
+
+  <!-- 1. A lateral do artigo -->
+  <section class="proposta">
+    <h2>A lateral do artigo: post-it e ficha</h2>
+    <p class="porque">A ideia do Cesar. O post-it tira a moldura de "painel de app" do sumário e o deixa com cara de lembrete; a ficha dá ao livro um lugar de catálogo. Os itens seguem em IBM Plex (legíveis); à mão, só os títulos, o visto e o sublinhado da seção atual (o B05 já pede a caneta azul ali).</p>
+    <div class="comparar">
+      <div class="lado"><p class="rotulo"><b>Hoje</b> folha do sumário e painel tingido</p>
+        <div class="coluna">
+          <div class="folha sumario-hoje">
+            <h3>Neste artigo</h3>
+            <ul class="trilho">
+              <li class="atual"><span>As três peças</span></li>
+              <li>Primeiro exemplo: removendo o CVV</li>
+              <li>Mascarando o número do cartão</li>
+              <li>Aplicando em todas as classes</li>
+              <li>Juntando tudo no Spring</li>
+            </ul>
+            <div class="progresso"></div>
+            <div class="lido"><span>9% lido</span><span>faltam 11 min</span></div>
+            <button type="button" class="atalhos-botao">Atalhos <kbd>?</kbd></button>
+          </div>
+          <div class="folha livro-hoje">
+            <div class="palco-livro"><div class="capa"><div class="cima">Desenvol&shy;vimento de Software</div><div class="baixo">O ofício dentro de cada serviço.</div></div></div>
+            <p class="de">Do livro</p>
+            <p class="titulo">Desenvolvimento de Software</p>
+            <p style="margin-top:6px"><a href="#" onclick="return false">Ver o livro →</a></p>
+          </div>
+        </div>
+      </div>
+      <div class="lado"><p class="rotulo"><b>Proposta</b> post-it (caneta azul) e ficha com clipe (caneta preta)</p>
+        <div class="coluna">
+          <div class="post-it-mesa">
+            <div class="post-it">
+              <p class="a-mao">Neste artigo</p>
+              <ul class="itens" id="itens"></ul>
+              <div class="progresso-caneta"><svg viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true"><path class="fundo" d="M1 4 H99"/><path class="feito" id="feito"/></svg></div>
+              <div class="lido"><span>9% lido</span><span>faltam 11 min</span></div>
+              <button type="button" class="atalhos-botao">Atalhos <kbd>?</kbd></button>
+            </div>
+          </div>
+          <div class="ficha">
+            <p class="a-mao preta pautado-cabeca">Do livro</p>
+            <div class="corpo pautado">
+              <div class="foto">
+                <svg class="clipe" viewBox="0 0 14 44" aria-hidden="true"><path d="M4 30 V7 A3.5 3.5 0 0 1 11 7 V33 A5 5 0 0 1 1 33 V12"/></svg>
+                <div class="capa"><div class="cima">Desenvol&shy;vimento de Software</div><div class="baixo">O ofício dentro de cada serviço.</div></div>
+              </div>
+              <p class="datilo"><span>Vol. 02 · 6 artigos</span><b>Desenvolvimento de Software</b><a class="ver" href="#" onclick="return false">Ver o livro →</a></p>
+            </div>
+          </div>
+        </div>
+        <p class="nota">Detalhes: o post-it gira 0,7° (só ele) e só a borda de baixo levanta; a ficha tem a pauta azul e a linha de cabeçalho vermelha das fichas de estudo, com os dados datilografados em JetBrains Mono (a "máquina de escrever" sem fonte nova). No escuro, o post-it vira um papel âmbar bem apagado. No celular (sumário que desce do cabeçalho), fica a folha de hoje: o post-it é da lateral.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. B06 -->
+  <section class="proposta">
+    <h2>B06: a cola dos atalhos</h2>
+    <p class="porque">Na tela grande, a cola sai do próprio "Atalhos ?" (como a busca nasce do campo, D44), cobre só a borda do texto e some com Esc ou clique fora; sem véu. Abre rápido (0,18s): é ação de teclado, e ação de teclado repetida não deve esperar animação. No celular, centrada, com o véu.</p>
+    <div class="comparar largo">
+      <div class="lado"><p class="rotulo"><b>Tela grande</b> clique em "Atalhos ?" (ou tecle ?)</p>
+        <div class="palco-b06" id="palco-grande">
+          <div class="lateral"><div class="post-it-mesa"><div class="post-it" style="padding-bottom:12px">
+            <p class="a-mao" style="font-size:24px">Neste artigo</p>
+            <ul class="itens" id="itens-b06"></ul>
+            <div class="lido" style="margin-top:12px"><span>9% lido</span><span>faltam 11 min</span></div>
+            <button type="button" class="atalhos-botao" id="abrir-cola" aria-expanded="false" aria-controls="cola-grande">Atalhos <kbd>?</kbd></button>
+          </div></div></div>
+          <div class="texto-falso folha"><p>O filtro decide, campo a campo, o que vai para o log e o que fica de fora. A anotação só dá o nome; quem diz o que fazer é o provedor registrado no mapper.</p><p>Com dois mappers, a mesma classe sai inteira na API e mascarada no log, sem uma linha a mais no domínio.</p><p>O resto do texto continua aqui embaixo, e a cola não o cobre.</p></div>
+          <div class="cola" id="cola-grande" hidden role="dialog" aria-label="Atalhos do teclado"></div>
+        </div>
+      </div>
+      <div class="lado"><p class="rotulo"><b>Celular</b> centrada, com o véu</p>
+        <div class="celular" id="celular">
+          <div class="topo-cel">Cesar Schutz</div>
+          <div class="texto-falso"><p>O filtro decide, campo a campo, o que vai para o log e o que fica de fora.</p><p>Com dois mappers, a mesma classe sai inteira na API e mascarada no log.</p><p>O resto do texto continua aqui embaixo.</p></div>
+          <div class="veu" id="veu-cel" hidden></div>
+          <div class="cola" id="cola-cel" hidden role="dialog" aria-label="Atalhos do teclado"></div>
+        </div>
+        <button type="button" class="abrir-cel" id="abrir-cel">Abrir a cola no celular</button>
+        <p class="nota">Num celular sem teclado, os atalhos não servem; vale mostrar o botão só com <code>(hover: hover) and (pointer: fine)</code>, como hoje. A versão centrada fica para tablet com teclado.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Carimbo -->
+  <section class="proposta">
+    <h2>O carimbo das fontes</h2>
+    <p class="porque">O blog não afirma nada sem fonte primária conferida (PRODUCT.md). Um carimbo discreto ao lado de "Fontes", com a data da conferência, mostra isso sem texto a mais. Um carimbo por artigo, sempre o mesmo, na tinta de almofada (a cor de Nota).</p>
+    <div class="comparar">
+      <div class="lado"><p class="rotulo"><b>Hoje</b></p>
+        <div class="fim-artigo"><div class="cabeca"><h3>Fontes</h3></div><ol><li>Documentação do Jackson: filtros de propriedade.</li><li>Javadoc de <code>SimpleBeanPropertyFilter</code>.</li><li>Guia de referência do Spring Boot: <code>Jackson2ObjectMapperBuilder</code>.</li></ol></div>
+      </div>
+      <div class="lado"><p class="rotulo"><b>Proposta</b></p>
+        <div class="fim-artigo"><div class="cabeca"><h3>Fontes</h3>
+          <svg class="carimbo" viewBox="0 0 150 64" role="img" aria-label="Fontes conferidas em 25 set 2026">
+            <defs><filter id="tinta-carimbo" x="-5%" y="-10%" width="110%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="r"/><feColorMatrix in="r" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.1 1.5" result="falhas"/><feComposite in="SourceGraphic" in2="falhas" operator="in"/></filter></defs>
+            <g filter="url(#tinta-carimbo)">
+              <rect x="2" y="2" width="146" height="60" rx="9" stroke-width="2.4"/>
+              <rect x="7" y="7" width="136" height="50" rx="6" stroke-width="1"/>
+              <text x="75" y="31" text-anchor="middle" style="font: italic 700 19px 'Bitter', serif">conferidas</text>
+              <text x="75" y="48" text-anchor="middle" style="font: 500 11.5px 'JetBrains Mono', monospace">em 25 set 2026</text>
+            </g>
+          </svg></div>
+          <ol><li>Documentação do Jackson: filtros de propriedade.</li><li>Javadoc de <code>SimpleBeanPropertyFilter</code>.</li><li>Guia de referência do Spring Boot: <code>Jackson2ObjectMapperBuilder</code>.</li></ol></div>
+        <p class="nota">A data sai de um campo do frontmatter (a revisão das fontes), não da data de publicação. Sem caixa alta: "conferidas", em Bitter itálico, como a tipografia dos livros. Não anima.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Fichário -->
+  <section class="proposta">
+    <h2>Opcional (com o B07): abas de fichário em "Todos os artigos"</h2>
+    <p class="porque">Os anos viram divisórias com aba na borda direita da folha: a aba do ano à vista fica na frente (branca, azul-tinta) e as outras atrás. Clicar leva ao ano. Resolve navegação, não enfeita; fica para o agente do B07 decidir se cabe.</p>
+    <div class="fichario">
+      <div class="folha-lista">
+        <p class="ano">2026</p>
+        <ul><li><time>25 set</time>Filtros de serialização no Jackson</li><li><time>23 set</time>CronJob ou endpoint + fila</li><li><time>16 set</time>Java 29 (próxima LTS)</li></ul>
+        <p class="ano">2025</p>
+        <ul><li><time>12 dez</time>Guia de atualizações do Java</li><li><time>03 nov</time>Java 25 (LTS)</li></ul>
+      </div>
+      <a class="aba ativa" href="#" onclick="return false" style="top:14px">2026</a>
+      <a class="aba" href="#" onclick="return false" style="top:60px">2025</a>
+      <a class="aba" href="#" onclick="return false" style="top:106px">2024</a>
+    </div>
+  </section>
+
+  <!-- 5. Não fazer -->
+  <section class="proposta">
+    <h2>O que não fazer</h2>
+    <p class="porque">Riscado à caneta azul. Tudo isso é ornamento sem função, e é o que faria o caderno virar fantasia.</p>
+    <ul class="nao">
+      <li><b>Textura de papel ou madeira<svg viewBox="0 0 100 20" preserveAspectRatio="none" data-rasura="Textura de papel ou madeira"></svg></b><span>O papel é liso (DESIGN.md); textura pesa, data rápido e briga com o texto.</span></li>
+      <li><b>Letra de mão no texto<svg viewBox="0 0 100 20" preserveAspectRatio="none" data-rasura="Letra de mão no texto"></svg></b><span>Caveat só em títulos curtos à mão e nas notas da D48; itens, datas e corpo, nunca.</span></li>
+      <li><b>Tudo torto<svg viewBox="0 0 100 20" preserveAspectRatio="none" data-rasura="Tudo torto"></svg></b><span>Só o post-it gira (0,7°). Folhas, cards e fichas ficam retos.</span></li>
+      <li><b>Post-its coloridos<svg viewBox="0 0 100 20" preserveAspectRatio="none" data-rasura="Post-its coloridos"></svg></b><span>Um amarelo só, o do marca-texto. A cor do livro já tem o lugar dela.</span></li>
+      <li><b>Fita adesiva e alfinetes<svg viewBox="0 0 100 20" preserveAspectRatio="none" data-rasura="Fita adesiva e alfinetes"></svg></b><span>O post-it cola sozinho; o clipe prende a capa. Mais um prendedor vira colagem.</span></li>
+      <li><b>Mancha de café, papel rasgado<svg viewBox="0 0 100 20" preserveAspectRatio="none" data-rasura="Mancha de café, papel rasgado"></svg></b><span>Clichês de "papelaria digital"; a caneca da série já é o café do site.</span></li>
+      <li><b>Efeito de máquina digitando<svg viewBox="0 0 100 20" preserveAspectRatio="none" data-rasura="Efeito de máquina digitando"></svg></b><span>Animação de entrada em texto (proibida no DESIGN.md). A máquina entra só como a mono datilografada da ficha.</span></li>
+      <li><b>Quadriculado de fundo<svg viewBox="0 0 100 20" preserveAspectRatio="none" data-rasura="Quadriculado de fundo"></svg></b><span>Pauta só dentro das fichas. A página e os desenhos ficam lisos.</span></li>
+      <li><b>Envelope no RSS<svg viewBox="0 0 100 20" preserveAspectRatio="none" data-rasura="Envelope no RSS"></svg></b><span>RSS não é e-mail; o ícone mentiria. E o rodapé fica de fora.</span></li>
+    </ul>
+  </section>
+</div>
+
+<script>
+/* Funções de src/lib/traco.ts (cópia). */
+function sorteio(semente) { let s = semente | 0; return () => { s = (s + 0x6d2b79f5) | 0; let t = Math.imul(s ^ (s >>> 15), 1 | s); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+const sementeDe = (texto) => [...texto].reduce((a, c) => (a * 31 + c.charCodeAt(0)) | 0, 7);
+const f = (n) => n.toFixed(2);
+function curva(p) { let d = `M${f(p[0][0])} ${f(p[0][1])}`; for (let i = 0; i < p.length - 1; i++) { const a = p[i - 1] ?? p[i], b = p[i], c = p[i + 1], e = p[i + 2] ?? c; d += ` C${f(b[0] + (c[0] - a[0]) / 6)} ${f(b[1] + (c[1] - a[1]) / 6)} ${f(c[0] - (e[0] - b[0]) / 6)} ${f(c[1] - (e[1] - b[1]) / 6)} ${f(c[0])} ${f(c[1])}`; } return d; }
+function tracoDeCaneta(texto, outro = 0, amplitude = 0.9) { const r = sorteio(sementeDe(texto) + outro); const n = Math.max(3, Math.round(texto.length / 2)); const p = []; for (let i = 0; i <= n; i++) { const y = 4 + (r() - 0.5) * 2 * amplitude + (i === n ? -amplitude : 0) + (i === 0 ? amplitude * 0.5 : 0); p.push([1 + (98 * i) / n, y]); } return curva(p); }
+function rasuraDeCaneta(largura, altura, texto) { const r = sorteio(sementeDe(texto)); const j = () => (r() - 0.5) * 1.6; const n = Math.max(4, Math.round(largura / 40)), m = Math.ceil(n * 0.6); const ida = [], volta = []; for (let i = 0; i <= n; i++) ida.push([2 + ((largura - 4) * i) / n, altura * 0.5 - (i / n) * 2 + j()]); for (let i = 0; i <= m; i++) volta.push([largura - 3 - (largura * 0.62 * i) / m, altura * 0.6 + j() * 0.8]); return [curva(ida), curva(volta)]; }
+/* O visto à mão: a perna curta desce, a longa sobe passando um nada. */
+function vistoDeCaneta(texto) { const r = sorteio(sementeDe(texto)); const j = () => (r() - 0.5) * 0.8; return curva([[2 + j(), 7.5 + j()], [5.6 + j(), 11.2], [9 + j(), 6.5 + j()], [14.2 + j(), 1.2 + j()]]); }
+
+function itens(el, curtos) {
+  const lista = [["Três peças", "lido"], ["Primeiro exemplo: removendo o CVV", "atual"], ["Mascarando o número do cartão", ""], ["Aplicando em todas as classes", ""], ["Juntando tudo no Spring", ""]];
+  el.innerHTML = lista.slice(0, curtos ? 4 : 5).map(([t, e]) => {
+    if (e === "lido") return `<li class="lido-item"><svg class="visto" viewBox="0 0 16 14" aria-hidden="true"><path d="${vistoDeCaneta(t)}"/></svg>${t}</li>`;
+    if (e === "atual") return `<li class="atual"><span>${t}<svg class="sublinha" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true"><path d="${tracoDeCaneta(t, 0, 0.7)}"/></svg></span></li>`;
+    return `<li>${t}</li>`;
+  }).join("");
+}
+itens(document.getElementById("itens"));
+itens(document.getElementById("itens-b06"), true);
+// O progresso: o traço azul só até onde foi lido (9%, mais um nada para se ver).
+document.getElementById("feito").setAttribute("d", curva([[1, 4.4], [6, 3.9], [12, 4.2]]));
+document.querySelectorAll("svg[data-rasura]").forEach((s) => { const [a, b] = rasuraDeCaneta(100, 20, s.dataset.rasura); s.innerHTML = `<path d="${a}"/><path d="${b}"/>`; });
+
+/* A cola (o mesmo conteúdo do Atalhos.astro). */
+const COLA = `<p class="a-mao preta pautado-cabeca">Atalhos do teclado</p><dl><dt><kbd>Espaço</kbd></dt><dd>Próxima seção</dd><dt><kbd>Shift</kbd> <kbd>Espaço</kbd></dt><dd>Seção anterior</dd><dt><kbd>T</kbd></dt><dd>Voltar ao topo</dd><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>Artigo anterior e próximo</dd><dt><kbd>?</kbd></dt><dd>Esta cola</dd></dl><label class="desligar"><input type="checkbox"> Desligar os atalhos</label><button type="button" class="fechar" aria-label="Fechar">×</button>`;
+const colaG = document.getElementById("cola-grande"), colaC = document.getElementById("cola-cel"), veu = document.getElementById("veu-cel");
+colaG.innerHTML = COLA; colaC.innerHTML = COLA;
+const botao = document.getElementById("abrir-cola");
+function abrirG() { colaG.hidden = false; colaG.classList.remove("some"); colaG.classList.add("nasce"); botao.setAttribute("aria-expanded", "true"); }
+function fecharG() { if (colaG.hidden) return; colaG.classList.remove("nasce"); colaG.classList.add("some"); botao.setAttribute("aria-expanded", "false"); setTimeout(() => { colaG.hidden = true; colaG.classList.remove("some"); }, 120); }
+botao.addEventListener("click", (e) => { e.stopPropagation(); colaG.hidden ? abrirG() : fecharG(); });
+colaG.querySelector(".fechar").addEventListener("click", fecharG);
+colaG.addEventListener("click", (e) => e.stopPropagation());
+document.addEventListener("click", fecharG);
+function abrirC() { veu.hidden = false; colaC.hidden = false; veu.classList.add("nasce"); colaC.classList.add("nasce"); }
+function fecharC() { veu.hidden = true; colaC.hidden = true; veu.classList.remove("nasce"); colaC.classList.remove("nasce"); }
+document.getElementById("abrir-cel").addEventListener("click", abrirC);
+veu.addEventListener("click", fecharC);
+colaC.querySelector(".fechar").addEventListener("click", fecharC);
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") { fecharG(); fecharC(); }
+  if (e.key === "?" && !(e.target instanceof HTMLInputElement)) { colaG.hidden ? abrirG() : fecharG(); }
+});
+
+/* Tema. */
+const html = document.documentElement, nomes = { "": "do sistema", light: "claro", dark: "escuro" };
+document.getElementById("tema").addEventListener("click", () => {
+  const atual = html.dataset.theme || "", prox = atual === "" ? "light" : atual === "light" ? "dark" : "";
+  if (prox) html.dataset.theme = prox; else delete html.dataset.theme;
+  document.getElementById("tema-nome").textContent = nomes[prox];
+});
+</script>
+</body>
+</html>

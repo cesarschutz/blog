@@ -33,12 +33,12 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
       no hover.
 - [~] **B03.** _(agente Simples)_ Anterior / próximo (teclado e botões) em **ordem cronológica global**, a mesma de
       "Todos os artigos", sem importar o livro.
-- [~] **B04.** _(agente Artigo)_ "Neste artigo" chega marcado (risco, "V" e a última seção selecionada): sempre chegar
+- [x] **B04.** _(agente Artigo; f5d4fac)_ "Neste artigo" chega marcado (risco, "V" e a última seção selecionada): sempre chegar
       zerado.
-- [~] **B05.** _(agente Artigo)_ "Neste artigo" sem o marca-texto na cor do livro: a caneta azul do cabeçalho (o traço
+- [x] **B05.** _(agente Artigo; 8048648)_ "Neste artigo" sem o marca-texto na cor do livro: a caneta azul do cabeçalho (o traço
       do progresso no fio), a linha lateral dos "V" em azul e a seção atual **sublinhada à caneta
       azul**, como o traço do menu (Categorias, Séries…). Menos cor do livro repetida.
-- [~] **B06.** _(agente Artigo)_ "?" abre a busca (em qualquer tela): a busca só com ⌘K / Ctrl+K; "?" só abre os
+- [x] **B06.** _(agente Artigo; 2788f33)_ "?" abre a busca (em qualquer tela): a busca só com ⌘K / Ctrl+K; "?" só abre os
       atalhos, e só no artigo. O painel de atalhos está feio: no celular, pode ser centrado com o
       fundo escurecido; na tela grande, uma entrada elegante (sem cobrir tudo).
 - [~] **B07.** _(agente Listas)_ "Todos os artigos": muito espaço vazio no painel com os livros ao lado do texto; em
@@ -98,6 +98,19 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
   classe `acena` (o mesmo movimento do hover) juntos, uma vez. Se o destaque estiver abaixo da dobra
   quando a estante assenta (tela baixa, celular), o aceno vem logo depois da estante, sem esperar o
   leitor rolar. [diagnosticos/B13.md](diagnosticos/B13.md).
+
+- **B04** (f5d4fac): a medição do sumário ia pelo `getBoundingClientRect` durante a chegada das folhas
+  (pequenas e no alto, em perspectiva), e todo título parecia lido ("Fontes" virava a atual). Agora pelo
+  layout (`offsetTop`); o visto só vale para a seção que foi a atual por 0,6s e ficou para trás; o
+  bfcache zera. [diagnosticos/B04.md](diagnosticos/B04.md).
+- **B05** (8048648): o progresso inteiro em `--caneta` (fio do cabeçalho, ponta, trilho, vistos, ponto
+  atual); a seção atual sublinhada à mão pelo `tracoDeCaneta` do menu (um traço por linha, escrito e
+  apagado para a direita); a barra de porcentagem saiu ("NN% lido" e os minutos ficam); saiu o
+  `SUMARIO_MARCA`. De quebra: o nome das seções voltou aos 14px. [diagnosticos/B05.md](diagnosticos/B05.md).
+- **B06** (2788f33): a causa era o atalho "/" da busca (no ABNT2, "/" e "?" são a mesma tecla). A busca
+  só com ⌘K / Ctrl+K; o "?" só no artigo. A ficha dos atalhos: na tela grande (≥ 1300px), uma ficha
+  pautada sai de trás da folha do sumário e pousa ao lado, sem escurecer; abaixo disso, no meio com o
+  véu. Popover com papel de diálogo, foco, Esc, "Desligar". [diagnosticos/B06.md](diagnosticos/B06.md).
 
 ## Para o Cesar decidir
 
