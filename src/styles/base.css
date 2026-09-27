@@ -612,6 +612,19 @@ a:hover > .titulo-sub,
 }
 
 /*
+ * O mesmo livro 3D nas duas pontas (o cartão de Categorias e o topo do livro, D52 B10): voa só a imagem
+ * nova, que é viva e continua o giro do livro (troca.js), num movimento de pegar e pousar.
+ */
+:root:active-view-transition-type(folhas)::view-transition-old(.mesmo) {
+  opacity: 0;
+}
+
+:root:active-view-transition-type(folhas)::view-transition-group(.mesmo) {
+  animation-duration: 0.75s;
+  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/*
  * Tema em círculo (D42, D44, trocarTema em tema.ts): indo para o escuro, a página nova cresce num
  * círculo a partir do botão; voltando ao claro, a antiga (escura) fica por cima e encolhe de fora
  * para dentro até o botão. Enquanto isso, nenhum outro elemento tem nome de transição: a página vira

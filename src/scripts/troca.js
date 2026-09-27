@@ -108,14 +108,32 @@
     var els = document.querySelectorAll("[data-troca-nome]");
     for (var i = 0; i < els.length; i++) {
       els[i].style.viewTransitionName = els[i].getAttribute("data-troca-nome");
-      els[i].style.viewTransitionClass = "";
+      // A classe também volta (o livro em pé tem "livro" no HTML; antes, ela se perdia depois da troca).
+      els[i].style.viewTransitionClass = els[i].getAttribute("data-troca-classe") || "";
       els[i].removeAttribute("data-troca-nome");
+      els[i].removeAttribute("data-troca-classe");
     }
   }
   function nomear(el, nome, classe) {
-    if (!el.hasAttribute("data-troca-nome")) el.setAttribute("data-troca-nome", el.style.viewTransitionName || "");
+    if (!el.hasAttribute("data-troca-nome")) {
+      el.setAttribute("data-troca-nome", el.style.viewTransitionName || "");
+      el.setAttribute("data-troca-classe", el.style.viewTransitionClass || "");
+    }
     el.style.viewTransitionName = nome;
     if (classe) el.style.viewTransitionClass = classe;
+  }
+
+  /**
+   * O giro do livro 3D (LivroEmPe) dentro de `el`, em graus, como está na tela agora (no cartão de
+   * Categorias, o hover o vira para o leitor, no meio da transição dele); null se não houver livro 3D.
+   */
+  function giroDe(el) {
+    var l3 = el.querySelector(".livro-3d");
+    if (!l3) return null;
+    try {
+      var mt = new DOMMatrix(getComputedStyle(l3).transform);
+      return Math.round((Math.atan2(-mt.m13, mt.m11) * 180) / Math.PI * 10) / 10;
+    } catch (err) { return null; }
   }
 
   function animarPseudo(pseudo, quadros, opcoes) {
@@ -172,7 +190,7 @@
     dados.livros = livrosNomeados(true).map(function (l) {
       var dono = -1;
       for (var i = 0; i < us.length; i++) if (us[i].el.contains(l.el)) dono = i;
-      return { n: l.n, u: dono };
+      return { n: l.n, u: dono, g: giroDe(l.el) };
     });
     guardar(dados);
   });
@@ -243,10 +261,11 @@
         return;
       }
       if (u.soEsmaece) {
-        // A folha que recebe o livro que voa esmaece antes das outras: o livro novo aparece com ela, e tem
-        // de estar inteiro quando pousa (0,7s).
+        // A folha que recebe o livro que voa esmaece antes das outras, e tem de estar inteira quando ele
+        // pousa (0,75s). Ela nunca fica em zero: com opacidade 0, o Chrome não pinta nada dentro dela, e a
+        // imagem nova do livro (viva) sumia no começo do voo.
         if (u.comLivro) t = 120;
-        animar(el, [{ opacity: 0 }, { opacity: 1 }], { duration: 450, delay: t, easing: "linear", fill: "backwards" });
+        animar(el, [{ opacity: u.comLivro ? 0.01 : 0 }, { opacity: 1 }], { duration: 450, delay: t, easing: "linear", fill: "backwards" });
         fim = Math.max(fim, t + 450);
         return;
       }
@@ -347,6 +366,18 @@
     novas.forEach(function (u) {
       for (var i = 0; i < novosLivros.length; i++) if (comPar[novosLivros[i].n] && u.el.contains(novosLivros[i].el)) u.soEsmaece = u.comLivro = true;
     });
+    // O mesmo livro 3D nas duas pontas (o cartão de Categorias e o topo do livro, D52 B10): voa só a imagem
+    // nova, que é viva, e o livro continua o giro de onde estava (virado para o leitor pelo hover) até o
+    // giro de parado. Antes, a imagem antiga (virada) ficava embaixo da nova (de lado): o livro pulava de
+    // ângulo no primeiro quadro e as bordas das duas apareciam juntas no voo.
+    var anims = [];
+    novosLivros.forEach(function (l) {
+      var v = velhos[l.n];
+      var g = comPar[l.n] && v && v.g != null ? giroDe(l.el) : null;
+      if (g == null) return;
+      nomear(l.el, l.n, "livro mesmo");
+      if (Math.abs(v.g - g) > 1) anims.push(l.el.querySelector(".livro-3d").animate([{ transform: "rotateY(" + v.g + "deg)" }, { transform: "rotateY(" + g + "deg)" }], { duration: 750, easing: "cubic-bezier(0.65, 0, 0.35, 1)", fill: "backwards" }));
+    });
 
     if (propria) {
       // A página anima a chegada dela (Categorias); até o script dela chegar, as folhas esperam escondidas.
@@ -360,7 +391,6 @@
     }
     // As folhas novas ficam escondidas desde o primeiro quadro, mas o relógio delas começa junto com a
     // queda das antigas (vt.ready, que pode vir alguns quadros depois deste evento).
-    var anims = [];
     var fimDaChegada = propria ? 0 : chegar(novas, { volta: volta, t0: SAIDA, anims: anims });
     var comecou = vt.ready.then(function () {
       anims.forEach(function (a) { a.currentTime = 0; });
