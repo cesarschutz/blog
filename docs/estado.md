@@ -190,6 +190,10 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
 
 ## Próximos passos
 
+000. **D51, segunda revisão:** o Cesar vê no localhost e commita (as mudanças já estão no stage).
+     Falta conferir por trace no celular (390px) a troca com o livro da lateral fora da tela (item 13
+     da revisão). As três perguntas da D51 estão em "Perguntas abertas".
+
 00. **Caneta (D48):** os outros 25 posts recebem a caneta na revisão (`.claude/revisao-posts.md`,
     coluna "Caneta"), pela skill `caneta`, com a proposta aprovada pelo Cesar antes de aplicar.
 
@@ -216,6 +220,9 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
 2. Confira no app do Google Drive se `~/Downloads` não está em "Backup de pastas do computador".
 3. Desempenho no celular: o que mais pesa agora é a Literata com o eixo `opsz` (107,5 KB), exigida
    pelo briefing. A versão só com peso tem 51 KB e anteciparia o primeiro texto em ~0,5 s. Troca?
+4. D51: o desfile de Categorias (~3 s) fica assim ou encurta? O desfile mais curto depois do caderno
+   da abertura fica? A troca de livro pela pilha da home e a navegação com a busca ou o livro ampliado
+   abertos (que seguem com a troca antiga, a folha que sobe e some) passam para a troca nova?
 
 ## Riscos a acompanhar
 
