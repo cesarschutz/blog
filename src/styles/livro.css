@@ -588,6 +588,8 @@
 
 .livro-3d {
   --giro: 38deg;
+  /* O miolo começa 1px para dentro da lombada (B08, ver a quina logo abaixo da lombada). */
+  --recuo-miolo: 1px;
   position: absolute;
   inset: 0;
   transform: rotateY(var(--giro));
@@ -632,7 +634,7 @@
 
 .livro-3d .miolo-topo {
   top: calc((var(--bh) - var(--sw)) / 2 + 2px);
-  left: 0;
+  left: var(--recuo-miolo);
   width: calc(var(--cw) - 6px);
   height: calc(var(--sw) - 4px);
   background: repeating-linear-gradient(
@@ -658,10 +660,34 @@
   --papel-h: calc(100% * 400 / var(--h, 640));
 }
 
+/*
+ * A quina da lombada com a capa (B08, D52). Havia uma linha clara entre as duas, de duas causas:
+ * 1. A fresta: as faces só se encostavam, e a capa fica 0,6px à frente da lombada (para as folhas do
+ *    livro ampliado caberem por baixo dela); pela fresta aparecia o que estava atrás. A lombada agora
+ *    passa 1,5px para a frente, por baixo da borda da capa, com o mesmo fundo (grão, sombreado e
+ *    divisão do papel): a sombra da lombada encosta direto na capa, também a 24° (o hover) e em 1x.
+ *    É um ::before, e não a largura da face, para as medidas da lombada (e o getBoundingClientRect
+ *    que as trocas de livro usam) não mudarem. Do lado da contracapa não precisa: aquela quina nunca
+ *    fica à vista.
+ * 2. O miolo encostado na lombada: a página de dentro, as camadas e as folhas do livro ampliado
+ *    começavam no plano da lombada, e o navegador corta a lombada em faixas no plano de cada página
+ *    (a ordem das faces 3D); na emenda de cada faixa, a borda clara da página vazava. O miolo agora
+ *    começa --recuo-miolo (1px) para dentro, como o bloco de folhas de um livro de capa dura, e o
+ *    verso da capa passa o mesmo tanto da dobradiça, para o livro aberto não mostrar fresta na calha.
+ */
+.livro-3d .face-lombada::before {
+  content: "";
+  position: absolute;
+  inset: 0 -1.5px 0 0;
+  border-radius: inherit;
+  background: inherit;
+}
+
 /* A página de dentro e as camadas de página, logo abaixo da capa. */
 .livro-3d .pagina,
 .livro-3d .folha-livro {
   top: 4px;
+  left: var(--recuo-miolo);
   width: calc(var(--cw) - 6px);
   height: calc(var(--bh) - 8px);
   border-radius: 0 3px 3px 0;
@@ -695,6 +721,11 @@
   position: absolute;
   inset: 0;
   backface-visibility: hidden;
+}
+
+/* O verso passa da dobradiça o recuo do miolo: aberto, ele encosta na primeira página (B08). */
+.face-capa > .capa-verso {
+  left: calc(-1 * var(--recuo-miolo, 0px));
 }
 
 /*
