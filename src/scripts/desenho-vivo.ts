@@ -32,7 +32,13 @@ function desenhar(gsap: GSAP, svg: SVGSVGElement) {
   gsap.set(textos, { opacity: 0 });
   gsap.set(tracos, { drawSVG: "0%" });
   gsap
-    .timeline({ onComplete: () => gsap.set(tracos, { clearProps: "strokeDasharray,strokeDashoffset" }) })
+    .timeline({
+      onComplete: () => {
+        gsap.set(tracos, { clearProps: "strokeDasharray,strokeDashoffset" });
+        // O desenho do destaque terminou: depois da abertura, os cadernos da marca acenam (B13, D52).
+        dispatchEvent(new CustomEvent("cs:desenhou"));
+      },
+    })
     .to(tracos, { drawSVG: "100%", duration: 1.1, stagger: passo, ease: "power1.inOut" })
     .to(tintas, { fillOpacity: 1, duration: 0.6, stagger: 0.03, clearProps: "fillOpacity" }, "-=0.4")
     .to(textos, { opacity: 1, duration: 0.4, stagger: 0.06, clearProps: "opacity" }, "<");

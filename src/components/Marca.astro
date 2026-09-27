@@ -9,7 +9,9 @@
  *
  * O livro abre (D41): ao passar o mouse (ou focar o link), a capa entreabre 38° sobre as páginas, só
  * com CSS. Para isso o livro são duas camadas: atrás, o miolo do caderno (a página creme e pautada de
- * src/lib/caderno.ts, A01, D52); na frente, a capa.
+ * src/lib/caderno.ts, A01, D52); na frente, a capa. No fim da abertura da home, depois do desenho do
+ * destaque, o do cabeçalho e o grande acenam juntos, uma vez: a classe `acena` (posta pela
+ * Abertura.astro, B13, D52) abre a capa como o hover e, ao sair, ela fecha.
  */
 import { BLOG_DESCENDENTE, BLOG_SVG, BLOG_VIEWBOX, MARCA_SVG, MARCA_VIEWBOX } from "../lib/marca";
 import { MIOLO_SVG } from "../lib/caderno";
@@ -102,7 +104,9 @@ const Elemento = semLink ? "span" : "a";
     transition: transform 0.45s cubic-bezier(0.65, 0, 0.35, 1);
   }
 
-  a.marca:is(:hover, :focus-visible) .marca-capa-3d {
+  /* O aceno do fim da abertura da home (B13, D52, Abertura.astro): o mesmo abrir do hover, uma vez. */
+  a.marca:is(:hover, :focus-visible) .marca-capa-3d,
+  .marca.acena .marca-capa-3d {
     transform: rotateY(-38deg);
     transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
   }
@@ -199,7 +203,7 @@ const Elemento = semLink ? "span" : "a";
       transition: none;
     }
 
-    .marca:is(:hover, :focus-visible) .marca-capa-3d {
+    .marca:is(:hover, :focus-visible, .acena) .marca-capa-3d {
       transform: none;
     }
   }

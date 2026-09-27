@@ -11,6 +11,8 @@
  *   para a direita (cada um entra pela direita, desliza até encostar no anterior, inclinado pelo atrito,
  *   e assenta), com a contagem da coleção embaixo ("Volume 01"… "E a revista"). A estante é a de
  *   verdade, levantada por cima do papel. Montada, ela volta para a folha da abertura e o papel esmaece.
+ *   Durante a abertura, a estante não responde ao mouse (B12, D52). Depois, quando o desenho do destaque
+ *   termina, o caderno do cabeçalho e o grande acenam juntos, uma vez (B13, D52).
  * - Nas outras páginas, o caderno "cs" carrega (a caneta escreve o fio, contando até 100), abre e fecha
  *   (contracapa, miolo pautado e capa com frente e verso, no papel dos livros, igual nos dois temas) e
  *   pousa na marca do cabeçalho; o papel esmaece e as folhas da página chegam do fundo, como na troca de
@@ -136,10 +138,31 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     };
   }
 
+  /**
+   * O aceno do fim da abertura da home (B13, D52): depois que o desenho do destaque termina (o
+   * desenho-vivo.ts avisa com `cs:desenhou`), o caderno do cabeçalho e o grande da abertura abrem um
+   * pouco e fecham, juntos e uma vez, com o mesmo movimento do hover (a classe `acena`, Marca.astro).
+   * Sem desenho no destaque, logo depois da abertura. Com o mouse já num deles, ele fica aberto: a
+   * classe só soma ao hover.
+   */
+  function acenoNoFim() {
+    const acenar = () => {
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const marcas = [...document.querySelectorAll<HTMLElement>(".cabecalho .marca, .marca-grande")];
+      for (const m of marcas) m.classList.add("acena");
+      // Aberto por um instante (a capa chega aos 38° em ~0,5s) e fecha com a volta do hover.
+      setTimeout(() => marcas.forEach((m) => m.classList.remove("acena")), 750);
+    };
+    if (document.querySelector("[data-desenhar] svg.ilustracao")) {
+      addEventListener("cs:desenhou", () => setTimeout(acenar, 150), { once: true });
+    } else addEventListener("cs:aberto", () => setTimeout(acenar, 400), { once: true });
+  }
+
   /* ---------- A3: a estante se monta (home) ---------- */
   async function estante(gsap: GSAP, cena: HTMLElement, { fim }: Controle) {
     const prat = document.querySelector<HTMLElement>("[data-estante]");
     if (!prat) return { tl: null };
+    acenoNoFim();
     const { CustomEase } = await import("gsap/CustomEase");
     gsap.registerPlugin(CustomEase);
     // O livro inclina pelo atrito enquanto desliza e, ao parar, passa um pouco do prumo e assenta.
