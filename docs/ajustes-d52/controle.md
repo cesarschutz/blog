@@ -62,10 +62,10 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
 
 - [x] **C01.** _(agente Simples; 10912bc, f1a592d)_ Primeira visita: tema **claro** e artigos em **cards**. A escolha do leitor fica
       guardada no navegador por **3 dias**; depois disso, volta ao padrão (claro e cards).
-- [~] **C02.** _(agente Home)_ Destaque da home: em cards, **um cartão maior ocupando duas colunas** sempre que houver
+- [x] **C02.** _(agente Home; ef241f1)_ Destaque da home: em cards, **um cartão maior ocupando duas colunas** sempre que houver
       pelo menos duas lado a lado; com uma coluna só, o primeiro cartão em destaque; em lista (tela
       grande e pequena), destaque no primeiro da lista.
-- [~] **C03.** _(agente Home)_ Código-fonte dos artigos (repositório `cesarschutz/blog-exemplos`): mostrar que o
+- [x] **C03.** _(agente Home; 3dcad52)_ Código-fonte dos artigos (repositório `cesarschutz/blog-exemplos`): mostrar que o
       artigo tem fonte em todo lugar onde ele aparece (cards e lista, com elegância) e o link no
       painel do topo do artigo. Hoje: o do Jackson
       (`https://github.com/cesarschutz/blog-exemplos/tree/main/jackson-filtros-mascarando-cartao`).
@@ -121,6 +121,18 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
 - **C01** (10912bc): padrão claro e cards (o tema não segue mais o sistema); a escolha do leitor (tema e
   modo) fica no `localStorage` com a data da última troca (`cs-prefs-quando`); passados 3 dias, o script
   do `<head>` apaga as chaves antes da primeira pintura. [diagnosticos/C01.md](diagnosticos/C01.md).
+
+- **C02** (ef241f1): o bloco "Em destaque" saiu; o mais recente é o primeiro item de "Artigos recentes",
+  só em `/`. Em cards com duas colunas ou mais, ocupa duas (desenho largo anotado, título de 26 a 32px);
+  numa coluna, o cartão com "Mais recente" (traço de caneta embaixo) e título maior; em lista, o
+  primeiro item maior (desenho 3:2 à direita; em cima no celular). O desenho que se desenha (D41) roda
+  uma vez, na forma à vista. **Paginação (muda a D27):** 12 lugares por página e o destaque vale dois,
+  então `/` tem 11 posts, `/2/` 12 e `/3/` 4 (as URLs são as mesmas). [diagnosticos/C02.md](diagnosticos/C02.md).
+- **C03** (3dcad52): campo `codigo` no frontmatter (URL https, opcional; "fonte" já é o `## Fontes` e as
+  tipografias), preenchido no post do Jackson. No topo do artigo, "Código deste artigo no GitHub" com o
+  ícone `</>`; em cards, lista e destaque, o sinal `</>` "código-fonte" na linha da data; só o ícone na
+  gaveta e em anterior / próximo; na busca, "código-fonte" na linha do resultado; no livro ampliado,
+  "Código no GitHub ↗". Skill `post` atualizada. [diagnosticos/C03.md](diagnosticos/C03.md).
 
 ## Para o Cesar decidir
 
