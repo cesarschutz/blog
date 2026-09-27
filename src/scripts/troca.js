@@ -40,10 +40,15 @@
   var QUAD_IN = "cubic-bezier(0.55, 0.085, 0.68, 0.53)";
   // A queda: acelera desde o começo (quad), para a folha sair do lugar logo e não ficar parada na mesa.
   var QUEDA = "cubic-bezier(0.11, 0, 0.5, 0)";
+  var SAI_LOGO = "cubic-bezier(0.33, 1, 0.68, 1)";
   var reduzido = matchMedia("(prefers-reduced-motion: reduce)");
-  // A mesa fica limpa antes (D52, A02): as folhas novas só começam a chegar quando as antigas já caíram
-  // (a última some em 0,3s); antes, as novas apareciam atrás das antigas ainda paradas.
-  var SAIDA = 0.26;
+  // A mesa fica limpa antes (D52, A02): as folhas novas só aparecem (CHEGA, 0,24s) quando as antigas já
+  // estão caindo e quase transparentes; antes, apareciam atrás das antigas ainda paradas. E sem mesa
+  // vazia no meio (revisão 2): o voo delas começa antes (VOO), ainda transparentes, porque as de cima
+  // saem do alto, fora da tela, e levam ~0,2s para entrar; com o voo e a opacidade juntos em 0,26s, a
+  // tela ficava ~0,1s só com o papel entre a saída e a chegada.
+  var VOO = 0.04;
+  var CHEGA = 0.24;
   // Lentidão (D52, B14): a caneta escreve o fio do cabeçalho se a página nova não vier em 0,2s; se a
   // espera passou de 1s (ou o aparelho não dá conta da coreografia), a chegada é a curta.
   var ESPERA = 200;
@@ -293,7 +298,8 @@
   /**
    * As folhas novas chegam do fundo e pousam (o fim do A2); os textos sobem por uma máscara. `t0` em
    * segundos. Devolve quando a última termina (ms). Com `opcoes.anims`, as animações criadas vão para
-   * essa lista (a troca as recomeça juntas quando a View Transition fica pronta).
+   * essa lista (a troca as recomeça juntas quando a View Transition fica pronta); `opcoes.visivel`
+   * (segundos) segura a opacidade das novas até lá, mesmo com o voo já começado.
    */
   function chegar(novas, opcoes) {
     opcoes = opcoes || {};
@@ -305,6 +311,8 @@
     passo = Math.min(opcoes.curta ? 0.02 : passo, (opcoes.curta ? 0.1 : 0.5) / Math.max(1, novas.length - 1));
     var curta = !!opcoes.curta;
     var t0 = opcoes.t0 || 0, fim = 0;
+    // Nada novo fica visível antes disto (ms): o voo pode começar antes, ainda transparente (revisão 2).
+    var visivel = (opcoes.visivel || 0) * 1000;
     var anims = opcoes.anims || [];
     var animar = function (el, quadros, tempo) {
       var a = el.animate(quadros, tempo);
@@ -317,9 +325,9 @@
       if (u.texto) {
         animar(el,
           [{ transform: "translateY(18px)", opacity: 0, clipPath: "inset(0 0 100% 0)" }, { transform: "none", opacity: 1, clipPath: "inset(0 0 0% 0)" }],
-          { duration: curta ? 280 : 550, delay: t + 50, easing: QUART_OUT, fill: "backwards" },
+          { duration: curta ? 280 : 550, delay: Math.max(t + 50, visivel), easing: QUART_OUT, fill: "backwards" },
         );
-        fim = Math.max(fim, t + (curta ? 330 : 600));
+        fim = Math.max(fim, Math.max(t + 50, visivel) + (curta ? 280 : 550));
         return;
       }
       if (u.soEsmaece) {
@@ -327,6 +335,7 @@
         // pousa (0,75s). Ela nunca fica em zero: com opacidade 0, o Chrome não pinta nada dentro dela, e a
         // imagem nova do livro (viva) sumia no começo do voo.
         if (u.comLivro) t = curta ? 0 : 120;
+        else t = Math.max(t, visivel);
         var dm = curta ? 250 : 450;
         animar(el, [{ opacity: u.comLivro ? 0.01 : 0 }, { opacity: 1 }], { duration: dm, delay: t, easing: "linear", fill: "backwards" });
         fim = Math.max(fim, t + dm);
@@ -351,7 +360,9 @@
       // vazia marca o tempo, para andar junto com as outras (e recomeçar com elas).
       if (desenho && el.contains(desenho)) animar(el, [], { duration: t + dur * 0.6 }).finished.then(function () { dispatchEvent(new CustomEvent("cs:pousou")); }, function () {});
       animar(el, [{ transform: de, transformOrigin: origem }, { transform: PARADO, transformOrigin: origem }], { duration: dur, delay: t, easing: QUART_OUT, fill: "backwards" });
-      animar(el, [{ opacity: 0 }, { opacity: 1 }], { duration: 280, delay: t, easing: "linear", fill: "backwards" });
+      // A opacidade vem logo (ease-out, 170ms), não antes de `visivel`: a folha aparece ainda pequena, lá no
+      // fundo, enquanto as antigas somem, e a mesa nunca fica vazia.
+      animar(el, [{ opacity: 0 }, { opacity: 1 }], { duration: 170, delay: Math.max(t, visivel), easing: SAI_LOGO, fill: "backwards" });
       fim = Math.max(fim, t + dur);
     });
     return fim;
@@ -359,7 +370,7 @@
 
   /**
    * As folhas antigas caem da mesa (de baixo para cima, numa cascata curta); os textos antigos sobem e
-   * somem. Tudo some em 0,3s, antes de as folhas novas aparecerem (SAIDA): a queda acelera logo (o
+   * somem. Tudo some em 0,3s; as folhas novas aparecem no fim disso (CHEGA): a queda acelera logo (o
    * peso) e a folha some na segunda metade dela, ainda caindo.
    */
   function cair(d, comPar, curta) {
@@ -384,7 +395,7 @@
       var t = dono ? 0 : j * passo, rz = rnd(-7, 7), o = "50% " + s.oy + "px";
       giro[s.n] = { t: t, rz: rz };
       animarPseudo(alvo, [{ transform: PARADO, transformOrigin: o }, { transform: T3(0, H * 0.8, 0, -18, 0, rz), transformOrigin: o }], { duration: 380, delay: t, easing: QUEDA });
-      animarPseudo(alvo, [{ opacity: 1 }, { opacity: 0 }], { duration: 150, delay: t + (dono ? 40 : 90), easing: QUAD_IN });
+      animarPseudo(alvo, [{ opacity: 1 }, { opacity: 0 }], { duration: 150, delay: t + (dono ? 40 : 80), easing: QUAD_IN });
       fim = Math.max(fim, t + 380);
     });
     return { fim: fim, giro: giro };
@@ -491,7 +502,7 @@
     if (propria) {
       // A página anima a chegada dela (Categorias); até o script dela chegar, as folhas esperam escondidas.
       novas.forEach(function (u) { u.el.style.opacity = "0"; });
-      var chegada = (window.csChegada = { novas: novas, inicio: performance.now(), t0: SAIDA });
+      var chegada = (window.csChegada = { novas: novas, inicio: performance.now(), t0: CHEGA });
       // Se o script dela (ou o GSAP, que ele carrega sob demanda) não vier em 1,8s, as folhas aparecem paradas.
       setTimeout(function () {
         if (chegada.comecou) return;
@@ -502,7 +513,7 @@
     }
     // As folhas novas ficam escondidas desde o primeiro quadro, mas o relógio delas começa junto com a
     // queda das antigas (vt.ready, que pode vir alguns quadros depois deste evento).
-    var fimDaChegada = propria ? 0 : chegar(novas, { volta: volta, t0: curta ? 0.06 : SAIDA, anims: anims, curta: curta });
+    var fimDaChegada = propria ? 0 : chegar(novas, { volta: volta, t0: curta ? 0.06 : VOO, visivel: curta ? 0 : CHEGA, anims: anims, curta: curta });
     var comecou = vt.ready.then(function () {
       anims.forEach(function (a) { a.currentTime = 0; });
     }, function () {});
@@ -516,7 +527,7 @@
         if (!g) return;
         var alvo = "::view-transition-old(" + l.n + ")";
         animarPseudo(alvo, [{ transform: PARADO }, { transform: T3(0, innerHeight * 0.8, 0, -18, 0, g.rz) }], { duration: 380, delay: g.t, easing: QUEDA });
-        animarPseudo(alvo, [{ opacity: 1 }, { opacity: 0 }], { duration: 150, delay: g.t + 90, easing: QUAD_IN });
+        animarPseudo(alvo, [{ opacity: 1 }, { opacity: 0 }], { duration: 150, delay: g.t + 80, easing: QUAD_IN });
       });
     }, function () {});
     // A chegada acabou quando a troca acabou e a última folha nova pousou (o desenho do artigo espera isso).
