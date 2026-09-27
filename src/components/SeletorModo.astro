@@ -1,10 +1,12 @@
 ---
 /**
- * Seletor Lista / Cards (D27, D33), com os ícones do blog atual. O modo fica no navegador
- * (`cs-post-view`, a mesma chave do blog atual) e é aplicado pelo script do <head> (Base.astro) em
- * `data-post-view` no <html>, sem piscar; as listas mostram uma forma ou a outra pelo CSS
- * (.lista-artigos-modo e .cartoes-modo, em base.css). Os cards vêm num <template> (D37): viram DOM
- * na página (script logo depois dele) se o modo já for Cards, ou aqui, na primeira troca para Cards.
+ * Seletor Lista / Cards (D27, D33), com os ícones do blog atual. O padrão é Cards (D52, C01); o
+ * modo fica no navegador (`cs-post-view`, a mesma chave do blog atual) com a data da última troca
+ * em `cs-prefs-quando` (compartilhada com o tema, tema.ts) — passados 3 dias, o script do <head>
+ * (Base.astro) ignora a escolha e volta ao padrão. O modo escolhido é aplicado em `data-post-view`
+ * no <html>, sem piscar; as listas mostram uma forma ou a outra pelo CSS (.lista-artigos-modo e
+ * .cartoes-modo, em base.css). Os cards vêm num <template> (D37): viram DOM na página (script logo
+ * depois dele) se o modo já for Cards, ou aqui, na primeira troca para Cards.
  * A troca esmaece a forma atual e traz a nova com um deslize de 8px (D42, Web Animations; direta com
  * movimento reduzido). Sem JS, fica a lista e o seletor some.
  *
@@ -28,6 +30,7 @@ import { ICONES } from "../lib/icones";
 
 <script>
   const CHAVE = "cs-post-view";
+  const QUANDO = "cs-prefs-quando";
   const raiz = document.documentElement;
   const seletores = [...document.querySelectorAll<HTMLElement>("[data-modo]")];
   // O modo para onde a página vai (durante a troca, o <html> ainda mostra o anterior).
@@ -89,6 +92,7 @@ import { ICONES } from "../lib/icones";
         trocar(b.dataset.valor!);
         try {
           localStorage.setItem(CHAVE, b.dataset.valor!);
+          localStorage.setItem(QUANDO, String(Date.now()));
         } catch {
           // Sem armazenamento: o modo vale só nesta página.
         }

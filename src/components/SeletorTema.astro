@@ -1,10 +1,10 @@
 ---
 /**
  * Botão de tema do cabeçalho (D39): alterna direto entre claro e escuro, sem menu. Mostra a lua no
- * claro e o sol no escuro (o tema para onde vai). O site sempre abre no tema do sistema: a escolha
- * vale até fechar o site (`cs-theme`, em sessionStorage), e o script do <head> (Base.astro) a aplica
- * antes da primeira pintura. A troca se espalha em círculo a partir do botão (D42). Sem JS, o botão
- * some e o tema segue o sistema. O ícone parado sai de um script inline logo depois do botão.
+ * claro e o sol no escuro (o tema para onde vai). O padrão é sempre claro (D52, C01): a escolha do
+ * leitor fica em `localStorage["cs-theme"]` por 3 dias (tema.ts), e o script do <head> (Base.astro)
+ * a aplica antes da primeira pintura. A troca se espalha em círculo a partir do botão (D42). Sem JS,
+ * o botão some e o tema fica no padrão claro. O ícone parado sai de um script inline logo depois do botão.
  *
  * O sol e a lua (D49, protótipo E1, propostas A e B; a B reabre a D44, em que o ícone só trocava):
  * - A: no hover, o sol gira 22° e a lua balança 14° (0,5s, só CSS);
