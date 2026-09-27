@@ -45,6 +45,30 @@
   }
 }
 
+/*
+ * Ao fechar, o visor das imagens sai como entrou (A04, D52): o véu, a imagem e os botões esmaecem
+ * juntos e a página volta por baixo, em vez de tudo sumir de uma vez. O diálogo fica na camada de
+ * cima até o fim (overlay e display em allow-discrete). O livro ampliado tem a volta própria
+ * (LivroAmpliado, .fechando).
+ */
+.visor:not(.visor-livro),
+.visor:not(.visor-livro)::backdrop {
+  transition:
+    opacity 0.18s ease-in,
+    overlay 0.18s allow-discrete,
+    display 0.18s allow-discrete;
+}
+
+.visor:not(.visor-livro):not([open]),
+.visor:not(.visor-livro):not([open])::backdrop {
+  opacity: 0;
+}
+
+.visor:not(.visor-livro):not([open]) .visor-quadro img {
+  scale: 0.97;
+  transition: scale 0.18s ease-in;
+}
+
 /* Uma trilha só, de altura definida: a imagem cabe inteira nela (max-height: 100%). */
 .visor-quadro {
   display: grid;
@@ -68,6 +92,24 @@
 .visor-quadro img[src$=".svg"] {
   padding: 14px;
   background: var(--quadro);
+}
+
+/*
+ * No tema escuro, o diagrama abre como está na página: a mesma inversão do texto (prosa.css, D39),
+ * com o quadro junto. Sem ela, o diagrama que era escuro no artigo abria como um bloco branco no
+ * visor (A04, D52). A sombra entra no próprio filtro, depois da inversão: a box-shadow seria invertida
+ * com a imagem e viraria um halo claro em volta dela.
+ */
+:root[data-theme="dark"] .visor-quadro img[src$=".svg"] {
+  box-shadow: none;
+  filter: invert(0.9) hue-rotate(180deg) drop-shadow(0 22px 34px rgb(0 0 0 / 0.6));
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .visor-quadro img[src$=".svg"] {
+    box-shadow: none;
+    filter: invert(0.9) hue-rotate(180deg) drop-shadow(0 22px 34px rgb(0 0 0 / 0.6));
+  }
 }
 
 @keyframes visor-cresce {
@@ -181,7 +223,10 @@
     animation: none;
   }
 
-  .visor-botao {
+  .visor-botao,
+  .visor:not(.visor-livro),
+  .visor:not(.visor-livro)::backdrop,
+  .visor:not(.visor-livro):not([open]) .visor-quadro img {
     transition: none;
   }
 }
