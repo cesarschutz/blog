@@ -166,8 +166,12 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     const tl = gsap.timeline({
       onComplete: () => {
         // No mesmo instante em que o CSS da abertura sai (os livros estão escondidos por ele até aqui).
-        gsap.set([prat, ...soLivros, tabua, ...(aparador ? [aparador] : [])], { clearProps: "transform,opacity" });
+        // A opacidade só depois de ele sair: antes, os livros voltavam a 0 por um quadro e, já sem a trava
+        // das transições, reapareciam esmaecendo (a estante piscava no fim).
+        const pecas = [prat, ...soLivros, tabua, ...(aparador ? [aparador] : [])];
+        gsap.set(pecas, { clearProps: "transform" });
         fim();
+        gsap.set(pecas, { clearProps: "opacity" });
       },
     });
     // 1. a caneta risca o fio (é o carregamento); o fio engrossa e vira a tábua
@@ -304,6 +308,12 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
   :global(:root[data-abertura="estante"] [data-estante]) {
     position: relative;
     z-index: 101;
+  }
+
+  /* Ela é a cena, não a estante da home (B12, D52): o mouse passa por ela até o papel (sem tombar o
+     livro nem mostrar a legenda, e o clique pula a abertura, como no resto da tela). */
+  :global(:root[data-abertura="estante"] :is([data-estante], [data-estante] *)) {
+    pointer-events: none;
   }
 
   :global(:root[data-abertura="estante"] [data-estante] :is(.prateleira-livros > *, .tabua)) {

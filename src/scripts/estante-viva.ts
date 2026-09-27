@@ -17,6 +17,9 @@
  * estante viva não mexe neles. O repouso de cada lombada (a inclinada da home, 6°; a escolhida no
  * filtro, 10px acima) fica com o GSAP, que escreve o `transform`, e o CSS não manda mais. Só
  * transformações. Com movimento reduzido, nada se move (a legenda continua).
+ *
+ * Durante a abertura da home (D51, `data-abertura` no <html>), a estante é a cena: não responde ao mouse
+ * nem ao foco (sem tombar e sem a legenda, B12 da D52) e o repouso espera ela acabar (`cs:aberto`).
  */
 import { descanso, foraDaPrateleira } from "./estante-gesto";
 import { adiantar, carregarGsap, movimentoReduzido, temMouse, type GSAP } from "./gsap";
@@ -26,6 +29,7 @@ const TOQUE = -5;
 const OCIOSO = 3000;
 
 const escolhida = (el: HTMLElement) => (el.getAttribute("aria-pressed") === "true" ? -10 : 0);
+const naAbertura = () => document.documentElement.hasAttribute("data-abertura");
 
 const prontas = new WeakSet<HTMLElement>();
 /**
@@ -100,7 +104,7 @@ export function estanteViva(raiz: HTMLElement, { emRepouso = false } = {}) {
   let espiado: HTMLElement | null = null;
 
   function iniciarRepouso() {
-    if (!gsap || ativo || !visivel || document.hidden || movimentoReduzido.matches || sob) return;
+    if (!gsap || ativo || !visivel || document.hidden || movimentoReduzido.matches || sob || naAbertura()) return;
     const g = gsap;
     ativo = true;
     const espiar = () => {
@@ -151,6 +155,8 @@ export function estanteViva(raiz: HTMLElement, { emRepouso = false } = {}) {
       addEventListener(evento, mexeu, { passive: true });
     }
     document.addEventListener("visibilitychange", mexeu);
+    // A abertura acabou: começa a contar os 3 segundos do repouso.
+    addEventListener("cs:aberto", mexeu);
     movimentoReduzido.addEventListener("change", mexeu);
     // Sem mouse, o GSAP vem quando a página fica ociosa, para o repouso poder começar.
     adiantar(raiz, () => carregarGsap().then((g) => {
@@ -162,7 +168,7 @@ export function estanteViva(raiz: HTMLElement, { emRepouso = false } = {}) {
   // O foco do teclado faz o mesmo que o mouse; a legenda aparece mesmo com movimento reduzido.
   for (const el of lombadas) {
     el.addEventListener("focus", () => {
-      if (!el.matches(":focus-visible")) return;
+      if (!el.matches(":focus-visible") || naAbertura()) return;
       if (movimentoReduzido.matches) return mostrarLegenda(el);
       carregarGsap().then((g) => {
         preparar(g);
@@ -177,7 +183,7 @@ export function estanteViva(raiz: HTMLElement, { emRepouso = false } = {}) {
   }
 
   raiz.addEventListener("pointermove", (e) => {
-    if (e.pointerType !== "mouse") return;
+    if (e.pointerType !== "mouse" || naAbertura()) return;
     if (!gsap && !movimentoReduzido.matches) {
       carregarGsap().then(preparar);
       return;
