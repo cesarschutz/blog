@@ -28,6 +28,20 @@
   animation: visor-entra 0.22s ease-out;
 }
 
+/*
+ * O livro ampliado não esmaece inteiro ao abrir (D52): a cópia sai do livro de origem, que some no
+ * mesmo quadro, e o diálogo a partir do transparente fazia o livro apagar e acender (o painel ficava
+ * vazio e a cópia aparecia quase transparente por ~0,1s). Só o véu esmaece; o botão de fechar chega
+ * logo depois, e a legenda, pelo GSAP (LivroAmpliado).
+ */
+.visor-livro[open] {
+  animation: none;
+}
+
+.visor-livro[open] > .visor-fechar {
+  animation: visor-entra 0.3s ease-out 0.15s both;
+}
+
 .visor::backdrop {
   background: color-mix(in oklab, var(--veu) 88%, transparent);
   -webkit-backdrop-filter: blur(3px);
@@ -219,7 +233,8 @@
 @media (prefers-reduced-motion: reduce) {
   .visor[open],
   .visor::backdrop,
-  .visor-quadro img {
+  .visor-quadro img,
+  .visor-livro[open] > .visor-fechar {
     animation: none;
   }
 

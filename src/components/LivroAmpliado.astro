@@ -551,6 +551,10 @@ import "../styles/paginas.css";
       ir.hidden = !destino || new URL(destino, location.href).pathname === location.pathname;
       ir.href = destino || "#";
 
+      // Até o GSAP pôr a cópia sobre o livro de origem (no mesmo quadro em que a origem some), ela e a
+      // legenda ficam invisíveis: com o GSAP ainda chegando, o livro grande aparecia um instante no meio.
+      const anima = !movimentoReduzido.matches;
+      if (anima) nova.style.opacity = legenda.style.opacity = "0";
       dialogo!.showModal();
       // As páginas e o GSAP chegam juntos; até lá, os botões esperam.
       const endereco = raiz.dataset.paginas;
@@ -564,15 +568,21 @@ import "../styles/paginas.css";
         });
       ligarArrasto();
       // O livro cresce a partir do de origem, que sai do lugar enquanto isso (D47).
-      if (!movimentoReduzido.matches) {
-        carregarGsap().then((g) => {
-          gsap ??= g;
-          if (!dialogo!.open || copia !== nova) return;
-          const de = sobreAOrigem();
-          g.set(caixa, { opacity: 0 });
-          g.fromTo(nova, de, { x: 0, y: 0, scale: 1, duration: 0.7, ease: "power3.inOut" });
-          g.fromTo(legenda, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4, delay: 0.35, ease: "power2.out" });
-        });
+      if (anima) {
+        carregarGsap().then(
+          (g) => {
+            gsap ??= g;
+            if (!dialogo!.open || copia !== nova) return;
+            const de = sobreAOrigem();
+            g.set(caixa, { opacity: 0 });
+            g.fromTo(nova, { ...de, opacity: 1 }, { x: 0, y: 0, scale: 1, duration: 0.7, ease: "power3.inOut" });
+            g.fromTo(legenda, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4, delay: 0.35, ease: "power2.out" });
+          },
+          () => {
+            nova.style.removeProperty("opacity");
+            legenda.style.removeProperty("opacity");
+          },
+        );
       }
     }
 
@@ -596,6 +606,9 @@ import "../styles/paginas.css";
       const para = sobreAOrigem();
       g.set(nova, agora);
       await g.to(nova, { ...para, duration: 0.55, ease: "power3.inOut" }).then();
+      // A origem volta no mesmo quadro em que o diálogo sai: no evento close (outra tarefa), sobrava um
+      // quadro com o painel vazio entre os dois.
+      caixaDeOrigem?.style.removeProperty("opacity");
       dialogo!.close();
     }
 
@@ -800,6 +813,32 @@ import "../styles/paginas.css";
     transition: opacity 0.5s ease-in;
   }
 
+  /*
+   * A sombra no chão chega com o livro, quando ele está quase no meio (o diálogo não esmaece mais ao
+   * abrir, D52), e sai com o véu, junto com o botão de fechar: sem isso, os dois ficavam sobre a página
+   * já clara até o fim da volta (a sombra, uma mancha escura sobre o texto, no celular).
+   */
+  .visor-livro[open] .palco-ampliado::after {
+    animation: sombra-chega 0.45s ease-out 0.35s both;
+  }
+
+  .visor-livro.fechando .palco-ampliado::after,
+  .visor-livro.fechando .visor-fechar {
+    animation: sombra-sai 0.3s ease-in both;
+  }
+
+  @keyframes sombra-chega {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @keyframes sombra-sai {
+    to {
+      opacity: 0;
+    }
+  }
+
   .legenda-livro {
     display: grid;
     justify-items: center;
@@ -912,6 +951,12 @@ import "../styles/paginas.css";
   @media (prefers-reduced-motion: reduce) {
     .passo {
       transition: none;
+    }
+
+    .visor-livro[open] .palco-ampliado::after,
+    .visor-livro.fechando .palco-ampliado::after,
+    .visor-livro.fechando .visor-fechar {
+      animation: none;
     }
   }
 </style>
