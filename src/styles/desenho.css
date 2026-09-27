@@ -63,6 +63,56 @@
   fill: none;
 }
 
+/*
+ * A caneca da série Java (C04, D52): no hover do cartão, do item da lista ou do topo do artigo, a
+ * fumaça de agora sobe e some pelo alto e uma nova se escreve de baixo (o traço começa embaixo), uma
+ * vez, a segunda um nada depois da primeira. Só o traço da fumaça se move; o resto da caneca fica.
+ * Com movimento reduzido, a fumaça fica parada.
+ */
+:is(.cartao, .item.completo, [data-desenhar-topo]):hover .ilustracao .fumaca {
+  animation: fumaca 1.15s cubic-bezier(0.33, 0, 0.2, 1) both;
+}
+
+:is(.cartao, .item.completo, [data-desenhar-topo]):hover .ilustracao .fumaca + .fumaca {
+  animation-delay: 0.12s;
+}
+
+@keyframes fumaca {
+  0% {
+    stroke-dasharray: 150 300;
+    stroke-dashoffset: 0;
+    translate: 0 0;
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.4, 0, 1, 1);
+  }
+
+  30% {
+    stroke-dashoffset: 0;
+    translate: 0 -46px;
+    opacity: 0;
+  }
+
+  31% {
+    stroke-dashoffset: 150;
+    translate: 0 0;
+    opacity: 1;
+    animation-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+
+  100% {
+    stroke-dasharray: 150 300;
+    stroke-dashoffset: 0;
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.cartao, .item.completo, [data-desenhar-topo]):hover .ilustracao .fumaca {
+    animation: none;
+  }
+}
+
 .ilustracao .papel {
   fill: var(--superficie);
 }

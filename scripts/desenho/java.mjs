@@ -33,8 +33,8 @@ function caneca(x, y, { futura = false, texto = "" } = {}) {
       <path d="${CORPO}" transform="translate(7 6)" class="cor"/>`;
   return {
     tinta: `<g transform="translate(${x} ${y})">
-      <path d="M75 -48 C58 -80 92 -100 75 -132" class="linha"/>
-      <path d="M155 -48 C138 -80 172 -100 155 -136" class="linha"/>
+      <path d="M75 -48 C58 -80 92 -100 75 -132" class="linha fumaca"/>
+      <path d="M155 -48 C138 -80 172 -100 155 -136" class="linha fumaca"/>
       ${volume}
       <path d="${CORPO}" class="${linha}"/>
       <path d="${ALCA}" class="${linha}"/>

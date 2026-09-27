@@ -2,8 +2,8 @@
   aria-label="Uma caneca em linha tracejada com JAVA 29 e o carimbo tracejado de próxima LTS: a versão ainda não saiu.">
   <g class="tinta">
     <g transform="translate(590 330)">
-      <path d="M75 -48 C58 -80 92 -100 75 -132" class="linha"/>
-      <path d="M155 -48 C138 -80 172 -100 155 -136" class="linha"/>
+      <path d="M75 -48 C58 -80 92 -100 75 -132" class="linha fumaca"/>
+      <path d="M155 -48 C138 -80 172 -100 155 -136" class="linha fumaca"/>
       
       <path d="M0 0 H240 V120 A60 60 0 0 1 180 180 H60 A60 60 0 0 1 0 120 Z" class="fantasma"/>
       <path d="M240 28 H282 A52 52 0 0 1 282 132 H240" class="fantasma"/>

@@ -19,7 +19,7 @@ const pastaDasLousas = join(raiz, "lousas");
 const CLASSES_DA_LOUSA = new Set(["traco", "fino", "guia", "destaque", "fantasma", "tracejado", "hachura", "cheio", "secundario", "codigo"]);
 const TEMPO = { traco: 2, escrita: 2, revela: 2, aparece: 2, some: 2, esmaece: 3, desloca: 4 };
 const CLASSES = new Set([
-  "tinta", "linha", "papel", "cor", "hachura", "fantasma", "carimbo",
+  "tinta", "linha", "fumaca", "papel", "cor", "hachura", "fantasma", "carimbo",
   "rotulo", "valor", "numero", "codigo", "carimbo-texto", "anotacao", "nota", "nota-pequena", "chamada",
 ]);
 const PROPORCOES = { largo: 1100 / 468, medio: 3 / 2, quadrado: 1 };

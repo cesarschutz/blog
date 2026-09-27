@@ -77,6 +77,7 @@ Classes (definidas em `src/styles/desenho.css`; nenhuma outra passa no validador
 |---|---|
 | `tinta` | grupo dos traços, o único que treme; texto nunca vai dentro dele |
 | `linha` | traço sem preenchimento |
+| `fumaca` | junto de `linha`, só na fumaça da caneca da série Java (o traço começa embaixo): no hover do cartão, do item da lista ou do topo, a fumaça sobe e uma nova se escreve (C04, D52) |
 | `papel` | preenchido com a superfície (tapa o que está atrás) |
 | `cor` | a cor da categoria: cópia da forma com `transform="translate(7 6)"`, antes do contorno |
 | `hachura` | sombra: cópia da forma deslocada (+14 objetos grandes, +7 caixas), antes do papel |

@@ -2,8 +2,8 @@
   aria-label="Uma caneca com JAVA 17 e o carimbo LTS, a versão de suporte longo lançada em set/2021.">
   <g class="tinta">
     <g transform="translate(590 330)">
-      <path d="M75 -48 C58 -80 92 -100 75 -132" class="linha"/>
-      <path d="M155 -48 C138 -80 172 -100 155 -136" class="linha"/>
+      <path d="M75 -48 C58 -80 92 -100 75 -132" class="linha fumaca"/>
+      <path d="M155 -48 C138 -80 172 -100 155 -136" class="linha fumaca"/>
       <path d="M0 0 H240 V120 A60 60 0 0 1 180 180 H60 A60 60 0 0 1 0 120 Z" transform="translate(14 14)" class="hachura"/>
       <path d="M0 0 H240 V120 A60 60 0 0 1 180 180 H60 A60 60 0 0 1 0 120 Z" transform="translate(7 6)" class="cor"/>
       <path d="M0 0 H240 V120 A60 60 0 0 1 180 180 H60 A60 60 0 0 1 0 120 Z" class="linha"/>
