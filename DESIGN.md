@@ -34,6 +34,7 @@ colors:
   marca: "#2D4B46"
   marca-letra: "#F2EDE2"
   marca-fita: "#C24D1C"
+  caderno-pauta: "#BEBAB0" # miolo do caderno "cs", igual nos dois temas (D52)
   veu: "#0C0F11"
   veu-tinta: "#EEF1EE"
   caneta: "#1F4FB5"
@@ -402,18 +403,24 @@ mexer na página. O site não tem som.
 - **Lousa:** sempre o contrário da página. No tema claro é vidro escuro (#15191C) com caneta clara;
   no escuro, quadro branco suavizado (#CFD5D1, nunca branco puro) com caneta escura.
 - **Marca e véu** (D33): o livro "cs" e o fundo do visor de imagens.
+- **Pauta do caderno** (D52, `caderno-pauta`, #BEBAB0, igual nos dois temas): as linhas do miolo do
+  caderno "cs", onde a capa abre (a marca do cabeçalho, a marca grande da home e o caderno da
+  abertura das outras páginas).
 - **Caneta do caderno** (D48, `caneta`, #1F4FB5; #8FA8FF no escuro): o azul de caneta das marcações
   dos artigos, **igual em todos os livros**. Não é cor de interação: fica só nos traços (riscos,
   círculos, caixas, setas, marcas de margem) e nas notas à mão, **nunca no texto marcado**, que
   continua na cor normal, para não se confundir com os links (azul-tinta). As notas à mão não têm
   sublinhado nem cara de link. Passa de 4,5:1 sobre a folha, o fundo e o código nos dois temas.
+  **Também é a cor da leitura do artigo** (D52, B05): o fio e a caneta do cabeçalho, e, no sumário, o
+  fio, os vistos, o ponto atual e o sublinhado da seção atual (no lugar da cor do livro e do
+  marca-texto de antes).
 - **Marca-texto** (D48, `marca-texto`, #FFE27A; no escuro, o mesmo amarelo a 30% sobre a folha):
   amarelo clássico, igual em todos os livros, com o texto sempre em `on-surface` por cima (12,75:1
   no claro, 5,92:1 no escuro). Chama muita atenção: no máximo uma ou duas vezes por post.
 
 **Livros (cor principal de cada categoria, `docs/capas/livros.json`).** A mesma cor pinta a capa, a
-lombada, o chip da categoria (quadradinho e nome tingido), a barra de leitura e o **painel dos
-desenhos** dos posts da categoria:
+lombada, o chip da categoria (quadradinho e nome tingido) e o **painel dos desenhos** dos posts da
+categoria (a barra de leitura e o sumário passaram para a caneta azul, D52, B05):
 
 | Vol. | Categoria | Cor | Tinta sobre a cor | Destaque sobre o papel |
 |---|---|---|---|---|
@@ -484,15 +491,20 @@ código, das tabelas, dos diagramas, das lousas e da apresentação (D46); o top
 tem a mesma largura e a mesma margem. No
 celular, o corpo do artigo não fica num cartão: o texto usa a largura da página, com a margem normal.
 A partir de 1300px, a coluna da esquerda começa no topo da página: o sumário numa folha própria e fixa,
-com a barra "NN% lido" embaixo; o fio das seções lidas, o ponto atual e a barra usam **a cor do
-livro do post** (o destaque do livro; no escuro, com 42% de branco), e embaixo da folha do sumário
+com "NN% lido" e os minutos que faltam embaixo (sem barra, D52, B05); o fio, os vistos, o ponto atual
+e o sublinhado da seção atual são da **caneta azul** (`--caneta`, D52, B05; antes, a cor do livro do
+post e o marca-texto do sumário), e embaixo da folha do sumário
 fica **o livro do artigo, grande e de lado** (D46), num painel tingido, com a lupa, o nome e "Ver o livro".
 **O sumário acompanha a leitura (D49):** um fio de tinta à mão desce pelo trilho até a altura lida;
-cada seção lida ganha um visto desenhado no marco; a seção atual fica com o marca-texto na cor do
-livro (`--sumario-marca-*`, no `tokens.ts`; contraste no `npm run contraste`). Abaixo de 1300px, o
+a seção em que o leitor ficou por 0,6s ou mais ganha um visto desenhado no marco ao ficar para trás, e
+a seção atual é sublinhada à mão, uma linha por vez (D52, B04 e B05); toda entrada (link, troca de
+página, recarga, `#título`, histórico) começa **sem nenhum visto**, e quem só passou por uma seção
+não a marca. Medir a posição durante a troca de página é sempre pelo layout (`offsetTop`), nunca pelo
+`getBoundingClientRect` (D52, B04). Abaixo de 1300px, o
 cabeçalho mostra "N de M · seção" no lugar da marca e abre o sumário numa folha que desce dele, com
-as cores do livro. Toda página tem o **voltar ao topo** depois de uma tela de rolagem
-(`VoltarTopo.astro`, no `Base.astro`). A home é paginada de 12 em 12. A estante tem 6px entre os livros.
+o mesmo trilho da caneta azul (D52, B05). Toda página tem o **voltar ao topo** depois de uma tela de rolagem
+(`VoltarTopo.astro`, no `Base.astro`). A home tem 12 lugares por página; na primeira, o destaque ocupa
+dois (D52, C02). A estante tem 6px entre os livros.
 Nada pode rolar para o lado em 390px nem em 320px. O sumário nunca rola para o lado. Toda área que
 rola por dentro (sumário, código, tabelas, gaveta, busca, painel) usa a **barra fina** do site, na
 tinta do tema com 24% (40% ao passar o mouse), por `scrollbar-width`, `scrollbar-color` e
@@ -534,7 +546,24 @@ têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm can
   (`/livros/marca/<slug>.svg`, `MarcaDagua.astro`), sem repetir o desenho no HTML.
 - **Diagramas antigos** (SVG com fundo branco, `public/posts/`): num quadro claro no tema claro e,
   no escuro, na versão escura feita por filtro (luz invertida e matiz de volta, D39), nunca um bloco
-  branco na página escura.
+  branco na página escura. No visor de imagens, a mesma inversão vale no escuro, com a sombra dentro
+  do filtro (D52, A04); o visor esmaece ao abrir e ao fechar (0,18s), nunca some de uma vez (o livro
+  ampliado, que não muda com o tema, mantém a volta própria).
+- **Topo das listas** (D52, B07: "Todos os artigos" e a página de uma tag): título e descrição no
+  alto à esquerda; no pé, na linha da tábua, os índices ("por assunto" e "por ano"); a estante de
+  filtro à direita, com a tábua alinhada aos índices. O pé da estante de filtro leva o rótulo
+  ("Filtrar por livro" ou "Só \<livro\>") e "Limpar filtro", no mesmo lugar da legenda do mouse.
+- **Ícone de tag** (D52, B11): um objeto de ofício desenhado à mão, no traço dos ícones das lombadas
+  (nunca logotipo), caixa fixa de 120; 68px no cartão de `/tags/` (com uma estante em miniatura dos
+  livros de onde vêm os artigos), 18 a 21px na pílula (`PilulaTag.astro`) e 360px como marca d'água no
+  topo da página da tag (8,5% de tinta, girada −8°, cortada pela borda). Tag sem ícone quebra o build.
+- **Rótulo "Mais recente"** (D52, C02, `MaisRecente.astro`): IBM Plex Sans 500, sem caixa alta, na
+  tinta, com o traço de caneta sublinhando por baixo, parado (sem Caveat: a letra de mão fica só nas
+  notas do caderno, D48).
+- **Código-fonte do artigo** (D52, C03): no topo do artigo, uma pílula de link ("Código deste artigo
+  no GitHub", borda `rule`, fundo da folha, texto e ícones em azul-tinta, 36px de altura, a seta
+  externa que anda 2px no hover); nas listas e nos cards, o ícone `</>` (15px, traço 1,8, tinta 2) com
+  "código-fonte" na letra da linha de meta; na gaveta e em anterior/próximo, só o ícone.
 - **Caneta do caderno** (D48; guia em `docs/marcacoes.md`, catálogo em
   `docs/prototipos/caneta-do-caderno.html` e, no dev, `/amostra/caneta/`): 20 tipos de marcação,
   todos **estáticos** (já vêm feitos, como se o texto tivesse sido riscado antes de publicar). Traço
@@ -581,7 +610,10 @@ frase e desenho; medidas em `docs/capas/CAPAS.md`):
 - **Livro 3D em todo lugar** (gaveta, grade de categorias e séries, topo da página do livro, livro
   do artigo e livro ampliado): **de lado, a 38° da frente**, com a lombada bem à vista (`GIRO` em
   `lib/livro-3d.ts`, D46; era 18° fora da gaveta). A perspectiva acompanha a altura do livro
-  (4,7 vezes, a da gaveta), para o pequeno e o grande terem a mesma cara.
+  (4,7 vezes, a da gaveta), para o pequeno e o grande terem a mesma cara. **A quina entre a lombada e
+  a capa é contínua** (D52, B08): a sombra da lombada encontra a capa, sem fio claro entre as duas; o
+  miolo (a página de dentro, as camadas e, no livro ampliado, as folhas) fica 1px para dentro da
+  lombada (`--recuo-miolo`).
 - O número nas lombadas é o total de artigos, contado pelos posts (some quando é zero). O
   "VOLUME 0N" é a posição na coleção.
 
@@ -633,6 +665,10 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
 - **Trocar uma animação que já existe por GSAP** exige, antes, um trace de performance (antes e
   depois, no MCP `chrome-devtools`) e o ganho concreto medido, mostrados ao Cesar. A troca só entra
   com a aprovação dele.
+- **Regra geral para trocas entre páginas quase iguais** (D52, B01 e B09): nenhuma transição pode
+  deslocar a raiz (um `translate`, por pequeno que seja, vira tremida); quem troca as animações
+  padrão da View Transition por outras precisa repor o `mix-blend-mode: plus-lighter` nelas (senão a
+  página clareia onde as duas imagens se somam).
 
 - **Livros em movimento (D40), com GSAP carregado sob demanda** (`src/scripts/gsap.ts`: baixado ao
   passar o mouse, tocar, receber o foco ou com a página ociosa). Só transformações e opacidade, nunca
@@ -680,6 +716,13 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
     de massa dele (até 25°) e caindo no lugar com um baque de 1px. Aí a página nova abre, e a View
     Transition leva só o puxado até o topo. Com mouse, dá para puxar devagar (Draggable): solto depois
     da metade, sai; antes, volta perdendo velocidade. No celular, 20% mais rápido e sem arrasto.
+    **Revisto na D52 (B01, B09):** a troca por trás de Categorias virou uma sequência só (~2,3s, antes
+    ~3,7s): o aberto gira até a lombada e voa num arco até a pilha, deitando-se no caminho; o
+    escolhido é puxado e, com o embalo do puxão, segue em arco até o palco, ficando em pé e girando
+    ainda na descida; o livro no ar é o livro 3D inteiro, numa camada própria, com sombra que cresce
+    com a altura e some no pouso; a página antiga já toma a cor, o texto e a pilha da nova antes de
+    abrir; o GSAP que gira `.livro-3d` desliga antes a transição CSS do palco (`[data-livro-gira]`).
+    No celular e no tablet, a troca de antes.
   - **Livro que gira** (D46, `data-livro-gira`, só CSS): na grade de categorias e séries, no topo da
     página do livro, no destaque de Séries e no livro do artigo, o livro vira de 38° para 24° ao
     passar o mouse (0,5s). A capa que seguia o mouse, com a luz e a capa entreaberta (`capa-viva.ts`,
@@ -697,9 +740,16 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   caderno marcado da D41, com ScrollTrigger e DrawSVG, saiu).
 - **O desenho do destaque da home** (D41, só ali): ao entrar na tela, os traços aparecem em sequência
   com DrawSVG (1,1s cada, sequência de até ~1,2s), depois a cor, a hachura (0,6s) e os textos (0,4s);
-  tracejados só por opacidade.
-- **Marca "cs"** (D41, D47, só CSS): no hover ou foco, a capa entreabre 38° sobre as páginas (0,5s). A
-  fita saiu na D47; o "c" fica acima e o "s" abaixo, em degrau.
+  tracejados só por opacidade. Desde a D52 (C02), o destaque é o primeiro card ou item de "Artigos
+  recentes" (não um bloco à parte): o desenho corre uma vez por página, na forma à vista (cards ou
+  lista), e a outra forma já aparece pronta ao trocar.
+- **Marca "cs"** (D41, D47, só CSS): no hover ou foco, a capa entreabre 38° sobre as páginas (0,5s),
+  mostrando o miolo creme e pautado do caderno (D52, A01: papel `--marca-letra` com a pauta
+  `--caderno-pauta`, igual nos dois temas). A fita saiu na D47; o "c" fica acima e o "s" abaixo, em
+  degrau. **O aceno do fim da abertura** (D52, B13): depois que o desenho do destaque termina
+  (`cs:desenhou`), o caderno do cabeçalho e o caderno grande da abertura abrem e fecham juntos, uma
+  vez, com a mesma curva do hover (a classe `acena`); o que estiver sob o mouse continua aberto. Sem
+  desenho no destaque, o aceno vem 0,4s depois do fim da abertura.
 - **Abertura do site** (D51, `Abertura.astro`, GSAP; protótipos 01 e 02 de
   `docs/prototipos/animacoes/`): toca **ao chegar de fora e ao recarregar** (o script do `<head>`
   decide), sem movimento reduzido; um clique ou tecla pula. Na home, **a estante se monta (A3)**: a
@@ -709,22 +759,36 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   o papel esmaece (0,55s). Nas outras páginas, **o caderno "cs"** carrega (caneta e contagem até 100),
   abre e fecha (a capa tem frente e verso) e pousa na marca do cabeçalho; o papel esmaece e as folhas da
   página chegam do fundo (em Categorias, com o desfile e a pilha). Durante ela, as transições de CSS
-  ficam desligadas.
+  ficam desligadas, e a estante não responde ao mouse nem ao foco (sem tombar, sem legenda, sem
+  gaveta): o clique nela pula a abertura, em vez de navegar (D52, B12).
 - **Troca de página por folhas** (D51, `src/scripts/troca.js`, embutido no `<head>`; View Transitions
   entre documentos animadas pela Web Animations API, sem biblioteca; protótipo 03, "cai da mesa",
-  texto fora): o cabeçalho parado e o traço do menu deslizando; as folhas à vista da página antiga caem
-  da mesa (480 ms, de baixo para cima, a cascata toda em no máximo 160 ms, giro de até 7°; a que tinha
-  o livro que voa, primeiro) e os textos soltos sobem 10px e somem (200 ms); as da nova chegam do fundo
-  em perspectiva e pousam (1s, `cubic-bezier(.25,1,.5,1)`, 85 ms entre elas, a partir de 0,2s, pela
-  posição na tela, e a última no máximo 0,55s depois da primeira); textos novos sobem por uma máscara.
-  Voltando pelo histórico, as novas vêm da frente; da memória do navegador (bfcache), sem troca. Livros
-  à vista com par nas duas páginas voam por cima das folhas (só o livro viaja, protótipo 07), sem
-  esmaecer de uma imagem na outra; a folha de destino só esmaece. Em Categorias, o livro chega no
-  desfile, sem voar. Artigo anterior e próximo: **na pilha** (protótipo 06). Categorias: **desfile e
-  pilha** (protótipo 04, script da página). Tag: **desfile direto** (60 ms). O desenho do topo do
+  texto fora): o cabeçalho parado e o traço do menu deslizando; **a mesa fica limpa antes de a nova
+  chegar** (D52, A02): as folhas à vista da página antiga caem da mesa em 0,38s (cascata de 0,06s, de
+  baixo para cima, acelerando desde o começo; a que tinha o livro que voa, primeiro) e somem ainda
+  caindo, entre 0,09s e 0,24s depois; os textos soltos sobem 10px e somem (200 ms); só então as da
+  nova chegam do fundo em perspectiva (0,26s) e pousam (1s, `cubic-bezier(.25,1,.5,1)`, 85 ms entre
+  elas, pela posição na tela, e a última no máximo 0,5s depois da primeira; textos novos sobem por
+  uma máscara; a troca inteira, ~1,6s). Voltando pelo histórico, as novas vêm da frente; da memória do
+  navegador (bfcache), sem troca. Livros à vista com par nas duas páginas voam por cima das folhas (só
+  o livro viaja, protótipo 07), sem esmaecer de uma imagem na outra; a folha de destino só esmaece.
+  Quando as duas pontas têm o mesmo livro 3D (D52, B10, ex.: Categorias ↔ a página do livro), voa só a
+  imagem nova, que continua o giro de onde estava (do hover para o parado) até o giro de parado
+  (0,75s, pegar e pousar); nunca duas imagens do livro ao mesmo tempo. Em Categorias, o livro chega no
+  desfile, sem voar. Artigo anterior e próximo: **na pilha** (protótipo 06); o atual esmaece e afunda
+  10px sob a folha nova, entre 0,14s e 0,4s, e some antes do pouso dela (D52, A03). Categorias:
+  **desfile e pilha** (protótipo 04, script da página; o desfile espera o GSAP por no máximo 1,8s,
+  D52, B14). Tag: **desfile direto** (60 ms). O desenho do topo do
   artigo se desenha **depois de pousar** (protótipo 08, a sequência do C1, ~2,1s), a partir de 60% da
   chegada da folha dele. A troca de livro pela pilha e
   a navegação com um diálogo aberto usam a folha de antes (a antiga sobe 6px e some, a nova sobe 18px).
+- **Carregando, quando a página demora** (D52, B14): regras de especulação do navegador
+  (`speculationrules`, JSON no `<head>`, sem biblioteca) pré-carregam o HTML dos links ao parar o
+  ponteiro sobre eles (0,2s) ou ao toque. Se a página nova ainda assim não vem em 0,2s desde o
+  clique, a caneta azul da leitura escreve um traço no fio do cabeçalho, cada vez mais devagar, até
+  ela chegar; nunca um spinner. Quando a espera passou de 1s, quando o aparelho não deu conta de uma
+  troca anterior nesta visita ou com pouca memória, a chegada é curta: as folhas antigas só somem, as
+  novas sobem 12px e aparecem juntas, e o livro voa mais rápido (sem o desfile, em Categorias).
 - **Gaveta** (D47): cresce (0,8s) com o conteúdo de baixo descendo junto; recolhe ao fechar; na troca
   de livro, vai da altura de um para a do outro (0,55s).
 - **Livro ampliado** (D47): cresce do livro de origem (0,7s, `power3.inOut`) e volta para ele ao fechar
@@ -767,14 +831,20 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
 - **Caneta da leitura** (D45, `BarraLeitura.astro`): o traço do progresso corre sobre o fio do
   cabeçalho e a caneta acompanha a ponta, ligada à rolagem (sem animação própria; só a caneta aparece
   por opacidade, 0,2s). No celular, o traço acompanha o cabeçalho que some e volta (`top`, 0,25s).
-- **A busca nasce do campo** (D44, `Busca.astro`, GSAP com Flip sob demanda): com clique, ⌘K,
-  Ctrl+K ou "/", a janela cresce a partir do campo do cabeçalho (no celular, do ícone) em 0,5s
+- **A busca nasce do campo** (D44, `Busca.astro`, GSAP com Flip sob demanda): com clique, ⌘K ou
+  Ctrl+K (o "/" saiu na D52, B06: em muitos teclados é a mesma tecla do "?" dos atalhos), a janela
+  cresce a partir do campo do cabeçalho (no celular, do ícone) em 0,5s
   (`power3.out`), o conteúdo aparece depois de 0,2s e o véu escurece junto (`@starting-style`). Os
   resultados entram em sequência (0,3s, `stagger` 0,035s) e o termo buscado ganha um marca-texto que
   se estica em 0,45s, também no título do resultado. Esc, "Fechar" ou clique fora encolhem a janela
   de volta para o campo (0,35s, `power2.in`), e o foco volta para ele. Um marcador só (o fundo e o
   fio azul) desliza até o resultado da vez com as setas, o foco e o mouse (0,28s, `power3.out`, D49).
   Sem resultado, o termo ganha a ondinha de revisor na cor de Cuidado (0,45s) e a saída chega depois.
+- **A ficha dos atalhos** (D52, B06, `Atalhos.astro`; só no artigo): a tecla do "?" (com ou sem
+  Shift) abre a ficha, nunca a busca. Com o sumário lateral (≥ 1300px), ela sai de trás da folha do
+  sumário e pousa ao lado, sem escurecer a página (0,34s, a curva da escrita do menu; volta em 0,2s);
+  sem a lateral, no meio da tela, com o `--veu` a 55%, subindo 10px (0,22s). O título, sublinhado à
+  caneta azul (0,42s). Desligar os atalhos desliga também o "?" (WCAG 2.1.4).
 - **A 404** (D49): a folha da abertura da home, com o erro e a estante; a caneta rasura o endereço
   (0,35s e 0,25s, 0,3s depois de abrir) e, quando dá, a sugestão chega depois (0,3s).
 - **Os minutos que faltam** (D49, sumário): rodam como contador quando mudam (0,4s); no fim, "faltam
@@ -796,14 +866,16 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   nos números da paginação e no GitHub e no LinkedIn do cabeçalho, um círculo à mão (uma volta e 8%,
   0,42s, `power2.inOut`) que some pela ponta ao sair (0,2s). As setas de "Anteriores" e "Mais
   artigos" avançam 3px no hover e, no clique, saem pela frente e voltam por trás (0,32s).
+- **O ícone de tag inclina** (D52, B11) no hover ou no foco: 6° no cartão de `/tags/`, 8° na pílula
+  (`PilulaTag`), 0,35 a 0,45s; parado com movimento reduzido.
 - Toda animação respeita `prefers-reduced-motion`: tudo aparece no estado final, sem prender a
   tela.
 - Vídeo (MP4/WebM) só quando o Cesar pedir: comprimido, com poster e carregado sob demanda.
 
 ## Do's and Don'ts
 
-- Faça: azul-tinta só no que é clicável; a cor da categoria só nos livros, chips, barra de leitura e
-  desenhos.
+- Faça: azul-tinta só no que é clicável; a cor da categoria só nos livros, chips e desenhos (a
+  leitura do artigo é da caneta azul, D52, B05).
 - Faça: todo conteúdo em folha; desenhos sempre no painel da categoria.
 - Faça: cores por token (`var(--ink)`, `var(--cat)`, papéis `--cima`/`--baixo` nos livros).
 - Faça: conferir os dois temas, a largura de 390px e `prefers-reduced-motion`.

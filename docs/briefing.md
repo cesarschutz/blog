@@ -70,7 +70,8 @@ protótipo divergirem, vale o briefing.
   com diff, facilidade de manutenção pelo próprio Claude Code.
 - Busca. Requisitos: ignora acentos; frase exata primeiro, depois todas as palavras;
   relevância título > tags > descrição > corpo; aceita `#tag`; link compartilhável `/?q=termo`;
-  atalhos ⌘K, Ctrl+K e `/`; o índice só é baixado quando a busca abre; continua rápida com
+  atalhos ⌘K e Ctrl+K (o "/" saiu na D52, B06: em muitos teclados é a mesma tecla do "?" dos atalhos
+  do artigo); o índice só é baixado quando a busca abre; continua rápida com
   centenas de posts. Compare o índice próprio do blog atual com uma alternativa como o
   Pagefind (índice em fragmentos): meça com os 26 posts reais e com uns 500 posts sintéticos
   (tamanho baixado e tempo até o primeiro resultado) e escolha com números. Resultado sem o termo
@@ -120,11 +121,14 @@ camada visual: estrutura, conteúdo, rotas e comportamento seguem as seções 5 
 
 - `--well` não veio do protótipo: é a superfície com 4% de tinta, para código em linha, cabeçalho
   de tabela e o fundo dos blocos de código, que ficam sobre a folha.
-- Tema: o site **sempre abre no tema do sistema** (D33). O botão do cabeçalho alterna direto entre
-  claro e escuro (lua ou sol, sem menu, D39), e a escolha vale até fechar o site (`sessionStorage`),
-  com script anti-piscada no `<head>`. Trocar o tema só muda as cores: nenhum tamanho depende do
-  tema, e a página não sai do lugar. A troca se espalha em círculo a partir do botão (D42), e o ícone
-  anima: a lua vira sol e o sol vira lua (D49, que reabre a D44).
+- Tema e modo: o site **sempre abre no claro e com os artigos em cards** (D52, C01; antes, o tema
+  seguia o sistema, D33). O botão do cabeçalho alterna direto entre claro e escuro (lua ou sol, sem
+  menu, D39). A escolha do leitor (tema e/ou o modo Lista/Cards) fica guardada no navegador e vale
+  por **3 dias** a partir da última troca de qualquer uma das duas (`localStorage`, D52; antes,
+  `sessionStorage`, só durante a aba); passado esse prazo, o script anti-piscada do `<head>` apaga a
+  escolha antes da primeira pintura e tudo volta ao padrão. Trocar o tema só muda as cores: nenhum
+  tamanho depende do tema, e a página não sai do lugar. A troca se espalha em círculo a partir do
+  botão (D42), e o ícone anima: a lua vira sol e o sol vira lua (D49, que reabre a D44).
 - **Categorias = livros de uma coleção numerada, no estilo "edição de estudo"; séries = revistas
   técnicas** (D30, D32). A regra visual de capas, lombadas, estante, livros e séries novos está em
   **`docs/capas/CAPAS.md`**, com as imagens de referência em `docs/capas/referencia/`. Os dados de
@@ -242,22 +246,26 @@ Referência: aba "Home" do protótipo.
   - **O livro ampliado abre** (D49): a capa gira pela lombada e, dentro, estão a guarda com o
     ex-libris, o sumário, uma página por artigo (com o link para ele), o fim do volume e o próximo
     livro da coleção. Arrastar, os botões, as setas ou um clique na página viram as folhas.
-- **Destaque** (só na primeira página): o post mais recente, com a ilustração (o painel acompanha a
-  altura do texto; até 960px, vai para cima), categoria, data e tempo de leitura com os ícones, o
-  **título inteiro**, a descrição e as tags (D33). O post em destaque **não se repete** na lista abaixo.
+- **Destaque** (D52, C02; só na primeira página): deixou de ser um bloco à parte ("Em destaque", com
+  o botão "Ler artigo") e passou a ser o **primeiro card ou item de "Artigos recentes"**. Em cards
+  com duas colunas ou mais, ele ocupa o lugar de dois (o recorte largo e anotado do topo do artigo,
+  título de 26 a 32px); com uma coluna, o card de sempre, com o rótulo "Mais recente" (traço de
+  caneta embaixo, sem letra de mão) e o título maior; em lista, o item maior, com o desenho em 3:2 à
+  direita. O desenho que se desenha (D41) roda uma vez por página, na forma à vista.
 - **Artigos recentes**: alternância **Lista / Cards** (guardada no navegador; a troca esmaece uma
   forma e traz a outra, D42, e o azul escorre de um botão para o outro, D49), no formato do blog
-  atual (D27). Em cima, categoria, data e tempo de leitura com relógio; o **título inteiro**, grande;
+  atual (D27). Em cima, categoria, data e tempo de leitura com relógio (e, quando o post tem
+  repositório de exemplos, o sinal `</>` "código-fonte", D52, C03); o **título inteiro**, grande;
   a **descrição completa** (fonte da interface); até 4 tags em `#tag` (fonte de código), que levam à
   página da tag (D38). O item inteiro é clicável.
   Lista: miniatura quadrada da ilustração à direita (104 a 148px; 84px no celular, sem as tags).
   Cards: grade de até 3 colunas, com a ilustração em 3:2 no topo e as tags no pé do card.
   Mesmo formato de lista nas páginas de categoria, tag e série; o arquivo por ano continua compacto.
-- **Paginação**: 12 artigos por página, como no blog atual: `/`, `/2/`, `/3/`… Embaixo da lista,
-  "Anteriores", os números (a atual em azul-tinta; nas outras, a caneta circula o número ao passar o
-  mouse, D49) e "Mais artigos"; no celular, só os dois botões.
-  Da página 2 em diante, só a lista ("Artigos — página N", em h1) e a paginação. O destaque nunca
-  entra na lista.
+- **Paginação**: **12 lugares por página** (na primeira, o destaque ocupa dois: 11 artigos; D52,
+  C02; antes, 12 artigos fora da conta do destaque), como no blog atual: `/`, `/2/`, `/3/`… Embaixo da
+  lista, "Anteriores", os números (a atual em azul-tinta; nas outras, a caneta circula o número ao
+  passar o mouse, D49) e "Mais artigos"; no celular, só os dois botões.
+  Da página 2 em diante, só a lista ("Artigos — página N", em h1) e a paginação, sem destaque.
 - **Painel lateral** (D28): **saiu da home na D44** (a lista e os cards ocupam a largura toda). Fica
   na página de categoria e na da série, à esquerda do conteúdo em telas ≥ 1100px e depois dele nas
   menores. Inspirado na barra lateral do blog
@@ -287,14 +295,19 @@ Todos os artigos (`/archive/`), categoria, tag, série (ordem de leitura) e `/se
 componentes novos.
 
 **Todos os artigos** e **tag** (D33): no formato da lista da home, com Lista / Cards; o arquivo
-agrupado por ano, sem a coluna de datas. No topo, numa folha, uma **estante de filtro** com os livros
-que têm artigos na página (e o número deles): clicar num livro mostra só os artigos dele
-(`?livro=<slug>` na URL). Para não confundir com a lombada que leva ao livro (D38): o rótulo "Filtrar
-por livro" acima da estante, a lombada escolhida um pouco acima da prateleira e as outras
-escurecidas (sem contorno azul, D39), "Limpar filtro" e as
-lombadas como botões com `aria-pressed`; sem JavaScript, a estante de filtro não aparece. Ao
-filtrar, o total e o de cada ano rodam como contador (D49). A tag
-mostra também as tags que aparecem junto com ela.
+agrupado por ano, sem a coluna de datas. No topo, uma composição apoiada no pé da folha (D52, B07,
+no lugar do texto centrado de antes): título e descrição no alto à esquerda; no pé, as três entradas
+do acervo — os índices **por assunto** (as tags mais usadas, com a contagem) e **por ano** (com a
+contagem, que roda como contador ao filtrar, D49), e a **estante de filtro**, com os livros que têm
+artigos na página (e o número deles): clicar num livro mostra só os artigos dele (`?livro=<slug>` na
+URL). Para não confundir com a lombada que leva ao livro (D38): o rótulo "Filtrar por livro" (ou "Só
+\<livro\>") no pé da estante, a lombada escolhida um pouco acima da prateleira e as outras
+escurecidas (sem contorno azul, D39), "Limpar filtro" no mesmo pé e as
+lombadas como botões com `aria-pressed`; sem JavaScript, a estante de filtro não aparece. A tag
+mostra também as tags que aparecem junto com ela, e tem um **ícone próprio** (D52, B11: um objeto de
+ofício desenhado à mão, nunca logotipo, no traço dos ícones das lombadas), como marca d'água no topo
+da página; os cartões de `/tags/` levam o mesmo ícone e uma estante em miniatura dos livros de onde
+vêm os artigos dela. Tag nova pede o ícone, pela seção "Tags" do `docs/capas/CAPAS.md`.
 
 **Categorias** (`/categories/`, D31) e **Séries** (`/series/`, D31): os livros lado a lado, grandes,
 abertos quase de frente como o livro do topo da página de cada um, cada um num cartão (folha) com o
@@ -342,25 +355,32 @@ Referência: aba "Artigo" do protótipo.
 - **Topo**: a ilustração vem **antes do título** (recorte largo no computador, 3:2 no celular),
   depois trilha "Artigos › Categoria" (ou "Séries › Nome"), o **título inteiro** e a **descrição**,
   como no blog atual (D33), e a assinatura: foto e nome do autor, data com o calendário,
-  "Atualizado em" quando houver e o tempo de leitura com o relógio. A marca d'água do livro fica no
-  canto de baixo do painel do título (D50; no fim do artigo, D39, ela ficava atrás de "anterior /
-  próximo"), como no topo das páginas de categoria e de série: grande e bem suave, cortada pela borda
-  da folha.
+  "Atualizado em" quando houver e o tempo de leitura com o relógio. Quando o post tem código de
+  exemplo publicado (campo `codigo` no frontmatter, D52, C03), a pílula "Código deste artigo no
+  GitHub" entra na linha da assinatura, à direita (no celular, na linha dela). A marca d'água do
+  livro fica no canto de baixo do painel do título (D50; no fim do artigo, D39, ela ficava atrás de
+  "anterior / próximo"), como no topo das páginas de categoria e de série: grande e bem suave,
+  cortada pela borda da folha.
 - **Título** (D44): na lista, nos cards (em todas as páginas), no destaque e no topo do artigo, o
   título "Assunto — complemento" aparece em duas partes: o assunto como sempre, e o complemento na
   linha de baixo, sem o travessão, na fonte do texto, sem negrito, em `--ink-2`, a dois terços do
   tamanho do título (no topo do artigo, 0,56), nunca abaixo de 17px (maior que o resumo). O texto
   continua o original (o travessão fica escondido para leitor de tela e busca). Na navegação
   (anterior / próximo), na gaveta e na busca, o título segue inteiro, numa linha.
-- **Barra de progresso de leitura** (D45): um traço de 2px sobre o fio embaixo do cabeçalho, na cor
-  da categoria, escrito por uma **caneta** pequena (22px, corpo na cor do papel, ponta na cor da
-  categoria) que vai na ponta dele; a caneta aparece depois que a leitura começa. O cabeçalho fica
-  sempre à vista, também no celular (D46).
+- **Barra de progresso de leitura** (D45): um traço de 2px sobre o fio embaixo do cabeçalho, na
+  **caneta azul** (D52, B05; antes, a cor da categoria), escrito por uma **caneta** pequena (22px,
+  corpo na cor do papel, ponta na caneta azul) que vai na ponta dele; a caneta aparece depois que a
+  leitura começa. O cabeçalho fica sempre à vista, também no celular (D46).
 - **Sumário**: em telas ≥ 1300px, à esquerda do texto, numa folha própria e fixa; recolhível no
   início do texto nas menores. Só aparece com 3 ou mais seções. No lateral (D33), um trilho: um ponto
-  em cada seção, sem número (D36; o "3. " do título sai do nome, nas duas variantes), o fio das lidas, o ponto atual e a barra de porcentagem na cor do livro do post (D39), as
-  subseções da atual abertas, e a atual sempre à vista. Embaixo, a barra fina com "19% lido" e o tempo
-  que falta (em fonte de código; os minutos rodam como contador, D49), que soma à barra do topo; só com JS. A coluna da esquerda começa
+  em cada seção, sem número (D36; o "3. " do título sai do nome, nas duas variantes); o fio, os
+  vistos, o ponto atual e o sublinhado da seção atual são da **caneta azul** (D52, B05; antes, a cor
+  do livro do post e o marca-texto), com as subseções da atual abertas e a atual sempre à vista. Uma
+  seção só ganha o visto depois de ter sido a atual por 0,6s ou mais e ter ficado para trás; toda
+  entrada (link, troca de página, recarga, `#título`, histórico) começa **sem nenhum visto** (D52,
+  B04; antes, tudo antes da atual vinha marcado). Embaixo, "NN% lido" e o tempo que falta (em fonte
+  de código; os minutos rodam como contador, D49; sem a barra de porcentagem de antes, D52, B05). A
+  coluna da esquerda começa
   **no topo da página, ao lado da ilustração** (D46), e a folha do topo e a do corpo têm a mesma
   largura, com o texto na mesma margem. Embaixo do sumário, **o livro do artigo, grande e de lado**
   (D46, como o da gaveta da home), num painel tingido, com a lupa que o amplia, o nome e "Ver o
@@ -368,9 +388,12 @@ Referência: aba "Artigo" do protótipo.
   fica no fim do artigo, como antes.
 - **Atalhos de teclado** (D50): Espaço leva à próxima seção e Shift + Espaço à anterior (depois da
   última, o Espaço rola a página como sempre); T volta ao topo (o botão do canto); ← e → abrem o
-  artigo anterior e o próximo; ? mostra a lista. Um "Atalhos ?" discreto embaixo do progresso do
-  sumário lateral (só com mouse e teclado) abre o cartão com a lista e a opção de desligar os
-  atalhos. Quietos com o foco num campo, botão, bloco de código ou lousa, e com um diálogo aberto.
+  artigo anterior e o próximo; "?" mostra a lista (D52, B06: com ou sem Shift; nunca a busca, que
+  abre só com ⌘K/Ctrl+K, sem o "/" de antes). Um "Atalhos ?" discreto embaixo do progresso do
+  sumário lateral (só com mouse e teclado) abre uma ficha com a lista: com a lateral, ela sai de
+  trás da folha do sumário e pousa ao lado, sem escurecer a página; sem ela, no meio da tela, com a
+  página escurecida (D52, B06, redesenho do cartão da D50). Desligar os atalhos desliga também o
+  "?". Quietos com o foco num campo, botão, bloco de código ou lousa, e com um diálogo aberto.
 - **Notas laterais**: notas de rodapé do Markdown viram notas na margem direita da folha do corpo
   quando ela tem espaço (a folha, e não a tela, decide, D33) e abrem no lugar, ao tocar no número,
   nas outras.
@@ -406,10 +429,11 @@ Referência: aba "Artigo" do protótipo.
   conter imprecisões: confirme nas fontes citadas e na documentação oficial antes de aplicar."
   (sem o "Saiba mais" desde a D33); o cartão **"Do livro"** (o livro 3D da categoria ou a revista da
   série, que leva à página do livro; no desktop com o sumário lateral, ele fica embaixo do sumário,
-  D39); depois a navegação **Artigo anterior / Próximo artigo** (ou anterior/próxima dentro da
-  série), com o título inteiro; ao passar o mouse, a seta aponta a direção e o canto do cartão dobra
-  (D49). Sem bloco de "artigos relacionados". Os links do texto ganham a tinta azul por baixo ao
-  passar o mouse (D49).
+  D39); depois a navegação **Artigo anterior / Próximo artigo**, sempre na ordem cronológica de
+  "Todos os artigos" (D52, B03; antes, dentro de uma série valia a ordem de leitura, que podia
+  divergir da data), com o título inteiro; ao passar o mouse, a seta aponta a direção e o canto do
+  cartão dobra (D49). Sem bloco de "artigos relacionados". Os links do texto ganham a tinta azul por
+  baixo ao passar o mouse (D49).
 - Botão "voltar ao topo" depois de uma tela de rolagem, **em toda página longa** (D49), não só no
   artigo. O sumário acompanha a leitura (D49): fio de tinta, visto nas seções lidas e marca-texto na
   seção atual; abaixo de 1300px, o cabeçalho mostra "N de M · seção" e abre o sumário numa folha.
@@ -530,7 +554,9 @@ com a rolagem. Use no máximo de vez em quando; o Cesar pode removê-la.
 - **Frontmatter**: `title` (aparece inteiro; o " — " só divide a imagem de compartilhamento),
   `description` até ~200 caracteres,
   `published`, `updated` opcional, `category` **ou** `series`, `tags` (2 a 4, reaproveitando o
-  vocabulário existente, sem repetir nome de categoria), `draft`.
+  vocabulário existente, sem repetir nome de categoria), `draft`, `codigo` (D52, C03: URL `https://`
+  do repositório de exemplos, opcional; só quando o post tem código publicado numa pasta própria em
+  `cesarschutz/blog-exemplos`).
 - **Categoria**: encaixe numa existente; se nenhuma servir de verdade, pode criar uma nova
   dentro do escopo do blog, com cor distinta, e avise o Cesar.
 - **Fluxo** (vale para post do zero e para texto que o Cesar traz pronto): classificar →

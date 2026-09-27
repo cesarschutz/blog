@@ -1559,3 +1559,174 @@ nada muda.
 - **Achado:** os três riscos do A3 vinham do `vector-effect: non-scaling-stroke` num SVG esticado: o
   DrawSVG media o traço numa escala e o navegador pintava noutra, e o tracejado se repetia. Nos
   protótipos, o caminho do fio é refeito em pixels, sem o `vector-effect`.
+
+## D52 · Ajustes de 27/09/2026: acabamento das animações, a leitura, as listas, as tags e o destaque
+
+- **Data:** 27/09/2026 · **Status:** aplicada, **commitada item a item, sem push** (cada item com o
+  próprio commit; o controle está em `docs/ajustes-d52/controle.md`, com os diagnósticos de cada
+  agente em `docs/ajustes-d52/diagnosticos/`).
+- **Pedido do Cesar:** três folhas de ajustes depois da D51 (animações da abertura, das trocas de
+  tela e da pilha; bugs de interação no artigo, no livro ampliado e nas listas; a lentidão em rede e
+  CPU fracas) e três novidades (tema e modo padrão na primeira visita, o destaque da home dentro da
+  grade, o código-fonte dos artigos). Vários agentes trabalharam ao mesmo tempo na mesma árvore
+  (`docs/ajustes-d52/regras.md`), cada um com um item ou um grupo pequeno de itens.
+- **O que mudou** (na ordem do `controle.md`; hash do commit entre parênteses):
+  - **A01** (`bc01200`): o caderno "cs" abria branco no claro e escuro no escuro, porque a página de
+    trás da capa era um retângulo em `--paper-hi` (segue o tema). Um desenho só
+    (`src/lib/caderno.ts`, `MIOLO_SVG`) passa a desenhar o miolo do caderno em papel dos livros
+    (`--marca-letra`) com pauta de caderno na página inteira, com o token novo `--caderno-pauta`
+    (`#BEBAB0`, igual nos dois temas), usado na marca do cabeçalho, na marca grande da home e no
+    caderno da abertura das outras páginas. No cabeçalho, só a pauta, a 0,5px (as 12 linhas a 1px
+    viravam uma escada cinza).
+  - **A02** (`5e42b33`): na troca de tela por folhas, os cartões da página nova apareciam por baixo
+    dos que ainda estavam caindo, porque o relógio da chegada (0,2s fixo) não esperava a saída, que
+    além disso demorava a sair do lugar (a cascata de cima só se movia depois de 0,35s). Agora a
+    saída cabe em 0,3s (cascata de 0,06s, queda de 0,38s que acelera desde o começo) e a chegada só
+    começa quando a mesa já está limpa; a troca inteira continua em ~1,6s.
+  - **A03** (`6912291`): no artigo, ao avançar para o próximo com a página rolada, sobrava um pedaço
+    da folha antiga acima da nova por 0,6 a 0,8s (a nova chegava ~30px abaixo do cabeçalho e a antiga
+    só esmaecia depois do pouso). Agora a antiga afunda 10px e some entre 0,14s e 0,4s, antes do
+    pouso da nova; o anterior (que já saía inteiro para a direita) não mudou.
+  - **A04** (`776f8dd`): no escuro, os diagramas antigos abriam **brancos** no visor de imagens,
+    porque o filtro de inversão da prosa (D39) não valia lá (o visor tinha o próprio quadro, sempre
+    branco). O visor passa a aplicar a mesma inversão, com a sombra dentro do filtro (`drop-shadow`
+    depois da inversão); e o visor esmaece ao fechar (0,18s), em vez de sumir de uma vez. O livro
+    ampliado (que não muda com o tema) mantém a volta própria.
+  - **B01 e B09** (`2463a34`): trocar de livro pela pilha (Categorias) tremia no fim por cinco causas
+    somadas: a página inteira caindo na transição padrão do `base.css` (a troca da pilha ficava fora
+    do `troca.js`); o giro 3D do livro brigando com a `transition` CSS do palco; as fontes da página
+    nova ainda não carregadas no primeiro quadro; a pilha da página antiga 1 a 8px diferente da nova;
+    e a imagem do livro esmaecendo de uma para a outra. A animação foi refeita como uma sequência só
+    (~2,3s, antes ~3,7s): o livro aberto gira até a lombada e voa num arco até a pilha, deitando-se no
+    caminho; o escolhido é puxado e, com o embalo do puxão, segue em arco até o palco, ficando em pé
+    e girando ainda na descida; o livro no ar é o livro 3D inteiro, numa camada própria, com sombra
+    que cresce com a altura e some no pouso; a página antiga já toma a cor, o texto e a pilha da nova
+    antes de abrir, e a nova abre a 70% do giro e o continua (tipo `pilha`, sem deslocar a raiz).
+    **Regra geral que sai daqui:** uma transição de página entre duas páginas quase iguais não pode
+    deslocar a raiz (qualquer `translate` vira tremida), e quem troca as animações padrão da View
+    Transition precisa repor o `mix-blend-mode: plus-lighter` (senão a página clareia).
+  - **B02** (`3774b8f`, diagnóstico em `bc72023`): no livro ampliado, "Ler o artigo" e "Abrir o
+    próximo livro" não mostravam cursor de link nem sublinhado no hover (só a primeira e a última
+    página funcionavam), porque o `:hover` nativo se perde nas folhas empilhadas a décimos de pixel
+    em 3D — o mesmo motivo do bug de clique da D50. Um `mousemove` no palco usa o mesmo cálculo do
+    clique (`linkNoPonto`) para marcar `.sob-o-mouse` no link certo; "Ver o livro inteiro" ganhou o
+    sublinhado mais forte no hover.
+  - **B03** (`c039c64`, diagnóstico em `08f5032`): anterior/próximo usava a **ordem de leitura da
+    série** para posts de série (`getPostsDaSerie`), não a data — na série Java, o guia vem primeiro
+    na leitura mas foi publicado depois dos `java-8/11/17/21/25`, e por isso a navegação podia voltar
+    no tempo. Agora `getVizinhos` usa sempre `getResumos()`, a mesma ordem cronológica de "Todos os
+    artigos", sem olhar série ou categoria; o rodapé perdeu o rótulo "na série" (não fazia mais
+    sentido fora da ordem de leitura).
+  - **B04** (`f5d4fac`): "Neste artigo" chegava com **tudo marcado como lido** (o visto em cada
+    seção e a última como atual), porque a posição dos títulos era medida com `getBoundingClientRect`
+    no meio da animação de chegada das folhas (D51): a folha do texto ainda estava pequena e no alto
+    da tela, então todo título parecia estar acima da linha de leitura. Agora a medição usa o layout
+    (`offsetTop`, que a animação não desloca); e o visto passou a ser de quem leu: uma seção só o
+    ganha depois de ter sido a atual por 0,6s (`TEMPO_DE_LEITURA`) e ter ficado para trás. Substitui
+    o "a que ficou para trás ganha um visto" do C2 (D49).
+  - **B05** (`8048648`): a cor do livro aparecia repetida quatro vezes na leitura (o fio do
+    cabeçalho, o fio e os vistos do trilho, o marca-texto da seção atual e a barra de porcentagem),
+    virando ruído. A leitura passa a ser escrita com **uma caneta só, a azul** (`--caneta`): o fio do
+    cabeçalho e a caneta na ponta, o fio, os vistos e o ponto do trilho, e a seção atual sublinhada à
+    mão (o mesmo traço do menu, um traço por linha do nome); a barra de porcentagem saiu (ficam "NN%
+    lido" e os minutos). Sai o token `SUMARIO_MARCA`. De quebra: o nome das seções, que uma regra do
+    "Do livro" deixava em 12,5px e `--ink-2` mesmo na atual, volta aos 14px do CSS. Muda a D39 (item
+    7, sumário na cor do livro), a D45 (o traço da barra de leitura na cor da categoria) e o C2 da D49
+    (marca-texto na cor do livro).
+  - **B06** (`2788f33`): o "?" abria a busca em qualquer tela, porque, em muitos teclados (o ABNT2
+    inclusive), "/" e "?" são a mesma tecla, e a busca também abria com "/" (D44). A busca passa a
+    abrir só com ⌘K/Ctrl+K (o "/" saiu); a tecla do "?" (com ou sem Shift) só abre os atalhos, e só no
+    artigo. A ficha dos atalhos foi redesenhada: com o sumário lateral (≥ 1300px), sai de trás da
+    folha do sumário e pousa ao lado, sem escurecer a página; sem a lateral, no meio da tela, com a
+    página escurecida. Desligar os atalhos desliga o "?" também (WCAG 2.1.4). Muda a D44 (o "/" da
+    busca) e o item 7 da D50 (o cartão de atalhos).
+  - **B07** (`6353c1d`): o topo de "Todos os artigos" e das tags tinha o texto centrado boiando num
+    vão grande (380px em 1280px, ~500px no celular, com a estante descendo sozinha abaixo de 860px).
+    Virou uma composição apoiada no pé da folha: título e descrição no alto à esquerda; no pé, na
+    mesma linha da tábua, os índices ("por assunto", com as tags mais usadas, e "por ano"); a estante
+    de filtro à direita, com "Filtrar por livro"/"Só \<livro\>" e "Limpar filtro" no próprio pé. A
+    altura caiu de 380 para 324px em 1280px, de 533 para 278px em 768px e de ~500 para 359px em
+    390px.
+  - **B08** (`975885c`): uma linha branca aparecia entre a lombada e a capa em todo livro de lado
+    (`Livro3D`), por dois defeitos de montagem: a capa 0,6px à frente da lombada (a fresta deixava
+    ver o que estava atrás) e o miolo no mesmo plano da lombada (o Chrome cortava a lombada nas
+    emendas das páginas). A lombada passa a avançar 1,5px por baixo da capa (`::before`) e o miolo
+    recua 1px (`--recuo-miolo`), com o verso da capa cobrindo a calha no livro aberto. Vale para todo
+    `Livro3D` (Categorias, Séries, topo do livro, livro do artigo, gaveta e livro ampliado).
+  - **B10** (`59eab79`): decisão — **melhorar, não tirar** o voo do livro entre `/categories/` e a
+    página do livro. Ele tinha salto de ângulo no primeiro quadro (o livro do cartão virado no hover
+    contra o livro parado do topo), ficava vazio (ou pálido) no começo (a folha de destino esmaecendo
+    a partir de opacidade 0, e o Chrome não pinta nada dentro de um elemento a opacidade 0) e perdia a
+    classe de transição depois de uma troca. Corrigido: quando as duas pontas têm o mesmo livro 3D,
+    voa só a imagem nova (viva), que continua o giro de onde estava até o giro de parado (0,75s,
+    `cubic-bezier(0.65, 0, 0.35, 1)`, pegar e pousar); nunca duas imagens do livro ao mesmo tempo.
+  - **B11** (`e6fd634`): toda tag ganhou um ícone próprio — um objeto de ofício desenhado à mão
+    (nunca logotipo), no traço dos ícones das lombadas, em `docs/capas/tags/<slug>.svg`, escrito por
+    `scripts/desenho/tags.mjs`; **tag sem ícone quebra o build** (a regra fica em `docs/capas/CAPAS.md`
+    e na skill `post`). Entra nos cartões de `/tags/` (com uma estante em miniatura dos livros de onde
+    vêm os artigos e o ícone que inclina 6° no hover), como marca d'água no topo da página da tag
+    (360px, tinta a 8,5%, girada −8°) e nas pílulas de tag (`PilulaTag.astro`, novo, com o ícone a
+    18–21px). Não entra nas listas de artigos (ruído numa lista de 27).
+  - **B12** (`e950bfc`): durante a abertura da home, a estante de verdade (a mesma da home viva)
+    respondia ao mouse e ao foco — tombava o livro, mostrava a legenda por cima da contagem da
+    coleção — e o clique nela pulava a abertura em vez de navegar. Agora ela fica sem
+    `pointer-events` até o fim da abertura, e a estante viva (hover, legenda, repouso) só começa no
+    `cs:aberto`. Achado no caminho: a estante piscava no fim da abertura (a opacidade dos livros saía
+    antes do `data-abertura`); corrigido na ordem da limpeza.
+  - **B13** (`3ac42db`, `c6addd8`): no fim da abertura da home, depois que o desenho do destaque
+    termina (evento `cs:desenhou`, de `desenho-vivo.ts`), o caderno do cabeçalho e o caderno grande
+    abrem um pouco e fecham **juntos, uma vez**, com o mesmo movimento do hover (38°, 0,5s); o que
+    estiver sob o mouse continua aberto. Sem desenho no destaque (post sem ilustração, ou sem
+    destaque), o aceno vem 0,4s depois do fim da abertura; com o destaque abaixo da dobra numa tela
+    baixa, o aceno vem logo depois da estante, sem esperar o leitor rolar.
+  - **B14** (`2d4bbb6`): medido com rede lenta e CPU 4×, o tempo entre o clique e o começo da troca
+    passava de ~580ms (tag) a ~900ms (artigo), com a tela parada e nenhum sinal de que algo ia
+    acontecer; em Categorias, a página podia ficar vazia esperando o GSAP (carregado sob demanda) para
+    o desfile. Agora: regras de especulação do navegador (`<script type="speculationrules">` no
+    `<head>` do `Base.astro`, JSON, sem biblioteca) fazem `prefetch` do HTML com `eagerness:
+    "moderate"` (0,2s de ponteiro parado sobre o link, ou o toque), o que baixou o tempo até ~180ms
+    (tag) e ~440ms (artigo) na mesma rede lenta; se a página nova não chega em 0,2s, a caneta azul da
+    leitura escreve um traço no fio do cabeçalho, cada vez mais devagar, até ela chegar (nunca um
+    spinner); se a espera passou de 1s, se uma troca anterior nesta visita passou de 50ms por quadro
+    (guardado em `cs-troca-leve` na sessão) ou com pouca memória (≤ 2GB), a chegada é curta (as folhas
+    só aparecem, ~0,4s, sem desfile); em Categorias, o desfile espera o GSAP por no máximo 1,8s, e
+    sem ele a troca fica só com as folhas paradas (antes, podia ficar vazia). Sem biblioteca nova.
+  - **C01** (`10912bc`, diagnóstico em `f1a592d`): o padrão do site passa a ser **sempre tema claro e
+    artigos em cards** (o tema deixa de seguir o sistema, mudando a D24/D39). A escolha do leitor
+    (tema e/ou modo de lista) fica guardada no navegador por **3 dias** a partir da última troca de
+    qualquer uma das duas (`cs-theme`, `cs-post-view` e a data em `cs-prefs-quando`, uma chave só para
+    as duas escolhas); vencida, as três chaves são apagadas pelo script do `<head>` antes da primeira
+    pintura, e tudo volta ao padrão. `cs-theme` passou de `sessionStorage` para `localStorage`.
+  - **C02** (`ef241f1`): o bloco "Em destaque" (com "Ler artigo") saiu; o post mais recente passa a
+    ser o **primeiro item de "Artigos recentes"**, só em `/`. Em cards com duas colunas ou mais, ele
+    ocupa o lugar de dois (`grid-column: span 2`, decidido por uma consulta ao contêiner, não à
+    largura da tela), com o recorte largo e anotado e o título de 26 a 32px; com uma coluna, o card de
+    sempre com o rótulo "Mais recente" (traço de caneta embaixo, sem Caveat) e título maior; em lista,
+    o item maior com o desenho em 3:2 à direita. O desenho que se desenha (D41) roda uma vez por
+    página, na forma à vista. **Muda a paginação da D27:** toda página passa a ter 12 lugares, e a
+    primeira mostra **11 artigos** (o destaque vale dois): `/` 11, `/2/` 12, `/3/` 4 (com os 27 posts
+    de hoje); as URLs continuam as mesmas.
+  - **C03** (`3dcad52`): campo novo no frontmatter, **`codigo`** (URL `https://`, opcional; o nome
+    evita confundir com `## Fontes` e com as fontes tipográficas), preenchido no post do Jackson com o
+    repositório `cesarschutz/blog-exemplos` (uma pasta por artigo). No topo do artigo, a pílula
+    "Código deste artigo no GitHub" na linha da assinatura; nas listas e nos cards, o sinal `</>`
+    "código-fonte" na linha da data (não é link); o sinal curto (só o ícone) na gaveta e no
+    anterior/próximo; na busca, "código-fonte" na linha do resultado (metadado novo do Pagefind); no
+    livro ampliado, "Ler o artigo → · Código no GitHub ↗". A skill `post` ganhou a regra de quando e
+    como preencher o campo.
+  - **B14 e C04 (a caneta em preto como identidade) continuam além do controle:** B14 entrou nesta
+    rodada; **C04 fica em andamento** (outra sessão continua, com a pesquisa e as sugestões de
+    `docs/ajustes-d52/pesquisa.md` como ponto de partida).
+- **Pesquisa (agente Pesquisa, `docs/ajustes-d52/pesquisa.md`):** levantamento do showcase do GSAP
+  (tudo gratuito desde a 3.13), da ordem de pintura das View Transitions, de princípios de movimento
+  com número (Material "fade through", Emil Kowalski, Josh Comeau, os limites de resposta da
+  Nielsen), de Speculation Rules, de traço à mão (Rough Notation, perfect-freehand) e das regras de
+  marca do GitHub e do LinkedIn, com recomendações por item (B06, B09, B14) e duas propostas em HTML
+  (`docs/ajustes-d52/sugestoes/c04-caneta.html` e `c05-papelaria.html`) para o C04 e o C05. Sem
+  alteração de código do site.
+- **Movimento reduzido:** cada item novo segue a regra do site (estado final, sem prender a tela); em
+  particular, a ficha dos atalhos (B06) e o aceno dos cadernos (B13) não fazem nada com ele ligado, e
+  a caneta do carregando (B14) vira um fio mais claro, sem a caneta.
+- **Conferido:** cada item, quadro a quadro (Chrome headless próprio ou trace com screenshots no MCP
+  `chrome-devtools`, sempre numa aba isolada) em 320, 390, 768, 1280 e 1600px, claro e escuro, e
+  `fnm exec --using=24 npm run check` sem erros antes do commit do item.

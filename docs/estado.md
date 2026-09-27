@@ -180,19 +180,34 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
   marca d'água no painel do título do artigo e os atalhos de teclado no artigo. Commitados pelo
   Cesar (131085e), sem push.
 
-- **Animações revistas (D51, 27/09/2026), aplicadas:** o Cesar escolheu nos protótipos de
-  `docs/prototipos/animacoes/` (abertura A3, caderno que vai para o cabeçalho, troca "cai da mesa"
-  com texto fora, desfile e pilha em Categorias, desfile direto na tag, "na pilha" no artigo vizinho,
-  só o livro viaja, desenho depois de pousar). Aplicado no site, com duas revisões de acabamento por
-  agentes (abertura/Categorias e trocas gerais) e as correções delas conferidas quadro a quadro. O
-  Cesar commitou a primeira parte (6ffbc45, a441fdd); **as correções da segunda revisão estão só
-  locais e aguardam ele ver no localhost** (dev 4322 e preview 4323) antes do commit.
+- **Animações revistas (D51, 27/09/2026), aplicadas e commitadas (sem push):** o Cesar escolheu nos
+  protótipos de `docs/prototipos/animacoes/` (abertura A3, caderno que vai para o cabeçalho, troca
+  "cai da mesa" com texto fora, desfile e pilha em Categorias, desfile direto na tag, "na pilha" no
+  artigo vizinho, só o livro viaja, desenho depois de pousar). Aplicado no site, com duas revisões de
+  acabamento por agentes (abertura/Categorias e trocas gerais) e as correções delas conferidas quadro
+  a quadro. Commitado pelo Cesar (6ffbc45, a441fdd, 32d5a28, 8e708fd).
+
+- **Ajustes de 27/09/2026 (D52), commitados item a item, sem push:** três folhas de pedidos do Cesar
+  depois da D51 (`docs/ajustes-d52/controle.md`), com vários agentes na mesma árvore. Acabamento das
+  animações (abertura sem responder ao mouse e sem piscar, o caderno pautado, a mesa que se limpa
+  antes da chegada, o livro anterior/próximo, a pilha de Categorias sem tremer no fim, o voo do livro
+  entre Categorias e a página dele, o aceno dos cadernos, os diagramas escuros no visor); bugs do
+  artigo e do livro ampliado (sumário que chega zerado, a leitura só na caneta azul, "?" só para os
+  atalhos no artigo — com a ficha redesenhada —, anterior/próximo pela data, o hover do livro
+  ampliado, a linha entre lombada e capa); o topo de "Todos os artigos" e das tags (com o ícone por
+  tag, obrigatório); a lentidão em rede e CPU fracas (pré-carregar por Speculation Rules, a caneta do
+  carregando, a chegada curta); e três novidades — tema claro e cards como padrão, válido por 3 dias;
+  o destaque dentro da grade da home (paginação de 12 lugares, o destaque valendo dois); o
+  código-fonte dos artigos (campo `codigo`, pílula no topo, sinal nas listas). Detalhe item a item em
+  `docs/decisoes.md` (D52). **Faltam o C04 e o C05** (ver "Próximos passos").
 
 ## Próximos passos
 
-000. **D51, segunda revisão:** o Cesar vê no localhost e commita (as mudanças já estão no stage).
-     Falta conferir por trace no celular (390px) a troca com o livro da lateral fora da tela (item 13
-     da revisão). As três perguntas da D51 estão em "Perguntas abertas".
+000. **D52:** faltam o **C04** (a caneta em preto como identidade — menu, GitHub e LinkedIn, botão de
+     tema, busca, data e tempo de leitura, a caneca da série Java, a assinatura sob "Schutz") e, por
+     último, o **C05** (a papelaria de estudo: post-it, ficha do livro, a cola dos atalhos e o
+     carimbo das fontes) — **sem commit**: o Cesar avalia os dois no localhost antes de decidir. As
+     perguntas que a pesquisa e os diagnósticos deixaram estão em "Perguntas abertas".
 
 00. **Caneta (D48):** os outros 25 posts recebem a caneta na revisão (`.claude/revisao-posts.md`,
     coluna "Caneta"), pela skill `caneta`, com a proposta aprovada pelo Cesar antes de aplicar.
@@ -223,6 +238,18 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
 4. D51: o desfile de Categorias (~3 s) fica assim ou encurta? O desfile mais curto depois do caderno
    da abertura fica? A troca de livro pela pilha da home e a navegação com a busca ou o livro ampliado
    abertos (que seguem com a troca antiga, a folha que sobe e some) passam para a troca nova?
+5. D52, B11: os 20 objetos dos ícones de tag ficam (principalmente os menos óbvios: semáforo de
+   ferrovia para Concorrência, moedor de café para JVM, espeto de notas para AOP, âncora para LTS)? E
+   a marca d'água da tag girada −8° (a dos livros não gira)?
+6. D52, B13: com o destaque abaixo da dobra (tela baixa ou celular), o aceno dos cadernos espera o
+   leitor rolar até o desenho. Prefere assim, ou o aceno sempre logo depois da estante?
+7. D52, pesquisa: GitHub e LinkedIn no cabeçalho — manter os ícones à mão de hoje (Lucide, não os
+   logotipos oficiais) ou trocar pelas marcas oficiais em preto (as duas proíbem redesenhar a marca,
+   mas aceitam o preto)?
+8. D52, pesquisa (para o C05): a Caveat (a letra de mão das notas da caneta, D48) sai das notas para
+   os títulos curtos da papelaria de estudo ("Neste artigo", "Do livro", "Atalhos do teclado")?
+9. D52, pesquisa: um campo novo no frontmatter com a data em que as fontes do post foram conferidas,
+   para um carimbo "conferidas em \<data\>" no fim do artigo, ao lado de "Fontes"?
 
 ## Riscos a acompanhar
 
@@ -231,3 +258,6 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
   Plano B, se pesar: gravar o tremor na própria geometria, no build.
 - A imagem de compartilhamento precisa de Chrome no build (D10); os runners do GitHub Actions têm.
 - A busca não foi medida no GitHub Pages real (regra 4 da D2): conferir no site publicado (D34).
+- D52, B14: o `prerender` (página pronta antes do clique, troca instantânea) fica como ideia para
+  depois — exigiria revisar todos os scripts que rodam ao carregar (abertura, desenhos, contagem de
+  visitas) para esperar a ativação.

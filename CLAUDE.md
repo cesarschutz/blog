@@ -51,7 +51,10 @@ Cesar acompanhar. Ele revisa tudo no fim.
   da caneta, D48; o gesto de copiar, os contadores que rolam e a rasura e a sugestão da 404, D49; os
   atalhos de teclado do artigo e o livro da pilha que voa até o topo, D50; a troca de página por
   folhas, `troca.js` no `<head>`, a abertura em toda página, o desfile de Categorias e o desenho do
-  topo do artigo, D51).
+  topo do artigo, D51; a ficha dos atalhos, o hover do livro ampliado (o `:hover` nativo se perde na
+  pilha 3D), a preferência de tema e de modo válida por 3 dias (o script anti-piscada do `<head>`), o
+  aceno dos dois cadernos no fim da abertura da home e a caneta que escreve o fio do cabeçalho quando
+  a página demora, D52).
   Artigo sem esses componentes funciona sem JS (as marcações da caneta são estáticas).
 - Fontes servidas pelo próprio site (`@fontsource`). Nunca Google Fonts nem CDN em produção.
 - Para verificar o blog no navegador (visual, console, performance), use sempre o MCP
@@ -109,7 +112,8 @@ revisão de 24/09/2026 mostrou que a maioria das antigas era inventada ou atribu
   `/about/` → `/` (a página Sobre saiu na D33; o Cesar escreve depois), `/projects/` → `/` e
   `/exercicios` → `/`
 - `/archive/?livro=<slug>` e `/tags/<Nome>/?livro=<slug>` abrem a lista já filtrada por um livro (D33)
-- `/2/` e `/3/`: páginas da home paginada, 12 por página, como no blog atual (D27)
+- `/2/` e `/3/`: páginas da home paginada, 12 lugares por página (na primeira, o destaque vale dois:
+  11 artigos em `/`, D52)
 
 Detalhes e casos especiais estão em `docs/decisoes.md` (D7).
 
@@ -125,6 +129,9 @@ Aprovada em 23/09/2026. Detalhes em `docs/decisoes.md`.
 - Fontes: Besley (títulos), Literata com `opsz` (texto), IBM Plex Sans (interface), JetBrains Mono
   (código); nos livros, Bitter e Newsreader itálico (D30); nas notas da caneta, Caveat (D48)
 - Busca com Pagefind e interface própria (D2, por medição): índice gerado no `postbuild`
+- Pré-carregamento por regras de especulação do navegador (`<script type="speculationrules">`, JSON
+  no `<head>` do `Base.astro`; `prefetch` com `eagerness: "moderate"`, sem `prerender` e sem
+  biblioteca, D52)
 - Node 24 (`.node-version`, instalado pelo fnm) e npm
 - Publicado por GitHub Actions no GitHub Pages, em `blog.cesarschutz.com.br` (D34): o `deploy.yml`
   roda a cada push na `main` (`withastro/action` e `deploy-pages`), e o domínio fica nas
@@ -178,6 +185,8 @@ docs/estilo-desenho.md   estilo das ilustrações e das lousas
 docs/marcacoes.md        guia vivo da caneta do caderno: 20 tipos, limites, tela, ajustes do Cesar (D48)
 docs/capas/              os livros: CAPAS.md (regra), livros.json, cores.js, desenhos, ícones, referência;
                          tags/ (um ícone por tag, D52)
+docs/ajustes-d52/        controle e diagnósticos dos ajustes da D52 (regras.md, controle.md,
+                         diagnosticos/<item>.md, pesquisa.md, sugestoes/)
 docs/virada.md           plano para o domínio passar ao blog novo (só com OK do Cesar)
 docs/referencias/        protótipos aprovados
 src/content/posts/       posts; nome do arquivo = slug da URL
@@ -194,7 +203,8 @@ src/pages/               rotas; a home é [...page].astro (paginada, D27); livro
 src/plugins/             Markdown: avisos, notas laterais, apresentação, tabelas, matemática
 src/lib/                 posts, formatos, busca (Pagefind), código (Expressive Code), PDF, estante
                          (livros), livros-svg (desenhos e ícones), livro-3d (medidas do livro aberto),
-                         marca (traçado da marca, gerado)
+                         marca (traçado da marca, gerado), caderno (miolo do caderno "cs", D52),
+                         tags-svg (ícones das tags, D52)
 src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, apresentação)
 src/scripts/tema.ts      tema: o botão do cabeçalho alterna claro e escuro (D39)
 scripts/                 contraste, links, apresentacao, og, copiar-katex, desenho/, bench-busca/,
@@ -276,3 +286,11 @@ src/lousas/<slug>/       desenhos das lousas de cada post .mdx
   quanto o da regra de base (D33).
 - No bash do Claude, `node -e '…'` quebra com apóstrofo no texto ("d'água"): escreva o script num
   arquivo do scratchpad e rode o arquivo.
+- Campo novo no esquema do conteúdo (`content.config.ts`): o dev já aberto não relê sozinho e
+  descarta o campo até reiniciar. Sem tirar o dev principal do ar, suba por uns segundos um segundo
+  dev noutra porta (`--ignore-lock`), que refaz o armazenamento de conteúdo com o esquema novo, e
+  pare-o (D52, C03).
+- No primeiro quadro de uma página nova (View Transition entre documentos), nenhuma fonte está
+  carregada (`document.fonts` todas `unloaded` no `pagereveal`): título, capas e menu aparecem na
+  fonte de reserva por um instante. No GSAP, `power2` é uma curva cúbica (`power1` é a quadrática), o
+  que muda a conta ao emendar uma curva na outra (D52, B01 e B09).
