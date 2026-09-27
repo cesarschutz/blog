@@ -530,7 +530,7 @@ têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm can
 - **Botão "Ler artigo":** pílula azul-tinta com seta, texto em `on-primary`.
 - **Marca d'água do livro** (D39): o desenho da capa (ou o emblema da revista), grande, na cor do
   livro com 10% de opacidade, cortado pela borda da folha, no topo das páginas de categoria e de
-  série e no fim do artigo, atrás de "anterior / próximo". Entra como máscara
+  série e no canto de baixo do painel do título do artigo (D50; menor no celular). Entra como máscara
   (`/livros/marca/<slug>.svg`, `MarcaDagua.astro`), sem repetir o desenho no HTML.
 - **Diagramas antigos** (SVG com fundo branco, `public/posts/`): num quadro claro no tema claro e,
   no escuro, na versão escura feita por filtro (luz invertida e matiz de volta, D39), nunca um bloco

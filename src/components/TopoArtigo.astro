@@ -4,23 +4,29 @@
  * que encosta nas bordas da folha (recorte largo, com anotações, no computador; 3:2 no celular),
  * depois a trilha "Artigos › Categoria" (ou "Séries › Nome"), o título inteiro e a descrição, como no
  * blog atual (D33), e a assinatura: a foto e o nome do autor, a data com o calendário, "Atualizado
- * em" quando houver e o tempo de leitura com o relógio. A marca d'água do livro saiu daqui (D39): fica
- * no fim do artigo.
+ * em" quando houver e o tempo de leitura com o relógio. No canto de baixo do painel do título, a marca
+ * d'água do livro, cortada pela borda da folha, como no topo das páginas de categoria e de série (saiu
+ * daqui na D39, com o topo de antes, e voltou em 27/09/2026: no fim do artigo, ficava atrás de
+ * "anterior / próximo").
  */
 import Chip from "./Chip.astro";
 import DataLeitura from "./DataLeitura.astro";
 import Ilustracao from "./Ilustracao.astro";
+import MarcaDagua from "./MarcaDagua.astro";
 import { AUTOR } from "../data/site";
 import { temIlustracao } from "../lib/ilustracoes";
 import { mdEmLinha, tituloEmPartes } from "../lib/formato";
 import { url } from "../lib/url";
 import type { Resumo } from "../lib/posts";
+import type { Livro } from "../lib/estante";
 
 interface Props {
   post: Resumo;
+  /** O livro do artigo, para a marca d'água. */
+  livro?: Livro;
 }
 
-const { post } = Astro.props;
+const { post, livro } = Astro.props;
 const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "Artigos", href: url("/archive/") };
 ---
 
@@ -38,6 +44,7 @@ const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "
     )
   }
   <header class="topo">
+    {livro && <MarcaDagua livro={livro} />}
     <nav class="trilha" aria-label="Trilha" data-pagefind-ignore>
       <a href={raiz.href}>{raiz.nome}</a>
       <span aria-hidden="true">›</span>
@@ -92,7 +99,35 @@ const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "
   /* O texto do topo usa a folha inteira, com a mesma margem do corpo embaixo (D46). */
   .topo {
     position: relative;
+    isolation: isolate;
     padding: 32px var(--margem-folha, 32px) 30px;
+  }
+
+  /* A marca d'água, atrás do texto, cortada pela borda da folha (overflow da .topo-folha). */
+  .topo > :global(.marca-dagua) {
+    z-index: -1;
+    right: -70px;
+    bottom: -110px;
+  }
+
+  .topo > :global(.marca-dagua.emblema) {
+    right: -40px;
+    bottom: -60px;
+  }
+
+  /* No celular, menor: só o canto, sem tomar o painel inteiro. */
+  @media (max-width: 600px) {
+    .topo > :global(.marca-dagua) {
+      width: 300px;
+      right: -70px;
+      bottom: -70px;
+    }
+
+    .topo > :global(.marca-dagua.emblema) {
+      width: 190px;
+      right: -40px;
+      bottom: -40px;
+    }
   }
 
   .trilha {

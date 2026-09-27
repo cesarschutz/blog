@@ -13,7 +13,8 @@
  * capa é pesada: sai devagar, bate e assenta. Arrastar o livro para a esquerda abre e vira; para a
  * direita, volta (a velocidade do arrasto decide se a folha para aberta ou fechada, InertiaPlugin).
  * Também pelos botões embaixo, pelas setas do teclado e por um clique na página da direita (vira) ou
- * da esquerda (volta); os links das páginas levam ao artigo e aos livros. No celular, o livro aberto
+ * da esquerda (volta); os links das páginas levam ao artigo e aos livros (quem decide o link é a
+ * página à vista, não o alvo do clique; o próximo livro abre depois que este se fecha). No celular, o livro aberto
  * fica maior que a tela, a vista corre para a página da vez, e as folhas viram retas e mais rápido.
  * Com movimento reduzido, tudo troca na hora.
  *
@@ -605,16 +606,73 @@ import "../styles/paginas.css";
       e.preventDefault();
     });
 
-    // Um clique no livro: na página da direita, vira; na da esquerda, volta; num link, segue o link.
-    // Fora do livro e da legenda, fecha (mas não o clique que termina um arraste).
+    /**
+     * O link sob o ponto, só nas páginas à vista. As folhas estão empilhadas em 3D, a décimos de pixel
+     * uma da outra, e o navegador entrega o clique à folha errada (a de baixo ou a metade da vizinha):
+     * por isso quem decide é o estado do livro, e não o alvo do clique.
+     */
+    function linkNoPonto(x: number, y: number) {
+      if (!aberto() || !livro || andando) return null;
+      const k = viradas();
+      const esquerda = k === 0 ? [livro.querySelector(".capa-verso")] : folhas[k - 1].el.querySelectorAll(".face.costas");
+      const direita = k < folhas.length ? folhas[k].el.querySelectorAll(".face.frente") : [pagina];
+      for (const pg of [...esquerda, ...direita]) {
+        for (const a of pg?.querySelectorAll<HTMLAnchorElement>("a[href]") ?? []) {
+          const r = a.getBoundingClientRect();
+          if (x >= r.left - 4 && x <= r.right + 4 && y >= r.top - 4 && y <= r.bottom + 4) return a;
+        }
+      }
+      return null;
+    }
+
+    /**
+     * Segue o link da página:
+     * - um artigo abre na hora, com a troca de página do site (o livro sai junto com a página, e o de
+     *   origem não voa por baixo do visor);
+     * - um livro (o próximo da coleção): este se fecha e volta ao lugar dele; se o outro estiver na
+     *   pilha ao lado (PainelHome), a troca é a da pilha (guarda este, puxa o outro e o leva ao topo);
+     * - o próprio livro ("Ver o livro inteiro" na página dele): só fecha.
+     */
+    let seguindo = false;
+    let nomeDaOrigem: { el: HTMLElement; nome: string } | null = null;
+    async function seguir(a: HTMLAnchorElement, e: MouseEvent) {
+      if (e.metaKey || e.ctrlKey || e.shiftKey) return void open(a.href, "_blank", "noopener");
+      if (seguindo) return;
+      const caminho = new URL(a.href).pathname;
+      if (caminho === location.pathname) return void fechar();
+      seguindo = true;
+      if (!/\/posts\//.test(caminho)) {
+        await fechar();
+        const naPilha = [...document.querySelectorAll<HTMLAnchorElement>(".pilha a.deitado")].find((d) => d.pathname === caminho);
+        if (naPilha) {
+          seguindo = false;
+          return void naPilha.click();
+        }
+      } else if (origem) {
+        nomeDaOrigem = { el: origem, nome: origem.style.viewTransitionName };
+        origem.style.viewTransitionName = "none";
+      }
+      location.assign(a.href);
+    }
+    // Voltar pelo histórico traz a página como ficou: o livro de origem volta a ter o nome dele.
+    addEventListener("pageshow", () => {
+      seguindo = false;
+      if (nomeDaOrigem) nomeDaOrigem.el.style.viewTransitionName = nomeDaOrigem.nome;
+      nomeDaOrigem = null;
+    });
+
+    // Um clique no livro: num link da página à vista, segue o link; na página da direita, vira; na da
+    // esquerda, volta. Fora do livro e da legenda, fecha (mas não o clique que termina um arraste).
     dialogo.addEventListener("click", (e) => {
       const alvo = e.target as HTMLElement;
       if (arrastou) {
         arrastou = false;
         return;
       }
-      if (alvo.closest("a") && alvo.closest(".livro-3d-caixa")) return;
       const noLivro = alvo.closest(".livro-3d-caixa");
+      if (noLivro) e.preventDefault();
+      const link = noLivro ? linkNoPonto(e.clientX, e.clientY) : null;
+      if (link) return void seguir(link, e);
       if (noLivro && copia) {
         if (!aberto()) return void proxima();
         if (celular.matches) return void (e.clientX > innerWidth / 2 ? proxima() : anterior());

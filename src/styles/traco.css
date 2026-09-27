@@ -7,7 +7,7 @@
  *   (View Transition, `traco-do-menu`, base.css).
  * Com movimento reduzido, os traços aparecem prontos, sem desenhar.
  */
-.traco {
+svg.traco {
   position: absolute;
   left: -2px;
   bottom: -7px;
@@ -17,7 +17,7 @@
   pointer-events: none;
 }
 
-.traco path {
+svg.traco path {
   fill: none;
   stroke: var(--acento);
   stroke-linecap: round;

@@ -48,7 +48,8 @@ Cesar acompanhar. Ele revisa tudo no fim.
 - JavaScript só onde há interação (estante, gaveta, busca, lousas, apresentação, lista/cards, menu de
   tema, filtro por livro, livro ampliado, o nome de transição do livro
   do painel e o menu do celular, D29, D33, D46; o desenho do destaque da home, D41; o lugar das notas
-  da caneta, D48; o gesto de copiar, os contadores que rolam e a rasura e a sugestão da 404, D49).
+  da caneta, D48; o gesto de copiar, os contadores que rolam e a rasura e a sugestão da 404, D49; os
+  atalhos de teclado do artigo e o livro da pilha que voa até o topo, D50).
   Artigo sem esses componentes funciona sem JS (as marcações da caneta são estáticas).
 - Fontes servidas pelo próprio site (`@fontsource`). Nunca Google Fonts nem CDN em produção.
 - Para verificar o blog no navegador (visual, console, performance), use sempre o MCP

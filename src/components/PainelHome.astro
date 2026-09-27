@@ -11,8 +11,9 @@
  *
  * Trocar de livro pela pilha (D46, D49): primeiro o livro aberto no topo da página é guardado em cima
  * da pilha (a pilha guarda, em cima, o espaço dele: --folga), depois o escolhido é puxado para fora,
- * com o peso dos de cima (o bloco tomba e cai no lugar), e a página nova abre; a transição de página
- * (Base.astro, base.css) leva só o livro puxado até o topo. Com movimento reduzido, a página só abre.
+ * com o peso dos de cima (o bloco tomba e cai no lugar), voa em pé até o topo da página e gira até
+ * ficar de lado (o livro da página nova, tirado do HTML dela), e só então a página nova abre, com ele
+ * já no lugar. Com movimento reduzido, a página só abre.
  * Uma série só: a pilha fica vazia, com um texto curto.
  */
 import { ICONES } from "../lib/icones";
@@ -121,8 +122,9 @@ const rotulo = (l: Livro) => {
    *   ele; só então o escolhido é puxado. Os de cima vão junto nos primeiros milímetros, pelo atrito;
    *   quando a ponta do livro puxado passa do centro de massa deles, o bloco tomba sobre a quina, com a
    *   ponta apoiada no livro de baixo; quando o livro sai inteiro, o bloco cai deitado no lugar, com
-   *   um baque. Aí a página nova abre, e a transição (base.css) leva só o puxado até o topo: o antigo
-   *   já está na pilha, onde a página nova o mostra (nenhum livro passa por cima do outro).
+   *   um baque. Aí o puxado se põe em pé, voa até o topo da página e gira até ficar de lado, como o
+   *   livro da página nova (é o elemento dela, buscado no clique), e a página abre: a transição
+   *   (base.css) encontra os dois livros onde a página nova os mostra, e nada mais se mexe.
    * - Com mouse, dá para puxar o livro devagar e ver o bloco de cima reagir. Solto depois da metade (a
    *   velocidade conta), o livro sai, espera ao lado da pilha enquanto o aberto é guardado, e a página
    *   abre; antes disso, volta para o lugar, perdendo velocidade, e o bloco se endireita sobre ele.
@@ -289,31 +291,99 @@ const rotulo = (l: Livro) => {
       a.li.classList.remove("no-ar");
     }
 
+    // ---------- levar o escolhido ao topo ----------
+    /** O livro em pé do topo da página nova, tirado do HTML dela (é a página que vai abrir). */
+    async function livroDoTopo(href: string) {
+      try {
+        const html = await (await fetch(href)).text();
+        const el = new DOMParser().parseFromString(html, "text/html").querySelector<HTMLElement>(".topo-livro .livro-em-pe");
+        return el ? (document.importNode(el, true) as HTMLElement) : null;
+      } catch {
+        return null;
+      }
+    }
+
+    /** O que não chegar a tempo fica de fora (a página abre do mesmo jeito). */
+    const ate = <T,>(p: Promise<T>, ms: number) => Promise.race([p, new Promise<null>((r) => setTimeout(() => r(null), ms))]);
+
+    let posto: { novo: HTMLElement; velho: HTMLElement } | null = null;
+
+    /**
+     * O escolhido vai até o lugar dele (D49, como na gaveta da home): sai da pilha em pé, com a lombada
+     * para o leitor, e voa até o topo da página, onde o livro da página nova (o mesmo elemento dela)
+     * aparece de lombada e gira até ficar de lado. A transição de página encontra os dois no mesmo
+     * lugar, e o livro não muda mais.
+     */
+    async function levarAoTopo(k: HTMLAnchorElement, novo: HTMLElement | null) {
+      const g = gsap!;
+      const velho = document.querySelector<HTMLElement>(".topo-livro .livro-em-pe");
+      if (!novo || !velho || !naTela(velho.getBoundingClientRect())) return;
+      const livro = novo.querySelector<HTMLElement>(".livro-3d");
+      const lombada = novo.querySelector<HTMLElement>(".face-lombada");
+      if (!livro || !lombada) return;
+      novo.style.visibility = "hidden";
+      velho.replaceWith(novo);
+      posto = { novo, velho };
+      const giro = Number(g.getProperty(livro, "rotationY")) || 38;
+      g.set(livro, { rotationY: 90 });
+      const rl = lombada.getBoundingClientRect();
+      const rd = k.getBoundingClientRect();
+      const de = centro(rd);
+      const para = centro(rl);
+      const x = Number(g.getProperty(k, "x")) || 0;
+      const y = Number(g.getProperty(k, "y")) || 0;
+      // Um livro só com esse nome na troca: o que está no topo (o script do <head> nomearia o da pilha).
+      k.removeAttribute("data-vt");
+      k.style.viewTransitionName = "none";
+      await g
+        .timeline()
+        .to(k, { y: y - Math.max(10, rd.height), duration: 0.18 * DUR(), ease: "power2.out" })
+        .to(k, {
+          x: x + para.x - de.x,
+          y: y + para.y - de.y,
+          rotation: 90,
+          scaleX: rl.height / k.offsetWidth,
+          scaleY: rl.width / k.offsetHeight,
+          transformOrigin: "50% 50%",
+          duration: 0.62 * DUR(),
+          ease: "power3.inOut",
+        })
+        .then();
+      novo.style.removeProperty("visibility");
+      k.style.visibility = "hidden";
+      await g.to(livro, { rotationY: giro, duration: 0.5 * DUR(), ease: "power2.out" }).then();
+      g.set(livro, { clearProps: "transform" });
+    }
+
     // ---------- trocar de livro ----------
     /** A pilha fica com a altura de agora e encostada embaixo: o livro guardado entra no espaço de cima. */
     function segurarPilha() {
       gsap!.set(ol, { height: ol.offsetHeight, justifyContent: "flex-end" });
     }
 
-    /** Clique, toque ou Enter: guarda o aberto, puxa o escolhido e abre a página dele. */
+    /** Clique, toque ou Enter: guarda o aberto, puxa o escolhido, leva-o ao topo e abre a página dele. */
     async function trocar(k: HTMLAnchorElement) {
       if (ocupado || !gsap) return;
       ocupado = true;
+      const novo = livroDoTopo(k.href);
       segurarPilha();
       const dx = Number(gsap.getProperty(k, "x")) || 0;
       await guardarOAberto();
       // Com o livro guardado em cima, o bloco sobre o escolhido mudou: mede de novo.
       medir();
       await puxarAteSair(k, dx);
+      await levarAoTopo(k, await ate(novo, 1500));
       location.assign(k.href);
     }
 
-    /** Arrastado e solto depois da metade: sai inteiro, espera ao lado da pilha, o aberto é guardado, e a página abre. */
+    /** Arrastado e solto depois da metade: sai inteiro, espera ao lado da pilha, o aberto é guardado, e ele vai ao topo. */
     async function tirarArrastado(k: HTMLAnchorElement, dx: number) {
       ocupado = true;
+      const novo = livroDoTopo(k.href);
       segurarPilha();
       const queda = await puxarAteSair(k, dx);
       await guardarOAberto(queda);
+      await levarAoTopo(k, await ate(novo, 1500));
       location.assign(k.href);
     }
 
@@ -393,9 +463,12 @@ const rotulo = (l: Livro) => {
 
     ol.addEventListener("click", (e) => {
       const link = (e.target as HTMLElement).closest<HTMLAnchorElement>("a.deitado");
-      if (!link || !gsap || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+      if (!link || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
       e.preventDefault();
-      trocar(link);
+      // O GSAP chega sozinho logo depois de a página abrir; um clique antes disso (ou o do livro
+      // ampliado, que abre o próximo livro pela pilha) espera por ele.
+      if (gsap) trocar(link);
+      else carregarGsap().then((g) => (ligar(g), trocar(link)));
     });
 
     // Voltar pelo histórico (bfcache) traz a página como ficou: a pilha e o livro do topo voltam ao lugar.
@@ -403,10 +476,18 @@ const rotulo = (l: Livro) => {
       if (!e.persisted || !gsap) return;
       ocupado = false;
       pressionado = null;
+      if (posto) {
+        posto.novo.replaceWith(posto.velho);
+        posto = null;
+      }
       for (const li of ordemInicial) {
         ol.append(li);
         li.classList.remove("no-ar");
-        li.querySelector<HTMLElement>(".deitado")?.style.removeProperty("view-transition-name");
+        const d = li.querySelector<HTMLElement>(".deitado");
+        if (!d) continue;
+        d.style.removeProperty("view-transition-name");
+        d.style.removeProperty("visibility");
+        d.dataset.vt = li.dataset.id;
       }
       if (escondido) escondido.hidden = true;
       if (topoInicial) {

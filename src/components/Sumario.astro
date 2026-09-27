@@ -85,6 +85,12 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
             </span>
           </p>
         </div>
+        {/* Os atalhos do teclado (D50, Atalhos.astro): só com mouse e teclado, e com JS. */}
+        <button type="button" class="dica-atalhos" popovertarget="atalhos">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.teclado} />
+          Atalhos
+          <kbd aria-hidden="true">?</kbd>
+        </button>
       </div>
       )}
       {
@@ -372,6 +378,47 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     background: var(--cor-ui);
     transform: scaleX(0);
     transform-origin: left;
+  }
+
+  /* "Atalhos ?" (D50): discreto, embaixo do progresso; some no toque e sem JS. */
+  .dica-atalhos {
+    display: none;
+    align-items: center;
+    gap: 7px;
+    margin: 12px 0 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ink-3);
+    font-family: var(--font-ui);
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    :global(:root[data-js]) .dica-atalhos {
+      display: inline-flex;
+    }
+  }
+
+  .dica-atalhos:hover,
+  .dica-atalhos:focus-visible {
+    color: var(--acento);
+  }
+
+  .dica-atalhos svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .dica-atalhos kbd {
+    font-size: 10.5px;
+    padding: 0 4px;
   }
 
   .numeros {

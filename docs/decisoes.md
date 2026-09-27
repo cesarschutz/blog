@@ -1427,3 +1427,58 @@ nada muda.
   sem erro no console. Cada item também foi conferido quadro a quadro no Chrome (MCP), no celular
   e com movimento reduzido.
 - **Motivo:** o Cesar revisou os protótipos um a um e escolheu o que entra.
+
+## D50 · Ajustes de 27/09/2026: o traço da leitura, a troca de livro, o livro ampliado, o cabeçalho, o tema, a marca d'água e os atalhos
+- **Data:** 27/09/2026 · **Status:** aplicada **só local, sem commit**, aguardando o Cesar ver no
+  localhost (ele pediu para ver antes de commitar).
+- **Pedido do Cesar e o que mudou:**
+  1. **O traço da leitura voltou a ser fino.** Causa: a regra global `.traco` do traço de caneta do
+     menu (E1, `traco.css`) também pegava o traço da barra de leitura (a mesma classe) e o deixava com
+     8px de altura. A barra passou a usar `.risco`, e a regra do menu vale só para `svg.traco` (ela
+     também pegava os `<g class="traco">` das lousas).
+  2. **Trocar de livro pela pilha leva o livro até o lugar dele**, como na home: depois de o aberto
+     ser guardado e o escolhido puxado (D49, D3), o escolhido se põe em pé, voa até o topo da página
+     com a lombada para o leitor e gira até ficar de lado; só então a página nova abre, com ele já no
+     lugar. Antes, a transição de página esticava a lombada deitada até o livro grande, esmaecendo uma
+     imagem na outra ("some e aparece grande"). O livro que gira é o da página nova: o clique busca o
+     HTML dela (`fetch`) e tira de lá o `.livro-em-pe` do topo, que entra no lugar do antigo; a
+     transição encontra os dois no mesmo lugar e não mexe mais nele. Se o HTML não chegar em 1,5s, ou
+     se o topo estiver fora da tela (a pilha fica embaixo do conteúdo no celular), a troca é a de antes.
+  3. **Os links do livro ampliado funcionam.** Causa: as folhas ficam empilhadas em 3D a décimos de
+     pixel uma da outra, e o navegador entregava o clique a outra folha (a de baixo ou a metade da
+     vizinha); só "Ver o livro inteiro", na última folha, acertava. Agora quem decide o link é o
+     estado do livro: as páginas à vista (a guarda, as costas da última folha virada, a frente da
+     próxima ou a página do próximo livro) e o retângulo de cada link. A animação: um artigo abre na
+     hora, com a troca de página do site (o livro de origem não voa por baixo do visor); o próximo
+     livro fecha este, que volta ao lugar, e, se o outro estiver na pilha ao lado, a troca é a da pilha
+     (guarda, puxa e leva ao topo); o próprio livro ("Ver o livro inteiro" na página dele) só fecha.
+     Cmd ou Ctrl abrem numa aba nova.
+  4. **O cabeçalho não treme na troca de página.** Duas causas, medidas quadro a quadro: o botão de
+     tema nascia escondido (`hidden`) até o script dele rodar, e o menu inteiro ficava 40px à direita
+     no primeiro quadro; e, no primeiro quadro da página nova, a fonte da interface ainda não estava
+     pronta (o menu aparecia na fonte de reserva, mais larga). O botão agora aparece já na primeira
+     pintura (um script inline logo depois dele põe o ícone certo; sem JS, o `data-js` do `<head>`
+     o esconde), e o cabeçalho antigo fica à vista por 0,12s antes do novo, trocando de uma vez (o
+     traço da seção atual desliza por cima o tempo todo).
+  5. **A troca de tema, nos dois sentidos:** indo para o escuro, a página clara fica parada embaixo do
+     círculo (ela esmaecia, o padrão do navegador, e deixava ver o fundo já escuro antes de o círculo
+     crescer); voltando ao claro, o botão guarda as cores do escuro até o escuro se fechar nele (ficava
+     branco antes da animação); o círculo nasce do tamanho do botão (e morre nele), e não de um
+     ponto; a barra de rolagem da página vira no fim, com o círculo (o `color-scheme` fica parado na
+     troca); cliques seguidos desfazem a troca anterior antes da próxima.
+  6. **A marca d'água saiu do fim do artigo** (ficava atrás de "anterior / próximo") e foi para o
+     canto de baixo do painel do título, cortada pela borda, como no topo das páginas de categoria e
+     de série (a segunda opção do Cesar; perto das Fontes ela ficaria atrás dos links da lista). No
+     celular, menor (300px).
+  7. **Atalhos de teclado no artigo** (`Atalhos.astro`): Espaço, a próxima seção; Shift + Espaço, a
+     anterior (depois da última, ou antes da primeira, o Espaço rola a página como sempre); T, o topo
+     (pelo botão do canto, com a animação e o foco dele); ← e →, o artigo anterior e o próximo; ?, a
+     lista. Onde aparecem: "Atalhos ?" discreto embaixo do progresso do sumário lateral, só com mouse e
+     teclado, que abre um cartão (popover nativo) com a lista e a opção de desligar os atalhos
+     (WCAG 2.1.4, `cs-atalhos` no navegador). Quietos com o foco num campo, botão, bloco de código,
+     lousa ou elemento que usa o teclado, com um diálogo aberto e com o sumário do celular aberto.
+- **Movimento reduzido:** a pilha e o livro ampliado seguem direto (sem voo), o tema troca seco, e os
+  atalhos rolam sem suavidade.
+- **Conferido:** `npm run check` sem erros, `npm run contraste` sem falhas, build e `npm run links`
+  (86 páginas, nenhum link quebrado); cada item gravado quadro a quadro no Chrome (MCP) no dev e no
+  preview; o celular (390px) no artigo e na categoria.

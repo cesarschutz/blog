@@ -14,7 +14,7 @@ const { cor } = Astro.props;
 ---
 
 <div class="barra-leitura" style={`--cor-barra:${cor}`} aria-hidden="true" data-barra-leitura>
-  <div class="traco"></div>
+  <div class="risco"></div>
   <svg class="caneta" viewBox="0 0 24 24" focusable="false">
     <path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1.4 1.4 0 0 1 0 2l-9.2 9.2Z" />
     <path class="anel" d="m15.6 5.8 2.6 2.6" />
@@ -35,7 +35,7 @@ const { cor } = Astro.props;
     pointer-events: none;
   }
 
-  .traco {
+  .risco {
     position: absolute;
     inset: 0;
     background: color-mix(in oklab, var(--cor-barra), #fff var(--branco-no-escuro));

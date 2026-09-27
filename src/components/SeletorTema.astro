@@ -4,7 +4,7 @@
  * claro e o sol no escuro (o tema para onde vai). O site sempre abre no tema do sistema: a escolha
  * vale até fechar o site (`cs-theme`, em sessionStorage), e o script do <head> (Base.astro) a aplica
  * antes da primeira pintura. A troca se espalha em círculo a partir do botão (D42). Sem JS, o botão
- * some e o tema segue o sistema.
+ * some e o tema segue o sistema. O ícone parado sai de um script inline logo depois do botão.
  *
  * O sol e a lua (D49, protótipo E1, propostas A e B; a B reabre a D44, em que o ícone só trocava):
  * - A: no hover, o sol gira 22° e a lua balança 14° (0,5s, só CSS);
@@ -31,12 +31,23 @@ const RAIOS = [
 const LUA = ICONES.lua.match(/d="([^"]+)"/)![1];
 ---
 
-<button type="button" class="botao-tema" aria-label="Usar o tema escuro" title="Tema escuro" data-botao-tema data-sol={SOL} data-lua={LUA} hidden>
+<button type="button" class="botao-tema" aria-label="Usar o tema escuro" title="Tema escuro" data-botao-tema data-sol={SOL} data-lua={LUA}>
   <svg class="icone-tema" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
     <g class="raios">{RAIOS.map((d) => <path d={d} />)}</g>
     <path class="corpo" d={LUA} />
   </svg>
 </button>
+<script is:inline>
+  // O ícone certo já na primeira pintura (sem esperar o script do componente): na troca de página, o
+  // botão escondido até o script rodar empurrava o menu 40px e o cabeçalho tremia.
+  (function () {
+    var b = document.currentScript.previousElementSibling;
+    var t = document.documentElement.dataset.theme;
+    var escuro = t === "dark" || (t !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
+    b.dataset.tela = escuro ? "escuro" : "claro";
+    if (escuro) b.querySelector(".corpo").setAttribute("d", b.dataset.sol);
+  })();
+</script>
 
 <script>
   import { carregarMorfo, movimentoReduzido, type GSAP } from "../scripts/gsap";
@@ -105,7 +116,6 @@ const LUA = ICONES.lua.match(/d="([^"]+)"/)![1];
     if (!movimentoReduzido.matches) {
       for (const evento of ["pointerenter", "pointerdown", "focusin"]) botao.addEventListener(evento, trazer, { once: true, passive: true });
     }
-    botao.hidden = false;
   }
 </script>
 
@@ -124,7 +134,8 @@ const LUA = ICONES.lua.match(/d="([^"]+)"/)![1];
     cursor: pointer;
   }
 
-  .botao-tema[hidden] {
+  /* Sem JS, o botão some e o tema segue o sistema (o script do <head> põe o data-js). */
+  :global(:root:not([data-js])) .botao-tema {
     display: none;
   }
 

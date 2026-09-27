@@ -1,0 +1,241 @@
+---
+/**
+ * Atalhos de teclado do artigo (D50, pedido do Cesar em 27/09/2026):
+ * - Espaço: a próxima seção (o próximo título do texto); Shift + Espaço: a anterior. Depois do último
+ *   título (ou antes do primeiro), o Espaço volta a rolar a página como sempre.
+ * - T: volta ao topo, pelo botão do canto (VoltarTopo), com a animação e o foco dele.
+ * - ← e →: o artigo anterior e o próximo (os links de RodapeArtigo).
+ * - ?: mostra ou esconde este cartão.
+ *
+ * Onde aparecem: "Atalhos ?" embaixo do progresso do sumário lateral (Sumario.astro), só com mouse e
+ * teclado; ele abre este cartão (popover nativo, que fecha com Esc ou com um clique fora). O cartão tem
+ * a opção de desligar os atalhos (WCAG 2.1.4, atalhos de uma tecla só), guardada no navegador
+ * (`cs-atalhos`).
+ *
+ * Os atalhos ficam quietos com o foco num campo, botão, bloco de código, lousa ou qualquer coisa que use
+ * o teclado, com um diálogo aberto (busca, visor, livro ampliado) e com o sumário do celular aberto.
+ * Sem JS, nada disso existe (o botão some). Com movimento reduzido, a rolagem é direta.
+ */
+import { ICONES } from "../lib/icones";
+---
+
+<div id="atalhos" class="atalhos folha" popover aria-labelledby="atalhos-titulo" data-atalhos>
+  <p class="titulo" id="atalhos-titulo">Atalhos do teclado</p>
+  <dl>
+    <div><dt><kbd>Espaço</kbd></dt><dd>Próxima seção</dd></div>
+    <div><dt><kbd>Shift</kbd> <kbd>Espaço</kbd></dt><dd>Seção anterior</dd></div>
+    <div><dt><kbd>T</kbd></dt><dd>Voltar ao topo</dd></div>
+    <div><dt><kbd aria-label="seta para a esquerda">←</kbd> <kbd aria-label="seta para a direita">→</kbd></dt><dd>Artigo anterior e próximo</dd></div>
+    <div><dt><kbd>?</kbd></dt><dd>Esta lista</dd></div>
+  </dl>
+  <label class="desligar"><input type="checkbox" data-atalhos-desligar /> Desligar os atalhos</label>
+  <button type="button" class="fechar" popovertarget="atalhos" popovertargetaction="hide" aria-label="Fechar">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.fechar} />
+  </button>
+</div>
+
+<script>
+  const cartao = document.querySelector<HTMLElement>("[data-atalhos]");
+  const desligar = document.querySelector<HTMLInputElement>("[data-atalhos-desligar]");
+  if (cartao && desligar) {
+    const CHAVE = "cs-atalhos";
+    const reduzir = matchMedia("(prefers-reduced-motion: reduce)");
+    let ligados = true;
+    try {
+      ligados = localStorage.getItem(CHAVE) !== "desligados";
+    } catch {
+      // Armazenamento bloqueado: os atalhos ficam ligados nesta página.
+    }
+    desligar.checked = !ligados;
+    desligar.addEventListener("change", () => {
+      ligados = !desligar.checked;
+      try {
+        if (ligados) localStorage.removeItem(CHAVE);
+        else localStorage.setItem(CHAVE, "desligados");
+      } catch {
+        // Vale só nesta página.
+      }
+    });
+
+    // Os títulos do texto (os mesmos do sumário) e a folga do cabeçalho fixo (scroll-padding-top).
+    const titulos = () => [...document.querySelectorAll<HTMLElement>("[data-corpo] > :is(h2, h3)[id]")];
+    const folga = () => parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+
+    // Com a rolagem suave em andamento, o próximo Espaço conta a partir do título de destino.
+    let destino: number | null = null;
+    addEventListener("scrollend", () => (destino = null));
+
+    function irPara(passo: 1 | -1) {
+      const lista = titulos();
+      const topo = folga();
+      // Onde o título para ao rolar até ele: a folga do cabeçalho mais a margem dele (scroll-margin-top).
+      const dist = (h: HTMLElement) => h.getBoundingClientRect().top - topo - (parseFloat(getComputedStyle(h).scrollMarginTop) || 0);
+      let i: number;
+      if (destino !== null) i = destino + passo;
+      else if (passo === 1) i = lista.findIndex((h) => dist(h) > 4);
+      else i = lista.findLastIndex((h) => dist(h) < -4);
+      const alvo = lista[i];
+      if (!alvo) return false;
+      destino = reduzir.matches ? null : i;
+      alvo.scrollIntoView({ behavior: reduzir.matches ? "auto" : "smooth", block: "start" });
+      return true;
+    }
+
+    const USA_TECLADO =
+      "input, textarea, select, button, summary, [contenteditable]:not([contenteditable='false']), [role='slider'], [role='tab'], [role='menu'], pre, .lousa, [tabindex]:not([tabindex='-1'])";
+
+    function quieto(e: KeyboardEvent) {
+      if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return true;
+      const alvo = e.target instanceof Element ? e.target : null;
+      if (alvo && alvo !== document.body && alvo.closest(USA_TECLADO)) return true;
+      if (document.querySelector("dialog[open]") || document.documentElement.hasAttribute("data-sumario-aberto")) return true;
+      return false;
+    }
+
+    addEventListener("keydown", (e) => {
+      // Dentro do cartão, só o "?" (que o fecha); o resto é do próprio cartão (o Espaço marca a caixa).
+      const noCartao = e.target instanceof Node && cartao.contains(e.target);
+      if (e.key === "?" && (noCartao || !quieto(e))) {
+        e.preventDefault();
+        cartao.togglePopover();
+        return;
+      }
+      if (noCartao || quieto(e) || !ligados) return;
+      if (e.key === " ") {
+        if (irPara(e.shiftKey ? -1 : 1)) e.preventDefault();
+        return;
+      }
+      if (e.shiftKey || e.repeat) return;
+      if (e.key === "t" || e.key === "T") {
+        const botao = document.querySelector<HTMLButtonElement>("[data-voltar-topo]");
+        if (botao && scrollY > 0) {
+          e.preventDefault();
+          botao.click();
+        }
+        return;
+      }
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+        const link = document.querySelector<HTMLAnchorElement>(`.vizinhos a[rel="${e.key === "ArrowLeft" ? "prev" : "next"}"]`);
+        if (link) {
+          e.preventDefault();
+          link.click();
+        }
+      }
+    });
+  }
+</script>
+
+<style>
+  .atalhos {
+    width: min(340px, calc(100vw - 32px));
+    margin: auto;
+    padding: 20px 22px 18px;
+    color: var(--ink);
+    font-family: var(--font-ui);
+    font-size: 14px;
+    opacity: 1;
+    translate: 0 0;
+    transition:
+      opacity 0.18s ease-out,
+      translate 0.18s ease-out,
+      display 0.18s allow-discrete,
+      overlay 0.18s allow-discrete;
+  }
+
+  .atalhos:not(:popover-open) {
+    opacity: 0;
+    translate: 0 6px;
+  }
+
+  @starting-style {
+    .atalhos:popover-open {
+      opacity: 0;
+      translate: 0 6px;
+    }
+  }
+
+  .atalhos::backdrop {
+    background: transparent;
+  }
+
+  .titulo {
+    margin: 0 28px 12px 0;
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    font-size: 17px;
+  }
+
+  dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: baseline;
+    gap: 9px 16px;
+    margin: 0;
+  }
+
+  dl > div {
+    display: contents;
+  }
+
+  dt {
+    white-space: nowrap;
+  }
+
+  dd {
+    margin: 0;
+    color: var(--ink-2);
+  }
+
+  .desligar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--rule);
+    color: var(--ink-3);
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .desligar input {
+    margin: 0;
+    accent-color: var(--acento);
+  }
+
+  .fechar {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: none;
+    color: var(--ink-3);
+    cursor: pointer;
+  }
+
+  .fechar:hover {
+    color: var(--ink);
+    background: var(--paper);
+  }
+
+  .fechar svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .atalhos {
+      transition: none;
+    }
+  }
+</style>

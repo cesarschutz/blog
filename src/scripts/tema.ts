@@ -57,6 +57,9 @@ export function aoMudarTema(ao: () => void) {
 
 pintarBarra(lerEscolha());
 
+/** Desfaz o que a troca em andamento pôs na página (a classe, o color-scheme e as cores do botão). */
+let desfazer: (() => void) | null = null;
+
 /**
  * Troca o tema pelo botão (D42, D44): indo para o escuro, o escuro se espalha em círculo a partir do
  * botão; voltando ao claro, o escuro se fecha de fora para dentro até sumir no botão. É a View
@@ -68,14 +71,42 @@ pintarBarra(lerEscolha());
 export function trocarTema(valor: Escolha, origem: Element) {
   const podeTipos = "startViewTransition" in document && typeof ViewTransition !== "undefined" && "types" in ViewTransition.prototype;
   if (!podeTipos || matchMedia("(prefers-reduced-motion: reduce)").matches) return aplicarTema(valor);
+  // Clique no meio de uma troca: a anterior é desfeita antes (o navegador a pula).
+  desfazer?.();
   const r = origem.getBoundingClientRect();
   const x = r.left + r.width / 2;
   const y = r.top + r.height / 2;
   raiz.style.setProperty("--tema-x", `${x}px`);
   raiz.style.setProperty("--tema-y", `${y}px`);
+  // O círculo nasce do tamanho do botão (e, voltando ao claro, morre nele).
+  raiz.style.setProperty("--tema-r0", `${r.width / 2}px`);
   raiz.style.setProperty("--tema-raio", `${Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y))}px`);
   raiz.classList.add("trocando-tema");
   const tipo = valor === "dark" ? "tema" : "tema-fecha";
+  // O botão fica por cima da troca (base.css, `botao-tema`). Voltando ao claro, o escuro só sai de
+  // cima dele no fim: até lá, ele guarda as cores do escuro (senão ficava branco sobre o escuro).
+  const cores = valor === "dark" ? null : congelarCores(origem);
+  // A barra de rolagem da página fica fora da troca e seguiria o tema na hora: vira no fim, com o círculo.
+  raiz.style.colorScheme = getComputedStyle(raiz).colorScheme;
+  const esta = () => {
+    raiz.classList.remove("trocando-tema");
+    raiz.style.removeProperty("color-scheme");
+    cores?.();
+    desfazer = null;
+  };
+  desfazer = esta;
   const transicao = document.startViewTransition({ update: () => aplicarTema(valor), types: [tipo] });
-  transicao.finished.finally(() => raiz.classList.remove("trocando-tema"));
+  transicao.finished.finally(() => {
+    if (desfazer === esta) esta();
+  });
+}
+
+/** Põe no elemento, em linha, as cores que ele tem agora; devolve quem as tira. */
+function congelarCores(el: Element) {
+  if (!(el instanceof HTMLElement)) return () => {};
+  const estilo = getComputedStyle(el);
+  const props = ["color", "background-color", "border-color"] as const;
+  const valores = props.map((p) => estilo.getPropertyValue(p));
+  props.forEach((p, i) => el.style.setProperty(p, valores[i]));
+  return () => props.forEach((p) => el.style.removeProperty(p));
 }

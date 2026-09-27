@@ -340,9 +340,10 @@ Referência: aba "Artigo" do protótipo.
 - **Topo**: a ilustração vem **antes do título** (recorte largo no computador, 3:2 no celular),
   depois trilha "Artigos › Categoria" (ou "Séries › Nome"), o **título inteiro** e a **descrição**,
   como no blog atual (D33), e a assinatura: foto e nome do autor, data com o calendário,
-  "Atualizado em" quando houver e o tempo de leitura com o relógio. A marca d'água do livro saiu do
-  topo (D39): fica no fim do artigo, atrás de "anterior / próximo", e no topo das páginas de
-  categoria e de série, grande e bem suave, cortada pela borda da folha.
+  "Atualizado em" quando houver e o tempo de leitura com o relógio. A marca d'água do livro fica no
+  canto de baixo do painel do título (D50; no fim do artigo, D39, ela ficava atrás de "anterior /
+  próximo"), como no topo das páginas de categoria e de série: grande e bem suave, cortada pela borda
+  da folha.
 - **Título** (D44): na lista, nos cards (em todas as páginas), no destaque e no topo do artigo, o
   título "Assunto — complemento" aparece em duas partes: o assunto como sempre, e o complemento na
   linha de baixo, sem o travessão, na fonte do texto, sem negrito, em `--ink-2`, a dois terços do
@@ -363,6 +364,11 @@ Referência: aba "Artigo" do protótipo.
   (D46, como o da gaveta da home), num painel tingido, com a lupa que o amplia, o nome e "Ver o
   livro"; em tela baixa ele encolhe. Com ele, o cartão do fim do artigo some no desktop; no celular,
   fica no fim do artigo, como antes.
+- **Atalhos de teclado** (D50): Espaço leva à próxima seção e Shift + Espaço à anterior (depois da
+  última, o Espaço rola a página como sempre); T volta ao topo (o botão do canto); ← e → abrem o
+  artigo anterior e o próximo; ? mostra a lista. Um "Atalhos ?" discreto embaixo do progresso do
+  sumário lateral (só com mouse e teclado) abre o cartão com a lista e a opção de desligar os
+  atalhos. Quietos com o foco num campo, botão, bloco de código ou lousa, e com um diálogo aberto.
 - **Notas laterais**: notas de rodapé do Markdown viram notas na margem direita da folha do corpo
   quando ela tem espaço (a folha, e não a tela, decide, D33) e abrem no lugar, ao tocar no número,
   nas outras.

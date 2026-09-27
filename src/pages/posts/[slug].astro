@@ -11,10 +11,10 @@ import { render } from "astro:content";
 import Base from "../../layouts/Base.astro";
 import BarraLeitura from "../../components/BarraLeitura.astro";
 import TopoArtigo from "../../components/TopoArtigo.astro";
+import Atalhos from "../../components/Atalhos.astro";
 import Sumario from "../../components/Sumario.astro";
 import RodapeArtigo from "../../components/RodapeArtigo.astro";
 import Comentarios from "../../components/Comentarios.astro";
-import MarcaDagua from "../../components/MarcaDagua.astro";
 import { AUTOR, COMENTARIOS_LIGADOS } from "../../data/site";
 import { getPosts, getVizinhos, resumir, secoesDoSumario, type Post } from "../../lib/posts";
 import { dataIso, dataPorExtenso, descricaoCurta, semMd } from "../../lib/formato";
@@ -105,9 +105,8 @@ const jsonLd = {
         <Sumario secoes={temSumario ? secoes : []} variante="lateral" minutos={resumo.minutos} livro={livroDoPost} />
       )}
       <div class="artigo-principal">
-      <TopoArtigo post={resumo} />
+      <TopoArtigo post={resumo} livro={livroDoPost} />
       <div class="folha artigo-folha">
-        {livroDoPost && <MarcaDagua livro={livroDoPost} />}
         <div class="artigo-corpo">
           <div class="prose" data-corpo>
             {temSumario && <Sumario secoes={secoes} variante="recolhivel" />}
@@ -134,6 +133,7 @@ const jsonLd = {
     </div>
   </article>
   {temSumario && <Sumario secoes={secoes} variante="folha" livro={livroDoPost} cor={resumo.cor} />}
+  <Atalhos />
 </Base>
 
 <script>

@@ -29,8 +29,8 @@
 
 /*
  * Contêiner: as lousas e os blocos largos se medem pela largura da folha, sem depender de vw. A folha
- * corta a marca d'água do livro (D39) no canto de baixo, atrás de "anterior / próximo"; `clip`, e não
- * `hidden`, para as lousas fixas (sticky) continuarem funcionando.
+ * corta o que passa da borda; `clip`, e não `hidden`, para as lousas fixas (sticky) continuarem
+ * funcionando.
  */
 .artigo-folha {
   position: relative;
@@ -39,11 +39,6 @@
   container-type: inline-size;
   min-width: 0;
   padding: 40px var(--margem-folha) 44px;
-}
-
-.artigo-folha > .marca-dagua {
-  right: -90px;
-  bottom: -80px;
 }
 
 .artigo-corpo {
