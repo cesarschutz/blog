@@ -548,6 +548,14 @@
     if (proximo && folha) nomear(folha, "artigo-novo");
     else if (folha) anims.push(folha.animate([{ opacity: 0.55, transform: "scale(0.99)" }, { opacity: 1, transform: "none" }], { duration: 500, delay: 150, easing: QUART_OUT, fill: "backwards" }));
     if (lateral && !mesmoLivro) anims.push(lateral.animate([{ opacity: 0, transform: "translateX(" + (proximo ? 16 : -16) + "px)" }, { opacity: 1, transform: "none" }], { duration: 400, delay: 180, easing: QUART_OUT, fill: "backwards" }));
+    // O desenho do topo começa com a folha quase pousada (revisão 8): no próximo, com ~95% do caminho feito;
+    // no anterior, quando a de cima já está saindo. Antes, esperava o fim da troca (cs:chegou, ~0,85s), e o
+    // painel ficava um bloco vazio por 0,5s. Uma animação vazia marca o tempo, no relógio das outras.
+    if (folha && folha.querySelector("[data-desenhar-topo]")) {
+      var pouso = raiz.animate([], { duration: proximo ? 420 : 300 });
+      anims.push(pouso);
+      pouso.finished.then(function () { dispatchEvent(new CustomEvent("cs:pousou")); }, function () {});
+    }
     vt.ready.then(function () {
       anims.forEach(function (a) { a.currentTime = 0; });
       if (proximo) {
