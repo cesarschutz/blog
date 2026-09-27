@@ -27,7 +27,7 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
 
 ## B. Ajustes que o Cesar identificou (e bugs que eu achar)
 
-- [~] **B01.** _(agente Pilha)_ Categorias: ao trocar de livro, depois que o livro novo vai para o lugar, a tela treme.
+- [x] **B01.** _(agente Pilha; 2463a34)_ Categorias: ao trocar de livro, depois que o livro novo vai para o lugar, a tela treme.
 - [x] **B02.** _(agente Simples; 3774b8f, bc72023)_ Livro ampliado: "Ler o artigo" e "Abrir o próximo livro" com o ponteiro de link e
       sublinhado no hover, como na primeira página; "Ver o livro inteiro" com o sublinhado mais forte
       no hover.
@@ -44,7 +44,7 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
 - [~] **B07.** _(agente Listas)_ "Todos os artigos": muito espaço vazio no painel com os livros ao lado do texto; em
       tela menor (livros embaixo do texto), pior. Repensar essa tela.
 - [~] **B08.** _(agente Livros e visor)_ Livros de lado (3D): uma **linha branca** entre a capa e a lombada. Arrumar em todos.
-- [~] **B09.** _(agente Pilha)_ Troca de livro em Categorias: a animação toda mais profissional, fluida e realista,
+- [x] **B09.** _(agente Pilha; 2463a34)_ Troca de livro em Categorias: a animação toda mais profissional, fluida e realista,
       principalmente o fim (o livro novo no lugar, sem tremer). Junto com o B01.
 - [~] **B10.** _(agente Trocas)_ De `/categories/` para uma categoria e de volta: a animação do livro está feia.
       Melhorar ou tirar.
@@ -133,6 +133,17 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
   ícone `</>`; em cards, lista e destaque, o sinal `</>` "código-fonte" na linha da data; só o ícone na
   gaveta e em anterior / próximo; na busca, "código-fonte" na linha do resultado; no livro ampliado,
   "Código no GitHub ↗". Skill `post` atualizada. [diagnosticos/C03.md](diagnosticos/C03.md).
+
+- **B01 e B09** (2463a34): a tremida eram cinco coisas somadas: a troca da pilha caía na transição
+  padrão do `base.css` (a página nova subia 18px e a antiga 6px, a tela duplicada por meio segundo); o
+  giro do palco por CSS brigando com o GSAP; as fontes da página nova ainda não prontas no
+  `pagereveal`; a pilha da página antiga diferente da nova em 1 a 8px (atrito, arredondamento, hover);
+  e as imagens do livro esmaecendo uma na outra. Agora é uma sequência só (~2,3s, antes ~3,7s): o
+  aberto gira até a lombada e voa num arco até a pilha; o escolhido é puxado e, com o embalo, segue até
+  o palco, fica em pé e gira; o livro 3D voa numa camada própria com sombra; a página antiga já toma a
+  cor e o texto do livro novo; a nova abre a 70% do giro e o continua (tipo `pilha`, sem deslocar a
+  raiz, esperando as fontes). A página do livro é buscada quando o mouse para 90ms sobre ele. No
+  celular e no tablet, a troca de antes. [diagnosticos/B01-B09.md](diagnosticos/B01-B09.md).
 
 ## Para o Cesar decidir
 
