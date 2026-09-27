@@ -971,7 +971,9 @@ const rotulo = (l: Livro) => {
         topoInicial.style.viewTransitionName = nomeDoTopo;
       }
       const livroDoTopo = topoInicial?.querySelector(".livro-3d");
-      gsap.set([ol, ...ol.querySelectorAll(".deitado"), ...(livroDoTopo ? [livroDoTopo] : [])], { clearProps: "all" });
+      // Só o que o GSAP pôs (clearProps "all" apagava o style inteiro: as cores e as medidas de cada
+      // livro iam junto, e a pilha voltava vazia).
+      gsap.set([...ol.querySelectorAll(".deitado"), ...(livroDoTopo ? [livroDoTopo] : [])], { clearProps: "transform,transformOrigin,opacity" });
       if (estiloDaPilha) ol.setAttribute("style", estiloDaPilha);
       else ol.removeAttribute("style");
     });
