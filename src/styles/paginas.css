@@ -341,10 +341,12 @@
   -webkit-box-orient: vertical;
 }
 
+/* Sem sublinhado parado (D52, B02): ele aparece só no hover, como no sumário (.sum). */
 .cap .ler {
   font-family: var(--font-ui);
   font-weight: 600;
   font-size: 0.8em;
+  text-decoration: none;
 }
 
 .cap .quando {
@@ -425,4 +427,25 @@
   font-family: var(--font-livro-italico);
   font-style: italic;
   line-height: 1.4;
+}
+
+/* Sem sublinhado parado (D52, B02): ele aparece só no hover, como no sumário (.sum). */
+.proximo a {
+  text-decoration: none;
+}
+
+/*
+ * O link sob o mouse (D52, B02): o cursor já é sempre pointer (script, marcarHover); aqui só o
+ * sublinhado, para "Ler o artigo" e "Abrir o próximo livro" ficarem como o sumário (sem risco
+ * parado, com risco no hover). "Ver o livro inteiro" (.colofao) já vem sublinhado sempre: o hover
+ * só reforça o traço.
+ */
+.cap a.sob-o-mouse,
+.proximo a.sob-o-mouse {
+  text-decoration-line: underline;
+}
+
+.colofao a.sob-o-mouse {
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--livro-destaque);
 }
