@@ -171,6 +171,8 @@ for (const [tema, p] of Object.entries({ claro, escuro })) {
   conferir(grupo, "texto do visor / véu (88%) sobre o fundo", p["veu-tinta"], misturar(p.paper, p.veu, 88), 4.5, true);
   conferir(grupo, "contador do visor (78%) / véu", misturar(p["veu-tinta"], misturar(p.paper, p.veu, 88), 22), misturar(p.paper, p.veu, 88), 4.5, true);
   conferir(grupo, "letras da marca / capa da marca", p["marca-letra"], p.marca, 4.5, true);
+  // A pauta do miolo do caderno (A01, D52): decorativa, só avisa; o mínimo é para ela não sumir no papel.
+  conferir(`Caderno da marca, tema ${tema} (decorativo, 1,5:1)`, "pauta / papel do caderno", p["caderno-pauta"], p["marca-letra"], 1.5, false);
 }
 
 // ---------- relatório ----------

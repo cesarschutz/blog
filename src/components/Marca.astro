@@ -8,9 +8,11 @@
  * ícones de public/, todos gerados por scripts/marca.mjs.
  *
  * O livro abre (D41): ao passar o mouse (ou focar o link), a capa entreabre 38° sobre as páginas, só
- * com CSS. Para isso o livro são duas camadas do mesmo traçado: atrás, as páginas; na frente, a capa.
+ * com CSS. Para isso o livro são duas camadas: atrás, o miolo do caderno (a página creme e pautada de
+ * src/lib/caderno.ts, A01, D52); na frente, a capa.
  */
 import { BLOG_DESCENDENTE, BLOG_SVG, BLOG_VIEWBOX, MARCA_SVG, MARCA_VIEWBOX } from "../lib/marca";
+import { MIOLO_SVG } from "../lib/caderno";
 import { url } from "../lib/url";
 
 interface Props {
@@ -29,7 +31,7 @@ const Elemento = semLink ? "span" : "a";
   style={`--descendente:${BLOG_DESCENDENTE}`}
 >
   <span class="marca-livro-3d" aria-hidden="true">
-    <svg class="marca-livro marca-miolo" viewBox={MARCA_VIEWBOX} focusable="false" set:html={`<rect class="marca-pagina" x="3" y="1.2" width="36" height="49.6" rx="2"/>${MARCA_SVG}`} />
+    <svg class="marca-livro marca-miolo" viewBox={MARCA_VIEWBOX} focusable="false" set:html={MIOLO_SVG} />
     <svg class="marca-livro marca-capa-3d" viewBox={MARCA_VIEWBOX} focusable="false" set:html={MARCA_SVG} />
   </span>
   {
@@ -80,16 +82,17 @@ const Elemento = semLink ? "span" : "a";
     overflow: visible;
   }
 
-  /* Atrás, só as páginas; na frente, a capa, presa pela lombada (à esquerda). */
-  .marca-miolo :global(:is(.marca-capa, .marca-dobra, .marca-letras)) {
+  /*
+   * Atrás, o miolo do caderno (A01, D52; src/lib/caderno.ts): a página creme e pautada, a mesma do
+   * caderno da abertura, igual nos dois temas. Na frente, a capa, presa pela lombada (à esquerda). No
+   * cabeçalho, pequeno, só a pauta, sem as entrelinhas e com o traço mais fino.
+   */
+  .marca-linha .marca-miolo :global(.caderno-entrelinha) {
     display: none;
   }
 
-  .marca-miolo :global(.marca-pagina) {
-    fill: var(--paper-hi);
-    stroke: var(--rule);
-    stroke-width: 1px;
-    vector-effect: non-scaling-stroke;
+  .marca-linha .marca-miolo :global(:is(.caderno-pagina, .caderno-pauta)) {
+    stroke-width: 0.5px;
   }
 
   .marca-capa-3d {

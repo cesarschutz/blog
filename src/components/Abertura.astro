@@ -22,6 +22,7 @@
  * HTML por baixo (leitor de tela e busca não percebem a abertura).
  */
 import { MARCA_SVG, MARCA_VIEWBOX } from "../lib/marca";
+import { MIOLO_SVG } from "../lib/caderno";
 
 interface Props {
   modo: "estante" | "caderno";
@@ -37,7 +38,7 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     modo === "caderno" && (
       <div class="abertura-caderno">
         <span class="caderno-contra" />
-        <span class="caderno-miolo"><i /><i /><i /><i /><i /></span>
+        <svg class="caderno-miolo" viewBox={MARCA_VIEWBOX} focusable="false" set:html={MIOLO_SVG} />
         <div class="caderno-capa">
           <svg class="capa-frente" viewBox={MARCA_VIEWBOX} focusable="false" set:html={MARCA_SVG} />
           <span class="capa-verso" />
@@ -400,9 +401,10 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
   }
 
   /*
-   * O caderno "cs" (como o do protótipo 02): a contracapa, um pouco mais escura, com a sombra; o miolo
-   * pautado, recuado; e a capa, presa pela lombada, com a marca na frente e o lado de dentro liso atrás.
-   * No papel dos livros (--marca-letra), igual nos dois temas, como os livros (D39).
+   * O caderno "cs" (como o do protótipo 02): a contracapa, um pouco mais escura, com a sombra; o miolo,
+   * a página creme e pautada de caderno (src/lib/caderno.ts, a mesma da marca, A01, D52), recuada; e a
+   * capa, presa pela lombada, com a marca na frente e o lado de dentro liso atrás. No papel dos livros
+   * (--marca-letra), igual nos dois temas, como os livros (D39).
    */
   .abertura-caderno {
     position: absolute;
@@ -422,20 +424,11 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     box-shadow: 0 14px 22px -12px rgb(0 0 0 / 0.45);
   }
 
+  /* O miolo é o mesmo da marca do cabeçalho e da home (src/lib/caderno.ts): creme e pautado. */
   .caderno-miolo {
-    inset: 4% 4% 4% 8%;
-    display: grid;
-    align-content: start;
-    gap: 9%;
-    padding: 20% 12% 0;
-    border-radius: 2px 5px 5px 2px;
-    background: var(--marca-letra);
-    box-shadow: inset 3px 0 4px -2px rgb(0 0 0 / 0.25);
-  }
-
-  .caderno-miolo i {
-    height: 1px;
-    background: color-mix(in oklab, var(--marca) 26%, transparent);
+    width: 100%;
+    height: 100%;
+    overflow: visible;
   }
 
   .caderno-capa {

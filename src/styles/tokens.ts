@@ -33,6 +33,7 @@ export const TOKENS = [
   "lousa-mistura",
   "marca",
   "marca-letra",
+  "caderno-pauta",
   "veu",
   "veu-tinta",
   "caneta",
@@ -71,6 +72,9 @@ export const claro: Paleta = {
   // Como os livros, é igual nos dois temas.
   marca: "#2D4B46",
   "marca-letra": "#F2EDE2", // o papel dos livros (PAPEL em docs/capas/cores.js)
+  // A pauta do miolo do caderno "cs" (A01, D52; src/lib/caderno.ts), no papel dos livros. Igual nos dois
+  // temas: a tinta dos livros (TINTA_PAPEL) a 22% sobre o papel, como no protótipo do caderno.
+  "caderno-pauta": "#BEBAB0",
   // Véu do visor de imagens e do livro ampliado (D33): escurece a página por trás, nos dois temas.
   veu: "#0C0F11",
   "veu-tinta": "#EEF1EE",
@@ -107,6 +111,7 @@ export const escuro: Paleta = {
   "lousa-mistura": "#0B6F58",
   marca: "#2D4B46",
   "marca-letra": "#F2EDE2",
+  "caderno-pauta": "#BEBAB0",
   veu: "#050708",
   "veu-tinta": "#EEF1EE",
   caneta: "#8FA8FF",
