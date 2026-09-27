@@ -199,15 +199,22 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
   carregando, a chegada curta); e três novidades — tema claro e cards como padrão, válido por 3 dias;
   o destaque dentro da grade da home (paginação de 12 lugares, o destaque valendo dois); o
   código-fonte dos artigos (campo `codigo`, pílula no topo, sinal nas listas). Detalhe item a item em
-  `docs/decisoes.md` (D52). **Faltam o C04 e o C05** (ver "Próximos passos").
+  `docs/decisoes.md` (D52). **Falta o C05** (ver "Próximos passos").
+
+- **C04 (a caneta em preto como identidade), 27/09/2026, commitado em seis lotes, sem push:** a regra
+  **a caneta preta desenha; a azul marca** (o preto é a tinta de sempre, `--ink`; o azul fica só no
+  estado). Ícones de data, tempo e código-fonte à mão; o rascunho do mouse (menu, colchete da lista,
+  círculo da paginação) em preto; GitHub e LinkedIn com as marcas oficiais; o botão de tema e a busca
+  redesenhados sem perder a animação; a caneca da série Java com a fumaça que se escreve de novo no
+  hover; e a assinatura embaixo de "Schutz" na home. Nada no rodapé. Detalhe em `docs/decisoes.md`
+  (D52) e no relatório `docs/ajustes-d52/diagnosticos/C04.md`.
 
 ## Próximos passos
 
-000. **D52:** faltam o **C04** (a caneta em preto como identidade — menu, GitHub e LinkedIn, botão de
-     tema, busca, data e tempo de leitura, a caneca da série Java, a assinatura sob "Schutz") e, por
-     último, o **C05** (a papelaria de estudo: post-it, ficha do livro, a cola dos atalhos e o
-     carimbo das fontes) — **sem commit**: o Cesar avalia os dois no localhost antes de decidir. As
-     perguntas que a pesquisa e os diagnósticos deixaram estão em "Perguntas abertas".
+000. **D52:** falta o **C05** (a papelaria de estudo: post-it, ficha do livro, a cola dos atalhos e o
+     carimbo das fontes) — **sem commit**: o Cesar avalia no localhost antes de decidir. O **C04** (a
+     caneta em preto como identidade) entrou nesta rodada. As perguntas que a pesquisa e os
+     diagnósticos deixaram estão em "Perguntas abertas".
 
 00. **Caneta (D48):** os outros 25 posts recebem a caneta na revisão (`.claude/revisao-posts.md`,
     coluna "Caneta"), pela skill `caneta`, com a proposta aprovada pelo Cesar antes de aplicar.
@@ -250,6 +257,17 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
    os títulos curtos da papelaria de estudo ("Neste artigo", "Do livro", "Atalhos do teclado")?
 9. D52, pesquisa: um campo novo no frontmatter com a data em que as fontes do post foram conferidas,
    para um carimbo "conferidas em \<data\>" no fim do artigo, ao lado de "Fontes"?
+10. D52, C04: o traço leve dos links do rodapé continua azul (D49). Mantém, passa a preto como o
+    cabeçalho, ou tira ("ali é profissionalismo")?
+11. D52, C04: o colchete da lista e o círculo da paginação foram para o preto, além do que foi pedido
+    (coerência com "todo rascunho do mouse é preto"). Ficam assim, ou voltam ao azul?
+12. D52, C04: o visto dentro do calendário ("o dia marcado") dá cara de bloquinho, mas pode ser lido
+    como "artigo já lido". Mantém, ou o calendário fica sem marca?
+13. D52, C04: o traço curto embaixo do "blog", no hover da marca do cabeçalho, é opcional e discreto.
+    Fica ou sai?
+14. D52, C04: a assinatura entra uns 5s depois de abrir a home (depois da estante, do desenho do
+    destaque e do aceno). Cedo demais, ou tarde? Se parecer tarde, pode vir junto com o aceno. No
+    celular (390px), a home não mostra o nome grande, então não há assinatura ali.
 
 ## Riscos a acompanhar
 

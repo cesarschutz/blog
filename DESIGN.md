@@ -397,6 +397,12 @@ mexer na página. O site não tem som.
   item ativo do menu, botão "Ler artigo", seletor Lista/Cards, item atual da paginação e
   foco. A navegação do cabeçalho e do rodapé, as pílulas e os botões secundários ficam na tinta e só
   ganham o azul ao passar o mouse. Não serve de decoração.
+- **Caneta preta (D52, C04):** não é token novo, é a tinta de sempre (`on-surface`; no escuro, a
+  tinta clara). É o traço de quem fez a página — ícones (calendário, relógio, `</>`, lupa, lua, sol),
+  o rascunho do mouse (hover do menu, o círculo dos perfis, da paginação e dos botões redondos, o
+  colchete da lista), os contornos a lápis do botão de tema e da busca, e a assinatura. O azul-tinta e
+  a caneta azul (`--caneta`) continuam só no estado: a seção e a página atuais, a caneta da leitura, as
+  marcações do texto (D48). Nada no rodapé, que segue com o traço leve azul da D49.
 - **Avisos:** Nota, Dica (também a linha adicionada no diff), Importante, Atenção e Cuidado (também
   a linha removida): fio fino na cor do aviso e fundo só levemente tingido (briefing §5.3), nunca a
   caixa pintada da cor inteira.
@@ -540,6 +546,15 @@ têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm can
 - **Chip de categoria:** quadradinho na cor do livro e nome tingido (34% de tinta no claro, 50% de
   branco no escuro). Leva à página da categoria.
 - **Botão "Ler artigo":** pílula azul-tinta com seta, texto em `on-primary`.
+- **Caneta preta da interface** (D52, C04): a caneta preta desenha, a azul marca. Os ícones de
+  calendário, relógio, código-fonte, lupa, lua e sol saem de `src/lib/traco.ts`, na tinta a 78%, traço
+  1,7, **parados** (aparecem dezenas de vezes por tela: identidade no desenho, sem movimento); GitHub
+  e LinkedIn são as marcas oficiais, preenchidas e em preto (as regras das duas proíbem redesenhar o
+  logotipo). O campo de busca tem 210 × 40 fixos, com o contorno traçado à mão a lápis (tinta a 42%)
+  que escurece no hover, e a lupa é da caneta preta; abaixo de 1100px, o botão redondo da busca e, no
+  celular, o do menu, levam o mesmo contorno e o círculo da caneta no hover (os dois traços do menu
+  cruzam num X). Abaixo de 360px, a marca cai para 16px e os botões para 36px, com 6px entre eles (o
+  "blog" não encosta mais na busca).
 - **Marca d'água do livro** (D39): o desenho da capa (ou o emblema da revista), grande, na cor do
   livro com 10% de opacidade, cortado pela borda da folha, no topo das páginas de categoria e de
   série e no canto de baixo do painel do título do artigo (D50; menor no celular). Entra como máscara
@@ -563,7 +578,10 @@ têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm can
 - **Código-fonte do artigo** (D52, C03): no topo do artigo, uma pílula de link ("Código deste artigo
   no GitHub", borda `rule`, fundo da folha, texto e ícones em azul-tinta, 36px de altura, a seta
   externa que anda 2px no hover); nas listas e nos cards, o ícone `</>` (15px, traço 1,8, tinta 2) com
-  "código-fonte" na letra da linha de meta; na gaveta e em anterior/próximo, só o ícone.
+  "código-fonte" na letra da linha de meta, e, abaixo de 340px de linha, só o ícone (com
+  "código-fonte no GitHub" para o leitor de tela); na gaveta e em anterior/próximo, só o ícone. O sinal
+  `</>` é desenhado à mão em `traco.ts` (`codigoDeCaneta`, D52, C04), com as pontas vivas e as retas
+  levemente embarrigadas.
 - **Caneta do caderno** (D48; guia em `docs/marcacoes.md`, catálogo em
   `docs/prototipos/caneta-do-caderno.html` e, no dev, `/amostra/caneta/`): 20 tipos de marcação,
   todos **estáticos** (já vêm feitos, como se o texto tivesse sido riscado antes de publicar). Traço
@@ -647,7 +665,11 @@ Cada post tem uma ilustração, e os diagramas seguem o mesmo traço:
 mais leve (`baseFrequency` 0.02, `scale` 2). O Rough.js não é usado. Regras técnicas, recortes e
 validação: skill `desenho` e `node scripts/desenho/validar.mjs`. **Custo:** o filtro é refeito a
 cada quadro enquanto o traço se move, então todo desenho animado passa por um trace de performance
-(CPU 4×) antes de ser aceito. Se pesar, o plano B é gravar o tremor na geometria, no build.
+(CPU 4×) antes de ser aceito. Se pesar, o plano B é gravar o tremor na geometria, no build. **Exceção
+(D52, C04):** os ícones de interface (`src/lib/traco.ts`) já usam esse plano B — o tremor está gravado
+na geometria, sem o filtro, porque são muitos e pequenos e aparecem dezenas de vezes por tela. A caneca
+das ilustrações da série Java tem a classe `fumaca` (D52, C04): no hover, a fumaça de agora sobe e some
+e uma nova se escreve embaixo, sem tocar o emblema da revista (que não anima).
 
 ### Movimento
 
@@ -749,7 +771,19 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   degrau. **O aceno do fim da abertura** (D52, B13): depois que o desenho do destaque termina
   (`cs:desenhou`), o caderno do cabeçalho e o caderno grande da abertura abrem e fecham juntos, uma
   vez, com a mesma curva do hover (a classe `acena`); o que estiver sob o mouse continua aberto. Sem
-  desenho no destaque, o aceno vem 0,4s depois do fim da abertura.
+  desenho no destaque, o aceno vem 0,4s depois do fim da abertura. **No hover do cabeçalho** (D52,
+  C04), junto com a capa que entreabre, um traço curto de caneta preta passa embaixo do "blog" (só ali;
+  o livro não se risca).
+- **A assinatura** (D52, C04, `src/lib/traco.ts`, `assinaturaDeCaneta`): na home, embaixo de
+  "Schutz", um traço de largura variável (contorno preenchido; entra fino, engrossa no meio e sobe
+  afinando no fim) — o único traço grande do site, identidade e não enfeite. Com a abertura, espera
+  escondido e é escrito da esquerda para a direita em 0,9s, depois que os cadernos terminam de acenar
+  (B13); sem a abertura (andando pelo site), já está pronto; com movimento reduzido, aparece pronto. No
+  celular (390px), a home não mostra o nome grande, então não há assinatura ali.
+- **A caneca** (D52, C04, classe `fumaca`): no hover do card, do item da lista ou do topo de um post
+  da série Java, a fumaça de agora sobe e some pelo alto e uma nova se escreve de baixo (1,15s, a
+  segunda 0,12s depois), uma vez; com movimento reduzido, a fumaça fica parada. O emblema da revista (a
+  xícara da capa e da lombada) não anima: é livro, não caneta.
 - **Abertura do site** (D51, `Abertura.astro`, GSAP; protótipos 01 e 02 de
   `docs/prototipos/animacoes/`): toca **ao chegar de fora e ao recarregar** (o script do `<head>`
   decide), sem movimento reduzido; um clique ou tecla pula. Na home, **a estante se monta (A3)**: a
@@ -818,14 +852,18 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   enche até virar o miolo do sol (MorphSVG, 0,4s, `power2.inOut`) e os raios giram de -30° a 0° e se
   escrevem de dentro para fora (DrawSVG, 0,22s, 0,03s entre eles); voltando ao claro, os raios
   recolhem (0,15s) e a lua é "mordida" de volta. No hover, o sol gira 22° e a lua balança 14° (0,5s).
-  A faixa de luz da estante em repouso saiu (D44).
+  A faixa de luz da estante em repouso saiu (D44). **Desde a D52 (C04):** o botão perdeu a borda de
+  CSS (um contorno a lápis no lugar dela) e a lua e o sol são desenhos da caneta preta (`luaDeCaneta`,
+  `solDeCaneta`, `traco.ts`); a lua passou a correr no sentido do miolo (sem o rabisco fino do meio) e
+  o círculo do hover fica desenhado durante a troca, em vez de se apagar e se escrever de novo.
 - **A caneta que navega** (D49, `traco.css`, `src/lib/traco.ts`): a seção atual do menu é sublinhada
   por um traço de caneta (2,2px, azul-tinta), torto de um jeito próprio em cada item e sempre igual;
   na troca de página, ele desliza de um item para o outro (View Transition `traco-do-menu`, 0,42s);
-  sem par, se escreve (0,38s) ou some pela direita (0,2s). O mouse escreve um traço leve (1,5px, 50%)
-  da esquerda para a direita (0,32s) e, ao sair, ele termina de passar e some pela direita (0,22s). Os
-  links do rodapé usam o mesmo traço leve. No celular, o traço da seção atual se escreve quando a
-  folha do menu termina de descer. A lupa inclina 14° no hover, a tecla ⌘K afunda 1,5px por 120ms
+  sem par, se escreve (0,38s) ou some pela direita (0,2s). No menu do cabeçalho, o mouse escreve um
+  traço leve **preto** (1,5px, 55%, D52, C04) da esquerda para a direita (0,32s) e, ao sair, ele
+  termina de passar e some pela direita (0,22s); os links do rodapé continuam com o mesmo traço leve
+  **azul**, como antes da D52 (ali é a navegação de sempre, não a caneta nova). No celular, o traço da
+  seção atual se escreve quando a folha do menu termina de descer. A lupa inclina 14° no hover, a tecla ⌘K afunda 1,5px por 120ms
   quando é usada e o campo dá um toque (98,5% para 100%) quando a busca nasce dele. No rodapé, os
   arcos do RSS se escrevem a partir do ponto, um depois do outro (0,18s cada).
 - **Caneta da leitura** (D45, `BarraLeitura.astro`): o traço do progresso corre sobre o fio do
@@ -862,10 +900,11 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   é uma tinta só que escorre de um botão para o outro (D49): a borda da frente corre (0,2s,
   `power2.in`) e a de trás alcança (0,28s, `power3.out`); o texto troca de cor no meio (0,16s).
 - **A caneta que marca** (D49, com mouse ou foco; `traco.css`): no hover de um artigo da lista, um
-  colchete na margem esquerda se escreve de cima para baixo (0,34s) e, ao sair, some por baixo (0,2s);
-  nos números da paginação e no GitHub e no LinkedIn do cabeçalho, um círculo à mão (uma volta e 8%,
-  0,42s, `power2.inOut`) que some pela ponta ao sair (0,2s). As setas de "Anteriores" e "Mais
-  artigos" avançam 3px no hover e, no clique, saem pela frente e voltam por trás (0,32s).
+  colchete **preto** (D52, C04) na margem esquerda se escreve de cima para baixo (0,34s) e, ao sair,
+  some por baixo (0,2s); nos números da paginação e no GitHub e no LinkedIn do cabeçalho, um círculo
+  **preto** à mão (D52, C04; uma volta e 8%, 0,42s, `power2.inOut`) que some pela ponta ao sair (0,2s).
+  As setas de "Anteriores" e "Mais artigos" avançam 3px no hover e, no clique, saem pela frente e
+  voltam por trás (0,32s).
 - **O ícone de tag inclina** (D52, B11) no hover ou no foco: 6° no cartão de `/tags/`, 8° na pílula
   (`PilulaTag`), 0,35 a 0,45s; parado com movimento reduzido.
 - Toda animação respeita `prefers-reduced-motion`: tudo aparece no estado final, sem prender a

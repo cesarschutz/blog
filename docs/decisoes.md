@@ -1714,9 +1714,44 @@ nada muda.
     anterior/próximo; na busca, "código-fonte" na linha do resultado (metadado novo do Pagefind); no
     livro ampliado, "Ler o artigo → · Código no GitHub ↗". A skill `post` ganhou a regra de quando e
     como preencher o campo.
-  - **B14 e C04 (a caneta em preto como identidade) continuam além do controle:** B14 entrou nesta
-    rodada; **C04 fica em andamento** (outra sessão continua, com a pesquisa e as sugestões de
-    `docs/ajustes-d52/pesquisa.md` como ponto de partida).
+  - **C04** (`1881e62`, `a32985a`, `8b38e51`, `b054b9a`, `aa8c961`, `43fa97d`): identidade da caneta —
+    **a caneta preta desenha; a azul marca**. O preto é a tinta de sempre (`--ink`; no escuro, a tinta
+    clara); o azul (`--caneta`) fica só no estado: a seção e a página atuais, a caneta da leitura, as
+    marcações da D48. Todo traço novo sai de `src/lib/traco.ts` (semente pelo texto, Catmull-Rom, sem
+    filtro), gerado no build, com `currentColor` ou tokens e sem `id`; com movimento reduzido, todo
+    traço aparece pronto. Por lote: (1, `1881e62`) o calendário (bloquinho com argolas e o dia
+    marcado), o relógio e o `</>` desenhados à mão, na tinta a 78%, traço 1,7, parados — aparecem
+    dezenas de vezes por tela, então nada de movimento; de quebra, o sinal do código-fonte ficou preso
+    ao tempo de leitura e, abaixo de 340px de linha, passou a mostrar só o ícone (o título do card
+    voltou a alinhar). (2, `a32985a`) o traço do hover do menu do cabeçalho em preto (a seção atual
+    segue azul); GitHub e LinkedIn com as marcas oficiais preenchidas, em preto (as regras das duas
+    proíbem redesenhar o logotipo), com o círculo à mão do hover também preto; o colchete da lista e o
+    círculo da paginação passam a preto, por coerência com "todo rascunho do mouse é preto". (3,
+    `8b38e51`) o botão de tema sem borda de CSS: um contorno a lápis (tinta a 42%) que a caneta cobre
+    no hover, com a lua e o sol desenhados à mão (`luaDeCaneta`, `solDeCaneta`); a animação da troca
+    segue a mesma (MorphSVG, DrawSVG, o espalhar em círculo da D42, o botão na primeira pintura), com
+    dois acertos: a lua corre no sentido do miolo (sem o rabisco fino de antes) e o círculo do hover
+    fica desenhado durante a troca. (4, `b054b9a`) a busca com o contorno à mão a lápis (210 × 40
+    fixos, para o traço não esticar) que escurece no hover, e a lupa à caneta (o Flip e o ⌘K seguem);
+    os botões redondos do cabeçalho (busca até 1100px, menu no celular) com o mesmo contorno, e os dois
+    traços do menu viram um X de caneta; abaixo de 360px, a marca cai para 16px e os botões para 36px
+    (a marca pedia 184px e sobravam 155, e a busca ficava espremida a 32px sobre o "blog"). (5,
+    `aa8c961`) a assinatura: um traço de largura variável embaixo de "Schutz" (contorno preenchido,
+    `assinaturaDeCaneta`), o único traço grande do site — na home com abertura, escrito da esquerda
+    para a direita em 0,9s depois do aceno dos cadernos (B13); sem abertura, já pronta; e um traço
+    curto opcional embaixo do "blog" no hover da marca do cabeçalho. (6, `43fa97d`) a caneca das
+    ilustrações da série Java: no hover do card, da lista ou do topo do artigo, a fumaça de agora sobe
+    e some pelo alto e uma nova se escreve de baixo (classe `fumaca`, 1,15s), sem tocar o emblema da
+    revista (que é livro, não caneta). Sem caneta: o rodapé (pedido do Cesar, "ali é profissionalismo",
+    o traço azul dos links da D49 continua), o corpo do texto e código (caneta azul da D48), os botões
+    cheios, tags e chips, e os livros, capas e a marca "cs" (desenho e tipografia próprios, `CAPAS.md`).
+  - **Alternativas descartadas (C04):** a busca como "linha de caderno" (deixava o campo menos óbvio);
+    GitHub e LinkedIn redesenhados à mão (contraria as regras das duas marcas); a assinatura por
+    máscara com DrawSVG (pede `id`; o recorte de um traço quase horizontal já basta); o contorno da
+    busca redesenhado no hover (movimento demais num campo muito usado — ficou só o escurecer).
+  - **C05 (a identidade de papelaria) continua além do controle:** B14 e C04 entraram nesta rodada
+    (C04 com a pesquisa e as sugestões de `docs/ajustes-d52/pesquisa.md` como ponto de partida); C05
+    fica em andamento, sem commit, aguardando o Cesar avaliar (`docs/ajustes-d52/controle.md`).
 - **Pesquisa (agente Pesquisa, `docs/ajustes-d52/pesquisa.md`):** levantamento do showcase do GSAP
   (tudo gratuito desde a 3.13), da ordem de pintura das View Transitions, de princípios de movimento
   com número (Material "fade through", Emil Kowalski, Josh Comeau, os limites de resposta da

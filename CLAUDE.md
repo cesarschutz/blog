@@ -43,6 +43,7 @@ Cesar acompanhar. Ele revisa tudo no fim.
   Um `git status` comum já regrava o `.git/index` de lá. Ao delegar para subagentes, repasse essa regra.
 - Antes de instalar qualquer biblioteca, proponha e espere o OK. Registre a decisão em `docs/decisoes.md`.
 - Cores só por tokens CSS (`var(--ink)`, `var(--cat)`…). Nada de hex solto em componente ou SVG.
+- Ícone novo de interface: função em `src/lib/traco.ts`, na caneta preta, nunca SVG solto (D52, C04).
 - Toda animação respeita `prefers-reduced-motion`: com ele ligado, tudo aparece no estado final,
   sem prender a tela.
 - JavaScript só onde há interação (estante, gaveta, busca, lousas, apresentação, lista/cards, menu de
@@ -54,7 +55,7 @@ Cesar acompanhar. Ele revisa tudo no fim.
   topo do artigo, D51; a ficha dos atalhos, o hover do livro ampliado (o `:hover` nativo se perde na
   pilha 3D), a preferência de tema e de modo válida por 3 dias (o script anti-piscada do `<head>`), o
   aceno dos dois cadernos no fim da abertura da home e a caneta que escreve o fio do cabeçalho quando
-  a página demora, D52).
+  a página demora, a assinatura da home e a fumaça da caneca no hover, D52).
   Artigo sem esses componentes funciona sem JS (as marcações da caneta são estáticas).
 - Fontes servidas pelo próprio site (`@fontsource`). Nunca Google Fonts nem CDN em produção.
 - Para verificar o blog no navegador (visual, console, performance), use sempre o MCP
@@ -204,7 +205,9 @@ src/plugins/             Markdown: avisos, notas laterais, apresentação, tabel
 src/lib/                 posts, formatos, busca (Pagefind), código (Expressive Code), PDF, estante
                          (livros), livros-svg (desenhos e ícones), livro-3d (medidas do livro aberto),
                          marca (traçado da marca, gerado), caderno (miolo do caderno "cs", D52),
-                         tags-svg (ícones das tags, D52)
+                         tags-svg (ícones das tags, D52), traco (traços e ícones à caneta: menu,
+                         colchete, círculo, rasura, ondinha, ícones de data, tempo, código, lupa, lua,
+                         sol, contornos dos botões e a assinatura, D52, C04)
 src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, apresentação)
 src/scripts/tema.ts      tema: o botão do cabeçalho alterna claro e escuro (D39)
 scripts/                 contraste, links, apresentacao, og, copiar-katex, desenho/, bench-busca/,

@@ -173,6 +173,10 @@ livro aparece na estante e na lateral, mesmo sem artigos; o número de artigos, 
   "Ler artigo" (pílula com seta, texto em `--sobre-acento`), seletor Lista/Cards, item atual do
   sumário (texto e barra), título do card ou da linha ao passar o mouse, foco. As cores das
   categorias continuam nos livros, nos chips e nos desenhos.
+- **A caneta preta desenha; a azul marca** (D52, C04): o preto (a tinta de sempre) é o traço de quem
+  fez a página — ícones, contornos e o rascunho do mouse; o azul continua só no estado (o que é
+  clicável e a leitura). Na abertura da home, a assinatura embaixo de "Cesar Schutz" é o **único
+  traço grande do site**.
 - **Desenhos com palco**: cada ilustração fica num painel tingido pela cor da categoria
   (`color-mix` da cor com 11% sobre a superfície no claro, 20% no escuro). As áreas preenchidas do
   desenho usam a mesma cor do painel, o traço fica um pouco mais grosso (×1,2) e o preenchimento de
