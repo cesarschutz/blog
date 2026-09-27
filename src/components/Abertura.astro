@@ -153,9 +153,19 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
       // Aberto por um instante (a capa chega aos 38° em ~0,5s) e fecha com a volta do hover.
       setTimeout(() => marcas.forEach((m) => m.classList.remove("acena")), 750);
     };
-    if (document.querySelector("[data-desenhar] svg.ilustracao")) {
-      addEventListener("cs:desenhou", () => setTimeout(acenar, 150), { once: true });
-    } else addEventListener("cs:aberto", () => setTimeout(acenar, 400), { once: true });
+    // Espera o desenho do destaque só se ele estiver à vista quando a estante assenta; abaixo da dobra
+    // (tela baixa, celular) o desenho só começa quando o leitor rola, e o aceno vem logo depois da estante.
+    const desenho = document.querySelector<HTMLElement>("[data-desenhar] svg.ilustracao");
+    addEventListener(
+      "cs:aberto",
+      () => {
+        const r = desenho?.getBoundingClientRect();
+        if (r && r.top < innerHeight * 0.9 && r.bottom > 0) {
+          addEventListener("cs:desenhou", () => setTimeout(acenar, 150), { once: true });
+        } else setTimeout(acenar, 400);
+      },
+      { once: true },
+    );
   }
 
   /* ---------- A3: a estante se monta (home) ---------- */
