@@ -15,57 +15,57 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
 
 ## A. Ajustes das últimas animações (D51)
 
-- [ ] **A01.** O caderno da abertura das outras telas abre **branco por dentro**: deixar como no
+- [x] **A01.** _(agente Abertura; bc01200)_ O caderno da abertura das outras telas abre **branco por dentro**: deixar como no
       protótipo (`docs/prototipos/animacoes/`), papel creme com pauta de caderno. O mesmo no caderno da
       marca quando abre na home (o grande do painel e o pequeno do cabeçalho, no hover): miolo creme e
       pautado, profissional.
-- [ ] **A02.** Troca de tela "mesa de cards": os cartões da página nova aparecem **antes** de os da
+- [~] **A02.** _(agente Trocas)_ Troca de tela "mesa de cards": os cartões da página nova aparecem **antes** de os da
       antiga sumirem (mais evidente de uma tag para outra, mas acontece em outras trocas). Resolver.
-- [ ] **A03.** Artigo → próximo (rolado para baixo): a folha antiga some devagar e fica um pedaço dela
+- [~] **A03.** _(agente Trocas)_ Artigo → próximo (rolado para baixo): a folha antiga some devagar e fica um pedaço dela
       em cima que a nova não cobre. Voltar (anterior) está bom. Melhorar o avançar.
-- [ ] **A04.** No escuro, as imagens ficam **brancas** ao abrir (visor). Arrumar.
+- [~] **A04.** _(agente Livros e visor)_ No escuro, as imagens ficam **brancas** ao abrir (visor). Arrumar.
 
 ## B. Ajustes que o Cesar identificou (e bugs que eu achar)
 
-- [ ] **B01.** Categorias: ao trocar de livro, depois que o livro novo vai para o lugar, a tela treme.
-- [ ] **B02.** Livro ampliado: "Ler o artigo" e "Abrir o próximo livro" com o ponteiro de link e
+- [~] **B01.** _(agente Pilha)_ Categorias: ao trocar de livro, depois que o livro novo vai para o lugar, a tela treme.
+- [~] **B02.** _(agente Simples)_ Livro ampliado: "Ler o artigo" e "Abrir o próximo livro" com o ponteiro de link e
       sublinhado no hover, como na primeira página; "Ver o livro inteiro" com o sublinhado mais forte
       no hover.
-- [ ] **B03.** Anterior / próximo (teclado e botões) em **ordem cronológica global**, a mesma de
+- [~] **B03.** _(agente Simples)_ Anterior / próximo (teclado e botões) em **ordem cronológica global**, a mesma de
       "Todos os artigos", sem importar o livro.
-- [ ] **B04.** "Neste artigo" chega marcado (risco, "V" e a última seção selecionada): sempre chegar
+- [~] **B04.** _(agente Artigo)_ "Neste artigo" chega marcado (risco, "V" e a última seção selecionada): sempre chegar
       zerado.
-- [ ] **B05.** "Neste artigo" sem o marca-texto na cor do livro: a caneta azul do cabeçalho (o traço
+- [~] **B05.** _(agente Artigo)_ "Neste artigo" sem o marca-texto na cor do livro: a caneta azul do cabeçalho (o traço
       do progresso no fio), a linha lateral dos "V" em azul e a seção atual **sublinhada à caneta
       azul**, como o traço do menu (Categorias, Séries…). Menos cor do livro repetida.
-- [ ] **B06.** "?" abre a busca (em qualquer tela): a busca só com ⌘K / Ctrl+K; "?" só abre os
+- [~] **B06.** _(agente Artigo)_ "?" abre a busca (em qualquer tela): a busca só com ⌘K / Ctrl+K; "?" só abre os
       atalhos, e só no artigo. O painel de atalhos está feio: no celular, pode ser centrado com o
       fundo escurecido; na tela grande, uma entrada elegante (sem cobrir tudo).
-- [ ] **B07.** "Todos os artigos": muito espaço vazio no painel com os livros ao lado do texto; em
+- [~] **B07.** _(agente Listas)_ "Todos os artigos": muito espaço vazio no painel com os livros ao lado do texto; em
       tela menor (livros embaixo do texto), pior. Repensar essa tela.
-- [ ] **B08.** Livros de lado (3D): uma **linha branca** entre a capa e a lombada. Arrumar em todos.
-- [ ] **B09.** Troca de livro em Categorias: a animação toda mais profissional, fluida e realista,
+- [~] **B08.** _(agente Livros e visor)_ Livros de lado (3D): uma **linha branca** entre a capa e a lombada. Arrumar em todos.
+- [~] **B09.** _(agente Pilha)_ Troca de livro em Categorias: a animação toda mais profissional, fluida e realista,
       principalmente o fim (o livro novo no lugar, sem tremer). Junto com o B01.
-- [ ] **B10.** De `/categories/` para uma categoria e de volta: a animação do livro está feia.
+- [~] **B10.** _(agente Trocas)_ De `/categories/` para uma categoria e de volta: a animação do livro está feia.
       Melhorar ou tirar.
-- [ ] **B11.** Tags: cartões mais bonitos; **um ícone por tag**, no padrão dos desenhos das capas, com
+- [~] **B11.** _(agente Listas)_ Tags: cartões mais bonitos; **um ícone por tag**, no padrão dos desenhos das capas, com
       o processo para tag nova já pedindo o ícone; na página de uma tag, o ícone grande como marca
       d'água no painel do topo, que hoje está mal aproveitado (como o de "Todos os artigos").
-- [ ] **B12.** Abertura da home: com o mouse sobre a estante, aparecem as legendas dos livros (as do
+- [x] **B12.** _(agente Abertura; e950bfc)_ Abertura da home: com o mouse sobre a estante, aparecem as legendas dos livros (as do
       hover da home). Na abertura, não.
-- [ ] **B13.** Fim da abertura da home: depois do desenho do destaque, o caderno do cabeçalho e o
+- [x] **B13.** _(agente Abertura; 3ac42db, c6addd8)_ Fim da abertura da home: depois do desenho do destaque, o caderno do cabeçalho e o
       caderno grande abrem um pouco e fecham, **os dois juntos** (como no hover), uma vez.
-- [ ] **B14.** Lentidão (rede, CPU, memória): deixar o site fluido e evitar engasgos; um carregando,
+- [~] **B14.** _(agente Trocas)_ Lentidão (rede, CPU, memória): deixar o site fluido e evitar engasgos; um carregando,
       ou algo do tipo, quando for demorar.
 
 ## C. Novidades
 
-- [ ] **C01.** Primeira visita: tema **claro** e artigos em **cards**. A escolha do leitor fica
+- [~] **C01.** _(agente Simples)_ Primeira visita: tema **claro** e artigos em **cards**. A escolha do leitor fica
       guardada no navegador por **3 dias**; depois disso, volta ao padrão (claro e cards).
-- [ ] **C02.** Destaque da home: em cards, **um cartão maior ocupando duas colunas** sempre que houver
+- [~] **C02.** _(agente Home)_ Destaque da home: em cards, **um cartão maior ocupando duas colunas** sempre que houver
       pelo menos duas lado a lado; com uma coluna só, o primeiro cartão em destaque; em lista (tela
       grande e pequena), destaque no primeiro da lista.
-- [ ] **C03.** Código-fonte dos artigos (repositório `cesarschutz/blog-exemplos`): mostrar que o
+- [~] **C03.** _(agente Home)_ Código-fonte dos artigos (repositório `cesarschutz/blog-exemplos`): mostrar que o
       artigo tem fonte em todo lugar onde ele aparece (cards e lista, com elegância) e o link no
       painel do topo do artigo. Hoje: o do Jackson
       (`https://github.com/cesarschutz/blog-exemplos/tree/main/jackson-filtros-mascarando-cartao`).
@@ -87,7 +87,17 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
 
 ## Registro por item
 
-(Cada item ganha aqui, ao fechar: causa ou decisão, o que mudou, como foi conferido e o commit.)
+- **A01** (bc01200): o miolo do caderno vira um desenho só (`src/lib/caderno.ts`), papel dos livros com
+  pauta na página inteira (token `--caderno-pauta`, igual nos dois temas), na marca do cabeçalho, na
+  grande da home e no caderno da abertura. No cabeçalho, metade das linhas (senão vira escada cinza).
+  Relatório: [diagnosticos/A01.md](diagnosticos/A01.md).
+- **B12** (e950bfc): durante a abertura a estante não responde ao mouse nem ao foco, e o clique nela
+  pula a abertura; a estante viva só começa no `cs:aberto`. De quebra: o fim da abertura piscava (a
+  opacidade dos livros saía antes do `data-abertura`). [diagnosticos/B12.md](diagnosticos/B12.md).
+- **B13** (3ac42db, c6addd8): `cs:desenhou` no fim do desenho do destaque; os dois cadernos ganham a
+  classe `acena` (o mesmo movimento do hover) juntos, uma vez. Se o destaque estiver abaixo da dobra
+  quando a estante assenta (tela baixa, celular), o aceno vem logo depois da estante, sem esperar o
+  leitor rolar. [diagnosticos/B13.md](diagnosticos/B13.md).
 
 ## Para o Cesar decidir
 
