@@ -176,16 +176,17 @@ const rotulo = (l: Livro) => {
    * - O mouse em cima (ou o foco do teclado): o livro sai 8px, e o bloco de cima vai junto 1,5px, pelo
    *   atrito; volta sem mola. Parado um instante em cima, o livro já busca a página dele.
    * - Trocar de livro (clique, toque ou Enter), numa sequência só, sem paradas:
-   *   1. o texto do topo e os artigos esmaecem (a página vai mudar) e, se a página estiver rolada, ela
-   *      volta ao topo (a pilha fica parada ao lado);
+   *   1. os artigos esmaecem (a página vai mudar; o título do topo fica, D52) e, se a página estiver
+   *      rolada, ela volta ao topo (a pilha fica parada ao lado);
    *   2. o livro aberto gira até mostrar a lombada, sai do palco subindo e voa num arco até a pilha,
    *      deitando-se no caminho, e é pousado em cima dela (a mão desce devagar no fim), no espaço que
    *      a pilha guarda para ele; a sombra cresce enquanto ele está no ar e some no pouso;
-   *   3. o escolhido é puxado: os de cima vão junto nos primeiros milímetros, pelo atrito; quando a
-   *      ponta dele passa do centro de massa deles, o bloco tomba sobre a quina, com a ponta apoiada no
-   *      livro de baixo; quando ele sai inteiro, o bloco cai deitado no lugar, com um baque;
+   *   3. o escolhido é puxado (logo antes do pouso, ANTECIPA): os de cima vão junto nos primeiros
+   *      milímetros, pelo atrito; quando a ponta dele passa do centro de massa deles, o bloco tomba
+   *      sobre a quina, com a ponta apoiada no livro de baixo; quando ele sai inteiro, o bloco cai
+   *      deitado no lugar, com um baque;
    *   4. sem parar (com o embalo do puxão), ele segue até o palco do topo, se pondo em pé no caminho;
-   *      o palco já toma a cor dele, e o texto da página nova aparece (tirado do HTML dela);
+   *      o palco já toma a cor dele, e o título velho dá lugar ao da página nova (tirado do HTML dela);
    *   5. ele gira até ficar de lado, e a página nova abre nesse giro: ela o continua de onde parou
    *      (`cs-pilha-chegada`, lido pelo script da ordem), e só os artigos chegam, esmaecendo.
    *   Os livros voam numa camada própria (`.voo-da-pilha`), por cima da página e da pilha e por baixo
