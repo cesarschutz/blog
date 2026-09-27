@@ -7,9 +7,9 @@
  *   texto solto entre elas ganha um nome de transição (`sai-N`, classe `sai`), e o que a página nova
  *   precisa saber vai para a sessão (`cs-troca`). O clique navega na hora, sem esperar.
  * - Na página que chega (`pagereveal`): as folhas antigas caem da mesa (cada uma escorrega para baixo
- *   com um giro pequeno, pelo peso, de baixo para cima) e os textos antigos sobem um pouco e somem. As
- *   folhas novas, que são a página de verdade, chegam do fundo, em perspectiva e um pouco tortas, e
- *   pousam no lugar, de cima para baixo (o fim do A2); os textos novos sobem por uma máscara, uma linha
+ *   com um giro pequeno, pelo peso, de baixo para cima) e os textos antigos sobem um pouco e somem. Só
+ *   então (a mesa fica limpa antes, D52) as folhas novas, que são a página de verdade, chegam do fundo,
+ *   em perspectiva e um pouco tortas, e pousam no lugar, de cima para baixo (o fim do A2); os textos novos sobem por uma máscara, uma linha
  *   curta. Voltando pelo histórico, as novas vêm da frente. Só o que está à vista anima.
  * - Os livros com o mesmo nome nas duas páginas voam de um lugar ao outro, fora das folhas (só o livro
  *   viaja, protótipo 07); a folha deles só esmaece. Livro sem par cai com a folha dele.
@@ -33,7 +33,12 @@
   var QUART_OUT = "cubic-bezier(0.25, 1, 0.5, 1)";
   var CUBIC_IN = "cubic-bezier(0.32, 0, 0.67, 0)";
   var QUAD_IN = "cubic-bezier(0.55, 0.085, 0.68, 0.53)";
+  // A queda: acelera desde o começo (quad), para a folha sair do lugar logo e não ficar parada na mesa.
+  var QUEDA = "cubic-bezier(0.11, 0, 0.5, 0)";
   var reduzido = matchMedia("(prefers-reduced-motion: reduce)");
+  // A mesa fica limpa antes (D52, A02): as folhas novas só começam a chegar quando as antigas já caíram
+  // (a última some em 0,3s); antes, as novas apareciam atrás das antigas ainda paradas.
+  var SAIDA = 0.26;
   var celular = function () { return innerWidth <= 640; };
   var rnd = function (a, b) { return a + Math.random() * (b - a); };
   var FOLHA = ".folha, [data-unidade]";
@@ -208,21 +213,28 @@
 
   /**
    * As folhas novas chegam do fundo e pousam (o fim do A2); os textos sobem por uma máscara. `t0` em
-   * segundos. Devolve quando a última termina (ms).
+   * segundos. Devolve quando a última termina (ms). Com `opcoes.anims`, as animações criadas vão para
+   * essa lista (a troca as recomeça juntas quando a View Transition fica pronta).
    */
   function chegar(novas, opcoes) {
     opcoes = opcoes || {};
     var W = innerWidth, H = innerHeight, cel = celular();
     var m = document.getElementById("conteudo");
     var passo = Number(opcoes.passo || (m && m.dataset.chegadaPasso) || 0.085);
-    // Com muitas folhas, a última sai no máximo 0,55s depois da primeira (a troca fecha em ~1,5s).
-    passo = Math.min(passo, 0.55 / Math.max(1, novas.length - 1));
+    // Com muitas folhas, a última sai no máximo 0,5s depois da primeira (a troca fecha em ~1,6s).
+    passo = Math.min(passo, 0.5 / Math.max(1, novas.length - 1));
     var t0 = opcoes.t0 || 0, fim = 0;
+    var anims = opcoes.anims || [];
+    var animar = function (el, quadros, tempo) {
+      var a = el.animate(quadros, tempo);
+      anims.push(a);
+      return a;
+    };
     var desenho = document.querySelector("[data-desenhar-topo]");
     novas.forEach(function (u, i) {
       var el = u.el, t = (t0 + i * passo) * 1000;
       if (u.texto) {
-        el.animate(
+        animar(el,
           [{ transform: "translateY(18px)", opacity: 0, clipPath: "inset(0 0 100% 0)" }, { transform: "none", opacity: 1, clipPath: "inset(0 0 0% 0)" }],
           { duration: 550, delay: t + 50, easing: QUART_OUT, fill: "backwards" },
         );
@@ -230,10 +242,10 @@
         return;
       }
       if (u.soEsmaece) {
-        // A folha que recebe o livro que voa esmaece já no começo: o livro novo aparece com ela, e tem de
-        // estar inteiro quando pousa (0,7s).
-        if (u.comLivro) t = 0;
-        el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 450, delay: t, easing: "linear", fill: "backwards" });
+        // A folha que recebe o livro que voa esmaece antes das outras: o livro novo aparece com ela, e tem
+        // de estar inteiro quando pousa (0,7s).
+        if (u.comLivro) t = 120;
+        animar(el, [{ opacity: 0 }, { opacity: 1 }], { duration: 450, delay: t, easing: "linear", fill: "backwards" });
         fim = Math.max(fim, t + 450);
         return;
       }
@@ -245,35 +257,40 @@
         de = cel ? T3(0, (-H * 0.45) / k, z, 22, 0, -2) : T3((W * 0.3) / k, (-H * 0.5) / k, z, 16, -30, rnd(-5, -2));
       }
       var dur = cel ? 850 : 1000;
-      // A folha do desenho do artigo: ele começa quando ela está quase pousada (protótipo 08).
-      if (desenho && el.contains(desenho)) setTimeout(function () { dispatchEvent(new CustomEvent("cs:pousou")); }, t + dur * 0.6);
-      el.animate([{ transform: de, transformOrigin: origem }, { transform: PARADO, transformOrigin: origem }], { duration: dur, delay: t, easing: QUART_OUT, fill: "backwards" });
-      el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 280, delay: t, easing: "linear", fill: "backwards" });
+      // A folha do desenho do artigo: ele começa quando ela está quase pousada (protótipo 08). Uma animação
+      // vazia marca o tempo, para andar junto com as outras (e recomeçar com elas).
+      if (desenho && el.contains(desenho)) animar(el, [], { duration: t + dur * 0.6 }).finished.then(function () { dispatchEvent(new CustomEvent("cs:pousou")); }, function () {});
+      animar(el, [{ transform: de, transformOrigin: origem }, { transform: PARADO, transformOrigin: origem }], { duration: dur, delay: t, easing: QUART_OUT, fill: "backwards" });
+      animar(el, [{ opacity: 0 }, { opacity: 1 }], { duration: 280, delay: t, easing: "linear", fill: "backwards" });
       fim = Math.max(fim, t + dur);
     });
     return fim;
   }
 
-  /** As folhas antigas caem da mesa (de baixo para cima); os textos antigos sobem e somem. */
+  /**
+   * As folhas antigas caem da mesa (de baixo para cima, numa cascata curta); os textos antigos sobem e
+   * somem. Tudo some em 0,3s, antes de as folhas novas aparecerem (SAIDA): a queda acelera logo (o
+   * peso) e a folha some na segunda metade dela, ainda caindo.
+   */
   function cair(d, comPar) {
     var H = innerHeight, fim = 0, giro = {};
     // A folha que tinha o livro que voou cai primeiro e some logo (senão, fica o buraco dele à vista).
     var donos = {};
     (d.livros || []).forEach(function (l) { if (comPar[l.n] && l.u >= 0) donos["sai-" + l.u] = true; });
-    // Toda a cascata cabe em 0,16s, por mais folhas que a página tenha.
-    var passo = Math.min(45, 160 / Math.max(1, d.sai.length - 1));
+    // Toda a cascata cabe em 0,06s, por mais folhas que a página tenha.
+    var passo = Math.min(25, 60 / Math.max(1, d.sai.length - 1));
     d.sai.slice().reverse().forEach(function (s, j) {
       var alvo = "::view-transition-old(" + s.n + ")";
       if (s.texto) {
-        animarPseudo(alvo, [{ transform: "none", opacity: 1 }, { transform: "translateY(-10px)", opacity: 0 }], { duration: 200, delay: j * passo * 0.8, easing: CUBIC_IN });
+        animarPseudo(alvo, [{ transform: "none", opacity: 1 }, { transform: "translateY(-10px)", opacity: 0 }], { duration: 180, delay: j * passo * 0.8, easing: CUBIC_IN });
         return;
       }
       var dono = donos[s.n];
       var t = dono ? 0 : j * passo, rz = rnd(-7, 7), o = "50% " + s.oy + "px";
       giro[s.n] = { t: t, rz: rz };
-      animarPseudo(alvo, [{ transform: PARADO, transformOrigin: o }, { transform: T3(0, H * 0.9, 0, -18, 0, rz), transformOrigin: o }], { duration: 480, delay: t, easing: CUBIC_IN });
-      animarPseudo(alvo, [{ opacity: 1 }, { opacity: 0 }], { duration: 200, delay: t + (dono ? 120 : 180), easing: QUAD_IN });
-      fim = Math.max(fim, t + 480);
+      animarPseudo(alvo, [{ transform: PARADO, transformOrigin: o }, { transform: T3(0, H * 0.8, 0, -18, 0, rz), transformOrigin: o }], { duration: 380, delay: t, easing: QUEDA });
+      animarPseudo(alvo, [{ opacity: 1 }, { opacity: 0 }], { duration: 150, delay: t + (dono ? 40 : 90), easing: QUAD_IN });
+      fim = Math.max(fim, t + 380);
     });
     return { fim: fim, giro: giro };
   }
@@ -333,14 +350,20 @@
     if (propria) {
       // A página anima a chegada dela (Categorias); até o script dela chegar, as folhas esperam escondidas.
       novas.forEach(function (u) { u.el.style.opacity = "0"; });
-      window.csChegada = { novas: novas, inicio: performance.now() };
+      window.csChegada = { novas: novas, inicio: performance.now(), t0: SAIDA };
       setTimeout(function () {
         if (!window.csChegada) return;
         novas.forEach(function (u) { u.el.style.opacity = ""; });
         window.csChegada = null;
       }, 1800);
     }
-    var fimDaChegada = propria ? 0 : chegar(novas, { volta: volta, t0: 0.2 });
+    // As folhas novas ficam escondidas desde o primeiro quadro, mas o relógio delas começa junto com a
+    // queda das antigas (vt.ready, que pode vir alguns quadros depois deste evento).
+    var anims = [];
+    var fimDaChegada = propria ? 0 : chegar(novas, { volta: volta, t0: SAIDA, anims: anims });
+    var comecou = vt.ready.then(function () {
+      anims.forEach(function (a) { a.currentTime = 0; });
+    }, function () {});
 
     vt.ready.then(function () {
       var r = cair(d, comPar);
@@ -350,12 +373,12 @@
         var g = r.giro["sai-" + l.u];
         if (!g) return;
         var alvo = "::view-transition-old(" + l.n + ")";
-        animarPseudo(alvo, [{ transform: PARADO }, { transform: T3(0, innerHeight * 0.9, 0, -18, 0, g.rz) }], { duration: 480, delay: g.t, easing: CUBIC_IN });
-        animarPseudo(alvo, [{ opacity: 1 }, { opacity: 0 }], { duration: 200, delay: g.t + 180, easing: QUAD_IN });
+        animarPseudo(alvo, [{ transform: PARADO }, { transform: T3(0, innerHeight * 0.8, 0, -18, 0, g.rz) }], { duration: 380, delay: g.t, easing: QUEDA });
+        animarPseudo(alvo, [{ opacity: 1 }, { opacity: 0 }], { duration: 150, delay: g.t + 90, easing: QUAD_IN });
       });
     }, function () {});
     // A chegada acabou quando a troca acabou e a última folha nova pousou (o desenho do artigo espera isso).
-    var pousou = new Promise(function (r) { setTimeout(r, fimDaChegada); });
+    var pousou = comecou.then(function () { return new Promise(function (r) { setTimeout(r, fimDaChegada); }); });
     Promise.all([vt.finished.catch(function () {}), pousou]).then(avisarChegada);
   });
 

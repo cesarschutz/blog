@@ -29,7 +29,7 @@ const livros = (await montarLivros()).filter((l) => !l.serie);
 
   type Unidade = { el: HTMLElement; texto: boolean };
   type Troca = { unidades: () => Unidade[]; chegar: (novas: Unidade[], opcoes?: { t0?: number }) => number };
-  const janela = window as unknown as { csTroca?: Troca; csChegada?: { novas: Unidade[]; inicio: number } | null };
+  const janela = window as unknown as { csTroca?: Troca; csChegada?: { novas: Unidade[]; inicio: number; t0?: number } | null };
 
   async function desfilar(novas: Unidade[], t0: number, curto = false) {
     const gsap = await carregarGsap();
@@ -103,7 +103,8 @@ const livros = (await montarLivros()).filter((l) => !l.serie);
     const chegada = janela.csChegada;
     if (chegada) {
       janela.csChegada = null;
-      void desfilar(chegada.novas, Math.max(0, 0.2 - (performance.now() - chegada.inicio) / 1000));
+      // O desfile começa quando as folhas da página anterior já caíram (troca.js, D52 A02).
+      void desfilar(chegada.novas, Math.max(0, (chegada.t0 ?? 0.2) - (performance.now() - chegada.inicio) / 1000));
     }
     // Entrando direto: o caderno da abertura avisa quando o papel começa a sair.
     addEventListener("cs:abertura-chega", () => janela.csTroca && void desfilar(janela.csTroca.unidades(), 0, true), { once: true });
