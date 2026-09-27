@@ -940,6 +940,19 @@ const rotulo = (l: Livro) => {
     padding: 22px 18px 18px;
   }
 
+  /*
+   * Com o painel embaixo do conteúdo (abaixo de 1100px, ComPainel), a lombada puxada some na borda da
+   * folha (D52). Sem isso, no celular ela passava da borda da tela, o documento ficava mais largo que
+   * ela (390 → 568px) e o navegador abortava a troca de página ("Viewport size changed"): a página nova
+   * entrava num corte seco. O clip só vale para o lado (a pilha que tomba e a sombra da folha ficam
+   * inteiras) e não cria rolagem. Na tela grande, a lombada passa da borda do painel de propósito.
+   */
+  @media (max-width: 1099.98px) {
+    .painel-home {
+      overflow-x: clip;
+    }
+  }
+
   .titulo-bloco {
     margin: 0 0 14px;
     font-family: var(--font-livro);
