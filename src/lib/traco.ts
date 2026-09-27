@@ -301,3 +301,56 @@ export function pilulaDeCaneta(largura: number, altura: number, texto: string) {
   p.push([x0 + 14, 0.6 + j(0.2)]);
   return curva(p);
 }
+
+/** Pontos ao longo da curva Catmull-Rom que passa por `p` (`porTrecho` em cada trecho). */
+function amostrar(p: Ponto[], porTrecho = 16) {
+  const fora: Ponto[] = [];
+  for (let i = 0; i < p.length - 1; i++) {
+    const p0 = p[i - 1] ?? p[i];
+    const p1 = p[i];
+    const p2 = p[i + 1];
+    const p3 = p[i + 2] ?? p2;
+    for (let s = 0; s < porTrecho; s++) {
+      const t = s / porTrecho;
+      const t2 = t * t;
+      const t3 = t2 * t;
+      const eixo = (k: 0 | 1) =>
+        0.5 * (2 * p1[k] + (-p0[k] + p2[k]) * t + (2 * p0[k] - 5 * p1[k] + 4 * p2[k] - p3[k]) * t2 + (-p0[k] + 3 * p1[k] - 3 * p2[k] + p3[k]) * t3);
+      fora.push([eixo(0), eixo(1)]);
+    }
+  }
+  fora.push(p[p.length - 1]);
+  return fora;
+}
+
+/**
+ * A assinatura da home (C04, D52): o único traço grande do site, embaixo do sobrenome, numa caixa de
+ * 260 × 22. É o traço de uma caneta de verdade, com a largura que muda (a técnica do perfect-freehand):
+ * entra fino, engrossa com a pressão no meio, desce um nada e sobe no fim, afinando até sumir, como
+ * quem assina. Sai como um contorno preenchido (a linha do meio, deslocada para os dois lados pela
+ * metade da largura em cada ponto).
+ */
+export function assinaturaDeCaneta(texto: string) {
+  const r = sorteio(sementeDe(texto));
+  const guia = (
+    [
+      [3, 9.2], [34, 12], [84, 13.4], [138, 12.8], [186, 10.6], [222, 7.6], [245, 4.4], [257, 1.8],
+    ] as Ponto[]
+  ).map(([x, y], i) => [x + (i ? (r() - 0.5) * 1.6 : 0), y + (r() - 0.5) * 1.1] as Ponto);
+  const meio = amostrar(guia);
+  const n = meio.length;
+  const largura = (t: number) => 0.5 + 4.1 * Math.pow(Math.sin(Math.PI * Math.min(1, t * 1.06)), 0.7) * (1 - 0.4 * t);
+  const esquerda: Ponto[] = [];
+  const direita: Ponto[] = [];
+  for (let i = 0; i < n; i++) {
+    const a = meio[Math.max(0, i - 1)];
+    const b = meio[Math.min(n - 1, i + 1)];
+    const l = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+    const [tx, ty] = [(b[0] - a[0]) / l, (b[1] - a[1]) / l];
+    const w = largura(i / (n - 1)) / 2;
+    esquerda.push([meio[i][0] - ty * w, meio[i][1] + tx * w]);
+    direita.push([meio[i][0] + ty * w, meio[i][1] - tx * w]);
+  }
+  const volta = esquerda.concat(direita.reverse());
+  return `M${volta.map(([x, y]) => `${f(x)} ${f(y)}`).join(" L")} Z`;
+}

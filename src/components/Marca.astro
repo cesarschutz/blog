@@ -12,18 +12,27 @@
  * src/lib/caderno.ts, A01, D52); na frente, a capa. No fim da abertura da home, depois do desenho do
  * destaque, o do cabeçalho e o grande acenam juntos, uma vez: a classe `acena` (posta pela
  * Abertura.astro, B13, D52) abre a capa como o hover e, ao sair, ela fecha.
+ *
+ * A caneta preta (C04, D52): na abertura da home, embaixo de "Schutz", a assinatura, o único traço
+ * grande do site (largura que muda, src/lib/traco.ts). Com a abertura, ela é escrita uma vez, quando o
+ * caderno termina de acenar (Abertura.astro, classes `a-escrever` e `escreve`); sem a abertura, já
+ * está pronta. No cabeçalho (`traco`), um traço curto de caneta passa embaixo do "blog" no hover,
+ * junto com a capa que entreabre (o traço leve do menu, traco.css). No rodapé, nada.
  */
 import { BLOG_DESCENDENTE, BLOG_SVG, BLOG_VIEWBOX, MARCA_SVG, MARCA_VIEWBOX } from "../lib/marca";
 import { MIOLO_SVG } from "../lib/caderno";
+import { assinaturaDeCaneta, tracoDeCaneta } from "../lib/traco";
 import { url } from "../lib/url";
 
 interface Props {
   variante?: "linha" | "grande";
   /** Sem link: na abertura da home, que já é a página inicial. */
   semLink?: boolean;
+  /** O traço da caneta embaixo do "blog" no hover (só o cabeçalho, C04). */
+  traco?: boolean;
 }
 
-const { variante = "linha", semLink = false } = Astro.props;
+const { variante = "linha", semLink = false, traco = false } = Astro.props;
 const Elemento = semLink ? "span" : "a";
 ---
 
@@ -40,13 +49,24 @@ const Elemento = semLink ? "span" : "a";
     variante === "grande" ? (
       <span class="marca-texto">
         <span class="marca-nome">
-          <span class="marca-linha-nome">Cesar</span> <span class="marca-linha-nome">Schutz<svg class="marca-blog" viewBox={BLOG_VIEWBOX} role="img" aria-label="blog" set:html={BLOG_SVG} /></span>
+          <span class="marca-linha-nome">Cesar</span> <span class="marca-linha-nome"><span class="sobrenome">Schutz<svg class="assinatura" viewBox="0 0 260 22" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d={assinaturaDeCaneta("Cesar Schutz")} /></svg></span><svg class="marca-blog" viewBox={BLOG_VIEWBOX} role="img" aria-label="blog" set:html={BLOG_SVG} /></span>
         </span>
       </span>
     ) : (
       <span class="marca-texto">
         <span class="marca-nome">Cesar Schutz</span>
-        <svg class="marca-blog" viewBox={BLOG_VIEWBOX} role="img" aria-label="blog" set:html={BLOG_SVG} />
+        {
+          traco ? (
+            <span class="blog-com-traco">
+              <svg class="marca-blog" viewBox={BLOG_VIEWBOX} role="img" aria-label="blog" set:html={BLOG_SVG} />
+              <svg class="traco traco-leve traco-preto" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                <path d={tracoDeCaneta("blog", 5, 0.7)} />
+              </svg>
+            </span>
+          ) : (
+            <svg class="marca-blog" viewBox={BLOG_VIEWBOX} role="img" aria-label="blog" set:html={BLOG_SVG} />
+          )
+        }
       </span>
     )
   }
@@ -193,6 +213,61 @@ const Elemento = semLink ? "span" : "a";
     vertical-align: calc(-0.5em * var(--descendente));
   }
 
+  /*
+   * A assinatura (C04): embaixo do sobrenome, da largura dele e um nada além, na caneta preta. Com a
+   * abertura da home (data-abertura, posto antes da primeira pintura), ela espera escondida até a
+   * Abertura.astro mandar escrever: o recorte abre da esquerda para a direita, como a mão que assina.
+   */
+  .sobrenome {
+    position: relative;
+  }
+
+  .assinatura {
+    position: absolute;
+    left: -0.05em;
+    bottom: 0.01em;
+    width: calc(100% + 0.16em);
+    height: 0.3em;
+    overflow: visible;
+    pointer-events: none;
+    fill: var(--ink);
+  }
+
+  :global(:root[data-abertura="estante"]) .assinatura,
+  .assinatura:global(.a-escrever) {
+    clip-path: inset(-60% 100% -60% -4%);
+  }
+
+  .assinatura:global(.escreve) {
+    animation: assinar 0.9s cubic-bezier(0.5, 0.05, 0.25, 1) both;
+  }
+
+  @keyframes assinar {
+    from {
+      clip-path: inset(-60% 100% -60% -4%);
+    }
+
+    to {
+      clip-path: inset(-60% -4% -60% -4%);
+    }
+  }
+
+  /* O "blog" do cabeçalho: o traço curto da caneta passa embaixo dele no hover (traco.css). */
+  .blog-com-traco {
+    position: relative;
+    display: inline-block;
+    margin-left: 0.3em;
+  }
+
+  .blog-com-traco .marca-blog {
+    margin-left: 0;
+  }
+
+  /* Embaixo da perna do "g", sem cortá-la. */
+  .blog-com-traco :global(.traco) {
+    bottom: -9px;
+  }
+
   .marca-grande:is(:hover, :focus-visible) .marca-capa-3d {
     transform: rotateY(-38deg);
     transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
@@ -201,6 +276,10 @@ const Elemento = semLink ? "span" : "a";
   @media (prefers-reduced-motion: reduce) {
     .marca-capa-3d {
       transition: none;
+    }
+
+    .assinatura:global(.escreve) {
+      animation: none;
     }
 
     .marca:is(:hover, :focus-visible, .acena) .marca-capa-3d {

@@ -144,9 +144,26 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
    * pouco e fecham, juntos e uma vez, com o mesmo movimento do hover (a classe `acena`, Marca.astro).
    * Sem desenho no destaque, logo depois da abertura. Com o mouse já num deles, ele fica aberto: a
    * classe só soma ao hover.
+   *
+   * Quando o caderno fecha, a caneta preta assina embaixo de "Schutz" (C04, D52; Marca.astro): até lá,
+   * a assinatura espera escondida (`a-escrever`). Se o aceno não vier (o desenho não terminou), ela é
+   * escrita mesmo assim, 6s depois da estante.
    */
   function acenoNoFim() {
+    const assinatura = document.querySelector<SVGElement>(".marca-grande .assinatura");
+    assinatura?.classList.add("a-escrever");
+    let assinou = false;
+    const assinar = () => {
+      if (assinou || !assinatura) return;
+      assinou = true;
+      assinatura.classList.remove("a-escrever");
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      assinatura.classList.add("escreve");
+      assinatura.addEventListener("animationend", () => assinatura.classList.remove("escreve"), { once: true });
+    };
     const acenar = () => {
+      // A assinatura começa quando a capa começa a fechar (ela fica aberta 0,75s).
+      setTimeout(assinar, 800);
       if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       const marcas = [...document.querySelectorAll<HTMLElement>(".cabecalho .marca, .marca-grande")];
       for (const m of marcas) m.classList.add("acena");
@@ -159,6 +176,7 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     addEventListener(
       "cs:aberto",
       () => {
+        setTimeout(assinar, 6000);
         const r = desenho?.getBoundingClientRect();
         if (r && r.top < innerHeight * 0.9 && r.bottom > 0) {
           addEventListener("cs:desenhou", () => setTimeout(acenar, 150), { once: true });
