@@ -14,7 +14,8 @@
  * - Os livros com o mesmo nome nas duas páginas voam de um lugar ao outro, fora das folhas (só o livro
  *   viaja, protótipo 07); a folha deles só esmaece. Livro sem par cai com a folha dele.
  * - Artigo anterior e próximo (protótipo 06, "na pilha"): o próximo é pousado por cima do atual, vindo
- *   da direita; o anterior aparece quando o de cima é tirado para a direita. O livro da lateral fica
+ *   da direita, e o atual some embaixo dele antes do pouso; o anterior aparece quando o de cima é tirado
+ *   para a direita. O livro da lateral fica
  *   parado se for o mesmo.
  * - `data-chegada-passo` no <main> muda o intervalo entre as folhas (a tag: desfile direto, 60 ms);
  *   `data-chegada="propria"` deixa a chegada para o script da página (Categorias: desfile e pilha).
@@ -390,14 +391,20 @@
     var sobre = document.querySelector("#conteudo .lateral a.sobre");
     var mesmoLivro = !!d.livro && !!sobre && new URL(sobre.href).pathname === d.livro;
     var proximo = d.lado === "proximo";
+    // As animações da página nova andam no relógio das imagens (recomeçam no vt.ready, como na troca geral).
+    var anims = [];
     if (proximo && folha) nomear(folha, "artigo-novo");
-    else if (folha) folha.animate([{ opacity: 0.55, transform: "scale(0.99)" }, { opacity: 1, transform: "none" }], { duration: 500, delay: 150, easing: QUART_OUT, fill: "backwards" });
-    if (lateral && !mesmoLivro) lateral.animate([{ opacity: 0, transform: "translateX(" + (proximo ? 16 : -16) + "px)" }, { opacity: 1, transform: "none" }], { duration: 400, delay: 180, easing: QUART_OUT, fill: "backwards" });
+    else if (folha) anims.push(folha.animate([{ opacity: 0.55, transform: "scale(0.99)" }, { opacity: 1, transform: "none" }], { duration: 500, delay: 150, easing: QUART_OUT, fill: "backwards" }));
+    if (lateral && !mesmoLivro) anims.push(lateral.animate([{ opacity: 0, transform: "translateX(" + (proximo ? 16 : -16) + "px)" }, { opacity: 1, transform: "none" }], { duration: 400, delay: 180, easing: QUART_OUT, fill: "backwards" }));
     vt.ready.then(function () {
+      anims.forEach(function (a) { a.currentTime = 0; });
       if (proximo) {
-        // o próximo vem da direita, um pouco torto, e é pousado por cima do atual, que some no fim
+        // O próximo vem da direita, um pouco torto, e é pousado por cima do atual. O atual vai para baixo da
+        // pilha enquanto é coberto: afunda um pouco e some antes de o próximo pousar (D52, A03). Antes, ele
+        // ficava inteiro até 0,6s, e o pedaço dele que o próximo não cobre (com a página rolada, o fim do
+        // artigo, acima do topo do novo) sumia devagar no fim.
         animarPseudo("::view-transition-new(artigo-novo)", [{ transform: "translate(" + W * 0.55 + "px, 26px) rotate(3.5deg)" }, { transform: "none" }], { duration: 700, delay: 50, easing: QUART_OUT });
-        animarPseudo("::view-transition-old(artigo-velho)", [{ opacity: 1 }, { opacity: 0 }], { duration: 200, delay: 600, easing: "linear" });
+        animarPseudo("::view-transition-old(artigo-velho)", [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(10px)" }], { duration: 260, delay: 140, easing: "cubic-bezier(0.33, 0, 0.67, 1)" });
       } else {
         // o anterior: o de cima é tirado para a direita e mostra o que estava embaixo
         animarPseudo("::view-transition-old(artigo-velho)", [{ transform: "none" }, { transform: "translate(" + W * 0.6 + "px, 20px) rotate(4deg)" }], { duration: 600, easing: CUBIC_IN });
