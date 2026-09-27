@@ -1,6 +1,8 @@
 ---
 /**
- * Busca (briefing §3): abre com ⌘K, Ctrl+K ou "/"; aceita #tag (as tags do site levam às páginas
+ * Busca (briefing §3): abre com ⌘K ou Ctrl+K (e o botão do cabeçalho), nunca com uma tecla só: o "/"
+ * saiu na B06 (D52), porque em muitos teclados ele é a tecla do "?", que abre os atalhos do artigo
+ * (Atalhos.astro). Aceita #tag (as tags do site levam às páginas
  * delas desde a D33, e não mais à busca);
  * link compartilhável /?q=termo. O motor (Pagefind, D2) e o índice só são baixados quando a busca
  * abre. O índice sai no build (`pagefind --site dist`, no postbuild), então no `npm run dev` a busca
@@ -285,13 +287,9 @@ import { url } from "../lib/url";
   });
 
   document.addEventListener("keydown", (e) => {
-    const digitando = (e.target as HTMLElement).closest("input, textarea, select, [contenteditable]");
-    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+    if ((e.metaKey || e.ctrlKey) && !e.altKey && e.key.toLowerCase() === "k") {
       e.preventDefault();
       dialogo.open ? fechar() : abrir();
-    } else if (e.key === "/" && !digitando && !dialogo.open) {
-      e.preventDefault();
-      abrir();
     }
   });
 

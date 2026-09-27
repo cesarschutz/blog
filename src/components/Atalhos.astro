@@ -1,35 +1,54 @@
 ---
 /**
- * Atalhos de teclado do artigo (D50, pedido do Cesar em 27/09/2026):
+ * Atalhos de teclado do artigo (D50, pedido do Cesar em 27/09/2026; redesenhados na B06 da D52):
  * - Espaço: a próxima seção (o próximo título do texto); Shift + Espaço: a anterior. Depois do último
  *   título (ou antes do primeiro), o Espaço volta a rolar a página como sempre.
  * - T: volta ao topo, pelo botão do canto (VoltarTopo), com a animação e o foco dele.
  * - ← e →: o artigo anterior e o próximo (os links de RodapeArtigo).
- * - ?: mostra ou esconde este cartão.
+ * - ?: mostra ou esconde esta ficha. Só no artigo: a busca abre só com ⌘K / Ctrl+K (Busca.astro). A
+ *   tecla do "?" vale com ou sem o Shift (em muitos teclados, o "/" e o "?" são a mesma tecla, e no
+ *   ABNT2 o "?" também sai com AltGr).
  *
- * Onde aparecem: "Atalhos ?" embaixo do progresso do sumário lateral (Sumario.astro), só com mouse e
- * teclado; ele abre este cartão (popover nativo, que fecha com Esc ou com um clique fora). O cartão tem
- * a opção de desligar os atalhos (WCAG 2.1.4, atalhos de uma tecla só), guardada no navegador
- * (`cs-atalhos`).
+ * A ficha (B06, D52): com o sumário ao lado (≥ 1300px), ela é puxada de trás da folha do sumário, como
+ * uma ficha tirada do fichário, e pousa ao lado dele, na altura do "Atalhos ?" (0,34s; volta para trás
+ * da folha em 0,2s), sem escurecer a página: o texto continua à vista. Sem o sumário ao lado, ela abre
+ * no meio da tela, com a página escurecida. As linhas são a pauta da ficha, e a caneta sublinha o
+ * título quando ela pousa (o traço do menu, traco.ts).
  *
- * Os atalhos ficam quietos com o foco num campo, botão, bloco de código, lousa ou qualquer coisa que use
- * o teclado, com um diálogo aberto (busca, visor, livro ampliado) e com o sumário do celular aberto.
- * Sem JS, nada disso existe (o botão some). Com movimento reduzido, a rolagem é direta.
+ * É um popover nativo (fecha com Esc, com um clique fora e com o ×), com papel de diálogo. Aberta
+ * pelo "?", o foco vai para ela; ao fechar, volta para onde estava. A opção de desligar (WCAG 2.1.4,
+ * atalhos de uma tecla só) desliga todos, o "?" também, e fica guardada no navegador (`cs-atalhos`);
+ * a ficha continua no botão "Atalhos" do sumário.
+ *
+ * Os atalhos ficam quietos com o foco num campo, botão, bloco de código, lousa ou qualquer coisa que
+ * use o teclado, com um diálogo aberto (busca, visor, livro ampliado) e com o sumário do celular
+ * aberto. Sem JS, nada disso existe (os botões somem). Com movimento reduzido, a ficha aparece e some
+ * sem deslizar, e a rolagem é direta.
  */
 import { ICONES } from "../lib/icones";
+import { tracoDeCaneta } from "../lib/traco";
+
+const TITULO = "Atalhos do teclado";
 ---
 
-<div id="atalhos" class="atalhos folha" popover aria-labelledby="atalhos-titulo" data-atalhos>
-  <p class="titulo" id="atalhos-titulo">Atalhos do teclado</p>
-  <dl>
+<div id="atalhos" class="atalhos" popover role="dialog" aria-labelledby="atalhos-titulo" tabindex="-1" data-atalhos data-lugar="meio">
+  <p class="titulo" id="atalhos-titulo">
+    <span class="escrito"
+      >{TITULO}<svg class="traco-titulo" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"
+        ><path d={tracoDeCaneta(TITULO)} /></svg
+      ></span
+    >
+  </p>
+  <dl class="pauta">
     <div><dt><kbd>Espaço</kbd></dt><dd>Próxima seção</dd></div>
     <div><dt><kbd>Shift</kbd> <kbd>Espaço</kbd></dt><dd>Seção anterior</dd></div>
     <div><dt><kbd>T</kbd></dt><dd>Voltar ao topo</dd></div>
     <div><dt><kbd aria-label="seta para a esquerda">←</kbd> <kbd aria-label="seta para a direita">→</kbd></dt><dd>Artigo anterior e próximo</dd></div>
-    <div><dt><kbd>?</kbd></dt><dd>Esta lista</dd></div>
+    <div><dt><kbd>?</kbd></dt><dd>Esta ficha</dd></div>
   </dl>
   <label class="desligar"><input type="checkbox" data-atalhos-desligar /> Desligar os atalhos</label>
-  <button type="button" class="fechar" popovertarget="atalhos" popovertargetaction="hide" aria-label="Fechar">
+  <p class="aviso-desligados" data-atalhos-aviso hidden>Desligados. A ficha continua no botão “Atalhos” do sumário.</p>
+  <button type="button" class="fechar" popovertarget="atalhos" popovertargetaction="hide" aria-label="Fechar os atalhos">
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.fechar} />
   </button>
 </div>
@@ -37,8 +56,10 @@ import { ICONES } from "../lib/icones";
 <script>
   const cartao = document.querySelector<HTMLElement>("[data-atalhos]");
   const desligar = document.querySelector<HTMLInputElement>("[data-atalhos-desligar]");
+  const aviso = document.querySelector<HTMLElement>("[data-atalhos-aviso]");
   if (cartao && desligar) {
     const CHAVE = "cs-atalhos";
+    const raiz = document.documentElement;
     const reduzir = matchMedia("(prefers-reduced-motion: reduce)");
     let ligados = true;
     try {
@@ -46,9 +67,14 @@ import { ICONES } from "../lib/icones";
     } catch {
       // Armazenamento bloqueado: os atalhos ficam ligados nesta página.
     }
-    desligar.checked = !ligados;
+    const mostrarEstado = () => {
+      desligar.checked = !ligados;
+      if (aviso) aviso.hidden = ligados;
+    };
+    mostrarEstado();
     desligar.addEventListener("change", () => {
       ligados = !desligar.checked;
+      mostrarEstado();
       try {
         if (ligados) localStorage.removeItem(CHAVE);
         else localStorage.setItem(CHAVE, "desligados");
@@ -57,9 +83,68 @@ import { ICONES } from "../lib/icones";
       }
     });
 
+    // ---------- onde a ficha abre ----------
+
+    /** O botão "Atalhos ?" da folha do sumário, quando ela está ao lado do texto. */
+    const botaoAoLado = () => {
+      const botao = document.querySelector<HTMLElement>(".lateral .dica-atalhos");
+      return botao && botao.offsetParent ? botao : null;
+    };
+
+    /**
+     * Ao lado do sumário, a ficha pousa à direita da folha dele, com o pé no pé da folha (onde fica o
+     * "Atalhos ?"): medida por baixo, ela não precisa estar à vista para ser posta no lugar. Nunca passa
+     * do cabeçalho (a altura máxima desconta ele). Sem o sumário ao lado, no meio da tela.
+     */
+    function posicionar() {
+      const botao = botaoAoLado();
+      const folha = botao?.closest<HTMLElement>(".folha");
+      if (!botao || !folha) {
+        cartao!.dataset.lugar = "meio";
+        for (const p of ["left", "bottom", "max-height"]) cartao!.style.removeProperty(p);
+        return;
+      }
+      cartao!.dataset.lugar = "ficha";
+      const caixa = folha.getBoundingClientRect();
+      const topo = parseFloat(getComputedStyle(raiz).getPropertyValue("--altura-topo")) || 64;
+      const baixo = Math.max(12, innerHeight - caixa.bottom);
+      cartao!.style.left = `${Math.round(caixa.right + 16)}px`;
+      cartao!.style.bottom = `${Math.round(baixo)}px`;
+      cartao!.style.maxHeight = `${Math.round(innerHeight - baixo - topo - 12)}px`;
+    }
+
+    // Quem tinha o foco antes de a ficha abrir (para devolver ao fechar).
+    let focoAntes: HTMLElement | null = null;
+    let pelaTecla = false;
+    cartao.addEventListener("beforetoggle", (e) => {
+      const abrindo = (e as ToggleEvent).newState === "open";
+      if (!abrindo) return;
+      focoAntes = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      posicionar();
+    });
+    cartao.addEventListener("toggle", (e) => {
+      const aberta = (e as ToggleEvent).newState === "open";
+      if (aberta) {
+        if (pelaTecla) cartao.focus({ preventScroll: true });
+        pelaTecla = false;
+        return;
+      }
+      const alvo = focoAntes && focoAntes !== document.body && focoAntes.isConnected ? focoAntes : null;
+      if (alvo && (cartao.contains(document.activeElement) || document.activeElement === document.body)) alvo.focus({ preventScroll: true });
+      focoAntes = null;
+    });
+    addEventListener("resize", () => cartao.matches(":popover-open") && posicionar());
+
+    const alternar = (tecla: boolean) => {
+      pelaTecla = tecla && !cartao.matches(":popover-open");
+      cartao.togglePopover();
+    };
+
+    // ---------- os atalhos ----------
+
     // Os títulos do texto (os mesmos do sumário) e a folga do cabeçalho fixo (scroll-padding-top).
     const titulos = () => [...document.querySelectorAll<HTMLElement>("[data-corpo] > :is(h2, h3)[id]")];
-    const folga = () => parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+    const folga = () => parseFloat(getComputedStyle(raiz).scrollPaddingTop) || 0;
 
     // Com a rolagem suave em andamento, o próximo Espaço conta a partir do título de destino.
     let destino: number | null = null;
@@ -84,23 +169,30 @@ import { ICONES } from "../lib/icones";
     const USA_TECLADO =
       "input, textarea, select, button, summary, [contenteditable]:not([contenteditable='false']), [role='slider'], [role='tab'], [role='menu'], pre, .lousa, [tabindex]:not([tabindex='-1'])";
 
-    function quieto(e: KeyboardEvent) {
-      if (e.defaultPrevented || e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return true;
+    /** O teclado é de outra coisa: um campo, um controle, um diálogo aberto, o sumário do celular. */
+    function ocupado(e: KeyboardEvent) {
+      if (e.defaultPrevented || e.isComposing) return true;
       const alvo = e.target instanceof Element ? e.target : null;
       if (alvo && alvo !== document.body && alvo.closest(USA_TECLADO)) return true;
-      if (document.querySelector("dialog[open]") || document.documentElement.hasAttribute("data-sumario-aberto")) return true;
+      if (document.querySelector("dialog[open]") || raiz.hasAttribute("data-sumario-aberto")) return true;
       return false;
     }
 
+    /**
+     * A tecla do "?": o "?" (com Shift, ou com AltGr no ABNT2) ou a mesma tecla sem o Shift ("/"), sem
+     * ⌘ nem Ctrl (o AltGr do Windows chega como Ctrl + Alt, e vale).
+     */
+    const teclaDaFicha = (e: KeyboardEvent) =>
+      (e.key === "?" || e.key === "/") && !e.metaKey && !(e.ctrlKey && !e.altKey) && !e.repeat;
+
     addEventListener("keydown", (e) => {
-      // Dentro do cartão, só o "?" (que o fecha); o resto é do próprio cartão (o Espaço marca a caixa).
-      const noCartao = e.target instanceof Node && cartao.contains(e.target);
-      if (e.key === "?" && (noCartao || !quieto(e))) {
+      const naFicha = e.target instanceof Node && cartao.contains(e.target);
+      if (teclaDaFicha(e) && (naFicha || (ligados && !ocupado(e)))) {
         e.preventDefault();
-        cartao.togglePopover();
+        alternar(true);
         return;
       }
-      if (noCartao || quieto(e) || !ligados) return;
+      if (naFicha || !ligados || ocupado(e) || e.ctrlKey || e.metaKey || e.altKey) return;
       if (e.key === " ") {
         if (irPara(e.shiftKey ? -1 : 1)) e.preventDefault();
         return;
@@ -126,74 +218,114 @@ import { ICONES } from "../lib/icones";
 </script>
 
 <style>
+  /*
+   * A ficha: uma ficha pautada, na folha do site. As linhas da lista são a pauta (o fio embaixo de cada
+   * uma), e o título é sublinhado à caneta azul (a da leitura, B05).
+   */
   .atalhos {
-    width: min(340px, calc(100vw - 32px));
-    margin: auto;
-    padding: 20px 22px 18px;
+    --folga: 16px;
+    --curva: cubic-bezier(0.2, 0.75, 0.2, 1);
+    width: min(328px, calc(100vw - 32px));
+    max-height: calc(100dvh - 32px);
+    overflow: auto;
+    padding: 18px 20px 14px;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    background: var(--paper-hi);
+    box-shadow: var(--sombra-folha);
     color: var(--ink);
     font-family: var(--font-ui);
     font-size: 14px;
-    opacity: 1;
-    translate: 0 0;
-    transition:
-      opacity 0.18s ease-out,
-      translate 0.18s ease-out,
-      display 0.18s allow-discrete,
-      overlay 0.18s allow-discrete;
-  }
-
-  .atalhos:not(:popover-open) {
-    opacity: 0;
-    translate: 0 6px;
-  }
-
-  @starting-style {
-    .atalhos:popover-open {
-      opacity: 0;
-      translate: 0 6px;
-    }
-  }
-
-  .atalhos::backdrop {
-    background: transparent;
+    outline: none;
   }
 
   .titulo {
-    margin: 0 28px 12px 0;
+    margin: 0 30px 10px 0;
     font-family: var(--font-titulo);
     font-weight: 700;
     font-size: 17px;
+    line-height: 1.3;
   }
 
-  dl {
+  .escrito {
+    position: relative;
+    display: inline-block;
+  }
+
+  /* O sublinhado à caneta do título, escrito quando a ficha pousa. */
+  .traco-titulo {
+    position: absolute;
+    left: -2px;
+    bottom: -7px;
+    width: calc(100% + 4px);
+    height: 8px;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .traco-titulo path {
+    fill: none;
+    stroke: var(--caneta);
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .atalhos:popover-open .traco-titulo {
+    animation: titulo-escrito 0.42s var(--curva) 0.26s backwards;
+  }
+
+  @keyframes titulo-escrito {
+    from {
+      clip-path: inset(-4px 100% -4px 0);
+    }
+
+    to {
+      clip-path: inset(-4px 0 -4px 0);
+    }
+  }
+
+  /* A pauta: cada atalho numa linha da ficha, com as teclas numa coluna só. */
+  .pauta {
     display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: baseline;
-    gap: 9px 16px;
+    grid-template-columns: max-content 1fr;
+    column-gap: 16px;
     margin: 0;
+    border-top: 1px solid var(--rule);
   }
 
-  dl > div {
-    display: contents;
+  .pauta > div {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: baseline;
+    padding: 8px 0 7px;
+    border-bottom: 1px solid var(--rule);
   }
 
   dt {
     white-space: nowrap;
   }
 
+  /* Na ficha, as teclas aparecem também nas telas de toque (base.css as esconde: lá não há teclado). */
+  dt kbd {
+    display: inline-block;
+    font-size: 12px;
+  }
+
   dd {
     margin: 0;
     color: var(--ink-2);
+    line-height: 1.35;
   }
 
   .desligar {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-top: 16px;
-    padding-top: 12px;
-    border-top: 1px solid var(--rule);
-    color: var(--ink-3);
+    margin-top: 12px;
+    color: var(--ink-2);
     font-size: 13px;
     cursor: pointer;
   }
@@ -203,19 +335,26 @@ import { ICONES } from "../lib/icones";
     accent-color: var(--acento);
   }
 
+  .aviso-desligados {
+    margin: 6px 0 0;
+    color: var(--ink-2);
+    font-size: 12.5px;
+    line-height: 1.4;
+  }
+
   .fechar {
     position: absolute;
     top: 12px;
     right: 12px;
     display: grid;
     place-items: center;
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     padding: 0;
     border: 0;
     border-radius: 50%;
     background: none;
-    color: var(--ink-3);
+    color: var(--ink-2);
     cursor: pointer;
   }
 
@@ -233,9 +372,95 @@ import { ICONES } from "../lib/icones";
     stroke-linecap: round;
   }
 
+  /*
+   * No meio da tela (sem o sumário ao lado): a página escurece, e a ficha sobe 10px e aparece (0,22s).
+   */
+  .atalhos[data-lugar="meio"] {
+    margin: auto;
+    opacity: 1;
+    translate: 0 0;
+    transition:
+      opacity 0.22s ease-out,
+      translate 0.22s var(--curva),
+      display 0.22s allow-discrete,
+      overlay 0.22s allow-discrete;
+  }
+
+  .atalhos[data-lugar="meio"]:not(:popover-open) {
+    opacity: 0;
+    translate: 0 10px;
+    transition-duration: 0.16s;
+  }
+
+  @starting-style {
+    .atalhos[data-lugar="meio"]:popover-open {
+      opacity: 0;
+      translate: 0 10px;
+    }
+  }
+
+  .atalhos::backdrop {
+    background: transparent;
+  }
+
+  .atalhos[data-lugar="meio"]::backdrop {
+    background: color-mix(in oklab, var(--veu) 55%, transparent);
+    transition:
+      background-color 0.22s,
+      display 0.22s allow-discrete,
+      overlay 0.22s allow-discrete;
+  }
+
+  .atalhos[data-lugar="meio"]:not(:popover-open)::backdrop {
+    background: transparent;
+  }
+
+  @starting-style {
+    .atalhos[data-lugar="meio"]:popover-open::backdrop {
+      background: transparent;
+    }
+  }
+
+  /*
+   * Ao lado do sumário: a ficha sai de trás da folha dele (0,34s, a curva da escrita do menu). Ela anda
+   * a própria largura mais a folga, e o recorte anda junto, do mesmo tanto: o que ainda está "atrás"
+   * da folha não aparece. Volta para trás dela em 0,2s. A página não escurece.
+   */
+  .atalhos[data-lugar="ficha"] {
+    inset: auto;
+    margin: 0;
+    translate: 0 0;
+    clip-path: inset(-40px -40px -40px calc(-1 * var(--folga)));
+    transition:
+      translate 0.34s var(--curva),
+      clip-path 0.34s var(--curva),
+      display 0.34s allow-discrete,
+      overlay 0.34s allow-discrete;
+  }
+
+  .atalhos[data-lugar="ficha"]:not(:popover-open) {
+    translate: calc(-100% - var(--folga)) 0;
+    clip-path: inset(-40px -40px -40px 100%);
+    transition-duration: 0.2s;
+    transition-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+  }
+
+  @starting-style {
+    .atalhos[data-lugar="ficha"]:popover-open {
+      translate: calc(-100% - var(--folga)) 0;
+      clip-path: inset(-40px -40px -40px 100%);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .atalhos {
+    .atalhos[data-lugar],
+    .atalhos[data-lugar]:not(:popover-open),
+    .atalhos[data-lugar="meio"]::backdrop {
       transition: none;
+    }
+
+    .atalhos:popover-open .traco-titulo {
+      animation: none;
     }
   }
 </style>

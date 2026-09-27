@@ -83,7 +83,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
             </span>
           </p>
         </div>
-        {/* Os atalhos do teclado (D50, Atalhos.astro): só com mouse e teclado, e com JS. */}
+        {/* Os atalhos do teclado (D50, Atalhos.astro): só com mouse e teclado, e com JS; a ficha sai daqui (B06). */}
         <button type="button" class="dica-atalhos" popovertarget="atalhos">
           <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.teclado} />
           Atalhos
@@ -130,6 +130,12 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
           </li>
         ))}
       </ol>
+      {/* Sem a lateral, a ficha dos atalhos (Atalhos.astro, B06 da D52) também abre daqui: só com mouse. */}
+      <button type="button" class="dica-atalhos" popovertarget="atalhos">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.teclado} />
+        Atalhos do teclado
+        <kbd aria-hidden="true">?</kbd>
+      </button>
     </div>
   ) : (
     <details class="recolhivel" data-pagefind-ignore>
@@ -396,8 +402,10 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     }
   }
 
+  /* Com a ficha aberta, o botão fica na tinta, como quem está com ela na mão. */
   .dica-atalhos:hover,
-  .dica-atalhos:focus-visible {
+  .dica-atalhos:focus-visible,
+  :global(:root:has(#atalhos:popover-open)) .dica-atalhos {
     color: var(--acento);
   }
 
