@@ -19,9 +19,9 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
       protótipo (`docs/prototipos/animacoes/`), papel creme com pauta de caderno. O mesmo no caderno da
       marca quando abre na home (o grande do painel e o pequeno do cabeçalho, no hover): miolo creme e
       pautado, profissional.
-- [~] **A02.** _(agente Trocas)_ Troca de tela "mesa de cards": os cartões da página nova aparecem **antes** de os da
+- [x] **A02.** _(agente Trocas; 5e42b33)_ Troca de tela "mesa de cards": os cartões da página nova aparecem **antes** de os da
       antiga sumirem (mais evidente de uma tag para outra, mas acontece em outras trocas). Resolver.
-- [~] **A03.** _(agente Trocas)_ Artigo → próximo (rolado para baixo): a folha antiga some devagar e fica um pedaço dela
+- [x] **A03.** _(agente Trocas; 6912291)_ Artigo → próximo (rolado para baixo): a folha antiga some devagar e fica um pedaço dela
       em cima que a nova não cobre. Voltar (anterior) está bom. Melhorar o avançar.
 - [x] **A04.** _(agente Livros e visor; 776f8dd)_ No escuro, as imagens ficam **brancas** ao abrir (visor). Arrumar.
 
@@ -46,7 +46,7 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
 - [x] **B08.** _(agente Livros e visor; 975885c)_ Livros de lado (3D): uma **linha branca** entre a capa e a lombada. Arrumar em todos.
 - [x] **B09.** _(agente Pilha; 2463a34)_ Troca de livro em Categorias: a animação toda mais profissional, fluida e realista,
       principalmente o fim (o livro novo no lugar, sem tremer). Junto com o B01.
-- [~] **B10.** _(agente Trocas)_ De `/categories/` para uma categoria e de volta: a animação do livro está feia.
+- [x] **B10.** _(agente Trocas; 59eab79)_ De `/categories/` para uma categoria e de volta: a animação do livro está feia.
       Melhorar ou tirar.
 - [x] **B11.** _(agente Listas; e6fd634)_ Tags: cartões mais bonitos; **um ícone por tag**, no padrão dos desenhos das capas, com
       o processo para tag nova já pedindo o ícone; na página de uma tag, o ícone grande como marca
@@ -55,7 +55,7 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
       hover da home). Na abertura, não.
 - [x] **B13.** _(agente Abertura; 3ac42db, c6addd8)_ Fim da abertura da home: depois do desenho do destaque, o caderno do cabeçalho e o
       caderno grande abrem um pouco e fecham, **os dois juntos** (como no hover), uma vez.
-- [~] **B14.** _(agente Trocas)_ Lentidão (rede, CPU, memória): deixar o site fluido e evitar engasgos; um carregando,
+- [x] **B14.** _(agente Trocas; 2d4bbb6)_ Lentidão (rede, CPU, memória): deixar o site fluido e evitar engasgos; um carregando,
       ou algo do tipo, quando for demorar.
 
 ## C. Novidades
@@ -170,6 +170,27 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
   uma estante em miniatura dos livros de onde vêm os artigos. Topo da tag como o do B07, com o ícone
   grande em marca d'água. `PilulaTag.astro` com ícone nas tags vizinhas, "Por assunto", topo do livro e
   fim do artigo. Folha de conferência em `/amostra/tags/`. [diagnosticos/B11.md](diagnosticos/B11.md).
+
+- **A02** (5e42b33): três coisas somadas: as folhas novas começavam no `pagereveal` e a queda das
+  antigas só no `vt.ready`; a queda demorava a sair do lugar (cubic-in de 0,48s, cascata de 0,16s); e o
+  esmaecer das antigas era tardio. Agora a saída some toda em 0,3s (quad-in 0,38s, cascata 0,06s), a
+  chegada do fundo começa em 0,26s e tudo anda no relógio do `vt.ready` (também o `cs:pousou` e o
+  desfile de Categorias). [diagnosticos/A02.md](diagnosticos/A02.md).
+- **A03** (6912291): a imagem do artigo atual ficava inteira até 0,6s e, rolada, aparecia acima do topo
+  do novo. Agora ela esmaece e afunda 10px entre 0,14s e 0,4s, embaixo da folha que chega, e some antes
+  do pouso. [diagnosticos/A03.md](diagnosticos/A03.md).
+- **B10** (59eab79): melhorado em vez de tirado. O hover vira o livro do cartão a 24° e o do topo está a
+  38° (as duas imagens se sobrepunham); a folha de destino partia da opacidade 0 (o Chrome não pinta
+  nada dentro dela); e o `limparNomes` zerava a classe `livro`. Agora, com o mesmo livro nas duas
+  pontas (classe `mesmo`), voa só a imagem nova, que continua o giro do hover até o de parado em 0,75s.
+  [diagnosticos/B10.md](diagnosticos/B10.md).
+- **B14** (2d4bbb6): medido com Slow 4G e CPU 4× no build: do clique ao começo da troca, ~580ms numa tag
+  e ~900ms num artigo. Regras de especulação (`prefetch`, `moderate`) no `<head>`: com o ponteiro 0,4s
+  sobre o link, ~180ms e ~440ms. Se a página nova passa de 0,2s, a caneta azul escreve o fio do
+  cabeçalho, cada vez mais devagar (carregando). Chegada curta (~0,4s) quando a espera passou de 1s,
+  quando uma troca anterior engasgou (`cs-troca-leve` na sessão) ou com até 2 GB de memória. O desfile
+  de Categorias espera o GSAP no máximo 1,8s. De fora: o peso das páginas (160 a 440 KB, pelos SVGs
+  embutidos) pede um item próprio; `prerender` fica para depois. [diagnosticos/B14.md](diagnosticos/B14.md).
 
 ## Para o Cesar decidir
 
