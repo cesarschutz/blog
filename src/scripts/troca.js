@@ -561,8 +561,10 @@
         // o anterior: o de cima é tirado para a direita e mostra o que estava embaixo
         animarPseudo("::view-transition-old(artigo-velho)", [{ transform: "none" }, { transform: "translate(" + W * 0.6 + "px, 20px) rotate(4deg)" }], { duration: 600, easing: CUBIC_IN });
       }
+      // O rodapé do site (com a página no fim) sai logo, em 90ms (revisão 3): a página nova já está inteira
+      // embaixo dele, e com 200ms em ease-in ele ficava nítido sobre o título do artigo novo até ~0,25s.
+      animarPseudo("::view-transition-old(rodape-velho)", [{ opacity: 1 }, { opacity: 0 }], { duration: 90, easing: SAI_LOGO });
       // A lateral: o mesmo livro fica parado (a antiga só sai no fim); outro livro troca junto.
-      animarPseudo("::view-transition-old(rodape-velho)", [{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: CUBIC_IN });
       if (mesmoLivro) animarPseudo("::view-transition-old(lateral-velha)", [{ opacity: 1 }, { opacity: 1 }], { duration: 650 });
       else animarPseudo("::view-transition-old(lateral-velha)", [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateX(" + (proximo ? -16 : 16) + "px)" }], { duration: 200, easing: CUBIC_IN });
     }, function () {});
