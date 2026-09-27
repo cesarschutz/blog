@@ -1504,6 +1504,39 @@ nada muda.
   tag: **desfile direto**; 06, artigo anterior e próximo: **na pilha**; 07, livro e artigo: **só o
   livro viaja**; 08, o desenho do artigo: **depois de pousar**. Pediu para aplicar como escolheu, com
   a revisão de acabamento por agentes, e para ver no localhost antes do commit.
+- **Como ficou no site (27/09/2026):**
+  - **Troca por folhas** (`src/scripts/troca.js`, embutido no `<head>` pelo `Base.astro`): sem atrasar
+    o clique. No `pageswap`, cada folha à vista (as `.folha` de fora, ou `[data-unidade]`) e cada texto
+    solto entre elas ganha um nome de View Transition (`sai-N`, classe `sai`); no `pagereveal`, a página
+    nova anima as imagens antigas pela Web Animations API (caem da mesa) e as próprias folhas (chegam
+    do fundo). A raiz não anima (tipos "folhas" e "lado" em `base.css`). O conteúdo só é pintado depois
+    de lido (`<link rel="expect" blocking="render">`), para as folhas à vista serem medidas certo.
+  - **Só o livro viaja:** os nomes de livro de antes (D29) continuam; com par, o livro voa fora das
+    folhas e a folha dele só esmaece; sem par na página nova, o nome sai e ele chega com a folha; sem
+    par na antiga, ele cai com a folha.
+  - **Na pilha:** entre artigo e o anterior ou o próximo (os links `rel="prev"`/`"next"`), a folha do
+    artigo inteira (`.artigo-principal`) é o que se move; a lateral fica parada se o livro é o mesmo.
+  - **Desenho do artigo:** `desenharTopoDoArtigo` (desenho-vivo.ts) espera `cs:chegou` (a última folha
+    pousou) e desenha pela sequência do C1; pelo histórico, ou com o topo fora da tela, ele já está
+    pronto. O desenho da lista que voava para o topo do post (D47) saiu.
+  - **Categorias:** a página cuida da própria chegada (`chegada={{ propria: true }}`); o desfile vem
+    de outra página ou depois do caderno (um pouco mais curto depois do caderno).
+  - **Tag:** `chegada={{ passo: 0.06 }}`; a folha da lista chega primeiro e cada artigo dela, sozinho.
+  - **Abertura:** decidida no `<head>` (`reload`, ou `navigate` com o `referrer` de fora); a estante
+    (home) ou o caderno (as outras páginas), em `Abertura.astro`, agora no layout de todas as páginas.
+  - **Fica de fora da troca por folhas:** a troca de livro pela pilha (`data-troca-propria`, a animação
+    da D50) e a navegação com um diálogo aberto (busca, livro ampliado): a folha de antes.
+- **Revisão de acabamento (agentes, 27/09/2026) e o que mudou por ela:** as peças da abertura e os
+  livros da estante escondidos até o script montar a cena (apareciam por um instante); a ficha do
+  desfile embaixo no celular (cobria o título); os cartões opacos em 0,12s (três translúcidos se
+  sobrepunham); `overflow-x: clip` na raiz (a barra lateral aparecia durante as chegadas); o caderno
+  refeito como no protótipo (contracapa, miolo pautado e verso no papel dos livros, igual nos dois
+  temas; no escuro ele sumia) e mais curto (de ~3,6s para ~2,6s, sem o tempo parado antes do voo);
+  pular também durante o carregamento; a tag desfilando artigo por artigo; a contagem da estante no
+  livro que está entrando (e só a partir do primeiro); o aparador só com a revista; o papel sai depois
+  de a estante passar pelo nome; o fio da estante na cor da borda da tábua; a sombra do caderno some no
+  voo; a trava de 7s do `<head>` cancelada quando a abertura assume; a rolagem do navegador devolvida
+  no fim.
 - **Achado:** os três riscos do A3 vinham do `vector-effect: non-scaling-stroke` num SVG esticado: o
   DrawSVG media o traço numa escala e o navegador pintava noutra, e o tracejado se repetia. Nos
   protótipos, o caminho do fio é refeito em pixels, sem o `vector-effect`.

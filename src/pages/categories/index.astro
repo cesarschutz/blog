@@ -31,7 +31,7 @@ const livros = (await montarLivros()).filter((l) => !l.serie);
   type Troca = { unidades: () => Unidade[]; chegar: (novas: Unidade[], opcoes?: { t0?: number }) => number };
   const janela = window as unknown as { csTroca?: Troca; csChegada?: { novas: Unidade[]; inicio: number } | null };
 
-  async function desfilar(novas: Unidade[], t0: number) {
+  async function desfilar(novas: Unidade[], t0: number, curto = false) {
     const gsap = await carregarGsap();
     const troca = janela.csTroca;
     const cartoes = novas.filter((u) => u.el.matches(".cartao-livro")).map((u) => u.el);
@@ -61,7 +61,8 @@ const livros = (await montarLivros()).filter((l) => !l.serie);
     document.body.append(ficha);
     const vol = ficha.querySelector<HTMLElement>(".vol")!, nome = ficha.querySelector<HTMLElement>("b")!;
     const rnd = gsap.utils.random;
-    const passo = cel ? 0.12 : 0.13, dur = 0.75, z = cel ? -900 : -1600, k = P / (P - z);
+    // Depois do caderno da abertura (entrando direto), o desfile é um pouco mais curto: a pessoa já esperou.
+    const passo = curto ? 0.08 : cel ? 0.12 : 0.13, dur = curto ? 0.6 : 0.75, z = cel ? -900 : -1600, k = P / (P - z);
     const tl = gsap.timeline({
       onComplete: () => {
         ficha.remove();
@@ -80,7 +81,8 @@ const livros = (await montarLivros()).filter((l) => !l.serie);
         { x: a.dx, y: a.dy, z: 0, rotationX: 0, rotationY: 0, rotationZ: rnd(-7, 7), scale: 0.86, duration: dur, ease: "power3.out" },
         t,
       )
-        .to(c, { opacity: 1, duration: 0.25, ease: "none" }, t)
+        // Opaco logo, ainda longe e pequeno: na pilha, nenhum cartão fica translúcido sobre os outros.
+        .to(c, { opacity: 1, duration: 0.12, ease: "power1.out" }, t)
         .call(() => {
           vol.textContent = livros[i].volume;
           nome.textContent = livros[i].nome;
@@ -104,7 +106,7 @@ const livros = (await montarLivros()).filter((l) => !l.serie);
       void desfilar(chegada.novas, Math.max(0, 0.2 - (performance.now() - chegada.inicio) / 1000));
     }
     // Entrando direto: o caderno da abertura avisa quando o papel começa a sair.
-    addEventListener("cs:abertura-chega", () => janela.csTroca && void desfilar(janela.csTroca.unidades(), 0), { once: true });
+    addEventListener("cs:abertura-chega", () => janela.csTroca && void desfilar(janela.csTroca.unidades(), 0, true), { once: true });
   }
 </script>
 
@@ -144,9 +146,11 @@ const livros = (await montarLivros()).filter((l) => !l.serie);
     text-wrap: balance;
   }
 
+  /* No celular, a ficha fica embaixo (em cima, ela cobria o título da página). */
   @media (max-width: 640px) {
     .ficha-desfile {
-      top: calc(var(--altura-topo) + 16px);
+      top: auto;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
       translate: none;
       left: 18px;
       right: 18px;

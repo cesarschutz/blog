@@ -50,10 +50,15 @@
     var m = document.getElementById("conteudo");
     if (!m) return [];
     var lista = [];
+    // No desfile (a página de uma tag), a folha da lista chega primeiro e cada artigo dela, sozinho.
+    var desfile = !!m.dataset.chegadaPasso;
     (function andar(el) {
       for (var c = el.firstElementChild; c; c = c.nextElementSibling) {
         if (/^(SCRIPT|STYLE|TEMPLATE|DIALOG|LINK|META)$/.test(c.tagName) || c.hidden || c.hasAttribute("data-fora-da-troca")) continue;
-        if (c.matches(FOLHA)) lista.push({ el: c, texto: false });
+        if (desfile && c.matches(".lista-artigos")) {
+          lista.push({ el: c, texto: false, soEsmaece: true });
+          for (var li = c.firstElementChild; li; li = li.nextElementSibling) lista.push({ el: li, texto: false });
+        } else if (c.matches(FOLHA)) lista.push({ el: c, texto: false });
         else if (c.querySelector(FOLHA)) andar(c);
         else lista.push({ el: c, texto: true });
       }

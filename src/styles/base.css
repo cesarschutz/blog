@@ -60,6 +60,8 @@ html {
   /* O lugar da barra de rolagem fica reservado: o cabeçalho não anda para o lado entre uma página
      curta (sem barra) e uma longa (D47). */
   scrollbar-gutter: stable;
+  /* As folhas que chegam do fundo passam da borda direita no meio do voo (D51): sem barra lateral. */
+  overflow-x: clip;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }

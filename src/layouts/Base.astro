@@ -106,7 +106,7 @@ const preVisualizacao = process.env.PREVIEW === "true";
     <script is:inline define:vars={{ modoDaAbertura: abertura ? "estante" : "caderno" }}>
       // A abertura do site (D51, Abertura.astro): ao chegar de fora (link de outro site, endereço
       // digitado, favorito) e ao recarregar; andando por dentro do site, vale a troca de página. Sem
-      // movimento reduzido. Por segurança, ela sai sozinha em 7s, mesmo que o script dela não chegue.
+      // movimento reduzido. Por segurança, ela sai sozinha em 7s se o script dela não chegar.
       try {
         var raizDaAbertura = document.documentElement;
         var navegacao = performance.getEntriesByType("navigation")[0];
@@ -114,7 +114,8 @@ const preVisualizacao = process.env.PREVIEW === "true";
         var deFora = !document.referrer || new URL(document.referrer).origin !== location.origin;
         if ((tipoDaNavegacao === "reload" || (tipoDaNavegacao === "navigate" && deFora)) && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
           raizDaAbertura.dataset.abertura = modoDaAbertura;
-          setTimeout(function () {
+          // A abertura cancela esta trava quando assume (Abertura.astro); ela só vale se o script não vier.
+          window.csTravaDaAbertura = setTimeout(function () {
             delete raizDaAbertura.dataset.abertura;
           }, 7000);
         }
