@@ -5,12 +5,12 @@
  *   (chip) e o texto dos desenhos, sobre a folha e sobre o painel tingido;
  * - `--ink-3`: só texto grande ou decorativo, e só sobre a folha: mínimo de 3:1 ali (falha o script);
  *   sobre o fundo, só avisa;
- * - elementos gráficos na cor da categoria (quadradinho do chip, barra de leitura, ícones): 3:1
- *   desejável, só avisa, porque são decorativos (o nome da categoria ou o rótulo sempre acompanha).
+ * - elementos gráficos na cor da categoria (quadradinho do chip, ícones): 3:1 desejável, só avisa,
+ *   porque são decorativos (o nome da categoria ou o rótulo sempre acompanha).
  *
  * Uso: npm run contraste. Lê os tokens e os cadastros direto dos .ts (Node 24).
  */
-import { claro, escuro, misturar, BRANCO_NO_ESCURO, CHIP, LINK_TINTA, LOUSA, MARCA_TEXTO, PAINEL, SUMARIO_MARCA } from "../src/styles/tokens.ts";
+import { claro, escuro, misturar, BRANCO_NO_ESCURO, CHIP, LINK_TINTA, LOUSA, MARCA_TEXTO, PAINEL } from "../src/styles/tokens.ts";
 import { CATEGORIAS } from "../src/data/taxonomia.ts";
 import { SERIES } from "../src/data/series.ts";
 import { PAPEL, TINTA_PAPEL } from "../docs/capas/cores.js";
@@ -72,7 +72,7 @@ for (const [tema, p] of Object.entries({ claro, escuro })) {
   const graficos = `Elementos gráficos, tema ${tema} (3:1 desejável)`;
   for (const a of AVISOS) conferir(graficos, `ícone e borda do ${a}`, p[a], misturar(p["paper-hi"], p[a], 7), 3, false);
   const naCor = (cor) => (tema === "escuro" ? misturar(cor, "#FFFFFF", BRANCO_NO_ESCURO) : cor);
-  for (const [nome, cor] of CORES) conferir(graficos, `quadradinho e barra de ${nome}`, naCor(cor), p["paper-hi"], 3, false);
+  for (const [nome, cor] of CORES) conferir(graficos, `quadradinho de ${nome}`, naCor(cor), p["paper-hi"], 3, false);
   for (const [nome, cor] of CORES) conferir(graficos, `nome no chip, ${nome} / --paper`, nomeNoChip(cor), p.paper, 4.5, false);
 }
 
@@ -115,13 +115,13 @@ for (const s of SERIES) {
   conferir(pequeno, `${s.nome}: destaque da lombada / papel`, s.destaqueTexto ?? s.destaque, PAPEL, 4.5, true);
 }
 
-// Sumário na cor do livro (D39): o trilho, o ponto atual e a barra de porcentagem usam o destaque do
-// livro (com o branco dos desenhos no escuro) sobre a folha. Elemento gráfico: 3:1 (falha o script).
+// A caneta da leitura (B05, D52): o fio do cabeçalho, o fio e os vistos do sumário e o sublinhado da
+// seção atual são traços na --caneta, sobre a folha (o sumário) e o fundo (o fio do cabeçalho, que é
+// o fundo a 94%). Elemento gráfico: 3:1 (falha o script). Antes, a cor do livro (D39).
 for (const [tema, p] of Object.entries({ claro, escuro })) {
-  const grupo = `Sumário na cor do livro, tema ${tema} (3:1)`;
-  const naFolha = (cor) => (tema === "escuro" ? misturar(cor, "#FFFFFF", BRANCO_NO_ESCURO) : cor);
-  for (const c of CATEGORIAS) conferir(grupo, c.nome, naFolha(c.cores.destaque), p["paper-hi"], 3, true);
-  for (const s of SERIES) conferir(grupo, s.nome, naFolha(s.destaque), p["paper-hi"], 3, true);
+  const grupo = `Caneta da leitura, tema ${tema} (3:1)`;
+  conferir(grupo, "--caneta (sumário) / --paper-hi", p.caneta, p["paper-hi"], 3, true);
+  conferir(grupo, "--caneta (fio do cabeçalho) / --paper", p.caneta, p.paper, 3, true);
 }
 
 // A caneta do caderno (D48): o texto sobre o marca-texto amarelo (no escuro, transparente sobre a
@@ -141,16 +141,6 @@ for (const [tema, p] of Object.entries({ claro, escuro })) {
     conferir(grupo, `--caneta (notas e traços) / --${papel}`, p.caneta, p[papel], 4.5, true);
   }
   conferir(grupo, "--caneta (anotação no código) / --well", p.caneta, p.well, 4.5, true);
-}
-
-// A seção atual do sumário (C2, D49): o nome em --ink sobre o marca-texto na cor do livro (clareada e
-// mais forte no escuro), com a transparência por cima da folha; a folha do celular também é --paper-hi.
-for (const [tema, p] of Object.entries({ claro, escuro })) {
-  const { branco, forca } = SUMARIO_MARCA[tema];
-  const grupo = `Seção atual do sumário, tema ${tema} (4,5:1)`;
-  for (const [nome, cor] of CORES) {
-    conferir(grupo, `--ink no marca-texto de ${nome} / --paper-hi`, p.ink, sobre(p["paper-hi"], misturar(cor, "#FFFFFF", branco), forca / 100), 4.5, true);
-  }
 }
 
 // A tinta do link no texto do artigo (E3, D49): o link em --acento sobre a tinta azul que sobe no

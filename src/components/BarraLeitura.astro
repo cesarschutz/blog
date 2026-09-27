@@ -1,19 +1,15 @@
 ---
 /**
  * Barra de progresso da leitura (briefing §5.3, D45): um traço de 2px sobre o fio embaixo do cabeçalho,
- * na cor da categoria (no escuro, clareada como os chips), escrito por uma caneta pequena que vai na
- * ponta dele. O cabeçalho fica sempre à vista, também no celular (D46).
+ * escrito por uma caneta pequena que vai na ponta dele. Desde a B05 (D52), é a caneta azul (`--caneta`,
+ * a do caderno, D48): a mesma que escreve o fio do sumário e sublinha a seção atual, e não mais a cor
+ * da categoria (que fica no livro). O cabeçalho fica sempre à vista, também no celular (D46).
  * Quem move é src/scripts/artigo.ts (a variável --lido, de 0 a 1, e a classe "escrevendo", que mostra
  * a caneta depois do início); sem JS, fica vazia.
  */
-interface Props {
-  cor: string;
-}
-
-const { cor } = Astro.props;
 ---
 
-<div class="barra-leitura" style={`--cor-barra:${cor}`} aria-hidden="true" data-barra-leitura>
+<div class="barra-leitura" aria-hidden="true" data-barra-leitura>
   <div class="risco"></div>
   <svg class="caneta" viewBox="0 0 24 24" focusable="false">
     <path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1.4 1.4 0 0 1 0 2l-9.2 9.2Z" />
@@ -38,7 +34,7 @@ const { cor } = Astro.props;
   .risco {
     position: absolute;
     inset: 0;
-    background: color-mix(in oklab, var(--cor-barra), #fff var(--branco-no-escuro));
+    background: var(--caneta);
     transform: scaleX(var(--lido, 0));
     transform-origin: 0 50%;
   }
@@ -60,8 +56,9 @@ const { cor } = Astro.props;
     opacity: 1;
   }
 
+  /* A caneta azul: o corpo com um pouco da tinta, a ponta e o anel na tinta dela. */
   .corpo {
-    fill: var(--paper-hi);
+    fill: color-mix(in oklab, var(--caneta) 16%, var(--paper-hi));
     stroke: var(--ink);
     stroke-width: 1.3;
     stroke-linejoin: round;
@@ -69,12 +66,12 @@ const { cor } = Astro.props;
 
   .anel {
     fill: none;
-    stroke: var(--ink);
-    stroke-width: 1.3;
+    stroke: var(--caneta);
+    stroke-width: 1.6;
   }
 
   .ponta {
-    fill: color-mix(in oklab, var(--cor-barra), #fff var(--branco-no-escuro));
+    fill: var(--caneta);
     stroke: var(--ink);
     stroke-width: 1.1;
     stroke-linejoin: round;

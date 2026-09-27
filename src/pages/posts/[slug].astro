@@ -98,7 +98,7 @@ const jsonLd = {
 >
   {remarkPluginFrontmatter?.temMatematica && <link slot="head" rel="stylesheet" href={url("/katex/katex.min.css")} />}
   {remarkPluginFrontmatter?.caneta?.escrita && <style slot="head" set:html={fonteDaCaneta} />}
-  <BarraLeitura cor={resumo.cor} />
+  <BarraLeitura />
   <article class="artigo wrap" data-artigo data-pagefind-body style={`--cor:${resumo.cor}`}>
     <div class:list={["artigo-grade", { "com-lateral": temSumario || livroDoPost }]}>
       {(temSumario || livroDoPost) && (
@@ -132,7 +132,7 @@ const jsonLd = {
       </div>
     </div>
   </article>
-  {temSumario && <Sumario secoes={secoes} variante="folha" livro={livroDoPost} cor={resumo.cor} />}
+  {temSumario && <Sumario secoes={secoes} variante="folha" />}
   <Atalhos />
 </Base>
 

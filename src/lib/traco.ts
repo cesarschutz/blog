@@ -36,12 +36,13 @@ function curva(p: [number, number][]) {
 
 /**
  * O caminho do traço para um texto. `outro` dá um tremor diferente para o mesmo texto (o traço leve
- * do mouse não é igual ao da seção atual).
+ * do mouse não é igual ao da seção atual). `quantos` fixa quantos pontos o traço tem (o sublinhado de
+ * cada linha do sumário, B05 da D52, conta pela largura da linha, e não pelo texto inteiro).
  */
-export function tracoDeCaneta(texto: string, outro = 0, amplitude = 0.9) {
+export function tracoDeCaneta(texto: string, outro = 0, amplitude = 0.9, quantos?: number) {
   const r = sorteio(sementeDe(texto) + outro);
   // Um ponto a cada ~16px do texto (uns dois caracteres), como no protótipo.
-  const n = Math.max(3, Math.round(texto.length / 2));
+  const n = Math.max(3, quantos ?? Math.round(texto.length / 2));
   const pontos: [number, number][] = [];
   for (let i = 0; i <= n; i++) {
     const y = 4 + (r() - 0.5) * 2 * amplitude + (i === n ? -amplitude : 0) + (i === 0 ? amplitude * 0.5 : 0);

@@ -143,14 +143,6 @@ export const CHIP = { claro: { tinta: 34, branco: 0 }, escuro: { tinta: 0, branc
 export const MARCA_TEXTO = { claro: { cor: "#FFE27A", alfa: 1 }, escuro: { cor: "#FFD65A", alfa: 0.3 } };
 
 /**
- * O marca-texto da seção atual no sumário (C2, D49): a cor do livro com essa porcentagem de branco, a
- * essa força (a transparência sobre a folha). No escuro, clareada e mais forte, até onde o texto por
- * cima ainda passa de 4,5:1 em todos os livros (`npm run contraste` confere). O sumário é da cor do
- * livro (D39); o amarelo fica para as marcações do texto (D48).
- */
-export const SUMARIO_MARCA = { claro: { branco: 0, forca: 32 }, escuro: { branco: 60, forca: 36 } };
-
-/**
  * A tinta do link no texto do artigo (E3, D49): com o mouse ou o foco, o azul-tinta a essa força sobe
  * de baixo até perto da metade da letra. No escuro, um pouco mais forte, para se ver sobre a folha
  * escura, mas não os 24% do protótipo: com eles, o link passava a 4,1:1 sobre os avisos. O link
@@ -235,7 +227,6 @@ export function cssDosTokens(): string {
   const proporcoes = (t: "claro" | "escuro") =>
     `--painel-mistura:${PAINEL[t]}%;--chip-tinta:${CHIP[t].tinta}%;--chip-branco:${CHIP[t].branco}%;` +
     `--marca-texto:${rgba(MARCA_TEXTO[t].cor, MARCA_TEXTO[t].alfa)};` +
-    `--sumario-marca-branco:${SUMARIO_MARCA[t].branco}%;--sumario-marca-forca:${SUMARIO_MARCA[t].forca}%;` +
     `--link-tinta:${LINK_TINTA[t]}%;`;
   const temaEscuro = `${variaveis(escuro)}${lousa(LOUSA.escuro)}${proporcoes("escuro")}--branco-no-escuro:${BRANCO_NO_ESCURO}%;color-scheme:dark;`;
   return (

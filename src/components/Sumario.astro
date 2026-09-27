@@ -5,19 +5,20 @@
  * "lateral" (D26, D33, D49): em telas ≥ 1300px, à esquerda do texto, numa folha própria e fixa. As
  * seções ficam num trilho, com um ponto em cada uma e sem número (D36): o "3. " de um título
  * numerado sai também do nome, nas três variantes. O sumário acompanha a leitura como o índice de um
- * caderno (C2, D49): o fio é escrito à caneta, na cor do livro, conforme a leitura anda dentro da
- * seção; a seção atual ganha o marca-texto na cor do livro; a que ficou para trás ganha um visto. O
- * script (src/scripts/artigo.ts) desenha o fio, abre as subseções da atual e mantém a atual à vista
- * quando a lista rola. Embaixo, a barra de quanto já foi lido, com "NN% lido" e o tempo que falta; só
- * com JS. Embaixo, o livro do artigo, grande e de lado, como o da gaveta da home (D46): gira um pouco
- * ao passar o mouse, a lupa abre o livro ampliado e o link leva à página dele. Sem seções (menos de
- * 3), a coluna tem só o livro.
+ * caderno (C2, D49), escrito com a mesma caneta azul do fio do cabeçalho (B05, D52; `--caneta`, e não
+ * mais a cor do livro): o fio desce conforme a leitura anda dentro da seção; a seção atual é
+ * sublinhada à mão, como a do menu (traco.ts); a seção em que o leitor ficou ganha um visto quando
+ * fica para trás (B04). O script (src/scripts/artigo.ts) desenha o fio e o sublinhado, abre as
+ * subseções da atual e mantém a atual à vista quando a lista rola. Embaixo, "NN% lido" e o tempo que
+ * falta (sem barra: o fio do cabeçalho já mostra o quanto foi lido); só com JS. Embaixo, o livro do
+ * artigo, grande e de lado, como o da gaveta da home (D46): gira um pouco ao passar o mouse, a lupa
+ * abre o livro ampliado e o link leva à página dele. Sem seções (menos de 3), a coluna tem só o livro.
  *
  * "recolhivel": no início do texto, nas telas menores.
  *
  * "folha" (C2, D49): nas telas sem a lateral, o nome da seção atual toma o lugar da marca no
  * cabeçalho (Cabecalho.astro) e, tocado, abre esta folha, que desce do cabeçalho como o menu (D46),
- * com os mesmos vistos.
+ * com os mesmos vistos; a caneta sublinha a seção atual quando a folha termina de descer.
  */
 import LivroAmpliado from "./LivroAmpliado.astro";
 import LivroEmPe from "./LivroEmPe.astro";
@@ -32,13 +33,11 @@ interface Props {
   variante: "lateral" | "recolhivel" | "folha";
   /** Tempo de leitura do artigo, para o "faltam N min". */
   minutos?: number;
-  /** O livro do artigo, grande, embaixo do sumário lateral (D46); na folha, dá a cor dela. */
+  /** O livro do artigo, grande, embaixo do sumário lateral (D46). */
   livro?: Livro;
-  /** A cor do artigo (a da categoria ou da série), para a folha, que fica fora do artigo. */
-  cor?: string;
 }
 
-const { secoes, variante, minutos = 0, livro, cor } = Astro.props;
+const { secoes, variante, minutos = 0, livro } = Astro.props;
 // "3. Bloqueio pessimista" → "Bloqueio pessimista": o sumário não mostra número (D36).
 const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
 ---
@@ -76,7 +75,6 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
           </div>
         </nav>
         <div class="progresso" aria-hidden="true" hidden data-progresso-sumario data-minutos={minutos}>
-          <span class="barra"><span class="feito"></span></span>
           <p class="numeros">
             <span class="lido">0% lido</span>
             <span class="falta" data-falta>
@@ -118,7 +116,6 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
       id="folha-sumario"
       role="dialog"
       aria-label="Neste artigo"
-      style={`${cor ? `--cor:${cor};` : ""}${livro ? coresDoLivroCss(livro) : ""}`}
       data-folha-sumario
       data-pagefind-ignore
     >
@@ -153,16 +150,10 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
 
 <style>
   /*
-   * A cor do livro do post (D39) no trilho, no ponto atual e na barra de porcentagem: o destaque do
-   * livro (a cor escurecida até ter contraste sobre o papel) e, no escuro, com o branco dos desenhos
-   * (--branco-no-escuro). Passa de 3:1 sobre a folha nos dois temas (npm run contraste).
+   * A leitura é escrita com a caneta azul (B05, D52): o fio do trilho, o ponto atual, os vistos e o
+   * sublinhado da seção atual usam `--caneta`, a mesma do fio do cabeçalho (BarraLeitura) e das
+   * marcações do caderno (D48). A cor do livro fica só no livro, embaixo (D39 item 7, revisto).
    */
-  .lateral,
-  .folha-celular {
-    --cor-ui: color-mix(in oklab, var(--livro-destaque, var(--cor, var(--acento))), #fff var(--branco-no-escuro, 0%));
-    --marca-sumario: color-mix(in oklab, color-mix(in oklab, var(--cor, var(--acento)), #fff var(--sumario-marca-branco)) var(--sumario-marca-forca), transparent);
-  }
-
   .lateral {
     display: none;
   }
@@ -185,7 +176,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
   }
 
   /*
-   * O fio do trilho (C2, D49): um traço à mão que passa pelos pontos, com a tinta na cor do livro
+   * O fio do trilho (C2, D49): um traço à mão que passa pelos pontos, com a tinta da caneta
    * escrita até onde a leitura chegou dentro da seção (artigo.ts desenha o caminho e move a tinta; a
    * transição do stroke-dashoffset faz a caneta seguir a rolagem com um leve atraso).
    */
@@ -216,7 +207,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
   }
 
   .fio-tinta {
-    stroke: var(--cor-ui);
+    stroke: var(--caneta);
     stroke-width: 2;
     transition: stroke-dashoffset 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
@@ -242,9 +233,9 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
   }
 
   /*
-   * O ponto de cada seção, sem número (D36). Na seção atual, cheio na cor do livro; na que ficou para
-   * trás, uma clareira no fio com o visto escrito dentro (C2, D49): fica, mesmo voltando a rolagem,
-   * como as marcações do caderno.
+   * O ponto de cada seção, sem número (D36). Na seção atual, cheio de tinta; na que ficou para trás,
+   * uma clareira no fio com o visto escrito dentro (C2, D49): fica, mesmo voltando a rolagem, como as
+   * marcações do caderno.
    */
   .marco {
     position: absolute;
@@ -269,7 +260,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
 
   .visto {
     fill: none;
-    stroke: var(--cor-ui);
+    stroke: var(--caneta);
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -281,8 +272,8 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
   }
 
   .secao > a[aria-current="true"] .bolinha {
-    fill: var(--cor-ui);
-    stroke: var(--cor-ui);
+    fill: var(--caneta);
+    stroke: var(--caneta);
   }
 
   .secao.lida > a:not([aria-current]) .bolinha {
@@ -305,23 +296,43 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
   }
 
   /*
-   * A seção atual ganha o marca-texto na cor do livro (C2, D49; os tons de SUMARIO_MARCA em tokens.ts,
-   * conferidos pelo npm run contraste): a pintura estica da esquerda para a direita e, ao sair, recolhe.
+   * A seção atual, sublinhada à caneta (B05, D52; no lugar do marca-texto na cor do livro): o mesmo
+   * traço do menu do cabeçalho (traco.ts), um por linha do nome, que a caneta escreve da esquerda para
+   * a direita, linha a linha; quando a leitura segue, ele termina de passar e some pela direita. Com o
+   * mouse (ou o foco) numa seção, um traço leve, como no menu. Quem desenha é o artigo.ts: as linhas
+   * de um nome que quebra só existem na tela. Com movimento reduzido, o traço aparece pronto.
    */
-  .rotulo {
-    padding: 0 2px;
-    background-image: linear-gradient(transparent 16%, var(--marca-sumario) 16%, var(--marca-sumario) 92%, transparent 92%);
-    background-repeat: no-repeat;
-    background-position: 0 0;
-    background-size: 0% 100%;
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
-    transition: background-size 0.2s ease-in;
+  .secao :global(.sublinhado) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    overflow: visible;
+    pointer-events: none;
   }
 
-  [aria-current="true"] > .nome > .rotulo {
-    background-size: 100% 100%;
-    transition: background-size 0.55s cubic-bezier(0.45, 0, 0.55, 1);
+  .secao :global(.sublinhado svg) {
+    position: absolute;
+    height: 8px;
+    overflow: visible;
+  }
+
+  .secao :global(.sublinhado path) {
+    fill: none;
+    stroke: var(--caneta);
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .secao :global(.sublinhado.leve) {
+    opacity: 0.5;
+  }
+
+  .secao :global(.sublinhado.leve path) {
+    stroke-width: 1.4;
   }
 
   /* Subseções: só as da seção atual, em corpo menor, com a atual em azul-tinta. */
@@ -362,22 +373,6 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
 
   .progresso[hidden] {
     display: none;
-  }
-
-  .barra {
-    display: block;
-    height: 4px;
-    border-radius: 2px;
-    background: var(--rule);
-    overflow: hidden;
-  }
-
-  .feito {
-    display: block;
-    height: 100%;
-    background: var(--cor-ui);
-    transform: scaleX(0);
-    transform-origin: left;
   }
 
   /* "Atalhos ?" (D50): discreto, embaixo do progresso; some no toque e sem JS. */
@@ -425,7 +420,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     display: flex;
     justify-content: space-between;
     gap: 8px;
-    margin: 8px 0 0;
+    margin: 0;
     font-family: var(--font-codigo);
     font-size: 12px;
     color: var(--ink-3);
@@ -530,7 +525,8 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     text-decoration: none;
   }
 
-  .rotulo {
+  /* Só o "Do livro": o nome das seções também é .rotulo e herda o tamanho e a cor do link (B05, D52). */
+  .sobre .rotulo {
     font-size: 12.5px;
     color: var(--ink-2);
   }
@@ -720,8 +716,6 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
   @media (prefers-reduced-motion: reduce) {
     .bolinha,
     .visto,
-    .rotulo,
-    [aria-current="true"] > .nome > .rotulo,
     .fio-tinta,
     .folha-celular,
     .veu-sumario,

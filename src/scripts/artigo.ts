@@ -1,12 +1,13 @@
 /**
  * Interações do artigo (briefing §5.3): barra de leitura (no topo e embaixo do sumário), o sumário
- * que acompanha a leitura (C2, D49: o fio escrito por seção, a seção atual com o marca-texto, os
- * vistos e, sem a lateral, a seção no cabeçalho com a folha do sumário), notas laterais que abrem no
+ * que acompanha a leitura (C2, D49: o fio escrito por seção, a seção atual sublinhada à caneta (B05,
+ * D52), os vistos e, sem a lateral, a seção no cabeçalho com a folha do sumário), notas laterais que abrem no
  * lugar nas telas menores, visor de imagens e a apresentação (setas, contador e tela cheia). Sem JS o artigo continua inteiro: as
  * notas abrem por âncora, a apresentação rola de lado e o PDF baixa. O Copiar do código faz o gesto de
  * copiar do site (E3, D49).
  */
 import { ICONES } from "../lib/icones";
+import { tracoDeCaneta } from "../lib/traco";
 import { criarContador, mudarContador } from "./contador";
 import { mostrarCopiado } from "./copiado";
 
@@ -19,7 +20,6 @@ const raiz = document.documentElement;
 const artigo = document.querySelector<HTMLElement>("[data-artigo]");
 const barra = document.querySelector<HTMLElement>("[data-barra-leitura]");
 const progresso = document.querySelector<HTMLElement>("[data-progresso-sumario]");
-const progressoFeito = progresso?.querySelector<HTMLElement>(".feito");
 const progressoTexto = progresso?.querySelector<HTMLElement>(".lido");
 const progressoFalta = progresso?.querySelector<HTMLElement>("[data-falta]");
 const minutosFalta = progresso?.querySelector<HTMLElement>("[data-minutos-falta]");
@@ -155,10 +155,7 @@ function aoRolar() {
     const lido = Math.min(1, Math.max(0, -topoNaJanela(artigo) / Math.max(artigo.offsetHeight - innerHeight, 1)));
     barra.style.setProperty("--lido", lido.toFixed(4));
     barra.classList.toggle("escrevendo", lido > 0.002);
-    if (progressoFeito && progressoTexto) {
-      progressoFeito.style.transform = `scaleX(${lido.toFixed(4)})`;
-      progressoTexto.textContent = `${Math.round(lido * 100)}% lido`;
-    }
+    if (progressoTexto) progressoTexto.textContent = `${Math.round(lido * 100)}% lido`;
     if (progressoFalta && minutosFalta && minutosDoArtigo) {
       const resto = Math.max(1, Math.ceil(minutosDoArtigo * (1 - lido)));
       if (resto !== minutosNaTela) mudarContador(minutosFalta, (minutosNaTela = resto));
@@ -171,7 +168,7 @@ function aoRolar() {
   moverTinta();
 }
 
-// A seção atual (aria-current, com o marca-texto), as que ficaram para trás (com o visto, que fica
+// A seção atual (aria-current, sublinhada à caneta), as que ficaram para trás (com o visto, que fica
 // mesmo voltando a rolagem), a subseção atual dentro dela e, se a lista rola, a atual sempre à vista.
 // O visto é de quem leu: a seção em que o leitor ficou ganha o dela quando a leitura segue adiante.
 function marcarSumario(de: number, para: number) {
@@ -179,11 +176,22 @@ function marcarSumario(de: number, para: number) {
   const agora = performance.now();
   if (de >= 0 && para > de && agora - atualDesde >= TEMPO_DE_LEITURA) lidas.add(de);
   atualDesde = agora;
+  // Na primeira marcação (ao chegar, ou voltando pelo histórico), o traço já vem pronto.
+  const escrever = de !== -2;
   secoes.forEach(({ link, naFolha }, k) => {
     for (const a of [link, naFolha]) {
       if (!a) continue;
-      if (k === para) a.setAttribute("aria-current", "true");
-      else a.removeAttribute("aria-current");
+      const era = a.hasAttribute("aria-current");
+      if (k === para) {
+        a.setAttribute("aria-current", "true");
+        if (!era) {
+          apagarSublinhado(a, "leve", false);
+          sublinhar(a, "atual", escrever, 90);
+        }
+      } else {
+        a.removeAttribute("aria-current");
+        if (era) apagarSublinhado(a, "atual", escrever);
+      }
       a.parentElement?.classList.toggle("lida", lidas.has(k));
     }
   });
@@ -198,6 +206,106 @@ function marcarSumario(de: number, para: number) {
     }
   }
   trocarCabecalho(de, para);
+}
+
+// ---------- a seção atual sublinhada à caneta (B05, D52) ----------
+
+const SVG_NS = "http://www.w3.org/2000/svg";
+/** A curva da escrita do menu (traco.css): sai rápido e assenta. */
+const ESCREVE = "cubic-bezier(0.2, 0.75, 0.2, 1)";
+type Sublinhado = "atual" | "leve";
+
+/**
+ * O sublinhado de uma seção do sumário (lateral ou folha): o traço do menu do cabeçalho, um por linha
+ * do nome (as linhas saem da tela, getClientRects, porque o nome quebra onde a largura manda). Cada
+ * linha tem o tremor dela, sempre o mesmo. Escrito, a caneta passa linha a linha, na velocidade de
+ * quem sublinha (uns 0,15s mais 1ms por pixel, até 0,42s cada, com 40ms para levantar a caneta).
+ */
+function sublinhar(link: HTMLAnchorElement, tipo: Sublinhado, escrever: boolean, atraso = 0) {
+  const secao = link.parentElement as HTMLElement | null;
+  const rotulo = link.querySelector<HTMLElement>(".rotulo");
+  if (!secao || !rotulo) return;
+  apagarSublinhado(link, tipo, false);
+  const caixa = secao.getBoundingClientRect();
+  // A folha que chega pode estar em escala: as medidas voltam ao tamanho do layout.
+  const escala = secao.offsetWidth ? caixa.width / secao.offsetWidth : 0;
+  const linhas = [...rotulo.getClientRects()].filter((r) => r.width > 2);
+  if (!escala || !linhas.length) return;
+  const nome = rotulo.textContent?.trim() ?? "";
+  const grupo = document.createElement("span");
+  grupo.className = `sublinhado ${tipo}`;
+  grupo.setAttribute("aria-hidden", "true");
+  const animar = escrever && !reduzir.matches;
+  let t = atraso;
+  linhas.forEach((r, i) => {
+    const largura = r.width / escala;
+    const svg = document.createElementNS(SVG_NS, "svg");
+    svg.setAttribute("viewBox", "0 0 100 8");
+    svg.setAttribute("preserveAspectRatio", "none");
+    svg.setAttribute("focusable", "false");
+    // O traço passa logo abaixo das letras, no vão entre as linhas (o meio da caixa de 8px fica no fim
+    // da linha): encosta nas pernas do "g" e do "p", como um sublinhado à mão.
+    svg.style.left = `${((r.left - caixa.left) / escala - 1).toFixed(1)}px`;
+    svg.style.top = `${((r.bottom - caixa.top) / escala - 3.5).toFixed(1)}px`;
+    svg.style.width = `${(largura + 2).toFixed(1)}px`;
+    const caminho = document.createElementNS(SVG_NS, "path");
+    caminho.setAttribute("d", tracoDeCaneta(`${nome}#${i}`, tipo === "leve" ? 101 : 0, 0.9, Math.round(largura / 16)));
+    svg.append(caminho);
+    grupo.append(svg);
+    if (!animar) return;
+    const duracao = Math.min(420, 150 + largura);
+    svg.animate([{ clipPath: "inset(-4px 100% -4px 0)" }, { clipPath: "inset(-4px 0 -4px 0)" }], {
+      duration: tipo === "leve" ? Math.min(320, duracao) : duracao,
+      delay: t,
+      easing: ESCREVE,
+      fill: "backwards",
+    });
+    t += duracao + 40;
+  });
+  secao.append(grupo);
+}
+
+/** O traço sai como o do menu: termina de passar e some pela direita (0,22s). */
+function apagarSublinhado(link: HTMLAnchorElement, tipo: Sublinhado, animar: boolean) {
+  const secao = link.parentElement;
+  if (!secao) return;
+  for (const grupo of secao.querySelectorAll<HTMLElement>(`:scope > .sublinhado.${tipo}:not(.saindo)`)) {
+    if (!animar || reduzir.matches) {
+      grupo.remove();
+      continue;
+    }
+    grupo.classList.add("saindo");
+    const saidas = [...grupo.children].map((svg) => {
+      // De onde o traço estiver (inteiro, pela metade ou ainda por escrever).
+      const agora = getComputedStyle(svg).clipPath;
+      for (const a of svg.getAnimations()) a.cancel();
+      const de = agora && agora !== "none" ? agora : "inset(-4px 0 -4px 0)";
+      return svg.animate([{ clipPath: de }, { clipPath: "inset(-4px 0 -4px 100%)" }], {
+        duration: 220,
+        easing: "cubic-bezier(0.55, 0, 1, 0.45)",
+        fill: "forwards",
+      }).finished;
+    });
+    Promise.all(saidas)
+      .catch(() => {})
+      .then(() => grupo.remove());
+  }
+}
+
+/** Refaz o sublinhado da seção atual, já pronto (a largura mudou, a fonte chegou, a folha pousou). */
+function refazerSublinhados() {
+  for (const { link, naFolha } of secoes)
+    for (const a of [link, naFolha]) if (a?.hasAttribute("aria-current")) sublinhar(a, "atual", false);
+}
+
+// Com o mouse ou o foco do teclado numa seção, a caneta passa um traço leve (como no menu).
+for (const { link } of secoes) {
+  const passar = () => !link.hasAttribute("aria-current") && sublinhar(link, "leve", true);
+  const tirar = () => apagarSublinhado(link, "leve", true);
+  link.addEventListener("pointerenter", (e) => e.pointerType === "mouse" && passar());
+  link.addEventListener("pointerleave", (e) => e.pointerType === "mouse" && tirar());
+  link.addEventListener("focus", () => link.matches(":focus-visible") && passar());
+  link.addEventListener("blur", tirar);
 }
 
 function marcarSubsecao() {
@@ -269,7 +377,10 @@ function abrirFolha(pelaTecla: boolean) {
   if (raiz.hasAttribute("data-menu-aberto")) document.querySelector<HTMLButtonElement>("[data-botao-menu]")?.click();
   botaoSecao.setAttribute("aria-expanded", "true");
   raiz.dataset.sumarioAberto = "";
-  const alvo = folha.querySelector<HTMLAnchorElement>('[aria-current="true"]') ?? folha.querySelector<HTMLAnchorElement>("a");
+  // A caneta sublinha a seção atual quando a folha termina de descer (como o traço do menu, D49).
+  const daVez = folha.querySelector<HTMLAnchorElement>('[aria-current="true"]');
+  if (daVez) sublinhar(daVez, "atual", true, 380);
+  const alvo = daVez ?? folha.querySelector<HTMLAnchorElement>("a");
   if (pelaTecla) alvo?.focus({ preventScroll: true });
 }
 
@@ -309,19 +420,26 @@ addEventListener(
 );
 let larguraAntes = innerWidth;
 addEventListener("resize", () => {
-  if (innerWidth !== larguraAntes) desenharFio();
+  if (innerWidth !== larguraAntes) {
+    desenharFio();
+    refazerSublinhados();
+  }
   larguraAntes = innerWidth;
   aoRolar();
 });
 lateralVisivel.addEventListener("change", () => {
   desenharFio();
+  refazerSublinhados();
   aoRolar();
 });
 if (listaTrilho) new ResizeObserver(() => desenharFio()).observe(listaTrilho);
 document.fonts?.ready.then(() => {
   desenharFio();
+  refazerSublinhados();
   aoRolar();
 });
+// Entrando por um #título com a troca de página (D51), o sublinhado foi medido na folha que chegava.
+addEventListener("cs:chegou", refazerSublinhados);
 // Voltando pela memória do navegador (bfcache), a página volta como estava: o sumário recomeça zerado,
 // só com a seção onde o leitor está (B04, D52).
 addEventListener("pageshow", (e) => {
