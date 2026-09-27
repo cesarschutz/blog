@@ -625,6 +625,133 @@ a:hover > .titulo-sub,
 }
 
 /*
+ * A chegada curta (D52, B14, troca.js): quando a página nova demorou mais de 1s desde o clique (ou o
+ * aparelho não dá conta da coreografia), as folhas só aparecem, e o livro voa depressa.
+ */
+:root:active-view-transition-type(curta)::view-transition-group(.livro) {
+  animation-duration: 0.35s;
+}
+
+:root:active-view-transition-type(curta)::view-transition-old(.livro):only-child {
+  animation: folha-sai 0.14s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+/*
+ * Carregando (D52, B14, troca.js): se a página nova não vem em 0,2s, a caneta azul (a da leitura, D48)
+ * escreve o fio do cabeçalho, depressa no começo e cada vez mais devagar, até a página chegar; ela some
+ * com a página antiga. A barra da leitura do artigo, no mesmo fio, fica escondida enquanto isso.
+ */
+@property --carga {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+.carregando {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + var(--altura-topo) - 2px);
+  left: 0;
+  right: 0;
+  z-index: 41;
+  height: 2px;
+  container-type: inline-size;
+  pointer-events: none;
+  animation: carga-escreve 14s cubic-bezier(0.1, 0.5, 0.2, 1) both;
+}
+
+.carregando .risco {
+  position: absolute;
+  inset: 0;
+  background: var(--caneta);
+  transform: scaleX(var(--carga));
+  transform-origin: 0 50%;
+}
+
+/* A ponta da caneta (4, 20 no desenho de 24) encosta no fim do traço e a mão balança um pouco. */
+.carregando .caneta {
+  position: absolute;
+  top: -17.3px;
+  left: -3.7px;
+  width: 22px;
+  height: 22px;
+  overflow: visible;
+  translate: calc(var(--carga) * 100cqw) 0;
+  transform-origin: 17% 83%;
+  animation:
+    carga-aparece 0.18s ease-out both,
+    carga-mao 0.32s ease-in-out infinite alternate;
+}
+
+.carregando .corpo {
+  fill: color-mix(in oklab, var(--caneta) 16%, var(--paper-hi));
+  stroke: var(--ink);
+  stroke-width: 1.3;
+  stroke-linejoin: round;
+}
+
+.carregando .anel {
+  fill: none;
+  stroke: var(--caneta);
+  stroke-width: 1.6;
+}
+
+.carregando .ponta {
+  fill: var(--caneta);
+  stroke: var(--ink);
+  stroke-width: 1.1;
+  stroke-linejoin: round;
+}
+
+:root[data-carregando] .barra-leitura {
+  visibility: hidden;
+}
+
+@keyframes carga-escreve {
+  from {
+    --carga: 0;
+  }
+
+  to {
+    --carga: 0.94;
+  }
+}
+
+@keyframes carga-aparece {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes carga-mao {
+  from {
+    rotate: -5deg;
+  }
+
+  to {
+    rotate: 4deg;
+  }
+}
+
+/* Com movimento reduzido, o fio aparece inteiro, mais claro, sem a caneta andando. */
+@media (prefers-reduced-motion: reduce) {
+  .carregando {
+    --carga: 1;
+    opacity: 0.45;
+    animation: none;
+  }
+
+  .carregando .caneta {
+    display: none;
+  }
+}
+
+@media print {
+  .carregando {
+    display: none;
+  }
+}
+
+/*
  * Tema em círculo (D42, D44, trocarTema em tema.ts): indo para o escuro, a página nova cresce num
  * círculo a partir do botão; voltando ao claro, a antiga (escura) fica por cima e encolhe de fora
  * para dentro até o botão. Enquanto isso, nenhum outro elemento tem nome de transição: a página vira

@@ -29,7 +29,8 @@ const livros = (await montarLivros()).filter((l) => !l.serie);
 
   type Unidade = { el: HTMLElement; texto: boolean };
   type Troca = { unidades: () => Unidade[]; chegar: (novas: Unidade[], opcoes?: { t0?: number }) => number };
-  const janela = window as unknown as { csTroca?: Troca; csChegada?: { novas: Unidade[]; inicio: number; t0?: number } | null };
+  type Chegada = { novas: Unidade[]; inicio: number; t0?: number; comecou?: boolean; revelada?: boolean };
+  const janela = window as unknown as { csTroca?: Troca; csChegada?: Chegada | null };
 
   async function desfilar(novas: Unidade[], t0: number, curto = false) {
     const gsap = await carregarGsap();
@@ -102,9 +103,14 @@ const livros = (await montarLivros()).filter((l) => !l.serie);
     // Vindo de outra página: a troca (troca.js) deixou as folhas escondidas esperando por esta chegada.
     const chegada = janela.csChegada;
     if (chegada) {
-      janela.csChegada = null;
-      // O desfile começa quando as folhas da página anterior já caíram (troca.js, D52 A02).
-      void desfilar(chegada.novas, Math.max(0, (chegada.t0 ?? 0.2) - (performance.now() - chegada.inicio) / 1000));
+      // O desfile começa quando as folhas da página anterior já caíram (troca.js, D52 A02) e o GSAP chegou.
+      // Com a rede lenta, se o GSAP demorar, a troca mostra as folhas paradas (D52 B14) e o desfile não vem.
+      void carregarGsap().then(() => {
+        if (chegada.revelada) return;
+        chegada.comecou = true;
+        janela.csChegada = null;
+        void desfilar(chegada.novas, Math.max(0, (chegada.t0 ?? 0.2) - (performance.now() - chegada.inicio) / 1000));
+      });
     }
     // Entrando direto: o caderno da abertura avisa quando o papel começa a sair.
     addEventListener("cs:abertura-chega", () => janela.csTroca && void desfilar(janela.csTroca.unidades(), 0, true), { once: true });

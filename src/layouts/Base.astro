@@ -81,6 +81,23 @@ const canonico = new URL(Astro.url.pathname, Astro.site);
 const imagemAbsoluta = new URL(url(imagem), Astro.site).href;
 // A pré-visualização não pode concorrer com o blog atual nos buscadores.
 const preVisualizacao = process.env.PREVIEW === "true";
+// Pré-carregar a página de um link do site quando o ponteiro para em cima dele (ou o dedo encosta), D52
+// B14: regras de especulação do navegador (sem JavaScript; quem não conhece, ignora). Só o HTML, sem
+// executar nada (prefetch, e não prerender: a página pré-renderizada rodaria os scripts antes da hora).
+const preCarregar = {
+  prefetch: [
+    {
+      where: {
+        and: [
+          { href_matches: "/*" },
+          { not: { href_matches: ["/*.pdf", "/*.xml", "/*.png", "/*.svg", "/*.json", "/*.txt"] } },
+          { not: { selector_matches: "[download], [target=_blank], [rel~=nofollow]" } },
+        ],
+      },
+      eagerness: "moderate",
+    },
+  ],
+};
 ---
 
 <!doctype html>
@@ -161,6 +178,7 @@ const preVisualizacao = process.env.PREVIEW === "true";
       })();
     </script>
     <script is:inline set:html={trocaJs}></script>
+    <script type="speculationrules" is:inline set:html={JSON.stringify(preCarregar)}></script>
     <link rel="expect" href="#fim-do-conteudo" blocking="render" />
     <style is:inline set:html={`${cssDosTokens()}:root{--grao:${GRAO_CSS}}`}></style>
     <title>{tituloDaAba}</title>

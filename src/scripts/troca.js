@@ -23,6 +23,10 @@
  *   pela pilha (`data-troca-propria`, PainelHome) e a navegação com um diálogo aberto (busca, livro
  *   ampliado): elas usam a troca de página de antes (base.css).
  *
+ * - Lentidão (D52, B14): se a página nova não vem em 0,2s, a caneta azul escreve o fio do cabeçalho até ela
+ *   chegar; se a espera passou de 1s desde o clique, ou o aparelho não deu conta de uma troca anterior
+ *   (mais de 50 ms por quadro) ou tem pouca memória, a chegada é a curta (as folhas só aparecem, ~0,4s).
+ *
  * Outros scripts usam `window.csTroca` (unidades, chegar) e os eventos `cs:pousou` (a folha do desenho
  * do artigo pousou) e `cs:chegou` (a chegada acabou). `data-vai-chegar` no <html>, posto já no <head>,
  * avisa os módulos que a página vai chegar por uma troca, antes do `pagereveal`.
@@ -40,6 +44,10 @@
   // A mesa fica limpa antes (D52, A02): as folhas novas só começam a chegar quando as antigas já caíram
   // (a última some em 0,3s); antes, as novas apareciam atrás das antigas ainda paradas.
   var SAIDA = 0.26;
+  // Lentidão (D52, B14): a caneta escreve o fio do cabeçalho se a página nova não vier em 0,2s; se a
+  // espera passou de 1s (ou o aparelho não dá conta da coreografia), a chegada é a curta.
+  var ESPERA = 200;
+  var DEMORA = 1000;
   var celular = function () { return innerWidth <= 640; };
   var rnd = function (a, b) { return a + Math.random() * (b - a); };
   var FOLHA = ".folha, [data-unidade]";
@@ -146,8 +154,59 @@
   };
   var PARADO = T3(0, 0, 0, 0, 0, 0);
 
+  /* ================= Enquanto a página nova não vem (D52, B14) ================= */
+  // O clique navega na hora; se a página nova demora mais de 0,2s (rede ou aparelho lentos), a caneta
+  // azul começa a escrever o fio do cabeçalho, cada vez mais devagar, até ela chegar. Ela fica na última
+  // imagem da página antiga (enquanto a nova termina de carregar, a tela fica parada) e some com ela.
+  var CANETA = '<svg class="caneta" viewBox="0 0 24 24" focusable="false"><path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1.4 1.4 0 0 1 0 2l-9.2 9.2Z"/><path class="anel" d="m15.6 5.8 2.6 2.6"/><path class="ponta" d="M8.2 13.2 10.8 15.8 4 20Z"/></svg>';
+  var carga = null, relogio = 0, largou = 0, inicioNav = 0;
+  function mostrarCarga() {
+    relogio = 0;
+    if (carga || !document.body) return;
+    carga = document.createElement("div");
+    carga.className = "carregando";
+    carga.setAttribute("aria-hidden", "true");
+    carga.innerHTML = '<div class="risco"></div>' + CANETA;
+    document.body.append(carga);
+    raiz.setAttribute("data-carregando", "");
+    // Se nada chegar (a pessoa parou o carregamento), a caneta some sozinha.
+    largou = setTimeout(esconderCarga, 20000);
+  }
+  function esconderCarga() {
+    clearTimeout(relogio);
+    clearTimeout(largou);
+    relogio = largou = 0;
+    if (carga) carga.remove();
+    carga = null;
+    raiz.removeAttribute("data-carregando");
+  }
+  function vaiNavegar(url) {
+    esconderCarga();
+    var d;
+    try { d = new URL(url, location.href); } catch (err) { return; }
+    if (d.origin !== location.origin || (d.pathname === location.pathname && d.search === location.search)) return;
+    inicioNav = Date.now();
+    relogio = setTimeout(mostrarCarga, ESPERA);
+  }
+  if (window.navigation && navigation.addEventListener) {
+    navigation.addEventListener("navigate", function (e) {
+      if (e.hashChange || e.downloadRequest || e.navigationType === "reload" || (e.destination && e.destination.sameDocument)) return;
+      vaiNavegar(e.destination.url);
+    });
+  } else {
+    addEventListener("click", function (e) {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      var a = e.target && e.target.closest && e.target.closest("a[href]");
+      if (!a || (a.target && a.target !== "_self") || a.hasAttribute("download")) return;
+      vaiNavegar(a.href);
+    });
+  }
+
   /* ================= A página que sai ================= */
   addEventListener("pageswap", function (e) {
+    // A caneta fica na tela até a página nova chegar; só o relógio para (não aparece mais depois disto:
+    // daqui até a página nova ser pintada, a tela fica parada na última imagem desta).
+    clearTimeout(relogio);
     limparNomes();
     try { sessionStorage.removeItem(CHAVE); } catch (err) {}
     if (!e.viewTransition || reduzido.matches) return;
@@ -155,7 +214,7 @@
     var destino = e.activation && e.activation.entry && e.activation.entry.url;
     if (!destino) return;
     var para = new URL(destino).pathname;
-    var dados = { t: Date.now(), de: location.pathname, para: para, W: innerWidth, H: innerHeight };
+    var dados = { t: Date.now(), clique: inicioNav, de: location.pathname, para: para, W: innerWidth, H: innerHeight };
 
     // Artigo anterior ou próximo: a folha do artigo inteira, e a lateral.
     var ehPost = function (c) { return /\/posts\//.test(c); };
@@ -202,6 +261,7 @@
   var restaurada = false;
   addEventListener("pageshow", function (e) {
     if (!e.persisted) return;
+    esconderCarga();
     limparNomes();
     restaurada = true;
   });
@@ -240,8 +300,10 @@
     var W = innerWidth, H = innerHeight, cel = celular();
     var m = document.getElementById("conteudo");
     var passo = Number(opcoes.passo || (m && m.dataset.chegadaPasso) || 0.085);
-    // Com muitas folhas, a última sai no máximo 0,5s depois da primeira (a troca fecha em ~1,6s).
-    passo = Math.min(passo, 0.5 / Math.max(1, novas.length - 1));
+    // Com muitas folhas, a última sai no máximo 0,5s depois da primeira (a troca fecha em ~1,6s); na chegada
+    // curta (a página demorou, B14), em 0,1s.
+    passo = Math.min(opcoes.curta ? 0.02 : passo, (opcoes.curta ? 0.1 : 0.5) / Math.max(1, novas.length - 1));
+    var curta = !!opcoes.curta;
     var t0 = opcoes.t0 || 0, fim = 0;
     var anims = opcoes.anims || [];
     var animar = function (el, quadros, tempo) {
@@ -255,18 +317,26 @@
       if (u.texto) {
         animar(el,
           [{ transform: "translateY(18px)", opacity: 0, clipPath: "inset(0 0 100% 0)" }, { transform: "none", opacity: 1, clipPath: "inset(0 0 0% 0)" }],
-          { duration: 550, delay: t + 50, easing: QUART_OUT, fill: "backwards" },
+          { duration: curta ? 280 : 550, delay: t + 50, easing: QUART_OUT, fill: "backwards" },
         );
-        fim = Math.max(fim, t + 600);
+        fim = Math.max(fim, t + (curta ? 330 : 600));
         return;
       }
       if (u.soEsmaece) {
         // A folha que recebe o livro que voa esmaece antes das outras, e tem de estar inteira quando ele
         // pousa (0,75s). Ela nunca fica em zero: com opacidade 0, o Chrome não pinta nada dentro dela, e a
         // imagem nova do livro (viva) sumia no começo do voo.
-        if (u.comLivro) t = 120;
-        animar(el, [{ opacity: u.comLivro ? 0.01 : 0 }, { opacity: 1 }], { duration: 450, delay: t, easing: "linear", fill: "backwards" });
-        fim = Math.max(fim, t + 450);
+        if (u.comLivro) t = curta ? 0 : 120;
+        var dm = curta ? 250 : 450;
+        animar(el, [{ opacity: u.comLivro ? 0.01 : 0 }, { opacity: 1 }], { duration: dm, delay: t, easing: "linear", fill: "backwards" });
+        fim = Math.max(fim, t + dm);
+        return;
+      }
+      if (curta) {
+        // A chegada curta: a folha só sobe um pouco e aparece, sem o voo do fundo.
+        if (desenho && el.contains(desenho)) animar(el, [], { duration: t + 180 }).finished.then(function () { dispatchEvent(new CustomEvent("cs:pousou")); }, function () {});
+        animar(el, [{ transform: "translateY(12px)", opacity: 0 }, { transform: "none", opacity: 1 }], { duration: 300, delay: t, easing: QUART_OUT, fill: "backwards" });
+        fim = Math.max(fim, t + 300);
         return;
       }
       var origem = "50% " + (u.oy || 0) + "px";
@@ -292,8 +362,13 @@
    * somem. Tudo some em 0,3s, antes de as folhas novas aparecerem (SAIDA): a queda acelera logo (o
    * peso) e a folha some na segunda metade dela, ainda caindo.
    */
-  function cair(d, comPar) {
+  function cair(d, comPar, curta) {
     var H = innerHeight, fim = 0, giro = {};
+    if (curta) {
+      // A saída curta (a página demorou, B14): as folhas antigas só somem.
+      d.sai.forEach(function (s) { animarPseudo("::view-transition-old(" + s.n + ")", [{ opacity: 1 }, { opacity: 0 }], { duration: 140, easing: CUBIC_IN }); });
+      return { fim: 140, giro: giro };
+    }
     // A folha que tinha o livro que voou cai primeiro e some logo (senão, fica o buraco dele à vista).
     var donos = {};
     (d.livros || []).forEach(function (l) { if (comPar[l.n] && l.u >= 0) donos["sai-" + l.u] = true; });
@@ -313,6 +388,34 @@
       fim = Math.max(fim, t + 380);
     });
     return { fim: fim, giro: giro };
+  }
+
+  /**
+   * O aparelho não dá conta da coreografia (D52, B14): pouca memória, ou uma troca anterior nesta visita
+   * que passou de 50 ms por quadro, em média. Daí em diante, as trocas são as curtas.
+   */
+  var LENTO = "cs-troca-leve";
+  function aparelhoLento() {
+    if (navigator.deviceMemory && navigator.deviceMemory <= 2) return true;
+    try { return sessionStorage.getItem(LENTO) === "1"; } catch (err) { return false; }
+  }
+  function medirQuadros(vt) {
+    var n = 0, primeiro = 0, ultimo = 0, acabou = false;
+    function quadro(t) {
+      if (!primeiro) primeiro = t;
+      ultimo = t;
+      n++;
+      if (!acabou) requestAnimationFrame(quadro);
+    }
+    vt.ready.then(function () { requestAnimationFrame(quadro); }, function () {});
+    vt.finished.then(function () {
+      acabou = true;
+      // Aba oculta não conta (o navegador não pinta, e os quadros param).
+      if (document.visibilityState !== "visible" || n < 4) return;
+      if ((ultimo - primeiro) / (n - 1) > 50) {
+        try { sessionStorage.setItem(LENTO, "1"); } catch (err) {}
+      }
+    });
   }
 
   function avisarChegada() {
@@ -341,6 +444,12 @@
     }
     raiz.dataset.chegando = "";
     try { vt.types.add(d.tipo); } catch (err) {}
+    // A chegada curta (D52, B14): a pessoa já esperou mais de 1s desde o clique (rede ou aparelho lentos),
+    // ou este aparelho não deu conta da coreografia numa troca anterior (aparelhoLento).
+    var curta = Date.now() - (d.clique || d.t) > DEMORA || aparelhoLento();
+    if (curta) {
+      try { vt.types.add("curta"); } catch (err) {}
+    } else medirQuadros(vt);
 
     if (d.tipo === "lado") {
       trocarDeLado(vt, d);
@@ -353,7 +462,7 @@
     (d.livros || []).forEach(function (l) { velhos[l.n] = l; });
     var volta = voltando();
     var m = document.getElementById("conteudo");
-    var propria = m && m.dataset.chegada === "propria" && !volta;
+    var propria = m && m.dataset.chegada === "propria" && !volta && !curta;
     var novosLivros = livrosNomeados();
     var comPar = {};
     novosLivros.forEach(function (l) {
@@ -376,31 +485,33 @@
       var g = comPar[l.n] && v && v.g != null ? giroDe(l.el) : null;
       if (g == null) return;
       nomear(l.el, l.n, "livro mesmo");
-      if (Math.abs(v.g - g) > 1) anims.push(l.el.querySelector(".livro-3d").animate([{ transform: "rotateY(" + v.g + "deg)" }, { transform: "rotateY(" + g + "deg)" }], { duration: 750, easing: "cubic-bezier(0.65, 0, 0.35, 1)", fill: "backwards" }));
+      if (Math.abs(v.g - g) > 1) anims.push(l.el.querySelector(".livro-3d").animate([{ transform: "rotateY(" + v.g + "deg)" }, { transform: "rotateY(" + g + "deg)" }], { duration: curta ? 350 : 750, easing: "cubic-bezier(0.65, 0, 0.35, 1)", fill: "backwards" }));
     });
 
     if (propria) {
       // A página anima a chegada dela (Categorias); até o script dela chegar, as folhas esperam escondidas.
       novas.forEach(function (u) { u.el.style.opacity = "0"; });
-      window.csChegada = { novas: novas, inicio: performance.now(), t0: SAIDA };
+      var chegada = (window.csChegada = { novas: novas, inicio: performance.now(), t0: SAIDA });
+      // Se o script dela (ou o GSAP, que ele carrega sob demanda) não vier em 1,8s, as folhas aparecem paradas.
       setTimeout(function () {
-        if (!window.csChegada) return;
+        if (chegada.comecou) return;
+        chegada.revelada = true;
         novas.forEach(function (u) { u.el.style.opacity = ""; });
-        window.csChegada = null;
+        if (window.csChegada === chegada) window.csChegada = null;
       }, 1800);
     }
     // As folhas novas ficam escondidas desde o primeiro quadro, mas o relógio delas começa junto com a
     // queda das antigas (vt.ready, que pode vir alguns quadros depois deste evento).
-    var fimDaChegada = propria ? 0 : chegar(novas, { volta: volta, t0: SAIDA, anims: anims });
+    var fimDaChegada = propria ? 0 : chegar(novas, { volta: volta, t0: curta ? 0.06 : SAIDA, anims: anims, curta: curta });
     var comecou = vt.ready.then(function () {
       anims.forEach(function (a) { a.currentTime = 0; });
     }, function () {});
 
     vt.ready.then(function () {
-      var r = cair(d, comPar);
-      // O livro que não tem par cai com a folha dele.
+      var r = cair(d, comPar, curta);
+      // O livro que não tem par cai com a folha dele (na saída curta, só some, pelo CSS).
       (d.livros || []).forEach(function (l) {
-        if (comPar[l.n] || l.u < 0) return;
+        if (curta || comPar[l.n] || l.u < 0) return;
         var g = r.giro["sai-" + l.u];
         if (!g) return;
         var alvo = "::view-transition-old(" + l.n + ")";
