@@ -224,8 +224,10 @@ export function codigoDeCaneta() {
 }
 
 /**
- * A lua do botão de tema: a borda de fora num arco só até a ponta de baixo e, dali, a mordida de volta
- * até a ponta de cima, cruzando um nada o começo. As duas pontas ficam vivas.
+ * A lua do botão de tema: da ponta de cima, a mordida por dentro até a ponta de baixo e, dali, a borda
+ * de fora num arco só, que volta à ponta de cima e passa um nada dela, cruzando o começo. As duas
+ * pontas ficam vivas. Corre no sentido do relógio e começa no alto à esquerda, como o miolo do sol:
+ * assim o MorphSVG enche a lua até virar o sol sem torcer o desenho no meio.
  */
 export function luaDeCaneta() {
   const [ox, oy] = [12, 12];
@@ -234,22 +236,22 @@ export function luaDeCaneta() {
   const baixo: Ponto = [20.1, 14.7];
   const R = Math.hypot(cima[0] - ox, cima[1] - oy);
   const Rb = Math.hypot(cima[0] - bx, cima[1] - by);
-  const a0 = Math.atan2(cima[1] - oy, cima[0] - ox) + 2 * Math.PI;
-  const a1 = Math.atan2(baixo[1] - oy, baixo[0] - ox);
-  const fora: Ponto[] = [];
-  for (let i = 0; i <= 12; i++) {
-    const a = a0 + ((a1 - a0) * i) / 12;
-    fora.push([ox + Math.cos(a) * R, oy + Math.sin(a) * R]);
-  }
-  const b0 = Math.atan2(baixo[1] - by, baixo[0] - bx);
-  const b1 = Math.atan2(cima[1] - by, cima[0] - bx) + 2 * Math.PI + 0.2;
+  const b0 = Math.atan2(cima[1] - by, cima[0] - bx) + 2 * Math.PI;
+  const b1 = Math.atan2(baixo[1] - by, baixo[0] - bx);
   const dentro: Ponto[] = [];
   for (let i = 0; i <= 8; i++) {
     const a = b0 + ((b1 - b0) * i) / 8;
-    const k = 1 + (i / 8) * 0.06;
-    dentro.push([bx + Math.cos(a) * Rb * k, by + Math.sin(a) * Rb * k]);
+    dentro.push([bx + Math.cos(a) * Rb, by + Math.sin(a) * Rb]);
   }
-  return trechos(tremer(fora, "lua", 0.25), tremer(dentro, "mordida", 0.2));
+  const a0 = Math.atan2(baixo[1] - oy, baixo[0] - ox);
+  const a1 = Math.atan2(cima[1] - oy, cima[0] - ox) + 2 * Math.PI + 0.14;
+  const fora: Ponto[] = [];
+  for (let i = 0; i <= 12; i++) {
+    const a = a0 + ((a1 - a0) * i) / 12;
+    const k = 1 + (i / 12) * 0.05;
+    fora.push([ox + Math.cos(a) * R * k, oy + Math.sin(a) * R * k]);
+  }
+  return trechos(tremer(dentro, "mordida", 0.2), tremer(fora, "lua", 0.25));
 }
 
 /** O sol: o miolo numa volta que passa do começo e oito raios, cada um de dentro para fora. */

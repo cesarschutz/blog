@@ -13,25 +13,24 @@
  *   claro, os raios recolhem primeiro e o círculo é "mordido" de volta. O botão fica por cima do
  *   círculo da troca (base.css, `botao-tema`). O MorphSVG só é baixado ao passar o mouse, tocar ou
  *   focar o botão; sem ele ainda, ou com movimento reduzido, o ícone troca seco.
+ *
+ * À caneta (C04, D52): o contorno é um círculo feito à mão, a lápis (a tinta do botão, fraca), e o
+ * sol e a lua são desenhos da caneta preta (src/lib/traco.ts), com as pontas vivas e a volta que passa
+ * do começo. No hover (ou com o foco), a caneta passa por cima do contorno, como no GitHub e no
+ * LinkedIn ao lado (o círculo de traco.css). A animação da troca é a mesma: o MorphSVG leva a lua
+ * desenhada ao miolo desenhado, e os raios desenhados se escrevem de dentro para fora.
  */
-import { ICONES } from "../lib/icones";
+import { circuloDeCaneta, contornoDeCaneta, luaDeCaneta, solDeCaneta } from "../lib/traco";
+import "../styles/traco.css";
 
-// O miolo do sol (um círculo como caminho, para virar a lua) e os raios, cada um de dentro para fora.
-const SOL = "M12 8a4 4 0 1 0 0 8a4 4 0 1 0 0-8z";
-const RAIOS = [
-  "M12 4.5V2.5",
-  "M18 6l1.4-1.4",
-  "M19.5 12h2",
-  "M18 18l1.4 1.4",
-  "M12 19.5v2",
-  "M6 18l-1.4 1.4",
-  "M4.5 12h-2",
-  "M6 6 4.6 4.6",
-];
-const LUA = ICONES.lua.match(/d="([^"]+)"/)![1];
+// O miolo do sol (uma volta, para virar a lua) e os raios, cada um de dentro para fora.
+const { miolo: SOL, raios: RAIOS } = solDeCaneta();
+const LUA = luaDeCaneta();
 ---
 
 <button type="button" class="botao-tema" aria-label="Usar o tema escuro" title="Tema escuro" data-botao-tema data-sol={SOL} data-lua={LUA}>
+  <svg class="contorno" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path d={contornoDeCaneta("tema")} /></svg>
+  <svg class="circulo" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path pathLength="1" d={circuloDeCaneta("Tema")} /></svg>
   <svg class="icone-tema" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
     <g class="raios">{RAIOS.map((d) => <path d={d} />)}</g>
     <path class="corpo" d={LUA} />
@@ -102,6 +101,20 @@ const LUA = ICONES.lua.match(/d="([^"]+)"/)![1];
       const para = temaNaTela() === "dark" ? "light" : "dark";
       animarIcone(para);
       trocarTema(para, botao);
+      // A caneta que circula o botão fica desenhada até o mouse sair (C04): durante a troca, a página
+      // em transição toma o mouse (o botão perde o hover), e o círculo se apagaria e se escreveria de
+      // novo no fim. O mouse que sai durante a troca só conta no primeiro movimento depois dela.
+      if (botao.matches(":hover")) botao.classList.add("circulado");
+    });
+    const trocando = () => document.documentElement.classList.contains("trocando-tema");
+    const soltar = (e: PointerEvent) => {
+      if (trocando()) return;
+      if (!botao.contains(e.target as Node)) botao.classList.remove("circulado");
+      removeEventListener("pointermove", soltar);
+    };
+    botao.addEventListener("pointerleave", () => {
+      if (!trocando()) botao.classList.remove("circulado");
+      else addEventListener("pointermove", soltar, { passive: true });
     });
     aoMudarTema(() => {
       const escuro = temaNaTela() === "dark";
@@ -121,17 +134,52 @@ const LUA = ICONES.lua.match(/d="([^"]+)"/)![1];
 
 <style>
   .botao-tema {
+    position: relative;
     display: grid;
     flex: none;
     place-items: center;
     width: 38px;
     height: 38px;
     padding: 0;
-    border: 1px solid var(--rule);
+    border: 0;
     border-radius: 50%;
     background: var(--paper-hi);
     color: var(--ink-2);
     cursor: pointer;
+  }
+
+  /*
+   * O contorno a lápis (C04): a tinta do botão, fraca, num círculo feito à mão. Na cor do texto
+   * (currentColor), para acompanhar as cores que a troca de tema congela no botão (tema.ts).
+   */
+  .contorno {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.15;
+    stroke-linecap: round;
+    stroke-opacity: 0.42;
+    transition: stroke-opacity 0.2s;
+  }
+
+  .botao-tema:hover .contorno {
+    stroke-opacity: 0.2;
+  }
+
+  /* A caneta que passa por cima no hover (traco.css), na tinta do botão. */
+  .botao-tema .circulo :global(path) {
+    stroke: currentColor;
+  }
+
+  .botao-tema.circulado > .circulo :global(path) {
+    stroke-dashoffset: 0;
+    transition: none;
+    animation: none;
   }
 
   /* Sem JS, o botão some e o tema segue o sistema (o script do <head> põe o data-js). */
@@ -140,17 +188,16 @@ const LUA = ICONES.lua.match(/d="([^"]+)"/)![1];
   }
 
   .botao-tema:hover {
-    border-color: var(--ink-3);
     color: var(--ink);
   }
 
-  svg {
+  .icone-tema {
     width: 17px;
     height: 17px;
     overflow: visible;
     fill: none;
     stroke: currentColor;
-    stroke-width: 1.8;
+    stroke-width: 1.7;
     stroke-linecap: round;
     stroke-linejoin: round;
     transition: rotate 0.5s cubic-bezier(0.2, 0.75, 0.2, 1);
@@ -163,29 +210,30 @@ const LUA = ICONES.lua.match(/d="([^"]+)"/)![1];
 
   /* A (D49): no hover (ou com o foco), o sol gira 22° e a lua balança 14°. */
   @media (hover: hover) {
-    [data-tela="escuro"]:hover svg {
+    [data-tela="escuro"]:hover .icone-tema {
       rotate: 22deg;
     }
 
-    [data-tela="claro"]:hover svg {
+    [data-tela="claro"]:hover .icone-tema {
       rotate: -14deg;
     }
   }
 
-  [data-tela="escuro"]:focus-visible svg {
+  [data-tela="escuro"]:focus-visible .icone-tema {
     rotate: 22deg;
   }
 
-  [data-tela="claro"]:focus-visible svg {
+  [data-tela="claro"]:focus-visible .icone-tema {
     rotate: -14deg;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    svg {
+    .icone-tema,
+    .contorno {
       transition: none;
     }
 
-    [data-tela]:is(:hover, :focus-visible) svg {
+    [data-tela]:is(:hover, :focus-visible) .icone-tema {
       rotate: none;
     }
   }

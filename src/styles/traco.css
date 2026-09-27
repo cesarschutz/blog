@@ -107,7 +107,8 @@ a:is(:hover, :focus-visible) .arco-rss + .arco-rss {
 
 /*
  * O círculo à mão (D49, protótipo E2; o caminho sai de circuloDeCaneta): nos números da paginação e
- * nos perfis do cabeçalho. Parado, ele já saiu pela ponta; com o mouse ou o foco no link, se escreve do
+ * nos perfis do cabeçalho (e, desde a C04 da D52, nos botões redondos do cabeçalho, por cima do
+ * contorno a lápis deles). Parado, ele já saiu pela ponta; com o mouse ou o foco no link, se escreve do
  * começo, passando um pouco do ponto de partida (0,42s), e ao sair some pela ponta (0,2s). O traçado
  * tem comprimento 1 e o vão, 2: parado, o caminho fica no meio do vão, longe da ponta do traço (se
  * ficasse encostado nela, a ponta redonda deixava um ponto no começo do círculo).
@@ -133,14 +134,14 @@ a:is(:hover, :focus-visible) .arco-rss + .arco-rss {
 }
 
 @media (hover: hover) {
-  a:hover > .circulo path {
+  :is(a, button):hover > .circulo path {
     stroke-dashoffset: 0;
     transition: none;
     animation: circular 0.42s cubic-bezier(0.455, 0.03, 0.515, 0.955);
   }
 }
 
-a:focus-visible > .circulo path {
+:is(a, button):focus-visible > .circulo path {
   stroke-dashoffset: 0;
   transition: none;
   animation: circular 0.42s cubic-bezier(0.455, 0.03, 0.515, 0.955);
@@ -154,7 +155,7 @@ a:focus-visible > .circulo path {
 
 @media (prefers-reduced-motion: reduce) {
   .circulo path,
-  a:is(:hover, :focus-visible) > .circulo path {
+  :is(a, button):is(:hover, :focus-visible) > .circulo path {
     transition: none;
     animation: none;
   }
