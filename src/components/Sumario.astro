@@ -60,13 +60,15 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
                     <span class="nome"><span class="rotulo" set:html={tituloComQuebras(semNumero(s.text))} /></span>
                   </a>
                   {s.sub.length > 0 && (
-                    <ol class="subsecoes">
-                      {s.sub.map((sub) => (
-                        <li>
-                          <a href={`#${sub.slug}`} data-subsecao={sub.slug} set:html={tituloComQuebras(sub.text)} />
-                        </li>
-                      ))}
-                    </ol>
+                    <div class="subsecoes">
+                      <ol>
+                        {s.sub.map((sub) => (
+                          <li>
+                            <a href={`#${sub.slug}`} data-subsecao={sub.slug} set:html={tituloComQuebras(sub.text)} />
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
                   )}
                 </li>
               );
@@ -174,7 +176,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
   /* ---------- trilho das seções ---------- */
 
   .trilho,
-  .subsecoes {
+  .subsecoes ol {
     margin: 0;
     padding: 0;
     list-style: none;
@@ -296,9 +298,22 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     opacity: 0;
   }
 
+  /*
+   * A seção atual fica na tinta cheia e um nada mais encorpada, sem mudar a largura do texto (revisão
+   * 4, D52): com o peso 600, o nome quebrava noutra linha, a lista inteira saltava e o sublinhado que
+   * saía, medido nas linhas de antes, ficava por um instante como um risco sobre a seção seguinte. O
+   * contorno fino na cor do texto engrossa a letra sem mexer na métrica; quem marca é o sublinhado.
+   */
+  .secao > a {
+    transition: color 0.2s;
+  }
+
   .secao > a[aria-current="true"] {
     color: var(--ink);
-    font-weight: 600;
+  }
+
+  .secao > a[aria-current="true"] .rotulo {
+    -webkit-text-stroke: 0.35px currentColor;
   }
 
   /*
@@ -341,16 +356,53 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     stroke-width: 1.4;
   }
 
-  /* Subseções: só as da seção atual, em corpo menor, com a atual em azul-tinta. */
+  /*
+   * Subseções: só as da seção atual, em corpo menor, com a atual em azul-tinta. Elas se desdobram
+   * embaixo do nome (e se dobram na que fica para trás) em vez de surgir de uma vez: antes, a lista
+   * inteira saltava ~47px a cada seção com subseções (revisão 4, D52). O fio acompanha os pontos quadro
+   * a quadro (artigo.ts). Fechadas, ficam escondidas também do teclado e do leitor de tela.
+   */
   .subsecoes {
-    display: none;
-    margin: 0 0 6px;
+    display: grid;
+    grid-template-rows: 0fr;
+    visibility: hidden;
+    transition:
+      grid-template-rows 0.26s cubic-bezier(0.4, 0, 0.2, 1),
+      visibility 0s linear 0.26s;
+  }
+
+  .subsecoes > ol {
+    min-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.14s;
+  }
+
+  /* O fio e o respiro ficam nos itens: no <ol>, eles ocupariam lugar mesmo com a lista fechada. */
+  .subsecoes li {
     padding-left: 10px;
     border-left: 1px solid var(--rule);
   }
 
+  .subsecoes li:last-child {
+    margin-bottom: 6px;
+  }
+
   .secao:has(> a[aria-current="true"]) > .subsecoes {
-    display: block;
+    grid-template-rows: 1fr;
+    visibility: visible;
+    transition: grid-template-rows 0.34s cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  .secao:has(> a[aria-current="true"]) > .subsecoes > ol {
+    opacity: 1;
+    transition: opacity 0.24s 0.08s;
+  }
+
+  /* Ao chegar (e voltando pela memória do navegador), a lista já vem aberta onde o leitor está. */
+  .de-uma-vez .subsecoes,
+  .de-uma-vez .subsecoes > ol {
+    transition: none !important;
   }
 
   .subsecoes a {
@@ -626,9 +678,13 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
       padding: 20px 18px 16px;
     }
 
+    /* O lugar da barra de rolagem fica reservado (onde ela ocupa espaço): se ela surgisse quando as
+       subseções abrem, os nomes quebrariam de novo e a lista saltaria (revisão 4, D52). */
     .folha-sumario nav {
       min-height: 0;
       overflow: hidden auto;
+      scrollbar-gutter: stable;
+      scrollbar-width: thin;
       margin-right: -8px;
       padding-right: 8px;
     }
@@ -722,6 +778,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .secao > a,
     .bolinha,
     .visto,
     .fio-tinta,
@@ -732,6 +789,11 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     .folha-celular .trilho > li,
     :global(:root[data-sumario-aberto]) .folha-celular .trilho > li {
       transition: none;
+    }
+
+    .subsecoes,
+    .subsecoes > ol {
+      transition: none !important;
     }
   }
 </style>

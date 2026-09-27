@@ -176,8 +176,10 @@ function marcarSumario(de: number, para: number) {
   const agora = performance.now();
   if (de >= 0 && para > de && agora - atualDesde >= TEMPO_DE_LEITURA) lidas.add(de);
   atualDesde = agora;
-  // Na primeira marcação (ao chegar, ou voltando pelo histórico), o traço já vem pronto.
+  // Na primeira marcação (ao chegar, ou voltando pelo histórico), o traço já vem pronto e as
+  // subseções da atual já vêm abertas.
   const escrever = de !== -2;
+  if (!escrever) trilho?.classList.add("de-uma-vez");
   secoes.forEach(({ link, naFolha }, k) => {
     for (const a of [link, naFolha]) {
       if (!a) continue;
@@ -195,8 +197,13 @@ function marcarSumario(de: number, para: number) {
       a.parentElement?.classList.toggle("lida", lidas.has(k));
     }
   });
-  // As subseções da atual abrem (CSS): o fio precisa passar pelos pontos nos lugares novos.
+  // As subseções da atual se desdobram (CSS): o fio passa pelos pontos nos lugares novos, quadro a
+  // quadro enquanto elas abrem e fecham (revisão 4, D52).
   desenharFio();
+  if (!escrever && trilho) {
+    void trilho.offsetHeight;
+    trilho.classList.remove("de-uma-vez");
+  } else acompanharSubsecoes();
   const link = secoes[para]?.link;
   if (trilho && link && trilho.scrollHeight > trilho.clientHeight) {
     const caixa = trilho.getBoundingClientRect();
@@ -206,6 +213,20 @@ function marcarSumario(de: number, para: number) {
     }
   }
   trocarCabecalho(de, para);
+}
+
+/** Redesenha o fio a cada quadro enquanto as subseções abrem e fecham (0,34s no CSS). */
+let acompanharAte = 0;
+function acompanharSubsecoes() {
+  if (!subsecoes.length || reduzir.matches || !listaTrilho?.offsetParent) return;
+  const jaAcompanha = performance.now() < acompanharAte;
+  acompanharAte = performance.now() + 400;
+  if (jaAcompanha) return;
+  const passo = () => {
+    desenharFio();
+    if (performance.now() < acompanharAte) requestAnimationFrame(passo);
+  };
+  requestAnimationFrame(passo);
 }
 
 // ---------- a seção atual sublinhada à caneta (B05, D52) ----------
