@@ -69,7 +69,7 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
       artigo tem fonte em todo lugar onde ele aparece (cards e lista, com elegância) e o link no
       painel do topo do artigo. Hoje: o do Jackson
       (`https://github.com/cesarschutz/blog-exemplos/tree/main/jackson-filtros-mascarando-cartao`).
-- [~] **C04.** _(agente Caneta)_ A caneta como identidade: o traço de caneta (o do menu do cabeçalho), também em
+- [x] **C04.** _(agente Caneta; 1881e62, a32985a, 8b38e51, b054b9a, aa8c961, 43fa97d)_ A caneta como identidade: o traço de caneta (o do menu do cabeçalho), também em
       **preto**, em lugares escolhidos (menu, GitHub e LinkedIn, botão de tema e busca redesenhados
       sem perder a animação, data e tempo de leitura com os ícones, a caneca, a marca "cs", o "Cesar
       Schutz" da home…). Nada no rodapé.
@@ -191,6 +191,24 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
   quando uma troca anterior engasgou (`cs-troca-leve` na sessão) ou com até 2 GB de memória. O desfile
   de Categorias espera o GSAP no máximo 1,8s. De fora: o peso das páginas (160 a 440 KB, pelos SVGs
   embutidos) pede um item próprio; `prerender` fica para depois. [diagnosticos/B14.md](diagnosticos/B14.md).
+
+- **C04** (seis lotes): a regra **a caneta preta desenha; a azul marca** (o preto é o `--ink`, que no
+  escuro vira a tinta clara; o azul fica no estado: seção e página atuais, a caneta da leitura, as
+  marcações da D48). Todo traço novo sai de `src/lib/traco.ts`, gerado no build, sem filtro e sem `id`.
+  (1, 1881e62) calendário, relógio e `</>` à mão, na tinta a 78%, parados; o "código-fonte" preso ao
+  tempo de leitura, só o ícone abaixo de 340px de linha (o título do card voltou a alinhar). (2,
+  a32985a) o traço do hover do menu em preto a 55%; GitHub e LinkedIn com as marcas oficiais em preto
+  (as regras das duas proíbem redesenhar) e o círculo à mão preto no hover; o colchete da lista e o
+  círculo da paginação também pretos. (3, 8b38e51) o botão de tema com o contorno a lápis e a lua e o
+  sol à caneta, com a mesma animação (MorphSVG, DrawSVG, o círculo da D42, o botão na primeira
+  pintura). (4, b054b9a) a busca com o contorno à mão a lápis que escurece no hover e a lupa à caneta
+  (o Flip e o ⌘K seguem); o botão do menu do celular com os dois traços que se cruzam no X; abaixo de
+  360px, marca a 16px e botões a 36px (o "blog" não encosta mais na busca). (5, aa8c961) a assinatura:
+  um traço de largura variável embaixo de "Schutz", escrito em 0,9s depois do aceno dos cadernos, ou
+  já pronto sem a abertura; um traço curto embaixo do "blog" no hover da marca do cabeçalho. (6,
+  43fa97d) a caneca das ilustrações da série Java: no hover, a fumaça sobe e some e uma nova se
+  escreve (classe `fumaca`). Sem caneta nova: rodapé, texto, código, botões cheios, tags, livros e a
+  revista. [diagnosticos/C04.md](diagnosticos/C04.md).
 
 ## Para o Cesar decidir
 
