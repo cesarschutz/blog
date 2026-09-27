@@ -363,6 +363,8 @@ const rotulo = (l: Livro) => {
     const celular = matchMedia("(max-width: 760px)");
     // No celular, tudo um pouco mais rápido.
     const DUR = () => (celular.matches ? 0.8 : 1);
+    /** Quanto o puxão começa antes de o livro guardado pousar (s, na escala de DUR). */
+    const ANTECIPA = 0.15;
     let gsap: GSAP | null = null;
     let ocupado = false;
     let pressionado: HTMLElement | null = null;
@@ -476,22 +478,44 @@ const rotulo = (l: Livro) => {
     };
     let palco: Palco | null = null;
 
-    /** O texto do topo, a marca d'água e o resto do conteúdo (os artigos) esmaecem: a página vai mudar. */
+    /**
+     * Os artigos esmaecem: a página vai mudar. O título e a marca d'água do topo ficam até o livro novo
+     * sair da pilha (montarOTopo): antes, eles sumiam no clique, e o topo ficava um bloco colorido vazio
+     * por mais de um segundo, com a ação toda na pilha pequena (D52).
+     */
     function apagarAPagina() {
       const topo = document.querySelector<HTMLElement>(".topo-livro");
       if (!topo) return;
       const texto = topo.querySelector<HTMLElement>(":scope > .texto");
       const marca = topo.querySelector<HTMLElement>(":scope > .marca-dagua");
       const resto = [...(topo.parentElement?.children ?? [])].filter((el) => el !== topo && el instanceof HTMLElement) as HTMLElement[];
-      const apagados = [texto, marca, ...resto].filter((el): el is HTMLElement => !!el);
-      palco = { topo, cor: topo.style.getPropertyValue("--cor"), apagados, texto, marca };
-      gsap!.to(apagados, { opacity: 0, duration: 0.28, ease: "power1.out", overwrite: "auto" });
+      palco = { topo, cor: topo.style.getPropertyValue("--cor"), apagados: resto, texto, marca };
+      gsap!.to(resto, { opacity: 0, duration: 0.28, ease: "power1.out", overwrite: "auto" });
+    }
+
+    /** O título velho, fora do fluxo, no lugar exato onde está: o topo passa a ter o tamanho do novo. */
+    const TEXTO_SOLTO = ["position", "left", "top", "width", "margin", "pointer-events", "--cor"];
+    function soltar(el: HTMLElement, topo: HTMLElement, cor: string) {
+      const rt = topo.getBoundingClientRect();
+      const r = el.getBoundingClientRect();
+      // A cor do livro velho fica nele (o quadradinho da contagem não troca de cor antes de sair).
+      if (cor) el.style.setProperty("--cor", cor);
+      Object.assign(el.style, {
+        position: "absolute",
+        left: `${r.left - rt.left - topo.clientLeft}px`,
+        top: `${r.top - rt.top - topo.clientTop}px`,
+        width: `${r.width}px`,
+        margin: "0",
+        pointerEvents: "none",
+      });
     }
 
     /**
-     * O topo toma o livro novo antes de a página abrir: a cor do palco muda devagar, e o texto e a
-     * marca d'água da página nova entram (ainda transparentes) no lugar dos antigos. Se o topo mudar de
-     * altura, ele cresce ou encolhe até ela (devolve essa animação, para começar depois de medido o voo).
+     * O livro novo saiu da pilha: o topo toma o livro novo antes de a página abrir. A cor do palco muda
+     * devagar, e o texto e a marca d'água da página nova entram (ainda transparentes) ao lado dos
+     * antigos, que saem em mostrarOTopo (o título velho fica no mesmo lugar, fora do fluxo). Se o topo
+     * mudar de altura, ele cresce ou encolhe até ela (devolve essa animação, para começar depois de
+     * medido o voo).
      */
     function montarOTopo(p: Pagina) {
       if (!palco) return () => {};
@@ -503,12 +527,13 @@ const rotulo = (l: Livro) => {
       if (palco.texto && p.texto) {
         palco.novoTexto = p.texto.cloneNode(true) as HTMLElement;
         palco.novoTexto.style.opacity = "0";
-        palco.texto.replaceWith(palco.novoTexto);
+        soltar(palco.texto, topo, palco.cor);
+        palco.texto.after(palco.novoTexto);
       }
       if (palco.marca && p.marca) {
         palco.novaMarca = p.marca.cloneNode(true) as HTMLElement;
         palco.novaMarca.style.opacity = "0";
-        palco.marca.replaceWith(palco.novaMarca);
+        palco.marca.after(palco.novaMarca);
       }
       const depois = topo.offsetHeight;
       return () => {
@@ -516,14 +541,22 @@ const rotulo = (l: Livro) => {
       };
     }
 
-    /** O texto novo aparece (e a marca d'água, até a transparência dela). */
+    /**
+     * O título velho sai depressa (e a marca d'água dele, junto com a cor do palco) e o novo aparece
+     * logo depois, no mesmo lugar, quase sem se cruzarem (e a marca d'água, até a transparência dela).
+     * Sem o texto novo (a página de origem não tem o CSS de alguma peça dele), o velho sai do mesmo
+     * jeito, e o novo entra com a troca de página.
+     */
     function mostrarOTopo(atraso: number) {
       if (!palco) return;
       const g = gsap!;
-      if (palco.novoTexto) g.to(palco.novoTexto, { opacity: 1, duration: 0.42, delay: atraso, ease: "power1.inOut", clearProps: "opacity" });
-      if (palco.novaMarca && palco.marca) {
-        const alvo = getComputedStyle(palco.marca).opacity === "0" ? 0.1 : Number(getComputedStyle(palco.marca).opacity);
-        g.to(palco.novaMarca, { opacity: alvo, duration: 0.5, delay: atraso, ease: "power1.inOut", clearProps: "opacity" });
+      const { texto, marca, novoTexto, novaMarca } = palco;
+      if (texto) g.to(texto, { opacity: 0, duration: 0.18, ease: "power1.out", onComplete: () => void (novoTexto && texto.remove()) });
+      if (novoTexto) g.to(novoTexto, { opacity: 1, duration: 0.42, delay: atraso, ease: "power1.inOut", clearProps: "opacity" });
+      if (marca) {
+        const alvo = Number(getComputedStyle(marca).opacity) || 0.1;
+        g.to(marca, { opacity: 0, duration: 0.3, ease: "power1.inOut", onComplete: () => void (novaMarca && marca.remove()) });
+        if (novaMarca) g.to(novaMarca, { opacity: alvo, duration: 0.5, delay: atraso, ease: "power1.inOut", clearProps: "opacity" });
       }
     }
 
@@ -607,21 +640,28 @@ const rotulo = (l: Livro) => {
           ease: "power1.inOut",
           onUpdate: () => {
             const pose = ir(obj.u);
+            // O puxão pode começar antes do pouso (abaixo): o atrito leva o bloco de cima, e este livro
+            // com ele, um ou dois px para o lado; a cópia vai junto e pousa onde a lombada está.
+            pose.cx += Number(g.getProperty(a.deitado, "x")) || 0;
             poseEmPe(g, v.copia, v.base, pose);
             sombra(pose, Math.sin(Math.PI * obj.u));
           },
         },
         0.1 * DUR(),
       );
-      await tl.then();
       // Pousou: a lombada da pilha (do tamanho dele, no mesmo lugar) toma o lugar da cópia.
-      sombra(null);
-      g.set(a.deitado, { y: queda, opacity: 1 });
-      g.to(v.copia, { opacity: 0, duration: 0.08, ease: "none", onComplete: () => v.copia.remove() });
-      // O baque do pouso (afunda 1px e volta) corre junto com o começo do puxão.
-      g.timeline({ onComplete: () => a.li.classList.remove("no-ar") })
-        .to(a.deitado, { y: queda + 1, duration: 0.05, ease: "power1.out" })
-        .to(a.deitado, { y: queda, duration: 0.1, ease: "power1.in" });
+      tl.eventCallback("onComplete", () => {
+        sombra(null);
+        g.set(a.deitado, { y: queda, opacity: 1 });
+        g.to(v.copia, { opacity: 0, duration: 0.08, ease: "none", onComplete: () => v.copia.remove() });
+        // O baque do pouso (afunda 1px e volta) corre junto com o começo do puxão.
+        g.timeline({ onComplete: () => a.li.classList.remove("no-ar") })
+          .to(a.deitado, { y: queda + 1, duration: 0.05, ease: "power1.out" })
+          .to(a.deitado, { y: queda, duration: 0.1, ease: "power1.in" });
+      });
+      // O passo seguinte começa um pouco antes do pouso, enquanto o livro desce os últimos milímetros
+      // (a outra mão já vai ao escolhido): antes, entre pousar e puxar, a pilha ficava ~0,3s parada.
+      await new Promise<void>((r) => void tl.call(r, undefined, Math.max(0, tl.duration() - ANTECIPA * DUR())));
     }
 
     // ---------- levar o escolhido ao topo ----------
@@ -906,11 +946,14 @@ const rotulo = (l: Livro) => {
       }
       if (palco) {
         const { topo, cor, apagados, texto, marca, novoTexto, novaMarca } = palco;
+        const velhos = [texto, marca].filter((el): el is HTMLElement => !!el);
+        gsap.killTweensOf(velhos);
         if (novoTexto && texto) novoTexto.replaceWith(texto);
         if (novaMarca && marca) novaMarca.replaceWith(marca);
+        for (const prop of TEXTO_SOLTO) texto?.style.removeProperty(prop);
         topo.style.setProperty("--cor", cor);
         topo.querySelector<HTMLElement>(":scope > .palco")?.style.removeProperty("transition");
-        gsap.set([topo, ...apagados], { clearProps: "opacity,height" });
+        gsap.set([topo, ...apagados, ...velhos], { clearProps: "opacity,height" });
         palco = null;
       }
       for (const li of ordemInicial) {
