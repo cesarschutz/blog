@@ -713,13 +713,17 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
 - **Troca de página por folhas** (D51, `src/scripts/troca.js`, embutido no `<head>`; View Transitions
   entre documentos animadas pela Web Animations API, sem biblioteca; protótipo 03, "cai da mesa",
   texto fora): o cabeçalho parado e o traço do menu deslizando; as folhas à vista da página antiga caem
-  da mesa (600 ms, de baixo para cima, 45 ms entre elas, giro de até 7°) e os textos soltos sobem 10px
-  e somem (200 ms); as da nova chegam do fundo em perspectiva e pousam (1s, `cubic-bezier(.25,1,.5,1)`,
-  85 ms entre elas, a partir de 0,2s); textos novos sobem por uma máscara. Voltando pelo histórico, as
-  novas vêm da frente. Livros com par nas duas páginas voam (só o livro viaja, protótipo 07); a folha
-  deles só esmaece. Artigo anterior e próximo: **na pilha** (protótipo 06). Categorias: **desfile e
+  da mesa (480 ms, de baixo para cima, a cascata toda em no máximo 160 ms, giro de até 7°; a que tinha
+  o livro que voa, primeiro) e os textos soltos sobem 10px e somem (200 ms); as da nova chegam do fundo
+  em perspectiva e pousam (1s, `cubic-bezier(.25,1,.5,1)`, 85 ms entre elas, a partir de 0,2s, pela
+  posição na tela, e a última no máximo 0,55s depois da primeira); textos novos sobem por uma máscara.
+  Voltando pelo histórico, as novas vêm da frente; da memória do navegador (bfcache), sem troca. Livros
+  à vista com par nas duas páginas voam por cima das folhas (só o livro viaja, protótipo 07), sem
+  esmaecer de uma imagem na outra; a folha de destino só esmaece. Em Categorias, o livro chega no
+  desfile, sem voar. Artigo anterior e próximo: **na pilha** (protótipo 06). Categorias: **desfile e
   pilha** (protótipo 04, script da página). Tag: **desfile direto** (60 ms). O desenho do topo do
-  artigo se desenha **depois de pousar** (protótipo 08, a sequência do C1). A troca de livro pela pilha e
+  artigo se desenha **depois de pousar** (protótipo 08, a sequência do C1, ~2,1s), a partir de 60% da
+  chegada da folha dele. A troca de livro pela pilha e
   a navegação com um diálogo aberto usam a folha de antes (a antiga sobe 6px e some, a nova sobe 18px).
 - **Gaveta** (D47): cresce (0,8s) com o conteúdo de baixo descendo junto; recolhe ao fechar; na troca
   de livro, vai da altura de um para a do outro (0,55s).

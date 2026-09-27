@@ -1537,6 +1537,25 @@ nada muda.
   de a estante passar pelo nome; o fio da estante na cor da borda da tábua; a sombra do caderno some no
   voo; a trava de 7s do `<head>` cancelada quando a abertura assume; a rolagem do navegador devolvida
   no fim.
+- **Segunda revisão de acabamento (trocas gerais, agente com 16 gravações, 27/09/2026) e o que mudou
+  por ela:** a saída comprimida (a cascata toda em 0,16s, a queda em 0,48s e o esmaecer a partir de
+  0,18s; antes, com 12 folhas, a de cima só começava a cair em 0,54s e cobria a página nova); a folha
+  que tinha o livro que voa cai primeiro; o livro que viaja voa por cima das folhas (antes passava por
+  baixo da folha do artigo e sumia no meio do voo) e sem esmaecer de uma imagem na outra (ficava meio
+  transparente): a imagem antiga fica inteira e a nova aparece com a folha de destino, que esmaece
+  desde o começo; em Categorias, o livro da página anterior não voa (encostava no cabeçalho e descia
+  com a pilha) e chega no desfile, com os outros; só voam livros à vista (no celular, o da lateral
+  subia de baixo da tela); a chegada pela posição na tela (de cima para baixo, da esquerda para a
+  direita) e com teto (a última folha sai até 0,55s depois da primeira); no artigo anterior e no
+  próximo, o rodapé esmaece (sumia de uma vez); voltando pela memória do navegador (bfcache), um corte
+  limpo (a página restaurada aparecia pronta e a antiga voltava por cima); o desenho do topo não sai
+  mais pronto por acaso (o `troca.js` marca `data-vai-chegar` já no `<head>`, antes dos módulos) e
+  começa quando a folha do artigo está quase pousada (`cs:pousou`), mais curto (~2,1s, como no
+  protótipo 08), com o papel antes da cor (a cor aparecia como um bloco inteiro); o nome de transição
+  que o livro já tinha volta depois da troca; as rotações na ordem do GSAP, como nos protótipos.
+  Testado e descartado: deixar a página nova por cima das folhas que caem (com o fundo transparente, o
+  Chrome captura a página nova com fundo branco opaco e esconde tudo). Ficaram como estão: a cor do
+  menu muda antes de o traço chegar (0,12s) e a nitidez do texto no fim da chegada.
 - **Achado:** os três riscos do A3 vinham do `vector-effect: non-scaling-stroke` num SVG esticado: o
   DrawSVG media o traço numa escala e o navegador pintava noutra, e o tracejado se repetia. Nos
   protótipos, o caminho do fio é refeito em pixels, sem o `vector-effect`.

@@ -22,7 +22,9 @@
  *   pela pilha (`data-troca-propria`, PainelHome) e a navegação com um diálogo aberto (busca, livro
  *   ampliado): elas usam a troca de página de antes (base.css).
  *
- * Outros scripts usam `window.csTroca` (unidades, chegar) e os eventos `cs:chegou` (a chegada acabou).
+ * Outros scripts usam `window.csTroca` (unidades, chegar) e os eventos `cs:pousou` (a folha do desenho
+ * do artigo pousou) e `cs:chegou` (a chegada acabou). `data-vai-chegar` no <html>, posto já no <head>,
+ * avisa os módulos que a página vai chegar por uma troca, antes do `pagereveal`.
  */
 (function () {
   var raiz = document.documentElement;
@@ -73,32 +75,41 @@
       // O meio da parte à vista: é em volta dele que a folha gira (as altas, como o artigo, também).
       u.oy = Math.round((Math.max(0, -r.top) + Math.min(r.height, H - r.top)) / 2);
       return true;
+    }).sort(function (a, b) {
+      // Pela tela, não pelo DOM: de cima para baixo e, na mesma linha, da esquerda para a direita.
+      return Math.round(a.r.top / 48) - Math.round(b.r.top / 48) || a.r.left - b.r.left;
     });
   }
 
   /** Os livros com nome de transição no <main> (o do topo, fixo; o que leva à página nova, data-vt). */
-  function livrosNomeados() {
+  function livrosNomeados(soAVista) {
     var fora = [];
     var els = document.querySelectorAll("#conteudo .livro-em-pe, #conteudo [data-vt]");
+    var topo = topoVisivel(), H = innerHeight;
     for (var i = 0; i < els.length; i++) {
       var n = els[i].style.viewTransitionName || getComputedStyle(els[i]).viewTransitionName;
-      if (n && n !== "none") fora.push({ el: els[i], n: n });
+      if (!n || n === "none") continue;
+      // Livro fora da tela não voa (no celular, o da lateral subia de baixo da tela por cima do artigo).
+      var r = els[i].getBoundingClientRect();
+      if (soAVista && !(r.bottom > topo && r.top < H)) nomear(els[i], "none");
+      else fora.push({ el: els[i], n: n });
     }
     return fora;
   }
 
+  /** Tira os nomes da troca e devolve o que cada elemento tinha antes (o livro do painel tem o dele). */
   function limparNomes() {
     var els = document.querySelectorAll("[data-troca-nome]");
     for (var i = 0; i < els.length; i++) {
-      els[i].style.viewTransitionName = "";
+      els[i].style.viewTransitionName = els[i].getAttribute("data-troca-nome");
       els[i].style.viewTransitionClass = "";
       els[i].removeAttribute("data-troca-nome");
     }
   }
   function nomear(el, nome, classe) {
+    if (!el.hasAttribute("data-troca-nome")) el.setAttribute("data-troca-nome", el.style.viewTransitionName || "");
     el.style.viewTransitionName = nome;
     if (classe) el.style.viewTransitionClass = classe;
-    el.setAttribute("data-troca-nome", "");
   }
 
   function animarPseudo(pseudo, quadros, opcoes) {
@@ -107,7 +118,7 @@
     try { return raiz.animate(quadros, opcoes); } catch (e) { return null; }
   }
   var T3 = function (x, y, z, rx, ry, rz) {
-    return "perspective(" + P + "px) translate3d(" + x + "px," + y + "px," + z + "px) rotateX(" + rx + "deg) rotateY(" + ry + "deg) rotateZ(" + rz + "deg)";
+    return "perspective(" + P + "px) translate3d(" + x + "px," + y + "px," + z + "px) rotateZ(" + rz + "deg) rotateY(" + ry + "deg) rotateX(" + rx + "deg)";
   };
   var PARADO = T3(0, 0, 0, 0, 0, 0);
 
@@ -132,6 +143,9 @@
         nomear(folha, "artigo-velho");
         var lateral = document.querySelector("#conteudo .lateral");
         if (lateral && lateral.getBoundingClientRect().width > 0) nomear(lateral, "lateral-velha");
+        // O rodapé do site, se estiver à vista, esmaece (sem nome, sumiria de uma vez com a raiz).
+        var rodape = document.querySelector("body > .rodape");
+        if (rodape && rodape.getBoundingClientRect().top < innerHeight) nomear(rodape, "rodape-velho");
         var sobre = document.querySelector("#conteudo .lateral a.sobre");
         dados.tipo = "lado";
         dados.lado = lado;
@@ -149,7 +163,7 @@
       return { n: "sai-" + i, texto: u.texto, oy: u.oy };
     });
     // Os livros nomeados: se a página nova tiver o mesmo, ele voa; senão, cai com a folha dele.
-    dados.livros = livrosNomeados().map(function (l) {
+    dados.livros = livrosNomeados(true).map(function (l) {
       var dono = -1;
       for (var i = 0; i < us.length; i++) if (us[i].el.contains(l.el)) dono = i;
       return { n: l.n, u: dono };
@@ -159,8 +173,14 @@
   function guardar(dados) {
     try { sessionStorage.setItem(CHAVE, JSON.stringify(dados)); } catch (err) {}
   }
-  // Voltar pelo histórico (bfcache) traz a página como ficou: sem os nomes da troca.
-  addEventListener("pageshow", function (e) { if (e.persisted) limparNomes(); });
+  // Voltar pelo histórico (bfcache) traz a página como ficou: sem os nomes da troca. E sem a troca: a
+  // página restaurada aparecia pronta num quadro e a antiga voltava por cima; um corte limpo é melhor.
+  var restaurada = false;
+  addEventListener("pageshow", function (e) {
+    if (!e.persisted) return;
+    limparNomes();
+    restaurada = true;
+  });
 
   /* ================= A página que chega ================= */
   function lerDados() {
@@ -174,6 +194,13 @@
       return d;
     } catch (err) { return null; }
   }
+  // Já no <head>, antes dos módulos: a página vai chegar por uma troca? (O desenho do topo do artigo
+  // precisa saber antes do `pagereveal`, que às vezes vem depois dos módulos.)
+  try {
+    var espia = JSON.parse(sessionStorage.getItem(CHAVE) || "null");
+    if (espia && espia.para === location.pathname && Date.now() - espia.t < 6000 && !reduzido.matches) raiz.dataset.vaiChegar = "";
+  } catch (err) {}
+
   function voltando() {
     var a = window.navigation && navigation.activation;
     return !!a && a.navigationType === "traverse";
@@ -188,7 +215,10 @@
     var W = innerWidth, H = innerHeight, cel = celular();
     var m = document.getElementById("conteudo");
     var passo = Number(opcoes.passo || (m && m.dataset.chegadaPasso) || 0.085);
+    // Com muitas folhas, a última sai no máximo 0,55s depois da primeira (a troca fecha em ~1,5s).
+    passo = Math.min(passo, 0.55 / Math.max(1, novas.length - 1));
     var t0 = opcoes.t0 || 0, fim = 0;
+    var desenho = document.querySelector("[data-desenhar-topo]");
     novas.forEach(function (u, i) {
       var el = u.el, t = (t0 + i * passo) * 1000;
       if (u.texto) {
@@ -200,6 +230,9 @@
         return;
       }
       if (u.soEsmaece) {
+        // A folha que recebe o livro que voa esmaece já no começo: o livro novo aparece com ela, e tem de
+        // estar inteiro quando pousa (0,7s).
+        if (u.comLivro) t = 0;
         el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 450, delay: t, easing: "linear", fill: "backwards" });
         fim = Math.max(fim, t + 450);
         return;
@@ -212,6 +245,8 @@
         de = cel ? T3(0, (-H * 0.45) / k, z, 22, 0, -2) : T3((W * 0.3) / k, (-H * 0.5) / k, z, 16, -30, rnd(-5, -2));
       }
       var dur = cel ? 850 : 1000;
+      // A folha do desenho do artigo: ele começa quando ela está quase pousada (protótipo 08).
+      if (desenho && el.contains(desenho)) setTimeout(function () { dispatchEvent(new CustomEvent("cs:pousou")); }, t + dur * 0.6);
       el.animate([{ transform: de, transformOrigin: origem }, { transform: PARADO, transformOrigin: origem }], { duration: dur, delay: t, easing: QUART_OUT, fill: "backwards" });
       el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 280, delay: t, easing: "linear", fill: "backwards" });
       fim = Math.max(fim, t + dur);
@@ -220,19 +255,25 @@
   }
 
   /** As folhas antigas caem da mesa (de baixo para cima); os textos antigos sobem e somem. */
-  function cair(d) {
+  function cair(d, comPar) {
     var H = innerHeight, fim = 0, giro = {};
+    // A folha que tinha o livro que voou cai primeiro e some logo (senão, fica o buraco dele à vista).
+    var donos = {};
+    (d.livros || []).forEach(function (l) { if (comPar[l.n] && l.u >= 0) donos["sai-" + l.u] = true; });
+    // Toda a cascata cabe em 0,16s, por mais folhas que a página tenha.
+    var passo = Math.min(45, 160 / Math.max(1, d.sai.length - 1));
     d.sai.slice().reverse().forEach(function (s, j) {
       var alvo = "::view-transition-old(" + s.n + ")";
       if (s.texto) {
-        animarPseudo(alvo, [{ transform: "none", opacity: 1 }, { transform: "translateY(-10px)", opacity: 0 }], { duration: 200, delay: j * 35, easing: CUBIC_IN });
+        animarPseudo(alvo, [{ transform: "none", opacity: 1 }, { transform: "translateY(-10px)", opacity: 0 }], { duration: 200, delay: j * passo * 0.8, easing: CUBIC_IN });
         return;
       }
-      var t = j * 45, rz = rnd(-7, 7), o = "50% " + s.oy + "px";
+      var dono = donos[s.n];
+      var t = dono ? 0 : j * passo, rz = rnd(-7, 7), o = "50% " + s.oy + "px";
       giro[s.n] = { t: t, rz: rz };
-      animarPseudo(alvo, [{ transform: PARADO, transformOrigin: o }, { transform: T3(0, H * 0.9, 0, -18, 0, rz), transformOrigin: o }], { duration: 600, delay: t, easing: CUBIC_IN });
-      animarPseudo(alvo, [{ opacity: 1 }, { opacity: 0 }], { duration: 250, delay: t + 320, easing: QUAD_IN });
-      fim = Math.max(fim, t + 600);
+      animarPseudo(alvo, [{ transform: PARADO, transformOrigin: o }, { transform: T3(0, H * 0.9, 0, -18, 0, rz), transformOrigin: o }], { duration: 480, delay: t, easing: CUBIC_IN });
+      animarPseudo(alvo, [{ opacity: 1 }, { opacity: 0 }], { duration: 200, delay: t + (dono ? 120 : 180), easing: QUAD_IN });
+      fim = Math.max(fim, t + 480);
     });
     return { fim: fim, giro: giro };
   }
@@ -240,6 +281,7 @@
   function avisarChegada() {
     limparNomes();
     delete raiz.dataset.chegando;
+    delete raiz.dataset.vaiChegar;
     dispatchEvent(new CustomEvent("cs:chegou"));
   }
 
@@ -247,7 +289,19 @@
     limparNomes();
     var d = lerDados();
     var vt = e.viewTransition;
-    if (!d || !vt || reduzido.matches) return;
+    if (restaurada) {
+      restaurada = false;
+      if (vt) {
+        vt.ready.catch(function () {});
+        vt.skipTransition();
+      }
+      d = null;
+    }
+    if (!d || !vt || reduzido.matches) {
+      // Não vai ter troca: quem esperava por ela (o desenho do artigo) segue na hora.
+      if (raiz.hasAttribute("data-vai-chegar")) avisarChegada();
+      return;
+    }
     raiz.dataset.chegando = "";
     try { vt.types.add(d.tipo); } catch (err) {}
 
@@ -260,20 +314,22 @@
     // Os livros: com par, voam (e a folha deles só esmaece); sem par na página nova, chegam com a folha.
     var velhos = {};
     (d.livros || []).forEach(function (l) { velhos[l.n] = l; });
-    var novosLivros = livrosNomeados();
-    var comPar = {};
-    novosLivros.forEach(function (l) {
-      if (velhos[l.n]) comPar[l.n] = true;
-      else l.el.style.viewTransitionName = "none";
-    });
-    var novas = unidades();
-    novas.forEach(function (u) {
-      for (var i = 0; i < novosLivros.length; i++) if (comPar[novosLivros[i].n] && u.el.contains(novosLivros[i].el)) u.soEsmaece = true;
-    });
-
     var volta = voltando();
     var m = document.getElementById("conteudo");
     var propria = m && m.dataset.chegada === "propria" && !volta;
+    var novosLivros = livrosNomeados();
+    var comPar = {};
+    novosLivros.forEach(function (l) {
+      // Numa chegada própria (o desfile de Categorias), todo livro chega no desfile: o que veio da página
+      // antiga cai com a folha dele (voando, ele encostava no cabeçalho e depois descia com a pilha).
+      if (velhos[l.n] && !propria) comPar[l.n] = true;
+      else nomear(l.el, "none");
+    });
+    var novas = unidades();
+    novas.forEach(function (u) {
+      for (var i = 0; i < novosLivros.length; i++) if (comPar[novosLivros[i].n] && u.el.contains(novosLivros[i].el)) u.soEsmaece = u.comLivro = true;
+    });
+
     if (propria) {
       // A página anima a chegada dela (Categorias); até o script dela chegar, as folhas esperam escondidas.
       novas.forEach(function (u) { u.el.style.opacity = "0"; });
@@ -287,15 +343,15 @@
     var fimDaChegada = propria ? 0 : chegar(novas, { volta: volta, t0: 0.2 });
 
     vt.ready.then(function () {
-      var r = cair(d);
+      var r = cair(d, comPar);
       // O livro que não tem par cai com a folha dele.
       (d.livros || []).forEach(function (l) {
         if (comPar[l.n] || l.u < 0) return;
         var g = r.giro["sai-" + l.u];
         if (!g) return;
         var alvo = "::view-transition-old(" + l.n + ")";
-        animarPseudo(alvo, [{ transform: PARADO }, { transform: T3(0, innerHeight * 0.9, 0, -18, 0, g.rz) }], { duration: 600, delay: g.t, easing: CUBIC_IN });
-        animarPseudo(alvo, [{ opacity: 1 }, { opacity: 0 }], { duration: 250, delay: g.t + 320, easing: QUAD_IN });
+        animarPseudo(alvo, [{ transform: PARADO }, { transform: T3(0, innerHeight * 0.9, 0, -18, 0, g.rz) }], { duration: 480, delay: g.t, easing: CUBIC_IN });
+        animarPseudo(alvo, [{ opacity: 1 }, { opacity: 0 }], { duration: 200, delay: g.t + 180, easing: QUAD_IN });
       });
     }, function () {});
     // A chegada acabou quando a troca acabou e a última folha nova pousou (o desenho do artigo espera isso).
@@ -324,6 +380,7 @@
         animarPseudo("::view-transition-old(artigo-velho)", [{ transform: "none" }, { transform: "translate(" + W * 0.6 + "px, 20px) rotate(4deg)" }], { duration: 600, easing: CUBIC_IN });
       }
       // A lateral: o mesmo livro fica parado (a antiga só sai no fim); outro livro troca junto.
+      animarPseudo("::view-transition-old(rodape-velho)", [{ opacity: 1 }, { opacity: 0 }], { duration: 200, easing: CUBIC_IN });
       if (mesmoLivro) animarPseudo("::view-transition-old(lateral-velha)", [{ opacity: 1 }, { opacity: 1 }], { duration: 650 });
       else animarPseudo("::view-transition-old(lateral-velha)", [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateX(" + (proximo ? -16 : 16) + "px)" }], { duration: 200, easing: CUBIC_IN });
     }, function () {});

@@ -4,7 +4,8 @@
  * - No destaque da home (D41): quando o desenho entra na tela, os traços aparecem uma vez, em sequência;
  *   depois vêm a cor, a hachura e os textos. Com a abertura na tela (D51), espera ela acabar.
  * - No topo do artigo (D51, protótipo 08, "depois de pousar"; a sequência do C1): quando a folha do
- *   artigo pousa (a troca de página ou o caderno da abertura avisam com `cs:chegou`), o desenho se
+ *   artigo pousa (a troca de página avisa com `cs:pousou`, e o caderno da abertura ou o fim da troca,
+ *   com `cs:chegou`), o desenho se
  *   desenha pelas camadas: os traços da caneta, em sequência; o papel ganha corpo e a cor "acerta o
  *   registro" (desliza até o lugar, como tinta impressa); as hachuras, os tracejados e os textos; o
  *   carimbo bate; por último, as anotações à mão, escritas da esquerda para a direita. Quem volta ao
@@ -69,24 +70,25 @@ function desenharPorCamadas(gsap: GSAP, svg: SVGSVGElement, celular: boolean) {
   se(notas, () => gsap.set(notas, { clipPath: "inset(0 100% 0 0)" }));
   se(carimbo, () => gsap.set(carimbo, { svgOrigin: centro, scale: 1.45 }));
   // 1. os traços, em sequência
-  se(tracos, () => tl.fromTo(tracos, { drawSVG: "0%" }, { drawSVG: "100%", duration: 0.9 * t, stagger: { amount: 0.6 * t } }, 0));
-  se(fantasmas, () => tl.to(fantasmas, { opacity: 1, duration: 0.5 * t }, 0.35 * t));
-  // 2. o papel ganha corpo e a cor acerta o registro (desliza até o deslocamento dela)
-  se(papeis, () => tl.to(papeis, { fillOpacity: 1, duration: 0.4 * t }, 1.2 * t));
-  se(cor, () => tl.from(cor, { x: "+=20", y: "+=16", opacity: 0, duration: 0.7 * t, ease: "power3.out" }, 1.2 * t));
-  se(hachuras, () => tl.to(hachuras, { opacity: 0.75, duration: 0.6 * t }, 1.3 * t));
-  se(textos, () => tl.to(textos, { opacity: 1, duration: 0.4 * t, stagger: 0.06 }, 1.45 * t));
+  se(tracos, () => tl.fromTo(tracos, { drawSVG: "0%" }, { drawSVG: "100%", duration: 0.8 * t, stagger: { amount: 0.5 * t } }, 0));
+  se(fantasmas, () => tl.to(fantasmas, { opacity: 1, duration: 0.5 * t }, 0.3 * t));
+  // 2. o papel ganha corpo e, com ele já opaco, a cor acerta o registro (desliza até o deslocamento
+  //    dela): só a lasca deslocada fica à vista, não um bloco de cor inteiro
+  se(papeis, () => tl.to(papeis, { fillOpacity: 1, duration: 0.3 * t }, 0.9 * t));
+  se(cor, () => tl.from(cor, { x: "+=20", y: "+=16", opacity: 0, duration: 0.6 * t, ease: "power3.out" }, 1.1 * t));
+  se(hachuras, () => tl.to(hachuras, { opacity: 0.75, duration: 0.5 * t }, 1.15 * t));
+  se(textos, () => tl.to(textos, { opacity: 1, duration: 0.35 * t, stagger: 0.05 }, 1.25 * t));
   // 3. o carimbo bate: cai de cima e assenta com um tranco curto
-  const tc = 1.75 * t;
+  const tc = 1.45 * t;
   se(carimbo, () => {
     tl.to(carimbo, { opacity: 1, duration: 0.08 }, tc)
       .to(carimbo, { scale: 1, duration: 0.24, ease: "power4.in" }, tc)
       .to(carimbo, { keyframes: [{ scale: 0.97, duration: 0.07 }, { scale: 1, duration: 0.18, ease: "power2.out" }] }, tc + 0.24);
   });
   // 4. as anotações à mão: primeiro a chamada, depois o texto, da esquerda para a direita
-  const ta = carimbo.length ? tc + 0.3 : tc;
-  se(chamadas, () => tl.fromTo(chamadas, { drawSVG: "0%" }, { drawSVG: "100%", duration: 0.45, stagger: 0.25 }, ta));
-  se(notas, () => tl.to(notas, { clipPath: "inset(0 0% 0 0)", duration: 0.7, ease: "none", stagger: 0.18 }, ta + 0.25));
+  const ta = carimbo.length ? tc + 0.25 : tc;
+  se(chamadas, () => tl.fromTo(chamadas, { drawSVG: "0%" }, { drawSVG: "100%", duration: 0.4, stagger: 0.2 }, ta));
+  se(notas, () => tl.to(notas, { clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "none", stagger: 0.15 }, ta + 0.2));
 }
 
 const mostrar = (area: Element) => area.setAttribute("data-desenhado", "");
@@ -124,31 +126,33 @@ export function desenharAoEntrar() {
 
 /**
  * O desenho do topo do artigo (`[data-desenhar-topo]`) se desenha quando a folha pousa: só quando a
- * página chega por uma troca (data-chegando) ou pela abertura (data-abertura). Nos outros casos, ele
- * já está inteiro.
+ * página chega por uma troca (data-vai-chegar, posto no <head> pelo troca.js, ou data-chegando) ou pela
+ * abertura (data-abertura). Nos outros casos, ele já está inteiro.
  */
 export function desenharTopoDoArtigo() {
   const area = document.querySelector("[data-desenhar-topo]");
   if (!area) return;
   const nav = (window as unknown as { navigation?: { activation?: { navigationType?: string } } }).navigation;
   const pelaHistoria = nav?.activation?.navigationType === "traverse";
-  const vai = !pelaHistoria && (raiz.hasAttribute("data-chegando") || raiz.hasAttribute("data-abertura"));
+  const vai = !pelaHistoria && ["data-chegando", "data-vai-chegar", "data-abertura"].some((a) => raiz.hasAttribute(a));
   if (!vai || movimentoReduzido.matches) return mostrar(area);
   const reserva = window.setTimeout(() => mostrar(area), 4000);
   const gsap = carregarTraco();
   gsap.catch(() => mostrar(area));
-  addEventListener(
-    "cs:chegou",
-    () => {
-      gsap.then((g) => {
-        clearTimeout(reserva);
-        // O desenho à vista (no celular, o recorte médio) e com o topo na tela; senão, pronto.
-        const svg = [...area.querySelectorAll<SVGSVGElement>("svg.ilustracao")].find((s) => s.getBoundingClientRect().width > 0);
-        const r = area.getBoundingClientRect();
-        if (svg && r.bottom > 0 && r.top < innerHeight) desenharPorCamadas(g, svg, innerWidth <= 640);
-        mostrar(area);
-      });
-    },
-    { once: true },
-  );
+  // O primeiro aviso que vier: a folha pousou (troca) ou a chegada acabou (abertura, ou troca sem folha).
+  let foi = false;
+  const comecar = () => {
+    if (foi) return;
+    foi = true;
+    gsap.then((g) => {
+      clearTimeout(reserva);
+      // O desenho à vista (no celular, o recorte médio) e com o topo na tela; senão, pronto.
+      const svg = [...area.querySelectorAll<SVGSVGElement>("svg.ilustracao")].find((s) => s.getBoundingClientRect().width > 0);
+      const r = area.getBoundingClientRect();
+      if (svg && r.bottom > 0 && r.top < innerHeight) desenharPorCamadas(g, svg, innerWidth <= 640);
+      mostrar(area);
+    });
+  };
+  addEventListener("cs:pousou", comecar, { once: true });
+  addEventListener("cs:chegou", comecar, { once: true });
 }

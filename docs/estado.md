@@ -177,13 +177,16 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
 - **Ajustes de 27/09/2026 (D50), só local, sem commit:** o traço da leitura fino de novo, a troca de
   livro pela pilha levando o livro até o topo (como na home), os links do livro ampliado, o cabeçalho
   sem tremer na troca de página, a troca de tema sem o fundo escuro antes e sem o botão branco, a
-  marca d'água no painel do título do artigo e os atalhos de teclado no artigo. **Aguarda o Cesar
-  ver no localhost** (dev 4322 e preview 4323) antes do commit.
+  marca d'água no painel do título do artigo e os atalhos de teclado no artigo. Commitados pelo
+  Cesar (131085e), sem push.
 
-- **Animações revistas (D51, 27/09/2026), em escolha:** oito protótipos em
-  `docs/prototipos/animacoes/` (abertura da home, entrada direta, troca geral com duas montagens,
-  Categorias, tag, artigo vizinho, livro e artigo, desenho do artigo), cada um com variações e a minha
-  sugestão. **Aguarda o Cesar escolher**; depois, revisão de design por agentes e aplicação.
+- **Animações revistas (D51, 27/09/2026), aplicadas:** o Cesar escolheu nos protótipos de
+  `docs/prototipos/animacoes/` (abertura A3, caderno que vai para o cabeçalho, troca "cai da mesa"
+  com texto fora, desfile e pilha em Categorias, desfile direto na tag, "na pilha" no artigo vizinho,
+  só o livro viaja, desenho depois de pousar). Aplicado no site, com duas revisões de acabamento por
+  agentes (abertura/Categorias e trocas gerais) e as correções delas conferidas quadro a quadro. O
+  Cesar commitou a primeira parte (6ffbc45, a441fdd); **as correções da segunda revisão estão só
+  locais e aguardam ele ver no localhost** (dev 4322 e preview 4323) antes do commit.
 
 ## Próximos passos
 

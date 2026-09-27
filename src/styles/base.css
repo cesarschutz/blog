@@ -511,7 +511,9 @@ a:hover > .titulo-sub,
   }
 }
 
+/* O livro que viaja passa por cima das folhas (que caem e chegam), mas por baixo do cabeçalho. */
 ::view-transition-group(.livro) {
+  z-index: 50;
   animation-duration: 0.7s;
   animation-timing-function: cubic-bezier(0.3, 0.75, 0.2, 1);
 }
@@ -594,7 +596,18 @@ a:hover > .titulo-sub,
 :root:active-view-transition-type(folhas)::view-transition-old(.livro):only-child,
 :root:active-view-transition-type(lado)::view-transition-old(artigo-velho),
 :root:active-view-transition-type(lado)::view-transition-new(artigo-novo),
-:root:active-view-transition-type(lado)::view-transition-old(lateral-velha) {
+:root:active-view-transition-type(lado)::view-transition-old(lateral-velha),
+:root:active-view-transition-type(lado)::view-transition-old(rodape-velho) {
+  animation: none;
+}
+
+/*
+ * O livro que viaja não esmaece de uma imagem na outra (as proporções são diferentes, e o livro ficava
+ * meio transparente no voo): a antiga fica inteira o voo todo, e a nova aparece por cima dela junto com
+ * a folha de destino, que esmaece (troca.js). No pouso, só a nova.
+ */
+:root:active-view-transition-type(folhas)::view-transition-old(.livro):not(:only-child),
+:root:active-view-transition-type(folhas)::view-transition-new(.livro) {
   animation: none;
 }
 
