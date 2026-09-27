@@ -6,6 +6,11 @@
  * - O traço da seção atual (2,2px) fica parado; entre as páginas, desliza de um item para o outro
  *   (View Transition, `traco-do-menu`, base.css).
  * Com movimento reduzido, os traços aparecem prontos, sem desenhar.
+ *
+ * A caneta preta desenha; a azul marca (C04, D52). O azul fica no estado e na navegação (a seção
+ * atual, o número da página atual, as marcações do texto); o rascunho do mouse é preto: o traço leve
+ * do menu do cabeçalho (`traco-preto`), o círculo dos perfis e da paginação e o colchete da lista. O
+ * rodapé fica como estava (pedido do Cesar: ali, nenhuma caneta nova).
  */
 svg.traco {
   position: absolute;
@@ -41,6 +46,14 @@ svg.traco path {
 
 .traco-leve path {
   stroke-width: 1.5;
+}
+
+svg.traco.traco-preto path {
+  stroke: var(--ink);
+}
+
+.traco-leve.traco-preto {
+  opacity: 0.55;
 }
 
 :is(a:hover, a:focus-visible):not([aria-current]) .traco-leve {
@@ -110,7 +123,8 @@ a:is(:hover, :focus-visible) .arco-rss + .arco-rss {
 
 .circulo path {
   fill: none;
-  stroke: var(--acento);
+  stroke: var(--ink);
+  stroke-opacity: 0.8;
   stroke-width: 1.7;
   stroke-linecap: round;
   stroke-dasharray: 1 2;

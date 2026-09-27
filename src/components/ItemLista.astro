@@ -7,9 +7,10 @@
  * (.lista-artigos.folha, D26). O `data-livro` serve ao filtro por livro do arquivo e das tags (D33).
  *
  * O colchete na margem (D49, protótipo E2): com o mouse (ou o foco no título), a caneta escreve um
- * colchete na margem esquerda, de cima para baixo (0,34s), em azul-tinta, o mesmo gesto das marcações
- * do texto dizendo "este aqui"; ao sair, ele termina de passar e some por baixo (0,2s). O tremor é o
- * de cada título (src/lib/traco.ts), e o SVG estica até a altura do item. Só CSS.
+ * colchete na margem esquerda, de cima para baixo (0,34s), dizendo "este aqui"; ao sair, ele termina
+ * de passar e some por baixo (0,2s). É da caneta preta (C04, D52: o rascunho do mouse é preto; era
+ * azul-tinta). O tremor é o de cada título (src/lib/traco.ts), e o SVG estica até a altura do item.
+ * Só CSS.
  *
  * O destaque (D52, C02): o primeiro item da primeira página da home é o mais recente, com o rótulo
  * "Mais recente", o título e a descrição maiores e, no lugar da miniatura, o desenho no recorte médio,
@@ -116,9 +117,11 @@ const ALTURA = 170;
     transition: clip-path 0.2s cubic-bezier(0.55, 0.085, 0.68, 0.53);
   }
 
+  /* A caneta preta (C04, D52): o rascunho do mouse; o azul fica no título, que é o link. */
   .colchete path {
     fill: none;
-    stroke: var(--acento);
+    stroke: var(--ink);
+    stroke-opacity: 0.72;
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;

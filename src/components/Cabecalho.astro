@@ -18,11 +18,14 @@
  * Transition); o mouse escreve um traço leve (traco.css). A lupa da busca se inclina no hover, e a
  * tecla ⌘K afunda quando é usada (Busca.astro). No GitHub e no LinkedIn, a caneta circula o ícone,
  * com o mesmo círculo da paginação (E2, traco.css).
+ *
+ * A caneta preta desenha; a azul marca (C04, D52): a seção atual segue no traço azul, e o rascunho do
+ * mouse (o traço leve e o círculo) é preto. GitHub e LinkedIn são as marcas oficiais, em preto.
  */
 import Marca from "./Marca.astro";
 import SeletorTema from "./SeletorTema.astro";
 import { AUTOR } from "../data/site";
-import { ICONES } from "../lib/icones";
+import { ICONES, MARCAS } from "../lib/icones";
 import { circuloDeCaneta, tracoDeCaneta } from "../lib/traco";
 import { url } from "../lib/url";
 import "../styles/traco.css";
@@ -63,7 +66,7 @@ const ITENS = [
         <a href={item.href} aria-current={atual === item.chave ? "page" : undefined} style={`--i:${i}`}>
           <span class="nome">
             {item.nome}
-            <svg class="traco traco-leve" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"
+            <svg class="traco traco-leve traco-preto" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"
               ><path d={tracoDeCaneta(item.nome, 101)} /></svg
             >
             {
@@ -80,10 +83,10 @@ const ITENS = [
     }
     <div class="menu-perfis" style={`--i:${ITENS.length}`}>
       <a href={AUTOR.github} rel="me">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.github} />GitHub
+        <svg class="marca-perfil" viewBox={MARCAS.github.viewBox} aria-hidden="true" focusable="false"><path d={MARCAS.github.d} /></svg>GitHub
       </a>
       <a href={AUTOR.linkedin} rel="me">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.linkedin} />LinkedIn
+        <svg class="marca-perfil" viewBox={MARCAS.linkedin.viewBox} aria-hidden="true" focusable="false"><path d={MARCAS.linkedin.d} /></svg>LinkedIn
       </a>
     </div>
   </nav>
@@ -94,11 +97,11 @@ const ITENS = [
   </button>
   <div class="perfis">
     <a href={AUTOR.github} aria-label="GitHub de Cesar Schutz" title="GitHub" rel="me">
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.github} />
+      <svg class="marca-perfil" viewBox={MARCAS.github.viewBox} aria-hidden="true" focusable="false"><path d={MARCAS.github.d} /></svg>
       <svg class="circulo" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path pathLength="1" d={circuloDeCaneta("GitHub")} /></svg>
     </a>
     <a href={AUTOR.linkedin} aria-label="LinkedIn de Cesar Schutz" title="LinkedIn" rel="me">
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.linkedin} />
+      <svg class="marca-perfil linkedin" viewBox={MARCAS.linkedin.viewBox} aria-hidden="true" focusable="false"><path d={MARCAS.linkedin.d} /></svg>
       <svg class="circulo" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path pathLength="1" d={circuloDeCaneta("LinkedIn")} /></svg>
     </a>
   </div>
@@ -389,8 +392,7 @@ const ITENS = [
     color: var(--ink);
   }
 
-  .campo-busca svg,
-  .perfis svg:not(.circulo) {
+  .campo-busca svg {
     flex: none;
     fill: none;
     stroke: currentColor;
@@ -455,17 +457,25 @@ const ITENS = [
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    color: var(--ink-2);
+    color: var(--ink);
   }
 
-  /* A caneta circula o perfil (D49, o mesmo círculo da paginação, traco.css). */
-  .perfis a:hover {
-    color: var(--acento);
+  /*
+   * As marcas oficiais, preenchidas e em preto (C04, D52): as regras do GitHub e do LinkedIn proíbem
+   * redesenhar o logotipo e aceitam o preto. A caneta fica no gesto: no hover, ela circula o perfil (o
+   * círculo da paginação, D49, à caneta preta; traco.css). O [in], cheio, pesa mais que o gato: um
+   * nada menor, para os dois parecerem do mesmo tamanho.
+   */
+  .marca-perfil {
+    flex: none;
+    width: 17px;
+    height: 17px;
+    fill: currentColor;
   }
 
-  .perfis svg:not(.circulo) {
-    width: 18px;
-    height: 18px;
+  .marca-perfil.linkedin {
+    width: 15px;
+    height: 15px;
   }
 
   /* Até 1100px, a busca vira só o ícone, redonda como o botão de tema. */
@@ -661,13 +671,9 @@ const ITENS = [
     }
 
     .menu-perfis svg {
-      width: 17px;
-      height: 17px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 1.8;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+      width: 16px;
+      height: 16px;
+      color: var(--ink);
     }
 
     /* O véu sobre a página, abaixo do cabeçalho. */
