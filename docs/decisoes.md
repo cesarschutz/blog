@@ -1482,3 +1482,28 @@ nada muda.
 - **Conferido:** `npm run check` sem erros, `npm run contraste` sem falhas, build e `npm run links`
   (86 páginas, nenhum link quebrado); cada item gravado quadro a quadro no Chrome (MCP) no dev e no
   preview; o celular (390px) no artigo e na categoria.
+
+## D51 · As animações revistas: abertura, troca de tela e as trocas especiais (em escolha)
+- **Data:** 27/09/2026 · **Status:** escolhida pelo Cesar; **em aplicação**, só local, sem commit
+  (protótipos em `docs/prototipos/animacoes/`).
+- **Pedido do Cesar:** a abertura da home vira o A3 (com o fio da caneta num risco só, e não em três) e
+  toca sempre ao entrar no site; nas outras telas, entrada direta com o caderno; uma troca de tela
+  geral no estilo do fim do A2 (as folhas chegam do fundo), com o que sai também animado, e duas
+  montagens para comparar (texto fora dos painéis e tudo em painel); trocas especiais para
+  Categorias (os livros em desfile, pousando numa pilha e depois cada um no seu lugar), para a página
+  de uma tag, para artigo anterior e próximo (B1), para livro e artigo (B3, mais discreto) e o desenho
+  do artigo que se desenha (C1).
+- **Decidido pelo Cesar (27/09/2026):** a abertura toca **ao chegar de fora** (link, endereço
+  digitado, favorito) **e ao recarregar**; andando por dentro do site (clicar na marca, por exemplo),
+  vale a troca de tela geral. Hoje ela tocava uma vez por aba (`cs-aberto` na sessão), e por isso não
+  voltava ao recarregar.
+- **Escolhas do Cesar (27/09/2026, sobre os protótipos):** 01, abertura da home **como no A3** (a
+  estante volta para a folha dela e o papel esmaece, mostrando o site de uma vez); 02, entrada direta
+  noutra tela: o caderno **vai para o cabeçalho**; 03, troca geral: saída **cai da mesa**, montagem
+  **texto fora** (o layout de hoje); 04, Categorias: **desfile e pilha** (sempre); 05, página de uma
+  tag: **desfile direto**; 06, artigo anterior e próximo: **na pilha**; 07, livro e artigo: **só o
+  livro viaja**; 08, o desenho do artigo: **depois de pousar**. Pediu para aplicar como escolheu, com
+  a revisão de acabamento por agentes, e para ver no localhost antes do commit.
+- **Achado:** os três riscos do A3 vinham do `vector-effect: non-scaling-stroke` num SVG esticado: o
+  DrawSVG media o traço numa escala e o navegador pintava noutra, e o tracejado se repetia. Nos
+  protótipos, o caminho do fio é refeito em pixels, sem o `vector-effect`.

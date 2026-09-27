@@ -134,6 +134,7 @@ const rotulo = (l: Livro) => {
    */
   import { adiantar, carregarArrastar, carregarGsap, movimentoReduzido, temMouse, type GSAP } from "../scripts/gsap";
 
+  const raiz = document.documentElement;
   for (const pilha of document.querySelectorAll<HTMLElement>(".pilha")) {
     if (movimentoReduzido.matches) continue;
     const ol = pilha.querySelector("ol")!;
@@ -373,6 +374,8 @@ const rotulo = (l: Livro) => {
       medir();
       await puxarAteSair(k, dx);
       await levarAoTopo(k, await ate(novo, 1500));
+      // A troca é esta (troca.js não derruba as folhas: o livro já está no lugar dele).
+      raiz.dataset.trocaPropria = "";
       location.assign(k.href);
     }
 
@@ -384,6 +387,8 @@ const rotulo = (l: Livro) => {
       const queda = await puxarAteSair(k, dx);
       await guardarOAberto(queda);
       await levarAoTopo(k, await ate(novo, 1500));
+      // A troca é esta (troca.js não derruba as folhas: o livro já está no lugar dele).
+      raiz.dataset.trocaPropria = "";
       location.assign(k.href);
     }
 
@@ -473,7 +478,9 @@ const rotulo = (l: Livro) => {
 
     // Voltar pelo histórico (bfcache) traz a página como ficou: a pilha e o livro do topo voltam ao lugar.
     addEventListener("pageshow", (e) => {
-      if (!e.persisted || !gsap) return;
+      if (!e.persisted) return;
+      delete raiz.dataset.trocaPropria;
+      if (!gsap) return;
       ocupado = false;
       pressionado = null;
       if (posto) {

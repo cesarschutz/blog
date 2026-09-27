@@ -205,10 +205,12 @@ Referência: aba "Home" do protótipo.
   até 1359px, a estante desce para baixo do texto, no centro; até 640px, a marca grande sai (fica a
   do cabeçalho; ela continua como o h1 para leitor de tela), para a abertura ficar mais curta (D38).
   Na abertura (D47), a marca é o livro "cs" grande, da altura de duas linhas, com "Cesar" e "Schutz"
-  empilhados e o "blog" depois do sobrenome. **Na primeira visita da sessão**, o site abre com a
-  folha de papel, o livro "cs" e o fio escrito pela caneta até 100; depois a folha sobe, o livro voa
-  até o da abertura e o site chega por partes (`Abertura.astro`; no celular, mais simples; nunca com
-  movimento reduzido).
+  empilhados e o "blog" depois do sobrenome. **Ao chegar de fora e ao recarregar** (D51), a home abre
+  com a estante que se monta (A3): a caneta risca a tábua, os livros entram um a um com a contagem da
+  coleção, a estante volta para a folha e o papel esmaece. Nas outras páginas, o caderno "cs" carrega,
+  abre e fecha e pousa na marca do cabeçalho, e as folhas da página chegam do fundo
+  (`Abertura.astro`; nunca com movimento reduzido). Por dentro do site, vale a troca de página por
+  folhas (D51, `troca.js`).
   A linha sobre IA saiu da abertura (fica no fim de cada artigo). O post-it das frases de autores
   saiu do blog (D39).
 - **Estante** (D30, pela regra de `docs/capas/CAPAS.md`):

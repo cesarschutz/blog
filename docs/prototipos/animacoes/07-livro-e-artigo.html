@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>07 · O livro e o artigo · protótipo</title>
+<!-- Só no protótipo: Google Fonts e GSAP pelo jsDelivr. No site, @fontsource e o gsap do npm. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@700;800&family=Bitter:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400&family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_base/site.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<style>
+  .folha-voo { position: absolute; left: 0; top: 0; border: 1px solid var(--rule); box-shadow: var(--sombra-alta); overflow: hidden; }
+  .folha-voo::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 42%; background: var(--faixa, transparent); opacity: 0; transition: opacity .2s; }
+  .folha-voo.grande::before { opacity: 1; }
+</style>
+</head>
+<body>
+<script src="_base/dados.js"></script>
+<script src="_base/site.js"></script>
+<script src="_base/transicoes.js"></script>
+<script>
+let estilo = "entreabre";
+
+SITE.iniciar({
+  ficha: `
+    <p class="rotulo"><a href="index.html">Protótipos de animação</a> · 07 · entre um livro e um artigo dele</p>
+    <h1>O livro e o artigo: o artigo sai do livro e volta para ele</h1>
+    <div>
+      <p class="ideia">Você gostou do B3 (na página de um livro, o artigo sai de dentro dele; em "Ver o livro", volta para dentro), mas achou que podia ser mais discreto. Aqui estão o B3 e três versões mais leves. Em todas, o resto da tela troca pela troca geral, na versão discreta.</p>
+      <p class="ideia">Para ver: abra um livro (Categorias ou a pilha) e clique num artigo; no artigo, clique no livro da lateral ou em "Ver o livro →". De Categorias para um livro, o livro também sai do cartão e vai para o topo.</p>
+    </div>
+    <dl class="ficha">
+      <dt>Minha sugestão</dt><dd><b>Entreabre</b>: a capa abre só um pouco, uma folha desliza para fora e some, e o livro, fechado, vai para o lugar dele na lateral do artigo (e volta ao topo em "Ver o livro"). Dá a ideia de "saiu deste livro" sem virar teatro: 0,9 s.</dd>
+      <dt>B3</dt><dd>O original: a capa abre toda e a primeira página cresce até virar a folha do artigo. 1,1 s.</dd>
+      <dt>Só o livro viaja</dt><dd>O livro não abre: só vai do topo para a lateral (e volta). A mais discreta; o vínculo livro e artigo fica no movimento dele.</dd>
+      <dt>O livro fica</dt><dd>O livro não se mexe; a folha sai dele e cresce até o artigo, e o livro some com a página.</dd>
+      <dt>Celular</dt><dd>A lateral fica no fim do artigo, fora da tela: o livro fecha no lugar e some com a página.</dd>
+    </dl>`,
+  telas: [["Categorias", "categorias"], ["Livro (Arquitetura)", "livro:arq"], ["Livro (SRE)", "livro:sre"], ["Artigo", "artigo:ledger"], ["Home", "home"]],
+  variantes: [{
+    rotulo: "Livro e artigo", padrao: "entreabre", principal: false, aoMudar: (v) => (estilo = v), opcoes: [
+      { id: "entreabre", nome: "Entreabre", dica: "a capa abre só um pouco, uma folha desliza para fora e o livro vai para a lateral." },
+      { id: "b3", nome: "B3", dica: "a capa abre toda e a primeira página cresce até virar a folha do artigo." },
+      { id: "livro", nome: "Só o livro viaja", dica: "o livro não abre: só vai do topo para a lateral, e volta." },
+      { id: "fica", nome: "O livro fica", dica: "o livro não se mexe; a folha sai dele e cresce até o artigo." },
+    ],
+  }],
+  inicial: "livro:arq",
+  legenda: "Clique num artigo da lista do livro; depois, no livro da lateral ou em \"Ver o livro →\".",
+  transicao: (ctx) => {
+    const { de, para } = ctx;
+    const acharTopo = (pg) => pg.querySelector("[data-topo-livro] [data-livro]");
+    const acharLado = (pg) => pg.querySelector(".do-livro [data-livro]");
+    if (de.tipo === "categorias" && para.tipo === "livro") {
+      const a = de.el.querySelector(`[data-cartao="${para.id}"] [data-livro]`), b = acharTopo(para.el);
+      if (a && b && SITE.naTela(a)) return livroVai(ctx, a, b, "<b>Categorias → Livro</b>: o livro sai do cartão e vai para o topo da página dele.");
+    }
+    if (de.tipo === "livro" && para.tipo === "artigo" && post(para.id).c === de.id) {
+      const a = acharTopo(de.el), b = acharLado(para.el);
+      if (a && b && SITE.naTela(a)) return livroAbre(ctx, a, b);
+    }
+    if (de.tipo === "artigo" && para.tipo === "livro") {
+      const a = acharLado(de.el), b = acharTopo(para.el);
+      if (a && b && SITE.naTela(a)) return livroGuarda(ctx, a, b);
+    }
+    return GERAL.geral(ctx, "discreta");
+  },
+});
+
+/* ---------- ajudantes ---------- */
+const cor = (nome) => getComputedStyle(document.documentElement).getPropertyValue(nome).trim();
+/** Um clone do livro, no voo, por cima do lugar dele; o original e o de destino ficam escondidos. */
+function clonar(deEl, paraEl) {
+  const a = SITE.caixa(deEl), b = SITE.caixa(paraEl);
+  const c = deEl.cloneNode(true);
+  Object.assign(c.style, { position: "absolute", left: a.x + "px", top: a.y + "px", margin: 0 });
+  SITE.voo.appendChild(c);
+  gsap.set(c, { transformOrigin: "0 0" });
+  gsap.set([deEl, paraEl], { visibility: "hidden" });
+  return { c, fim: { x: b.x - a.x, y: b.y - a.y, scale: b.w / a.w }, a, b };
+}
+/** O resto das duas telas troca pela troca geral, na versão discreta (sem as folhas do livro). */
+function resto(tl, ctx, sem = [], t0 = 0) {
+  const velhas = ctx.velhas.filter((u) => !sem.includes(u));
+  const novas = ctx.novas.filter((u) => !sem.includes(u));
+  const tSai = GERAL.SAIDAS.discreta(tl, { ...ctx, velhas });
+  GERAL.chegarDiscreta(tl, { ...ctx, novas }, t0 + tSai);
+}
+function folhaQueVoa(r, faixa) {
+  const f = document.createElement("div");
+  f.className = "folha-voo";
+  f.style.setProperty("--faixa", faixa);
+  SITE.voo.appendChild(f);
+  gsap.set(f, { left: r.x, top: r.y, width: r.w, height: r.h, borderRadius: 3, backgroundColor: cor("--livro-papel") });
+  return f;
+}
+const retVisivel = (el, H) => { const r = SITE.caixa(el); const topo = Math.max(r.y, 0); return { x: r.x, y: topo, w: r.w, h: Math.min(r.y + r.h, H) - topo }; };
+
+/* Categorias → livro: o livro sai do cartão e vai para o topo. */
+function livroVai(ctx, a, b, texto) {
+  const tl = gsap.timeline();
+  const { c, fim } = clonar(a, b);
+  tl.to(c, { ...fim, duration: 0.7, ease: "power3.inOut" }, 0.05).set(b, { visibility: "visible" }, 0.75).set(c, { opacity: 0 }, 0.75);
+  resto(tl, ctx);
+  SITE.dizer(texto);
+  return tl;
+}
+
+/* Livro → artigo */
+function livroAbre(ctx, a, b) {
+  const tl = gsap.timeline();
+  const lateralVisivel = SITE.naTela(b) && !ctx.celular;
+  const { c, fim } = clonar(a, lateralVisivel ? b : a);
+  if (!lateralVisivel) gsap.set(b, { visibility: "visible" });
+  const capa = c.querySelector(".capa"), miolo = c.querySelector(".miolo");
+  const corpo = ctx.para.el.querySelector(".corpo-artigo");
+  const rc = retVisivel(corpo, ctx.H);
+  const faixa = `color-mix(in oklab, ${post(ctx.para.id) && corDoPost(post(ctx.para.id))} 11%, ${cor("--paper-hi")})`;
+  if (estilo === "b3" || estilo === "entreabre") {
+    const aberto = estilo === "b3" ? -150 : -42;
+    const rm = SITE.caixa(miolo);
+    const f = folhaQueVoa(rm, faixa);
+    gsap.set(f, { autoAlpha: 0 });
+    SITE.voo.appendChild(c); // o livro fica por cima da folha que sai dele
+    tl.to(capa, { rotationY: aberto, duration: estilo === "b3" ? 0.42 : 0.3, ease: "power2.inOut" }, 0).set(f, { autoAlpha: 1 }, 0.2);
+    if (estilo === "b3") {
+      SITE.voo.appendChild(f); // na B3, a página sai por cima do livro
+      gsap.set(corpo, { opacity: 0 });
+      tl.to(f, { left: rc.x, top: rc.y, width: rc.w, height: rc.h, borderRadius: 14, backgroundColor: cor("--paper-hi"), duration: 0.6, ease: "power3.inOut" }, 0.3)
+        .add(() => f.classList.add("grande"), 0.6)
+        .to(corpo, { opacity: 1, duration: 0.22 }, 0.86).to(f, { autoAlpha: 0, duration: 0.2 }, 0.9)
+        .to(capa, { rotationY: 0, duration: 0.3, ease: "power2.out" }, 0.5);
+      resto(tl, ctx, [corpo]);
+    } else {
+      // entreabre: a folha só desliza um pouco para fora e some; o artigo chega pela troca discreta
+      tl.to(f, { x: rm.w * 0.55, y: -rm.h * 0.06, rotationZ: 4, duration: 0.4, ease: "power2.out" }, 0.22)
+        .to(f, { autoAlpha: 0, duration: 0.2 }, 0.5)
+        .to(capa, { rotationY: 0, duration: 0.26, ease: "power2.in" }, 0.5);
+      resto(tl, ctx, [], 0.15);
+    }
+    tl.addLabel("fecha", 0.72);
+    lateralVisivel ? tl.to(c, { ...fim, duration: 0.55, ease: "power3.inOut" }, "fecha").set(b, { visibility: "visible" }, "fecha+=0.55").set(c, { opacity: 0 }, "fecha+=0.55")
+      : tl.to(c, { opacity: 0, duration: 0.25 }, "fecha");
+  } else if (estilo === "livro") {
+    tl.to(c, { ...fim, duration: 0.75, ease: "power3.inOut" }, 0.05).set(b, { visibility: "visible" }, 0.8).set(c, { opacity: 0 }, 0.8);
+    resto(tl, ctx);
+  } else {
+    // o livro fica: não voa; só a folha sai dele e cresce até o artigo
+    gsap.set(c, { x: 0, y: 0 });
+    const rm = SITE.caixa(miolo);
+    const f = folhaQueVoa(rm, faixa);
+    gsap.set(corpo, { opacity: 0 });
+    tl.to(capa, { rotationY: -60, duration: 0.3, ease: "power2.out" }, 0)
+      .to(f, { left: rc.x, top: rc.y, width: rc.w, height: rc.h, borderRadius: 14, backgroundColor: cor("--paper-hi"), duration: 0.65, ease: "power3.inOut" }, 0.2)
+      .add(() => f.classList.add("grande"), 0.5)
+      .to(c, { opacity: 0, duration: 0.3 }, 0.3)
+      .to(corpo, { opacity: 1, duration: 0.2 }, 0.8).to(f, { autoAlpha: 0, duration: 0.2 }, 0.85);
+    gsap.set(b, { visibility: "visible" });
+    resto(tl, ctx, [corpo]);
+  }
+  SITE.dizer(`<b>Livro → Artigo</b> · ${{ entreabre: "a capa entreabre, uma folha desliza para fora e o livro vai para a lateral", b3: "a capa abre, a primeira página cresce até virar o artigo e o livro vai para a lateral", livro: "só o livro viaja, do topo para a lateral", fica: "o livro fica; a folha sai dele e vira o artigo" }[estilo]}.`);
+  return tl;
+}
+
+/* Artigo → livro */
+function livroGuarda(ctx, a, b) {
+  const tl = gsap.timeline();
+  const { c, fim } = clonar(a, b);
+  const capa = c.querySelector(".capa"), miolo = c.querySelector(".miolo");
+  const corpo = ctx.de.el.querySelector(".corpo-artigo");
+  if ((estilo === "b3" || estilo === "fica") && capa) {
+    const r = retVisivel(corpo, ctx.H);
+    const f = folhaQueVoa(r, "transparent");
+    gsap.set(f, { borderRadius: 14, backgroundColor: cor("--paper-hi") });
+    SITE.voo.insertBefore(f, c);
+    gsap.set(corpo, { opacity: 0 });
+    // a folha do artigo encolhe e entra no livro, que abre para recebê-la
+    const alvo = SITE.caixa(miolo);
+    tl.to(capa, { rotationY: -150, duration: 0.3, ease: "power2.out" }, 0)
+      .to(f, { left: alvo.x, top: alvo.y, width: alvo.w, height: alvo.h, borderRadius: 3, backgroundColor: cor("--livro-papel"), duration: 0.45, ease: "power2.in" }, 0.04)
+      .set(f, { autoAlpha: 0 }, 0.5)
+      .to(capa, { rotationY: 0, duration: 0.24, ease: "power2.out" }, 0.48)
+      .to(c, { ...fim, duration: 0.6, ease: "power3.inOut" }, 0.55).set(b, { visibility: "visible" }, 1.15).set(c, { opacity: 0 }, 1.15);
+    resto(tl, ctx, [corpo], 0.1);
+  } else {
+    if (estilo === "entreabre" && capa) tl.to(capa, { rotationY: -38, duration: 0.25, ease: "power2.out" }, 0).to(capa, { rotationY: 0, duration: 0.25, ease: "power2.in" }, 0.3);
+    tl.to(c, { ...fim, duration: 0.75, ease: "power3.inOut" }, estilo === "entreabre" ? 0.2 : 0.05).set(b, { visibility: "visible" }, 0.95).set(c, { opacity: 0 }, 0.95);
+    resto(tl, ctx);
+  }
+  SITE.dizer("<b>Artigo → Livro</b>: o livro da lateral volta para o topo da página dele" + (estilo === "b3" || estilo === "fica" ? ", levando a folha do artigo para dentro." : "."));
+  return tl;
+}
+</script>
+</body>
+</html>

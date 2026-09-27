@@ -3,7 +3,8 @@
  * Uma tag (/tags/<Nome>/, com o nome cru na URL, como no blog atual: D7), D33: o topo com a estante
  * de filtro (os livros por onde a tag passa, com o número de artigos dela em cada um) e as tags que
  * mais aparecem junto com ela; embaixo, os artigos no formato da home, com Lista / Cards
- * (ListaFiltrada).
+ * (ListaFiltrada). Na troca de página (D51, protótipo 05, "desfile direto"), as folhas chegam do fundo
+ * com 60 ms entre elas, e não 85: a página de uma tag é a que tem mais cards.
  */
 import Base from "../../layouts/Base.astro";
 import { paginaDeColecao } from "../../lib/seo";
@@ -33,7 +34,7 @@ const junto = [...vizinhas]
   .map(([nome]) => nome);
 ---
 
-<Base titulo={`#${grupo.nome}`} descricao={descricao} atual="tags" jsonLd={paginaDeColecao(`#${grupo.nome}`, descricao, Astro.url.pathname, Astro.site)}>
+<Base titulo={`#${grupo.nome}`} descricao={descricao} atual="tags" jsonLd={paginaDeColecao(`#${grupo.nome}`, descricao, Astro.url.pathname, Astro.site)} chegada={{ passo: 0.06 }}>
   <div class="wrap">
     <ListaFiltrada posts={grupo.posts} titulo={`#${grupo.nome}`} descricao={descricao} trilha={{ nome: "Tags", href: url("/tags/") }}>
       {

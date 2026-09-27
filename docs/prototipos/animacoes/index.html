@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Protótipos de animação · 27/09/2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&family=Literata:opsz,wght@7..72,400;7..72,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_base/site.css">
+<style>
+  .indice { max-width: 980px; margin: 0 auto; padding: 36px clamp(16px, 3vw, 32px) 60px; display: grid; gap: 18px; }
+  .indice h1 { font: 700 clamp(30px, 4vw, 44px)/1.06 var(--f-titulo); margin: 0; letter-spacing: -.015em; }
+  .indice > p { font: 17px/1.6 var(--f-texto); color: var(--ink-2); margin: 0; }
+  .indice ol { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 12px; }
+  .indice li a { display: grid; grid-template-columns: 54px minmax(0, 1fr) auto; gap: 16px; align-items: baseline; padding: 18px 22px; background: var(--paper-hi); border: 1px solid var(--rule); border-radius: 14px; box-shadow: var(--sombra); text-decoration: none; color: var(--ink); }
+  .indice li a:hover b { color: var(--acento); }
+  .indice .n { font: 800 24px/1 var(--f-titulo); color: var(--ink-3); }
+  .indice b { font: 700 21px/1.25 var(--f-titulo); display: block; }
+  .indice small { display: block; margin-top: 4px; font: 15px/1.5 var(--f-texto); color: var(--ink-2); }
+  .indice .estado { font: 500 13px var(--f-ui); color: var(--ink-3); white-space: nowrap; }
+  .indice .pronto .estado { color: var(--acento); }
+  .indice li:not(.pronto) a { pointer-events: none; opacity: .55; box-shadow: none; }
+</style>
+</head>
+<body>
+<main class="indice">
+  <h1>Protótipos de animação</h1>
+  <p>Pedidos de 27/09/2026. Cada protótipo tem o mini-site com todas as telas, câmera lenta, tema escuro, largura de celular e movimento reduzido. As ideias ainda não estão refinadas: servem para escolher. Depois da escolha, o acabamento passa por uma revisão de design.</p>
+  <ol>
+    <li data-p="01"><a href="01-abertura-home.html"><span class="n">01</span><span><b>A abertura da home</b><small>O A3 (a estante se monta), com os três riscos corrigidos, tocando ao chegar de fora e ao recarregar. Com variações do fim.</small></span><span class="estado">em preparo</span></a></li>
+    <li data-p="02"><a href="02-abertura-outras-telas.html"><span class="n">02</span><span><b>Entrar direto noutra tela</b><small>Quem chega por um link de artigo, categoria ou tag: o caderno carrega, abre e fecha, e a tela pedida chega.</small></span><span class="estado">em preparo</span></a></li>
+    <li data-p="03"><a href="03-transicao-geral.html"><span class="n">03</span><span><b>A troca de tela geral</b><small>De qualquer tela para qualquer tela: as folhas do A2 chegando do fundo, com quatro jeitos de sair e as duas montagens (texto fora e tudo em painel).</small></span><span class="estado">em preparo</span></a></li>
+    <li data-p="04"><a href="04-categorias.html"><span class="n">04</span><span><b>A chegada em Categorias</b><small>Os livros chegam em pilha, como os cartões do A2, e cada um vai para o seu lugar na grade.</small></span><span class="estado">em preparo</span></a></li>
+    <li data-p="05"><a href="05-tags.html"><span class="n">05</span><span><b>A página de uma tag</b><small>Muitos cards: ideias para eles chegarem juntos sem virar confusão.</small></span><span class="estado">em preparo</span></a></li>
+    <li data-p="06"><a href="06-artigo-para-artigo.html"><span class="n">06</span><span><b>Artigo anterior e próximo</b><small>O B1 (a folha vizinha desliza) e outras formas de passar de um artigo ao outro.</small></span><span class="estado">em preparo</span></a></li>
+    <li data-p="07"><a href="07-livro-e-artigo.html"><span class="n">07</span><span><b>O livro e o artigo</b><small>O B3 (o artigo sai de dentro do livro e volta para ele), em versões mais discretas.</small></span><span class="estado">em preparo</span></a></li>
+    <li data-p="08"><a href="08-desenho-do-artigo.html"><span class="n">08</span><span><b>O desenho do artigo se desenha</b><small>O C1 ao abrir um artigo: a ilustração do topo se desenha depois que a folha pousa.</small></span><span class="estado">em preparo</span></a></li>
+  </ol>
+</main>
+<script>
+  // Quais já estão prontos (atualizado a cada protótipo terminado).
+  const PRONTOS = ["01", "02", "03", "04", "05", "06", "07", "08"];
+  for (const li of document.querySelectorAll("[data-p]")) {
+    if (!PRONTOS.includes(li.dataset.p)) continue;
+    li.classList.add("pronto");
+    li.querySelector(".estado").textContent = "pronto";
+  }
+</script>
+</body>
+</html>

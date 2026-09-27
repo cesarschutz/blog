@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>01 · A abertura da home · protótipo</title>
+<!-- Só no protótipo: Google Fonts e GSAP pelo jsDelivr. No site, @fontsource e o gsap do npm. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@700;800&family=Bitter:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400&family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_base/site.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/DrawSVGPlugin.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/CustomEase.min.js"></script>
+<style>
+  /* A camada da abertura cobre a janela inteira (cabeçalho junto); a estante de verdade sobe por cima dela. */
+  .abertura { position: absolute; inset: 0; z-index: 40; pointer-events: none; display: none; }
+  .janela.abrindo .abertura { display: block; }
+  .janela.abrindo .pagina { overflow: hidden; }
+  .abertura .papel { position: absolute; inset: 0; background: var(--paper); }
+  .fio-caixa { position: absolute; left: 0; top: 0; height: 8px; }
+  .fio { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  /* Corrigido: sem vector-effect (com ele, o DrawSVG media o traço numa escala e o navegador pintava
+     noutra, e o tracejado se repetia em três riscos). O caminho é refeito em pixels a cada abertura. */
+  .fio-tinta { fill: none; stroke: var(--ink); stroke-width: 1.4; stroke-linecap: round; }
+  .abertura .caneta { left: -3.7px; top: -14.3px; }
+  .conta { position: absolute; left: 0; right: 0; margin: 0; text-align: center; font: 700 12px/1 var(--f-livro); letter-spacing: .2em; text-transform: uppercase; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .janela.abrindo .prateleira { z-index: 50; }
+  .janela.abrindo .prateleira .lombada, .janela.abrindo .prateleira .revista,
+  .janela.abrindo .prateleira .aparador, .janela.abrindo .prateleira .tabua { opacity: 0; }
+</style>
+</head>
+<body>
+<script src="_base/dados.js"></script>
+<script src="_base/site.js"></script>
+<script src="_base/transicoes.js"></script>
+<script>
+gsap.registerPlugin(DrawSVGPlugin, CustomEase);
+// O livro inclina pelo atrito enquanto desliza e, ao parar, passa um pouco do prumo e assenta (do A3).
+CustomEase.create("assenta", "M0,0 C0.2,0 0.35,1.22 0.55,1.1 0.7,1.02 0.82,0.98 1,1");
+
+let fimDaAbertura = "a2";
+let tocando = null;
+
+SITE.iniciar({
+  ficha: `
+    <p class="rotulo"><a href="index.html">Protótipos de animação</a> · 01 · entrar no site pela home</p>
+    <h1>A abertura da home: a estante se monta (A3)</h1>
+    <div>
+      <p class="ideia">A caneta risca um fio, o fio engrossa e vira a tábua da prateleira, e a coleção é posta nela, livro a livro, da direita para a esquerda. Montada a estante, ela volta para o lugar dela na folha da abertura.</p>
+      <p class="ideia"><b>Corrigido:</b> o fio saía em três riscos separados (o traço media em uma escala e era pintado em outra). Agora é um risco só, da caneta.</p>
+      <p class="ideia"><b>Quando toca:</b> sempre que a pessoa chega de fora (link, endereço digitado, favorito) e sempre que recarrega a página. Andando por dentro do site (clicar na marca, por exemplo), vale a troca de tela geral (03). Use "Entrar no site" para ver de novo.</p>
+    </div>
+    <dl class="ficha">
+      <dt>Minha sugestão</dt><dd><b>O fim com as folhas do A2</b>: a estante volta para a folha dela e, logo depois, o destaque e a lista chegam do fundo, como na troca geral. A abertura termina com o mesmo gesto do resto do site, em vez de a folha de papel só esmaecer.</dd>
+      <dt>Tempo</dt><dd>Cerca de 2,6 s. Um clique ou qualquer tecla pula direto para o fim.</dd>
+      <dt>No site</dt><dd>O script do &lt;head&gt; decide: <code>performance.getEntriesByType("navigation")[0].type === "reload"</code> ou o <code>referrer</code> de fora do site. Hoje ele guarda <code>cs-aberto</code> na sessão, e é por isso que a abertura não voltava ao recarregar.</dd>
+      <dt>Celular</dt><dd>A mesma sequência, mais curta, com a estante na largura da tela.</dd>
+      <dt>Movimento reduzido</dt><dd>O site aparece pronto, sem abertura.</dd>
+    </dl>`,
+  telas: [["Home", "home"], ["Artigos", "artigos"], ["Categorias", "categorias"], ["Artigo", "artigo:cronjob"]],
+  variantes: [{
+    rotulo: "Fim da abertura", padrao: "a2", principal: false, aoMudar: (v) => (fimDaAbertura = v), opcoes: [
+      { id: "a2", nome: "Folhas do A2", dica: "a estante volta para a folha dela e o destaque e a lista chegam do fundo, como na troca geral." },
+      { id: "a3", nome: "Como no A3", dica: "a estante volta para a folha dela e o papel esmaece, mostrando o site inteiro de uma vez." },
+    ],
+  }],
+  extras: [["Entrar no site (recarregar)", () => entrar()]],
+  legenda: "A abertura toca sozinha. Depois, clique na marca, no menu ou nos livros para ver que, por dentro do site, vale a troca geral.",
+  transicao: (ctx) => GERAL.geral(ctx, "frente"),
+  bloqueado: () => !!tocando,
+  aoIniciar: () => entrar(),
+});
+
+/* ================= A abertura ================= */
+const janela = SITE.janela;
+janela.insertAdjacentHTML("beforeend", `
+  <div class="abertura" aria-hidden="true">
+    <div class="papel"></div>
+    <div class="fio-caixa">
+      <svg class="fio" preserveAspectRatio="none"><path class="fio-tinta"/></svg>
+      <svg class="caneta" viewBox="0 0 24 24"><path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1.4 1.4 0 0 1 0 2l-9.2 9.2Z"/><path class="anel" d="m15.6 5.8 2.6 2.6"/><path class="ponta" d="M8.2 13.2 10.8 15.8 4 20Z"/></svg>
+    </div>
+    <p class="conta"><span class="conta-texto">Volume 01</span></p>
+  </div>`);
+const ov = janela.querySelector(".abertura");
+const papel = ov.querySelector(".papel"), caixaFio = ov.querySelector(".fio-caixa"), svgFio = ov.querySelector(".fio");
+const tinta = ov.querySelector(".fio-tinta"), caneta = ov.querySelector(".caneta");
+const conta = ov.querySelector(".conta"), contaTexto = ov.querySelector(".conta-texto");
+/** Retângulo nas coordenadas da janela (a abertura cobre a janela inteira). */
+function caixaJ(el) {
+  const r = el.getBoundingClientRect(), j = janela.getBoundingClientRect();
+  const x = r.left - j.left, y = r.top - j.top;
+  return { x, y, w: r.width, h: r.height, cx: x + r.width / 2, cy: y + r.height / 2 };
+}
+
+function limpar() {
+  tocando?.kill();
+  tocando = null;
+  janela.classList.remove("abrindo");
+  const pg = SITE.atual?.el;
+  if (pg) gsap.set(pg.querySelectorAll("*:not(svg *)"), { clearProps: "transform,opacity,visibility,clipPath,zIndex,willChange,transformOrigin" });
+  gsap.set([papel, caixaFio, conta, caneta], { clearProps: "all" });
+}
+const pular = () => { if (tocando) tocando.progress(1); };
+janela.addEventListener("pointerdown", (e) => { if (tocando && !e.target.closest(".controles")) pular(); });
+addEventListener("keydown", (e) => { if (tocando && !e.metaKey && !e.ctrlKey && e.key !== "Tab") pular(); });
+
+async function entrar() {
+  limpar();
+  const pg = SITE.irDireto("home");
+  pg.scrollTop = 0;
+  if (SITE.reduzido()) { SITE.dizer("<b>Movimento reduzido</b>: o site aparece pronto, sem abertura."); return; }
+  await document.fonts.ready;
+  janela.classList.add("abrindo");
+  const cel = SITE.celular();
+  const W = janela.clientWidth, H = janela.clientHeight;
+  const prat = pg.querySelector(".prateleira");
+  const livros = [...prat.querySelectorAll(".lombada, .revista")];
+  const aparador = prat.querySelector(".aparador"), tabua = prat.querySelector(".tabua");
+  // As outras folhas (destaque, lista) esperam a vez delas, se o fim for o do A2.
+  const outras = SITE.unidades(pg).filter((u) => !u.classList.contains("abertura-home"));
+  gsap.set(outras, { opacity: fimDaAbertura === "a2" ? 0 : 1 });
+
+  // A estante de verdade vai para o meio da janela, maior (é ela que volta ao lugar no fim).
+  const r = caixaJ(prat);
+  const s = Math.min(cel ? 1.05 : 1.4, (W * 0.84) / r.w, (H * 0.5) / r.h);
+  gsap.set(prat, { x: W / 2 - r.cx, y: H * 0.47 - r.cy, scale: s, transformOrigin: "50% 50%" });
+
+  // O fio da caneta, desenhado exatamente onde a tábua vai estar, com o caminho em pixels.
+  const rt = caixaJ(tabua), w = rt.w;
+  svgFio.setAttribute("viewBox", `0 0 ${w} 8`);
+  tinta.setAttribute("d", `M1 4.3C${w * 0.17} 3.5 ${w * 0.35} 4.9 ${w * 0.5} 4.1S${w * 0.82} 3.6 ${w - 1} 4.3`);
+  gsap.set(caixaFio, { left: rt.x, top: rt.cy - 4, width: w, opacity: 1 });
+  gsap.set(conta, { top: rt.y + rt.h + 26, opacity: 0 });
+  gsap.set(tinta, { drawSVG: "0%" });
+  const L = tinta.getTotalLength();
+  const p = { v: 0 };
+  const pintar = () => {
+    gsap.set(tinta, { drawSVG: `0% ${p.v * 100}%` });
+    const pt = tinta.getPointAtLength(p.v * L);
+    gsap.set(caneta, { x: pt.x, y: pt.y - 4 });
+  };
+  pintar();
+
+  const tl = gsap.timeline({ onComplete: () => { tocando = null; limpar(); } });
+  tocando = tl;
+  SITE.dizer("<b>A abertura</b>: a caneta risca a tábua e a coleção é posta nela. Um clique pula para o fim.");
+
+  // 1. a caneta risca o fio (é o carregamento); o fio engrossa e vira a tábua
+  tl.to(p, { v: 1, duration: cel ? 0.4 : 0.55, ease: "power1.inOut", onUpdate: pintar }, 0.15)
+    .to(caneta, { y: "-=10", rotation: 16, opacity: 0, duration: 0.25, ease: "power2.in" })
+    .to(tabua, { opacity: 1, duration: 0.2 }, "<")
+    .fromTo(tabua, { scaleY: 0.15 }, { scaleY: 1, duration: 0.3, ease: "power2.out", transformOrigin: "50% 50%" }, "<")
+    .to(caixaFio, { opacity: 0, duration: 0.2 }, "<")
+    .to(conta, { opacity: 1, duration: 0.25 }, "<");
+
+  // 2. a coleção é posta na prateleira, da direita, um livro por vez, deslizando até o vizinho
+  const t0 = tl.duration() - 0.1;
+  const passo = cel ? 0.065 : 0.075, dur = cel ? 0.5 : 0.55;
+  livros.forEach((b, i) => {
+    const rb = caixaJ(b);
+    const fora = (W - rb.x) / s + 24;
+    const t = t0 + i * passo;
+    const revista = b.classList.contains("revista");
+    tl.set(b, { opacity: 1 }, t)
+      .fromTo(b, { x: fora }, { x: 0, duration: dur, ease: "power3.out" }, t)
+      .fromTo(b, { rotation: -3.5 }, { rotation: 0, duration: dur, ease: "assenta" }, t)
+      .call(() => { contaTexto.textContent = revista ? "E a revista" : `Volume ${String(i + 1).padStart(2, "0")}`; }, null, t + dur * 0.55);
+    if (i > 0) tl.to(livros[i - 1], { xPercent: -3, duration: 0.07, yoyo: true, repeat: 1, ease: "power1.out" }, t + dur * 0.6);
+    if (revista) tl.to(aparador, { opacity: 1, duration: 0.2 }, t);
+  });
+
+  // 3. a estante volta para a folha da abertura; o papel se desfaz em volta
+  const t1 = t0 + (livros.length - 1) * passo + dur + 0.05;
+  tl.to(conta, { opacity: 0, duration: 0.2 }, t1 - 0.05)
+    .to(prat, { x: 0, y: 0, scale: 1, duration: cel ? 0.8 : 0.95, ease: "power3.inOut" }, t1)
+    .to(papel, { opacity: 0, duration: 0.55, ease: "power1.inOut" }, t1 + 0.3);
+
+  // 4. (fim do A2) o destaque e a lista chegam do fundo, como na troca geral
+  if (fimDaAbertura === "a2") {
+    const ctx = { novas: outras, W: SITE.palco.clientWidth, H: SITE.palco.clientHeight, celular: cel, sentido: "abre" };
+    GERAL.chegarDoFundo(tl, ctx, t1 + 0.55, { passo: 0.12, dur: 1.05 });
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>08 · O desenho do artigo se desenha · protótipo</title>
+<!-- Só no protótipo: Google Fonts e GSAP pelo jsDelivr. No site, @fontsource e o gsap do npm. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@700;800&family=Bitter:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400&family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_base/site.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/DrawSVGPlugin.min.js"></script>
+<style>
+  .desenho-voa { position: absolute; left: 0; top: 0; overflow: hidden; border-radius: 10px; }
+</style>
+</head>
+<body>
+<script src="_base/dados.js"></script>
+<script src="_base/site.js"></script>
+<script src="_base/transicoes.js"></script>
+<script>
+gsap.registerPlugin(DrawSVGPlugin);
+let estilo = "depois";
+
+SITE.iniciar({
+  ficha: `
+    <p class="rotulo"><a href="index.html">Protótipos de animação</a> · 08 · ao abrir um artigo</p>
+    <h1>O desenho do artigo se desenha (C1)</h1>
+    <div>
+      <p class="ideia">Ao abrir um artigo, a ilustração do topo se desenha como no C1, pelas camadas: primeiro os traços da caneta, em sequência; depois o papel ganha corpo e a cor "acerta o registro" (desliza até o lugar, como tinta impressa); as hachuras e os textos do desenho; por último, as anotações à mão, escritas da esquerda para a direita.</p>
+      <p class="ideia">Abra um artigo pela lista, pelos cards, pelo destaque ou por uma tag. Só toca ao abrir o artigo: quem volta a ele pelo histórico, ou abre no meio do texto, vê o desenho pronto.</p>
+    </div>
+    <dl class="ficha">
+      <dt>Minha sugestão</dt><dd><b>Depois de pousar</b>: a folha do artigo chega pela troca geral e, quando ela assenta, o desenho se desenha (1,6 s). Uma coisa de cada vez: primeiro a página, depois o desenho.</dd>
+      <dt>Enquanto chega</dt><dd>O desenho começa a se desenhar com a folha ainda no ar. Parece mais rápido, mas as duas animações disputam o olhar.</dd>
+      <dt>Da miniatura</dt><dd>A miniatura do artigo na lista cresce e vira o desenho do topo (como o site já faz hoje, D47), já desenhada; só as anotações à mão são escritas depois. É a mais curta e mantém o vínculo com o item clicado.</dd>
+      <dt>Movimento reduzido</dt><dd>O desenho aparece pronto.</dd>
+    </dl>`,
+  telas: [["Home", "home"], ["Artigos", "artigos"], ["Tag Spring", "tag:Spring"], ["Artigo", "artigo:idempotencia"]],
+  variantes: [{
+    rotulo: "O desenho", padrao: "depois", principal: false, aoMudar: (v) => (estilo = v), opcoes: [
+      { id: "depois", nome: "Depois de pousar", dica: "a folha chega e, quando assenta, o desenho se desenha." },
+      { id: "junto", nome: "Enquanto chega", dica: "o desenho começa a se desenhar com a folha ainda no ar." },
+      { id: "miniatura", nome: "Da miniatura", dica: "a miniatura clicada cresce e vira o desenho do topo; só as anotações são escritas depois." },
+    ],
+  }],
+  inicial: "home",
+  legenda: "Clique num artigo (título, desenho ou destaque) para abri-lo.",
+  transicao: (ctx) => {
+    if (ctx.para.tipo !== "artigo" || ctx.sentido === "volta") return GERAL.geral(ctx, ctx.sentido === "volta" ? "frente" : "frente");
+    const tl = gsap.timeline();
+    const svg = ctx.para.el.querySelector("[data-topo-desenho] svg");
+    const miniatura = estilo === "miniatura" && ctx.origem ? ctx.origem.closest(".item, .card, .destaque")?.querySelector("[data-desenho]") : null;
+    if (miniatura && SITE.naTela(miniatura)) {
+      SITE.dizer("<b>Da miniatura</b>: a miniatura clicada cresce e vira o desenho do topo; as anotações à mão são escritas depois.");
+      const t0 = GERAL.SAIDAS.discreta(tl, ctx);
+      GERAL.chegarDiscreta(tl, ctx, t0);
+      const topo = ctx.para.el.querySelector("[data-topo-desenho]");
+      const a = SITE.caixa(miniatura), b = SITE.caixa(topo);
+      const voa = document.createElement("div");
+      voa.className = "desenho-voa painel";
+      voa.style.cssText = topo.getAttribute("style") || "";
+      voa.style.setProperty("--c", getComputedStyle(topo).getPropertyValue("--c"));
+      voa.innerHTML = topo.innerHTML;
+      SITE.voo.append(voa);
+      gsap.set(voa, { left: a.x, top: a.y, width: a.w, height: a.h });
+      gsap.set(miniatura, { visibility: "hidden" });
+      tl.set(topo, { visibility: "hidden" }, 0)
+        .to(voa, { left: b.x, top: b.y, width: b.w, height: b.h, borderRadius: 13, duration: 0.75, ease: "power3.inOut" }, 0.05)
+        .set(topo, { visibility: "visible" }, 0.8).set(voa, { opacity: 0 }, 0.8);
+      const notas = svg.querySelectorAll(".a, .a2");
+      gsap.set(notas, { clipPath: "inset(0 100% 0 0)" });
+      tl.to(notas, { clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "none", stagger: 0.16 }, 0.85);
+      return tl;
+    }
+    const t0 = GERAL.SAIDAS.frente(tl, ctx);
+    GERAL.chegarDoFundo(tl, ctx, t0);
+    const pousa = t0 + 0.95;
+    SITE.dizer(`<b>Abrir o artigo</b>: ${estilo === "junto" ? "o desenho se desenha enquanto a folha chega" : "a folha chega e, quando assenta, o desenho se desenha"}.`);
+    desenhar(tl, svg, estilo === "junto" ? t0 + 0.25 : pousa);
+    return tl;
+  },
+});
+
+/** A sequência do C1, nas camadas dos desenhos do site. */
+function desenhar(tl, svg, t) {
+  const tracos = [...svg.querySelectorAll(".t, .tf")];
+  const todos = (s) => [...svg.querySelectorAll(s)];
+  const papeis = todos(".tf"), cor = todos(".c"), hachuras = todos(".h"), guias = todos(".g"), textos = todos(".m"), notas = todos(".a, .a2");
+  gsap.set(tracos, { drawSVG: "0%" });
+  gsap.set(papeis, { fillOpacity: 0 });
+  gsap.set([...hachuras, ...guias, ...textos], { opacity: 0 });
+  gsap.set(cor, { x: 27, y: 22, opacity: 0 });
+  gsap.set(notas, { clipPath: "inset(0 100% 0 0)" });
+  // 1. os traços, em sequência
+  tl.to(tracos, { drawSVG: "100%", duration: 0.8, ease: "power1.inOut", stagger: { amount: 0.55 } }, t)
+    .to(guias, { opacity: 0.75, duration: 0.4 }, t + 0.35)
+  // 2. o papel ganha corpo e a cor acerta o registro
+    .to(papeis, { fillOpacity: 1, duration: 0.35 }, t + 1.0)
+    .to(cor, { x: 0, y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, t + 1.0)
+    .to(hachuras, { opacity: 0.5, duration: 0.5 }, t + 1.1)
+    .to(textos, { opacity: 1, duration: 0.35, stagger: 0.06 }, t + 1.15)
+  // 3. as anotações à mão, da esquerda para a direita
+    .to(notas, { clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: "none", stagger: 0.16 }, t + 1.35);
+}
+</script>
+</body>
+</html>

@@ -700,16 +700,27 @@ cada quadro enquanto o traço se move, então todo desenho animado passa por um 
   tracejados só por opacidade.
 - **Marca "cs"** (D41, D47, só CSS): no hover ou foco, a capa entreabre 38° sobre as páginas (0,5s). A
   fita saiu na D47; o "c" fica acima e o "s" abaixo, em degrau.
-- **Abertura do site** (D47, `Abertura.astro`, GSAP): só na home, na primeira visita da sessão e sem
-  movimento reduzido. Folha de papel com o livro "cs" (0,55s) e o fio escrito pela caneta com a
-  contagem até 100 (mínimo ~1,2s; no celular, ~0,9s); o livro voa até o livro grande da abertura
-  (1s, `power3.inOut`; no celular, até o do cabeçalho) e a folha sobe (`yPercent -100`, 0,95s); o
-  site chega de baixo para cima: destaque, folha da abertura, nome linha a linha, livros descendo
-  para a prateleira um a um (`yPercent`, `bounce.out`, 50ms entre eles; não no celular) e, por último,
-  o cabeçalho. Durante ela, as transições de CSS ficam desligadas (atrapalham o GSAP a ler o estado final).
-- **Troca de página** (D47, View Transitions entre documentos, `base.css`): o cabeçalho parado; a
-  folha antiga sai (6px para cima, 0,2s) e a nova chega (18px, 0,5s, 60ms depois); livros e o desenho
-  do post voam quando estão nas duas páginas; sem par, saem e chegam com a folha (`:only-child`).
+- **Abertura do site** (D51, `Abertura.astro`, GSAP; protótipos 01 e 02 de
+  `docs/prototipos/animacoes/`): toca **ao chegar de fora e ao recarregar** (o script do `<head>`
+  decide), sem movimento reduzido; um clique ou tecla pula. Na home, **a estante se monta (A3)**: a
+  caneta risca um fio só onde vai ficar a tábua (o caminho é refeito em pixels, sem `vector-effect`), o
+  fio vira a tábua, os livros entram da direita um a um (Volume 01 primeiro, 75 ms entre eles,
+  inclinados pelo atrito e assentando) com a contagem da coleção embaixo, a estante volta para a folha e
+  o papel esmaece (0,55s). Nas outras páginas, **o caderno "cs"** carrega (caneta e contagem até 100),
+  abre e fecha (a capa tem frente e verso) e pousa na marca do cabeçalho; o papel esmaece e as folhas da
+  página chegam do fundo (em Categorias, com o desfile e a pilha). Durante ela, as transições de CSS
+  ficam desligadas.
+- **Troca de página por folhas** (D51, `src/scripts/troca.js`, embutido no `<head>`; View Transitions
+  entre documentos animadas pela Web Animations API, sem biblioteca; protótipo 03, "cai da mesa",
+  texto fora): o cabeçalho parado e o traço do menu deslizando; as folhas à vista da página antiga caem
+  da mesa (600 ms, de baixo para cima, 45 ms entre elas, giro de até 7°) e os textos soltos sobem 10px
+  e somem (200 ms); as da nova chegam do fundo em perspectiva e pousam (1s, `cubic-bezier(.25,1,.5,1)`,
+  85 ms entre elas, a partir de 0,2s); textos novos sobem por uma máscara. Voltando pelo histórico, as
+  novas vêm da frente. Livros com par nas duas páginas voam (só o livro viaja, protótipo 07); a folha
+  deles só esmaece. Artigo anterior e próximo: **na pilha** (protótipo 06). Categorias: **desfile e
+  pilha** (protótipo 04, script da página). Tag: **desfile direto** (60 ms). O desenho do topo do
+  artigo se desenha **depois de pousar** (protótipo 08, a sequência do C1). A troca de livro pela pilha e
+  a navegação com um diálogo aberto usam a folha de antes (a antiga sobe 6px e some, a nova sobe 18px).
 - **Gaveta** (D47): cresce (0,8s) com o conteúdo de baixo descendo junto; recolhe ao fechar; na troca
   de livro, vai da altura de um para a do outro (0,55s).
 - **Livro ampliado** (D47): cresce do livro de origem (0,7s, `power3.inOut`) e volta para ele ao fechar

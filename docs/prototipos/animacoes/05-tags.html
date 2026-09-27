@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>05 · A página de uma tag · protótipo</title>
+<!-- Só no protótipo: Google Fonts e GSAP pelo jsDelivr. No site, @fontsource e o gsap do npm. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@700;800&family=Bitter:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400&family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_base/site.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<style>
+  .pg-tag .card { position: relative; }
+  /* A tag clicada, que voa até virar o título da página. */
+  .tag-voa { position: absolute; left: 0; top: 0; font: 700 clamp(38px, 6cqi, 64px)/1 var(--f-codigo); letter-spacing: -.03em; color: var(--ink); white-space: nowrap; transform-origin: 0 0; }
+  .tag-voa span { color: var(--ink-3); }
+</style>
+</head>
+<body>
+<script src="_base/dados.js"></script>
+<script src="_base/site.js"></script>
+<script src="_base/transicoes.js"></script>
+<script src="_base/caderno.js"></script>
+<script>
+const rnd = gsap.utils.random;
+let estilo = "tag";
+
+SITE.iniciar({
+  ficha: `
+    <p class="rotulo"><a href="index.html">Protótipos de animação</a> · 05 · a página de uma tag</p>
+    <h1>A página de uma tag: muitos cards chegando juntos</h1>
+    <div>
+      <p class="ideia">A tag junta artigos de livros diferentes, e a página dela é a que tem mais cards (a de Spring tem nove). Quatro ideias para eles chegarem sem virar confusão. Clique numa tag (as pílulas da página Tags, os <code>#Spring</code> da lista, os títulos dos cartões de tag) para ver a troca de verdade, com a tag que você clicou.</p>
+    </div>
+    <dl class="ficha">
+      <dt>Minha sugestão</dt><dd><b>A tag junta os artigos</b>: a tag clicada voa e vira o título da página, e os cards saem de dentro dela, abrindo em leque até os lugares. A pessoa vê que clicou num assunto e que ele reuniu os artigos. Sem uma tag de origem (entrada direta), vale a <b>onda</b>.</dd>
+      <dt>Onda</dt><dd>Os cards vêm do fundo numa onda em diagonal, do canto de cima para o de baixo, 45 ms entre eles. A mais limpa para muitos cards.</dd>
+      <dt>Desfile direto</dt><dd>Cada card faz o caminho do A2 e pousa direto no lugar, sem pilha, 60 ms entre eles.</dd>
+      <dt>Juntar as folhas</dt><dd>Os cards chegam de fora da tela, cada um do lado mais perto dele, um pouco tortos, como folhas espalhadas sendo juntadas na mesa.</dd>
+      <dt>Movimento reduzido</dt><dd>A tela só troca.</dd>
+    </dl>`,
+  telas: [["Home", "home"], ["Artigos", "artigos"], ["Tags", "tags"], ["Tag Spring", "tag:Spring"], ["Tag Java", "tag:Java"], ["Artigo", "artigo:aop"]],
+  variantes: [{
+    rotulo: "Os cards chegam", padrao: "tag", principal: false, aoMudar: (v) => (estilo = v), opcoes: [
+      { id: "tag", nome: "A tag junta os artigos", dica: "a tag clicada vira o título da página e os cards saem de dentro dela, em leque." },
+      { id: "onda", nome: "Onda", dica: "do fundo, numa onda em diagonal, do canto de cima para o de baixo." },
+      { id: "desfile", nome: "Desfile direto", dica: "cada card faz o caminho do A2 e pousa no lugar, sem pilha." },
+      { id: "juntar", nome: "Juntar as folhas", dica: "de fora da tela, cada um do lado mais perto dele, um pouco torto, como folhas sendo juntadas." },
+    ],
+  }],
+  extras: [["Entrar direto numa tag", () => entrarDireto()]],
+  inicial: "tags",
+  legenda: "Clique numa tag (pílula, #tag de um artigo ou título de um cartão) para abrir a página dela.",
+  transicao: (ctx) => {
+    if (ctx.para.tipo !== "tag" || ctx.sentido === "volta") return GERAL.geral(ctx, "frente");
+    const tl = gsap.timeline();
+    const origem = estilo === "tag" && ctx.origem && SITE.naTela(ctx.origem) ? SITE.caixa(ctx.origem) : null;
+    SITE.dizer(`<b>${SITE.NOMES[ctx.de.tipo]} → #${decodeURIComponent(ctx.para.id)}</b>: ${origem ? "a tag clicada vira o título e os cards saem dela" : estilo === "tag" ? "sem uma tag de origem na tela (atalho), vale a onda" : "os cards chegam"}.`);
+    const t0 = GERAL.SAIDAS.frente(tl, ctx);
+    chegarTag(tl, ctx, t0, origem);
+    return tl;
+  },
+});
+
+function chegarTag(tl, ctx, t0, origem) {
+  const pg = ctx.para.el, W = ctx.W, H = ctx.H;
+  const topo = pg.querySelector(".topo-tag"), cab = pg.querySelector(".bloco-cab");
+  const cards = [...pg.querySelectorAll(".card")];
+  const rs = cards.map((c) => SITE.caixa(c));
+  const modo = origem ? "tag" : estilo === "tag" ? "onda" : estilo;
+  GERAL.chegarDoFundo(tl, { ...ctx, novas: [topo], sentido: "abre" }, t0);
+  GERAL.textoEntra(tl, cab, t0 + 0.2);
+  cards.forEach((c) => GERAL.preparar(c, ctx));
+
+  if (modo === "tag") {
+    // a tag clicada voa até o título; os cards saem de dentro dela
+    const h1 = topo.querySelector("h1");
+    const rh = SITE.caixa(h1);
+    const voa = document.createElement("div");
+    voa.className = "tag-voa";
+    voa.innerHTML = h1.innerHTML;
+    SITE.voo.append(voa);
+    const s0 = origem.h / rh.h;
+    gsap.set(voa, { x: origem.x, y: origem.y, scale: s0 });
+    gsap.set(h1, { opacity: 0 });
+    tl.to(voa, { x: rh.x, y: rh.y, scale: 1, duration: 0.75, ease: "power3.inOut" }, t0 * 0.5)
+      .set(h1, { opacity: 1 }, t0 * 0.5 + 0.75)
+      .set(voa, { opacity: 0 }, t0 * 0.5 + 0.75);
+    const ox = origem.cx, oy = origem.cy;
+    cards.forEach((c, i) => {
+      const r = rs[i];
+      const t = t0 + 0.45 + i * 0.06;
+      tl.fromTo(c, { x: ox - r.cx, y: oy - r.cy, scale: 0.18, rotationZ: rnd(-14, 14), opacity: 0 },
+        { x: 0, y: 0, scale: 1, rotationZ: 0, duration: 0.8, ease: "power3.out" }, t)
+        .to(c, { opacity: 1, duration: 0.2 }, t);
+    });
+  } else if (modo === "onda") {
+    const col = (r) => Math.round(r.x / 60), lin = (r) => Math.round(r.y / 60);
+    cards.forEach((c, i) => {
+      const r = rs[i], d = (r.x + r.y * 1.4) / (W + H * 1.4);
+      const t = t0 + 0.25 + d * 0.7;
+      tl.fromTo(c, { z: -420, y: 50, rotationX: 14, opacity: 0 }, { z: 0, y: 0, rotationX: 0, duration: 0.75, ease: "power3.out" }, t)
+        .to(c, { opacity: 1, duration: 0.25 }, t);
+    });
+  } else if (modo === "desfile") {
+    GERAL.chegarDoFundo(tl, { ...ctx, novas: cards, sentido: "abre" }, t0 + 0.15, { passo: 0.06, dur: 0.95 });
+  } else {
+    cards.forEach((c, i) => {
+      const r = rs[i];
+      const esq = r.cx < W * 0.34, dir = r.cx > W * 0.66;
+      const de = esq ? { x: -r.x - r.w - 40 } : dir ? { x: W - r.x + 40 } : { y: H - r.y + 60 };
+      const t = t0 + 0.2 + i * 0.035;
+      tl.fromTo(c, { ...de, rotationZ: rnd(-12, 12), opacity: 1 }, { x: 0, y: 0, rotationZ: 0, duration: 0.8, ease: "power3.out" }, t);
+    });
+  }
+}
+
+function entrarDireto() {
+  const pg = SITE.irDireto("tag:Spring");
+  pg.scrollTop = 0;
+  if (SITE.reduzido()) return SITE.dizer("<b>Movimento reduzido</b>: a tela aparece pronta.");
+  const ctx = { para: { el: pg }, W: SITE.palco.clientWidth, H: SITE.palco.clientHeight, celular: SITE.celular() };
+  gsap.set([...pg.querySelectorAll(".card, .topo-tag, .bloco-cab")], { opacity: 0 });
+  SITE.dizer(`<b>Entrada direta em #Spring</b>: o caderno pousa no cabeçalho; os cards chegam ${estilo === "tag" ? "em onda (não há tag de origem)" : "pela variação escolhida"}.`);
+  const tl = CADERNO.tocar((t, em) => chegarTag(t, ctx, em, null));
+  tl.eventCallback("onComplete", () => { CADERNO.limpar(); gsap.set(pg.querySelectorAll("[data-u], .bloco-cab"), { clearProps: "transform,opacity,zIndex,transformOrigin,willChange,clipPath" }); });
+}
+</script>
+</body>
+</html>

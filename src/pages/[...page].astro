@@ -14,7 +14,6 @@ import Gaveta from "../components/Gaveta.astro";
 import Destaque from "../components/Destaque.astro";
 import Recentes from "../components/Recentes.astro";
 import Marca from "../components/Marca.astro";
-import Abertura from "../components/Abertura.astro";
 import { TEXTOS } from "../data/site";
 import { montarLivros } from "../lib/estante";
 import { getResumos, type Resumo } from "../lib/posts";
@@ -54,7 +53,6 @@ const jsonLd = {
   {
     primeira && (
       <>
-        <Abertura />
         {/*
           A abertura (D33) é uma folha: a identidade (a marca grande e a apresentação do blog atual) e a
           estante; a gaveta do livro aberto abre dentro da folha (D26). O post-it das frases saiu (D39).

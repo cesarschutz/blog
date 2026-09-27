@@ -49,7 +49,9 @@ Cesar acompanhar. Ele revisa tudo no fim.
   tema, filtro por livro, livro ampliado, o nome de transição do livro
   do painel e o menu do celular, D29, D33, D46; o desenho do destaque da home, D41; o lugar das notas
   da caneta, D48; o gesto de copiar, os contadores que rolam e a rasura e a sugestão da 404, D49; os
-  atalhos de teclado do artigo e o livro da pilha que voa até o topo, D50).
+  atalhos de teclado do artigo e o livro da pilha que voa até o topo, D50; a troca de página por
+  folhas, `troca.js` no `<head>`, a abertura em toda página, o desfile de Categorias e o desenho do
+  topo do artigo, D51).
   Artigo sem esses componentes funciona sem JS (as marcações da caneta são estáticas).
 - Fontes servidas pelo próprio site (`@fontsource`). Nunca Google Fonts nem CDN em produção.
 - Para verificar o blog no navegador (visual, console, performance), use sempre o MCP

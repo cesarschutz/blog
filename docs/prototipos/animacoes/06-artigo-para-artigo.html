@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>06 · Artigo anterior e próximo · protótipo</title>
+<!-- Só no protótipo: Google Fonts e GSAP pelo jsDelivr. No site, @fontsource e o gsap do npm. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@700;800&family=Bitter:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400&family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_base/site.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<style>
+  /* a sombra da folha que vira (só enquanto vira) */
+  .corpo-artigo { position: relative; }
+  .sombra-vira { position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(90deg, rgb(0 0 0 / .18), rgb(0 0 0 / 0) 60%); opacity: 0; pointer-events: none; z-index: 3; }
+</style>
+</head>
+<body>
+<script src="_base/dados.js"></script>
+<script src="_base/site.js"></script>
+<script src="_base/transicoes.js"></script>
+<script>
+let estilo = "desliza";
+
+SITE.iniciar({
+  ficha: `
+    <p class="rotulo"><a href="index.html">Protótipos de animação</a> · 06 · de um artigo para o anterior ou o próximo</p>
+    <h1>Artigo anterior e próximo: a folha vizinha</h1>
+    <div>
+      <p class="ideia">Passar de um artigo ao vizinho é ir <b>para o lado</b>, e não entrar ou voltar. Por isso a troca é lateral: o próximo vem da direita, o anterior da esquerda. Role até o fim do artigo e use os cartões "anterior / próximo" (ou os botões acima; no site, também as setas do teclado, D50).</p>
+      <p class="ideia">Um detalhe em todas as versões: quando os dois artigos são do <b>mesmo livro</b>, o cartão "Do livro" da lateral fica parado, porque o livro não mudou. Só o texto e o sumário trocam.</p>
+    </div>
+    <dl class="ficha">
+      <dt>Minha sugestão</dt><dd><b>Desliza (B1)</b>, como você pediu: é rápido (0,6 s), não cansa quem lê vários seguidos e diz a direção.</dd>
+      <dt>A página vira</dt><dd>A folha do artigo vira pela lombada, como a página de um caderno, e mostra o próximo embaixo; o anterior volta virando por cima. Mais teatral.</dd>
+      <dt>Na pilha</dt><dd>O próximo é pousado por cima do atual, vindo da direita, um pouco torto, e assenta; o anterior aparece quando o de cima é tirado para a direita.</dd>
+      <dt>Movimento reduzido</dt><dd>A tela só troca.</dd>
+    </dl>`,
+  telas: [["Artigo (CronJob)", "artigo:cronjob"], ["Anterior", () => vizinho(1)], ["Próximo", () => vizinho(-1)], ["Home", "home"], ["Livro", "livro:arq"]],
+  variantes: [{
+    rotulo: "Troca", padrao: "desliza", principal: false, aoMudar: (v) => (estilo = v), opcoes: [
+      { id: "desliza", nome: "Desliza (B1)", dica: "a folha atual sai para um lado e a vizinha entra pelo outro." },
+      { id: "vira", nome: "A página vira", dica: "a folha vira pela lombada e mostra o próximo embaixo; o anterior volta virando por cima." },
+      { id: "pilha", nome: "Na pilha", dica: "o próximo é pousado por cima, vindo da direita; o anterior aparece quando o de cima é tirado." },
+    ],
+  }],
+  inicial: "artigo:cronjob",
+  legenda: "Role até o fim do artigo e clique em \"anterior\" ou \"próximo\", ou use os botões acima.",
+  transicao: (ctx) => {
+    if (!(ctx.de.tipo === "artigo" && ctx.para.tipo === "artigo")) return GERAL.geral(ctx, "frente");
+    return trocarArtigo(ctx);
+  },
+});
+function vizinho(passo) {
+  const a = SITE.atual;
+  const i = a && a.tipo === "artigo" ? POSTS.findIndex((p) => p.id === a.id) : 1;
+  const j = Math.min(POSTS.length - 1, Math.max(0, i + passo));
+  return `artigo:${POSTS[j].id}`;
+}
+
+function trocarArtigo(ctx) {
+  const tl = gsap.timeline();
+  const frente = ctx.sentido === "frente";
+  const d = frente ? 1 : -1;
+  const pv = post(ctx.de.id), pn = post(ctx.para.id);
+  const mesmoLivro = pv.serie === pn.serie && pv.c === pn.c;
+  const q = (pg, s) => pg.querySelector(s);
+  const velho = { corpo: q(ctx.de.el, ".corpo-artigo"), sum: q(ctx.de.el, ".sumario"), livro: q(ctx.de.el, ".do-livro") };
+  const novo = { corpo: q(ctx.para.el, ".corpo-artigo"), sum: q(ctx.para.el, ".sumario"), livro: q(ctx.para.el, ".do-livro") };
+  SITE.dizer(`<b>${frente ? "Próximo" : "Anterior"} artigo</b> · ${mesmoLivro ? "mesmo livro: o cartão \"Do livro\" fica parado" : "outro livro: o cartão \"Do livro\" troca junto"} · ${estilo === "desliza" ? "a folha desliza" : estilo === "vira" ? "a página vira" : "na pilha"}.`);
+
+  // quando a folha nova passa por cima da atual, a página nova fica em cima
+  if ((estilo === "pilha" && frente) || (estilo === "vira" && !frente)) ctx.para.el.style.zIndex = 3;
+
+  // a lateral: o sumário troca sempre; o livro só se mudou
+  const lateralV = [velho.sum, mesmoLivro ? null : velho.livro].filter(Boolean);
+  const lateralN = [novo.sum, mesmoLivro ? null : novo.livro].filter(Boolean);
+  if (mesmoLivro) { gsap.set(velho.livro, { opacity: 0 }); }
+  tl.to(lateralV, { opacity: 0, x: -d * 16, duration: 0.2, ease: "power2.in" }, 0)
+    .fromTo(lateralN, { opacity: 0, x: d * 16 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out", stagger: 0.05 }, 0.18);
+
+  if (estilo === "desliza") {
+    tl.to(velho.corpo, { x: -d * 60, opacity: 0, duration: 0.24, ease: "power2.in" }, 0)
+      .fromTo(novo.corpo, { x: d * 70, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, 0.16);
+  } else if (estilo === "vira") {
+    const topo = Math.max(0, -SITE.caixa(velho.corpo).y);
+    const o = `0% ${topo + ctx.H / 2}px`;
+    if (frente) {
+      // a atual vira para a esquerda, pela lombada; a próxima está embaixo
+      const sombra = document.createElement("div"); sombra.className = "sombra-vira"; velho.corpo.append(sombra);
+      gsap.set(velho.corpo, { transformPerspective: 2200, transformOrigin: o, zIndex: 5 });
+      tl.to(velho.corpo, { rotationY: -100, duration: 0.7, ease: "power2.in" }, 0)
+        .to(sombra, { opacity: 1, duration: 0.5 }, 0)
+        .fromTo(novo.corpo, { opacity: 0.4, scale: 0.985 }, { opacity: 1, scale: 1, duration: 0.6, ease: "power2.out" }, 0.1);
+    } else {
+      // a anterior volta virando por cima da atual
+      gsap.set(novo.corpo, { transformPerspective: 2200, transformOrigin: `0% ${ctx.H / 2}px`, zIndex: 5 });
+      tl.fromTo(novo.corpo, { rotationY: -100, opacity: 1 }, { rotationY: 0, duration: 0.75, ease: "power2.out" }, 0)
+        .to(velho.corpo, { opacity: 0.35, scale: 0.985, duration: 0.6 }, 0);
+    }
+  } else {
+    if (frente) {
+      gsap.set(novo.corpo, { zIndex: 5 });
+      tl.fromTo(novo.corpo, { x: ctx.W * 0.55, y: 26, rotationZ: 3.5, opacity: 1 }, { x: 0, y: 0, rotationZ: 0, duration: 0.7, ease: "power3.out" }, 0.05)
+        .to(velho.corpo, { opacity: 0, duration: 0.2 }, 0.6);
+    } else {
+      gsap.set(velho.corpo, { zIndex: 5 });
+      tl.to(velho.corpo, { x: ctx.W * 0.6, y: 20, rotationZ: 4, duration: 0.6, ease: "power2.in" }, 0)
+        .fromTo(novo.corpo, { opacity: 0.5, scale: 0.99 }, { opacity: 1, scale: 1, duration: 0.5 }, 0.15);
+    }
+  }
+  return tl;
+}
+</script>
+</body>
+</html>

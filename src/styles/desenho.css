@@ -168,6 +168,16 @@
   }
 }
 
+/*
+ * O desenho do topo do artigo (D51): ao abrir o artigo por uma troca de página ou pela abertura, ele
+ * fica escondido até a folha pousar e a sequência começar (desenho-vivo.ts; no máximo 4s).
+ */
+@media screen and (prefers-reduced-motion: no-preference) {
+  :root:is([data-chegando], [data-abertura]) [data-desenhar-topo]:not([data-desenhado]) .ilustracao {
+    visibility: hidden;
+  }
+}
+
 /* Na impressão, o desenho sai sempre inteiro, mesmo que a sequência esteja no meio. */
 @media print {
   .ilustracao .tinta :not(.fantasma) {

@@ -426,16 +426,17 @@ a:hover > .titulo-sub,
 }
 
 /*
- * Transição entre páginas (D29, D47), a mesma de qualquer página para qualquer outra:
- * - o cabeçalho fica parado (tem nome próprio, "topo", e não anima);
- * - a página é uma folha: a antiga sai depressa, subindo 6px e sumindo (0,2s), e a nova chega subindo
- *   18px, como uma folha posta na mesa (0,5s, um instante depois);
+ * Transição entre páginas (D29, D47, D51):
+ * - o cabeçalho fica parado (tem nome próprio, "topo") e o traço do menu desliza;
+ * - a troca por folhas (D51, `troca.js`, tipo "folhas"): as folhas da página antiga caem da mesa e as
+ *   da nova chegam do fundo e pousam (as animações ficam no script); a raiz não anima;
+ * - artigo anterior e próximo (tipo "lado"): o próximo é pousado por cima do atual, o anterior aparece
+ *   quando o de cima é tirado (também no script);
  * - os livros voam de um lugar ao outro quando o mesmo livro está nas duas páginas (a pilha e a grade
  *   viram o livro do topo; o do topo vira o do post e o contrário), com o nome de transição dado pelo
- *   script do <head> (Base.astro) ou fixo no HTML; o livro que não tem par na página nova sai junto
- *   com a folha, e não por cima dela;
- * - o desenho do artigo na lista, nos cards e no destaque vira o desenho do topo do post (e volta);
- *   entre dois posts, nada voa (o topo só ganha nome quando a outra página não é um post).
+ *   script do <head> (Base.astro) ou fixo no HTML;
+ * - sem o script da troca (a troca de livro pela pilha, um diálogo aberto), vale a folha de antes: a
+ *   antiga sai subindo 6px e sumindo (0,2s) e a nova chega subindo 18px (0,5s).
  * Sem suporte do navegador (ou com movimento reduzido), a página só abre.
  */
 @view-transition {
@@ -508,8 +509,7 @@ a:hover > .titulo-sub,
   }
 }
 
-::view-transition-group(.livro),
-::view-transition-group(desenho-do-post) {
+::view-transition-group(.livro) {
   animation-duration: 0.7s;
   animation-timing-function: cubic-bezier(0.3, 0.75, 0.2, 1);
 }
@@ -520,23 +520,6 @@ a:hover > .titulo-sub,
   height: 100%;
   object-fit: contain;
   animation-duration: 0.7s;
-}
-
-/*
- * O desenho da lista vira o largo do topo: só a imagem nova, cobrindo a caixa que cresce (as duas
- * misturadas deixavam um fantasma do recorte quadrado ampliado).
- */
-::view-transition-new(desenho-do-post) {
-  height: 100%;
-  object-fit: cover;
-  animation: none;
-}
-
-::view-transition-old(desenho-do-post) {
-  height: 100%;
-  object-fit: cover;
-  animation: none;
-  opacity: 0;
 }
 
 /*
@@ -583,19 +566,34 @@ a:hover > .titulo-sub,
   }
 }
 
-/* Sem par na página nova (ou na antiga), o livro e o desenho saem e chegam com a folha. */
-::view-transition-old(.livro):only-child,
-::view-transition-old(desenho-do-post):only-child {
+/* Sem par na página nova (ou na antiga), o livro sai e chega com a folha. */
+::view-transition-old(.livro):only-child {
   animation: folha-sai 0.2s cubic-bezier(0.4, 0, 1, 1) both;
 }
 
-::view-transition-old(desenho-do-post):only-child {
-  opacity: 1;
+::view-transition-new(.livro):only-child {
+  animation: folha-entra 0.5s cubic-bezier(0.2, 0.75, 0.2, 1) both;
 }
 
-::view-transition-new(.livro):only-child,
-::view-transition-new(desenho-do-post):only-child {
-  animation: folha-entra 0.5s cubic-bezier(0.2, 0.75, 0.2, 1) both;
+/*
+ * A troca por folhas e a de lado (D51, troca.js): a raiz não anima (a antiga some na hora, porque as
+ * folhas dela já estão em imagens próprias, e a nova é a página de verdade, onde as folhas chegam); as
+ * imagens que saem são animadas pelo script, e nenhuma animação padrão do navegador atrapalha.
+ */
+:root:is(:active-view-transition-type(folhas), :active-view-transition-type(lado))::view-transition-old(root) {
+  display: none;
+}
+
+:root:is(:active-view-transition-type(folhas), :active-view-transition-type(lado))::view-transition-new(root) {
+  animation: none;
+}
+
+:root:active-view-transition-type(folhas)::view-transition-old(.sai),
+:root:active-view-transition-type(folhas)::view-transition-old(.livro):only-child,
+:root:active-view-transition-type(lado)::view-transition-old(artigo-velho),
+:root:active-view-transition-type(lado)::view-transition-new(artigo-novo),
+:root:active-view-transition-type(lado)::view-transition-old(lateral-velha) {
+  animation: none;
 }
 
 /*

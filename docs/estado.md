@@ -180,6 +180,11 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
   marca d'água no painel do título do artigo e os atalhos de teclado no artigo. **Aguarda o Cesar
   ver no localhost** (dev 4322 e preview 4323) antes do commit.
 
+- **Animações revistas (D51, 27/09/2026), em escolha:** oito protótipos em
+  `docs/prototipos/animacoes/` (abertura da home, entrada direta, troca geral com duas montagens,
+  Categorias, tag, artigo vizinho, livro e artigo, desenho do artigo), cada um com variações e a minha
+  sugestão. **Aguarda o Cesar escolher**; depois, revisão de design por agentes e aplicação.
+
 ## Próximos passos
 
 00. **Caneta (D48):** os outros 25 posts recebem a caneta na revisão (`.claude/revisao-posts.md`,

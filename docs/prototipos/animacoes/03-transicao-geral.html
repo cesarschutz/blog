@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>03 · Transição geral · protótipo</title>
+<!-- Só no protótipo: Google Fonts e GSAP pelo jsDelivr. No site, @fontsource e o gsap do npm. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Besley:wght@700;800&family=Bitter:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400&family=Newsreader:ital,opsz,wght@1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="_base/site.css">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+</head>
+<body>
+<script src="_base/dados.js"></script>
+<script src="_base/site.js"></script>
+<script src="_base/transicoes.js"></script>
+<script>
+SITE.iniciar({
+  ficha: `
+    <p class="rotulo"><a href="index.html">Protótipos de animação</a> · 03 · de qualquer tela para qualquer tela</p>
+    <h1>A troca de tela geral: as folhas do A2</h1>
+    <div>
+      <p class="ideia">O que você pediu: as folhas da tela nova chegam <b>do fundo</b>, em perspectiva e um pouco tortas, e pousam no lugar, uma depois da outra, como no fim do A2. As da tela atual saem antes. O cabeçalho nunca se mexe; só o traço azul do menu desliza até a seção nova.</p>
+      <p class="ideia">Escolha acima <b>como as folhas saem</b> (quatro jeitos) e a <b>montagem</b>: "Texto fora" é o site de hoje, com títulos soltos na mesa; "Tudo em painel" põe cada bloco (título, seletor e lista) dentro de uma folha, e é a folha inteira que voa.</p>
+    </div>
+    <dl class="ficha">
+      <dt>Minha sugestão</dt><dd><b>Segue em frente</b> com <b>tudo em painel</b>: a saída continua o movimento do A2 (as folhas passam por perto de quem lê e saem por baixo), então a troca inteira vira um caminho só, do fundo para a frente. Voltar (botão "← Voltar") inverte: as folhas saem para o fundo e as novas vêm da frente, e a pessoa sente que voltou.</dd>
+      <dt>Texto fora</dt><dd>Os títulos soltos não voam em 3D: sobem por uma máscara, uma linha curta, logo antes da folha deles. Assim eles não "aparecem do nada".</dd>
+      <dt>Ordem</dt><dd>De cima para baixo e da esquerda para a direita, 85 ms entre uma folha e a outra; só as folhas à vista animam (as de baixo já estão lá quando a pessoa rolar). Cerca de 1,1 s no total.</dd>
+      <dt>No site</dt><dd>Dá para fazer sem trocar a navegação do site: a saída roda no clique (uns 0,3 s antes de a página mudar) e a chegada, na página nova, com as folhas já no lugar (GSAP ou View Transitions por folha).</dd>
+      <dt>Celular</dt><dd>As folhas caem do alto em linha reta, sem o giro lateral, 15% mais rápido.</dd>
+      <dt>Movimento reduzido</dt><dd>A tela só troca.</dd>
+    </dl>`,
+  telas: [["Home", "home"], ["Página 2", "home:2"], ["Artigos", "artigos"], ["Categorias", "categorias"], ["Livro", "livro:arq"], ["Séries", "series"], ["Série", "serie"], ["Tags", "tags"], ["Tag", "tag:Spring"], ["Artigo", "artigo:cronjob"]],
+  variantes: [{
+    rotulo: "Saída", padrao: "frente", opcoes: [
+      { id: "frente", nome: "Segue em frente", dica: "as folhas atuais continuam o movimento do A2: passam por perto de quem lê e saem por baixo; as novas vêm do fundo." },
+      { id: "fundo", nome: "Volta para o fundo", dica: "as folhas atuais fazem o caminho ao contrário e somem lá atrás, de onde as novas vêm." },
+      { id: "cai", nome: "Cai da mesa", dica: "as folhas atuais escorregam para baixo, com um giro pequeno, pelo peso." },
+      { id: "discreta", nome: "Discreta", dica: "as folhas atuais só se levantam e somem; as novas vêm do fundo em linha reta, sem o giro lateral. A mais calma das quatro." },
+    ],
+  }],
+  montagem: true,
+  legenda: "Clique nos links do mini-site (menu, livros, títulos, tags, anterior e próximo) ou nos botões acima. Use a câmera lenta para ver os detalhes.",
+  transicao: (ctx) => {
+    SITE.dizer(`<b>${SITE.NOMES[ctx.de.tipo]} → ${SITE.NOMES[ctx.para.tipo]}</b> · ${ctx.sentido === "volta" ? "voltando: as folhas saem para o fundo e as novas vêm da frente" : "entrando"} · ${ctx.velhas.length} folhas saem, ${ctx.novas.length} chegam.`);
+    return GERAL.geral(ctx, ctx.sentido === "volta" && ctx.variante === "frente" ? "frente" : ctx.variante);
+  },
+});
+</script>
+</body>
+</html>
