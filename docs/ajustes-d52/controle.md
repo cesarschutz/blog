@@ -74,6 +74,27 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
       sem perder a animação, data e tempo de leitura com os ícones, a caneca, a marca "cs", o "Cesar
       Schutz" da home…). Nada no rodapé.
 
+## Revisão de acabamento das animações (depois do C04)
+
+Um agente gravou as dez cenas da D52 juntas (Chrome headless, 1440 e 390, claro e escuro) e achou 14
+problemas ([diagnosticos/revisao-animacoes.md](diagnosticos/revisao-animacoes.md)). Um commit por
+correção ("D52 revisão N").
+
+- [ ] 1. Pilha no celular: a lombada puxada alarga a página e a transição aborta (corte seco).
+- [ ] 2. Trocas gerais: 85 a 135ms de página vazia entre a saída e a chegada (lê como piscada).
+- [ ] 3. Anterior com a página no fim: o rodapé nítido por cima do título do artigo novo.
+- [ ] 4. Sumário: a seção atual em peso 600 quebra a linha e a lista salta ~11px.
+- [x] 5. O aceno vinha antes do desenho do destaque (pegava a miniatura escondida da lista).
+- [ ] 6. Livro ampliado: pisca ao abrir e fica um quadro vazio ao fechar.
+- [ ] 7. CPU lenta: a página congela ~1,1s sem a caneta de carregando e vem a coreografia inteira.
+- [ ] 8. Próximo e anterior: o painel do desenho fica vazio por 0,5 a 0,65s.
+- [ ] 9. Próximo: a lateral velha e a nova juntas a ~50% no mesmo lugar.
+- [ ] 10. Pilha na tela grande: o painel do topo fica um retângulo vazio por ~1,1s.
+- [ ] 11. Visor ao fechar: o diagrama do visor e o da página juntos por ~0,1s.
+- [ ] 12. Abertura no escuro: o fio da caneta quase não aparece.
+- [ ] 13. Carregando: a caneta some de uma vez antes de as folhas caírem.
+- [ ] 14. Abertura com o caderno: o voo em linha reta cruza "Cesar Schutz".
+
 ## Antes do último
 
 - [ ] Conferir que tudo acima foi commitado (`git status --untracked-files=all` limpo, sem " 2").
