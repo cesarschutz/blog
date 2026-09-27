@@ -232,16 +232,52 @@
 
 /*
  * ---------- estante de filtro (arquivo e tags, D33) ----------
- * Menor (teto de 0,3px por unidade), sem o livro inclinado. Com um livro escolhido, os outros
- * apagam e ele sai um pouco da prateleira.
+ * Menor (teto de 0,3px por unidade, que a página muda em --teto-filtro), sem o livro inclinado. Com
+ * um livro escolhido, os outros apagam e ele sai um pouco da prateleira.
  */
 .estante-filtro {
-  width: calc(var(--natural) * 0.3px);
+  --teto: var(--teto-filtro, 0.3px);
+  width: calc(var(--natural) * var(--teto));
 }
 
 .estante-filtro .prateleira-livros,
 .estante-filtro .prateleira-livros + .tabua {
-  --u: min(0.3px, 100cqw / var(--natural));
+  --u: min(var(--teto), 100cqw / var(--natural));
+}
+
+/*
+ * O pé da estante de filtro (D52): uma linha só embaixo da tábua, onde a legenda do mouse e o rótulo
+ * da página (o slot) dividem o lugar. Com a legenda escrita, o rótulo some por baixo dela, sem a linha
+ * mudar de altura.
+ */
+.estante-filtro .pe-estante {
+  display: grid;
+  min-height: 1.6em;
+  margin-top: 10px;
+  font-family: var(--font-ui);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+.estante-filtro .pe-estante > * {
+  grid-area: 1 / 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.estante-filtro .pe-estante .legenda-estante {
+  min-height: 0;
+  margin: 0;
+  font-size: inherit;
+  text-align: start;
+}
+
+.estante-filtro .pe-estante .legenda-estante:empty {
+  visibility: hidden;
+}
+
+.estante-filtro .pe-estante:has(.legenda-estante:not(:empty)) > :not(.legenda-estante) {
+  visibility: hidden;
 }
 
 .estante-filtro.filtrando .lombada:not([aria-pressed="true"]) {

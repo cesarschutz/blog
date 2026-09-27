@@ -12,7 +12,9 @@
  *
  * - "filtro" (o arquivo e as tags, D33): menor, sem o livro inclinado, só com os livros que têm
  *   artigos na página; com JS, cada lombada filtra a lista (ListaFiltrada.astro). O número da lombada
- *   é o que a página tem daquele livro.
+ *   é o que a página tem daquele livro. Embaixo da tábua, o pé (D52): a legenda do mouse e, no mesmo
+ *   lugar, o que a página puser no slot (o rótulo do filtro e o livro escolhido); a legenda, quando
+ *   aparece, cobre o rótulo.
  */
 import MioloLombada from "./MioloLombada.astro";
 import { coresDoLivroCss, larguraDaEstante, type Livro } from "../lib/estante";
@@ -103,7 +105,16 @@ const conta = (l: Livro) => {
     }
   </div>
   <div class="tabua" aria-hidden="true"></div>
-  <p class="legenda-estante" aria-hidden="true" data-legenda-estante></p>
+  {
+    filtro ? (
+      <div class="pe-estante">
+        <p class="legenda-estante" aria-hidden="true" data-legenda-estante />
+        <slot />
+      </div>
+    ) : (
+      <p class="legenda-estante" aria-hidden="true" data-legenda-estante />
+    )
+  }
 </div>
 
 <script>

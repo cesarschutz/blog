@@ -2,12 +2,15 @@
 /**
  * Todos os artigos (/archive/, D33): no formato da lista da home (título inteiro, descrição, tags e a
  * ilustração), agrupados por ano (os ids #y2026 vêm do blog atual), com Lista / Cards e a estante de
- * filtro no topo: clicar num livro mostra só os artigos dele (ListaFiltrada).
+ * filtro no topo: clicar num livro mostra só os artigos dele (ListaFiltrada). No topo (D52, B07), as
+ * três entradas do acervo: por livro (a estante), por assunto (as tags mais usadas, que levam à página
+ * de cada uma) e por ano (o índice, que leva ao ano na lista).
  */
 import Base from "../layouts/Base.astro";
 import { paginaDeColecao } from "../lib/seo";
 import ListaFiltrada from "../components/ListaFiltrada.astro";
-import { getResumos } from "../lib/posts";
+import { getResumos, getTags, urlTag } from "../lib/posts";
+import { url } from "../lib/url";
 
 const resumos = await getResumos();
 const livros = new Set(resumos.map((r) => r.livro));
@@ -18,10 +21,45 @@ const partes = [
   series ? `${series} ${series === 1 ? "série" : "séries"}` : "",
 ].filter(Boolean);
 const descricao = `${resumos.length} artigos em ${partes.join(" e ")}, do mais recente ao mais antigo.`;
+// As tags mais usadas (D52): as cinco primeiras, com o número de artigos de cada uma (cabem numa linha).
+const assuntos = (await getTags()).slice(0, 5);
 ---
 
 <Base titulo="Todos os artigos" descricao={descricao} atual="artigos" jsonLd={paginaDeColecao("Todos os artigos", descricao, Astro.url.pathname, Astro.site)}>
   <div class="wrap">
-    <ListaFiltrada posts={resumos} titulo="Todos os artigos" descricao={descricao} porAno />
+    <ListaFiltrada posts={resumos} titulo="Todos os artigos" descricao={descricao} porAno>
+      <nav class="linha-indice por-assunto so-no-largo" aria-labelledby="rotulo-por-assunto">
+        <span class="rotulo-indice" id="rotulo-por-assunto">Por assunto</span>
+        <ul>
+          {
+            assuntos.map((t) => (
+              <li>
+                <a class="pilula" href={urlTag(t.nome)}>
+                  #{t.nome} <small>{t.posts.length}</small>
+                </a>
+              </li>
+            ))
+          }
+          <li>
+            <a class="todas" href={url("/tags/")}>Todas as tags</a>
+          </li>
+        </ul>
+      </nav>
+    </ListaFiltrada>
   </div>
 </Base>
+
+<style>
+  .por-assunto .pilula {
+    min-height: 30px;
+    padding: 3px 11px;
+    font-size: 13.5px;
+  }
+
+  .todas {
+    margin-left: 6px;
+    font-family: var(--font-ui);
+    font-size: 13.5px;
+    color: var(--acento);
+  }
+</style>

@@ -1,21 +1,27 @@
 ---
 /**
  * Página de lista com filtro por livro (D33): "Todos os artigos" (/archive/) e cada tag
- * (/tags/<Nome>/). No topo, numa folha, a trilha, o título, a descrição e o que a página quiser
- * acrescentar (slot); ao lado, a estante de filtro, só com os livros que têm artigos na página, cada
- * um com o número deles. Clicar num livro mostra só os artigos dele (a URL ganha ?livro=<slug>, para
- * compartilhar); clicar de novo, ou em "Ver todos", volta à lista inteira. Sem JS, o livro leva à
- * página dele. Embaixo, a contagem, o seletor Lista / Cards e os artigos no formato da home (D27),
+ * (/tags/<Nome>/). No topo, numa folha (D52, B07), uma composição só: à esquerda, a trilha, o título,
+ * a descrição e, no pé, os índices: o que a página acrescentar (slot, em linhas `.linha-indice` com um
+ * `.rotulo-indice`: as tags mais usadas no arquivo, as vizinhas na tag; `.so-no-largo` some abaixo de
+ * 900px) e o índice dos anos (no arquivo); à direita, a estante de filtro, só com os livros que têm
+ * artigos na página, cada um com o número deles, apoiada no pé da folha, na mesma linha dos índices. Embaixo da tábua, o rótulo ("Filtrar
+ * por livro") e, com um livro escolhido, o nome dele e "Limpar filtro": o filtro fica à vista onde foi
+ * feito. No celular, a estante encolhe e vem logo depois do texto, sem empurrar a lista para longe. O
+ * slot "fundo" recebe a marca d'água da página (o ícone da tag, D52, B11). Clicar num livro mostra só
+ * os artigos dele (a URL ganha ?livro=<slug>, para compartilhar); clicar de novo, ou em "Limpar
+ * filtro", volta à lista inteira. Sem JS, o livro leva à página dele. Embaixo, a contagem, o seletor Lista / Cards e os artigos no formato da home (D27),
  * agrupados por ano quando `porAno` (os ids #y2026 vêm do blog atual). Ao filtrar, a lista sai
  * esmaecendo e os artigos escolhidos chegam em sequência, subindo (D47); com movimento reduzido, troca
  * direto. O total e o de cada ano rodam como um contador já no clique, cada algarismo numa fita, na
  * direção certa (D49, protótipo E2; src/scripts/contador.ts): quem olha para a estante vê o número
- * mudar. O leitor de tela ouve só o valor final ("6 artigos em Dados").
+ * mudar; os anos do índice também. O leitor de tela ouve só o valor final ("6 artigos em Dados").
  */
 import Cartao from "./Cartao.astro";
 import Estante from "./Estante.astro";
 import ItemLista from "./ItemLista.astro";
 import SeletorModo from "./SeletorModo.astro";
+import { ICONES } from "../lib/icones";
 import { montarLivros } from "../lib/estante";
 import type { Resumo } from "../lib/posts";
 
@@ -40,21 +46,65 @@ const grupos = porAno
     }))
   : [{ ano: undefined, posts }];
 const nivelDoItem = porAno ? "h3" : "h2";
+// O índice dos anos (D52), só no arquivo e com mais de um ano: leva ao ano (#y2026) e conta os artigos.
+const indiceDosAnos = porAno && grupos.length > 1 ? grupos : [];
+const temIndices = Astro.slots.has("default") || indiceDosAnos.length > 0;
 ---
 
-<div class="folha topo-filtrado">
+<div class:list={["folha topo-filtrado", { "com-estante": livros.length > 0 }]}>
+  <slot name="fundo" />
   <header class="texto-topo">
-    {trilha && <a class="trilha" href={trilha.href}>{trilha.nome}</a>}
-    <h1>{titulo}</h1>
-    <p class="descricao">{descricao}</p>
-    <slot />
+    <div class="cabeca-topo">
+      {trilha && <a class="trilha" href={trilha.href}>{trilha.nome}</a>}
+      <h1>{titulo}</h1>
+      <p class="descricao">{descricao}</p>
+    </div>
+    {
+      temIndices && (
+        <div class="indices">
+          <slot />
+          {indiceDosAnos.length > 0 && (
+            <nav class="linha-indice por-ano" aria-labelledby="rotulo-por-ano">
+              <span class="rotulo-indice" id="rotulo-por-ano">
+                Por ano
+              </span>
+              <ol>
+                {indiceDosAnos.map((g) => (
+                  <li>
+                    <a href={`#y${g.ano}`} data-ano={g.ano}>
+                      <span class="ano-numero">{g.ano}</span>
+                      <small data-contagem-ano>
+                        <span data-numero>{g.posts.length}</span> <span data-resto>{palavra(g.posts.length)}</span>
+                      </small>
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          )}
+        </div>
+      )
+    }
   </header>
   {
     livros.length > 0 && (
       <div class="lado-estante" data-lado-estante hidden>
-        <p class="rotulo-filtro" id="rotulo-filtro">Filtrar por livro</p>
-        <Estante livros={livros} modo="filtro" />
-        <p class="dica">Escolha um livro para ver só os artigos dele.</p>
+        <Estante livros={livros} modo="filtro">
+          <div class="rotulo-estante">
+            <p class="rotulo-filtro" id="rotulo-filtro">
+              Filtrar por livro
+            </p>
+            <p class="escolhido" data-escolhido hidden>
+              <span>
+                Só <b data-escolhido-nome />
+              </span>
+              <button type="button" class="limpar" data-limpar>
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.fechar} />
+                Limpar filtro
+              </button>
+            </p>
+          </div>
+        </Estante>
       </div>
     )
   }
@@ -67,7 +117,6 @@ const nivelDoItem = porAno ? "h3" : "h2";
     <p class="status" data-status data-total={posts.length}>
       <span data-numero>{posts.length}</span> <span data-resto>{palavra(posts.length)}</span>
     </p>
-    <button type="button" class="pilula limpar" data-limpar hidden>Limpar filtro</button>
     <SeletorModo />
   </div>
   {
@@ -114,7 +163,13 @@ const nivelDoItem = porAno ? "h3" : "h2";
     const itens = () => [...lista.querySelectorAll<HTMLElement>("[data-livro]")];
     const grupos = [...lista.querySelectorAll<HTMLElement>("[data-grupo]")];
     const status = lista.querySelector<HTMLElement>("[data-status]")!;
-    const limpar = lista.querySelector<HTMLButtonElement>("[data-limpar]")!;
+    // O pé da estante (D52): o rótulo, ou o livro escolhido com "Limpar filtro".
+    const rotulo = document.querySelector<HTMLElement>("#rotulo-filtro")!;
+    const escolhidoEl = document.querySelector<HTMLElement>("[data-escolhido]")!;
+    const escolhidoNome = document.querySelector<HTMLElement>("[data-escolhido-nome]")!;
+    const limpar = document.querySelector<HTMLButtonElement>("[data-limpar]")!;
+    // O índice dos anos no topo (D52): o número de cada ano também roda, e o ano sem artigos apaga.
+    const anos = [...document.querySelectorAll<HTMLAnchorElement>("[data-ano]")];
     const total = Number(status.dataset.total);
     const palavra = (n: number) => (n === 1 ? "artigo" : "artigos");
     const nome = (b: HTMLButtonElement) => b.dataset.nome!;
@@ -129,6 +184,7 @@ const nivelDoItem = porAno ? "h3" : "h2";
     const contagens = grupos.map((g) => g.querySelector<HTMLElement>("[data-contagem]"));
     criarContador(numero(status), total);
     for (const c of contagens) if (c) criarContador(numero(c), Number(numero(c).textContent));
+    for (const a of anos) criarContador(numero(a), Number(numero(a).textContent));
     status.setAttribute("aria-live", "polite");
     status.setAttribute("aria-atomic", "true");
 
@@ -141,6 +197,14 @@ const nivelDoItem = porAno ? "h3" : "h2";
         const n = conta(grupo);
         mudarContador(numero(c), n);
         resto(c).textContent = palavra(n);
+        const ano = anos.find((a) => `y${a.dataset.ano}` === c.parentElement?.id);
+        if (ano) {
+          mudarContador(numero(ano), n);
+          resto(ano).textContent = palavra(n);
+          ano.classList.toggle("vazio", n === 0);
+          if (n === 0) ano.setAttribute("aria-disabled", "true");
+          else ano.removeAttribute("aria-disabled");
+        }
       });
       const escolhido = livros.find((l) => l.dataset.filtro === id);
       const n = escolhido ? conta(lista!) : total;
@@ -178,7 +242,9 @@ const nivelDoItem = porAno ? "h3" : "h2";
       estante!.classList.toggle("filtrando", Boolean(id));
       contar(id);
       const escolhido = livros.find((l) => l.dataset.filtro === id);
-      limpar.hidden = !escolhido;
+      rotulo.hidden = Boolean(escolhido);
+      escolhidoEl.hidden = !escolhido;
+      escolhidoNome.textContent = escolhido ? nome(escolhido) : "";
       const endereco = new URL(location.href);
       if (escolhido) endereco.searchParams.set("livro", id.replace(/^(livro|serie)-/, ""));
       else endereco.searchParams.delete("livro");
@@ -188,7 +254,14 @@ const nivelDoItem = porAno ? "h3" : "h2";
     livros.forEach((livro) => {
       livro.addEventListener("click", () => filtrar(livro.dataset.filtro!));
     });
-    limpar.addEventListener("click", () => filtrar(""));
+    limpar.addEventListener("click", () => {
+      // O botão some com o filtro: o foco volta para a estante, no livro que estava escolhido.
+      const antes = livros.find((l) => l.dataset.filtro === atual) ?? livros[0];
+      filtrar("");
+      antes.focus({ preventScroll: true });
+    });
+    // O ano sem artigos no filtro fica apagado e não leva a lugar nenhum.
+    for (const a of anos) a.addEventListener("click", (e) => a.hasAttribute("aria-disabled") && e.preventDefault());
     addEventListener("cartoes:prontos", () => aplicar(atual));
 
     const pedido = new URL(location.href).searchParams.get("livro");
@@ -198,15 +271,86 @@ const nivelDoItem = porAno ? "h3" : "h2";
 </script>
 
 <style>
-  /* ---------- topo ---------- */
+  /* ---------- topo (D52, B07) ---------- */
 
+  /*
+   * Uma composição só, apoiada no pé da folha: o texto à esquerda, com o título no alto e o índice (ou
+   * as tags vizinhas) embaixo; a estante à direita, com a tábua na mesma linha do índice. Os dois lados
+   * têm a mesma altura (a da estante), e o que sobra fica entre o título e o índice, não em volta. A
+   * marca d'água (slot "fundo") passa por baixo de tudo e é cortada pela borda (overflow: clip).
+   */
   .topo-filtrado {
+    --teto-filtro: 0.3px;
+    position: relative;
+    isolation: isolate;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 24px 48px;
-    align-items: center;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "cabeca estante"
+      "indices estante";
+    column-gap: clamp(32px, 6vw, 96px);
     margin-top: 26px;
-    padding: 30px 40px 26px;
+    padding: 34px 40px 24px;
+    overflow: clip;
+  }
+
+  /* O cabeçalho só agrupa: o título e os índices vão cada um para a sua área da grade. */
+  .texto-topo {
+    display: contents;
+  }
+
+  .cabeca-topo {
+    grid-area: cabeca;
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+  }
+
+  /*
+   * Os índices (D52): o que a página põe no slot (as tags, com o rótulo) e os anos, numa grade de duas
+   * colunas (o rótulo e os itens), no pé, na linha da tábua. Cada linha é um `.linha-indice` com um
+   * `.rotulo-indice` e a lista; a que tiver também `.so-no-largo` some abaixo de 900px.
+   */
+  .indices {
+    grid-area: indices;
+    align-self: end;
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    align-items: baseline;
+    gap: 12px 20px;
+    min-width: 0;
+    margin-top: 22px;
+  }
+
+  /* Sem estante (nenhum artigo com livro), o texto ocupa a folha toda. */
+  .topo-filtrado:not(.com-estante) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "cabeca"
+      "indices";
+  }
+
+  .indices :global(.linha-indice) {
+    display: contents;
+  }
+
+  .indices :global(.rotulo-indice) {
+    font-family: var(--font-ui);
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+
+  .indices :global(.linha-indice > :is(ul, ol)) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 
   .trilha {
@@ -220,27 +364,78 @@ const nivelDoItem = porAno ? "h3" : "h2";
   }
 
   h1 {
-    margin: 8px 0 0;
+    margin: 6px 0 0;
     font-size: clamp(34px, 4.6vw, 52px);
     line-height: 1.05;
     letter-spacing: -0.012em;
     overflow-wrap: anywhere;
   }
 
+  .cabeca-topo > h1:first-child {
+    margin-top: 0;
+  }
+
   .descricao {
-    max-width: 52ch;
+    max-width: 62ch;
     margin: 12px 0 0;
     font-size: 18px;
     line-height: 1.55;
     color: var(--ink-2);
+    text-wrap: pretty;
+  }
+
+  /* O índice dos anos: o ano no título, a contagem ao lado, e o ano leva à parte dele na lista. */
+  .indices .por-ano ol {
+    column-gap: 26px;
+  }
+
+  .por-ano a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    min-height: 32px;
+    color: var(--ink);
+    text-decoration: none;
+    transition: opacity 0.25s;
+  }
+
+  .ano-numero {
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    font-size: 22px;
+    line-height: 1.2;
+    font-variant-numeric: lining-nums;
+  }
+
+  .por-ano small {
+    font-family: var(--font-ui);
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+
+  .por-ano a:hover .ano-numero,
+  .por-ano a:focus-visible .ano-numero {
+    color: var(--acento);
+  }
+
+  .por-ano a.vazio {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  .por-ano a.vazio:hover .ano-numero {
+    color: inherit;
   }
 
   /* A coluna declarada deixa a estante encolher (max-width: 100%); a implícita crescia até a largura natural dela e a página rolava para o lado em 320px. */
   .lado-estante {
+    grid-area: estante;
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    justify-items: end;
-    gap: 10px;
+    align-content: end;
+    justify-items: start;
     min-width: 0;
   }
 
@@ -248,19 +443,65 @@ const nivelDoItem = porAno ? "h3" : "h2";
     display: none;
   }
 
+  /* O pé da estante: o rótulo, ou o livro escolhido e "Limpar filtro" (o filtro à vista). */
+  .rotulo-estante {
+    display: flex;
+    align-items: center;
+    min-height: 26px;
+  }
+
   .rotulo-filtro {
     margin: 0;
-    font-family: var(--font-ui);
     font-weight: 500;
-    font-size: 14px;
     color: var(--ink);
   }
 
-  .dica {
+  .escolhido {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 12px;
     margin: 0;
-    font-family: var(--font-ui);
-    font-size: 13px;
     color: var(--ink-2);
+  }
+
+  .escolhido[hidden],
+  .rotulo-filtro[hidden] {
+    display: none;
+  }
+
+  .escolhido b {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .limpar {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 26px;
+    margin: 0;
+    padding: 0 6px 0 4px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: var(--paper-hi);
+    color: var(--ink-2);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .limpar:hover {
+    border-color: var(--acento);
+    color: var(--acento);
+  }
+
+  .limpar svg {
+    width: 13px;
+    height: 13px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
   }
 
   /* ---------- barra e grupos ---------- */
@@ -282,11 +523,6 @@ const nivelDoItem = porAno ? "h3" : "h2";
     font-family: var(--font-ui);
     font-size: 15px;
     color: var(--ink-2);
-  }
-
-  .limpar {
-    min-height: 32px;
-    padding: 3px 12px;
   }
 
   .barra-lista :global(.modo) {
@@ -326,14 +562,82 @@ const nivelDoItem = porAno ? "h3" : "h2";
     color: var(--ink-2);
   }
 
-  @media (max-width: 860px) {
+  /*
+   * Até 900px, a mesma composição, com a estante menor; o índice fica só com os anos (as tags
+   * continuam na página delas), para caber ao lado dela.
+   */
+  @media (max-width: 900px) {
     .topo-filtrado {
+      --teto-filtro: 0.25px;
+      column-gap: 28px;
+      padding: 28px 28px 20px;
+    }
+
+    .indices :global(.linha-indice.so-no-largo) {
+      display: none;
+    }
+  }
+
+  /*
+   * No celular (D52), uma coluna curta: o título, a estante logo embaixo (uns 150px de altura, sem
+   * empurrar a lista para longe) e o índice dos anos numa linha só.
+   */
+  @media (max-width: 640px) {
+    .topo-filtrado {
+      --teto-filtro: 0.22px;
       grid-template-columns: minmax(0, 1fr);
-      padding: 24px 22px 20px;
+      grid-template-rows: auto;
+      grid-template-areas:
+        "cabeca"
+        "estante"
+        "indices";
+      padding: 22px 20px 16px;
     }
 
     .lado-estante {
-      justify-items: start;
+      margin-top: 16px;
+    }
+
+    /* Os anos numa linha só, sem o rótulo (o leitor de tela continua ouvindo "Por ano"). */
+    .indices {
+      grid-template-columns: minmax(0, 1fr);
+      margin-top: 12px;
+      padding-top: 8px;
+      border-top: 1px solid var(--rule);
+    }
+
+    .indices .por-ano .rotulo-indice {
+      display: none;
+    }
+
+    .indices:has(> :global(.linha-indice.so-no-largo):only-child) {
+      display: none;
+    }
+
+    .descricao {
+      font-size: 16.5px;
+    }
+
+    .ano-numero {
+      font-size: 19px;
+    }
+
+    .indices .por-ano ol {
+      column-gap: 14px;
+    }
+
+    .indices .por-ano small {
+      font-size: 13px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .topo-filtrado {
+      padding-inline: 16px;
+    }
+
+    .indices .por-ano a {
+      gap: 6px;
     }
   }
 </style>

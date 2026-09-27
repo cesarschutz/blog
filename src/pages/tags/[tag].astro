@@ -39,8 +39,8 @@ const junto = [...vizinhas]
     <ListaFiltrada posts={grupo.posts} titulo={`#${grupo.nome}`} descricao={descricao} trilha={{ nome: "Tags", href: url("/tags/") }}>
       {
         junto.length > 0 && (
-          <div class="junto">
-            <span>Aparece junto com</span>
+          <div class="linha-indice junto">
+            <span class="rotulo-indice">Aparece junto com</span>
             <ul>
               {junto.map((t) => (
                 <li>
@@ -58,26 +58,6 @@ const junto = [...vizinhas]
 </Base>
 
 <style>
-  .junto {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px 12px;
-    margin-top: 18px;
-    font-family: var(--font-ui);
-    font-size: 14px;
-    color: var(--ink-2);
-  }
-
-  .junto ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
   .junto .pilula {
     min-height: 30px;
     padding: 3px 11px;
