@@ -172,14 +172,21 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     };
     // Espera o desenho do destaque só se ele estiver à vista quando a estante assenta; abaixo da dobra
     // (tela baixa, celular) o desenho só começa quando o leitor rola, e o aceno vem logo depois da estante.
-    const desenho = document.querySelector<HTMLElement>("[data-desenhar] svg.ilustracao");
     addEventListener(
       "cs:aberto",
       () => {
         setTimeout(assinar, 6000);
+        // O desenho à vista: em cards, a miniatura da lista fica escondida (0×0), e vice-versa.
+        const desenho = [...document.querySelectorAll<HTMLElement>("[data-desenhar] svg.ilustracao")].find(
+          (el) => el.getClientRects().length > 0,
+        );
         const r = desenho?.getBoundingClientRect();
         if (r && r.top < innerHeight * 0.9 && r.bottom > 0) {
-          addEventListener("cs:desenhou", () => setTimeout(acenar, 150), { once: true });
+          // Se o desenho não avisar (o GSAP não veio), o aceno vem mesmo assim.
+          let acenou = false;
+          const uma = () => { if (!acenou) { acenou = true; acenar(); } };
+          addEventListener("cs:desenhou", () => setTimeout(uma, 150), { once: true });
+          setTimeout(uma, 4500);
         } else setTimeout(acenar, 400);
       },
       { once: true },
