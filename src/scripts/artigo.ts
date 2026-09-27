@@ -44,7 +44,29 @@ const trilho = document.querySelector<HTMLElement>("[data-trilho]");
 /** A linha em que uma seção vira a atual: o título dela passou de 140px do alto da janela. */
 const LINHA = 140;
 let atual = -2; // -2: ainda não marcado; -1: antes da primeira seção
+// As seções lidas nesta visita (B04, D52): só as que foram a atual por um tempo de leitura e ficaram
+// para trás. Quem chega (pelo link, pela troca de página, recarregando, pelo histórico ou por um
+// #título) começa sem nenhum visto, e quem pula (o sumário, o fim da página, a rolagem rápida) não ganha
+// visto nas seções por onde só passou: pular para o meio do texto não é ter lido o começo.
 const lidas = new Set<number>();
+/** Quanto tempo uma seção precisa ter sido a atual para, ao ficar para trás, ganhar o visto. */
+const TEMPO_DE_LEITURA = 600;
+let atualDesde = 0;
+
+/**
+ * Onde o elemento está, sem as transformações: a soma dos offsetTop até `ate` (ou até o documento).
+ * A troca de página (D51) e a abertura trazem as folhas de longe, em perspectiva e tortas; medido pelo
+ * getBoundingClientRect nesse meio-tempo, todo título do artigo parecia já ter passado da linha, e o
+ * sumário chegava com a última seção como a atual, todas as outras lidas e o fio encolhido (B04, D52).
+ */
+function topoSemTransformar(el: HTMLElement, ate: HTMLElement | null = null) {
+  let y = 0;
+  for (let e: HTMLElement | null = el; e && e !== ate; e = e.offsetParent as HTMLElement | null) y += e.offsetTop + (e === el ? 0 : e.clientTop);
+  return y;
+}
+
+/** O topo do elemento na janela, como estaria sem nenhuma animação. */
+const topoNaJanela = (el: HTMLElement) => topoSemTransformar(el) - scrollY;
 
 // O fio do trilho, escrito à caneta (só na lateral): um traço quase reto que passa pelos pontos, com o
 // tremor pequeno de uma linha feita à mão (semente fixa: sempre o mesmo desenho).
@@ -55,12 +77,22 @@ let pontosY: number[] = [];
 let tabelaDoFio: [number, number][] = [];
 let comprimentoDoFio = 0;
 
+// O meio de cada ponto na lista, pela posição dele no layout (sem a transformação da folha que chega).
+function meioDoMarco(link: HTMLAnchorElement) {
+  const marco = link.querySelector<SVGSVGElement>(".marco")!;
+  const estilo = getComputedStyle(marco);
+  const secao = link.parentElement!;
+  return {
+    x: secao.offsetLeft + parseFloat(estilo.left) + parseFloat(estilo.width) / 2,
+    y: topoSemTransformar(secao, listaTrilho!) + parseFloat(estilo.top) + parseFloat(estilo.height) / 2,
+  };
+}
+
 function desenharFio() {
   if (!listaTrilho || !fioBase || !fioTinta || !listaTrilho.offsetParent || !secoes.length) return;
-  const caixa = listaTrilho.getBoundingClientRect();
-  const marcos = secoes.map(({ link }) => link.querySelector(".marco")!.getBoundingClientRect());
-  pontosY = marcos.map((m) => m.top - caixa.top + m.height / 2);
-  const x = marcos[0].left - caixa.left + marcos[0].width / 2;
+  const marcos = secoes.map(({ link }) => meioDoMarco(link));
+  pontosY = marcos.map((m) => m.y);
+  const x = marcos[0].x;
   let semente = 7;
   const acaso = () => (semente = (semente * 16807) % 2147483647) / 2147483647 - 0.5;
   const [y0, y1] = [pontosY[0], pontosY.at(-1)!];
@@ -102,7 +134,7 @@ function comprimentoAte(y: number) {
 
 /** A seção atual e quanto dela já foi lido (de 0 a 1): do título dela passar da linha ao do próximo passar. */
 function leitura() {
-  const topos = secoes.map(({ titulo }) => titulo.getBoundingClientRect().top);
+  const topos = secoes.map(({ titulo }) => topoNaJanela(titulo));
   let i = -1;
   topos.forEach((t, k) => {
     if (t < LINHA) i = k;
@@ -110,7 +142,7 @@ function leitura() {
   let f = 0;
   if (i >= 0 && artigo) {
     const inicio = topos[i] - LINHA;
-    const fim = i + 1 < topos.length ? topos[i + 1] - LINHA : artigo.getBoundingClientRect().bottom - innerHeight;
+    const fim = i + 1 < topos.length ? topos[i + 1] - LINHA : topoNaJanela(artigo) + artigo.offsetHeight - innerHeight;
     f = Math.min(1, Math.max(0, -inicio / Math.max(fim - inicio, 1)));
   }
   return { i, f };
@@ -120,8 +152,7 @@ let agendado = false;
 function aoRolar() {
   agendado = false;
   if (artigo && barra) {
-    const caixa = artigo.getBoundingClientRect();
-    const lido = Math.min(1, Math.max(0, -caixa.top / Math.max(caixa.height - innerHeight, 1)));
+    const lido = Math.min(1, Math.max(0, -topoNaJanela(artigo) / Math.max(artigo.offsetHeight - innerHeight, 1)));
     barra.style.setProperty("--lido", lido.toFixed(4));
     barra.classList.toggle("escrevendo", lido > 0.002);
     if (progressoFeito && progressoTexto) {
@@ -142,9 +173,12 @@ function aoRolar() {
 
 // A seção atual (aria-current, com o marca-texto), as que ficaram para trás (com o visto, que fica
 // mesmo voltando a rolagem), a subseção atual dentro dela e, se a lista rola, a atual sempre à vista.
+// O visto é de quem leu: a seção em que o leitor ficou ganha o dela quando a leitura segue adiante.
 function marcarSumario(de: number, para: number) {
   atual = para;
-  for (let k = 0; k < para; k++) lidas.add(k);
+  const agora = performance.now();
+  if (de >= 0 && para > de && agora - atualDesde >= TEMPO_DE_LEITURA) lidas.add(de);
+  atualDesde = agora;
   secoes.forEach(({ link, naFolha }, k) => {
     for (const a of [link, naFolha]) {
       if (!a) continue;
@@ -170,7 +204,7 @@ function marcarSubsecao() {
   const daAtual = secoes[atual]?.link;
   let subAtual: HTMLAnchorElement | undefined;
   for (const { link, titulo, daSecao } of subsecoes) {
-    if (daSecao === daAtual && titulo.getBoundingClientRect().top < LINHA) subAtual = link;
+    if (daSecao === daAtual && topoNaJanela(titulo) < LINHA) subAtual = link;
   }
   for (const { link } of subsecoes) {
     if (link === subAtual) link.setAttribute("aria-current", "true");
@@ -287,6 +321,15 @@ if (listaTrilho) new ResizeObserver(() => desenharFio()).observe(listaTrilho);
 document.fonts?.ready.then(() => {
   desenharFio();
   aoRolar();
+});
+// Voltando pela memória do navegador (bfcache), a página volta como estava: o sumário recomeça zerado,
+// só com a seção onde o leitor está (B04, D52).
+addEventListener("pageshow", (e) => {
+  if (!e.persisted) return;
+  lidas.clear();
+  atual = -2;
+  aoRolar();
+  marcarSubsecao();
 });
 desenharFio();
 aoRolar();
