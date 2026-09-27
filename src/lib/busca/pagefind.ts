@@ -90,6 +90,7 @@ const paraResultado = (d: DadosPagefind, comDescricao = false): ResultadoBusca =
   titulo: d.meta.title ?? "",
   rotulo: d.meta.rotulo ?? "",
   data: d.meta.data ?? "",
+  codigo: Boolean(d.meta.codigo),
   trecho: comDescricao ? escaparHtml(d.meta.descricao ?? "") : d.excerpt,
 });
 

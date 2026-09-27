@@ -1,0 +1,43 @@
+---
+/**
+ * O sinal de que o artigo tem código-fonte (D52, C03): o ícone de código, no traço dos outros ícones do
+ * site, e "código-fonte", na linha da categoria, da data e do tempo de leitura (listas, cards e o
+ * destaque, pelo MetaItem). Não é link: o item inteiro já leva ao artigo, e o link para o repositório
+ * fica no topo do artigo. `curto` deixa só o ícone, onde falta lugar (a gaveta, o anterior / próximo),
+ * com o mesmo texto para o leitor de tela e na dica do mouse.
+ */
+import { ICONES } from "../lib/icones";
+
+interface Props {
+  curto?: boolean;
+}
+
+const { curto = false } = Astro.props;
+---
+
+<span class:list={["sinal-codigo", { curto }]} title={curto ? "Tem código-fonte no GitHub" : undefined}
+  ><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.codigo} />{
+    curto ? <span class="sr">Tem código-fonte no GitHub</span> : <>código-fonte<span class="sr"> no GitHub</span></>
+  }</span
+>
+
+<style>
+  .sinal-codigo {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+  }
+
+  svg {
+    flex: none;
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.85;
+  }
+</style>

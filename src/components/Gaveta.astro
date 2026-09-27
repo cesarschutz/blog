@@ -20,6 +20,7 @@
  */
 import Livro3D from "./Livro3D.astro";
 import LivroAmpliado from "./LivroAmpliado.astro";
+import SinalCodigo from "./SinalCodigo.astro";
 import { ICONES } from "../lib/icones";
 import { coresDoLivroCss, dadosDoLivro, paginasDoLivro, type Livro } from "../lib/estante";
 import { diaEMes } from "../lib/formato";
@@ -88,7 +89,7 @@ function linhas(l: Livro): Linha[] {
               ) : (
                 <li>
                   <a href={linha.post.url}>
-                    <span class="titulo-item">{linha.parte && <span class="parte">Parte {linha.parte}</span>}{linha.post.tituloCompleto}</span>
+                    <span class="titulo-item">{linha.parte && <span class="parte">Parte {linha.parte}</span>}{linha.post.tituloCompleto}{linha.post.codigo && <SinalCodigo curto />}</span>
                     <span class="pontilhado" aria-hidden="true" />
                     <span class="dia">{diaEMes(linha.post.publicado)}</span>
                   </a>

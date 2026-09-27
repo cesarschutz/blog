@@ -83,6 +83,15 @@ Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
   - `published`; `updated` só em revisão relevante (aparece como "Atualizado em");
   - `category` **ou** `series`, nunca os dois;
   - `tags`: de 2 a 4;
+  - `codigo` (D52), **só quando o artigo tem código-fonte publicado** no repositório de exemplos do
+    Cesar (`https://github.com/cesarschutz/blog-exemplos`, uma pasta por artigo, com o nome do slug):
+    o endereço da pasta, com `https://`, por exemplo
+    `codigo: https://github.com/cesarschutz/blog-exemplos/tree/main/jackson-filtros-mascarando-cartao`.
+    Pergunte ao Cesar se o código do post vai para lá; se for, abra o link e confira que a pasta existe
+    e é a do artigo antes de preencher. Com o campo, o topo do artigo mostra "Código deste artigo no
+    GitHub" e o artigo ganha o sinal de código-fonte nas listas, nos cards, na gaveta, no anterior /
+    próximo, no livro ampliado e na busca. Não repita o link no texto (a não ser que ele explique uma
+    parte específica do código). Sem código publicado, o campo fica de fora;
   - `draft: true` até o Cesar aprovar.
 - **Aviso de conteúdo feito com ajuda de IA:** sai sozinho no rodapé de todo artigo
   (`RodapeArtigo.astro`). Confira que ele aparece; não escreva outro no texto.

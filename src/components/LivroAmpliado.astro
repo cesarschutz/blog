@@ -54,7 +54,7 @@ import "../styles/paginas.css";
   import { GIRO } from "../lib/livro-3d";
   import { adiantar, carregarArrastar, carregarGsap, movimentoReduzido, type GSAP } from "../scripts/gsap";
 
-  type Post = { titulo: string; subtitulo: string; descricao: string; dia: string; data: string; url: string };
+  type Post = { titulo: string; subtitulo: string; descricao: string; dia: string; data: string; url: string; codigo?: string };
   type Paginas = {
     nome: string;
     serie: boolean;
@@ -150,7 +150,9 @@ import "../styles/paginas.css";
         ...d.posts.map((p, i) => ({
           html: `<div class="pg pg-${i % 2 === 0 ? "esq" : "dir"} cap">${cab}<p class="num">${i + 1}</p><h3>${esc(p.titulo)}</h3>${
             p.subtitulo ? `<p class="sub">${esc(p.subtitulo)}</p>` : ""
-          }<p class="desc">${esc(p.descricao)}</p>${link(p.url, "Ler o artigo →", "ler")}<p class="quando">${esc(p.data)}</p><p class="folio">${i + 1}</p></div>`,
+          }<p class="desc">${esc(p.descricao)}</p>${link(p.url, "Ler o artigo →", "ler")}${
+            p.codigo ? `<span class="ler-sep" aria-hidden="true"> · </span>${link(p.codigo, "Código no GitHub ↗", "ler")}` : ""
+          }<p class="quando">${esc(p.data)}</p><p class="folio">${i + 1}</p></div>`,
           rotulo: `artigo ${i + 1}`,
           titulo: p.titulo,
         })),
@@ -667,6 +669,8 @@ import "../styles/paginas.css";
     async function seguir(a: HTMLAnchorElement, e: MouseEvent) {
       if (e.metaKey || e.ctrlKey || e.shiftKey) return void open(a.href, "_blank", "noopener");
       if (seguindo) return;
+      // O código-fonte do artigo (D52, C03) sai do site: vai direto, sem fechar o livro antes.
+      if (new URL(a.href).origin !== location.origin) return void location.assign(a.href);
       const caminho = new URL(a.href).pathname;
       if (caminho === location.pathname) return void fechar();
       seguindo = true;

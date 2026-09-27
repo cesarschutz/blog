@@ -32,6 +32,8 @@ export const ICONES = {
   fechar: '<path d="M18 6 6 18M6 6l12 12"/>',
   externo: '<path d="M7 17 17 7M8 7h9v9"/>',
   ampliar: '<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>',
+  // O código-fonte do artigo (D52): os dois sinais de maior e menor e a barra, no traço dos outros.
+  codigo: '<path d="m8 6.5-5.5 5.5L8 17.5M16 6.5l5.5 5.5-5.5 5.5M13.8 4l-3.6 16"/>',
   teclado: '<rect width="20" height="14" x="2" y="5" rx="2"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 12.5h.01M10 12.5h.01M14 12.5h.01M18 12.5h.01M8 16h8"/>',
 } as const;
 

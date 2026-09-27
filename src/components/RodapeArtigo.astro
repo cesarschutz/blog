@@ -4,7 +4,7 @@
  * WhatsApp e o compartilhar nativo quando existir); aviso sobre IA; o livro do artigo (o livro 3D da
  * categoria ou da série, que voa até a página do livro ao clicar; no desktop com o sumário lateral,
  * ele fica embaixo do sumário, D39); anterior e próximo, em ordem cronológica global (D52, B03),
- * com o título inteiro.
+ * com o título inteiro e, quando o artigo tem código-fonte (D52, C03), o sinal no fim do título.
  *
  * Os gestos pequenos (D49, protótipo E3): "Copiar link" faz o gesto de copiar do site, o mesmo do
  * código (os elos se juntam, a caneta faz o visto e o rótulo rola até "Link copiado", com a pílula
@@ -13,6 +13,7 @@
  * toque, aparecem enquanto o dedo está no cartão.
  */
 import LivroEmPe from "./LivroEmPe.astro";
+import SinalCodigo from "./SinalCodigo.astro";
 import { ICONES } from "../lib/icones";
 import { montarLivros } from "../lib/estante";
 import { urlTag, type Resumo } from "../lib/posts";
@@ -112,7 +113,7 @@ const rotulos = { anterior: "Artigo anterior", proximo: "Próximo artigo" };
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
             {rotulos.anterior}
           </span>
-          <span class="nome" set:html={tituloComQuebras(anterior.tituloCompleto)} />
+          <span class="nome"><span set:html={tituloComQuebras(anterior.tituloCompleto)} />{anterior.codigo && <SinalCodigo curto />}</span>
         </a>
       ) : (
         <span />
@@ -123,7 +124,7 @@ const rotulos = { anterior: "Artigo anterior", proximo: "Próximo artigo" };
             {rotulos.proximo}
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
           </span>
-          <span class="nome" set:html={tituloComQuebras(proximo.tituloCompleto)} />
+          <span class="nome"><span set:html={tituloComQuebras(proximo.tituloCompleto)} />{proximo.codigo && <SinalCodigo curto />}</span>
         </a>
       )}
     </nav>
@@ -479,6 +480,13 @@ const rotulos = { anterior: "Artigo anterior", proximo: "Próximo artigo" };
     font-size: 17px;
     line-height: 1.3;
     transition: color 0.15s;
+  }
+
+  /* O sinal do código-fonte (D52): só o ícone, colado ao fim do título, na tinta 2. */
+  .nome :global(.sinal-codigo) {
+    margin-left: 0.4em;
+    color: var(--ink-2);
+    vertical-align: -0.1em;
   }
 
   @media (max-width: 600px) {

@@ -7,6 +7,8 @@ export interface ResultadoBusca {
   rotulo: string;
   /** Data curta ("10 set 2026"). */
   data: string;
+  /** O artigo tem código-fonte no repositório de exemplos (frontmatter `codigo`, D52). */
+  codigo?: boolean;
   /** Trecho em HTML, com o termo em <mark>. */
   trecho: string;
   /** Sem o termo exato, só uma palavra parecida ("kafkaxyz" → Kafka). */

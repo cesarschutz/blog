@@ -121,6 +121,7 @@ const jsonLd = {
             <span data-pagefind-meta="data">{dataPorExtenso(post.data.published)}</span>
             <span data-pagefind-meta="descricao">{semMd(post.data.description)}</span>
             <span data-pagefind-meta="tags">{post.data.tags.join(", ")}</span>
+            {post.data.codigo && <span data-pagefind-meta="codigo">sim</span>}
             {post.data.tags.map((t) => <span data-pagefind-filter="tag">{t}</span>)}
           </div>
           <div data-pagefind-ignore>

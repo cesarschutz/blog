@@ -444,6 +444,13 @@
   color: var(--ink-2);
 }
 
+/* O sinal do código-fonte (D52, C03): só o ícone, colado ao fim do título, na tinta 2. */
+.indice-livro .sinal-codigo {
+  margin-left: 0.45em;
+  color: var(--ink-2);
+  vertical-align: -0.1em;
+}
+
 .indice-livro a:hover .titulo-item {
   color: var(--acento);
 }

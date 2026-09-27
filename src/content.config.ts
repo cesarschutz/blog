@@ -31,6 +31,12 @@ const posts = defineCollection({
         .refine((s) => series.includes(s), { message: "Série fora de src/data/series.ts" })
         .optional(),
       tags: z.array(z.string()).min(2).max(4),
+      /**
+       * O código-fonte do artigo (D52, C03): a pasta dele no repositório de exemplos
+       * (https://github.com/cesarschutz/blog-exemplos/tree/main/<pasta>). Aparece no topo do artigo e
+       * como sinal nas listas, nos cards, na gaveta, no anterior / próximo e na busca.
+       */
+      codigo: z.url({ protocol: /^https$/, message: "codigo: o endereço do código, com https://" }).optional(),
       draft: z.boolean().default(false),
     })
     .refine((d) => Boolean(d.category) !== Boolean(d.series), {

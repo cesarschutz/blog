@@ -42,6 +42,7 @@ import { url } from "../lib/url";
 <script>
   import type { MotorDeBusca, ResultadoBusca } from "../lib/busca/tipos";
   import { escaparHtml } from "../lib/busca/tipos";
+  import { ICONES } from "../lib/icones";
   import { ondaDeCaneta } from "../lib/traco";
   import { adiantar, carregarFlip, movimentoReduzido } from "../scripts/gsap";
 
@@ -131,7 +132,9 @@ import { url } from "../lib/url";
       .map(
         (r) => `<li><a class="resultado" href="${r.url}">
           <span class="r-titulo">${marcarTitulo(r.titulo, consulta)}</span>
-          <span class="r-meta">${escaparHtml([r.rotulo, r.data].filter(Boolean).join(", "))}</span>
+          <span class="r-meta">${escaparHtml([r.rotulo, r.data].filter(Boolean).join(", "))}${
+            r.codigo ? `<span class="r-codigo"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONES.codigo}</svg>código-fonte</span>` : ""
+          }</span>
           <span class="r-trecho">${r.trecho}</span>
         </a></li>`,
       )
@@ -473,6 +476,25 @@ import { url } from "../lib/url";
   .resultados :global(.r-meta) {
     font-size: 13.5px;
     color: var(--ink-2);
+  }
+
+  /* O sinal do código-fonte (D52, C03), como nas listas: o ícone e "código-fonte". */
+  .resultados :global(.r-codigo) {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 12px;
+    white-space: nowrap;
+  }
+
+  .resultados :global(.r-codigo svg) {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   .resultados :global(.r-trecho) {

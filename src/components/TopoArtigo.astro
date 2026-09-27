@@ -8,12 +8,17 @@
  * d'água do livro, cortada pela borda da folha, como no topo das páginas de categoria e de série (saiu
  * daqui na D39, com o topo de antes, e voltou em 27/09/2026: no fim do artigo, ficava atrás de
  * "anterior / próximo").
+ *
+ * O código-fonte (D52, C03): com `codigo` no frontmatter, a assinatura ganha, à direita, a pílula
+ * "Código deste artigo no GitHub", com o ícone de código e a seta de link externo (abre na mesma aba,
+ * como os outros links do site).
  */
 import Chip from "./Chip.astro";
 import DataLeitura from "./DataLeitura.astro";
 import Ilustracao from "./Ilustracao.astro";
 import MarcaDagua from "./MarcaDagua.astro";
 import { AUTOR } from "../data/site";
+import { ICONES } from "../lib/icones";
 import { temIlustracao } from "../lib/ilustracoes";
 import { mdEmLinha, tituloEmPartes } from "../lib/formato";
 import { url } from "../lib/url";
@@ -28,6 +33,7 @@ interface Props {
 
 const { post, livro } = Astro.props;
 const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "Artigos", href: url("/archive/") };
+const noGithub = post.codigo ? new URL(post.codigo).hostname === "github.com" : false;
 ---
 
 <div class="folha topo-folha">
@@ -58,6 +64,15 @@ const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "
         {AUTOR.nome}
       </span>
       <DataLeitura data={post.publicado} atualizado={post.atualizado} minutos={post.minutos} longo />
+      {
+        post.codigo && (
+          <a class="codigo-fonte" href={post.codigo}>
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.codigo} />
+            {noGithub ? "Código deste artigo no GitHub" : "Código deste artigo"}
+            <svg class="externo" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.externo} />
+          </a>
+        )
+      }
     </div>
   </header>
 </div>
@@ -213,6 +228,54 @@ const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "
     color: var(--ink);
   }
 
+  /* A pílula do código-fonte (D52): na ponta direita da assinatura, azul-tinta como todo link. */
+  .codigo-fonte {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 36px;
+    margin-left: auto;
+    padding: 5px 14px 5px 12px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: var(--paper-hi);
+    color: var(--acento);
+    font-weight: 500;
+    text-decoration: none;
+    transition: border-color 0.15s;
+  }
+
+  .codigo-fonte:hover {
+    border-color: color-mix(in oklab, var(--acento) 60%, var(--rule));
+  }
+
+  .codigo-fonte svg {
+    flex: none;
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .codigo-fonte .externo {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.2s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .codigo-fonte:hover .externo {
+    transform: translate(2px, -2px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .codigo-fonte .externo {
+      transition: none;
+    }
+  }
+
   .foto {
     flex: none;
     width: 32px;
@@ -231,6 +294,11 @@ const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "
     .assinatura {
       gap: 8px 14px;
       font-size: 13.5px;
+    }
+
+    /* No celular, a pílula desce para a linha dela, alinhada à esquerda com o resto. */
+    .codigo-fonte {
+      margin-left: 0;
     }
   }
 </style>

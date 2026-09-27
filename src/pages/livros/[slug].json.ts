@@ -37,6 +37,8 @@ export const GET: APIRoute = ({ props }) => {
       dia: diaEMes(post.publicado),
       data: dataPorExtenso(post.publicado),
       url: post.url,
+      // O código-fonte do artigo (D52, C03): o link ao lado de "Ler o artigo", na página dele.
+      codigo: post.codigo,
     })),
     proximo: {
       nome: p.nome,
