@@ -5,6 +5,11 @@
  * destaque, pelo MetaItem). Não é link: o item inteiro já leva ao artigo, e o link para o repositório
  * fica no topo do artigo. `curto` deixa só o ícone, onde falta lugar (a gaveta, o anterior / próximo),
  * com o mesmo texto para o leitor de tela e na dica do mouse.
+ *
+ * O ícone é da caneta preta, da família do calendário e do relógio (C04, D52; src/lib/traco.ts). Na
+ * linha da data de um card estreito (os de quatro colunas, ~270px), "código-fonte" não cabe e quebrava
+ * sozinho numa linha nova, descendo o título: abaixo de 340px de linha (a consulta ao contêiner
+ * `meta-item`, MetaItem.astro), fica só o ícone, com o texto para o leitor de tela.
  */
 import { ICONES } from "../lib/icones";
 
@@ -17,7 +22,7 @@ const { curto = false } = Astro.props;
 
 <span class:list={["sinal-codigo", { curto }]} title={curto ? "Tem código-fonte no GitHub" : undefined}
   ><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.codigo} />{
-    curto ? <span class="sr">Tem código-fonte no GitHub</span> : <>código-fonte<span class="sr"> no GitHub</span></>
+    curto ? <span class="sr">Tem código-fonte no GitHub</span> : <><span class="rotulo">código-fonte</span><span class="sr"> no GitHub</span></>
   }</span
 >
 
@@ -33,11 +38,23 @@ const { curto = false } = Astro.props;
     flex: none;
     width: 15px;
     height: 15px;
+    overflow: visible;
     fill: none;
-    stroke: currentColor;
-    stroke-width: 1.8;
+    stroke: var(--ink);
+    stroke-width: 1.7;
     stroke-linecap: round;
     stroke-linejoin: round;
-    opacity: 0.85;
+    opacity: 0.78;
+  }
+
+  @container meta-item (max-width: 339.98px) {
+    .rotulo {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
   }
 </style>

@@ -1,7 +1,14 @@
 /**
  * Ícones de traço (viewBox 0 0 24 24), desenhados no protótipo. Quem usa aplica
  * `fill:none; stroke:currentColor` (ou a cor do aviso) com traço de 1.8.
+ *
+ * Os da caneta preta (C04 da D52: o calendário, o relógio e o código-fonte) não são desenhados aqui:
+ * saem de src/lib/traco.ts, à mão, com a mesma semente em toda visita.
  */
+import { calendarioDeCaneta, codigoDeCaneta, relogioDeCaneta } from "./traco";
+
+const caminhos = (lista: string[]) => lista.map((d) => `<path d="${d}"/>`).join("");
+
 export const ICONES = {
   nota: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.6v.01"/>',
   dica: '<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.6 10.8c.7.5 1.1 1.3 1.1 2.1V16h5v-.1c0-.8.4-1.6 1.1-2.1A6 6 0 0 0 12 3z"/>',
@@ -20,9 +27,9 @@ export const ICONES = {
   seta: '<path d="M5 12h14M13 6l6 6-6 6"/>',
   // Os dois arcos separados, do de dentro para o de fora: o sinal se escreve no hover (traco.css, D49).
   rss: '<path class="arco-rss" pathLength="1" d="M5 11a8 8 0 0 1 8 8"/><path class="arco-rss" pathLength="1" d="M5 5a14 14 0 0 1 14 14"/><circle cx="6" cy="18" r="1.4"/>',
-  relogio: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  relogio: caminhos(relogioDeCaneta()),
   // Blog atual (D33): calendário da data, os dois modos da lista, GitHub e LinkedIn do cabeçalho.
-  calendario: '<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  calendario: caminhos(calendarioDeCaneta()),
   lista: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
   grade: '<rect width="7" height="7" x="3" y="3" rx="1.5"/><rect width="7" height="7" x="14" y="3" rx="1.5"/><rect width="7" height="7" x="14" y="14" rx="1.5"/><rect width="7" height="7" x="3" y="14" rx="1.5"/>',
   github:
@@ -32,8 +39,8 @@ export const ICONES = {
   fechar: '<path d="M18 6 6 18M6 6l12 12"/>',
   externo: '<path d="M7 17 17 7M8 7h9v9"/>',
   ampliar: '<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>',
-  // O código-fonte do artigo (D52): os dois sinais de maior e menor e a barra, no traço dos outros.
-  codigo: '<path d="m8 6.5-5.5 5.5L8 17.5M16 6.5l5.5 5.5-5.5 5.5M13.8 4l-3.6 16"/>',
+  // O código-fonte do artigo (D52): os dois sinais de maior e menor e a barra, à caneta (C04).
+  codigo: caminhos(codigoDeCaneta()),
   teclado: '<rect width="20" height="14" x="2" y="5" rx="2"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 12.5h.01M10 12.5h.01M14 12.5h.01M18 12.5h.01M8 16h8"/>',
 } as const;
 
