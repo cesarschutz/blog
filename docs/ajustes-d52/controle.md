@@ -23,7 +23,7 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
       antiga sumirem (mais evidente de uma tag para outra, mas acontece em outras trocas). Resolver.
 - [~] **A03.** _(agente Trocas)_ Artigo → próximo (rolado para baixo): a folha antiga some devagar e fica um pedaço dela
       em cima que a nova não cobre. Voltar (anterior) está bom. Melhorar o avançar.
-- [~] **A04.** _(agente Livros e visor)_ No escuro, as imagens ficam **brancas** ao abrir (visor). Arrumar.
+- [x] **A04.** _(agente Livros e visor; 776f8dd)_ No escuro, as imagens ficam **brancas** ao abrir (visor). Arrumar.
 
 ## B. Ajustes que o Cesar identificou (e bugs que eu achar)
 
@@ -43,7 +43,7 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
       fundo escurecido; na tela grande, uma entrada elegante (sem cobrir tudo).
 - [~] **B07.** _(agente Listas)_ "Todos os artigos": muito espaço vazio no painel com os livros ao lado do texto; em
       tela menor (livros embaixo do texto), pior. Repensar essa tela.
-- [~] **B08.** _(agente Livros e visor)_ Livros de lado (3D): uma **linha branca** entre a capa e a lombada. Arrumar em todos.
+- [x] **B08.** _(agente Livros e visor; 975885c)_ Livros de lado (3D): uma **linha branca** entre a capa e a lombada. Arrumar em todos.
 - [x] **B09.** _(agente Pilha; 2463a34)_ Troca de livro em Categorias: a animação toda mais profissional, fluida e realista,
       principalmente o fim (o livro novo no lugar, sem tremer). Junto com o B01.
 - [~] **B10.** _(agente Trocas)_ De `/categories/` para uma categoria e de volta: a animação do livro está feia.
@@ -144,6 +144,16 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto e commitado (hash).
   cor e o texto do livro novo; a nova abre a 70% do giro e o continua (tipo `pilha`, sem deslocar a
   raiz, esperando as fontes). A página do livro é buscada quando o mouse para 90ms sobre ele. No
   celular e no tablet, a troca de antes. [diagnosticos/B01-B09.md](diagnosticos/B01-B09.md).
+
+- **A04** (776f8dd): os diagramas antigos ficam escuros por um filtro da prosa (D39), que o visor não
+  tinha (e o quadro dele é sempre branco). No escuro, o visor aplica a mesma inversão, com a sombra
+  dentro do filtro (`drop-shadow` depois da inversão); e o visor esmaece ao fechar (0,18s).
+  [diagnosticos/A04.md](diagnosticos/A04.md).
+- **B08** (975885c): duas falhas de montagem do `Livro3D`: a capa fica 0,6px à frente da lombada e as
+  duas só se encostavam (fresta); e o miolo começava no plano da lombada, e a borda clara da página
+  vazava nas emendas. A lombada passa 1,5px por baixo da capa (`::before`), o miolo começa 1px para
+  dentro (`--recuo-miolo`) e o verso da capa passa 1px da dobradiça. Vale para todos os livros de lado.
+  [diagnosticos/B08.md](diagnosticos/B08.md).
 
 ## Para o Cesar decidir
 
