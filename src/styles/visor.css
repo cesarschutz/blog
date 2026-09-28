@@ -64,13 +64,24 @@
  * juntos e a página volta por baixo, em vez de tudo sumir de uma vez. O diálogo fica na camada de
  * cima até o fim (overlay e display em allow-discrete). O livro ampliado tem a volta própria
  * (LivroAmpliado, .fechando).
+ *
+ * A imagem sai antes de a página aparecer (D52): ela some em 0,12s, rápida no começo (ease-out), e o
+ * véu, que começa 0,05s depois e devagar (ease-in), só clareia de verdade quando ela já saiu. Com os
+ * dois juntos em 0,18s ease-in, o diagrama do visor e o mesmo diagrama na página ficavam à vista ao
+ * mesmo tempo por ~0,1s (no escuro, bem visível). O filtro do escuro (A04) continua na imagem.
  */
-.visor:not(.visor-livro),
+.visor:not(.visor-livro) {
+  transition:
+    opacity 0.12s cubic-bezier(0.33, 1, 0.68, 1),
+    overlay 0.22s allow-discrete,
+    display 0.22s allow-discrete;
+}
+
 .visor:not(.visor-livro)::backdrop {
   transition:
-    opacity 0.18s ease-in,
-    overlay 0.18s allow-discrete,
-    display 0.18s allow-discrete;
+    opacity 0.17s cubic-bezier(0.5, 0, 0.9, 0.5) 0.05s,
+    overlay 0.22s allow-discrete,
+    display 0.22s allow-discrete;
 }
 
 .visor:not(.visor-livro):not([open]),
@@ -79,8 +90,8 @@
 }
 
 .visor:not(.visor-livro):not([open]) .visor-quadro img {
-  scale: 0.97;
-  transition: scale 0.18s ease-in;
+  scale: 0.94;
+  transition: scale 0.12s cubic-bezier(0.33, 1, 0.68, 1);
 }
 
 /* Uma trilha só, de altura definida: a imagem cabe inteira nela (max-height: 100%). */
