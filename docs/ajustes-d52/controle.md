@@ -80,20 +80,29 @@ Um agente gravou as dez cenas da D52 juntas (Chrome headless, 1440 e 390, claro 
 problemas ([diagnosticos/revisao-animacoes.md](diagnosticos/revisao-animacoes.md)). Um commit por
 correção ("D52 revisão N").
 
-- [ ] 1. Pilha no celular: a lombada puxada alarga a página e a transição aborta (corte seco).
-- [ ] 2. Trocas gerais: 85 a 135ms de página vazia entre a saída e a chegada (lê como piscada).
-- [ ] 3. Anterior com a página no fim: o rodapé nítido por cima do título do artigo novo.
-- [ ] 4. Sumário: a seção atual em peso 600 quebra a linha e a lista salta ~11px.
-- [x] 5. O aceno vinha antes do desenho do destaque (pegava a miniatura escondida da lista).
-- [ ] 6. Livro ampliado: pisca ao abrir e fica um quadro vazio ao fechar.
+- [x] 1. Pilha no celular: a lombada puxada alarga a página e a transição aborta (corte seco). (9cccaf4, c30dc21)
+- [x] 2. Trocas gerais: 85 a 135ms de página vazia entre a saída e a chegada (lê como piscada). (7e0806b)
+- [x] 3. Anterior com a página no fim: o rodapé nítido por cima do título do artigo novo. (aaa9579)
+- [x] 4. Sumário: a seção atual em peso 600 quebra a linha e a lista salta ~11px. (49616bb)
+- [x] 5. O aceno vinha antes do desenho do destaque (pegava a miniatura escondida da lista). (46a06c7)
+- [x] 6. Livro ampliado: pisca ao abrir e fica um quadro vazio ao fechar. (7f1e450)
 - [ ] 7. CPU lenta: a página congela ~1,1s sem a caneta de carregando e vem a coreografia inteira.
-- [ ] 8. Próximo e anterior: o painel do desenho fica vazio por 0,5 a 0,65s.
-- [ ] 9. Próximo: a lateral velha e a nova juntas a ~50% no mesmo lugar.
-- [ ] 10. Pilha na tela grande: o painel do topo fica um retângulo vazio por ~1,1s.
-- [ ] 11. Visor ao fechar: o diagrama do visor e o da página juntos por ~0,1s.
-- [ ] 12. Abertura no escuro: o fio da caneta quase não aparece.
-- [ ] 13. Carregando: a caneta some de uma vez antes de as folhas caírem.
-- [ ] 14. Abertura com o caderno: o voo em linha reta cruza "Cesar Schutz".
+- [x] 8. Próximo e anterior: o painel do desenho fica vazio por 0,5 a 0,65s. (abea3f9)
+- [x] 9. Próximo: a lateral velha e a nova juntas a ~50% no mesmo lugar. (519cfaf)
+- [x] 10. Pilha na tela grande: o painel do topo fica um retângulo vazio por ~1,1s. (d1217d2, 20be2a5, 67b6a11)
+- [x] 11. Visor ao fechar: o diagrama do visor e o da página juntos por ~0,1s. (2de479a)
+- [x] 12. Abertura no escuro: o fio da caneta quase não aparece. (4545e75)
+- [x] 13. Carregando: a caneta some de uma vez antes de as folhas caírem. (aa21d4e)
+- [x] 14. Abertura com o caderno: o voo em linha reta cruza "Cesar Schutz". (5d6dd1f)
+
+- [ ] 15. Pilha no celular, agora que anima: a lombada deitada esticada até o livro do topo cruza a
+      capa como uma faixa por ~0,15s.
+- De quebra (67b6a11): voltar pelo histórico depois da troca pela pilha trazia a pilha **vazia** (o
+  `clearProps: "all"` do `pageshow` apagava o estilo das lombadas).
+
+Relatórios: [revisao-sumario-abertura.md](diagnosticos/revisao-sumario-abertura.md),
+[revisao-pilha-livro.md](diagnosticos/revisao-pilha-livro.md), revisao-trocas.md (quando o agente das
+trocas fechar).
 
 ## Antes do último
 
