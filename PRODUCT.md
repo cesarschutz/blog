@@ -38,7 +38,7 @@ O que o blog faz e outro blog técnico em pt-BR não pode copiar sem mudar o jei
 - **Rigor com fontes:** nenhuma afirmação técnica sem fonte primária aberta e conferida; `## Fontes`
   no fim de todo post; frase de autor só com a fonte primária aberta.
 - **Código e SQL testados antes de publicar**, não só "que compila".
-- **Explicação visual:** ilustração própria em cada post, lousas passo a passo e, quando existe, a
+- **Explicação visual:** ilustração própria em cada post, lousas animadas (linha do tempo e loop) e, quando existe, a
   apresentação em slides com o PDF.
 - **Série Java por LTS:** um guia por versão LTS, com as versões intermediárias absorvidas, como
   referência de consulta.

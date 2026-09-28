@@ -41,8 +41,6 @@ export const ICONES = {
   teclado: '<rect width="20" height="14" x="2" y="5" rx="2"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 12.5h.01M10 12.5h.01M14 12.5h.01M18 12.5h.01M8 16h8"/>',
 } as const;
 
-export type NomeIcone = keyof typeof ICONES;
-
 /**
  * As marcas do GitHub e do LinkedIn (C04, D52): as oficiais, preenchidas e em preto, como as regras
  * das duas pedem (nada de redesenhar o logotipo). O GitHub é a Invertocat (Octicons "mark-github",

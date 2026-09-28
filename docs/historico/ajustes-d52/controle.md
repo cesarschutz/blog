@@ -111,9 +111,9 @@ Relatórios: [revisao-sumario-abertura.md](diagnosticos/revisao-sumario-abertura
       preview da 4323 reiniciado com o build. O remoto recebeu pushes às 18h43 e 22h11 (fora desta
       sessão; nenhum agente deu push); o registro da revisão (f1f4c4c) e este controle ficaram locais.
 
-## C05 (o último, **sem commit**)
+## C05 (o último)
 
-- [ ] **C05.** Identidade do site com papelaria, caderno, anotação, estudo (post-it, fichário,
+- [x] **C05.** _(commitado pelo Cesar em 28/09/2026, da57524)_ Identidade do site com papelaria, caderno, anotação, estudo (post-it, fichário,
       ficha, envelope, máquina de escrever…), sem poluir e profissional. Ideia do Cesar: o painel
       "Neste artigo" e o painel do livro embaixo dele como post-its, escritos à caneta (azul e preta).
       **Não commitar**: o Cesar avalia antes. A lista do que foi feito vai no fim deste arquivo.

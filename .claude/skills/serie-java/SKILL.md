@@ -5,9 +5,8 @@ description: Regras da série Atualizações do Java (só LTS), com o esqueleto 
 
 # Série "Atualizações do Java"
 
-Esqueleto da Fase 0, portado do `CLAUDE.md` do blog atual. Ainda falta completar:
-- dados, rotas e página `/series/java/` (Fase 2; D32 mudou de `/java/`, que redireciona);
-- ilustrações da série (Fase 6).
+Portada do `CLAUDE.md` do blog atual. Dados em `src/data/java.ts`, página em `/series/java/` (D32;
+`/java/` redireciona) e ilustrações geradas por `node scripts/desenho/java.mjs` (D17).
 
 ## Estrutura da série
 
@@ -56,9 +55,9 @@ Esqueleto da Fase 0, portado do `CLAUDE.md` do blog atual. Ainda falta completar
   1. tirar `upcoming` em `JAVA_LTS`;
   2. revisar o `java-29` como LTS;
   3. criar o `java-33` como a próxima;
-  4. atualizar a capa da revista em `docs/capas/livros.json` (série "Atualizações do Java"):
+  4. atualizar a capa da revista em `src/livros/livros.json` (série "Atualizações do Java"):
      `numeroDeCapa` ("29"), a lista `edicoes` (a nova no fim, que vira a edição atual) e a
      `guia.linha` ("do Java 8 ao 29, passo a passo"). O total de edições da capa sai dos posts.
 - **Ilustrações da série:** não se desenha à mão. Elas saem de um script com padrão fixo
   (`scripts/desenho/java.mjs`, D17). A série é uma revista técnica (D32, `docs/capas/CAPAS.md`), com
-  destaque `#c24d1c` e a xícara (`docs/capas/serie/xicara.svg`) como emblema.
+  destaque `#c24d1c` e a xícara (`src/livros/serie/xicara.svg`) como emblema.

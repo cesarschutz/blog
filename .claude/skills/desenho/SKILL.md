@@ -5,8 +5,8 @@ description: Cria ou altera a ilustração SVG de um post no estilo de docs/esti
 
 # Desenho (ilustração do post)
 
-Formato, definições globais e scripts prontos na Fase 5 (D11). Os lotes dos posts existentes
-ficam para a Fase 6. Referência pronta: `src/ilustracoes/cobranca-duplicada-no-retry.svg`.
+Formato, definições globais e scripts desde a Fase 5 (D11); os 27 posts têm ilustração. Referência:
+`src/ilustracoes/cobranca-duplicada-no-retry.svg`.
 
 **Antes de desenhar, leia `docs/estilo-desenho.md`**, porque o estilo pode ter mudado.
 

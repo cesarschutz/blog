@@ -109,7 +109,7 @@ const DESENHOS = {
 };
 const svgDesenho = (id) => `<svg class="des" viewBox="0 0 1040 440" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">${DESENHOS[id]()}</svg>`;
 
-/* Os livros da coleção (docs/capas/livros.json) e a revista da série. As cores não mudam com o tema (D39). */
+/* Os livros da coleção (src/livros/livros.json) e a revista da série. As cores não mudam com o tema (D39). */
 const LIVROS = [
   { k: "arq", nome: "Arquitetura de Software", linhas: ["Arquitetura", "de Software"], vol: "01", w: 62, h: 92, cor: "#2d4b46", tinta: "#efe8d8", dest: "#2d4b46", frase: "As decisões caras de desfazer.", desc: "Microsserviços, domínios, eventos e consistência: as decisões caras de desfazer." },
   { k: "dev", nome: "Desenvolvimento de Software", linhas: ["Desenvolvimento", "de Software"], vol: "02", w: 60, h: 88, cor: "#7a4430", tinta: "#efe8d8", dest: "#7a4430", frase: "O ofício dentro de cada serviço.", desc: "Java, Spring, testes e refatoração: o ofício dentro de cada serviço." },

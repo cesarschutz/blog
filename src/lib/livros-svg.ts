@@ -1,5 +1,5 @@
 /**
- * Desenhos e ícones dos livros (D30), lidos de `docs/capas/desenhos/` e `docs/capas/icones/` e
+ * Desenhos e ícones dos livros (D30), lidos de `src/livros/desenhos/` e `src/livros/icones/` e
  * preparados no build para entrar inline (a cor vem de currentColor e das variáveis):
  *
  * - sem o comentário e sem o <style> de cada arquivo: as classes `cz-*` têm espessuras diferentes no
@@ -10,9 +10,9 @@
  * - o ícone e o emblema da série ganham o viewBox justo do desenho (os arquivos têm muita sobra),
  *   para caber bem na ponta da lombada deitada e na área de cima da lombada em pé.
  */
-const desenhos = import.meta.glob<string>("../../docs/capas/desenhos/*.svg", { query: "?raw", import: "default", eager: true });
-const icones = import.meta.glob<string>("../../docs/capas/icones/*.svg", { query: "?raw", import: "default", eager: true });
-const emblemas = import.meta.glob<string>("../../docs/capas/serie/*.svg", { query: "?raw", import: "default", eager: true });
+const desenhos = import.meta.glob<string>("../livros/desenhos/*.svg", { query: "?raw", import: "default", eager: true });
+const icones = import.meta.glob<string>("../livros/icones/*.svg", { query: "?raw", import: "default", eager: true });
+const emblemas = import.meta.glob<string>("../livros/serie/*.svg", { query: "?raw", import: "default", eager: true });
 
 type Ponto = [number, number];
 
@@ -76,22 +76,20 @@ const cacheIcone = new Map<string, { corpo: string; caixa: [number, number, numb
 export function desenhoDaCapa(slug: string): string {
   const pronto = cacheDesenho.get(slug);
   if (pronto) return pronto;
-  const arquivo = `../../docs/capas/desenhos/${slug}.svg`;
+  const arquivo = `../livros/desenhos/${slug}.svg`;
   const fonte = desenhos[arquivo];
-  if (!fonte) throw new Error(`Falta docs/capas/desenhos/${slug}.svg`);
+  if (!fonte) throw new Error(`Falta src/livros/desenhos/${slug}.svg`);
   const { corpo } = simplificar(miolo(fonte, arquivo), 0.1);
   const svg = `<svg class="desenho-capa" viewBox="0 300 480 420" preserveAspectRatio="xMidYMid meet" aria-hidden="true" focusable="false">${corpo}</svg>`;
   cacheDesenho.set(slug, svg);
   return svg;
 }
 
-export const temDesenho = (slug: string) => `../../docs/capas/desenhos/${slug}.svg` in desenhos;
-
 /** Lê um ícone (`icones/<slug>.svg`) ou um emblema de série (`serie/<nome>.svg`, pelo caminho). */
 function lerIcone(chave: string) {
   const pronto = cacheIcone.get(chave);
   if (pronto) return pronto;
-  const arquivo = chave.startsWith("serie/") ? `../../docs/capas/${chave}` : `../../docs/capas/icones/${chave}.svg`;
+  const arquivo = chave.startsWith("serie/") ? `../livros/${chave}` : `../livros/icones/${chave}.svg`;
   const fonte = (chave.startsWith("serie/") ? emblemas : icones)[arquivo];
   if (!fonte) throw new Error(`Falta ${arquivo.replace("../../", "")}`);
   const { corpo, pontos } = simplificar(miolo(fonte, arquivo), 0.12);
@@ -125,7 +123,7 @@ export function iconeDoLivro(chave: string, girado = false): string {
   return `<svg ${atributos} viewBox="${-(y + h)} ${x} ${h} ${w}"><g transform="rotate(90)">${corpo}</g></svg>`;
 }
 
-const grao = import.meta.glob<string>("../../docs/capas/grao.svg", { query: "?raw", import: "default", eager: true });
+const grao = import.meta.glob<string>("../livros/grao.svg", { query: "?raw", import: "default", eager: true });
 
-/** O grão de papel (docs/capas/grao.svg) como url() de CSS, para a variável --grao (Base.astro). */
+/** O grão de papel (src/livros/grao.svg) como url() de CSS, para a variável --grao (Base.astro). */
 export const GRAO_CSS = `url("data:image/svg+xml,${encodeURIComponent(Object.values(grao)[0].trim()).replace(/'/g, "%27")}")`;

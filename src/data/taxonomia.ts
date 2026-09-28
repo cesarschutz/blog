@@ -1,14 +1,14 @@
 /**
  * Cadastro das categorias (briefing §4.2). Cada categoria é um livro da coleção, no estilo "edição de
- * estudo" (D30, D32): os dados vêm de `docs/capas/livros.json` e as cores, de `docs/capas/cores.js`
+ * estudo" (D30, D32): os dados vêm de `src/livros/livros.json` e as cores, de `src/livros/cores.js`
  * (a partir da cor principal). A regra completa de capas, lombadas e livros novos está em
  * `docs/capas/CAPAS.md`. Categoria nova = livro novo lá, e depois o `npm run contraste`.
  *
  * Os scripts do Node também leem este arquivo (contraste.mjs), por isso os imports usam o caminho
  * com extensão e o atributo de JSON.
  */
-import dados from "../../docs/capas/livros.json" with { type: "json" };
-import { coresDoLivro, PAPEL, TINTA_PAPEL } from "../../docs/capas/cores.js";
+import dados from "../livros/livros.json" with { type: "json" };
+import { coresDoLivro, PAPEL, TINTA_PAPEL } from "../livros/cores.js";
 
 export interface CoresDoLivro {
   /** Bloco de cima da capa e da lombada (na série, o destaque). */
@@ -33,7 +33,7 @@ export interface CoresDoLivro {
 export interface Categoria {
   /** Igual ao frontmatter e à URL, que usa o nome cru: `/categories/<nome>/`. */
   nome: string;
-  /** Nome dos arquivos em `docs/capas/desenhos/` e `docs/capas/icones/`. */
+  /** Nome dos arquivos em `src/livros/desenhos/` e `src/livros/icones/`. */
   slug: string;
   /** Volume da coleção: o "VOLUME 01" da capa. */
   volume: number;

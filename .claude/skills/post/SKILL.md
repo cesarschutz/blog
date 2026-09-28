@@ -35,7 +35,7 @@ quebrar). **O `DESIGN.md` vence qualquer ferramenta:** o "go all out", o redesig
 
 Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
 
-- **Livro:** um dos livros de `docs/capas/livros.json` (Arquitetura de Software, Desenvolvimento de
+- **Livro:** um dos livros de `src/livros/livros.json` (Arquitetura de Software, Desenvolvimento de
   Software, Dados, IA, Segurança, DevOps, SRE, Carreira) **ou** uma série (`src/data/series.ts`). O
   subtítulo de cada livro diz o que cabe nele. Livro novo só se nenhum servir, pela seção "Livros
   novos" de `docs/capas/CAPAS.md` e com o OK do Cesar.
@@ -51,8 +51,9 @@ Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
     evidência (um erro no console, um painel real) pode ficar como imagem, com `alt` descritivo;
     diga por quê.
   - A **ilustração do post** (sempre existe): o que ela vai mostrar.
-  - Onde entram **desenhos e animações novos**: lousa de passo a passo, linha do tempo, loop, frase
-    em destaque (rara) ou animação GSAP, cada um com o trecho do texto que ele explica.
+  - Onde entram **desenhos e animações novos**: linha do tempo de arrastar (também para passo a
+    passo, com a lista dos passos embaixo), animação curta em loop, frase em destaque (rara) ou
+    animação GSAP com play/pause, cada um com o trecho do texto que ele explica.
 - **Caneta (D48):** as marcações **não entram no plano**. Elas são a última etapa (passo 9), pela
   skill `caneta`, depois que texto, desenhos e animações estiverem prontos e aprovados.
 - **Modo Adaptar:** a lista de **sugestões de conteúdo**, separadas do plano (passo 3).
@@ -118,7 +119,7 @@ Siga a skill `desenho` (ilustração) e a skill `lousa` (diagramas), no estilo d
 - Antes de aceitar: `node scripts/desenho/validar.mjs <slug>`, `centrar.mjs` e o render claro e
   escuro (`render.mjs`, com o dev no ar).
 - **Tag nova:** o ícone dela, pela seção "Tags" do `docs/capas/CAPAS.md` (o desenho em
-  `scripts/desenho/tags.mjs`, gravado em `docs/capas/tags/<slug>.svg` e conferido em `/amostra/tags/`
+  `scripts/desenho/tags.mjs`, gravado em `src/livros/tags/<slug>.svg` e conferido em `/amostra/tags/`
   ao lado dos outros, nos dois temas). Sem ele, o build quebra.
 
 ### 6. Animações
@@ -128,9 +129,9 @@ Siga a skill `desenho` (ilustração) e a skill `lousa` (diagramas), no estilo d
 - **Primeiro, os componentes da lousa** (`LousaTempo`, `LousaLoop`, `FraseDestaque`; a lousa de
   passos com a rolagem saiu na D46 e não volta): eles têm play/pause, respeitam `prefers-reduced-motion` e funcionam sem
   JS. A frase em destaque é rara.
-- **GSAP** só para uma animação que os componentes não cobrem: em SVG, avançando com a rolagem
-  (ScrollTrigger) ou com play/pause, **importado só no post que a usa** (script do componente ou do
-  `.mdx`, nunca no layout). Consulte as skills `gsap-core`, `gsap-scrolltrigger`, `gsap-timeline` e
+- **GSAP** só para uma animação que os componentes não cobrem: em SVG, com play/pause (diagrama
+  comandado pela rolagem saiu na D46), **importado só no post que a usa** (script do componente ou do
+  `.mdx`, nunca no layout). Consulte as skills `gsap-core`, `gsap-timeline`, `gsap-plugins` (DrawSVG) e
   `gsap-performance`. Use `gsap.matchMedia()` com `(prefers-reduced-motion: reduce)` para mostrar a
   **versão estática** (estado final, sem prender a tela) e anime só `transform`, `opacity` e
   `stroke-dashoffset`. Sem JS, o SVG aparece completo.

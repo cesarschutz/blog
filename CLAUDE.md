@@ -16,9 +16,10 @@ continuar de onde parou: design ou produto no `docs/briefing.md` (e no `docs/est
 de desenho); a decisão, o motivo e o que mudou no `docs/decisoes.md`; o andamento no `docs/estado.md`;
 e, se mudar o jeito de trabalhar, aqui, na skill ou na regra (`.claude/`) certa.
 
-Modo de trabalho combinado em 23/09/2026: seguir as fases do briefing **sem parar** para aprovação
-(atualizando o `docs/estado.md` ao fechar cada uma) e deixar o site rodando **só na máquina**, para o
-Cesar acompanhar. Ele revisa tudo no fim.
+Lista grande de ajustes: controle em `docs/ajustes-dNN/` (um commit por item, quando o Cesar pedir
+commits), agentes em paralelo sem parar para perguntar e as decisões pendentes no fim. Ao fechar a
+rodada, o controle vai para `docs/historico/` e o lixo de depuração (`.astro/depuracao/`, previews em
+outras portas) sai.
 
 ## Posts, visual e ferramentas (D35)
 
@@ -72,8 +73,8 @@ Cesar acompanhar. Ele revisa tudo no fim.
 **A regra de capas, lombadas, estante, livros e séries novos é `docs/capas/CAPAS.md`** (D30, D32),
 com as imagens de referência em `docs/capas/referencia/`. Cada categoria é um livro de uma coleção
 numerada, no estilo "edição de estudo"; cada série é uma revista técnica (cada post, uma edição). Os
-dados vêm de `docs/capas/livros.json` e todas as cores, de `docs/capas/cores.js` (nada de cor fixa).
-Desenhos, ícones e emblemas ficam em `docs/capas/desenhos/`, `icones/` e `serie/` e entram inline pelo
+dados vêm de `src/livros/livros.json` e todas as cores, de `src/livros/cores.js` (nada de cor fixa).
+Desenhos, ícones e emblemas ficam em `src/livros/desenhos/`, `icones/` e `serie/` (D53) e entram inline pelo
 `src/lib/livros-svg.ts`; o desenho grande da capa e o emblema da revista só carregam quando o livro
 abre na gaveta (`/livros/<slug>.svg`). O número das lombadas, da capa da revista e da página do livro
 é o total de artigos, contado pelos posts (some quando é zero); o "VOLUME 01" da capa é a posição na
@@ -86,7 +87,7 @@ As peças usam os **papéis de cor** de `livro.css` (`--cima`, `--baixo`, `--rev
 cores cruas `--livro-*`. Os livros **não mudam com o tema** (D39): a categoria sempre com o papel em
 cima e a cor do livro embaixo, a série sempre clara. Para conferir, `/amostra/livros/` (só no dev).
 
-**Toda tag tem um ícone** (D52), no traço dos ícones das lombadas: `docs/capas/tags/<slug>.svg`,
+**Toda tag tem um ícone** (D52), no traço dos ícones das lombadas: `src/livros/tags/<slug>.svg`,
 escrito em `scripts/desenho/tags.mjs` e embutido por `src/lib/tags-svg.ts` (`IconeTag`, `PilulaTag`).
 Tag nova num post = ícone novo, pela seção "Tags" do `CAPAS.md`; sem ele, o build quebra. Para
 conferir, `/amostra/tags/` (só no dev).
@@ -156,13 +157,14 @@ node scripts/desenho/validar.mjs [slug]   # regras da ilustração e das lousas
 node scripts/desenho/centrar.mjs <slug>   # centra os recortes no desenho (dev no ar)
 node scripts/desenho/render.mjs [slug]    # folha da ilustração, claro e escuro (dev no ar)
 node scripts/desenho/java.mjs             # as ilustrações da série Java (padrão fixo, D17)
-node scripts/desenho/tags.mjs [slug]      # os ícones das tags (docs/capas/tags/, D52)
+node scripts/desenho/tags.mjs [slug]      # os ícones das tags (src/livros/tags/, D52)
 node scripts/marca.mjs                    # a marca e os ícones do navegador (precisa do pdftocairo)
+node scripts/caveat-titulos.mjs           # a Caveat dos títulos à mão (título novo em src/data/mao.ts, C05)
 ```
 
 A porta 4321 desta máquina está ocupada por outra ferramenta do Cesar, que não deve ser tocada. O
 Astro usa a próxima livre (4322). Só no dev: `/amostra/` (tokens, fontes, avisos),
-`/amostra/markdown/` (recursos de Markdown, de `src/amostra/recursos.md`), `/amostra/caneta/` (os 20
+`/amostra/markdown/` e `/amostra/mdx/` (recursos de Markdown e de MDX, de `src/amostra/`), `/amostra/caneta/` (os 20
 tipos da caneta, de `src/amostra/caneta.md`), `/amostra/desenhos/` e
 `/amostra/livros/` (as capas planas, para comparar com `docs/capas/referencia/`) e `/amostra/tags/`
 (os ícones das tags, lado a lado e da pílula à marca d'água).
@@ -175,6 +177,8 @@ Medição da busca (D2): `scripts/bench-busca/` (construir, conferir, medir), co
 
 ```
 DESIGN.md                sistema visual (fonte de verdade do visual, formato DESIGN.md do Google)
+CLAUDE-CODE.md           análise de 28/09/2026: a configuração do Claude Code, os recursos de post e as
+                         sugestões de melhoria ainda por decidir
 PRODUCT.md               registro de produto do Impeccable (leitor, propósito, diferenciais); o
                          briefing vence em caso de divergência
 .impeccable/config.json  ajustes do Impeccable ("buildPath": "code")
@@ -184,24 +188,30 @@ docs/estado.md           painel: fase, pronto, próximos passos, perguntas
 docs/decisoes.md         registro de decisões (data, decisão, motivo, alternativas)
 docs/estilo-desenho.md   estilo das ilustrações e das lousas
 docs/marcacoes.md        guia vivo da caneta do caderno: 20 tipos, limites, tela, ajustes do Cesar (D48)
-docs/capas/              os livros: CAPAS.md (regra), livros.json, cores.js, desenhos, ícones, referência;
-                         tags/ (um ícone por tag, D52)
-docs/ajustes-d52/        controle e diagnósticos dos ajustes da D52 (regras.md, controle.md,
-                         diagnosticos/<item>.md, pesquisa.md, sugestoes/)
+docs/capas/              a regra dos livros (CAPAS.md) e as imagens de referência
+src/livros/              o que o site lê dos livros (D53): livros.json, cores.js, grao.svg, desenhos/,
+                         icones/, serie/ e tags/ (um ícone por tag, D52)
+docs/historico/          rodadas fechadas: o prompt da Fase 0, os controles da D46/D47 e ajustes-d52/
+                         (controle, regras dos agentes, diagnósticos, pesquisa e sugestões da D52)
 docs/virada.md           plano para o domínio passar ao blog novo (só com OK do Cesar)
 docs/referencias/        protótipos aprovados
 src/content/posts/       posts; nome do arquivo = slug da URL
 src/data/                taxonomia e series (leem docs/capas), java, decks (apresentações), site
-                         (autor, perfis e textos)
+                         (autor, perfis e textos), mao (os títulos à mão da papelaria, C05)
+src/amostra/             o conteúdo das páginas /amostra/ (recursos.md, recursos.mdx, caneta.md)
 src/styles/tokens.ts     cores dos dois temas: fonte única, gera as variáveis CSS (D4)
 src/styles/              base (folha, painel, transição de página), fontes, avisos, prosa, artigo (grade,
-                         notas, visor), estante e livro (lombada, livro 3D e capa)
+                         notas), paginas, estante e livro (lombada, livro 3D e capa), desenho
+                         (ilustrações), lousa, caneta (marcações, D48), traco (traços à caneta, C04),
+                         visor, contador e copiado (D49)
+src/assets/              caveat-titulos.woff: a Caveat 600 só com as letras dos títulos à mão (C05)
 src/layouts/Base.astro   head, anti-piscada, cabeçalho, rodapé e busca
 src/components/          peças das páginas (estante, gaveta, sumário, avisos, busca…)
 src/pages/               rotas; a home é [...page].astro (paginada, D27); livros/[slug].svg (desenho
                          da capa, que a gaveta busca ao abrir o livro, D30);
                          posts/[slug]/apresentacao.pdf.ts (PDF) e og/[slug] (imagem, D10)
-src/plugins/             Markdown: avisos, notas laterais, apresentação, tabelas, matemática
+src/plugins/             Markdown: avisos, notas laterais, apresentação, tabelas, matemática e a
+                         caneta (marcacoes.mjs, D48)
 src/lib/                 posts, formatos, busca (Pagefind), código (Expressive Code), PDF, estante
                          (livros), livros-svg (desenhos e ícones), livro-3d (medidas do livro aberto),
                          marca (traçado da marca, gerado), caderno (miolo do caderno "cs", D52),
@@ -211,7 +221,8 @@ src/lib/                 posts, formatos, busca (Pagefind), código (Expressive 
 src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, apresentação)
 src/scripts/tema.ts      tema: o botão do cabeçalho alterna claro e escuro (D39)
 scripts/                 contraste, links, apresentacao, og, copiar-katex, desenho/, bench-busca/,
-                         verificar-ambiente (npm run setup e hook do início da sessão)
+                         marca, caveat-titulos (subconjunto da Caveat, C05), verificar-ambiente
+                         (npm run setup e hook do início da sessão)
 public/posts/<slug>/     diagramas antigos e slides das apresentações (deck/)
 src/ilustracoes/         uma ilustração SVG por post (<slug>.svg), com os recortes na raiz (D11)
 src/lousas/<slug>/       desenhos das lousas de cada post .mdx
@@ -228,7 +239,8 @@ src/lousas/<slug>/       desenhos das lousas de cada post .mdx
 - `post`: todo post, nos modos Novo e Adaptar, com o checklist único e a revisão em lote
   (`.claude/revisao-posts.md`)
 - `desenho`: a ilustração de cada post (o que desenhar, regras técnicas, recortes, validação)
-- `lousa`: diagramas na lousa (passo a passo, linha do tempo, loop) e frase em destaque
+- `lousa`: diagramas na lousa (linha do tempo de arrastar, também para passos, e animação curta em
+  loop) e frase em destaque
 - `caneta`: a passada de caneta num post (a última etapa da skill `post`, ou sozinha: "passa a caneta
   no post X"), pelo guia `docs/marcacoes.md`
 - `apresentacao`: PowerPoint do NotebookLM → slides WebP e PDF

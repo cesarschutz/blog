@@ -17,6 +17,9 @@ não mudam. A série continua como na referência, sempre papel claro. Nada diss
 
 ## Arquivos
 
+Desde a D53, os arquivos que o site lê ficam em `src/livros/`; aqui ficam só esta regra e as
+imagens de `referencia/`.
+
 - `livros.json`: dados de cada livro e da série. O campo `artigos` é só um exemplo, porque no site o número vem da contagem real de posts.
 - `cores.js`: dá a `tinta` (texto sobre a cor do livro) e o `destaque` (a cor do livro escurecida até ter contraste sobre o papel). Use sempre ele, nunca cores fixas.
 - `desenhos/<slug>.svg`: o desenho da parte clara da capa, já posicionado (viewBox `0 300 480 420`).

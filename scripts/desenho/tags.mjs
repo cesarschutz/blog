@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Ícones das tags (D52, B11): um desenho por tag, no traço dos ícones das lombadas
- * (docs/capas/icones/): caneta com leve tremor, duas espessuras (cz-w1 no contorno, cz-w2 nos
+ * (src/livros/icones/): caneta com leve tremor, duas espessuras (cz-w1 no contorno, cz-w2 nos
  * detalhes, cz-w3 no que é bem fino), pontas redondas, um preenchimento de papel (`--tag-papel`) que
  * tapa o que fica atrás e, se for o caso, um único elemento fantasma tracejado (cz-gh). Só
  * currentColor e variáveis: sem cor fixa, sem id e sem defs. Nada de logotipo de marca: cada tag é
@@ -9,7 +9,7 @@
  *
  * Cada ícone é escrito aqui em geometria limpa (linhas, arcos, curvas), numa caixa de 120 × 120, com
  * o desenho entre 14 e 106 mais ou menos; o script passa a caneta (o tremor vem de um ruído suave,
- * com semente tirada do nome, igual a cada vez) e grava docs/capas/tags/<slug>.svg. Tag nova: um
+ * com semente tirada do nome, igual a cada vez) e grava src/livros/tags/<slug>.svg. Tag nova: um
  * desenho novo em DESENHOS, `node scripts/desenho/tags.mjs <slug>` e a conferência em /amostra/tags/
  * (regra em docs/capas/CAPAS.md, "Tags novas").
  *
@@ -20,7 +20,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const pasta = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "docs", "capas", "tags");
+const pasta = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "src", "livros", "tags");
 
 /** O slug do arquivo a partir do nome da tag: sem acento, minúsculo, com hífen ("Banco de Dados" → "banco-de-dados"). */
 export const slugDaTag = (nome) =>
@@ -638,5 +638,5 @@ for (const [nome, { o, d }] of Object.entries(DESENHOS)) {
   const corpo = desenhar(nome, d);
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" aria-hidden="true"><!-- Ícone da tag ${nome}: ${o}. Gerado por scripts/desenho/tags.mjs; não edite à mão. -->${ESTILO}${corpo}</svg>\n`;
   writeFileSync(join(pasta, `${slug}.svg`), svg);
-  console.log(`docs/capas/tags/${slug}.svg (${(svg.length / 1024).toFixed(1)} KB)`);
+  console.log(`src/livros/tags/${slug}.svg (${(svg.length / 1024).toFixed(1)} KB)`);
 }

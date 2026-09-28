@@ -67,4 +67,4 @@ das dúvidas, respondidas antes de começar:
       de teste não emula a preferência).
 - [x] `docs/decisoes.md` (D46), `docs/briefing.md`, `DESIGN.md`, `docs/estado.md`, `CLAUDE.md` e as
       skills `lousa` e `post` atualizados.
-- [ ] Commit e push.
+- [x] Commit e push (publicado em 26/09/2026).

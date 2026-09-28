@@ -1,14 +1,13 @@
 /**
  * Os livros (D30, D32): um por categoria, na ordem dos volumes da coleção ("edição de estudo"), e um
- * por série (revista técnica). Os dados e as medidas vêm de `docs/capas/livros.json` (pela taxonomia
- * e pelo cadastro das séries) e as cores, de `docs/capas/cores.js`. A regra visual está em
+ * por série (revista técnica). Os dados e as medidas vêm de `src/livros/livros.json` (pela taxonomia
+ * e pelo cadastro das séries) e as cores, de `src/livros/cores.js`. A regra visual está em
  * `docs/capas/CAPAS.md`. O número das lombadas, da capa da revista e da página do livro é o total de
  * artigos, contado pelos posts; sem artigos, ele não aparece.
  */
-import { PAPEL, TINTA_PAPEL } from "../../docs/capas/cores.js";
+import { PAPEL, TINTA_PAPEL } from "../livros/cores.js";
 import { CATEGORIAS, type CoresDoLivro } from "../data/taxonomia";
 import { SERIES } from "../data/series";
-import { normalizar } from "./busca/tipos";
 import { getPostsDaSerie, getResumos, urlCategoria, urlSerie, type Resumo } from "./posts";
 import { url } from "./url";
 
@@ -18,7 +17,7 @@ export interface Livro {
   nome: string;
   href: string;
   serie: boolean;
-  /** Arquivos de desenho e ícone em docs/capas (só categorias). */
+  /** Arquivos de desenho e ícone em src/livros (só categorias). */
   slug?: string;
   /** Volume da coleção (só categorias). */
   volume?: number;
@@ -129,9 +128,6 @@ export const coresDoLivroCss = (l: Livro) =>
   `--livro-cor:${l.cores.cor};--livro-tinta:${l.cores.tinta};--livro-destaque:${l.cores.destaque};` +
   `--livro-papel:${l.cores.papel};--livro-tinta-papel:${l.cores.tintaPapel};` +
   `--livro-cor-texto:${l.cores.corTexto ?? l.cores.cor};--livro-destaque-texto:${l.cores.destaqueTexto ?? l.cores.destaque}`;
-
-/** Texto que o filtro do sumário procura: título, subtítulo e tags, sem acento. */
-export const textoDoFiltro = (p: Resumo) => normalizar(`${p.titulo} ${p.subtitulo} ${p.tags.join(" ")}`);
 
 /**
  * Largura natural da estante, em unidades da referência (as medidas de estante.css): 16 de respiro de

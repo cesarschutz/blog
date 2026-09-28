@@ -17,7 +17,7 @@ difícil (animação, design), Sonnet para execução bem definida, Haiku para c
 
 | Agente | Itens | Arquivos principais |
 | --- | --- | --- |
-| Pesquisa | referências (GSAP e outras) | só `docs/ajustes-d52/` |
+| Pesquisa | referências (GSAP e outras) | só `docs/historico/ajustes-d52/` |
 | Trocas | A02, A03, B10 | `src/scripts/troca.js`, `base.css` (trechos da troca) |
 | Pilha | B01, B09 | `PainelHome.astro` e o que a troca da pilha usar |
 | Abertura | A01, B12, B13 | `Abertura.astro`, `Marca.astro`, `estante-viva.ts` |
@@ -35,7 +35,7 @@ C04 e C05 vêm depois, quando os outros terminarem (mexem no site todo).
   `git commit -m "D52 <item>: <resumo>" -- <arquivo1> <arquivo2> …` (commit por caminho, que não leva
   o que outro agente deixou no stage). Mensagem em pt-BR, terminando com a linha
   `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`. Se o git reclamar de `index.lock`, espere
-  uns segundos e repita. **Não editar `docs/ajustes-d52/controle.md`** (a sessão principal marca).
+  uns segundos e repita. **Não editar `docs/historico/ajustes-d52/controle.md`** (a sessão principal marca).
 - Não mexer em `docs/decisoes.md`, `docs/estado.md` nem `DESIGN.md`: o que precisar ser registrado vai
   no relatório, na seção "Para registrar" (a sessão principal junta tudo na D52). Exceção: regra de
   processo que o próprio item cria (ex.: o ícone de tag nova no `CAPAS.md` e na skill `post`).
@@ -78,5 +78,5 @@ C04 e C05 vêm depois, quando os outros terminarem (mexem no site todo).
 
 ## Relatório do agente
 
-Escrever em `docs/ajustes-d52/diagnosticos/<item>.md` (curto): causa ou proposta, o que mudou (arquivos),
+Escrever em `docs/historico/ajustes-d52/diagnosticos/<item>.md` (curto): causa ou proposta, o que mudou (arquivos),
 como conferiu, o que ficou de fora e por quê.

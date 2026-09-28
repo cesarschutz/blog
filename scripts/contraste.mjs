@@ -13,7 +13,7 @@
 import { claro, escuro, misturar, BRANCO_NO_ESCURO, CHIP, LINK_TINTA, LOUSA, MARCA_TEXTO, PAINEL } from "../src/styles/tokens.ts";
 import { CATEGORIAS } from "../src/data/taxonomia.ts";
 import { SERIES } from "../src/data/series.ts";
-import { PAPEL, TINTA_PAPEL } from "../docs/capas/cores.js";
+import { PAPEL, TINTA_PAPEL } from "../src/livros/cores.js";
 
 // ---------- cor: sRGB e luminância (WCAG); a mistura em oklab vem dos tokens ----------
 const rgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
@@ -91,7 +91,7 @@ for (const [tema, p] of Object.entries({ claro, escuro })) {
 
 // Livros (D30, D32): o título grande e o ícone sobre a cor do livro; o título da lombada, o número e o
 // desenho no destaque sobre o papel; o texto da revista. As cores são as do padrão dos livros
-// (docs/capas/cores.js, iguais às referências) e o livro é arte, com o texto de verdade no rótulo do
+// (src/livros/cores.js, iguais às referências) e o livro é arte, com o texto de verdade no rótulo do
 // link e na página. Por isso só avisa.
 const livro = "Texto dos livros, arte com rótulo acessível (4,5:1 desejável)";
 for (const c of CATEGORIAS) {
@@ -104,7 +104,7 @@ for (const s of SERIES) {
 }
 
 // Texto pequeno nas lombadas (D35): onde a cor do livro fica abaixo de 4,5:1, a lombada usa a
-// variante (corTexto, destaqueTexto em docs/capas/livros.json). Texto de verdade: falha o script.
+// variante (corTexto, destaqueTexto em src/livros/livros.json). Texto de verdade: falha o script.
 // Desde a D39 os livros não mudam com o tema: estes pares valem para o claro e para o escuro.
 const pequeno = "Texto pequeno nas lombadas (4,5:1)";
 for (const c of CATEGORIAS) {

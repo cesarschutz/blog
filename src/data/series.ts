@@ -1,10 +1,10 @@
 /**
  * Cadastro das séries (briefing §4.2). As séries são revistas técnicas (D32): cada post é uma edição.
  * Os dados (título dividido, destaque, número de capa, edições, tarja do guia, emblema e medidas) vêm
- * de `docs/capas/livros.json`, e a regra está em `docs/capas/CAPAS.md` ("Séries: revista técnica").
+ * de `src/livros/livros.json`, e a regra está em `docs/capas/CAPAS.md` ("Séries: revista técnica").
  * Série nova entra aqui e lá, e passa pelo `npm run contraste`.
  */
-import dados from "../../docs/capas/livros.json" with { type: "json" };
+import dados from "../livros/livros.json" with { type: "json" };
 
 export interface Serie {
   chave: string;
@@ -31,7 +31,7 @@ export interface Serie {
   edicoes: string[];
   /** A tarja do material especial da série (opcional). */
   guia?: { titulo: string; linha: string };
-  /** Arquivo do emblema em `docs/capas/` (ex.: "serie/xicara.svg"). */
+  /** Arquivo do emblema em `src/livros/` (ex.: "serie/xicara.svg"). */
   emblema: string;
   /** Lombada na estante, em unidades da referência (CAPAS.md). */
   emPe: { altura: number; largura: number };
@@ -46,7 +46,7 @@ const CADASTRO: { chave: string; nome: string; paginaPropria?: boolean }[] = [
 
 export const SERIES: Serie[] = CADASTRO.map((s) => {
   const l = dados.series.find((x) => x.titulo === s.nome);
-  if (!l) throw new Error(`Série "${s.nome}" fora de docs/capas/livros.json`);
+  if (!l) throw new Error(`Série "${s.nome}" fora de src/livros/livros.json`);
   return {
     ...s,
     descricao: l.subtitulo,

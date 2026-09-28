@@ -32,9 +32,9 @@ antes. Cada item é marcado quando fica pronto e conferido no navegador.
 
 ## 5. Ideias de fora (agentes sem contexto)
 
-- [ ] Cinco agentes, sem o contexto desta conversa, olham o site já com as mudanças acima e o
+- [x] (feito: os protótipos em `docs/historico/prototipos/ideias/`, revistos na D49) Cinco agentes, sem o contexto desta conversa, olham o site já com as mudanças acima e o
       showcase do GSAP e propõem melhorias. Cada ideia vira um protótipo HTML em
-      `docs/prototipos/ideias/` (até uns 20), com texto e imagens de mentira, para o Cesar ver e
+      `docs/historico/prototipos/ideias/` (até uns 20), com texto e imagens de mentira, para o Cesar ver e
       decidir. Entre elas, as folhas dos artigos voando e se encaixando (a imagem que ele mandou).
 
 ## Anotações

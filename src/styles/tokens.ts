@@ -74,7 +74,7 @@ export const claro: Paleta = {
   // Marca (D33, D47): o livro "cs" tem a capa do Volume 01 (a fita da série saiu na D47).
   // Como os livros, é igual nos dois temas.
   marca: "#2D4B46",
-  "marca-letra": "#F2EDE2", // o papel dos livros (PAPEL em docs/capas/cores.js)
+  "marca-letra": "#F2EDE2", // o papel dos livros (PAPEL em src/livros/cores.js)
   // A pauta do miolo do caderno "cs" (A01, D52; src/lib/caderno.ts), no papel dos livros. Igual nos dois
   // temas: a tinta dos livros (TINTA_PAPEL) a 22% sobre o papel, como no protótipo do caderno.
   "caderno-pauta": "#BEBAB0",

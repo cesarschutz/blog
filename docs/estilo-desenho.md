@@ -68,7 +68,8 @@ A lousa é sempre o **contrário da página**:
 - **A caneta aparece desenhando.** Enquanto uma seta é traçada, a caneta fica na ponta do traço e
   acompanha o desenho. Os textos são escritos da esquerda para a direita, com a caneta seguindo. A
   caneta assume a cor do que está desenhando (a cor de destaque, nos destaques).
-- Se a rolagem para, a caneta para. Se a pessoa rola para cima, o desenho se apaga.
+- A caneta segue a linha do tempo ou o loop: parou o play (ou o arrasto), a caneta para; voltou no
+  tempo, o desenho se apaga até ali. Nada é comandado pela rolagem (D46).
 - Os rótulos e as caixas iniciais do cenário podem já estar desenhados ("o professor montou o quadro
   antes da aula").
 - **Frase em destaque** (recurso raro): uma citação cujas palavras acendem com a rolagem.

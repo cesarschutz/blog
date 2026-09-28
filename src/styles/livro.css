@@ -12,10 +12,10 @@
  * - lombada: calc(N * var(--u)), com --u em px por unidade (a estante e a gaveta definem);
  * - capa: calc(N * var(--k)), com --k = 100cqw / 480 (a capa é um contêiner de 480 de largura).
  *
- * As cores vêm do livro (docs/capas/cores.js), em --livro-cor, --livro-tinta, --livro-destaque,
+ * As cores vêm do livro (src/livros/cores.js), em --livro-cor, --livro-tinta, --livro-destaque,
  * --livro-papel e --livro-tinta-papel (coresDoLivroCss, em src/lib/estante.ts). As sombras e os
  * brilhos são pretos e brancos translúcidos, como na regra. O grão (--grao) vem de
- * docs/capas/grao.svg (Base.astro).
+ * src/livros/grao.svg (Base.astro).
  */
 
 @import "@fontsource-variable/bitter/wght.css";
@@ -46,7 +46,7 @@
 
 /*
  * Texto pequeno nas lombadas (D35): onde a cor do livro não passa de 4,5:1 com texto pequeno, as
- * lombadas (em pé e deitadas) usam a variante de docs/capas/livros.json: a cor da Carreira fica por
+ * lombadas (em pé e deitadas) usam a variante de src/livros/livros.json: a cor da Carreira fica por
  * trás do título e do número, e o destaque da série vira texto pequeno sobre o papel. As capas e os
  * títulos grandes continuam na cor principal (exceção decidida pelo Cesar).
  */

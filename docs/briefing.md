@@ -7,7 +7,7 @@ para propor, justificar e registrar em `docs/decisoes.md`.
 
 Referências visuais e de comportamento, abertas no navegador (arquivos locais, sem build):
 
-- `docs/referencias/prototipo-home-e-artigo.html`: home (estante, destaque, lista e cards,
+- `docs/historico/prototipos/prototipo-home-e-artigo.html`: home (estante, destaque, lista e cards,
   tags, busca) e página de artigo completa (abas no topo alternam as duas páginas)
 - `docs/referencias/prototipo-lousas.html`: as lousas dos diagramas. **A escolhida é a aba
   "Invertida, canetinha"** (ver seção 7)
@@ -133,7 +133,7 @@ camada visual: estrutura, conteúdo, rotas e comportamento seguem as seções 5 
   técnicas** (D30, D32). A regra visual de capas, lombadas, estante, livros e séries novos está em
   **`docs/capas/CAPAS.md`**, com as imagens de referência em `docs/capas/referencia/`. Os dados de
   cada livro e de cada série (volume, título, frase, subtítulo, cor, medidas; na série, as edições e
-  a tarja) ficam em `docs/capas/livros.json` e todas as cores saem de `docs/capas/cores.js` (a cor
+  a tarja) ficam em `src/livros/livros.json` e todas as cores saem de `src/livros/cores.js` (a cor
   do livro, a tinta sobre ela, o destaque sobre o papel, o papel e a tinta do papel). A cor principal também é a da categoria no site: chip, barra de leitura e palco dos
   desenhos. No tema escuro, o destaque dos desenhos usa a cor misturada com 42% de branco.
 

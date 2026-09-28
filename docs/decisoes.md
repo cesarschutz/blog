@@ -2,7 +2,68 @@
 
 Registro curto das decisões do projeto. Cada entrada traz data, status, decisão, motivo e
 alternativas. Os status possíveis são **proposta** (aguarda o Cesar), **aprovada** e **substituída
-por Dn**. As decisões de produto e design já fechadas estão em `docs/briefing.md` e não se repetem aqui.
+por Dn**. Decisão nova entra no fim e ganha uma linha no índice. As decisões de produto e design já fechadas estão em `docs/briefing.md` e não se repetem aqui.
+
+## Índice
+
+A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em que ela foi escrita
+(de D27 a D33, "aguardando aprovação", foram aprovadas e publicadas na D34).
+
+| # | Decisão | Hoje |
+|---|---|---|
+| D1 | Framework: continuar no Astro 7 | em vigor |
+| D2 | Busca: Pagefind com interface própria (escolhido por medição) | em vigor |
+| D3 | TypeScript 6, Node 24 e npm | em vigor |
+| D4 | CSS próprio com tokens | em vigor |
+| D5 | Fontes | em vigor |
+| D6 | KaTeX servido pelo site | em vigor |
+| D7 | URLs preservadas | em vigor |
+| D8 | Validar e renderizar desenhos com `playwright-core` | em vigor |
+| D9 | PDF da apresentação: gerador próprio + sharp no build | em vigor |
+| D10 | Imagem de compartilhamento: página fotografada pelo Chrome no build | em vigor |
+| D11 | Onde ficam ilustrações e lousas, e o formato da ilustração | em vigor (ilustrações e lousas) |
+| D12 | Infográfico do NotebookLM não é portado | em vigor |
+| D13 | Sem pré-visualização publicada por enquanto | mudou na D34 (publicado) |
+| D14 | "Apresentação" sempre sem número | em vigor |
+| D15 | Migração com o conteúdo como está | em vigor |
+| D16 | Abertura da home com os textos do protótipo | em vigor |
+| D17 | Ilustrações da série Java geradas por script | em vigor |
+| D18 | Git só local | mudou na D34 (repositório no GitHub) |
+| D19 | Bloqueio de edição no blog atual | em vigor |
+| D20 | Onde os protótipos divergem do briefing (vale o briefing) | em vigor |
+| D21 | Posts em MDX: RSS e "Apresentação" | em vigor |
+| D22 | Contraste sem mudar os tokens | em vigor |
+| D23 | Cor de destaque da série Java: a fita | em vigor |
+| D24 | Tema: escolha guardada com a chave do blog atual | em vigor |
+| D25 | Favicon novo | em vigor |
+| D26 | Variação "A. Folhas claras": folhas, azul-tinta, IBM Plex Sans e desenhos com palco | em vigor |
+| D27 | Lista e cards no formato do blog atual, e a home paginada | em vigor; a 1ª página com 11 artigos desde a D52 (C02) |
+| D28 | Painel lateral da home com séries e categorias em pilhas de livros | o painel saiu da home na D44; a pilha lateral ficou nas páginas de livro (D46) |
+| D29 | Página de categoria com o livro em pé e a transição do livro | em vigor |
+| D30 | Livros no padrão da coleção (docs/capas): capas, estante, lateral e categorias novas | em vigor |
+| D31 | Cabeçalho fixo, menu com Categorias e Séries, e as páginas de livros | em vigor |
+| D32 | Categorias em "edição de estudo", séries em revista técnica, e /series/java/ | em vigor |
+| D33 | Marca, cabeçalho e rodapé do blog atual, post-it das frases, livros invertidos no escuro e ilustrações maiores | em vigor, menos o post-it das frases (saiu na D39) |
+| D34 | Publicação em blog.cesarschutz.com.br, num repositório próprio | em vigor |
+| D35 | Processo único de posts, ferramentas do projeto e portabilidade | em vigor |
+| D36 | Sumário sem números | em vigor |
+| D37 | Auditoria de acabamento das páginas e dos componentes | em vigor |
+| D38 | Post-it no fim do artigo, lombada que leva ao livro, tags como links e cabeçalho que se esconde | em vigor, menos o cabeçalho que se esconde (desfeito na D46) |
+| D39 | Acabamento de design: livros de cor fixa, lombada única, tema direto, sem som | em vigor |
+| D40 | Livros em movimento, com GSAP | em vigor; a ideia 3 foi substituída pela D43 |
+| D41 | Caderno marcado, o desenho do destaque e a marca que abre | o caderno marcado foi substituído pela D48; ficaram o desenho do destaque e a marca que abre |
+| D42 | Tema em círculo e Lista / Cards com esmaecer | em vigor |
+| D43 | A gaveta volta ao sumário, e o livro sai da estante | em vigor |
+| D44 | Ajustes da home: títulos em duas partes, busca que nasce do campo e mais | em vigor |
+| D45 | A caneta que escreve o progresso da leitura | em vigor |
+| D46 | Livros de lado, pilha que troca de livro, menu do celular e o artigo mais largo | em vigor |
+| D47 | Marca em degrau, estante que só sobe, abertura do site e o movimento das páginas | em vigor |
+| D48 | A caneta do caderno: marcações estáticas, azuis e com 20 tipos | em vigor |
+| D49 | As ideias de movimento revistas: sumário, estante, livros, cabeçalho, listas e artigo | em vigor |
+| D50 | Ajustes de 27/09/2026: o traço da leitura, a troca de livro, o livro ampliado, o cabeçalho, o tema, a marca d'água e os atalhos | em vigor |
+| D51 | As animações revistas: abertura, troca de tela e as trocas especiais | em vigor |
+| D52 | Ajustes de 27/09/2026: acabamento das animações, a leitura, as listas, as tags e o destaque | em vigor |
+| D53 | Faxina: docs só com documentos, dados dos livros em src/livros | em vigor |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -938,7 +999,7 @@ nada muda.
 ## D40 · Livros em movimento, com GSAP
 - **Data:** 25/09/2026 · **Status:** aprovada e aplicada, um lote por ideia (cinco commits), sem push.
 - **Pedido do Cesar:** animar os livros com GSAP, tendo como guia de movimento, tempos e ângulos o
-  protótipo `docs/prototipos/livros-em-movimento.html` (peças reais do blog; não é código para
+  protótipo `docs/historico/prototipos/livros-em-movimento.html` (peças reais do blog; não é código para
   copiar), a partir do acabamento da D39 (cor fixa, lombada única, 18°, livro escurecido). Esta
   decisão é a aprovação pedida pela D35 para trocar animações existentes por GSAP; cada lote leva
   um trace de performance no celular com CPU 4×.
@@ -984,8 +1045,8 @@ nada muda.
 ## D41 · Caderno marcado, o desenho do destaque e a marca que abre
 - **Data:** 25/09/2026 · **Status:** aplicada, sem push. O caderno marcado (item 3) foi **substituído
   pela D48** (a caneta do caderno, estática e azul).
-- **Pedido do Cesar:** animar o resto do site a partir de `docs/prototipos/site-em-movimento.html` e
-  `docs/prototipos/caderno-marcado.html` (lista, cards e filtro com Flip; do cartão ao artigo com View
+- **Pedido do Cesar:** animar o resto do site a partir de `docs/historico/prototipos/site-em-movimento.html` e
+  `docs/historico/prototipos/caderno-marcado.html` (lista, cards e filtro com Flip; do cartão ao artigo com View
   Transitions; o desenho que se desenha; a busca que nasce do campo; o caderno marcado; o tema em
   círculo; o Copiar e a marca "cs"). Os lotes foram feitos e mostrados; depois de ver, o Cesar **não
   gostou do conjunto** e pediu para desfazer tudo, ficando só três coisas:
@@ -1099,7 +1160,7 @@ nada muda.
      letra por letra: o travessão fica escondido (leitor de tela e busca leem o título inteiro) e a
      inicial maiúscula do complemento é só visual (`::first-letter`); a primeira versão usava o
      subtítulo já com maiúscula, e o título indexado pela busca saía "— Como…".
-  5. **A busca nasce do campo** (protótipo `docs/prototipos/site-em-movimento.html`): o lote 4 da
+  5. **A busca nasce do campo** (protótipo `docs/historico/prototipos/site-em-movimento.html`): o lote 4 da
      D41, que tinha sido desfeito, voltou como era (janela com Flip a partir do campo, resultados em
      sequência, marca-texto no termo, fechar de volta para o campo). `carregarFlip` voltou ao
      `gsap.ts`.
@@ -1126,7 +1187,7 @@ nada muda.
 
 ## D46 · Livros de lado, pilha que troca de livro, menu do celular e o artigo mais largo
 - **Data:** 26/09/2026 · **Status:** aplicada e publicada (parte 1 da lista de 26/09/2026,
-  `docs/controle-parte1.md`).
+  `docs/historico/controle-parte1.md`).
 - **Pedido do Cesar e o que mudou:**
   1. **Lista:** a descrição dos artigos ia só até 68ch e deixava um vão até a miniatura; agora vai até
      perto dela, em toda lista (`ItemLista`).
@@ -1166,7 +1227,7 @@ nada muda.
 
 ## D47 · Marca em degrau, estante que só sobe, abertura do site e o movimento das páginas
 - **Data:** 26/09/2026 · **Status:** aplicada **só local, sem commit**, aguardando o Cesar validar
-  (parte 2 da lista de 26/09/2026, `docs/controle-parte2.md`).
+  (parte 2 da lista de 26/09/2026, `docs/historico/controle-parte2.md`).
 - **Pedido do Cesar e o que mudou:**
   1. **Marca "cs":** o "c" 5,4 acima e o "s" 5,4 abaixo do centro da capa, um pouco maiores, e **sem a
      fita** (gerador `scripts/marca.mjs`, favicon e ícone do iPhone regerados; saiu o token
@@ -1275,7 +1336,7 @@ nada muda.
 ## D49 · As ideias de movimento revistas: sumário, estante, livros, cabeçalho, listas e artigo
 - **Data:** 26/09/2026 · **Status:** aprovada pelo Cesar (item a item, abaixo), **feita e publicada
   na `main`** em 26/09/2026, a pedido dele (um commit por item, do C2 ao E4; o C3 ficou de fora).
-- **Pedido do Cesar:** aplicar os protótipos revistos em `docs/prototipos/ideias/ja feitas ou
+- **Pedido do Cesar:** aplicar os protótipos revistos em `docs/historico/prototipos/ideias/ja feitas ou
   reprovadas/`, na ordem, a partir do C2, com as observações dele em cada um, e no fim listar o que
   foi feito.
 - **Decisões do Cesar, item a item:**
@@ -1563,13 +1624,13 @@ nada muda.
 ## D52 · Ajustes de 27/09/2026: acabamento das animações, a leitura, as listas, as tags e o destaque
 
 - **Data:** 27/09/2026 · **Status:** aplicada, **commitada item a item, sem push** (cada item com o
-  próprio commit; o controle está em `docs/ajustes-d52/controle.md`, com os diagnósticos de cada
-  agente em `docs/ajustes-d52/diagnosticos/`).
+  próprio commit; o controle está em `docs/historico/ajustes-d52/controle.md`, com os diagnósticos de cada
+  agente em `docs/historico/ajustes-d52/diagnosticos/`).
 - **Pedido do Cesar:** três folhas de ajustes depois da D51 (animações da abertura, das trocas de
   tela e da pilha; bugs de interação no artigo, no livro ampliado e nas listas; a lentidão em rede e
   CPU fracas) e três novidades (tema e modo padrão na primeira visita, o destaque da home dentro da
   grade, o código-fonte dos artigos). Vários agentes trabalharam ao mesmo tempo na mesma árvore
-  (`docs/ajustes-d52/regras.md`), cada um com um item ou um grupo pequeno de itens.
+  (`docs/historico/ajustes-d52/regras.md`), cada um com um item ou um grupo pequeno de itens.
 - **O que mudou** (na ordem do `controle.md`; hash do commit entre parênteses):
   - **A01** (`bc01200`): o caderno "cs" abria branco no claro e escuro no escuro, porque a página de
     trás da capa era um retângulo em `--paper-hi` (segue o tema). Um desenho só
@@ -1751,7 +1812,7 @@ nada muda.
     busca redesenhado no hover (movimento demais num campo muito usado — ficou só o escurecer).
   - **Revisão de acabamento das animações (depois do C04):** um agente gravou as dez cenas da D52
     juntas, quadro a quadro, num Chrome headless próprio (`playwright-core`), a 1440 e 390px, claro e
-    escuro, e achou 15 problemas de acabamento (`docs/ajustes-d52/diagnosticos/revisao-animacoes.md`);
+    escuro, e achou 15 problemas de acabamento (`docs/historico/ajustes-d52/diagnosticos/revisao-animacoes.md`);
     três agentes corrigiram, um commit por correção ("D52 revisão N"), com os relatórios em
     `revisao-trocas.md`, `revisao-pilha-livro.md` e `revisao-sumario-abertura.md`:
     1. pilha no celular: a lombada puxada passava da borda da folha, o documento alargava e a View
@@ -1818,14 +1879,19 @@ nada muda.
     segunda troca lenta da visita — a primeira ainda não tem o tempo de montagem guardado na sessão,
     então continua sem o sinal.
   - **C05 (a identidade de papelaria) continua além do controle:** B14 e C04 entraram nesta rodada
-    (C04 com a pesquisa e as sugestões de `docs/ajustes-d52/pesquisa.md` como ponto de partida); C05
-    fica em andamento, sem commit, aguardando o Cesar avaliar (`docs/ajustes-d52/controle.md`).
-- **Pesquisa (agente Pesquisa, `docs/ajustes-d52/pesquisa.md`):** levantamento do showcase do GSAP
+    (C04 com a pesquisa e as sugestões de `docs/historico/ajustes-d52/pesquisa.md` como ponto de partida); C05
+    ficou na árvore de trabalho para o Cesar avaliar (`docs/historico/ajustes-d52/controle.md`) e foi
+    **commitado por ele em 28/09/2026** (`da57524`): o post-it "Neste artigo", a ficha do livro com o
+    clipe, a cola dos atalhos e os vistos à mão, com os quatro títulos curtos em Caveat 600 (subconjunto
+    `src/assets/caveat-titulos.woff`, gerado por `node scripts/caveat-titulos.mjs` a partir da lista de
+    `src/data/mao.ts`). O carimbo "fontes conferidas em …", as abas de fichário e a busca como ficheiro
+    ficaram de fora.
+- **Pesquisa (agente Pesquisa, `docs/historico/ajustes-d52/pesquisa.md`):** levantamento do showcase do GSAP
   (tudo gratuito desde a 3.13), da ordem de pintura das View Transitions, de princípios de movimento
   com número (Material "fade through", Emil Kowalski, Josh Comeau, os limites de resposta da
   Nielsen), de Speculation Rules, de traço à mão (Rough Notation, perfect-freehand) e das regras de
   marca do GitHub e do LinkedIn, com recomendações por item (B06, B09, B14) e duas propostas em HTML
-  (`docs/ajustes-d52/sugestoes/c04-caneta.html` e `c05-papelaria.html`) para o C04 e o C05. Sem
+  (`docs/historico/ajustes-d52/sugestoes/c04-caneta.html` e `c05-papelaria.html`) para o C04 e o C05. Sem
   alteração de código do site.
 - **Movimento reduzido:** cada item novo segue a regra do site (estado final, sem prender a tela); em
   particular, a ficha dos atalhos (B06) e o aceno dos cadernos (B13) não fazem nada com ele ligado, e
@@ -1833,3 +1899,22 @@ nada muda.
 - **Conferido:** cada item, quadro a quadro (Chrome headless próprio ou trace com screenshots no MCP
   `chrome-devtools`, sempre numa aba isolada) em 320, 390, 768, 1280 e 1600px, claro e escuro, e
   `fnm exec --using=24 npm run check` sem erros antes do commit do item.
+
+## D53 · Faxina: docs só com documentos, dados dos livros em src/livros
+- **Data:** 28/09/2026 · **Status:** aprovada (pedido do Cesar: "arrume o projeto removendo lixo")
+- **Decisão:** o que o build lê de `docs/capas/` (`livros.json`, `cores.js`, `grao.svg`, `desenhos/`,
+  `icones/`, `serie/` e `tags/`) passa para `src/livros/`; em `docs/capas/` ficam só o `CAPAS.md` e as
+  imagens de `referencia/`. Controles de rodadas fechadas (D46/D47, `ajustes-d52/`), o prompt da Fase
+  0 e os protótipos superados (home e artigo da Fase 0, movimento da D40/D41, caderno marcado, ideias
+  da D49) vão para `docs/historico/`. Este arquivo ganha um índice no topo. Junto: lixo local
+  apagado (`.astro/depuracao/` com 3,4 GB, `bench/`, `.render/`), três exports sem uso removidos,
+  `docs/estado.md` reescrito como painel e os textos que ainda descreviam a lousa de passos (D46)
+  corrigidos; diagrama animado de post nunca é comandado pela rolagem (DESIGN.md, skill `post`).
+- **Motivo:** apagar um "documento" de `docs/` quebrava o build; o histórico misturado com o que vale
+  hoje confundia as sessões seguintes.
+- **Mudado:** `src/livros/`, `src/lib/livros-svg.ts`, `src/lib/tags-svg.ts`, `src/lib/estante.ts`,
+  `src/data/taxonomia.ts`, `src/data/series.ts`, `src/pages/[amostra].astro`,
+  `src/pages/[amostra]/tags.astro`, `scripts/contraste.mjs`, `scripts/desenho/tags.mjs`, `CLAUDE.md`,
+  `CLAUDE-CODE.md` (novo: a configuração do Claude Code no projeto), `docs/capas/CAPAS.md`, skills e
+  regras.
+

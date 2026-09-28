@@ -55,7 +55,7 @@ colors:
   lousa-mistura-escuro: "#0B6F58"
   caneta-escuro: "#8FA8FF"
   marca-texto-escuro: "#FFD65A" # a 30% sobre a folha (rgba(255, 214, 90, .30))
-  # Livros (docs/capas/livros.json e cores.js): a cor principal de cada categoria
+  # Livros (src/livros/livros.json e cores.js): a cor principal de cada categoria
   arquitetura-de-software: "#2d4b46"
   desenvolvimento-de-software: "#7a4430"
   dados: "#5f4662"
@@ -350,7 +350,7 @@ Este arquivo é a **fonte de verdade do visual** do blog. Toda página e todo po
 aqui. As decisões vêm de `docs/briefing.md` §4, §6 e §7 e das decisões D26, D30, D32, D33 e D35 de
 `docs/decisoes.md`, e os detalhes de medida estão em `docs/capas/CAPAS.md` (livros) e
 `docs/estilo-desenho.md` (desenhos e lousas). O código lê as cores de `src/styles/tokens.ts` e de
-`docs/capas/cores.js`. Os valores do bloco YAML acima espelham esses arquivos: **quem muda um valor
+`src/livros/cores.js`. Os valores do bloco YAML acima espelham esses arquivos: **quem muda um valor
 muda os dois**, e `npm run contraste` confere o resultado.
 
 Os títulos das seções padrão ficam em inglês porque o formato DESIGN.md do Google os reconhece
@@ -424,7 +424,7 @@ mexer na página. O site não tem som.
   amarelo clássico, igual em todos os livros, com o texto sempre em `on-surface` por cima (12,75:1
   no claro, 5,92:1 no escuro). Chama muita atenção: no máximo uma ou duas vezes por post.
 
-**Livros (cor principal de cada categoria, `docs/capas/livros.json`).** A mesma cor pinta a capa, a
+**Livros (cor principal de cada categoria, `src/livros/livros.json`).** A mesma cor pinta a capa, a
 lombada, o chip da categoria (quadradinho e nome tingido) e o **painel dos desenhos** dos posts da
 categoria (a barra de leitura e o sumário passaram para a caneta azul, D52, B05):
 
@@ -439,7 +439,7 @@ categoria (a barra de leitura e o sumário passaram para a caneta azul, D52, B05
 | 07 | SRE | #c4a050 | escura | #836100 |
 | 08 | Carreira | #9a7650 | clara | #7f5b36 |
 
-A tinta e o destaque saem sempre de `coresDoLivro()` (`docs/capas/cores.js`), nunca de um valor
+A tinta e o destaque saem sempre de `coresDoLivro()` (`src/livros/cores.js`), nunca de um valor
 fixo. No tema escuro, o destaque dos desenhos leva 42% de branco. **Os livros não mudam com o tema**
 (D39): pelos papéis de cor (`--cima`, `--baixo`), a categoria tem sempre o papel em cima e a cor do
 livro embaixo, e a série (revista) é sempre papel claro. **Cor só por token**:
@@ -455,7 +455,7 @@ avisa sobre `capa-carreira` e `revista-java` por isso: são avisos esperados. **
 nessas cores sempre usa a variante escura:** `carreira-texto` (#816342, 4,53:1 com a tinta clara)
 atrás de texto pequeno da Carreira e `serie-java-texto` (#b8481a, 4,52:1 sobre o papel) como texto
 pequeno da série. Hoje isso vale para as lombadas, em pé e deitadas (`corTexto` e `destaqueTexto` em
-`docs/capas/livros.json`, papéis `--livro-cor-texto` e `--livro-destaque-texto`), e o
+`src/livros/livros.json`, papéis `--livro-cor-texto` e `--livro-destaque-texto`), e o
 `npm run contraste` falha se alguma lombada ficar abaixo de 4,5:1. Livro novo com cor abaixo de
 4,5:1 ganha a variante do mesmo jeito.
 
@@ -866,9 +866,9 @@ e uma nova se escreve embaixo, sem tocar o emblema da revista (que não anima).
   a largura (0,4s).
 - **Sem lousa de passos** (D46): a lousa que a caneta desenha enquanto o texto rola saiu. Nos posts,
   só a linha do tempo de arrastar e a animação curta em loop.
-- **Diagrama que avança com a rolagem só em posts que explicam um fluxo** (passo a passo, linha do
-  tempo, antes e depois). Em outros casos, desenho parado. Animações novas desse tipo usam GSAP em
-  SVG, carregado só no post que as usa. Com play/pause quando não seguem a rolagem.
+- **Diagrama animado só em posts que explicam um fluxo** (passo a passo, linha do tempo, antes e
+  depois), sempre com play/pause ou arrastar, nunca comandado pela rolagem (D46). Em outros casos,
+  desenho parado. Animações novas desse tipo usam GSAP em SVG, carregado só no post que as usa.
 - **Frase em destaque** (palavras que acendem com a rolagem): recurso raro dos posts, usado só de
   vez em quando.
 - **Na home, só coisas discretas:** um livro que tomba um nada para a frente ao passar o mouse, a

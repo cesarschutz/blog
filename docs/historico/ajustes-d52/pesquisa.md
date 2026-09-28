@@ -11,7 +11,7 @@ foi visto, com a fonte, e **recomendações curtas por item**. As propostas visu
 
 Para abrir as duas: servir a **raiz do projeto** (as fontes vêm do `node_modules`):
 `python3 -m http.server 8791 --bind 127.0.0.1` e abrir
-`http://127.0.0.1:8791/docs/ajustes-d52/sugestoes/c04-caneta.html`. Conferidas em 320, 390, 1280 e
+`http://127.0.0.1:8791/docs/historico/ajustes-d52/sugestoes/c04-caneta.html`. Conferidas em 320, 390, 1280 e
 1440px, nos dois temas, sem rolagem lateral e sem erro no console. Os traços saem das mesmas funções
 de `src/lib/traco.ts` (copiadas na página), com a mesma semente por texto.
 
