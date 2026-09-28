@@ -105,7 +105,11 @@ Relatórios: [revisao-sumario-abertura.md](diagnosticos/revisao-sumario-abertura
 
 ## Antes do último
 
-- [ ] Conferir que tudo acima foi commitado (`git status --untracked-files=all` limpo, sem " 2").
+- [x] Conferir que tudo acima foi commitado (`git status --untracked-files=all` limpo, sem " 2"). Em
+      27/09/2026, 22h20: árvore limpa, nenhum arquivo com " 2"; `npm run check` 0 erros, `npm run
+      contraste` 0 falhas, `npm run build -- --force` e `npm run links` (86 páginas, nada quebrado);
+      preview da 4323 reiniciado com o build. O remoto recebeu pushes às 18h43 e 22h11 (fora desta
+      sessão; nenhum agente deu push); o registro da revisão (f1f4c4c) e este controle ficaram locais.
 
 ## C05 (o último, **sem commit**)
 
