@@ -232,11 +232,12 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
         gsap.set(pecas, { clearProps: "opacity" });
       },
     });
-    // 1. a caneta risca o fio (é o carregamento); o fio engrossa e vira a tábua
+    // 1. a caneta risca o fio (é o carregamento); o fio engrossa e vira a tábua, tomando a cor dela
     tl.to(p, { v: 1, duration: celular ? 0.4 : 0.55, ease: "power1.inOut", onUpdate: () => pintar(p.v) }, 0.15)
       .to(".abertura-caneta", { y: "-=10", rotation: 16, opacity: 0, duration: 0.25, ease: "power2.in" })
       .to(tabua, { opacity: 1, duration: 0.2 }, "<")
       .fromTo(tabua, { scaleY: 0.15 }, { scaleY: 1, duration: 0.3, ease: "power2.out", transformOrigin: "50% 50%" }, "<")
+      .fromTo(".abertura-fio .fio-tinta", { "--vira": 0 }, { "--vira": 1, duration: 0.18, ease: "power1.inOut" }, "<")
       .to(".abertura-fio", { opacity: 0, duration: 0.2 }, "<");
     // 2. a coleção é posta na prateleira, um livro por vez, deslizando até o vizinho
     const t0 = tl.duration() - 0.1;
@@ -411,9 +412,13 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     stroke-linecap: round;
   }
 
-  /* Na estante, o fio já tem a cor da borda da tábua em que ele vai virar (no escuro, não troca de cor). */
+  /*
+   * Na estante, o fio é um risco de caneta legível (--ink-2) enquanto a caneta escreve e, quando ela
+   * levanta, passa para a cor da tábua em que ele vira (o script leva --vira de 0 a 1). Antes ele já
+   * nascia na cor da borda da tábua, e no escuro quase não aparecia (~1,4:1; revisão 12, D52).
+   */
   [data-modo="estante"] .fio-tinta {
-    stroke: var(--tabua-borda);
+    stroke: color-mix(in oklab, var(--tabua) calc(var(--vira, 0) * 100%), var(--ink-2));
     stroke-width: 2;
   }
 
