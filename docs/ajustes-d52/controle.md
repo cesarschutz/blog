@@ -245,7 +245,35 @@ Relatórios: [revisao-sumario-abertura.md](diagnosticos/revisao-sumario-abertura
 
 ## Para o Cesar decidir
 
-(Preenchido no fim.)
+Decidi tudo para não parar; estas escolhas podem voltar atrás com pouco trabalho.
+
+1. **Ícones das tags (B11):** as 20 metáforas (as mais discutíveis: semáforo de ferrovia para
+   Concorrência, moedor de café para JVM, espeto de notas para AOP, âncora para LTS) e o giro de −8° da
+   marca d'água na página da tag (a das categorias não gira). Folha de conferência em `/amostra/tags/`.
+2. **GitHub e LinkedIn (C04):** ficaram as marcas oficiais em preto, com o círculo à caneta no hover. O
+   desenho à mão que você sugeriu contraria as regras de marca das duas (risco baixo num blog pessoal).
+3. **Caneta preta além do pedido (C04):** o colchete da lista e o círculo da paginação passaram a
+   preto (podem voltar ao azul); o rodapé ficou com o traço azul da D49 (manter, preto ou tirar).
+4. **Detalhes do C04:** o visto dentro do calendário (pode ler como "feito"; a alternativa é o
+   calendário sem marca); o traço curto embaixo do "blog" no hover da marca (opcional); a assinatura
+   embaixo de "Schutz" entra ~5s depois de abrir a home, e no celular não existe (a home não mostra o
+   nome grande).
+5. **Home (C02):** a primeira página tem 11 artigos (o destaque vale dois lugares, para a grade fechar
+   em 1, 2, 3 e 4 colunas); `/2/` e `/3/` sem destaque. Muda a D27 ("12 por página, como no blog
+   atual"); as URLs são as mesmas.
+6. **Aceno dos cadernos (B13):** com o destaque abaixo da dobra (tela baixa, celular), o aceno vem logo
+   depois da estante, sem esperar o leitor rolar até o desenho.
+7. **Preferência de 3 dias (C01):** conta a partir da última troca, e tema e modo têm o mesmo relógio.
+8. **Ficha dos atalhos (B06):** aparece ao lado do sumário a partir de 1300px; a 1280px fica no meio,
+   com o véu (a regra do celular).
+9. **Tempos longos (D51, revisão):** o desfile de Categorias leva ~3,3s toda vez; a troca geral só
+   termina de pousar em 1,6 a 1,9s; o papel da abertura com o caderno saiu ~0,25s mais tarde (revisão 14).
+10. **Caderno no escuro (A01):** a contracapa verde do caderno da abertura quase some no fundo escuro;
+    sugestão: um contorno leve, como o da marca.
+11. **Peso das páginas (B14):** 160 a 440 KB abertos, pelos SVGs embutidos; merece um item próprio. O
+    `prerender` das regras de especulação ficou para depois.
+12. **Campo `codigo` (C03):** o nome evita confundir com as "Fontes" (referências) e as fontes
+    tipográficas. Por enquanto só o post do Jackson tem.
 
 ## C05: o que foi feito (sem commit)
 
