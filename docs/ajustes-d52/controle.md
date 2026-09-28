@@ -86,7 +86,7 @@ correção ("D52 revisão N").
 - [x] 4. Sumário: a seção atual em peso 600 quebra a linha e a lista salta ~11px. (49616bb)
 - [x] 5. O aceno vinha antes do desenho do destaque (pegava a miniatura escondida da lista). (46a06c7)
 - [x] 6. Livro ampliado: pisca ao abrir e fica um quadro vazio ao fechar. (7f1e450)
-- [ ] 7. CPU lenta: a página congela ~1,1s sem a caneta de carregando e vem a coreografia inteira.
+- [x] 7. CPU lenta: a página congela ~1,1s sem a caneta de carregando e vem a coreografia inteira. (83b6f0f)
 - [x] 8. Próximo e anterior: o painel do desenho fica vazio por 0,5 a 0,65s. (abea3f9)
 - [x] 9. Próximo: a lateral velha e a nova juntas a ~50% no mesmo lugar. (519cfaf)
 - [x] 10. Pilha na tela grande: o painel do topo fica um retângulo vazio por ~1,1s. (d1217d2, 20be2a5, 67b6a11)
@@ -95,14 +95,13 @@ correção ("D52 revisão N").
 - [x] 13. Carregando: a caneta some de uma vez antes de as folhas caírem. (aa21d4e)
 - [x] 14. Abertura com o caderno: o voo em linha reta cruza "Cesar Schutz". (5d6dd1f)
 
-- [ ] 15. Pilha no celular, agora que anima: a lombada deitada esticada até o livro do topo cruza a
-      capa como uma faixa por ~0,15s.
+- [x] 15. Pilha no celular, agora que anima: a lombada deitada esticada até o livro do topo cruza a
+      capa como uma faixa por ~0,15s. (ace7907)
 - De quebra (67b6a11): voltar pelo histórico depois da troca pela pilha trazia a pilha **vazia** (o
   `clearProps: "all"` do `pageshow` apagava o estilo das lombadas).
 
 Relatórios: [revisao-sumario-abertura.md](diagnosticos/revisao-sumario-abertura.md),
-[revisao-pilha-livro.md](diagnosticos/revisao-pilha-livro.md), revisao-trocas.md (quando o agente das
-trocas fechar).
+[revisao-pilha-livro.md](diagnosticos/revisao-pilha-livro.md), [revisao-trocas.md](diagnosticos/revisao-trocas.md).
 
 ## Antes do último
 
