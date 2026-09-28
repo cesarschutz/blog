@@ -15,8 +15,9 @@
  *   termina, o caderno do cabeçalho e o grande acenam juntos, uma vez (B13, D52).
  * - Nas outras páginas, o caderno "cs" carrega (a caneta escreve o fio, contando até 100), abre e fecha
  *   (contracapa, miolo pautado e capa com frente e verso, no papel dos livros, igual nos dois temas) e
- *   pousa na marca do cabeçalho; o papel esmaece e as folhas da página chegam do fundo, como na troca de
- *   página (em Categorias, com o desfile e a pilha da página).
+ *   voa em arco até a marca do cabeçalho, subindo por baixo dela, sobre a folha ainda limpa (revisão 14,
+ *   D52); o papel esmaece em volta dele e as folhas da página chegam do fundo, como na troca de página
+ *   (em Categorias, com o desfile e a pilha da página).
  *
  * Até o script montar a cena, o CSS esconde as peças dela e os livros da estante (sem isso, a estante
  * pronta e o caderno grande no canto apareciam por um instante). Um clique ou uma tecla pulam para o
@@ -271,6 +272,37 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     return { tl };
   }
 
+  /**
+   * O voo do caderno até a marca do cabeçalho (revisão 14, D52), em arco: em linha reta, ele cruzava
+   * "Cesar Schutz" antes de pousar. Ele sai de lado, pouco acima do meio da tela, faz a curva e sobe por
+   * baixo da marca (uma curva de Bézier com o ponto de controle embaixo dela): só entra na altura do
+   * cabeçalho quando já está sob a marca, pequeno. Inclina para o lado do voo, mais quanto mais rápido
+   * anda de lado, e se endireita ao subir, como um objeto posto no lugar; pousa reto, na marca exata.
+   */
+  function voarAteAMarca(gsap: GSAP, livro: HTMLElement, dx: number, dy: number, escala: number) {
+    const curva = gsap.parseEase("power2.inOut");
+    const cy = dy * 0.35;
+    // A inclinação máxima (quando ele anda mais depressa de lado), menor nos voos curtos (celular).
+    const giro = Math.sign(dx) * Math.min(9, Math.abs(dx) / 24);
+    const voo = { t: 0 };
+    return gsap.to(voo, {
+      t: 1,
+      duration: 0.6,
+      ease: "none",
+      onUpdate: () => {
+        const t = voo.t, p = curva(t), q = 1 - p;
+        // A velocidade de lado: 2(1 - p) no caminho vezes a da curva no tempo (máximo ~2,18 em t = 0,4).
+        const deLado = 2 * q * (t < 0.5 ? 4 * t : 4 * (1 - t));
+        gsap.set(livro, {
+          x: dx * (1 - q * q),
+          y: 2 * p * q * cy + p * p * dy,
+          scale: 1 + (escala - 1) * p,
+          rotation: (giro * deLado) / 2.18,
+        });
+      },
+    });
+  }
+
   /* ---------- 02: o caderno carrega, abre e fecha e pousa no cabeçalho (outras páginas) ---------- */
   async function caderno(gsap: GSAP, cena: HTMLElement, { pulou, pulado, fim }: Controle) {
     const papel = cena.querySelector<HTMLElement>(".abertura-papel")!;
@@ -312,16 +344,20 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
       .to(capa, { rotationY: -150, duration: 0.36, ease: "power2.out", transformOrigin: "0% 50%" }, 0.05)
       .to(capa, { rotationY: 0, duration: 0.3, ease: "power2.in" }, 0.46)
       .to(livro, { scale: 0.97, duration: 0.06, ease: "power1.out", yoyo: true, repeat: 1 }, 0.76);
-    // 3. ele pousa na marca do cabeçalho (a sombra some no caminho, como a da marca, chapada), o papel sai
-    //    e as folhas da página chegam do fundo
+    // 3. ele pousa na marca do cabeçalho em arco (a sombra some no caminho, como a da marca, chapada); as
+    //    folhas da página chegam do fundo ainda embaixo do papel, e o papel só sai quando o caderno já
+    //    passou pelo título dela (ele sobe por baixo da marca): o voo é sobre a folha limpa, sem cruzar
+    //    texto nenhum, e a página aparece em volta dele quando ele pousa (revisão 14, D52). A marca de
+    //    verdade toma o lugar do caderno quando o papel acaba de sair.
     const t3 = 0.85;
+    const tPapel = t3 + 0.42, tTroca = tPapel + 0.35;
     if (marca && rm && rm.width > 0) {
-      tl.to(livro, { x: rm.left + rm.width / 2 - cx, y: rm.top + rm.height / 2 - cy, scale: rm.height / lh, duration: 0.6, ease: "power2.inOut" }, t3)
+      tl.add(voarAteAMarca(gsap, livro, rm.left + rm.width / 2 - cx, rm.top + rm.height / 2 - cy, rm.height / lh), t3)
         .to(contra, { boxShadow: "0 0 0 0 rgb(0 0 0 / 0)", duration: 0.5 }, t3)
-        .call(() => raiz.classList.add("caderno-pousou"), undefined, t3 + 0.6)
-        .set(livro, { opacity: 0 }, t3 + 0.6);
+        .call(() => raiz.classList.add("caderno-pousou"), undefined, tTroca)
+        .set(livro, { opacity: 0 }, tTroca);
     } else tl.to(livro, { opacity: 0, duration: 0.3 }, t3);
-    tl.to(papel, { opacity: 0, duration: 0.45, ease: "power1.inOut" }, t3 + 0.1)
+    tl.to(papel, { opacity: 0, duration: 0.35, ease: "power1.inOut" }, tPapel)
       .call(() => {
         if (propria) dispatchEvent(new CustomEvent("cs:abertura-chega"));
         else if (troca) {
@@ -329,7 +365,7 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
           const pousa = troca.chegar(troca.unidades(), { t0: 0 });
           setTimeout(() => dispatchEvent(new CustomEvent("cs:chegou")), pousa);
         }
-      }, undefined, t3 + 0.08);
+      }, undefined, t3 + 0.3);
     return { tl };
   }
 </script>
