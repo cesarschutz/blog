@@ -75,10 +75,8 @@ const rss = Astro.locals.rss;
       faixa.value = String(Math.round(t * 1000));
       lousa.desenhar(t * lousa.fim, tocando);
       const texto = [...estados].reverse().find((e) => t >= e.de)?.texto ?? "";
-      if (rotuloDoEstado.textContent !== texto) {
-        rotuloDoEstado.textContent = texto;
-        faixa.setAttribute("aria-valuetext", texto);
-      }
+      if (rotuloDoEstado.textContent !== texto) rotuloDoEstado.textContent = texto;
+      if (faixa.getAttribute("aria-valuetext") !== texto) faixa.setAttribute("aria-valuetext", texto);
     };
 
     let tocando = false;

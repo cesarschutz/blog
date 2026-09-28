@@ -796,7 +796,7 @@ const ITENS = [
   /* Telefones de 320px: a marca encolhe um pouco para a linha caber. */
   @media (max-width: 400px) {
     .lugar-marca > :global(.marca) {
-      font-size: 18px;
+      font-size: 17px;
     }
 
     .vaga .nome {
@@ -806,8 +806,9 @@ const ITENS = [
 
   /*
    * Abaixo de 360px (C04, D52): mesmo com a marca a 18px, o "blog" encostava na busca (a marca pedia
-   * 184px e sobravam 155, e a busca era espremida para 32px). A marca vai a 16px e os três botões, a
-   * 36px, com 6px entre eles: sobram uns 5px de folga em 320px, sem esconder nada.
+   * 184px e sobravam 155, e a busca era espremida para 32px). A marca vai a 14,5px e os três botões, a
+   * 36px, com 6px entre eles (medido em 320px: a marca termina antes da busca, sem esconder nada). De
+   * 360 a 400px a marca fica a 17px, para a folga não zerar em 360px.
    */
   @media (max-width: 359.98px) {
     .cabecalho {
@@ -815,7 +816,7 @@ const ITENS = [
     }
 
     .lugar-marca > :global(.marca) {
-      font-size: 16px;
+      font-size: 14.5px;
     }
 
     .campo-busca,

@@ -21,6 +21,13 @@ reescrito. Depois, as sugestões do `CLAUDE-CODE.md` (regra de interface, CLAUDE
 Impeccable só no site, `npm run conferir`, `/amostra/lousas/`, `docs/movimento.md`). O que ainda é
 decisão do Cesar está no fim do `CLAUDE-CODE.md`.
 
+Revisão de interface de 28/09/2026 (skill `better-interface`, instalada em `.claude/skills/better-*`, sem
+commit): aplicados o anel de foco dos cards, a marca do cabeçalho em 320–400px, os rótulos da lousa de
+loop em tela estreita e o `aria-valuetext` do slider da lousa. **Ainda abertos** (o Cesar decide): campo
+da busca sem anel de foco, medida do artigo em 1280/1600px (D46), `text-wrap: balance` nos títulos de
+cards, foco fino da lombada e do bloco de código, `:hover` em "Ver a série" e "Todos os N", cores soltas
+fora de token, `aria-pressed` redundante nos botões das lousas e "do Java" a 4,11:1.
+
 ## Como ver
 
 - Dev: `fnm exec --using=24 npm run dev -- --host 127.0.0.1` (<http://127.0.0.1:4322>); parar com

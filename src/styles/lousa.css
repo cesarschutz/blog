@@ -320,6 +320,29 @@
   transform: none;
 }
 
+/* Em tela estreita os rótulos vizinhos se sobrepõem: quebram em duas linhas, e a barra ganha espaço embaixo. */
+@media (max-width: 430px) {
+  .lousa-loop .barra-tempo {
+    margin-bottom: 42px;
+  }
+
+  .lousa-loop .rotulo-marca {
+    width: max-content;
+    max-width: 9ch;
+    line-height: 1.2;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .lousa-loop .rotulo-marca.primeira {
+    text-align: start;
+  }
+
+  .lousa-loop .rotulo-marca.ultima {
+    text-align: end;
+  }
+}
+
 .lousa-loop .rotulo-marca.ultima {
   transform: translateX(-100%);
 }

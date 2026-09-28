@@ -115,6 +115,12 @@ const Titulo = nivel;
     color: var(--acento);
   }
 
+  /* O título é um bloco dentro de um link em linha: o Chrome não pinta o anel do link. O anel vai no card, que o link cobre inteiro. */
+  .cartao:has(.titulo-cartao a:focus-visible) {
+    outline: 2px solid var(--acento);
+    outline-offset: 3px;
+  }
+
   .descricao {
     margin: 8px 0 0;
     font-family: var(--font-ui);
