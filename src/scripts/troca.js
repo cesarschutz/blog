@@ -238,6 +238,10 @@
         dados.tipo = "lado";
         dados.lado = lado;
         dados.livro = sobre ? new URL(sobre.href).pathname : "";
+        // O nome do livro da lateral (a imagem dele sai à parte): se o livro mudar, ele sai junto com ela.
+        var livroLateral = lateral && lateral.querySelector(".livro-em-pe");
+        var nomeLivro = livroLateral && getComputedStyle(livroLateral).viewTransitionName;
+        dados.nomeLivro = nomeLivro && nomeLivro !== "none" ? nomeLivro : "";
         guardar(dados);
         return;
       }
@@ -547,7 +551,17 @@
     var anims = [];
     if (proximo && folha) nomear(folha, "artigo-novo");
     else if (folha) anims.push(folha.animate([{ opacity: 0.55, transform: "scale(0.99)" }, { opacity: 1, transform: "none" }], { duration: 500, delay: 150, easing: QUART_OUT, fill: "backwards" }));
-    if (lateral && !mesmoLivro) anims.push(lateral.animate([{ opacity: 0, transform: "translateX(" + (proximo ? 16 : -16) + "px)" }, { opacity: 1, transform: "none" }], { duration: 400, delay: 180, easing: QUART_OUT, fill: "backwards" }));
+    if (lateral && !mesmoLivro) {
+      // Outro livro: a lateral nova só entra quando a antiga está quase fora (0,22s; revisão 9). Antes, em
+      // 0,18s, as duas ficavam a ~50% no mesmo lugar. O livro novo vem com ela, sem o nome dele: com nome, a
+      // imagem dele (viva) não era pintada enquanto a lateral estava na opacidade 0 e aparecia de uma vez.
+      var livrosNovos = lateral.querySelectorAll(".livro-em-pe");
+      for (var i = 0; i < livrosNovos.length; i++) {
+        var n = getComputedStyle(livrosNovos[i]).viewTransitionName;
+        if (n && n !== "none") nomear(livrosNovos[i], "none");
+      }
+      anims.push(lateral.animate([{ opacity: 0, transform: "translateX(" + (proximo ? 16 : -16) + "px)" }, { opacity: 1, transform: "none" }], { duration: 400, delay: 220, easing: QUART_OUT, fill: "backwards" }));
+    }
     // O desenho do topo começa com a folha quase pousada (revisão 8): no próximo, com ~95% do caminho feito;
     // no anterior, quando a de cima já está saindo. Antes, esperava o fim da troca (cs:chegou, ~0,85s), e o
     // painel ficava um bloco vazio por 0,5s. Uma animação vazia marca o tempo, no relógio das outras.
@@ -574,7 +588,12 @@
       animarPseudo("::view-transition-old(rodape-velho)", [{ opacity: 1 }, { opacity: 0 }], { duration: 90, easing: SAI_LOGO });
       // A lateral: o mesmo livro fica parado (a antiga só sai no fim); outro livro troca junto.
       if (mesmoLivro) animarPseudo("::view-transition-old(lateral-velha)", [{ opacity: 1 }, { opacity: 1 }], { duration: 650 });
-      else animarPseudo("::view-transition-old(lateral-velha)", [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateX(" + (proximo ? -16 : 16) + "px)" }], { duration: 200, easing: CUBIC_IN });
+      else {
+        var saiLateral = [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateX(" + (proximo ? -16 : 16) + "px)" }];
+        animarPseudo("::view-transition-old(lateral-velha)", saiLateral, { duration: 200, easing: CUBIC_IN });
+        // O livro antigo da lateral (imagem à parte) sai do mesmo jeito que ela.
+        if (d.nomeLivro) animarPseudo("::view-transition-old(" + d.nomeLivro + ")", saiLateral, { duration: 200, easing: CUBIC_IN });
+      }
     }, function () {});
   }
 
