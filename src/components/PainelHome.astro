@@ -602,7 +602,10 @@ const rotulo = (l: Livro) => {
       a.li.hidden = false;
       ol.style.paddingTop = "0px";
       a.li.classList.add("no-ar");
-      a.deitado.style.viewTransitionName = a.deitado.dataset.vt ?? "";
+      // Com o voo, a lombada guardada tem o nome dela: a página nova tem a pilha no mesmo lugar, e ela
+      // troca de uma vez. Sem ele (no celular, com a página rolada até a pilha), a página nova abre no
+      // alto, com a pilha lá embaixo: com o nome, a lombada atravessava a pilha e descia pela tela.
+      a.deitado.style.viewTransitionName = voa ? (a.deitado.dataset.vt ?? "") : "none";
       const rd = a.deitado.getBoundingClientRect();
       if (!voa) {
         a.topo.style.visibility = "hidden";
