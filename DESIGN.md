@@ -503,7 +503,10 @@ post e o marca-texto do sumário), e embaixo da folha do sumário
 fica **o livro do artigo, grande e de lado** (D46), num painel tingido, com a lupa, o nome e "Ver o livro".
 **O sumário acompanha a leitura (D49):** um fio de tinta à mão desce pelo trilho até a altura lida;
 a seção em que o leitor ficou por 0,6s ou mais ganha um visto desenhado no marco ao ficar para trás, e
-a seção atual é sublinhada à mão, uma linha por vez (D52, B04 e B05); toda entrada (link, troca de
+a seção atual é sublinhada à mão, uma linha por vez (D52, B04 e B05), sem mudar o peso da letra — fica
+em 400, com um contorno fino da própria cor (`-webkit-text-stroke: 0,35px`), para o texto não mudar de
+largura nem quebrar linha (D52, revisão 4); as subseções da seção atual se desdobram (0,34s, a curva
+da escrita) em vez de aparecer de repente. Toda entrada (link, troca de
 página, recarga, `#título`, histórico) começa **sem nenhum visto**, e quem só passou por uma seção
 não a marca. Medir a posição durante a troca de página é sempre pelo layout (`offsetTop`), nunca pelo
 `getBoundingClientRect` (D52, B04). Abaixo de 1300px, o
@@ -562,8 +565,10 @@ têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm can
 - **Diagramas antigos** (SVG com fundo branco, `public/posts/`): num quadro claro no tema claro e,
   no escuro, na versão escura feita por filtro (luz invertida e matiz de volta, D39), nunca um bloco
   branco na página escura. No visor de imagens, a mesma inversão vale no escuro, com a sombra dentro
-  do filtro (D52, A04); o visor esmaece ao abrir e ao fechar (0,18s), nunca some de uma vez (o livro
-  ampliado, que não muda com o tema, mantém a volta própria).
+  do filtro (D52, A04); o visor abre esmaecendo (0,18s) e fecha mais rápido — a imagem sai em 0,12s,
+  ease-out, encolhendo a 0,94, e o véu clareia 0,05s depois, em 0,17s — para não haver um instante com
+  o diagrama do visor e o da página nítidos ao mesmo tempo (D52, revisão 11); nunca some de uma vez (o
+  livro ampliado, que não muda com o tema, mantém a volta própria).
 - **Topo das listas** (D52, B07: "Todos os artigos" e a página de uma tag): título e descrição no
   alto à esquerda; no pé, na linha da tábua, os índices ("por assunto" e "por ano"); a estante de
   filtro à direita, com a tábua alinhada aos índices. O pé da estante de filtro leva o rótulo
@@ -691,6 +696,9 @@ e uma nova se escreve embaixo, sem tocar o emblema da revista (que não anima).
   deslocar a raiz (um `translate`, por pequeno que seja, vira tremida); quem troca as animações
   padrão da View Transition por outras precisa repor o `mix-blend-mode: plus-lighter` nelas (senão a
   página clareia onde as duas imagens se somam).
+- **Regra geral do Chrome, achada na revisão de acabamento das animações (D52):** ele não pinta um
+  elemento com `view-transition-name` dentro de um pai com opacidade 0; para o elemento aparecer,
+  tire o nome dele (ou do pai) enquanto a opacidade estiver em zero, e devolva depois.
 
 - **Livros em movimento (D40), com GSAP carregado sob demanda** (`src/scripts/gsap.ts`: baixado ao
   passar o mouse, tocar, receber o foco ou com a página ociosa). Só transformações e opacidade, nunca
@@ -744,7 +752,11 @@ e uma nova se escreve embaixo, sem tocar o emblema da revista (que não anima).
     ainda na descida; o livro no ar é o livro 3D inteiro, numa camada própria, com sombra que cresce
     com a altura e some no pouso; a página antiga já toma a cor, o texto e a pilha da nova antes de
     abrir; o GSAP que gira `.livro-3d` desliga antes a transição CSS do palco (`[data-livro-gira]`).
-    No celular e no tablet, a troca de antes.
+    No celular e no tablet (sem o voo, com o topo fora da tela), o painel corta a lombada puxada na
+    borda da folha (`.painel-home { overflow-x: clip }` abaixo de 1100px, D52, revisão 1: sem isso, o
+    documento alargava no fim do puxão e a View Transition entre páginas era abortada); a lombada
+    guardada só leva o nome de transição quando há voo — sem ele, ela sai com a pilha e o livro chega
+    com a própria folha, sem o morph lombada → livro em pé (D52, revisão 15).
   - **Livro que gira** (D46, `data-livro-gira`, só CSS): na grade de categorias e séries, no topo da
     página do livro, no destaque de Séries e no livro do artigo, o livro vira de 38° para 24° ao
     passar o mouse (0,5s). A capa que seguia o mouse, com a luz e a capa entreaberta (`capa-viva.ts`,
@@ -757,7 +769,10 @@ e uma nova se escreve embaixo, sem tocar o emblema da revista (que não anima).
     e, ao soltar, a inércia leva a folha até aberta ou fechada (0,25 a 0,7s; a capa, até 0,9s), sem
     passar do fim. Fechar o visor com o livro aberto: as folhas voltam juntas e a capa por cima
     (0,6s), e só então o livro volta para o de origem. No celular, as folhas viram retas e a vista
-    corre para a página da vez (0,45s). As páginas não mudam com o tema (papel e tinta de papel).
+    corre para a página da vez (0,45s). O diálogo em si não esmaece ao abrir nem ao fechar — só o véu;
+    o livro de origem (painel ou lombada) só some quando a cópia grande já está por cima dele, e só
+    reaparece um instante antes de o diálogo fechar, para não haver um quadro vazio nem uma piscada
+    (D52, revisão 6). As páginas não mudam com o tema (papel e tinta de papel).
 - **Caneta do caderno (D48):** **não anima.** As marcações já vêm feitas (a animação por rolagem do
   caderno marcado da D41, com ScrollTrigger e DrawSVG, saiu).
 - **O desenho do destaque da home** (D41, só ali): ao entrar na tela, os traços aparecem em sequência
@@ -787,11 +802,16 @@ e uma nova se escreve embaixo, sem tocar o emblema da revista (que não anima).
 - **Abertura do site** (D51, `Abertura.astro`, GSAP; protótipos 01 e 02 de
   `docs/prototipos/animacoes/`): toca **ao chegar de fora e ao recarregar** (o script do `<head>`
   decide), sem movimento reduzido; um clique ou tecla pula. Na home, **a estante se monta (A3)**: a
-  caneta risca um fio só onde vai ficar a tábua (o caminho é refeito em pixels, sem `vector-effect`), o
-  fio vira a tábua, os livros entram da direita um a um (Volume 01 primeiro, 75 ms entre eles,
-  inclinados pelo atrito e assentando) com a contagem da coleção embaixo, a estante volta para a folha e
+  caneta risca um fio só onde vai ficar a tábua, na cor `--ink-2` enquanto é traço — a cor da borda da
+  tábua quase sumia no escuro (D52, revisão 12) —; o caminho é refeito em pixels, sem `vector-effect`,
+  e o fio passa para `--tabua` ao virar a tábua; os livros entram da direita um a um (Volume 01
+  primeiro, 75 ms entre eles, inclinados pelo atrito e assentando) com a contagem da coleção embaixo, a
+  estante volta para a folha e
   o papel esmaece (0,55s). Nas outras páginas, **o caderno "cs"** carrega (caneta e contagem até 100),
-  abre e fecha (a capa tem frente e verso) e pousa na marca do cabeçalho; o papel esmaece e as folhas da
+  abre e fecha (a capa tem frente e verso) e **voa em arco** até pousar na marca do cabeçalho, subindo
+  por baixo dela e inclinando para o lado do voo — em linha reta, ele cortava por cima de "Cesar
+  Schutz" (D52, revisão 14); o papel só esmaece depois que o caderno passou pelo título, e a marca de
+  verdade entra quando o papel acaba de sumir; as folhas da
   página chegam do fundo (em Categorias, com o desfile e a pilha). Durante ela, as transições de CSS
   ficam desligadas, e a estante não responde ao mouse nem ao foco (sem tombar, sem legenda, sem
   gaveta): o clique nela pula a abertura, em vez de navegar (D52, B12).
@@ -799,18 +819,26 @@ e uma nova se escreve embaixo, sem tocar o emblema da revista (que não anima).
   entre documentos animadas pela Web Animations API, sem biblioteca; protótipo 03, "cai da mesa",
   texto fora): o cabeçalho parado e o traço do menu deslizando; **a mesa fica limpa antes de a nova
   chegar** (D52, A02): as folhas à vista da página antiga caem da mesa em 0,38s (cascata de 0,06s, de
-  baixo para cima, acelerando desde o começo; a que tinha o livro que voa, primeiro) e somem ainda
-  caindo, entre 0,09s e 0,24s depois; os textos soltos sobem 10px e somem (200 ms); só então as da
-  nova chegam do fundo em perspectiva (0,26s) e pousam (1s, `cubic-bezier(.25,1,.5,1)`, 85 ms entre
-  elas, pela posição na tela, e a última no máximo 0,5s depois da primeira; textos novos sobem por
-  uma máscara; a troca inteira, ~1,6s). Voltando pelo histórico, as novas vêm da frente; da memória do
+  baixo para cima, acelerando desde o começo; a que tinha o livro que voa, primeiro) e começam a
+  esmaecer 80ms depois de começar a cair, sumindo ainda em queda; os textos soltos sobem 10px e somem
+  (200 ms). As da nova já começam o voo em 0,04s, ainda transparentes, mas só aparecem a partir de
+  0,24s — com as antigas quase sumidas —, com a opacidade em 170ms, ease-out (D52, revisão 2: antes, a
+  opacidade começava junto com o voo, linear em 280ms, e sobrava 0,1 a 0,2s de mesa vazia no meio);
+  pousam em 1s (`cubic-bezier(.25,1,.5,1)`, 85 ms entre elas, pela posição na tela, e a última no
+  máximo 0,5s depois da primeira; textos novos sobem por uma máscara; a troca inteira, ~1,6s, ~0,2s
+  mais curta que antes). Voltando pelo histórico, as novas vêm da frente; da memória do
   navegador (bfcache), sem troca. Livros à vista com par nas duas páginas voam por cima das folhas (só
   o livro viaja, protótipo 07), sem esmaecer de uma imagem na outra; a folha de destino só esmaece.
   Quando as duas pontas têm o mesmo livro 3D (D52, B10, ex.: Categorias ↔ a página do livro), voa só a
   imagem nova, que continua o giro de onde estava (do hover para o parado) até o giro de parado
   (0,75s, pegar e pousar); nunca duas imagens do livro ao mesmo tempo. Em Categorias, o livro chega no
   desfile, sem voar. Artigo anterior e próximo: **na pilha** (protótipo 06); o atual esmaece e afunda
-  10px sob a folha nova, entre 0,14s e 0,4s, e some antes do pouso dela (D52, A03). Categorias:
+  10px sob a folha nova, entre 0,14s e 0,4s, e some antes do pouso dela (D52, A03); o rodapé do site
+  sai em 90ms, ease-out, não em 200ms (D52, revisão 3: senão fica nítido por cima do título novo, com
+  a página rolada até o fim); a lateral nova (com o livro dela) só entra em 220ms, quando a antiga já
+  está quase fora (D52, revisão 9); o desenho do topo do artigo começa com a folha quase pousada — em
+  420ms no próximo e 300ms no anterior (`cs:pousou`, D52, revisão 8) —, em vez de esperar o fim da
+  troca. Categorias:
   **desfile e pilha** (protótipo 04, script da página; o desfile espera o GSAP por no máximo 1,8s,
   D52, B14). Tag: **desfile direto** (60 ms). O desenho do topo do
   artigo se desenha **depois de pousar** (protótipo 08, a sequência do C1, ~2,1s), a partir de 60% da
@@ -820,9 +848,14 @@ e uma nova se escreve embaixo, sem tocar o emblema da revista (que não anima).
   (`speculationrules`, JSON no `<head>`, sem biblioteca) pré-carregam o HTML dos links ao parar o
   ponteiro sobre eles (0,2s) ou ao toque. Se a página nova ainda assim não vem em 0,2s desde o
   clique, a caneta azul da leitura escreve um traço no fio do cabeçalho, cada vez mais devagar, até
-  ela chegar; nunca um spinner. Quando a espera passou de 1s, quando o aparelho não deu conta de uma
+  ela chegar; nunca um spinner. A caneta tem nome de transição próprio e esmaece em 0,2s ao sumir
+  (D52, revisão 13; antes, ela ficava na raiz antiga, que a troca por folhas esconde de uma vez).
+  Quando a espera passou de 0,7s (antes, 1s; D52, revisão 7), quando o aparelho não deu conta de uma
   troca anterior nesta visita ou com pouca memória, a chegada é curta: as folhas antigas só somem, as
-  novas sobem 12px e aparecem juntas, e o livro voa mais rápido (sem o desfile, em Categorias).
+  novas sobem 12px e aparecem juntas, e o livro voa mais rápido (sem o desfile, em Categorias). Se uma
+  troca desta visita levou mais de 0,3s entre a resposta e a primeira pintura (CPU ou rede lentas), a
+  seguinte já mostra a caneta **no clique**, sem esmaecer e com um traço começado, em vez de deixar a
+  tela parada sem sinal nenhum (D52, revisão 7).
 - **Gaveta** (D47): cresce (0,8s) com o conteúdo de baixo descendo junto; recolhe ao fechar; na troca
   de livro, vai da altura de um para a do outro (0,55s).
 - **Livro ampliado** (D47): cresce do livro de origem (0,7s, `power3.inOut`) e volta para ele ao fechar

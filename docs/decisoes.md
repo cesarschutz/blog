@@ -1749,6 +1749,74 @@ nada muda.
     GitHub e LinkedIn redesenhados à mão (contraria as regras das duas marcas); a assinatura por
     máscara com DrawSVG (pede `id`; o recorte de um traço quase horizontal já basta); o contorno da
     busca redesenhado no hover (movimento demais num campo muito usado — ficou só o escurecer).
+  - **Revisão de acabamento das animações (depois do C04):** um agente gravou as dez cenas da D52
+    juntas, quadro a quadro, num Chrome headless próprio (`playwright-core`), a 1440 e 390px, claro e
+    escuro, e achou 15 problemas de acabamento (`docs/ajustes-d52/diagnosticos/revisao-animacoes.md`);
+    três agentes corrigiram, um commit por correção ("D52 revisão N"), com os relatórios em
+    `revisao-trocas.md`, `revisao-pilha-livro.md` e `revisao-sumario-abertura.md`:
+    1. pilha no celular: a lombada puxada passava da borda da folha, o documento alargava e a View
+       Transition era abortada (corte seco). `.painel-home { overflow-x: clip }` abaixo de 1100px
+       (`9cccaf4`, `c30dc21`).
+    2. trocas gerais: 85 a 135ms de "mesa vazia" entre a saída da folha antiga e a chegada da nova (a
+       opacidade da chegada começava junto com o voo, linear em 280ms). O voo da chegada passa a
+       começar em 0,04s, ainda transparente, e só aparece a partir de 0,24s (opacidade em 170ms,
+       ease-out); a saída esmaece 80ms depois de começar a cair (`7e0806b`).
+    3. artigo anterior com a página no fim: o rodapé do site ficava nítido por cima do título do
+       artigo novo (esmaecia em 200ms, ease-in). Passa a sair em 90ms, ease-out (`aaa9579`).
+    4. sumário: a seção atual em peso 600 quebrava a linha e a lista saltava ~11px, deixando um risco
+       sobre a seção errada. A seção atual fica no peso 400, com contorno fino da própria cor
+       (`-webkit-text-stroke: 0,35px`); as subseções da atual se desdobram em 0,34s (`49616bb`).
+    5. o aceno dos cadernos (B13) vinha antes do fim do desenho do destaque, porque pegava a miniatura
+       escondida da lista (modo cards). Passa a buscar o desenho que está de fato visível (`46a06c7`).
+    6. livro ampliado: piscava ao abrir (a cópia surgia do transparente enquanto a origem já tinha
+       sumido) e sobrava um quadro vazio ao fechar. `.visor-livro[open] { animation: none }`, e a
+       origem volta antes do `dialogo.close()` (`7f1e450`).
+    7. CPU lenta: a página congelava ~1,1s sem sinal (a caneta do carregando só cobria a espera antes
+       do `pageswap`) e vinha a coreografia inteira em vez da chegada curta. Agora a sessão guarda
+       quanto a troca anterior levou entre a resposta e a primeira pintura; passado 0,3s, a seguinte já
+       mostra a caneta no clique e usa a chegada curta (limite descido de 1s para 0,7s) (`83b6f0f`).
+    8. artigo anterior/próximo: o painel do desenho ficava vazio por 0,5 a 0,65s (o desenho do topo
+       esperava o fim inteiro da troca). `cs:pousou` passa a disparar a 420ms (próximo) ou 300ms
+       (anterior) do `vt.ready` (`abea3f9`).
+    9. artigo próximo: a lateral velha e a nova apareciam juntas, a ~50%, no mesmo lugar (e o livro da
+       lateral nova, com nome de transição próprio, surgia inteiro de repente). A lateral nova passa a
+       entrar em 220ms, com a antiga já quase fora (`519cfaf`).
+    10. pilha na tela grande: o título e a marca d'água do topo esmaeciam junto com os artigos no
+        clique, e o painel ficava um retângulo vazio por ~1,1s. Agora só os artigos esmaecem no
+        clique; o título e a marca d'água ficam até o livro escolhido sair da pilha, trocando junto
+        com a cor do palco; o puxão começa 0,15s antes do pouso do guardado (`d1217d2`, `20be2a5`,
+        `67b6a11`).
+    11. visor de imagem: ao fechar, o diagrama do visor e o da página ficavam nítidos juntos por
+        ~0,1s. A imagem passa a sair em 0,12s, ease-out, encolhendo a 0,94, com o véu começando 0,05s
+        depois (`2de479a`).
+    12. abertura no escuro: o fio da caneta quase não aparecia (contraste 1,39:1, na cor da borda da
+        tábua). O fio passa a ser escrito em `--ink-2`, passando para `--tabua` quando engrossa
+        (`4545e75`).
+    13. carregando: a caneta sumia de um quadro para o outro antes de as folhas caírem (ficava na
+        raiz antiga, escondida pela troca por folhas). Ganhou `view-transition-name` própria e
+        esmaece em 0,2s (`aa21d4e`).
+    14. abertura com o caderno: o voo em linha reta cruzava "Cesar Schutz". Virou um arco (curva de
+        Bézier), subindo por baixo da marca; o papel só sai depois que o caderno passou pelo título
+        (`5d6dd1f`).
+    15. pilha no celular e no tablet, já com a troca animando: a lombada deitada, esticada até o livro
+        do topo, cruzava a capa como uma faixa por ~0,15s (o nome de transição do livro guardado
+        descia atravessando a pilha). Sem o voo, a lombada guardada perde o nome de transição: sai com
+        a pilha, e o livro chega com a folha, sem o morph (`ace7907`).
+
+    De quebra, no caminho do problema 10: voltar pelo histórico (bfcache) depois de uma troca pela
+    pilha trazia a pilha **vazia**, só a prateleira — o `clearProps: "all"` do GSAP, no `pageshow`,
+    apagava o `style` inline inteiro das lombadas (cores e medidas), não só o que a animação tinha
+    mexido (`67b6a11`).
+
+    **Ficou de fora:** os dois quadros de cruzamento semitransparente na troca geral, quando a antiga
+    já está quase sumindo e a nova ainda pequena e translúcida (aceito como parte do efeito, não uma
+    piscada); o arco "por cima do nome" no voo do caderno (problema 14), que não cabe no espaço acima
+    de "Cesar Schutz" (12px até a borda da tela) — por isso o voo passa por baixo; a faixa clara da
+    barra de rolagem fixa atrás dos visores (livro ampliado e imagem), em sistemas com
+    `scrollbar-gutter` estável (Windows, ou Mac com mouse; não aparece no Mac com trackpad), já
+    apontada no relatório do A04; e a caneta já no clique (problema 7), que só entra a partir da
+    segunda troca lenta da visita — a primeira ainda não tem o tempo de montagem guardado na sessão,
+    então continua sem o sinal.
   - **C05 (a identidade de papelaria) continua além do controle:** B14 e C04 entraram nesta rodada
     (C04 com a pesquisa e as sugestões de `docs/ajustes-d52/pesquisa.md` como ponto de partida); C05
     fica em andamento, sem commit, aguardando o Cesar avaliar (`docs/ajustes-d52/controle.md`).

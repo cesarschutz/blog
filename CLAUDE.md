@@ -297,3 +297,11 @@ src/lousas/<slug>/       desenhos das lousas de cada post .mdx
   carregada (`document.fonts` todas `unloaded` no `pagereveal`): título, capas e menu aparecem na
   fonte de reserva por um instante. No GSAP, `power2` é uma curva cúbica (`power1` é a quadrática), o
   que muda a conta ao emendar uma curva na outra (D52, B01 e B09).
+- O Chrome não pinta um elemento com `view-transition-name` dentro de um pai com opacidade 0: ele só
+  aparece de repente quando o pai volta a 1. Para animar o elemento chegando, tire o nome dele (ou do
+  pai) enquanto a opacidade estiver em zero, e devolva depois (D52, revisão de acabamento das
+  animações).
+- O `clearProps: "all"` do GSAP apaga o `style` inline **inteiro** do elemento, inclusive o que não
+  foi o próprio GSAP quem pôs ali (cores e medidas em variáveis CSS escritas no HTML, por exemplo):
+  passe a lista das propriedades que a animação de fato mexeu, nunca `"all"` num elemento com estilo
+  próprio (D52, revisão 10b: `clearProps: "all"` no `pageshow` apagava o estilo das lombadas da pilha).

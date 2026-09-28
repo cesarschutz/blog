@@ -201,6 +201,14 @@ anima o quê (CSS, View Transitions nativas, GSAP), no `DESIGN.md`.
   código-fonte dos artigos (campo `codigo`, pílula no topo, sinal nas listas). Detalhe item a item em
   `docs/decisoes.md` (D52). **Falta o C05** (ver "Próximos passos").
 
+- **Revisão de acabamento das animações da D52 (depois do C04), 27/09/2026, commitada correção a
+  correção, sem push:** um agente gravou as dez cenas da D52 juntas, quadro a quadro, e achou 15
+  problemas de acabamento (piscadas, "mesa vazia" nas trocas, sumário que saltava, painéis vazios,
+  pilha travando no celular, caneta do carregando…); três agentes corrigiram, um commit por correção
+  ("D52 revisão N"), mais o bug de quebra achado no caminho (a pilha vazia ao voltar pelo histórico,
+  `clearProps: "all"` do GSAP). Detalhe em `docs/decisoes.md` (D52) e nos relatórios de
+  `docs/ajustes-d52/diagnosticos/`.
+
 - **C04 (a caneta em preto como identidade), 27/09/2026, commitado em seis lotes, sem push:** a regra
   **a caneta preta desenha; a azul marca** (o preto é a tinta de sempre, `--ink`; o azul fica só no
   estado). Ícones de data, tempo e código-fonte à mão; o rascunho do mouse (menu, colchete da lista,
