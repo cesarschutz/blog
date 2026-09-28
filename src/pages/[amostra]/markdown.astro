@@ -9,6 +9,7 @@ import Sumario from "../../components/Sumario.astro";
 import { Content, getHeadings } from "../../amostra/recursos.md";
 import { url } from "../../lib/url";
 import { secoesDoSumario } from "../../lib/posts";
+import { fonteDaMao } from "../../lib/mao";
 import "../../styles/prosa.css";
 import "../../styles/artigo.css";
 import "../../styles/caneta.css";
@@ -22,6 +23,7 @@ const secoes = secoesDoSumario(getHeadings());
 
 <Base titulo="Amostra dos recursos de Markdown">
   <link slot="head" rel="stylesheet" href={url("/katex/katex.min.css")} />
+  <style slot="head" set:html={fonteDaMao} />
   <article class="wrap" data-artigo>
     <h1 class="titulo">Amostra dos recursos de Markdown</h1>
     <div class="artigo-grade com-sumario">

@@ -37,6 +37,9 @@ export const TOKENS = [
   "veu",
   "veu-tinta",
   "caneta",
+  "post-it",
+  "pauta",
+  "pauta-cabeca",
 ] as const;
 
 export type Token = (typeof TOKENS)[number];
@@ -81,6 +84,13 @@ export const claro: Paleta = {
   // A caneta do caderno (D48): azul de caneta, igual em todos os livros. Só nos traços e nas notas à
   // mão; o texto marcado fica na cor normal, para não confundir com os links (--acento).
   caneta: "#1F4FB5",
+  // A papelaria de estudo (C05, D52): o post-it do "Neste artigo" e as fichas pautadas (o livro do
+  // artigo e a ficha dos atalhos). Um amarelo só, tirado do marca-texto da D48 (#FFE27A a 52% sobre a
+  // folha); a pauta azul, a caneta (D48) a 18% sobre a folha; a linha do cabeçalho da ficha, vermelha, o
+  // Cuidado a 50% sobre a folha. A pauta e o cabeçalho são decorativos (o texto fica na tinta de sempre).
+  "post-it": "#FFF1BE",
+  pauta: "#D4DFF3",
+  "pauta-cabeca": "#D6A192",
 };
 
 export const escuro: Paleta = {
@@ -115,6 +125,12 @@ export const escuro: Paleta = {
   veu: "#050708",
   "veu-tinta": "#EEF1EE",
   caneta: "#8FA8FF",
+  // No escuro, o post-it é um papel âmbar apagado, que não brilha na página escura: o marca-texto escuro
+  // (#FFD65A) a uns 14% sobre a folha, puxado para o quente (a mistura pura, #35372E, dava um oliva frio,
+  // por causa do verde da folha escura); a pauta, a caneta a 18%; o cabeçalho, o Cuidado a 50%.
+  "post-it": "#39372D",
+  pauta: "#2C3746",
+  "pauta-cabeca": "#7A594F",
 };
 
 /**

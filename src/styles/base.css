@@ -10,6 +10,8 @@
   /* Interface (D26): menu, busca, datas, categoria, tags, botões, trilha, sumário e legendas. */
   --font-ui: "IBM Plex Sans Variable", "IBM Plex Sans fallback", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-codigo: "JetBrains Mono Variable", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  /* Os títulos curtos à mão da papelaria (C05, D52; src/lib/mao.ts): só nas páginas de artigo. */
+  --font-mao: "Caveat Titulos", "Caveat", "Segoe Print", "Bradley Hand", cursive;
   /* Largura e margem lateral iguais às do blog atual (conteúdo de até 1320px, D26). */
   --pad: clamp(16px, 2.4vw, 32px);
   --largura: 1320px;
@@ -27,6 +29,8 @@
   --sombra-folha-alta: 0 2px 4px rgb(40 38 30 / 0.05), 0 18px 36px -18px rgb(40 38 30 / 0.35);
   /* Sombra de objeto erguido do papel (livros, botão de voltar ao topo); mais funda no escuro. */
   --ergue: 0 1px 0 rgb(28 36 39 / 0.05), 0 18px 34px -18px rgb(28 36 39 / 0.45);
+  /* O post-it (C05, D52): colado em cima, com a borda de baixo levantada; a sombra fica só embaixo. */
+  --sombra-post-it: 0 1px 1px rgb(40 38 30 / 0.08), 0 16px 12px -12px rgb(40 38 30 / 0.36);
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -36,6 +40,7 @@
     --sombra-folha: 0 12px 30px -18px rgb(0 0 0 / 0.8);
     --sombra-folha-alta: 0 18px 36px -16px rgb(0 0 0 / 0.9);
     --ergue: 0 18px 34px -16px rgb(0 0 0 / 0.75);
+    --sombra-post-it: 0 1px 1px rgb(0 0 0 / 0.4), 0 16px 12px -12px rgb(0 0 0 / 0.8);
   }
 }
 
@@ -43,6 +48,7 @@
   --sombra-folha: 0 12px 30px -18px rgb(0 0 0 / 0.8);
   --sombra-folha-alta: 0 18px 36px -16px rgb(0 0 0 / 0.9);
   --ergue: 0 18px 34px -16px rgb(0 0 0 / 0.75);
+  --sombra-post-it: 0 1px 1px rgb(0 0 0 / 0.4), 0 16px 12px -12px rgb(0 0 0 / 0.8);
 }
 
 *,

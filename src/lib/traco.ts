@@ -302,6 +302,51 @@ export function pilulaDeCaneta(largura: number, altura: number, texto: string) {
   return curva(p);
 }
 
+/**
+ * O visto do sumário (C05, D52), na caixa de 14 × 14 do marco de cada seção: a perna curta desce, o canto
+ * fica vivo e a longa sobe um pouco embarrigada, passando um nada do alto. Cada seção tem o seu (a semente
+ * é o nome dela), como quem risca uma lista à mão. A caneta azul marca: é o estado da leitura.
+ */
+export function vistoDeCaneta(texto: string) {
+  const r = sorteio(sementeDe(texto) + 11);
+  const j = (a: number) => (r() - 0.5) * 2 * a;
+  return quebrada(
+    [
+      [2.5 + j(0.35), 7.3 + j(0.45)],
+      [5.6 + j(0.25), 10.7 + j(0.2)],
+      [12.1 + j(0.3), 2.9 + j(0.45)],
+    ],
+    `visto ${texto}`,
+    0.55,
+  );
+}
+
+/**
+ * O clipe da ficha do livro (C05, D52), numa caixa de 14 × 46: um clipe comum, desenhado de uma vez — a
+ * ponta de dentro sobe, faz a curva pequena no alto, desce pela direita, dá a volta grande embaixo, sobe
+ * por fora até o alto, faz a curva larga e desce pela borda de fora, terminando no meio. Quatro pernas e
+ * três voltas, com o tremor da mão. É a caneta preta: desenho, não estado.
+ */
+export function clipeDeCaneta(texto = "clipe") {
+  const arco = (cx: number, cy: number, raio: number, de: number, ate: number, n = 6): Ponto[] =>
+    Array.from({ length: n + 1 }, (_, i) => {
+      const a = de + ((ate - de) * i) / n;
+      return [cx + Math.cos(a) * raio, cy + Math.sin(a) * raio];
+    });
+  const p: Ponto[] = [
+    [5, 32],
+    [5, 20],
+    ...arco(7.2, 9, 2.2, Math.PI, 2 * Math.PI, 4),
+    [9.4, 24],
+    ...arco(5.5, 39, 3.9, 0, Math.PI, 6),
+    [1.6, 22],
+    ...arco(7, 6, 5.4, Math.PI, 2 * Math.PI, 6),
+    [12.4, 18],
+    [12.4, 30],
+  ];
+  return curva(tremer(p, texto, 0.35));
+}
+
 /** Pontos ao longo da curva Catmull-Rom que passa por `p` (`porTrecho` em cada trecho). */
 function amostrar(p: Ponto[], porTrecho = 16) {
   const fora: Ponto[] = [];

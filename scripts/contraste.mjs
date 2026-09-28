@@ -124,6 +124,22 @@ for (const [tema, p] of Object.entries({ claro, escuro })) {
   conferir(grupo, "--caneta (fio do cabeçalho) / --paper", p.caneta, p.paper, 3, true);
 }
 
+// A papelaria de estudo (C05, D52). O post-it do "Neste artigo" é texto de verdade sobre o amarelo: os
+// nomes das seções (--ink-2; a atual e o hover em --ink), a subseção atual (--acento), "NN% lido" e os
+// minutos (--ink-2), e o título à mão na --caneta (26px, mas conferido a 4,5:1 como texto pequeno). Os
+// traços da leitura (fio, vistos, sublinhado) são elementos gráficos (3:1). As fichas pautadas (o livro
+// do artigo e os atalhos) ficam na folha, já conferida acima; a pauta azul e a linha vermelha do
+// cabeçalho são decorativas (só avisam: o mínimo é elas não sumirem no papel).
+for (const [tema, p] of Object.entries({ claro, escuro })) {
+  const texto = `Post-it, tema ${tema} (texto 4,5:1)`;
+  for (const t of ["ink", "ink-2", "acento", "caneta"]) conferir(texto, `--${t} / --post-it`, p[t], p["post-it"], 4.5, true);
+  conferir(`Post-it, tema ${tema} (traço 3:1)`, "--caneta (fio, vistos, sublinhado) / --post-it", p.caneta, p["post-it"], 3, true);
+  conferir(`Post-it, tema ${tema} (traço 3:1)`, "--ink-3 (anel das seções) / --post-it", p["ink-3"], p["post-it"], 3, false);
+  const ficha = `Fichas pautadas, tema ${tema} (decorativo, 1,3:1)`;
+  conferir(ficha, "pauta / --paper-hi", p.pauta, p["paper-hi"], 1.3, false);
+  conferir(ficha, "linha do cabeçalho / --paper-hi", p["pauta-cabeca"], p["paper-hi"], 1.3, false);
+}
+
 // A caneta do caderno (D48): o texto sobre o marca-texto amarelo (no escuro, transparente sobre a
 // folha; a composição do navegador é em sRGB), sempre em --ink (o CSS força, também numa citação, que
 // é --ink-2, e no código em linha, que fica sem fundo próprio no trecho), e as notas à mão e os traços na cor da caneta, que é texto: 4,5:1 sobre a folha, o

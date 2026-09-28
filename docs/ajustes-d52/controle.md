@@ -275,6 +275,148 @@ Decidi tudo para não parar; estas escolhas podem voltar atrás com pouco trabal
 12. **Campo `codigo` (C03):** o nome evita confundir com as "Fontes" (referências) e as fontes
     tipográficas. Por enquanto só o post do Jackson tem.
 
+**C05 (sem commit; detalhes na seção seguinte):**
+
+13. **Aprovar ou não a papelaria** (post-it, ficha do volume com clipe, cola dos atalhos, vistos à
+    mão). Tudo está só na árvore de trabalho; nada foi commitado.
+14. **Caveat fora das notas** (estende a D48): os quatro títulos curtos à mão ("Neste artigo", "Do
+    livro", "Da série", "Atalhos do teclado"), num subconjunto próprio de 10,6 KB, pré-carregado em toda
+    página de artigo. Alternativa: os títulos voltam para a Besley e a papelaria fica só no papel.
+15. **O amarelo do post-it:** claro `#FFF1BE` (o marca-texto a 52% sobre a folha) e escuro `#39372D`
+    (âmbar apagado, ajustado a olho: a mistura pura dava um oliva frio). Mais pálido (42%, a proposta
+    da pesquisa) ou mais forte?
+16. **A cola dos atalhos perdeu o sublinhado azul animado do título (B06):** no lugar, a linha vermelha
+    do cabeçalho da ficha, parada. Pode voltar, mas ficam duas linhas embaixo do título.
+17. **A ficha no fim do artigo** (abaixo de 1300px, e a ficha da lateral): a ficha inteira continua
+    sendo o link; na folha larga ela fica do tamanho de um cartão de anterior/próximo (metade), e não
+    mais de lado a lado. Ao passar o mouse, o livro gira (sem subir 4px, como antes: agora ele está
+    preso numa foto).
+18. **Ficou de fora (pode entrar depois, com o seu OK):** carimbo "fontes conferidas em …" (pede um
+    campo novo no frontmatter e a conferência feita post a post; sem isso, o carimbo mentiria); abas de
+    fichário nos anos (o B07 já pôs "Por ano" no topo, e com dois anos as abas não ajudam); a busca como
+    gaveta de ficheiro (mexe no Flip da D44 sem ganho claro de uso).
+
 ## C05: o que foi feito (sem commit)
 
-(Preenchido no fim.)
+Agente Papelaria, 27/09/2026. **Nada commitado** (nem `git add`): tudo está só na árvore de trabalho.
+Não mexi em `docs/decisoes.md`, `docs/estado.md`, `DESIGN.md`, `docs/briefing.md` nem `CLAUDE.md`.
+
+**A ideia:** poucos objetos de papelaria, cada um num lugar só e com uma função (a metáfora explica, não
+enfeita), todos em volta da leitura do artigo, onde o blog é mais "caderno de estudo". A caneta azul
+marca (o estado da leitura) e a preta desenha (C04). O resto do site não mudou: livros, código, capas,
+rodapé e listas ficaram como estavam.
+
+### O que mudou
+
+1. **O "Neste artigo" virou um post-it** (lateral, ≥ 1300px; `Sumario.astro`). Um amarelo só
+   (`--post-it`), sem borda, cantos quase retos, colado em cima e com a borda de baixo levantada (a
+   sombra só embaixo, `--sombra-post-it`), torto 0,7° — o único papel torto do site. O título "Neste
+   artigo" à mão, na caneta azul (Caveat 600, 26px), fica preso no alto do post-it quando a lista rola
+   (tela baixa, artigo com muitas seções). Os itens continuam em IBM Plex; o fio, os vistos, o ponto e o
+   sublinhado da seção atual seguem na caneta azul (B05). No amarelo: o fio de base, o anel das seções,
+   a divisória e a barra de rolagem passaram a tinta transparente (a `--rule` sumia no amarelo), e
+   "NN% lido", os minutos e "Atalhos ?" subiram de `--ink-3` para `--ink-2` (contraste de texto). Por
+   quê: é a ideia do Cesar; o sumário deixa de ser "painel de app" e vira o lembrete colado ao lado do
+   texto (onde estou, o que já li).
+2. **Os vistos à mão** (`vistoDeCaneta` em `traco.ts`): cada seção tem o seu (semente pelo nome), com o
+   canto vivo e a perna longa embarrigada, no post-it e na folha do sumário do celular e do tablet (o
+   "detalhe discreto" permitido ali; a folha continua folha, com o título em Besley). O traço apagado
+   passou a `stroke-dasharray: 1 2` (com "1", a ponta redonda deixava um pingo no começo).
+3. **O painel "Do livro" virou a ficha do volume** (lateral; `Sumario.astro`): uma ficha de fichário,
+   à caneta preta — "Do livro" (ou "Da série") à mão sobre a **linha vermelha** do cabeçalho; a foto do
+   livro (o painel tingido de sempre, com o livro 3D grande, que gira no hover e se amplia pela lupa)
+   presa por um **clipe desenhado à caneta** (`clipeDeCaneta` em `traco.ts`: quatro pernas e três
+   voltas, com o tremor da mão); e embaixo, na **pauta azul**, os dados **datilografados** em JetBrains
+   Mono ("Volume 02 · 6 artigos", de `dadosDoLivro`), o nome e "Ver o livro". A pauta acompanha as linhas
+   do texto (24px), com as letras assentadas no fio. O livro e a lupa não mudaram (D39, D46); o anel de
+   foco do link fica por dentro da ficha (a ficha corta o de fora). Tela baixa: o livro encolhe a 80%
+   (≤ 820px de altura, como antes) e a 70% (≤ 760px, novo), para o post-it caber.
+4. **A mesma ficha no fim do artigo** (abaixo de 1300px; `RodapeArtigo.astro`), deitada: título à mão,
+   foto com clipe à esquerda, dados na pauta à direita. Dentro da folha do artigo, sem sombra
+   (DESIGN.md: caixa dentro de folha não leva sombra). A ficha inteira é o link (borda azul-tinta no
+   hover, o livro gira, a seta anda); o livro 3D continua voando para a página do livro no clique. Na
+   folha larga (contêiner ≥ 880px), a ficha fica do tamanho de um cartão de anterior/próximo, logo
+   abaixo, em vez de uma faixa pautada vazia de lado a lado. No celular estreito (≤ 400px), o livro a
+   76% e o nome a 19px; os dados só quebram no ponto ("Volume 02 ·" / "6 artigos").
+5. **A cola dos atalhos conversa com a ficha** (`Atalhos.astro`, B06): cantos de 3px, "Atalhos do
+   teclado" à mão (preto) sobre a linha vermelha, e cada atalho numa linha azul da pauta, de uma borda à
+   outra. Saiu o sublinhado azul animado do título (com a linha vermelha, ficavam duas linhas); o resto
+   do B06 (sair de trás do post-it, o meio com o véu, foco, Esc, "Desligar") não mudou.
+6. **Tokens novos** (`tokens.ts`, claro e escuro): `--post-it` (`#FFF1BE` / `#39372D`), `--pauta`
+   (`#D4DFF3` / `#2C3746`: a caneta a 18% sobre a folha) e `--pauta-cabeca` (`#D6A192` / `#7A594F`: o
+   Cuidado a 50%). A sombra do post-it por variável, com a versão escura (`base.css`).
+7. **A letra dos títulos à mão** (`src/data/mao.ts`, `src/lib/mao.ts`, `scripts/caveat-titulos.mjs`,
+   `src/assets/caveat-titulos.woff`): a Caveat 600 num **subconjunto só com as 18 letras dos quatro
+   títulos**, com as alternativas de contexto (`calt`), família própria ("Caveat Titulos", para não se
+   misturar com a Caveat das notas), `font-display: swap`, declarada e pré-carregada só nas páginas de
+   artigo (e na `/amostra/markdown/` do dev). O script corta a fonte com o `hb-subset` (HarfBuzz, do
+   Homebrew, que já vem com o poppler da marca), abrindo e fechando o WOFF só com o zlib do Node; nenhuma
+   biblioteca instalada. O tipo `TituloAMao` faz o `astro check` recusar um título fora da lista.
+8. **Medição do sublinhado** (`artigo.ts`): com o post-it torto, as caixas da tela desciam o traço uns
+   2px no fim das linhas longas; mede-se com ele reto, na mesma tarefa (sem pintar).
+9. **Contraste** (`scripts/contraste.mjs`): pares novos — `--ink`, `--ink-2`, `--acento` e `--caneta`
+   sobre o post-it (texto, 4,5:1, obrigatório; o menor é `--ink-2`, 5,73:1 no claro e 5,40:1 no escuro),
+   a caneta como traço (3:1), o anel das seções (aviso) e a pauta e a linha do cabeçalho (decorativas,
+   só avisam). `npm run contraste`: 0 falhas; os 5 alertas são os de antes.
+
+### Custo
+
+- **Fonte:** 10,6 KB (10.616 bytes, WOFF) por visita, em cache depois, só em páginas de artigo — contra
+  51 KB da Caveat inteira no latim. Os posts com nota escrita (D48) baixam os dois arquivos (51 + 10,6
+  KB). Sem o `calt`, o subconjunto cairia para ~4 KB, com letras repetidas iguais ("Atalhos do teclado"
+  tem quatro "a" e três "o").
+- **HTML:** uns 2,7 KB a mais por artigo, sem compressão (os vistos à mão, ~1,6 KB contra ~0,5 KB dos
+  vistos iguais de antes, e os dois clipes, ~1,6 KB).
+- **Movimento:** nenhum novo. Nada anima na entrada; o post-it, a ficha e o clipe são parados. Com
+  movimento reduzido, nada muda.
+
+### O que decidi não fazer (e por quê)
+
+- **Carimbo "fontes conferidas":** só com texto verdadeiro. Não há um campo com a data da conferência
+  das fontes nem a garantia de que ela foi feita em todos os posts; um carimbo com a data de publicação
+  repetiria o topo do artigo. Fica como proposta (campo novo no frontmatter).
+- **Abas de fichário nos anos:** o B07 já pôs "Por ano" (com a contagem) no topo de "Todos os artigos";
+  com dois anos, as abas repetiriam o índice sem ajudar a navegar.
+- **Busca como gaveta de ficheiro:** mexe na busca que nasce do campo (D44, Flip) sem ganho claro de
+  uso; ficha de catálogo em cada resultado viraria ruído numa lista.
+- **Post-it no celular:** a folha do sumário que desce do cabeçalho continua folha (pedido); só os
+  vistos à mão.
+- **Fichamento das fontes** (o "## Fontes" como ficha pautada): pensado, não feito — as listas de
+  fontes variam muito (parágrafos, grupos em negrito, dezenas de linhas nos guias do Java) e a pauta
+  atrás de links longos ficaria pesada.
+- Nada de textura, fita, alfinete, café, papel rasgado, quadriculado, máquina digitando ou envelope no
+  RSS; livros, código e rodapé intocados.
+
+### Como conferi
+
+MCP `chrome-devtools`, aba própria (`isolatedContext: "papelaria"`, fechada no fim), no dev da 4322:
+Jackson (sumário longo, código-fonte), cobrança duplicada (sumário curto, com notas da caneta: as duas
+Caveats carregam, cada uma no seu lugar), `java-21` (série: "Da série", "Série · 7 edições"), CronJob e
+SIGTERM, a 320, 390, 768, 1280, 1300 × 700, 1440 e 1600px, claro e escuro. Sem rolagem lateral em
+nenhuma (a largura do documento é a da janela menos a barra), console sem erros nem aviso de
+pré-carregamento, foco visível no link da ficha (por dentro) e na ficha do fim, desenhos com
+`aria-hidden` (clipe, vistos, foto do fim), a lupa abre e fecha o livro ampliado, anterior/próximo e a
+cola (ao lado do post-it e no meio, com véu) funcionando; um trace da troca "próximo" sem salto do
+post-it. `fnm exec --using=24 npm run check`: 0 erros; `npm run contraste`: 0 falhas; um `astro build`
+num diretório à parte (apagado depois) confirmou o arquivo da fonte com hash em `/_astro/`. O preview da
+4323 não foi tocado (precisa de rebuild para mostrar o C05).
+
+### Arquivos
+
+- Novos: `scripts/caveat-titulos.mjs`, `src/assets/caveat-titulos.woff`, `src/data/mao.ts`,
+  `src/lib/mao.ts`.
+- Alterados: `src/components/Sumario.astro`, `src/components/RodapeArtigo.astro`,
+  `src/components/Atalhos.astro`, `src/lib/traco.ts`, `src/styles/tokens.ts`, `src/styles/base.css`
+  (`--font-mao`, `--sombra-post-it`), `src/scripts/artigo.ts` (medição do sublinhado),
+  `src/pages/posts/[slug].astro` e `src/pages/[amostra]/markdown.astro` (a fonte), `scripts/contraste.mjs`.
+
+### Para registrar (se o Cesar aprovar)
+
+- `DESIGN.md`: os tokens `post-it`, `pauta`, `pauta-cabeca` no YAML e em Colors; a Caveat dos títulos à
+  mão em Typography (estende a D48); em Shapes, a ficha (3px) e o post-it (2px, único torto, 0,7°); em
+  Components, o post-it, a ficha do volume e o clipe; em Movimento, a cola sem o sublinhado animado.
+- `CLAUDE.md`: `src/assets/` e `src/data/mao.ts` no mapa das pastas; `node scripts/caveat-titulos.mjs`
+  nos comandos (título à mão novo = rodar o script); a Caveat nas fontes da stack.
+- `docs/decisoes.md`: o C05 na D52 (ou uma D53), com as alternativas acima.
+- Aviso do hook do Impeccable ao editar `artigo.ts`: "imagem sem src" na linha do visor (`<img alt="">`
+  criada vazia e preenchida pelo script) — falso positivo de antes do C05; não gravei exceção.

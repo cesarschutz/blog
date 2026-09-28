@@ -12,8 +12,9 @@
  * A ficha (B06, D52): com o sumário ao lado (≥ 1300px), ela é puxada de trás da folha do sumário, como
  * uma ficha tirada do fichário, e pousa ao lado dele, na altura do "Atalhos ?" (0,34s; volta para trás
  * da folha em 0,2s), sem escurecer a página: o texto continua à vista. Sem o sumário ao lado, ela abre
- * no meio da tela, com a página escurecida. As linhas são a pauta da ficha, e a caneta sublinha o
- * título quando ela pousa (o traço do menu, traco.ts).
+ * no meio da tela, com a página escurecida. É a mesma ficha de fichário do livro do artigo (C05, D52):
+ * o título à mão, à caneta preta, sobre a linha vermelha do cabeçalho, e cada atalho numa linha azul
+ * da pauta.
  *
  * É um popover nativo (fecha com Esc, com um clique fora e com o ×), com papel de diálogo. Aberta
  * pelo "?", o foco vai para ela; ao fechar, volta para onde estava. A opção de desligar (WCAG 2.1.4,
@@ -26,19 +27,14 @@
  * sem deslizar, e a rolagem é direta.
  */
 import { ICONES } from "../lib/icones";
-import { tracoDeCaneta } from "../lib/traco";
+import type { TituloAMao } from "../lib/mao";
 
-const TITULO = "Atalhos do teclado";
+// À mão (C05, D52): só os títulos da lista de src/data/mao.ts (o subconjunto da Caveat).
+const TITULO: TituloAMao = "Atalhos do teclado";
 ---
 
 <div id="atalhos" class="atalhos" popover role="dialog" aria-labelledby="atalhos-titulo" tabindex="-1" data-atalhos data-lugar="meio">
-  <p class="titulo" id="atalhos-titulo">
-    <span class="escrito"
-      >{TITULO}<svg class="traco-titulo" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"
-        ><path d={tracoDeCaneta(TITULO)} /></svg
-      ></span
-    >
-  </p>
+  <p class="titulo" id="atalhos-titulo">{TITULO}</p>
   <dl class="pauta">
     <div><dt><kbd>Espaço</kbd></dt><dd>Próxima seção</dd></div>
     <div><dt><kbd>Shift</kbd> <kbd>Espaço</kbd></dt><dd>Seção anterior</dd></div>
@@ -219,18 +215,20 @@ const TITULO = "Atalhos do teclado";
 
 <style>
   /*
-   * A ficha: uma ficha pautada, na folha do site. As linhas da lista são a pauta (o fio embaixo de cada
-   * uma), e o título é sublinhado à caneta azul (a da leitura, B05).
+   * A ficha (C05, D52): uma ficha de fichário, como a do livro do artigo (Sumario.astro) — cantos quase
+   * retos, o título à mão (caneta preta) sobre a linha vermelha do cabeçalho, e cada atalho numa linha
+   * da pauta azul, de uma borda à outra.
    */
   .atalhos {
     --folga: 16px;
     --curva: cubic-bezier(0.2, 0.75, 0.2, 1);
+    --lado: 20px;
     width: min(328px, calc(100vw - 32px));
     max-height: calc(100dvh - 32px);
     overflow: auto;
-    padding: 18px 20px 14px;
+    padding: 12px var(--lado) 14px;
     border: 1px solid var(--rule);
-    border-radius: 8px;
+    border-radius: 3px;
     background: var(--paper-hi);
     box-shadow: var(--sombra-folha);
     color: var(--ink);
@@ -240,50 +238,13 @@ const TITULO = "Atalhos do teclado";
   }
 
   .titulo {
-    margin: 0 30px 10px 0;
-    font-family: var(--font-titulo);
-    font-weight: 700;
-    font-size: 17px;
-    line-height: 1.3;
-  }
-
-  .escrito {
-    position: relative;
-    display: inline-block;
-  }
-
-  /* O sublinhado à caneta do título, escrito quando a ficha pousa. */
-  .traco-titulo {
-    position: absolute;
-    left: -2px;
-    bottom: -7px;
-    width: calc(100% + 4px);
-    height: 8px;
-    overflow: visible;
-    pointer-events: none;
-  }
-
-  .traco-titulo path {
-    fill: none;
-    stroke: var(--caneta);
-    stroke-width: 1.9;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    vector-effect: non-scaling-stroke;
-  }
-
-  .atalhos:popover-open .traco-titulo {
-    animation: titulo-escrito 0.42s var(--curva) 0.26s backwards;
-  }
-
-  @keyframes titulo-escrito {
-    from {
-      clip-path: inset(-4px 100% -4px 0);
-    }
-
-    to {
-      clip-path: inset(-4px 0 -4px 0);
-    }
+    margin: 0 calc(-1 * var(--lado)) 2px;
+    padding: 0 52px 4px var(--lado);
+    border-bottom: 1.5px solid var(--pauta-cabeca);
+    font-family: var(--font-mao);
+    font-weight: 600;
+    font-size: 25px;
+    line-height: 1.15;
   }
 
   /* A pauta: cada atalho numa linha da ficha, com as teclas numa coluna só. */
@@ -292,16 +253,26 @@ const TITULO = "Atalhos do teclado";
     grid-template-columns: max-content 1fr;
     column-gap: 16px;
     margin: 0;
-    border-top: 1px solid var(--rule);
   }
 
   .pauta > div {
+    position: relative;
     display: grid;
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
     align-items: baseline;
     padding: 8px 0 7px;
-    border-bottom: 1px solid var(--rule);
+  }
+
+  /* A linha azul vai de uma borda da ficha à outra, como numa ficha de verdade. */
+  .pauta > div::after {
+    content: "";
+    position: absolute;
+    right: calc(-1 * var(--lado));
+    bottom: 0;
+    left: calc(-1 * var(--lado));
+    height: 1px;
+    background: var(--pauta);
   }
 
   dt {
@@ -459,8 +430,5 @@ const TITULO = "Atalhos do teclado";
       transition: none;
     }
 
-    .atalhos:popover-open .traco-titulo {
-      animation: none;
-    }
   }
 </style>

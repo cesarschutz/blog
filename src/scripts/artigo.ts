@@ -247,10 +247,15 @@ function sublinhar(link: HTMLAnchorElement, tipo: Sublinhado, escrever: boolean,
   const rotulo = link.querySelector<HTMLElement>(".rotulo");
   if (!secao || !rotulo) return;
   apagarSublinhado(link, tipo, false);
+  // O post-it do sumário é torto 0,7° (C05, D52): as caixas da tela seriam as do papel girado, e o traço
+  // desceria uns 2px no fim de uma linha longa. Mede-se com ele reto (na mesma tarefa, sem pintar).
+  const papel = secao.closest<HTMLElement>(".post-it");
+  if (papel) papel.style.rotate = "0deg";
   const caixa = secao.getBoundingClientRect();
   // A folha que chega pode estar em escala: as medidas voltam ao tamanho do layout.
   const escala = secao.offsetWidth ? caixa.width / secao.offsetWidth : 0;
   const linhas = [...rotulo.getClientRects()].filter((r) => r.width > 2);
+  if (papel) papel.style.rotate = "";
   if (!escala || !linhas.length) return;
   const nome = rotulo.textContent?.trim() ?? "";
   const grupo = document.createElement("span");

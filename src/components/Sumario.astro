@@ -2,7 +2,9 @@
 /**
  * Sumário do artigo (briefing §5.3), só com 3 seções ou mais.
  *
- * "lateral" (D26, D33, D49): em telas ≥ 1300px, à esquerda do texto, numa folha própria e fixa. As
+ * "lateral" (D26, D33, D49; C05, D52): em telas ≥ 1300px, à esquerda do texto, fixa. O sumário é um
+ * post-it (o lembrete colado ao lado do texto, escrito à caneta azul) e o livro, embaixo, a ficha do
+ * volume (uma ficha de fichário, à caneta preta, com a foto do livro presa por um clipe). As
  * seções ficam num trilho, com um ponto em cada uma e sem número (D36): o "3. " de um título
  * numerado sai também do nome, nas três variantes. O sumário acompanha a leitura como o índice de um
  * caderno (C2, D49), escrito com a mesma caneta azul do fio do cabeçalho (B05, D52; `--caneta`, e não
@@ -10,9 +12,10 @@
  * sublinhada à mão, como a do menu (traco.ts); a seção em que o leitor ficou ganha um visto quando
  * fica para trás (B04). O script (src/scripts/artigo.ts) desenha o fio e o sublinhado, abre as
  * subseções da atual e mantém a atual à vista quando a lista rola. Embaixo, "NN% lido" e o tempo que
- * falta (sem barra: o fio do cabeçalho já mostra o quanto foi lido); só com JS. Embaixo, o livro do
- * artigo, grande e de lado, como o da gaveta da home (D46): gira um pouco ao passar o mouse, a lupa
- * abre o livro ampliado e o link leva à página dele. Sem seções (menos de 3), a coluna tem só o livro.
+ * falta (sem barra: o fio do cabeçalho já mostra o quanto foi lido); só com JS. Embaixo, na ficha, o
+ * livro do artigo, grande e de lado, como o da gaveta da home (D46): gira um pouco ao passar o mouse, a
+ * lupa abre o livro ampliado e o link leva à página dele. Sem seções (menos de 3), a coluna tem só a
+ * ficha. Os vistos são desenhados à mão, um por seção (vistoDeCaneta, traco.ts), aqui e na "folha".
  *
  * "recolhivel": no início do texto, nas telas menores.
  *
@@ -23,10 +26,12 @@
 import LivroAmpliado from "./LivroAmpliado.astro";
 import LivroEmPe from "./LivroEmPe.astro";
 import { ICONES } from "../lib/icones";
-import { coresDoLivroCss, type Livro } from "../lib/estante";
+import { coresDoLivroCss, dadosDoLivro, type Livro } from "../lib/estante";
 import type { SecaoDoSumario } from "../lib/posts";
 import "../styles/livro.css";
 import { tituloComQuebras } from "../lib/formato";
+import { clipeDeCaneta, vistoDeCaneta } from "../lib/traco";
+import type { TituloAMao } from "../lib/mao";
 
 interface Props {
   secoes: SecaoDoSumario[];
@@ -40,15 +45,18 @@ interface Props {
 const { secoes, variante, minutos = 0, livro } = Astro.props;
 // "3. Bloqueio pessimista" → "Bloqueio pessimista": o sumário não mostra número (D36).
 const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
+// Os títulos à mão da papelaria (C05, D52): só os da lista de src/data/mao.ts (o subconjunto da Caveat).
+const NESTE_ARTIGO: TituloAMao = "Neste artigo";
+const DO_LIVRO: TituloAMao = livro?.serie ? "Da série" : "Do livro";
 ---
 
 {
   variante === "lateral" ? (
     <aside class="lateral" data-pagefind-ignore style={livro ? coresDoLivroCss(livro) : undefined}>
       {secoes.length > 0 && (
-      <div class="folha folha-sumario">
+      <div class="folha folha-sumario post-it">
         <nav aria-label="Neste artigo" data-trilho>
-          <p class="titulo">Neste artigo</p>
+          <p class="titulo">{NESTE_ARTIGO}</p>
           <div class="lista-trilho" data-lista-trilho>
           <svg class="fio" aria-hidden="true" focusable="false"><path class="fio-base" /><path class="fio-tinta" /></svg>
           <ol class="trilho">
@@ -56,7 +64,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
               return (
                 <li class="secao">
                   <a href={`#${s.slug}`} data-secao={s.slug}>
-                    <svg class="marco" viewBox="0 0 14 14" aria-hidden="true" focusable="false"><circle class="bolinha" cx="7" cy="7" r="3.4" /><path class="visto" pathLength="1" d="M2.6 7.6 5.7 10.5 11.6 3.3" /></svg>
+                    <svg class="marco" viewBox="0 0 14 14" aria-hidden="true" focusable="false"><circle class="bolinha" cx="7" cy="7" r="3.4" /><path class="visto" pathLength="1" d={vistoDeCaneta(s.text)} /></svg>
                     <span class="nome"><span class="rotulo" set:html={tituloComQuebras(semNumero(s.text))} /></span>
                   </a>
                   {s.sub.length > 0 && (
@@ -95,12 +103,16 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
       )}
       {
         livro && (
-          <div class="folha do-livro">
-            <div class="palco-livro painel" style={`--cor:${livro.cores.cor}`} data-livro-gira>
-              <LivroEmPe livro={livro} altura={204} ampliavel />
+          <div class="folha do-livro ficha">
+            <p class="cabeca-ficha">{DO_LIVRO}</p>
+            <div class="foto">
+              <svg class="clipe" viewBox="0 0 14 46" aria-hidden="true" focusable="false"><path d={clipeDeCaneta()} /></svg>
+              <div class="palco-livro painel" style={`--cor:${livro.cores.cor}`} data-livro-gira>
+                <LivroEmPe livro={livro} altura={204} ampliavel />
+              </div>
             </div>
             <a class="sobre" href={livro.href}>
-              <span class="rotulo">{livro.serie ? "Da série" : "Do livro"}</span>
+              <span class="dados">{dadosDoLivro(livro)}</span>
               <span class="nome-livro">{livro.nome}</span>
               <span class="ver">
                 {livro.serie ? "Ver a série" : "Ver o livro"}
@@ -126,7 +138,7 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
         {secoes.map((s, i) => (
           <li class="secao" style={`--i:${i}`}>
             <a href={`#${s.slug}`} data-secao-folha={s.slug}>
-              <svg class="marco" viewBox="0 0 14 14" aria-hidden="true" focusable="false"><circle class="bolinha" cx="7" cy="7" r="3.4" /><path class="visto" pathLength="1" d="M2.6 7.6 5.7 10.5 11.6 3.3" /></svg>
+              <svg class="marco" viewBox="0 0 14 14" aria-hidden="true" focusable="false"><circle class="bolinha" cx="7" cy="7" r="3.4" /><path class="visto" pathLength="1" d={vistoDeCaneta(s.text)} /></svg>
               <span class="nome"><span class="rotulo" set:html={tituloComQuebras(semNumero(s.text))} /></span>
             </a>
           </li>
@@ -272,7 +284,8 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
-    stroke-dasharray: 1;
+    /* O vão maior que o traço: com a ponta redonda, "1" deixava um pingo no começo do visto apagado. */
+    stroke-dasharray: 1 2;
     stroke-dashoffset: 1;
     transition:
       stroke-dashoffset 0.42s ease-in-out 0.15s,
@@ -546,20 +559,61 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
   }
 
   /*
-   * ---------- o livro do artigo (D46) ----------
-   * Grande e de lado (38°, como na gaveta da home), num painel tingido pela cor dele; embaixo, o nome e
-   * o link. A lupa (LivroEmPe) abre o livro ampliado.
+   * ---------- o livro do artigo: a ficha do volume (D46; C05, D52) ----------
+   * Uma ficha pautada de fichário, escrita à caneta preta: no cabeçalho, "Do livro" à mão sobre a linha
+   * vermelha; embaixo, a foto do livro (o painel tingido, com o livro grande e de lado, que gira ao passar
+   * o mouse e se amplia pela lupa) presa por um clipe desenhado à caneta (traco.ts); e os dados do volume
+   * datilografados (JetBrains Mono) nas linhas azuis da pauta, com o nome e o link. Reta, como toda folha:
+   * só o post-it gira. A pauta segue as linhas do texto (--linha).
    */
   .do-livro {
+    --linha: 24px;
     flex: none;
     overflow: hidden;
-    padding: 10px;
+    border-radius: 3px;
+  }
+
+  .cabeca-ficha {
+    margin: 0;
+    padding: 9px 14px 3px;
+    border-bottom: 1.5px solid var(--pauta-cabeca);
+    color: var(--ink);
+    font-family: var(--font-mao);
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 1.05;
+  }
+
+  /* A foto do livro e o clipe que a prende à ficha (o clipe passa da borda de cima da foto). */
+  .foto {
+    position: relative;
+    margin: 16px 10px 0;
+  }
+
+  .clipe {
+    position: absolute;
+    z-index: 2;
+    top: -16px;
+    left: 20px;
+    width: 15px;
+    height: 49px;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .clipe path {
+    fill: none;
+    stroke: color-mix(in oklab, var(--ink) 74%, transparent);
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   .palco-livro {
     display: grid;
     place-items: center;
-    padding: 22px 10px 26px;
+    padding: 20px 10px 22px;
+    border-radius: 3px;
   }
 
   /* Tela baixa: o livro encolhe para o sumário continuar à vista; bem baixa, fica só o sumário. */
@@ -569,40 +623,52 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     }
   }
 
+  @media (max-height: 760px) {
+    .palco-livro {
+      zoom: 0.7;
+    }
+  }
+
   @media (max-height: 660px) {
     .do-livro {
       display: none;
     }
   }
 
+  /*
+   * Os dados na pauta: cada linha do texto numa linha da ficha, com o fio azul logo abaixo das letras
+   * (a mesma altura de linha nos três, para o nome que quebra em duas continuar na pauta).
+   */
   .sobre {
     display: flex;
     flex-direction: column;
-    gap: 2px;
-    padding: 12px 6px 4px;
+    margin-top: 6px;
+    padding: 0 14px 6px;
+    background: repeating-linear-gradient(to bottom, transparent 0 calc(var(--linha) - 1px), var(--pauta) calc(var(--linha) - 1px) var(--linha));
+    background-position: 0 -4px;
     color: var(--ink);
     font-family: var(--font-ui);
+    line-height: var(--linha);
     text-decoration: none;
   }
 
-  /* Só o "Do livro": o nome das seções também é .rotulo e herda o tamanho e a cor do link (B05, D52). */
-  .sobre .rotulo {
-    font-size: 12.5px;
+  .dados {
+    font-family: var(--font-codigo);
+    font-size: 12px;
     color: var(--ink-2);
+    font-variant-numeric: lining-nums;
   }
 
   .nome-livro {
     font-family: var(--font-titulo);
     font-weight: 700;
     font-size: 17px;
-    line-height: 1.25;
   }
 
   .ver {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    margin-top: 4px;
     font-size: 13.5px;
     color: var(--acento);
   }
@@ -616,6 +682,11 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
     stroke-linecap: round;
     stroke-linejoin: round;
     transition: translate 0.2s;
+  }
+
+  /* O link vai de uma borda da ficha à outra: o anel do foco fica por dentro (a ficha corta o de fora). */
+  .sobre:focus-visible {
+    outline-offset: -3px;
   }
 
   .sobre:hover .nome-livro {
@@ -676,6 +747,77 @@ const semNumero = (texto: string) => texto.replace(/^\d{1,2}[.)]\s+/, "");
       flex-direction: column;
       min-height: 0;
       padding: 20px 18px 16px;
+    }
+
+    /*
+     * O post-it (C05, D52): o "Neste artigo" é um lembrete colado ao lado do texto, escrito à caneta azul
+     * — a da leitura (B05): o título à mão, o fio, os vistos e o sublinhado da seção atual. Um amarelo
+     * só (--post-it), sem borda, colado em cima e com a borda de baixo levantada (a sombra só embaixo),
+     * torto 0,7°: é o único papel torto do site. Os itens continuam na letra da interface.
+     */
+    .post-it {
+      padding: 16px 18px 14px;
+      border: 0;
+      border-radius: 2px 2px 4px 3px;
+      background: var(--post-it);
+      box-shadow: var(--sombra-post-it);
+      rotate: -0.7deg;
+    }
+
+    /* O título fica no alto do post-it mesmo quando a lista rola (tela baixa, artigo com muitas seções). */
+    .post-it .titulo {
+      position: sticky;
+      z-index: 2;
+      top: 0;
+      margin: 0 0 0 -1px;
+      padding-bottom: 10px;
+      background: var(--post-it);
+      color: var(--caneta);
+      font-family: var(--font-mao);
+      font-weight: 600;
+      font-size: 26px;
+      line-height: 1.05;
+    }
+
+    /* A barra da lista que rola, mais leve no amarelo (a da tinta a 24% pesava como uma faixa parda). */
+    .post-it nav {
+      scrollbar-color: color-mix(in oklab, var(--ink) 15%, transparent) transparent;
+    }
+
+    .post-it nav:hover {
+      scrollbar-color: color-mix(in oklab, var(--ink) 30%, transparent) transparent;
+    }
+
+    .post-it .fio-base {
+      stroke: color-mix(in oklab, var(--ink) 17%, transparent);
+    }
+
+    .post-it .bolinha,
+    .post-it .secao.lida > a:not([aria-current]) .bolinha {
+      fill: var(--post-it);
+    }
+
+    .post-it .subsecoes li {
+      border-left-color: color-mix(in oklab, var(--ink) 15%, transparent);
+    }
+
+    .post-it .progresso {
+      border-top-color: color-mix(in oklab, var(--ink) 14%, transparent);
+    }
+
+    .post-it .numeros,
+    .post-it .dica-atalhos {
+      color: var(--ink-2);
+    }
+
+    .post-it .dica-atalhos:hover,
+    .post-it .dica-atalhos:focus-visible,
+    :global(:root:has(#atalhos:popover-open)) .post-it .dica-atalhos {
+      color: var(--acento);
+    }
+
+    .post-it .dica-atalhos kbd {
+      border-color: color-mix(in oklab, var(--ink) 24%, transparent);
     }
 
     /* O lugar da barra de rolagem fica reservado (onde ela ocupa espaço): se ela surgisse quando as

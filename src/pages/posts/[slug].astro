@@ -26,6 +26,7 @@ import "../../styles/artigo.css";
 import "../../styles/visor.css";
 import "../../styles/caneta.css";
 import { fonteDaCaneta } from "../../lib/caneta";
+import { arquivoDaMao, fonteDaMao } from "../../lib/mao";
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -98,6 +99,9 @@ const jsonLd = {
 >
   {remarkPluginFrontmatter?.temMatematica && <link slot="head" rel="stylesheet" href={url("/katex/katex.min.css")} />}
   {remarkPluginFrontmatter?.caneta?.escrita && <style slot="head" set:html={fonteDaCaneta} />}
+  {/* Os títulos à mão da papelaria (C05, D52): o post-it, as fichas do livro e a dos atalhos. */}
+  <link slot="head" rel="preload" href={arquivoDaMao} as="font" type="font/woff" crossorigin />
+  <style slot="head" set:html={fonteDaMao} />
   <BarraLeitura />
   <article class="artigo wrap" data-artigo data-pagefind-body style={`--cor:${resumo.cor}`}>
     <div class:list={["artigo-grade", { "com-lateral": temSumario || livroDoPost }]}>

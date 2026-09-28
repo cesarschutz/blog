@@ -2,8 +2,9 @@
 /**
  * Rodapé do post (briefing §5.3, D33), nesta ordem: tags (com o ícone de cada uma, D52);
  * compartilhar (copiar link, LinkedIn, WhatsApp e o compartilhar nativo quando existir); aviso sobre
- * IA; o livro do artigo (o livro 3D da categoria ou da série, que voa até a página do livro ao
- * clicar; no desktop com o sumário lateral, ele fica embaixo do sumário, D39); anterior e próximo,
+ * IA; o livro do artigo, na ficha do volume (C05, D52: a mesma ficha de fichário da lateral, com o
+ * título à mão, a foto do livro presa pelo clipe e os dados datilografados na pauta; o livro 3D voa até
+ * a página do livro ao clicar; no desktop com o sumário lateral, ela fica embaixo do sumário, D39); anterior e próximo,
  * em ordem cronológica global (D52, B03), com o título inteiro e, quando o artigo tem código-fonte
  * (D52, C03), o sinal no fim do título.
  *
@@ -17,9 +18,11 @@ import LivroEmPe from "./LivroEmPe.astro";
 import PilulaTag from "./PilulaTag.astro";
 import SinalCodigo from "./SinalCodigo.astro";
 import { ICONES } from "../lib/icones";
-import { montarLivros } from "../lib/estante";
+import { dadosDoLivro, montarLivros } from "../lib/estante";
 import type { Resumo } from "../lib/posts";
 import { tituloComQuebras } from "../lib/formato";
+import { clipeDeCaneta } from "../lib/traco";
+import type { TituloAMao } from "../lib/mao";
 
 interface Props {
   post: Resumo;
@@ -34,11 +37,10 @@ const livros = await montarLivros();
 const livro = post.serie
   ? livros.find((l) => l.id === `serie-${post.serie!.chave}`)
   : livros.find((l) => post.categoria && l.slug === post.categoria.slug);
-const quantos = livro
-  ? livro.serie
-    ? `${livro.posts.length} ${livro.posts.length === 1 ? "edição" : "edições"}`
-    : `${livro.posts.length} ${livro.posts.length === 1 ? "artigo" : "artigos"}`
-  : "";
+// O título da ficha, à mão (C05, D52): só os da lista de src/data/mao.ts (o subconjunto da Caveat).
+const DO_LIVRO: TituloAMao = livro?.serie ? "Da série" : "Do livro";
+// Datilografado: "Volume 02 ·" e "6 artigos" nunca se partem por dentro (a linha quebra no ponto, no celular).
+const dadosNaFicha = livro ? dadosDoLivro(livro).split(" · ").map((parte) => parte.replaceAll(" ", "\u00a0")).join("\u00a0· ") : "";
 const linkedin = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(endereco)}`;
 const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${tituloCompleto} ${endereco}`)}`;
 // Sempre em ordem cronológica global, sem olhar o livro (D52, B03): os rótulos não falam mais de série.
@@ -84,18 +86,21 @@ const rotulos = { anterior: "Artigo anterior", proximo: "Próximo artigo" };
     {
       livro && (
         <a class="livro-do-artigo" href={livro.href} data-livro-gira>
-          <span class="livro-3d-pequeno" aria-hidden="true">
-            <LivroEmPe livro={livro} altura={150} transicao="ao-clicar" />
-          </span>
-          <span class="sobre-livro">
-            <span class="rotulo-livro">{livro.serie ? "Da série" : "Do livro"}</span>
-            <span class="nome-livro">{livro.nome}</span>
-            <span class="dados-livro">
-              {livro.serie ? "Série" : `Volume ${String(livro.volume).padStart(2, "0")}`} · {quantos}
+          <span class="cabeca-ficha">{DO_LIVRO}</span>
+          <span class="corpo-ficha">
+            <span class="foto" aria-hidden="true">
+              <svg class="clipe" viewBox="0 0 14 46" focusable="false"><path d={clipeDeCaneta()} /></svg>
+              <span class="livro-3d-pequeno painel" style={`--cor:${livro.cores.cor}`}>
+                <LivroEmPe livro={livro} altura={150} transicao="ao-clicar" />
+              </span>
             </span>
-            <span class="ver-livro">
-              {livro.serie ? "Ver a série" : "Ver o livro"}
-              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
+            <span class="sobre-livro">
+              <span class="dados-livro">{dadosNaFicha}</span>
+              <span class="nome-livro">{livro.nome}</span>
+              <span class="ver-livro">
+                {livro.serie ? "Ver a série" : "Ver o livro"}
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
+              </span>
             </span>
           </span>
         </a>
@@ -237,73 +242,127 @@ const rotulos = { anterior: "Artigo anterior", proximo: "Próximo artigo" };
     margin-top: 1px;
   }
 
-  /* ---------- o livro do artigo ---------- */
-
+  /*
+   * ---------- o livro do artigo: a ficha do volume (C05, D52) ----------
+   * A mesma ficha de fichário da lateral (Sumario.astro), deitada: no cabeçalho, "Do livro" à mão (caneta
+   * preta) sobre a linha vermelha; embaixo, a foto do livro presa pelo clipe e, ao lado, os dados
+   * datilografados, o nome e o link nas linhas azuis da pauta. Dentro da folha do artigo, sem sombra
+   * (DESIGN.md: painéis e caixas dentro de uma folha não levam sombra). A ficha inteira é o link; ao
+   * passar o mouse, a borda fica azul-tinta e o livro gira um pouco (data-livro-gira).
+   */
   .fim-do-artigo {
     margin-top: 30px;
   }
 
   .livro-do-artigo {
-    display: flex;
-    align-items: center;
-    gap: 22px;
-    padding: 18px 24px;
+    --linha: 28px;
+    display: block;
+    overflow: hidden;
     border: 1px solid var(--rule);
-    border-radius: var(--raio-painel);
-    background: color-mix(in oklab, var(--well) 60%, var(--paper-hi));
+    border-radius: 3px;
+    background: var(--paper-hi);
     color: var(--ink);
     text-decoration: none;
-    transition:
-      border-color 0.15s,
-      background-color 0.15s;
-  }
-
-  /* O livro 3D em três quartos, como no topo da página do livro; ao passar o mouse, sobe um pouco. */
-  .livro-3d-pequeno {
-    flex: none;
-    transition: transform 0.35s cubic-bezier(0.2, 0.75, 0.2, 1);
+    transition: border-color 0.15s;
   }
 
   .livro-do-artigo:hover {
     border-color: var(--acento);
   }
 
-  .livro-do-artigo:hover .livro-3d-pequeno {
-    transform: translateY(-4px) rotate(-1deg);
+  /*
+   * Folha larga: a ficha fica do tamanho de uma ficha (a largura de um dos cartões de anterior/próximo,
+   * logo abaixo), e não uma faixa de pauta vazia de lado a lado.
+   */
+  @container (min-width: 880px) {
+    .livro-do-artigo {
+      max-width: calc((100% - 18px) / 2);
+    }
+  }
+
+  .cabeca-ficha {
+    display: block;
+    padding: 9px 20px 3px;
+    border-bottom: 1.5px solid var(--pauta-cabeca);
+    font-family: var(--font-mao);
+    font-weight: 600;
+    font-size: 25px;
+    line-height: 1.05;
+  }
+
+  /* A pauta corre a ficha inteira; a foto do livro cobre o pedaço dela à esquerda. */
+  .corpo-ficha {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 18px 20px 14px;
+    /* A pauta para 10px antes do pé da ficha (não vira uma segunda borda embaixo). */
+    background: repeating-linear-gradient(to bottom, transparent 0 calc(var(--linha) - 1px), var(--pauta) calc(var(--linha) - 1px) var(--linha))
+      0 13px / 100% calc(100% - 23px) no-repeat;
+  }
+
+  .foto {
+    position: relative;
+    flex: none;
+  }
+
+  .clipe {
+    position: absolute;
+    z-index: 2;
+    top: -14px;
+    left: 16px;
+    width: 14px;
+    height: 46px;
+    overflow: visible;
+  }
+
+  .clipe path {
+    fill: none;
+    stroke: color-mix(in oklab, var(--ink) 74%, transparent);
+    stroke-width: 1.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .livro-3d-pequeno {
+    display: grid;
+    place-items: center;
+    padding: 14px 16px 16px;
+    border-radius: 3px;
   }
 
   /* A coluna encolhe e o nome quebra com hífen: "Desenvolvimento" não cabe inteiro ao lado do livro em 375px. */
   .sobre-livro {
-    display: grid;
-    gap: 3px;
+    display: flex;
+    flex-direction: column;
     min-width: 0;
+    padding-top: 2px;
     font-family: var(--font-ui);
-  }
-
-  .rotulo-livro {
-    font-size: 13.5px;
-    color: var(--ink-2);
-  }
-
-  .nome-livro {
-    font-family: var(--font-titulo);
-    font-weight: 700;
-    font-size: 21px;
-    line-height: 1.2;
-    hyphens: auto;
-    overflow-wrap: break-word;
+    line-height: var(--linha);
   }
 
   .dados-livro {
-    font-size: 14px;
+    font-family: var(--font-codigo);
+    font-size: 13px;
     color: var(--ink-2);
+    font-variant-numeric: lining-nums;
+  }
+
+  /* O nome, maior, sobe um nada para assentar na mesma linha da pauta que os dados e o link. */
+  .nome-livro {
+    position: relative;
+    top: -4px;
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    font-size: 21px;
+    hyphens: auto;
+    overflow-wrap: break-word;
   }
 
   .ver-livro {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    margin-top: 8px;
     font-size: 14.5px;
     font-weight: 500;
     color: var(--acento);
@@ -324,14 +383,34 @@ const rotulos = { anterior: "Artigo anterior", proximo: "Próximo artigo" };
     translate: 3px 0;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .livro-3d-pequeno,
-    .ver-livro svg {
-      transition: none;
+  /* Celular estreito: o livro um pouco menor, para o nome ter onde quebrar. */
+  @media (max-width: 400px) {
+    .corpo-ficha {
+      gap: 14px;
+      padding-inline: 14px;
     }
 
-    .livro-do-artigo:hover .livro-3d-pequeno {
-      transform: none;
+    .cabeca-ficha {
+      padding-inline: 14px;
+    }
+
+    .livro-3d-pequeno {
+      zoom: 0.76;
+    }
+
+    .nome-livro {
+      top: -3px;
+      font-size: 19px;
+    }
+
+    .clipe {
+      left: 10px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ver-livro svg {
+      transition: none;
     }
   }
 
