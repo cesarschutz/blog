@@ -229,6 +229,7 @@
     limparNomes();
     try { sessionStorage.removeItem(CHAVE); } catch (err) {}
     if (!e.viewTransition || reduzido.matches) return;
+    naoEsticarALombada(e);
     if (raiz.hasAttribute("data-troca-propria") || document.querySelector("dialog[open]")) return;
     var destino = e.activation && e.activation.entry && e.activation.entry.url;
     if (!destino) return;
@@ -276,6 +277,40 @@
     });
     guardar(dados);
   });
+  /**
+   * A lombada deitada da pilha (PainelHome) não vira, pela View Transition, o livro em pé do topo da
+   * página dela (D52, revisão 15). O script do <head> dá o nome dela quando ela leva à página nova; sem o
+   * voo da pilha (no celular e no tablet, com o topo fora da tela), a imagem fina dela era esticada até a
+   * largura do livro e cruzava a capa como uma faixa. Com formas tão diferentes, não há morph: ela sai
+   * com a pilha, e o livro chega com a folha da página nova (que também tira o nome dele, abaixo, para
+   * ele não aparecer por cima da página antiga). Com o voo, a pilha já tira o nome da lombada.
+   */
+  var SEM_PAR = "cs-troca-sem-par";
+  function naoEsticarALombada(e) {
+    var destino = e.activation && e.activation.entry && e.activation.entry.url;
+    if (!destino) return;
+    var para = new URL(destino).pathname;
+    var deitados = document.querySelectorAll(".deitado[data-vt]");
+    for (var i = 0; i < deitados.length; i++) {
+      var link = deitados[i].closest("a[href]");
+      var nome = deitados[i].style.viewTransitionName;
+      if (!link || new URL(link.href).pathname !== para || !nome || nome === "none") continue;
+      deitados[i].style.viewTransitionName = "none";
+      try { sessionStorage.setItem(SEM_PAR, JSON.stringify({ n: nome, para: para, t: Date.now() })); } catch (err) {}
+    }
+  }
+  /** Na página nova: o livro que teria o par com a lombada chega com a folha, sem nome (e o recebe de volta no fim). */
+  function livroSemPar(vt) {
+    var d;
+    try {
+      d = JSON.parse(sessionStorage.getItem(SEM_PAR) || "null");
+      sessionStorage.removeItem(SEM_PAR);
+    } catch (err) { return; }
+    if (!d || d.para !== location.pathname || Date.now() - d.t > 6000) return;
+    var els = document.querySelectorAll(".livro-em-pe");
+    for (var i = 0; i < els.length; i++) if (els[i].style.viewTransitionName === d.n) nomear(els[i], "none");
+    vt.finished.finally(limparNomes);
+  }
   function guardar(dados) {
     try { sessionStorage.setItem(CHAVE, JSON.stringify(dados)); } catch (err) {}
   }
@@ -458,6 +493,7 @@
     limparNomes();
     var d = lerDados();
     var vt = e.viewTransition;
+    if (vt && !restaurada) livroSemPar(vt);
     var lenta = montagemAnterior() > MONTAGEM_LENTA;
     if (restaurada) {
       restaurada = false;
