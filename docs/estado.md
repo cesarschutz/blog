@@ -17,8 +17,9 @@ Faxina de 28/09/2026 (D53, sem commit): lixo local apagado (`.astro/depuracao`, 
 `.render/`), três exports sem uso removidos, os dados dos livros de `docs/capas/` para `src/livros/`,
 controles fechados e protótipos superados em `docs/historico/`, índice no `docs/decisoes.md`, textos
 que ainda descreviam a lousa de passos (D46) corrigidos, `CLAUDE-CODE.md` novo e este painel
-reescrito. Conferido: check, contraste, build `--force`, links (86 páginas) e `/categories/` no
-preview.
+reescrito. Depois, as sugestões do `CLAUDE-CODE.md` (regra de interface, CLAUDE.md mais curto,
+Impeccable só no site, `npm run conferir`, `/amostra/lousas/`, `docs/movimento.md`). O que ainda é
+decisão do Cesar está no fim do `CLAUDE-CODE.md`.
 
 ## Como ver
 
@@ -76,6 +77,8 @@ Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
    atalhos sem o sublinhado azul animado do título.
 9. **Carimbo "fontes conferidas em …"** no fim do artigo: pede um campo novo no frontmatter e a
    conferência post a post.
+10. **Lousa `tempo` da idempotência:** a linha que marca o instante passa por cima dos rótulos
+    "pede", "cobra" e "tenta de novo" (achado pela `/amostra/lousas/`). Corrige?
 
 ## Riscos a acompanhar
 

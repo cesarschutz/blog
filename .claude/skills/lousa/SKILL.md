@@ -111,5 +111,9 @@ no fim do traço (0,02).
 fnm exec --using=24 node scripts/desenho/validar.mjs <slug>   # classes e atributos de tempo
 ```
 
-Depois, olhe a lousa no navegador nos dois temas e com 390px, e um quadro de cada passo: o que
-entra não pode cobrir o que já está escrito, e os textos não podem sair da caixa.
+Depois de ajustar os tempos (`data-traco`, `data-aparece`…), abra `/amostra/lousas/?lousa=<slug>/<nome>`
+(só no dev): cada marca vira um quadro parado com o instante e o estado do post. Confira ali, nos
+dois temas (`&tema=escuro`) e com 390px, que nada entra por cima do que já está escrito, que os
+textos não saem da caixa e que o estado combina com o desenho; use `&quadros=todos` quando a folha
+amostrar. Uma parte a meio caminho aparece inteira no quadro (o quadro parado só esconde o que ainda
+não começou). Por fim, toque a lousa no post, pelo navegador.

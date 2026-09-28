@@ -1,0 +1,95 @@
+---
+paths:
+  - "src/components/**"
+  - "src/layouts/**"
+  - "src/pages/**"
+  - "src/styles/**"
+  - "src/scripts/**"
+  - "src/lib/**"
+---
+
+# Arquivos de interface
+
+Antes de mexer no visual ou no movimento, leia o `DESIGN.md` (vence qualquer ferramenta, inclusive o
+Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
+
+## Regras
+
+- Cores só por tokens CSS (`var(--ink)`, `var(--cat)`…), de `src/styles/tokens.ts`. Nada de hex solto
+  em componente ou SVG.
+- Ícone novo de interface: função em `src/lib/traco.ts`, na caneta preta, nunca SVG solto (D52, C04).
+  A caneta preta desenha; a azul marca (estado: seção e página atuais, leitura, marcações da D48).
+- Toda animação respeita `prefers-reduced-motion`: com ele ligado, tudo aparece no estado final, sem
+  prender a tela. Anime `transform` e `opacity` (e `stroke-dashoffset` nos traços desenhados), nunca
+  `filter` no livro 3D (`DESIGN.md`, Movimento).
+- Não pode parecer feito por IA: nada de fonte genérica, gradiente decorativo, sombra genérica em
+  tudo, animação de entrada em cada seção, rótulo em caixa alta ou emoji.
+- **JavaScript só onde há interação.** A lista do que tem JS hoje:
+  - estante, gaveta, busca, lousas, apresentação, lista/cards, menu de tema, filtro por livro, livro
+    ampliado, o nome de transição do livro do painel e o menu do celular (D29, D33, D46);
+  - o desenho do destaque da home (D41) e o lugar das notas da caneta (D48);
+  - o gesto de copiar, os contadores que rolam e a rasura e a sugestão da 404 (D49);
+  - os atalhos de teclado do artigo e o livro da pilha que voa até o topo (D50);
+  - a troca de página por folhas (`troca.js` no `<head>`), a abertura em toda página, o desfile de
+    Categorias e o desenho do topo do artigo (D51);
+  - a ficha dos atalhos, o hover do livro ampliado (o `:hover` nativo se perde na pilha 3D), a
+    preferência de tema e de modo válida por 3 dias (o script anti-piscada do `<head>`), o aceno dos
+    dois cadernos no fim da abertura da home, a caneta que escreve o fio do cabeçalho quando a página
+    demora, a assinatura da home e a fumaça da caneca no hover (D52).
+
+  Artigo sem esses componentes funciona sem JS (as marcações da caneta são estáticas). Peça nova com
+  JS entra nesta lista.
+- GSAP só carregado sob demanda (`src/scripts/gsap.ts`), nunca no layout.
+
+## Livros
+
+- A regra visual é `docs/capas/CAPAS.md`; os dados e as cores, `src/livros/livros.json` e
+  `src/livros/cores.js`; desenhos, ícones e emblemas em `src/livros/` entram inline por
+  `src/lib/livros-svg.ts`. O desenho grande da capa e o emblema da revista só carregam quando o livro
+  abre na gaveta (`/livros/<slug>.svg`).
+- Os componentes são `Capa`, `MioloLombada` (a lombada, em pé e, girada, deitada no `PainelHome`),
+  `Estante` (também no modo "filtro" do arquivo e das tags), `Gaveta`, `Livro3D`, `LivroEmPe`,
+  `TopoLivro` e `GradeLivros`: altere esses, sem criar outros em paralelo. `LivroAmpliado` copia o
+  livro 3D para o visor e monta nele as páginas de dentro, de `/livros/<slug>.json` (D49).
+- As peças usam os **papéis de cor** de `livro.css` (`--cima`, `--baixo`, `--revista-*`), nunca as
+  cores cruas `--livro-*`. Os livros **não mudam com o tema** (D39).
+- O número das lombadas, da capa da revista e da página do livro é o total de artigos, contado pelos
+  posts (some quando é zero); o "VOLUME 01" é a posição na coleção.
+- A marca "cs" (`src/lib/marca.ts`, `favicon.*`, `apple-touch-icon.png`) sai de
+  `node scripts/marca.mjs`. Não edite à mão.
+
+## Armadilhas
+
+- O cabeçalho é fixo (D31): peça nova com `position: sticky` ou âncora que role até o topo precisa
+  descontar `--altura-topo` (base.css), senão fica escondida atrás dele.
+- O CSS com escopo do Astro põe um atributo em **cada parte** do seletor, e isso soma especificidade:
+  `.menu button span` (três partes) vence `.menu .chave` (duas), mesmo vindo antes. Estado de um
+  elemento dentro de outro (aria-checked, aria-current) precisa de um seletor pelo menos tão longo
+  quanto o da regra de base (D33).
+- Em `.astro`, uma quebra de linha colada a um elemento embutido (antes ou depois) some por inteiro:
+  "mim e" + `<strong>` vira "mim ea". Mantenha o elemento na mesma linha das palavras vizinhas.
+- Instalar dependência com o dev no ar faz o Vite reiniciar, e componentes editados nesse meio-tempo
+  podem ficar com o CSS velho: salve-os de novo (um `touch` basta). O mesmo acontece quando um script
+  reescreve o arquivo inteiro (Write ou `writeFileSync`): se o CSS novo não aparecer, `touch` no
+  arquivo ou reinicie o dev antes de concluir que a regra está errada.
+- No primeiro quadro de uma página nova (View Transition entre documentos), nenhuma fonte está
+  carregada (`document.fonts` todas `unloaded` no `pagereveal`): título, capas e menu aparecem na
+  fonte de reserva por um instante. No GSAP, `power2` é uma curva cúbica (`power1` é a quadrática), o
+  que muda a conta ao emendar uma curva na outra (D52, B01 e B09).
+- O Chrome não pinta um elemento com `view-transition-name` dentro de um pai com opacidade 0: ele só
+  aparece de repente quando o pai volta a 1. Para animar o elemento chegando, tire o nome dele (ou do
+  pai) enquanto a opacidade estiver em zero, e devolva depois (D52).
+- O `clearProps: "all"` do GSAP apaga o `style` inline **inteiro** do elemento, inclusive o que não
+  foi o próprio GSAP quem pôs ali (cores e medidas em variáveis CSS escritas no HTML): passe a lista
+  das propriedades que a animação mexeu, nunca `"all"` num elemento com estilo próprio (D52, revisão
+  10b).
+
+## Conferir
+
+- Pelo MCP `chrome-devtools`, numa aba de contexto isolado (o Cesar usa as mesmas abas), nunca o
+  `claude-in-chrome`. Larguras de 320 a 1600px, os dois temas, console limpo, sem rolagem lateral.
+- Tremor, piscada ou efeito errado em animação: trace com screenshots e os quadros analisados um a um
+  (congelar a View Transition engana).
+- Depois de cada mudança visível: `npm run build` e reiniciar o preview na 4323, e pedir ao Cesar um
+  Cmd+Shift+R (o dev guarda plugin antigo).
+- Lixo de depuração vai para `.astro/depuracao/` e sai quando a rodada fecha.

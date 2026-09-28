@@ -109,7 +109,7 @@ function comoTexto(no) {
 }
 
 /** Atributos das cercas de código que a caneta usa (o Expressive Code lê os mesmos, codigo.ts). */
-export function canetaNoCodigo(meta) {
+function canetaNoCodigo(meta) {
   const achados = [];
   for (const [, nome, valor] of String(meta ?? "").matchAll(/\b(anotar|linhas)="([^"]*)"/g)) achados.push({ nome, valor });
   return achados;

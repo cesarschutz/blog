@@ -2,17 +2,12 @@
   "buildPath": "code",
   "detector": {
     "ignoreRules": [],
-    "ignoreFiles": [],
+    "ignoreFiles": [
+      "scripts/**",
+      "docs/**",
+      ".claude/**"
+    ],
     "ignoreValues": [
-      {
-        "rule": "cream-palette",
-        "value": "*",
-        "files": [
-          ".impeccable/review/caneta/index.html"
-        ],
-        "createdAt": "2026-09-26T20:41:26.218Z",
-        "reason": "D26 e DESIGN.md: #F1F0EB é o papel da página do blog (neutral, Folhas claras), decidido pelo Cesar; a página de revisão (fora do git) usa a paleta do próprio blog"
-      },
       {
         "rule": "layout-transition",
         "value": "*",
@@ -27,61 +22,10 @@
         "value": "sf mono",
         "createdAt": "2026-09-27T13:51:58.785Z",
         "reason": "base.css: monoespaçada do sistema no kbd de propósito (comentário no CSS: o ⌘K não pode baixar a JetBrains Mono em toda página)"
-      },
-      {
-        "rule": "cream-palette",
-        "value": "*",
-        "files": [
-          "docs/prototipos/animacoes/index.html"
-        ],
-        "createdAt": "2026-09-27T15:35:03.513Z",
-        "reason": "D26 e DESIGN.md: #F1F0EB é o papel da página do blog (Folhas claras), decidido pelo Cesar; os protótipos de animação (D51) usam a paleta do próprio blog"
-      },
-      {
-        "rule": "cream-palette",
-        "value": "*",
-        "files": [
-          "docs/prototipos/animacoes/01-abertura-home.html"
-        ],
-        "createdAt": "2026-09-27T15:35:03.556Z",
-        "reason": "D26 e DESIGN.md: #F1F0EB é o papel da página do blog (Folhas claras), decidido pelo Cesar; os protótipos de animação (D51) usam a paleta do próprio blog"
-      },
-      {
-        "rule": "cream-palette",
-        "value": "*",
-        "files": [
-          "docs/prototipos/animacoes/02-abertura-outras-telas.html"
-        ],
-        "createdAt": "2026-09-27T15:35:03.595Z",
-        "reason": "D26 e DESIGN.md: #F1F0EB é o papel da página do blog (Folhas claras), decidido pelo Cesar; os protótipos de animação (D51) usam a paleta do próprio blog"
-      },
-      {
-        "rule": "cream-palette",
-        "value": "*",
-        "files": [
-          "docs/prototipos/animacoes/03-transicao-geral.html"
-        ],
-        "createdAt": "2026-09-27T15:35:03.636Z",
-        "reason": "D26 e DESIGN.md: #F1F0EB é o papel da página do blog (Folhas claras), decidido pelo Cesar; os protótipos de animação (D51) usam a paleta do próprio blog"
-      },
-      {
-        "rule": "cream-palette",
-        "value": "*",
-        "files": [
-          "docs/prototipos/animacoes/04-categorias.html"
-        ],
-        "createdAt": "2026-09-27T15:35:03.665Z",
-        "reason": "D26 e DESIGN.md: #F1F0EB é o papel da página do blog (Folhas claras), decidido pelo Cesar; os protótipos de animação (D51) usam a paleta do próprio blog"
-      },
-      {
-        "rule": "cream-palette",
-        "value": "*",
-        "files": [
-          "docs/prototipos/animacoes/05-tags.html"
-        ],
-        "createdAt": "2026-09-27T15:35:03.695Z",
-        "reason": "D26 e DESIGN.md: #F1F0EB é o papel da página do blog (Folhas claras), decidido pelo Cesar; os protótipos de animação (D51) usam a paleta do próprio blog"
       }
     ]
+  },
+  "hook": {
+    "quiet": true
   }
 }

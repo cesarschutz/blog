@@ -17,7 +17,7 @@ const originais = metas.map((meta) => meta.content);
  * A escolha em vigor nesta página. Vem do `data-theme` (o script do <head> o põe a partir do
  * armazenamento), e não do armazenamento, que pode estar bloqueado.
  */
-export function lerEscolha(): Escolha {
+function lerEscolha(): Escolha {
   const valor = raiz.dataset.theme;
   return valor === "light" || valor === "dark" ? valor : "";
 }
@@ -35,7 +35,7 @@ function pintarBarra(valor: Escolha) {
   metas.forEach((meta, i) => (meta.content = valor ? fundo : originais[i]));
 }
 
-export function aplicarTema(valor: Escolha) {
+function aplicarTema(valor: Escolha) {
   // C01 (D52): sem escolha (ou vencida), o padrão é sempre claro, nunca o do sistema.
   raiz.dataset.theme = valor || "light";
   try {

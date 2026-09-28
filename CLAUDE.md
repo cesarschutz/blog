@@ -16,6 +16,10 @@ continuar de onde parou: design ou produto no `docs/briefing.md` (e no `docs/est
 de desenho); a decisão, o motivo e o que mudou no `docs/decisoes.md`; o andamento no `docs/estado.md`;
 e, se mudar o jeito de trabalhar, aqui, na skill ou na regra (`.claude/`) certa.
 
+**Onde fica cada coisa:** regra e decisão do projeto moram só nos documentos do projeto (este arquivo,
+`.claude/`, `DESIGN.md` e `docs/`). A memória automática do Claude e o Segundo Cérebro guardam o jeito
+de trabalhar e apontam para cá, sem copiar regra: se divergirem, vale o projeto.
+
 Lista grande de ajustes: controle em `docs/ajustes-dNN/` (um commit por item, quando o Cesar pedir
 commits), agentes em paralelo sem parar para perguntar e as decisões pendentes no fim. Ao fechar a
 rodada, o controle vai para `docs/historico/` e o lixo de depuração (`.astro/depuracao/`, previews em
@@ -44,20 +48,11 @@ outras portas) sai.
   Um `git status` comum já regrava o `.git/index` de lá. Ao delegar para subagentes, repasse essa regra.
 - Antes de instalar qualquer biblioteca, proponha e espere o OK. Registre a decisão em `docs/decisoes.md`.
 - Cores só por tokens CSS (`var(--ink)`, `var(--cat)`…). Nada de hex solto em componente ou SVG.
-- Ícone novo de interface: função em `src/lib/traco.ts`, na caneta preta, nunca SVG solto (D52, C04).
 - Toda animação respeita `prefers-reduced-motion`: com ele ligado, tudo aparece no estado final,
   sem prender a tela.
-- JavaScript só onde há interação (estante, gaveta, busca, lousas, apresentação, lista/cards, menu de
-  tema, filtro por livro, livro ampliado, o nome de transição do livro
-  do painel e o menu do celular, D29, D33, D46; o desenho do destaque da home, D41; o lugar das notas
-  da caneta, D48; o gesto de copiar, os contadores que rolam e a rasura e a sugestão da 404, D49; os
-  atalhos de teclado do artigo e o livro da pilha que voa até o topo, D50; a troca de página por
-  folhas, `troca.js` no `<head>`, a abertura em toda página, o desfile de Categorias e o desenho do
-  topo do artigo, D51; a ficha dos atalhos, o hover do livro ampliado (o `:hover` nativo se perde na
-  pilha 3D), a preferência de tema e de modo válida por 3 dias (o script anti-piscada do `<head>`), o
-  aceno dos dois cadernos no fim da abertura da home e a caneta que escreve o fio do cabeçalho quando
-  a página demora, a assinatura da home e a fumaça da caneca no hover, D52).
-  Artigo sem esses componentes funciona sem JS (as marcações da caneta são estáticas).
+- JavaScript só onde há interação; a lista do que tem JS, os ícones, os livros e as armadilhas de
+  CSS, View Transition e GSAP estão em `.claude/rules/interface.md` (carrega ao abrir componentes,
+  estilos, scripts, páginas e `src/lib/`). Artigo sem componente interativo funciona sem JS.
 - Fontes servidas pelo próprio site (`@fontsource`). Nunca Google Fonts nem CDN em produção.
 - Para verificar o blog no navegador (visual, console, performance), use sempre o MCP
   `chrome-devtools`, nunca o `claude-in-chrome`.
@@ -66,42 +61,18 @@ outras portas) sai.
 - Os protótipos em `docs/referencias/` e `docs/prototipos/` (os novos vão para esta, D40) mostram
   aparência e comportamento, mas não são código para copiar. Onde divergirem do briefing, vale o briefing.
 - O caminho do projeto tem espaço (`novo site`): use aspas em todo comando e script.
+- Frase de autor (saiu na D39) só volta com a fonte primária aberta e conferida.
 - Se o Cesar corrigir a mesma coisa duas vezes, isso vira regra no lugar certo (skill, `.claude/rules/` ou aqui).
 
-## Livros e séries: capas, lombadas e categorias
+## Livros, séries e tags
 
-**A regra de capas, lombadas, estante, livros e séries novos é `docs/capas/CAPAS.md`** (D30, D32),
-com as imagens de referência em `docs/capas/referencia/`. Cada categoria é um livro de uma coleção
-numerada, no estilo "edição de estudo"; cada série é uma revista técnica (cada post, uma edição). Os
-dados vêm de `src/livros/livros.json` e todas as cores, de `src/livros/cores.js` (nada de cor fixa).
-Desenhos, ícones e emblemas ficam em `src/livros/desenhos/`, `icones/` e `serie/` (D53) e entram inline pelo
-`src/lib/livros-svg.ts`; o desenho grande da capa e o emblema da revista só carregam quando o livro
-abre na gaveta (`/livros/<slug>.svg`). O número das lombadas, da capa da revista e da página do livro
-é o total de artigos, contado pelos posts (some quando é zero); o "VOLUME 01" da capa é a posição na
-coleção. Categoria ou série nova = pela seção "Livros novos" do `CAPAS.md`, com o OK do Cesar. Os
-componentes são `Capa`, `MioloLombada` (a lombada, em pé e, girada, deitada no `PainelHome`), `Estante` (também no modo
-"filtro" do arquivo e das tags), `Gaveta`, `Livro3D`, `LivroEmPe`, `TopoLivro` e `GradeLivros`:
-altere esses, sem criar outros em paralelo (`LivroAmpliado` copia o livro 3D para o visor e monta
-nele as páginas de dentro, de `/livros/<slug>.json`, D49).
-As peças usam os **papéis de cor** de `livro.css` (`--cima`, `--baixo`, `--revista-*`), nunca as
-cores cruas `--livro-*`. Os livros **não mudam com o tema** (D39): a categoria sempre com o papel em
-cima e a cor do livro embaixo, a série sempre clara. Para conferir, `/amostra/livros/` (só no dev).
-
-**Toda tag tem um ícone** (D52), no traço dos ícones das lombadas: `src/livros/tags/<slug>.svg`,
-escrito em `scripts/desenho/tags.mjs` e embutido por `src/lib/tags-svg.ts` (`IconeTag`, `PilulaTag`).
-Tag nova num post = ícone novo, pela seção "Tags" do `CAPAS.md`; sem ele, o build quebra. Para
-conferir, `/amostra/tags/` (só no dev).
-
-A **marca** (D33) é o livro "cs": `Marca.astro` com o traçado de `src/lib/marca.ts`. Esse arquivo, o
-`favicon.svg`, o `favicon.ico` e o `apple-touch-icon.png` saem de `node scripts/marca.mjs` (usa o
-`pdftocairo`, do poppler do Homebrew, para tirar o contorno das letras da própria fonte). Não edite à
-mão.
-
-## Frases de autores
-
-As frases de autores (o post-it da home e dos artigos, D33) **saíram do blog na D39**, a pedido do
-Cesar, com o arquivo delas. Se voltarem um dia, só com a **fonte primária aberta e conferida** (a
-revisão de 24/09/2026 mostrou que a maioria das antigas era inventada ou atribuída sem base).
+Cada categoria é um livro de uma coleção numerada ("edição de estudo"); cada série é uma revista
+técnica (cada post, uma edição). A regra é `docs/capas/CAPAS.md` (D30, D32); os dados, as cores e os
+desenhos ficam em `src/livros/` (D53). Categoria ou série nova = pela seção "Livros novos" do
+`CAPAS.md`, com o OK do Cesar. Os livros **não mudam com o tema** (D39). **Toda tag tem um ícone**
+(D52): tag nova num post = ícone novo, pela seção "Tags" do `CAPAS.md`; sem ele, o build quebra.
+Componentes e detalhes em `.claude/rules/interface.md`. Para conferir, `/amostra/livros/` e
+`/amostra/tags/` (só no dev).
 
 ## URLs que não podem quebrar
 
@@ -151,6 +122,8 @@ npm run check        # astro check: 0 erros antes de mostrar qualquer coisa ao C
 npm run preview      # serve o dist/; é onde a busca funciona (no dev não há índice)
 npm run contraste    # contraste dos tokens (D22); falha se texto ficar abaixo do mínimo
 npm run links        # confere links internos, âncoras e redirecionamentos do dist/
+npm run conferir -- <slug> [--base URL] [--capturas]   # o post em 320–1600px × claro/escuro: rolagem
+                     # lateral, console, rede, alt e marcas da caneta (D53); sai 1 com problema
 npm run setup        # confere o ambiente (Node, dependências, skills, Chrome, motor do Impeccable)
 npm run apresentacao -- <slug> --pptx <arquivo> --titulo "…"   # slides do NotebookLM
 node scripts/desenho/validar.mjs [slug]   # regras da ilustração e das lousas
@@ -166,14 +139,16 @@ A porta 4321 desta máquina está ocupada por outra ferramenta do Cesar, que nã
 Astro usa a próxima livre (4322). Só no dev: `/amostra/` (tokens, fontes, avisos),
 `/amostra/markdown/` e `/amostra/mdx/` (recursos de Markdown e de MDX, de `src/amostra/`), `/amostra/caneta/` (os 20
 tipos da caneta, de `src/amostra/caneta.md`), `/amostra/desenhos/` e
-`/amostra/livros/` (as capas planas, para comparar com `docs/capas/referencia/`) e `/amostra/tags/`
-(os ícones das tags, lado a lado e da pílula à marca d'água).
+`/amostra/livros/` (as capas planas, para comparar com `docs/capas/referencia/`), `/amostra/tags/`
+(os ícones das tags, lado a lado e da pílula à marca d'água) e `/amostra/lousas/` (os quadros-chave
+de cada lousa, parados, no instante de cada marca, com o estado do post; `?lousa=<slug>/<nome>`,
+`?tema=escuro`, `?quadros=todos`).
 
 Medição da busca (D2): `scripts/bench-busca/` (construir, conferir, medir), com o dev parado.
 
 ## Mapa das pastas
 
-"(planejado)" marca o que ainda não existe. Atualize quando mudar.
+Atualize quando mudar.
 
 ```
 DESIGN.md                sistema visual (fonte de verdade do visual, formato DESIGN.md do Google)
@@ -188,15 +163,18 @@ docs/estado.md           painel: fase, pronto, próximos passos, perguntas
 docs/decisoes.md         registro de decisões (data, decisão, motivo, alternativas)
 docs/estilo-desenho.md   estilo das ilustrações e das lousas
 docs/marcacoes.md        guia vivo da caneta do caderno: 20 tipos, limites, tela, ajustes do Cesar (D48)
+docs/movimento.md        o detalhe de cada animação (durações, curvas, ordem); as regras ficam no DESIGN.md
 docs/capas/              a regra dos livros (CAPAS.md) e as imagens de referência
 src/livros/              o que o site lê dos livros (D53): livros.json, cores.js, grao.svg, desenhos/,
                          icones/, serie/ e tags/ (um ícone por tag, D52)
-docs/historico/          rodadas fechadas: o prompt da Fase 0, os controles da D46/D47 e ajustes-d52/
-                         (controle, regras dos agentes, diagnósticos, pesquisa e sugestões da D52)
+docs/historico/          rodadas fechadas: o prompt da Fase 0, os controles da D46/D47, ajustes-d52/
+                         (controle, regras dos agentes, diagnósticos, pesquisa e sugestões da D52) e
+                         os protótipos superados
 docs/virada.md           plano para o domínio passar ao blog novo (só com OK do Cesar)
-docs/referencias/        protótipos aprovados
+docs/referencias/        protótipos aprovados da Fase 0 (estilo dos desenhos, lousas, "Folhas claras")
+docs/prototipos/         protótipos que ainda são referência (caneta, animações da D51)
 src/content/posts/       posts; nome do arquivo = slug da URL
-src/data/                taxonomia e series (leem docs/capas), java, decks (apresentações), site
+src/data/                taxonomia e series (leem src/livros), java, decks (apresentações), site
                          (autor, perfis e textos), mao (os títulos à mão da papelaria, C05)
 src/amostra/             o conteúdo das páginas /amostra/ (recursos.md, recursos.mdx, caneta.md)
 src/styles/tokens.ts     cores dos dois temas: fonte única, gera as variáveis CSS (D4)
@@ -231,7 +209,7 @@ src/lousas/<slug>/       desenhos das lousas de cada post .mdx
 .claude/agents/          subagentes do Impeccable
 .claude/revisao-posts.md lista e status da revisão em lote dos posts
 .mcp.json                MCPs do projeto (astro-docs, chrome-devtools)
-.claude/rules/           regras por caminho (posts, desenhos)
+.claude/rules/           regras por caminho (posts, desenhos, interface)
 ```
 
 ## Skills
@@ -246,7 +224,8 @@ src/lousas/<slug>/       desenhos das lousas de cada post .mdx
 - `apresentacao`: PowerPoint do NotebookLM → slides WebP e PDF
 - `serie-java`: série "Atualizações do Java" (só LTS)
 - De terceiros, lidas antes de instalar (D35): `impeccable` (revisão de design; o motor fica em
-  `~/.impeccable`), `gsap-*` (animações), `web-quality-audit`, `accessibility`, `performance`,
+  `~/.impeccable`), `gsap-core`, `gsap-timeline`, `gsap-plugins`, `gsap-performance` e `gsap-utils` (animações; as de
+  React, Vue e ScrollTrigger saíram na D53), `web-quality-audit`, `accessibility`, `performance`,
   `core-web-vitals`, `seo` e `best-practices`. Atualizar = ler a versão nova antes.
 - MCPs do projeto (`.mcp.json`): `astro-docs` (documentação do Astro) e `chrome-devtools`
   (`chrome-devtools-mcp@1.10.1`, sem telemetria), usados na conferência dos posts.
@@ -273,8 +252,6 @@ src/lousas/<slug>/       desenhos das lousas de cada post .mdx
   exige `git mv` em dois passos.
 - `$` em texto de post precisa de escape (`US\$ 10`). Sem isso, dois `$` na mesma frase viram fórmula.
 - O espaço entre dois `<tspan>` some ao embutir o SVG: use `&#160;`.
-- Em `.astro`, uma quebra de linha colada a um elemento embutido (antes ou depois) some por inteiro:
-  "mim e" + `<strong>` vira "mim ea". Mantenha o elemento na mesma linha das palavras vizinhas.
 - Antes de commitar (quando pedido): `git status --untracked-files=all`, e nada com " 2" no nome.
 - Deploy preso na fila: cancelar e reexecutar o workflow (o `gh` está instalado nesta máquina).
 - Push sempre pelo remoto SSH (`origin` = `git@github.com:cesarschutz/blog.git`): pelo HTTPS com o
@@ -289,31 +266,14 @@ src/lousas/<slug>/       desenhos das lousas de cada post .mdx
   porque o HTML guardado aponta para um `ec.*.css` que não existe mais).
 - Suba o dev com `npm run dev -- --host 127.0.0.1`. Sem isso ele escuta só em `localhost` (IPv6), e o
   endereço <http://127.0.0.1:4322> que o Cesar usa não abre.
-- O cabeçalho é fixo (D31): peça nova com `position: sticky` ou âncora que role até o topo precisa
-  descontar `--altura-topo` (base.css), senão fica escondida atrás dele.
-- Instalar dependência com o dev no ar faz o Vite reiniciar, e componentes editados nesse meio-tempo
-  podem ficar com o CSS velho: salve-os de novo (um `touch` basta). O mesmo acontece quando um script
-  reescreve o arquivo inteiro (Write ou `writeFileSync`): se o CSS novo não aparecer, `touch` no
-  arquivo ou reinicie o dev antes de concluir que a regra está errada.
-- O CSS com escopo do Astro põe um atributo em **cada parte** do seletor, e isso soma especificidade:
-  `.menu button span` (três partes) vence `.menu .chave` (duas), mesmo vindo antes. Estado de um
-  elemento dentro de outro (aria-checked, aria-current) precisa de um seletor pelo menos tão longo
-  quanto o da regra de base (D33).
 - No bash do Claude, `node -e '…'` quebra com apóstrofo no texto ("d'água"): escreva o script num
   arquivo do scratchpad e rode o arquivo.
 - Campo novo no esquema do conteúdo (`content.config.ts`): o dev já aberto não relê sozinho e
   descarta o campo até reiniciar. Sem tirar o dev principal do ar, suba por uns segundos um segundo
   dev noutra porta (`--ignore-lock`), que refaz o armazenamento de conteúdo com o esquema novo, e
   pare-o (D52, C03).
-- No primeiro quadro de uma página nova (View Transition entre documentos), nenhuma fonte está
-  carregada (`document.fonts` todas `unloaded` no `pagereveal`): título, capas e menu aparecem na
-  fonte de reserva por um instante. No GSAP, `power2` é uma curva cúbica (`power1` é a quadrática), o
-  que muda a conta ao emendar uma curva na outra (D52, B01 e B09).
-- O Chrome não pinta um elemento com `view-transition-name` dentro de um pai com opacidade 0: ele só
-  aparece de repente quando o pai volta a 1. Para animar o elemento chegando, tire o nome dele (ou do
-  pai) enquanto a opacidade estiver em zero, e devolva depois (D52, revisão de acabamento das
-  animações).
-- O `clearProps: "all"` do GSAP apaga o `style` inline **inteiro** do elemento, inclusive o que não
-  foi o próprio GSAP quem pôs ali (cores e medidas em variáveis CSS escritas no HTML, por exemplo):
-  passe a lista das propriedades que a animação de fato mexeu, nunca `"all"` num elemento com estilo
-  próprio (D52, revisão 10b: `clearProps: "all"` no `pageshow` apagava o estilo das lombadas da pilha).
+- Dev com erro 504 "Outdated Optimize Dep" (o GSAP não carrega, "Failed to fetch dynamically imported
+  module", a gaveta não arrasta): o cache de dependências do Vite ficou velho, em geral depois de
+  mover arquivos importados com o dev no ar. Pare o dev, apague `node_modules/.vite` e suba de novo.
+- As armadilhas de interface (cabeçalho fixo, CSS com escopo, quebra de linha em `.astro`, Vite com
+  CSS velho, View Transition e GSAP) estão em `.claude/rules/interface.md`.

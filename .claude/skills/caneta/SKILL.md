@@ -59,8 +59,9 @@ Com o dev no ar, pelo MCP `chrome-devtools` (nunca o `claude-in-chrome`), na pá
 - console sem erros;
 - `npm run check` (0 erros) e `npm run contraste` (0 falhas).
 
-Um script de conferência que mede tudo isso nas 10 combinações vale mais que olhar uma a uma; olhe as
-capturas das marcas de perto, pelo menos em 390 e 1280px, nos dois temas.
+O script de conferência é `fnm exec --using=24 npm run conferir -- <slug> --capturas` (D53): mede as
+10 combinações, marcas cortadas pela janela ou por um bloco e notas por cima do texto. Olhe as
+capturas em `.astro/conferir/<slug>/` de perto, pelo menos em 390 e 1280px, nos dois temas.
 
 ### 6. Entregar o relatório
 

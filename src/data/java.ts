@@ -6,7 +6,7 @@
  * Sem imports: o Node 24 roda este arquivo direto nos scripts.
  */
 
-export interface JavaLts {
+interface JavaLts {
   version: number;
   /** Mês e ano de lançamento (ou previsto). */
   release: string;

@@ -3,7 +3,7 @@
  * como está (filtro DCTDecode); cada página tem o tamanho da imagem a 96 dpi e um conteúdo que só
  * desenha a imagem na página toda. Sem biblioteca: é o pedaço do formato que precisamos.
  */
-export interface PaginaJpeg {
+interface PaginaJpeg {
   jpeg: Uint8Array;
   largura: number;
   altura: number;

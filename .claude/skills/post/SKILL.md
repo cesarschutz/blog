@@ -26,7 +26,8 @@ Como ler o que chega em `entrada/` (fora do git; nada ali é publicado):
 
 ### 1. Ler as regras
 
-Leia `DESIGN.md` (visual, desenhos e movimento) e `CLAUDE.md` (regras do projeto, URLs que não podem
+Leia `DESIGN.md` (visual, desenhos e as regras de movimento; o detalhe de cada animação está em
+`docs/movimento.md`) e `CLAUDE.md` (regras do projeto, URLs que não podem
 quebrar). **O `DESIGN.md` vence qualquer ferramenta:** o "go all out", o redesign e a troca do
 `DESIGN.md` que a skill `impeccable` sugere não valem aqui. Leia também um post existente em
 `src/content/posts/` para carregar `.claude/rules/posts.md`, e o `docs/estilo-desenho.md`.
@@ -51,6 +52,7 @@ Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
     evidência (um erro no console, um painel real) pode ficar como imagem, com `alt` descritivo;
     diga por quê.
   - A **ilustração do post** (sempre existe): o que ela vai mostrar.
+  - Cada recurso escolhido pela tabela [Qual recurso para qual conteúdo](#qual-recurso-para-qual-conteúdo).
   - Onde entram **desenhos e animações novos**: linha do tempo de arrastar (também para passo a
     passo, com a lista dos passos embaixo), animação curta em loop, frase em destaque (rara) ou
     animação GSAP com play/pause, cada um com o trecho do texto que ele explica.
@@ -140,6 +142,11 @@ Siga a skill `desenho` (ilustração) e a skill `lousa` (diagramas), no estilo d
 
 ### 7. Conferir no navegador (Chrome DevTools MCP)
 
+Antes de olhar à mão, rode `fnm exec --using=24 npm run conferir -- <slug> --capturas` (dev no ar;
+`--base http://127.0.0.1:4323` para o preview). Ele cobre 320 a 1600px nos dois temas, rolagem
+lateral, console, rede, `alt` e as marcas da caneta, e precisa terminar com "Tudo ok". O trace de
+performance e as animações continuam à mão, pelo `chrome-devtools`:
+
 Com o dev no ar (`fnm exec --using=24 npm run dev -- --host 127.0.0.1`, porta 4322), use o servidor
 MCP `chrome-devtools`:
 
@@ -202,6 +209,29 @@ mesma coisa duas vezes, a mudança vira regra (CLAUDE.md).
 - Nunca mude um título de seção migrado, nem quando o post virar MDX: as âncoras dependem deles (D7).
 - A base é o commit `0184562` do blog atual (`../blog-atual`, **somente leitura**: use
   `git --no-optional-locks`).
+
+## Qual recurso para qual conteúdo
+
+Escolha pelo papel do trecho, não para enfeitar. Post sem fluxo não tem animação; a maioria dos
+trechos fica só no texto.
+
+| O trecho é… | Recurso | Onde está |
+|---|---|---|
+| o assunto do post inteiro | a ilustração (sempre, uma por post) | skill `desenho` |
+| um evento curto que se repete (o problema acontecendo) | animação em loop, `LousaLoop` | skill `lousa` |
+| uma sequência em que a ordem importa | linha do tempo com passos, `LousaTempo` com um estado por passo e a lista numerada embaixo | skill `lousa` |
+| antes e depois, ou "com e sem", ao longo do tempo | linha do tempo com duas linhas, `LousaTempo` | skill `lousa` |
+| uma frase que resume o post e merece ser lida duas vezes (rara) | `FraseDestaque` | skill `lousa` |
+| um fluxo que nenhuma lousa cobre | animação GSAP em SVG, com play/pause | passo 6 |
+| alerta, dica ou ressalva fora do fluxo do texto | aviso (`> [!DICA]`, `NOTA`, `IMPORTANTE`, `ATENCAO`, `CUIDADO`) | Recursos de Markdown |
+| um comentário curto ao lado do parágrafo | nota lateral (`texto[^chave]`) | Recursos de Markdown |
+| dado para consultar (parâmetros, comparação) | tabela | Recursos de Markdown |
+| detalhe que a maioria pula | `<details>` com `<summary>` | Recursos de Markdown |
+| evidência real (erro no console, painel) | imagem com `alt` descritivo | passo 2 |
+| o que um arquiteto marcaria lendo | caneta (20 tipos, marca-texto no máximo 2) | skill `caneta`, só no fim |
+
+Não use dois recursos para a mesma ideia (a lousa e a frase dizendo a mesma coisa, ou a caneta
+marcando um aviso).
 
 ## Recursos de Markdown
 

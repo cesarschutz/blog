@@ -36,14 +36,14 @@ export interface Resumo {
 }
 
 /** Divide "Assunto — complemento" em título e subtítulo (com inicial maiúscula). */
-export function dividirTitulo(titulo: string): { titulo: string; subtitulo: string } {
+function dividirTitulo(titulo: string): { titulo: string; subtitulo: string } {
   const [principal, ...resto] = titulo.split(" — ");
   const sub = resto.join(" — ");
   return { titulo: principal, subtitulo: sub ? sub.charAt(0).toUpperCase() + sub.slice(1) : "" };
 }
 
 /** Palavras ÷ 200, como no blog atual (conta o Markdown inteiro, com código). */
-export function minutosDeLeitura(corpo: string): number {
+function minutosDeLeitura(corpo: string): number {
   const palavras = corpo.trim().split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(palavras / 200));
 }

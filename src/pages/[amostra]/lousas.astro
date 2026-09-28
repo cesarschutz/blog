@@ -1,0 +1,270 @@
+---
+/**
+ * Folha de conferência das lousas (skill lousa): cada desenho de src/lousas/ em quadros-chave, lado
+ * a lado e parados, no instante de cada marca dos atributos de tempo (data-traco, data-aparece…),
+ * mais o 0 e o fim. Os quadros saem do servidor, por quadroDaLousa (o mesmo quadro parado do post),
+ * sem o script da lousa. Cada quadro diz o estado vigente do LousaTempo (ou a marca do LousaLoop)
+ * que usa o desenho, lido do texto cru dos posts .mdx, e usa a cor da categoria desse post. Só no
+ * `npm run dev` (/amostra/lousas/). ?lousa=<slug>/<nome> mostra uma só; ?tema=escuro troca o tema;
+ * ?quadros=todos mostra todas as marcas quando o desenho passa de 12.
+ */
+import Base from "../../layouts/Base.astro";
+import { getResumos, urlPost } from "../../lib/posts";
+import { quadroDaLousa } from "../../lib/lousas";
+import { ATRIBUTOS, numeros } from "../../lib/lousa-tempo";
+import "../../styles/lousa.css";
+
+export function getStaticPaths() {
+  return import.meta.env.DEV ? [{ params: { amostra: "amostra" } }] : [];
+}
+
+const MAXIMO = 12;
+
+const desenhos = import.meta.glob<string>("../../lousas/**/*.svg", { query: "?raw", import: "default", eager: true });
+const fontesDosPosts = import.meta.glob<string>("../../content/posts/*.mdx", { query: "?raw", import: "default", eager: true });
+const resumos = new Map((await getResumos()).map((r) => [r.slug, r]));
+
+interface Uso {
+  post: string;
+  titulo: string;
+  endereco: string;
+  cor?: string;
+  componente: "LousaTempo" | "LousaLoop";
+  rotulo: string;
+  /** LousaTempo: o texto a partir de cada instante (de 0 a 1). */
+  estados: { de: number; texto: string }[];
+  /** LousaLoop: os eventos da barra de tempo (de 0 a 1). */
+  marcas: { em: number; rotulo: string }[];
+  /** LousaLoop: o instante do quadro parado (de 0 a 1). */
+  parado?: number;
+}
+
+// Os usos, pelo texto cru do JSX: <LousaTempo … /> e <LousaLoop … />, com as props em aspas e os
+// objetos no formato { de: 0.2, texto: "…" } e { em: 0.47, rotulo: "…" }, como a skill lousa ensina.
+const texto = String.raw`"((?:[^"\\]|\\.)*)"`;
+const usos = new Map<string, Uso[]>();
+for (const [arquivo, fonte] of Object.entries(fontesDosPosts)) {
+  const post = arquivo.split("/").pop()!.replace(/\.mdx$/, "");
+  const resumo = resumos.get(post);
+  for (const [, componente, props] of fonte.matchAll(/<(LousaTempo|LousaLoop)\b([\s\S]*?)\/>/g)) {
+    const desenho = props.match(/\bdesenho="([^"]+)"/)?.[1];
+    if (!desenho) continue;
+    const uso: Uso = {
+      post,
+      titulo: resumo?.titulo ?? post,
+      endereco: resumo?.url ?? urlPost(post),
+      cor: resumo?.cor,
+      componente: componente as Uso["componente"],
+      rotulo: props.match(new RegExp(`\\brotulo=${texto}`))?.[1] ?? desenho,
+      estados: [...props.matchAll(new RegExp(String.raw`\{\s*de:\s*([\d.]+)\s*,\s*texto:\s*${texto}\s*\}`, "g"))].map(
+        ([, de, t]) => ({ de: Number(de), texto: t }),
+      ),
+      marcas: [...props.matchAll(new RegExp(String.raw`\{\s*em:\s*([\d.]+)\s*,\s*rotulo:\s*${texto}\s*\}`, "g"))].map(
+        ([, em, r]) => ({ em: Number(em), rotulo: r }),
+      ),
+      parado: componente === "LousaLoop" ? Number(props.match(/\bparado=\{([\d.]+)\}/)?.[1] ?? 1) : undefined,
+    };
+    usos.set(desenho, [...(usos.get(desenho) ?? []), uso]);
+  }
+}
+
+const numero = (n: number) => n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 3 });
+const arredondar = (n: number) => Math.round(n * 1000) / 1000;
+
+/** Os quadros: cada início e fim citado nos atributos, mais o 0, o fim e o quadro parado do loop. */
+function instantesDe(fonte: string, fim: number, parado?: number) {
+  const todos = new Set([0, arredondar(fim)]);
+  for (const [, , valor] of fonte.matchAll(new RegExp(`\\sdata-(${ATRIBUTOS.join("|")})="([^"]*)"`, "g"))) {
+    const [a, b] = numeros(valor);
+    for (const n of [a, b]) if (Number.isFinite(n)) todos.add(arredondar(n));
+  }
+  if (parado !== undefined) todos.add(arredondar(parado));
+  const lista = [...todos].sort((x, y) => x - y);
+  // Mais de 12: a intervalos iguais na lista, sempre com o 0, o fim e o parado.
+  const fixos = new Set([0, arredondar(fim), ...(parado !== undefined ? [arredondar(parado)] : [])]);
+  const mostrados = new Set(fixos);
+  const resto = lista.filter((n) => !fixos.has(n));
+  const vagas = Math.max(0, MAXIMO - fixos.size);
+  if (resto.length <= vagas) resto.forEach((n) => mostrados.add(n));
+  else for (let i = 0; i < vagas; i++) mostrados.add(resto[Math.round(((i + 0.5) * resto.length) / vagas - 0.5)]);
+  return lista.map((t) => ({ t, mostrado: mostrados.has(t) }));
+}
+
+const lousas = Object.entries(desenhos)
+  .map(([arquivo, fonte]) => {
+    const nome = arquivo.replace("../../lousas/", "").replace(/\.svg$/, "");
+    const usosDela = usos.get(nome) ?? [];
+    const uso = usosDela[0];
+    const rotulo = uso?.rotulo ?? nome;
+    const { fim } = quadroDaLousa(nome, rotulo);
+    const parado = uso?.parado !== undefined ? uso.parado * fim : undefined;
+    const quadros = instantesDe(fonte, fim, parado).map(({ t, mostrado }) => {
+      const fracao = fim ? t / fim : 1;
+      let estado = "";
+      if (uso?.componente === "LousaTempo")
+        estado = [...uso.estados].reverse().find((e) => fracao + 1e-9 >= e.de)?.texto ?? "";
+      else if (uso?.componente === "LousaLoop")
+        estado = [...uso.marcas].reverse().find((m) => fracao + 1e-9 >= m.em)?.rotulo ?? "início";
+      return {
+        t,
+        fracao,
+        mostrado,
+        estado,
+        parado: parado !== undefined && arredondar(parado) === t,
+        svg: quadroDaLousa(nome, rotulo, t).svg,
+      };
+    });
+    // Desenho bem mais largo que alto (a linha do tempo, o loop): dois por linha, para o texto miúdo ser lido.
+    const [, , largura, altura] = numeros(fonte.match(/viewBox="([^"]+)"/)?.[1] ?? "0 0 560 430");
+    const larga = largura / altura > 2;
+    return { nome, fim, usos: usosDela, cor: uso?.cor, quadros, larga, ocultos: quadros.filter((q) => !q.mostrado).length };
+  })
+  .sort((a, b) => a.nome.localeCompare(b.nome));
+---
+
+<Base titulo="Folha das lousas">
+  <script is:inline slot="head">
+    (() => {
+      const tema = new URLSearchParams(location.search).get("tema");
+      if (tema) document.documentElement.dataset.theme = tema === "escuro" ? "dark" : "light";
+    })();
+  </script>
+  <div class="wrap folhas">
+    <h1>Folha das lousas</h1>
+    <p class="nota">
+      Só no dev. Os quadros-chave de cada lousa, no instante de cada marca. <code>?lousa=</code> filtra; <code>?tema=escuro</code> troca o tema.
+      Com mais de {MAXIMO} marcas, a folha escolhe {MAXIMO} (sempre com o 0 e o fim); <code>?quadros=todos</code> mostra todas.
+    </p>
+    {
+      lousas.map((l) => (
+        <section class="conferencia" data-lousa={l.nome} style={l.cor ? `--cor:${l.cor}` : undefined}>
+          <h2>
+            <code>{l.nome}</code>
+          </h2>
+          <p class="uso">
+            {l.usos.length ? (
+              l.usos.map((u, i) => (
+                <>
+                  {i > 0 && "; "}
+                  {u.componente} em <a href={u.endereco}>{u.titulo}</a>
+                  {u.componente === "LousaLoop" && u.parado !== undefined && ` (quadro parado em ${numero(u.parado)})`}
+                </>
+              ))
+            ) : (
+              <>Nenhum post usa este desenho (sem a cor da categoria).</>
+            )}
+            {" · "}fim em t = {numero(l.fim)}
+            {" · "}
+            {l.quadros.length - l.ocultos} de {l.quadros.length} marcas
+            {l.ocultos > 0 && <span class="amostrado"> (amostrado)</span>}
+          </p>
+          <ol class:list={["quadros", { larga: l.larga }]}>
+            {l.quadros.map((q) => (
+              <li class:list={["quadro", { extra: !q.mostrado }]} hidden={!q.mostrado}>
+                <figure>
+                  <div class="lousa" set:html={q.svg} />
+                  <figcaption>
+                    <span class="instante">
+                      t = {numero(q.t)}
+                      {l.fim !== 1 && <span class="fracao"> · {Math.round(q.fracao * 100)}%</span>}
+                      {q.parado && <span class="fracao"> · quadro parado</span>}
+                    </span>
+                    {q.estado && <span class="estado">{q.estado}</span>}
+                  </figcaption>
+                </figure>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))
+    }
+  </div>
+  <script is:inline>
+    (() => {
+      const busca = new URLSearchParams(location.search);
+      const lousa = busca.get("lousa");
+      if (lousa) for (const s of document.querySelectorAll(".conferencia")) s.hidden = s.dataset.lousa !== lousa;
+      if (busca.get("quadros") === "todos") for (const q of document.querySelectorAll(".quadro.extra")) q.hidden = false;
+    })();
+  </script>
+</Base>
+
+<style>
+  .folhas {
+    padding-top: 32px;
+    padding-bottom: 64px;
+  }
+
+  .nota code {
+    white-space: nowrap;
+  }
+
+  .nota {
+    max-width: 72ch;
+    color: var(--ink-2);
+    font-size: 14.5px;
+  }
+
+  .conferencia {
+    margin: 40px 0 56px;
+  }
+
+  h2 {
+    margin: 0 0 4px;
+  }
+
+  h2 code {
+    font-size: 18px;
+    font-weight: 500;
+    overflow-wrap: anywhere;
+  }
+
+  .uso {
+    margin: 0 0 18px;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+
+  .amostrado {
+    color: var(--ink-3);
+  }
+
+  /* Três quadros por linha no desktop (dois nos desenhos largos); um só no celular, sem rolagem lateral. */
+  .quadros {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+    gap: 28px 22px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .quadros.larga {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 480px), 1fr));
+  }
+
+  figure {
+    margin: 0;
+  }
+
+  figcaption {
+    display: grid;
+    gap: 2px;
+    margin-top: 8px;
+    font-family: var(--font-ui);
+    font-size: 13.5px;
+    color: var(--ink-2);
+  }
+
+  .instante {
+    font-weight: 600;
+    color: var(--ink);
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
+  .fracao {
+    font-weight: 400;
+    color: var(--ink-2);
+  }
+</style>

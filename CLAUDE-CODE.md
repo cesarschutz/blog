@@ -1,9 +1,9 @@
 # Configuração do Claude Code neste projeto
 
-Análise de 28/09/2026, em três partes:
+Análise de 28/09/2026, atualizada depois das melhorias aplicadas no mesmo dia (D53), em três partes:
 
-1. [Como o Claude Code está configurado](#camadas): camadas, hooks, regras, skills, agentes, MCPs e
-   memória.
+1. [Como o Claude Code está configurado](#camadas): camadas, hooks, regras, skills, agentes, MCPs,
+   memória e as ferramentas de conferência.
 2. [Os recursos de escrita de post](#recursos-de-escrita-de-post): o que existe, onde está
    configurado e quando usar.
 3. [Sugestões de melhoria](#sugestões-de-melhoria): o que ficou para decidir.
@@ -19,11 +19,11 @@ escrever código GSAP do jeito certo. Vale o mesmo para o Impeccable, o SEO e as
 | Camada | Onde fica | O que faz |
 |---|---|---|
 | Global (todos os projetos) | `~/.claude/CLAUDE.md` e os hooks do Segundo Cérebro | Injeta as notas do cofre Obsidian antes de cada pedido e obriga o registro no cofre no fim. As preferências gerais do Cesar (nunca commitar sem pedir etc.) vêm daí. |
-| Instruções do projeto | `CLAUDE.md` | Lido em toda sessão: regras (pt-BR, tokens, JS só onde há interação, nada com cara de IA), URLs que não podem quebrar, stack, comandos, mapa de pastas e armadilhas do ambiente. |
+| Instruções do projeto | `CLAUDE.md` | Lido em toda sessão: regras (pt-BR, tokens, nada com cara de IA), onde fica cada coisa, URLs que não podem quebrar, stack, comandos, mapa de pastas e armadilhas do ambiente. O detalhe de interface foi para uma regra por caminho. |
 | Settings | `.claude/settings.json` | Bloqueia a edição do `../blog-atual`, desliga a telemetria, habilita os dois MCPs e define três hooks. |
-| Settings pessoais | `.claude/settings.local.json` (fora do git) | Permissões desta máquina. |
-| Regras por caminho | `.claude/rules/` | Só carregam quando o Claude abre certos arquivos. |
-| Skills | `.claude/skills/` | Manuais carregados sob demanda: 6 próprias e 15 de terceiros. |
+| Settings pessoais | `.claude/settings.local.json` (fora do git) | Permissões desta máquina: os comandos do projeto que rodam sem perguntar (check, build, links, contraste, conferir, setup, status do dev, validador, git só de leitura e o Impeccable). |
+| Regras por caminho | `.claude/rules/` | Só carregam quando o Claude abre certos arquivos: posts, desenhos e interface. |
+| Skills | `.claude/skills/` | Manuais carregados sob demanda: 6 próprias e 12 de terceiros. |
 | Subagentes | `.claude/agents/` | Os 4 do Impeccable. |
 | MCPs | `.mcp.json` | Servidores de ferramentas: `astro-docs` e `chrome-devtools`. |
 | Memória automática | `~/.claude/projects/…/memory/` | Notas sobre como trabalhar neste projeto. |
@@ -35,8 +35,13 @@ Comandos que o Claude Code roda sozinho, sem o Claude decidir.
 | Hook | Quando | O que roda |
 |---|---|---|
 | `SessionStart` | início de cada sessão | `scripts/verificar-ambiente.mjs --hook`: confere Node, dependências, skills, Chrome e o motor do Impeccable. Resposta "Ambiente OK" ou a lista do que falta. |
-| `PostToolUse` (`Edit\|Write`) | a cada arquivo editado | o detector do Impeccable no arquivo alterado. |
-| `Stop` | fim de cada resposta | o "Design deep pass" do Impeccable. |
+| `PostToolUse` (`Edit\|Write`) | a cada arquivo editado | o detector do Impeccable no arquivo alterado, só nos problemas mecânicos (imagem quebrada, conteúdo cortado, contraste, gradiente no texto, desvio do sistema de design). |
+| `Stop` | fim de cada resposta | o "Design deep pass" do Impeccable: o conjunto inteiro de regras nos arquivos de interface mexidos na sessão. Sem achado, fica em silêncio. |
+
+O detector só olha arquivos de interface (`.astro`, `.css`, `.ts`, `.js`, `.html`…): os `.md` ficam de
+fora. Em `.impeccable/config.json`, ele também ignora `scripts/**`, `docs/**` e `.claude/**`, que não
+são o site, e fica quieto quando o arquivo está limpo (`hook.quiet`). As exceções decididas pelo Cesar
+ficam no mesmo arquivo (`detector.ignoreValues`, com o motivo).
 
 Variáveis de ambiente: `DO_NOT_TRACK`, `IMPECCABLE_NO_TELEMETRY` e `DISABLE_TELEMETRY`.
 
@@ -49,6 +54,7 @@ Permissão negada: `Edit` em `../blog-atual/**`. A regra não cobre comandos no 
 |---|---|---|
 | `posts.md` | `src/content/posts/**/*.{md,mdx}` | Tamanho, veracidade e `## Fontes`, frontmatter, categoria, escape de `$`. Aponta para a skill `post`. |
 | `desenho.md` | `src/ilustracoes/**` e `src/lousas/**` | O que é proibido no SVG (cor fixa, `style=`, `id`, `<defs>`, degradê, sombra). Aponta para as skills `desenho` e `lousa`. |
+| `interface.md` | `src/components/**`, `src/layouts/**`, `src/pages/**`, `src/styles/**`, `src/scripts/**`, `src/lib/**` | Tokens, ícones à caneta, movimento reduzido, a lista do que tem JavaScript, os componentes dos livros, as armadilhas de CSS, View Transition e GSAP e como conferir. |
 
 ## Skills
 
@@ -70,7 +76,7 @@ Lidas antes de instalar (D35) e travadas por hash no `skills-lock.json`.
 | Skill | Origem | Para quê |
 |---|---|---|
 | `impeccable` | Impeccable | Revisor de design (`polish`, `audit`, `critique`…), com motor próprio em `~/.impeccable`. O `DESIGN.md` vence sempre: "go all out", redesign e troca do `DESIGN.md` não valem aqui. |
-| `gsap-core`, `gsap-timeline`, `gsap-plugins`, `gsap-performance`, `gsap-utils`, `gsap-scrolltrigger`, `gsap-react`, `gsap-frameworks` | `greensock/gsap-skills` | Os manuais oficiais do GSAP. As três últimas não se aplicam hoje (sem ScrollTrigger desde a D46; o site não usa React nem Vue). |
+| `gsap-core`, `gsap-timeline`, `gsap-plugins`, `gsap-performance`, `gsap-utils` | `greensock/gsap-skills` | Os manuais oficiais do GSAP. As de React, Vue e ScrollTrigger saíram (D53): o site é Astro sem framework e não usa mais ScrollTrigger. |
 | `web-quality-audit`, `accessibility`, `performance`, `core-web-vitals`, `seo`, `best-practices` | `addyosmani/web-quality-skills` | Auditorias de qualidade web. |
 
 ## Subagentes (`.claude/agents/`)
@@ -97,10 +103,11 @@ Não são configuração do Claude Code, mas guiam o que ele faz.
 
 | Documento | Papel |
 |---|---|
-| `DESIGN.md` | Fonte de verdade do visual. Vence qualquer ferramenta. |
+| `DESIGN.md` | Fonte de verdade do visual. Vence qualquer ferramenta. Em Movimento, as regras e a tabela das peças. |
+| `docs/movimento.md` | O detalhe de cada animação (durações, curvas, ordem, revisões). |
 | `PRODUCT.md` | Leitor, propósito e diferenciais, para o Impeccable. O briefing vence em caso de divergência. |
 | `docs/briefing.md` | Decisões de produto e design (fonte da verdade). |
-| `docs/decisoes.md` | Registro das decisões D1 a D52 (data, decisão, motivo). |
+| `docs/decisoes.md` | Registro das decisões D1 a D53 (data, decisão, motivo), com índice no topo. |
 | `docs/estado.md` | Painel: fase, próximos passos, perguntas abertas. Lido no início da sessão. |
 | `docs/marcacoes.md` | Guia vivo da caneta, com os ajustes do Cesar. |
 | `docs/estilo-desenho.md` | Estilo das ilustrações e das lousas. |
@@ -110,6 +117,10 @@ Não são configuração do Claude Code, mas guiam o que ele faz.
 
 ## Memória automática
 
+Regra do `CLAUDE.md` ("onde fica cada coisa"): regra e decisão do projeto moram só nos documentos do
+projeto. A memória automática e o Segundo Cérebro guardam o jeito de trabalhar e apontam para cá; se
+divergirem, vale o projeto.
+
 | Nota | Conteúdo |
 |---|---|
 | Navegador para páginas locais | O blog só pelo `chrome-devtools`, em aba isolada. |
@@ -117,10 +128,21 @@ Não são configuração do Claude Code, mas guiam o que ele faz.
 | Animação quadro a quadro | Trace com screenshots e PIL para achar tremor e piscada. |
 | Listas grandes com agentes | Controle em `docs/ajustes-dNN/`, commit por item, agentes em paralelo; ao fechar, controle para `docs/historico/`. |
 
+## Ferramentas de conferência
+
+| Ferramenta | Para quê |
+|---|---|
+| `npm run conferir -- <slug> [--base URL] [--capturas]` | O post em 320, 390, 768, 1280 e 1600px, nos dois temas, mais o movimento reduzido: rolagem lateral, console, rede, `alt`, marcas da caneta cortadas e notas por cima do texto. Sai 1 com problema. Capturas em `.astro/conferir/<slug>/`. Não mede trace de performance nem se as animações andam. |
+| `/amostra/lousas/` (dev) | Os quadros-chave de cada lousa, parados, no instante de cada marca, com o estado do post. `?lousa=`, `?tema=escuro`, `?quadros=todos`. |
+| `/amostra/desenhos/` (dev) e `render.mjs` | A ilustração em todos os recortes, claro e escuro. |
+| `/amostra/caneta/`, `/amostra/livros/`, `/amostra/tags/` (dev) | Os 20 tipos da caneta, as capas planas e os ícones das tags. |
+| `npm run check`, `build`, `links`, `contraste` | Tipos, build, links e âncoras, contraste dos tokens. |
+
 ## Recursos de escrita de post
 
 Todos os recursos aparecem juntos no dev, em `/amostra/markdown/`, `/amostra/mdx/` e
-`/amostra/caneta/`. O post de referência, com ilustração, as três lousas, a frase em destaque e a
+`/amostra/caneta/`. Na skill `post`, a tabela "Qual recurso para qual conteúdo" diz qual usar para
+cada tipo de trecho. O post de referência, com ilustração, as três lousas, a frase em destaque e a
 caneta, é `/posts/cobranca-duplicada-no-retry/` ("Chave de idempotência").
 
 ### Visão geral
@@ -158,7 +180,8 @@ caneta, é `/posts/cobranca-duplicada-no-retry/` ("Chave de idempotência").
   2. Ler o post inteiro.
   3. Propor uma tabela (seção, trecho, tipo, motivo) e esperar o OK.
   4. Aplicar sem mudar nenhuma palavra do texto.
-  5. Testar em 320, 390, 768, 1280 e 1600px, nos dois temas.
+  5. Testar em 320, 390, 768, 1280 e 1600px, nos dois temas (`npm run conferir -- <slug> --capturas`
+     mede e fotografa; as capturas se olham de perto em 390 e 1280px).
   6. Entregar o relatório e atualizar a coluna "Caneta" do `.claude/revisao-posts.md`.
 - **Limites (o build recusa o que passar):** de 6 a 12 por post, marca-texto no máximo 2, o mesmo tipo
   no máximo 3, nunca duas marcações no mesmo parágrafo, nada em títulos, trecho sem quebra de até 32
@@ -215,6 +238,9 @@ As "três animações" são dois componentes. Post com lousa é `.mdx`.
 - **Desenho:** `src/lousas/<slug>/<nome>.svg`, viewBox de referência 560×430. O tempo de cada parte
   fica no próprio elemento (`data-traco`, `data-escrita`, `data-revela`, `data-aparece`,
   `data-some`, `data-esmaece`, `data-desloca`), de 0 a 1.
+- **Conferência:** `node scripts/desenho/validar.mjs <slug>` (classes e atributos de tempo) e a folha
+  `/amostra/lousas/?lousa=<slug>/<nome>` (os quadros-chave parados, com o estado do post), nos dois
+  temas e em 390px: nada entra por cima do que já está escrito. Por fim, tocar a lousa no post.
 - **Estilo "Invertida, canetinha":** vidro escuro na página clara e quadro branco na página escura.
 - **Nunca volta:** a lousa comandada pela rolagem saiu na D46, a pedido do Cesar.
 - **Frase em destaque** (`FraseDestaque`): as palavras acendem com a rolagem. É o único recurso de
@@ -231,8 +257,9 @@ As "três animações" são dois componentes. Post com lousa é `.mdx`.
 4. Frontmatter completo e `draft: true` até o OK.
 5. Desenhos (skills `desenho` e `lousa`).
 6. Animações (só onde há fluxo).
-7. Conferência no `chrome-devtools`: 1440 e 390px, dois temas, console limpo, movimento reduzido e
-   trace de performance.
+7. Conferência: `npm run conferir -- <slug> --capturas` até "Tudo ok"; depois, no `chrome-devtools`,
+   as animações (andam, pausam, voltam, versão estática com movimento reduzido) e o trace de
+   performance.
 8. Qualidade: Impeccable até zero achados, `web-quality-audit`, `check`, `build`, `links`,
    `contraste`.
 9. Caneta.
@@ -240,77 +267,36 @@ As "três animações" são dois componentes. Post com lousa é `.mdx`.
 
 ## Sugestões de melhoria
 
-Levantadas na análise de 28/09/2026, para o Cesar decidir. As já feitas estão no fim.
-
-### Configuração do Claude Code
-
-1. **CLAUDE.md mais enxuto.** São cerca de 310 linhas, lidas em toda sessão (a meta da Fase 0 era menos
-   de 150). A lista de "onde pode JavaScript" tem 15 linhas de exceções. A seção dos livros e o
-   histórico das frases de autores poderiam morar no `DESIGN.md` e no `CAPAS.md`, ficando no
-   CLAUDE.md só as regras e os ponteiros.
-2. **Hooks do Impeccable mais estreitos.** O detector roda a cada Edit/Write, até em `.md` e scripts,
-   e o "Design deep pass" roda no fim de toda resposta. Limitar a `src/components`, `src/styles` e
-   `src/pages` e rever o de fim de resposta.
-3. **Remover as skills que não se aplicam:** `gsap-react` e `gsap-frameworks` (o site é Astro sem
-   framework) e `gsap-scrolltrigger` (o ScrollTrigger saiu). Elas poluem a lista e podem induzir erro.
-4. **Uma regra por caminho para interface** (`.claude/rules/interface.md`, para `src/components/**`,
-   `src/styles/**` e `src/scripts/**`). As armadilhas de layout estão espalhadas entre o CLAUDE.md, a
-   memória e o Segundo Cérebro:
-   - sticky e âncoras descontando `--altura-topo`;
-   - `clearProps` do GSAP;
-   - especificidade do CSS com escopo;
-   - movimento reduzido;
-   - rebuild do preview na 4323.
-5. **Três lugares de registro competindo:** docs do projeto, memória automática e Segundo Cérebro.
-   Definir que as regras do projeto moram só nos docs, e que a memória e o cérebro guardam o "como
-   trabalhar".
-6. **`.claude/settings.local.json` com permissões velhas** (`java -version`, `~/.m2`, um `git diff`
-   específico). Trocar por permissões úteis, como os comandos `fnm exec --using=24 npm run …`, para
-   reduzir as perguntas de permissão.
+As sugestões da análise de 28/09/2026 que foram aplicadas saíram desta lista (registro na D53 do
+`docs/decisoes.md`). Ficam as que dependem de decisão do Cesar.
 
 ### Criação de posts
 
-7. **Guia de "qual recurso para qual conteúdo"** na skill `post`: quando usar loop, passos, linha do
-   tempo, frase, aviso, nota lateral ou caneta. Hoje está espalhado em três skills.
-8. **Script de conferência de post** (`npm run conferir <slug>`): larguras, temas, console, rolagem
-   lateral e limites da caneta num comando. A skill `caneta` já recomenda, mas o script não existe.
-9. **Folha de conferência das lousas** (`/amostra/lousas/`), com os quadros-chave de cada uma, como a
-   que existe para as ilustrações. Os tempos (`data-traco="0.2 0.4"`) são escritos à mão e hoje só se
-   conferem tocando a animação.
-10. **`LousaTempo` "como passos" repete o texto:** os estados e a lista embaixo são escritos duas
-    vezes. O componente poderia gerar a lista a partir dos estados.
-11. **A revisão em lote parou:** 26 posts pendentes em `.claude/revisao-posts.md` e só 2 com caneta.
-    Definir uma ordem (por exemplo, os mais lidos primeiro).
-12. **Estilo dos diagramas:** se a ideia é algo mais próximo do ByteByteGo (mais limpo e colorido) nas
-    lousas, é uma decisão nova, que muda o `docs/estilo-desenho.md`.
+1. **A revisão em lote parou:** 26 posts pendentes em `.claude/revisao-posts.md` e só 2 com caneta.
+   Falta definir a ordem (por exemplo, os mais lidos primeiro, o que pede os números de acesso, ou os
+   mais recentes primeiro, que são os mais próximos do formato atual).
+2. **Estilo dos diagramas:** se a ideia é algo mais próximo do ByteByteGo (mais limpo e colorido) nas
+   lousas, é uma decisão nova, que muda o `docs/estilo-desenho.md` e as quatro lousas existentes. O
+   estilo de hoje é o "A + C" e a lousa "Invertida, canetinha", dos protótipos da Fase 0.
+3. **Lousa `tempo` do post de idempotência:** a linha vertical que marca o instante passa por cima dos
+   rótulos "pede", "cobra" e "tenta de novo" (em t = 0,065, 0,25 e 0,678, por exemplo). Achado pela
+   `/amostra/lousas/`; esbarra na regra da skill `lousa` de que o que entra não cobre o que já está
+   escrito. Corrigir é mexer no desenho (`src/lousas/cobranca-duplicada-no-retry/tempo.svg`).
+4. **Carimbo "fontes conferidas em …"** no fim do artigo (ficou de fora do C05): pede um campo novo no
+   frontmatter e a conferência feita post a post; sem isso, o carimbo mentiria.
+
+### Configuração do Claude Code
+
+5. **O `CLAUDE.md` ainda tem cerca de 280 linhas** (a meta da Fase 0 era menos de 150). O que sobra de
+   maior é o mapa das pastas (~60 linhas) e as armadilhas do ambiente (~30). Dá para levar o mapa para
+   um `docs/mapa.md` e deixar no `CLAUDE.md` só as pastas que o Claude precisa em quase toda tarefa;
+   o custo é o Claude abrir mais um arquivo quando precisar do resto.
+6. **`Aviso.astro`** só é usado em `/amostra/` (os avisos dos posts saem do plugin `rehype-avisos`).
+   Ficou, porque serve para um aviso dentro de `.mdx`. Se não houver essa intenção, pode sair.
 
 ### Edição do site
 
-13. **A seção "Movimento" do `DESIGN.md` tem cerca de 270 linhas** descrevendo cada animação em
-    detalhe. Uma tabela curta (peça, ferramenta, duração, decisão) com o detalhe nas decisões deixaria
-    o documento mais fácil de consultar.
-14. As sugestões 2 e 4 também valem para a edição do site: menos ruído do Impeccable e as armadilhas
-    carregadas só quando se mexe em interface.
-
-### Pendentes de OK
-
-- Apagar `.impeccable/review/` (192 MB, fora do git): relatórios e capturas das auditorias da D37 à
-  D40, já aprovadas e publicadas. Não tem como recuperar depois.
-- `Aviso.astro` só é usado em `/amostra/` (os avisos dos posts saem do plugin). Fica se a ideia for
-  usá-lo em MDX.
-- Nove funções exportadas são usadas só no próprio arquivo (`dividirTitulo`, `minutosDeLeitura`,
-  `urlPost`, `canetaNoCodigo`, `rolarRotulo`, `lerEscolha`, `aplicarTema`, `PaginaJpeg`, `JavaLts`).
-  Tirar o `export` é opcional.
-
-### Já feito na faxina de 28/09/2026 (D53)
-
-- Lixo local apagado (cerca de 3,7 GB): `.astro/depuracao/` (3,4 GB de quadros de depuração),
-  `bench/`, `.render/` e `.DS_Store`. Um preview esquecido na porta 4324 foi parado.
-- Três exports sem uso removidos (`textoDoFiltro`, `temDesenho`, `NomeIcone`).
-- Dados dos livros de `docs/capas/` para `src/livros/`, porque o build lia de `docs/`.
-- Controles de rodadas fechadas, o prompt da Fase 0 e os protótipos superados em `docs/historico/`.
-- Índice com a coluna "Hoje" no topo do `docs/decisoes.md`.
-- `docs/estado.md` reescrito como painel curto.
-- Textos que ainda descreviam a lousa de passos (D46) e o ScrollTrigger corrigidos no CLAUDE.md, na
-  skill `post`, no `DESIGN.md`, no `PRODUCT.md` e no `estilo-desenho.md`.
-- Mapa de pastas do CLAUDE.md completado.
+7. **Movimento sem `stroke-dashoffset` no `DESIGN.md`:** a seção Movimento diz "só transformações e
+   opacidade" no livro 3D, mas os traços desenhados (DrawSVG, a caneta das lousas, o desenho do
+   destaque) animam `stroke-dashoffset`. A regra de interface já trata assim; falta decidir se o
+   `DESIGN.md` diz isso com todas as letras.

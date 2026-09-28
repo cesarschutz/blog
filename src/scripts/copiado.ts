@@ -24,7 +24,7 @@ function emLetras(el: HTMLElement, texto: string) {
 }
 
 /** Leva o rótulo ao texto novo: o velho sobe e some, o novo sobe de baixo, e a largura acompanha. */
-export function rolarRotulo(rotulo: HTMLElement, texto: string) {
+function rolarRotulo(rotulo: HTMLElement, texto: string) {
   if ((rotulo.dataset.texto ?? rotulo.textContent) === texto) return;
   rotulo.dataset.texto = texto;
   const antes = rotulo.getBoundingClientRect().width;

@@ -1917,4 +1917,21 @@ nada muda.
   `src/pages/[amostra]/tags.astro`, `scripts/contraste.mjs`, `scripts/desenho/tags.mjs`, `CLAUDE.md`,
   `CLAUDE-CODE.md` (novo: a configuração do Claude Code no projeto), `docs/capas/CAPAS.md`, skills e
   regras.
+- **Depois, no mesmo dia, as sugestões do `CLAUDE-CODE.md`** (pedido do Cesar: "aplicar as melhorias
+  que você sugeriu"):
+  - `.claude/rules/interface.md` (nova, por caminho): a lista do que tem JS, os livros, as armadilhas
+    de CSS, View Transition e GSAP e como conferir saíram do `CLAUDE.md` (de ~320 para ~280 linhas);
+    no `CLAUDE.md`, a regra "onde fica cada coisa" (o projeto vence a memória e o Segundo Cérebro).
+  - Impeccable: o detector ignora `scripts/**`, `docs/**` e `.claude/**` e fica quieto quando está
+    limpo (`hook.quiet`); os `.md` ele já pulava.
+  - Saíram as skills `gsap-react`, `gsap-frameworks` e `gsap-scrolltrigger` (o site é Astro sem
+    framework e não usa mais ScrollTrigger).
+  - `npm run conferir -- <slug>` (`scripts/conferir.mjs`): o post em 320 a 1600px nos dois temas.
+  - `/amostra/lousas/`: os quadros-chave de cada lousa, parados, com o estado do post.
+  - `DESIGN.md`, Movimento: ficam as regras e uma tabela das peças; o detalhe foi, sem cortes, para
+    `docs/movimento.md`.
+  - Skill `post`: a tabela "Qual recurso para qual conteúdo".
+  - Permissões locais trocadas pelos comandos do projeto; `.impeccable/review/` apagado; `export` tirado
+    de oito funções usadas só no próprio arquivo.
+  - Descartada: gerar a lista dos passos da `LousaTempo` a partir dos estados (são textos diferentes).
 
