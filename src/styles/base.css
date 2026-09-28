@@ -706,6 +706,29 @@ a:hover > .titulo-sub,
   visibility: hidden;
 }
 
+/*
+ * Na troca, a caneta tem imagem própria e esmaece em 0,2s (D52, revisão 13): antes, ela ia junto com a
+ * raiz antiga, que as trocas por folhas escondem no primeiro quadro, e sumia de uma vez, com a tela ainda
+ * parada. Fica por cima do cabeçalho, onde ela escreve.
+ */
+.carregando {
+  view-transition-name: carregando;
+}
+
+::view-transition-group(carregando) {
+  z-index: 101;
+}
+
+::view-transition-old(carregando) {
+  animation: carga-sai 0.2s cubic-bezier(0.33, 1, 0.68, 1) both;
+}
+
+@keyframes carga-sai {
+  to {
+    opacity: 0;
+  }
+}
+
 @keyframes carga-escreve {
   from {
     --carga: 0;
