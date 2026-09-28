@@ -24,8 +24,10 @@
  *   ampliado): elas usam a troca de página de antes (base.css).
  *
  * - Lentidão (D52, B14): se a página nova não vem em 0,2s, a caneta azul escreve o fio do cabeçalho até ela
- *   chegar; se a espera passou de 1s desde o clique, ou o aparelho não deu conta de uma troca anterior
+ *   chegar; se a espera passou de 0,7s desde o clique, ou o aparelho não deu conta de uma troca anterior
  *   (mais de 50 ms por quadro) ou tem pouca memória, a chegada é a curta (as folhas só aparecem, ~0,4s).
+ *   Se a última troca demorou para montar a página nova (mais de 0,3s entre a resposta e a primeira
+ *   pintura), a próxima mostra a caneta já no clique e é a curta.
  *
  * Outros scripts usam `window.csTroca` (unidades, chegar) e os eventos `cs:pousou` (a folha do desenho
  * do artigo pousou) e `cs:chegou` (a chegada acabou). `data-vai-chegar` no <html>, posto já no <head>,
@@ -50,9 +52,18 @@
   var VOO = 0.04;
   var CHEGA = 0.24;
   // Lentidão (D52, B14): a caneta escreve o fio do cabeçalho se a página nova não vier em 0,2s; se a
-  // espera passou de 1s (ou o aparelho não dá conta da coreografia), a chegada é a curta.
+  // espera passou de 0,7s (ou o aparelho não dá conta da coreografia), a chegada é a curta. Com a CPU
+  // lenta, a demora vem depois da resposta (montar a página nova, com a tela parada): se a última troca
+  // levou mais de 0,3s entre a resposta e a primeira pintura (`pageswap` → `pagereveal`), a próxima já
+  // mostra a caneta no clique e usa a chegada curta (revisão 7). Antes, a tela congelava ~1,1s sem sinal
+  // nenhum e a chegada curta (limite de 1s) falhava por pouco.
   var ESPERA = 200;
-  var DEMORA = 1000;
+  var DEMORA = 700;
+  var MONTAGEM_LENTA = 300;
+  var CHAVE_MONTAGEM = "cs-troca-montagem";
+  function montagemAnterior() {
+    try { return Number(sessionStorage.getItem(CHAVE_MONTAGEM)) || 0; } catch (err) { return 0; }
+  }
   var celular = function () { return innerWidth <= 640; };
   var rnd = function (a, b) { return a + Math.random() * (b - a); };
   var FOLHA = ".folha, [data-unidade]";
@@ -165,11 +176,13 @@
   // imagem da página antiga (enquanto a nova termina de carregar, a tela fica parada) e some com ela.
   var CANETA = '<svg class="caneta" viewBox="0 0 24 24" focusable="false"><path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1.4 1.4 0 0 1 0 2l-9.2 9.2Z"/><path class="anel" d="m15.6 5.8 2.6 2.6"/><path class="ponta" d="M8.2 13.2 10.8 15.8 4 20Z"/></svg>';
   var carga = null, relogio = 0, largou = 0, inicioNav = 0;
-  function mostrarCarga() {
+  function mostrarCarga(noClique) {
     relogio = 0;
     if (carga || !document.body) return;
     carga = document.createElement("div");
-    carga.className = "carregando";
+    // No clique (a última troca demorou para montar), ela já aparece inteira e com um traço começado: a
+    // tela pode parar na próxima imagem, e ela tem de estar nela.
+    carga.className = noClique === true ? "carregando no-clique" : "carregando";
     carga.setAttribute("aria-hidden", "true");
     carga.innerHTML = '<div class="risco"></div>' + CANETA;
     document.body.append(carga);
@@ -191,7 +204,8 @@
     try { d = new URL(url, location.href); } catch (err) { return; }
     if (d.origin !== location.origin || (d.pathname === location.pathname && d.search === location.search)) return;
     inicioNav = Date.now();
-    relogio = setTimeout(mostrarCarga, ESPERA);
+    if (montagemAnterior() > MONTAGEM_LENTA) mostrarCarga(true);
+    else relogio = setTimeout(mostrarCarga, ESPERA);
   }
   if (window.navigation && navigation.addEventListener) {
     navigation.addEventListener("navigate", function (e) {
@@ -444,6 +458,7 @@
     limparNomes();
     var d = lerDados();
     var vt = e.viewTransition;
+    var lenta = montagemAnterior() > MONTAGEM_LENTA;
     if (restaurada) {
       restaurada = false;
       if (vt) {
@@ -452,6 +467,8 @@
       }
       d = null;
     }
+    // Quanto esta página levou da resposta à primeira pintura (a próxima troca usa isso).
+    if (d) try { sessionStorage.setItem(CHAVE_MONTAGEM, String(Date.now() - d.t)); } catch (err) {}
     if (!d || !vt || reduzido.matches) {
       // Não vai ter troca: quem esperava por ela (o desenho do artigo) segue na hora.
       if (raiz.hasAttribute("data-vai-chegar")) avisarChegada();
@@ -459,9 +476,10 @@
     }
     raiz.dataset.chegando = "";
     try { vt.types.add(d.tipo); } catch (err) {}
-    // A chegada curta (D52, B14): a pessoa já esperou mais de 1s desde o clique (rede ou aparelho lentos),
-    // ou este aparelho não deu conta da coreografia numa troca anterior (aparelhoLento).
-    var curta = Date.now() - (d.clique || d.t) > DEMORA || aparelhoLento();
+    // A chegada curta (D52, B14): a pessoa já esperou mais de 0,7s desde o clique (rede ou aparelho lentos),
+    // a troca anterior demorou para montar (revisão 7), ou este aparelho não deu conta da coreografia numa
+    // troca anterior (aparelhoLento).
+    var curta = Date.now() - (d.clique || d.t) > DEMORA || lenta || aparelhoLento();
     if (curta) {
       try { vt.types.add("curta"); } catch (err) {}
     } else medirQuadros(vt);

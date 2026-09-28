@@ -702,6 +702,19 @@ a:hover > .titulo-sub,
   stroke-linejoin: round;
 }
 
+/*
+ * Já no clique (a última troca demorou para montar a página nova, D52 revisão 7): a tela pode parar na
+ * imagem seguinte até a página nova ser pintada, então a caneta aparece inteira, sem esmaecer, e com um
+ * traço já começado.
+ */
+.carregando.no-clique {
+  animation-delay: -0.4s;
+}
+
+.carregando.no-clique .caneta {
+  animation: carga-mao 0.32s ease-in-out infinite alternate;
+}
+
 :root[data-carregando] .barra-leitura {
   visibility: hidden;
 }
