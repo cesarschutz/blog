@@ -66,8 +66,8 @@ const rotulos = { anterior: "Artigo anterior", proximo: "Próximo artigo" };
       ><span class="rotulo-rola" aria-hidden="true"><span>Copiar link</span></span>
     </button>
     <span class="sr" aria-live="polite" data-aviso-copiar></span>
-    <a class="pilula" href={linkedin} target="_blank" rel="noopener">LinkedIn</a>
-    <a class="pilula" href={whatsapp} target="_blank" rel="noopener">WhatsApp</a>
+    <a class="pilula" href={linkedin} target="_blank" rel="noopener" aria-label="Compartilhar no LinkedIn (abre em nova aba)">LinkedIn</a>
+    <a class="pilula" href={whatsapp} target="_blank" rel="noopener" aria-label="Compartilhar no WhatsApp (abre em nova aba)">WhatsApp</a>
     <button type="button" class="pilula" data-nativo hidden>
       <svg viewBox="0 0 24 24" aria-hidden="true" set:html={ICONES.compartilhar} /><span class="no-largo">Mais opções</span
       ><span class="no-celular">Compartilhar</span>

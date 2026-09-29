@@ -23,12 +23,30 @@ function quebrarCodigo(no) {
   no.children.forEach(quebrarCodigo);
 }
 
+/** O texto de um nó (sem as tags). */
+const texto = (no) => (no.type === "text" ? no.value : Array.isArray(no.children) ? no.children.map(texto).join("") : "");
+
+/** As células do cabeçalho da tabela ("Estado, Em inglês, …"), para dar nome ao contêiner. */
+function cabecalho(tabela) {
+  const celulas = [];
+  const achar = (no) => {
+    if (no.type !== "element") return;
+    if (no.tagName === "th") celulas.push(texto(no).trim());
+    else if (!celulas.length) (no.children ?? []).forEach(achar);
+  };
+  achar(tabela);
+  return celulas.filter(Boolean).join(", ");
+}
+
 export function rehypeTabela() {
   const envolver = (no) => {
     if (!Array.isArray(no.children)) return;
     no.children = no.children.map((filho) => {
       if (filho.type === "element" && filho.tagName === "table") {
-        return { type: "element", tagName: "div", properties: { className: ["tabela"], tabIndex: 0 }, children: [filho] };
+        // Quem chega pelo Tab ouve o que é a parada (D54): uma região com o nome das colunas.
+        const colunas = cabecalho(filho);
+        const nome = colunas ? `Tabela: ${colunas.length > 80 ? `${colunas.slice(0, 79)}…` : colunas}` : "Tabela";
+        return { type: "element", tagName: "div", properties: { className: ["tabela"], tabIndex: 0, role: "region", ariaLabel: nome }, children: [filho] };
       }
       envolver(filho);
       return filho;

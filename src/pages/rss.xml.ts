@@ -31,7 +31,12 @@ export async function GET(contexto: APIContext) {
       // Botões (Copiar do código), scripts e estilos não fazem sentido num leitor de RSS.
       .replace(/<button[^>]*>[\s\S]*?<\/button>/g, "")
       .replace(/<(script|style)\b[\s\S]*?<\/\1>/g, "")
-      .replace(/<link\b[^>]*>/g, "");
+      .replace(/<link\b[^>]*>/g, "")
+      // Os desenhos decorativos (a caneta, os ícones dos avisos) não têm tamanho sem o CSS do site e saíam
+      // gigantes e pretos nos leitores de RSS (D54).
+      .replace(/<svg\b[^>]*aria-hidden="true"[^>]*>[\s\S]*?<\/svg>/g, "")
+      // As âncoras do próprio post (sumário, "veja a seção…") apontam para o post no site (D54).
+      .replace(/href="#/g, `href="${endereco}#`);
     return `${corpo}${notas.length ? `<hr>${notas.join("")}` : ""}`.replace(/(href|src)="\/(?!\/)/g, `$1="${new URL(contexto.site!).origin}/`);
   };
 

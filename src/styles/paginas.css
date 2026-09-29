@@ -248,7 +248,7 @@
   font-weight: 600;
   font-size: 0.7em;
   line-height: 1;
-  opacity: 0.6;
+  opacity: 0.68; /* 0,6 dava 4,4:1 no texto pequeno (D54) */
 }
 
 .pg-dir .folio {
@@ -361,7 +361,7 @@
   font-size: 0.75em;
   line-height: 1;
   text-align: center;
-  opacity: 0.6;
+  opacity: 0.68; /* 0,6 dava 4,4:1 no texto pequeno (D54) */
 }
 
 /* A página de notas (com número ímpar de artigos): pautada, como a de um caderno. */
