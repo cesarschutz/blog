@@ -20,6 +20,8 @@
   /* A altura do próprio cabeçalho; --altura-topo é o quanto as peças fixas descontam. No celular, o
      cabeçalho também tem uma linha só e fica sempre à vista (D46). */
   --altura-cabecalho: 60px;
+  /* O quanto uma âncora ou um item focado dentro do conteúdo para abaixo do cabeçalho fixo (D54). */
+  --folga-ancora: calc(env(safe-area-inset-top, 0px) + var(--altura-topo) + 16px);
   /* ~72 caracteres por linha no corpo do artigo (D39; era 760px, ~76). */
   --coluna: 720px;
   /* Folhas (D26): o conteúdo fica em superfícies com borda fina e sombra leve; painéis dentro delas. */
@@ -62,7 +64,6 @@
 }
 
 html {
-  scroll-padding-top: calc(env(safe-area-inset-top, 0px) + var(--altura-topo) + 16px);
   /* O lugar da barra de rolagem fica reservado: o cabeçalho não anda para o lado entre uma página
      curta (sem barra) e uma longa (D47). */
   scrollbar-gutter: stable;
@@ -70,6 +71,17 @@ html {
   overflow-x: clip;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+}
+
+/*
+ * A folga do cabeçalho fixo fica em cada alvo do conteúdo (âncoras, links, campos e o próprio main), e
+ * não no html (scroll-padding-top): com ela no html, o Chrome rolava a página meia tela para cima quando
+ * um controle do próprio cabeçalho recebia o foco (o tema, a busca, a seção atual), porque ele fica
+ * dentro da faixa reservada (D54).
+ */
+main,
+main :is([id], a, button, input, select, textarea, summary, [tabindex]) {
+  scroll-margin-top: var(--folga-ancora);
 }
 
 body {
@@ -787,9 +799,17 @@ a:hover > .titulo-sub,
   }
 }
 
+/*
+ * Na impressão (D54), só o texto: sem o cabeçalho fixo (que saía por cima da primeira página), os
+ * botões de compartilhar, o anterior e o próximo e o voltar ao topo. Os <details> abrem (artigo.ts).
+ */
 @media print {
-  .carregando {
-    display: none;
+  .carregando,
+  .topo-fixo,
+  .rodape-artigo .compartilhar,
+  .rodape-artigo .vizinhos,
+  .voltar-topo {
+    display: none !important;
   }
 }
 

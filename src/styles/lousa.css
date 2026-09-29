@@ -402,3 +402,41 @@
 .frase-destaque.animada .palavra.acesa {
   color: var(--ink);
 }
+
+/* A legenda padrão da linha do tempo: no toque não há roda do mouse (D54). */
+.lousa-tempo .legenda-toque {
+  display: none;
+}
+
+@media (hover: none) {
+  .lousa-tempo .legenda-mouse {
+    display: none;
+  }
+
+  .lousa-tempo .legenda-toque {
+    display: inline;
+  }
+}
+
+/*
+ * Na impressão (D54): o desenho inteiro, sem os controles, a barra de tempo e a legenda que falam de
+ * tocar e arrastar (os passos continuam na lista logo abaixo); a frase em destaque, toda acesa. As cores
+ * da lousa no papel (o quadro branco, caneta escura) vêm dos tokens (tokens.ts).
+ */
+@media print {
+  .lousa-tempo .controles,
+  .lousa-tempo figcaption,
+  .lousa-loop .barra-tempo,
+  .lousa-loop .botoes {
+    display: none !important;
+  }
+
+  .lousa {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  .frase-destaque.animada .palavra {
+    color: var(--ink);
+  }
+}

@@ -354,6 +354,9 @@ const vagas = [...document.querySelectorAll<HTMLElement>("[data-vaga]")];
 let vagaAtiva = 0;
 if (botaoSecao && marcaDoTopo && secoes.length) {
   botaoSecao.hidden = false;
+  // Antes da primeira seção a marca é que está à vista: o botão, que fica por cima dela, deixa o clique
+  // passar para o link da marca (D54).
+  botaoSecao.style.pointerEvents = "none";
   marcaDoTopo.dataset.pos = "meio";
 }
 
@@ -383,6 +386,7 @@ function trocarCabecalho(de: number, para: number) {
     entra.querySelector(".nome")!.textContent = secoes[para].nome;
   }
   botaoSecao.tabIndex = para >= 0 ? 0 : -1;
+  botaoSecao.style.pointerEvents = para >= 0 ? "" : "none";
   botaoSecao.setAttribute("aria-label", para >= 0 ? `Seção ${para + 1} de ${secoes.length}: ${secoes[para].nome}. Abrir o sumário` : "Abrir o sumário");
   if (sai === entra) return;
   posicionar(entra, desce ? "baixo" : "cima", true);
@@ -407,7 +411,10 @@ function abrirFolha(pelaTecla: boolean) {
   const daVez = folha.querySelector<HTMLAnchorElement>('[aria-current="true"]');
   if (daVez) sublinhar(daVez, "atual", true, 380);
   const alvo = daVez ?? folha.querySelector<HTMLAnchorElement>("a");
-  if (pelaTecla) alvo?.focus({ preventScroll: true });
+  // Dois quadros depois: até lá, os itens ainda herdam o `visibility: hidden` da folha fechada, o Chrome
+  // recusa o foco neles e ele ficava no botão (D54).
+  if (pelaTecla && alvo)
+    requestAnimationFrame(() => requestAnimationFrame(() => folhaAberta() && alvo.focus({ preventScroll: true })));
 }
 
 function fecharFolha(devolverFoco: boolean) {
@@ -424,6 +431,17 @@ if (botaoSecao && folha) {
   folha.addEventListener("focusout", (e) => {
     const para = e.relatedTarget as Node | null;
     if (folhaAberta() && para && !folha.contains(para) && para !== botaoSecao) fecharFolha(false);
+  });
+  // O Tab que sai da folha (depois do último item ou antes do primeiro) fecha e devolve o foco ao botão
+  // da seção (D54): a folha fica depois do artigo, e o foco ia para o rodapé, levando a página junto.
+  folha.addEventListener("keydown", (e) => {
+    if (e.key !== "Tab" || !folhaAberta()) return;
+    const focaveis = [...folha.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])')].filter(
+      (el) => el.getClientRects().length > 0,
+    );
+    if (document.activeElement !== (e.shiftKey ? focaveis[0] : focaveis.at(-1))) return;
+    e.preventDefault();
+    fecharFolha(true);
   });
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && folhaAberta()) fecharFolha(true);
@@ -523,7 +541,8 @@ function criarVisor(): HTMLDialogElement {
     const acao = alvo.closest<HTMLElement>("[data-visor]")?.dataset.visor;
     if (acao === "anterior") mostrar(indice - 1);
     else if (acao === "proximo") mostrar(indice + 1);
-    else if (acao === "fechar" || alvo === dialogo || alvo.classList.contains("visor-quadro")) dialogo.close();
+    else if (acao === "fechar" || alvo === dialogo || alvo.classList.contains("visor-quadro") || alvo.classList.contains("visor-posicao"))
+      dialogo.close();
   });
   dialogo.addEventListener("keydown", (e) => {
     if (e.key === "ArrowRight") mostrar(indice + 1);
@@ -546,8 +565,19 @@ function mostrar(novo: number) {
   visor!.querySelector(".visor-posicao")!.textContent = galeria ? `${indice + 1} de ${imagens.length}` : "";
   const [anterior, proximo] = visor!.querySelectorAll<HTMLButtonElement>('[data-visor="anterior"], [data-visor="proximo"]');
   anterior.hidden = proximo.hidden = !galeria;
-  anterior.disabled = indice === 0;
-  proximo.disabled = indice === imagens.length - 1;
+  desabilitar(anterior, proximo, indice === 0, indice === imagens.length - 1);
+}
+
+/**
+ * Nas pontas, a seta daquele lado fica desabilitada. Se era ela quem tinha o foco, ele passa para a
+ * outra seta (D54): senão, caía no <body>, sem anel, e as setas do teclado paravam no visor.
+ */
+function desabilitar(anterior: HTMLButtonElement, proximo: HTMLButtonElement, noInicio: boolean, noFim: boolean) {
+  const foco = document.activeElement;
+  anterior.disabled = noInicio;
+  proximo.disabled = noFim;
+  if (foco === anterior && noInicio && !noFim) proximo.focus();
+  else if (foco === proximo && noFim && !noInicio) anterior.focus();
 }
 
 function abrirVisor(lista: Imagem[], inicio = 0, depois?: (indice: number) => void) {
@@ -575,12 +605,16 @@ for (const secao of document.querySelectorAll<HTMLElement>("[data-apresentacao]"
   const marcar = (i: number) => {
     atual = i;
     posicao.textContent = `${i + 1} de ${slides.length}`;
-    anterior.disabled = i === 0;
-    proximo.disabled = i === slides.length - 1;
+    desabilitar(anterior, proximo, i === 0, i === slides.length - 1);
   };
+  // Durante a rolagem suave pedida pelos botões, a faixa passa pelos slides do meio: a posição não
+  // segue a rolagem até ela chegar (senão, cliques rápidos voltavam ao slide do meio e perdiam passos, D54).
+  let indo: { left: number; ate: number } | null = null;
   const ir = (i: number, comportamento: ScrollBehavior = rolagem()) => {
     const alvo = Math.max(0, Math.min(slides.length - 1, i));
-    faixa.scrollTo({ left: slides[alvo].parentElement!.offsetLeft, behavior: comportamento });
+    const left = slides[alvo].parentElement!.offsetLeft;
+    indo = comportamento === "smooth" ? { left, ate: performance.now() + 1500 } : null;
+    faixa.scrollTo({ left, behavior: comportamento });
     marcar(alvo);
   };
   const ampliar = (i: number) =>
@@ -595,19 +629,31 @@ for (const secao of document.querySelectorAll<HTMLElement>("[data-apresentacao]"
   anterior.addEventListener("click", () => ir(atual - 1));
   proximo.addEventListener("click", () => ir(atual + 1));
   telaCheia.addEventListener("click", () => ampliar(atual));
+  const seguirRolagem = () => {
+    const i = Math.round(faixa.scrollLeft / Math.max(faixa.clientWidth, 1));
+    if (i !== atual) marcar(Math.min(i, slides.length - 1));
+  };
   faixa.addEventListener(
     "scroll",
     () => {
-      const i = Math.round(faixa.scrollLeft / Math.max(faixa.clientWidth, 1));
-      if (i !== atual) marcar(Math.min(i, slides.length - 1));
+      if (indo) {
+        if (Math.abs(faixa.scrollLeft - indo.left) > 1 && performance.now() < indo.ate) return;
+        indo = null;
+      }
+      seguirRolagem();
     },
     { passive: true },
   );
+  faixa.addEventListener("scrollend", () => {
+    indo = null;
+    seguirRolagem();
+  });
   apresentacoes.set(faixa, ampliar);
 }
 
 // Imagens do corpo abrem no visor; um slide abre a apresentação em tela cheia, a partir dele.
-document.querySelector("[data-corpo]")?.addEventListener("click", (e) => {
+const corpo = document.querySelector<HTMLElement>("[data-corpo]");
+corpo?.addEventListener("click", (e) => {
   const img = (e.target as HTMLElement).closest<HTMLImageElement>("img");
   if (!img || img.closest("a")) return;
   const faixa = img.closest(".slides");
@@ -615,6 +661,20 @@ document.querySelector("[data-corpo]")?.addEventListener("click", (e) => {
   if (ampliar) ampliar([...faixa.querySelectorAll("img")].indexOf(img));
   else abrirVisor([{ src: img.currentSrc || img.src, alt: img.alt }]);
 });
+
+// Pelo teclado também (D54): a imagem do texto entra no Tab e abre com Enter ou Espaço; ao fechar, o
+// foco volta para ela (o <dialog> devolve o foco a quem o tinha). Os slides já têm o "Tela cheia".
+for (const img of corpo?.querySelectorAll<HTMLImageElement>("img") ?? []) {
+  if (img.closest("a, .slides")) continue;
+  img.tabIndex = 0;
+  img.setAttribute("role", "button");
+  img.setAttribute("aria-haspopup", "dialog");
+  img.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    e.preventDefault();
+    abrirVisor([{ src: img.currentSrc || img.src, alt: img.alt }]);
+  });
+}
 
 // ---------- o Copiar do código (E3, D49) ----------
 
@@ -631,3 +691,16 @@ if (corpoDoArtigo?.querySelector(".expressive-code .copy")) {
       }
   }).observe(corpoDoArtigo, { childList: true, subtree: true });
 }
+
+// ---------- impressão (D54) ----------
+
+// Os <details> fechados não saem no papel: abrem para imprimir e voltam a fechar depois.
+let fechadosNaImpressao: HTMLDetailsElement[] = [];
+addEventListener("beforeprint", () => {
+  fechadosNaImpressao = [...document.querySelectorAll<HTMLDetailsElement>("[data-corpo] details:not([open])")];
+  for (const d of fechadosNaImpressao) d.open = true;
+});
+addEventListener("afterprint", () => {
+  for (const d of fechadosNaImpressao) d.open = false;
+  fechadosNaImpressao = [];
+});

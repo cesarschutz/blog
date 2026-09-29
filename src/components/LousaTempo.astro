@@ -25,7 +25,7 @@ const {
   desenho,
   rotulo,
   estados,
-  legenda = "Aperte o play, arraste sobre o desenho, gire a roda do mouse em cima dele (ou com Shift) ou use o controle.",
+  legenda,
 } = Astro.props;
 const { svg } = quadroDaLousa(desenho, rotulo);
 const id = `tempo-${desenho.replace(/[^a-z0-9]+/gi, "-")}`;
@@ -52,7 +52,15 @@ const rss = Astro.locals.rss;
           {estados.map((e) => <span class="reserva" aria-hidden="true">{e.texto}</span>)}
         </span>
       </div>
-      <figcaption>{legenda}</figcaption>
+      {/* A legenda fala dos controles, que só existem com JS: aparece junto com eles (D54). */}
+      <figcaption hidden>
+        {legenda ?? (
+          <>
+            <span class="legenda-mouse">Aperte o play, arraste sobre o desenho, gire a roda do mouse em cima dele (ou com Shift) ou use o controle.</span>
+            <span class="legenda-toque">Aperte o play, arraste sobre o desenho ou use o controle.</span>
+          </>
+        )}
+      </figcaption>
     </figure>
   )
 }
@@ -73,6 +81,7 @@ const rss = Astro.locals.rss;
     const rotuloDoEstado = figura.querySelector<HTMLElement>(".estado .atual")!;
     const estados: { de: number; texto: string }[] = JSON.parse(figura.dataset.estados ?? "[]");
     controles.hidden = false;
+    figura.querySelector("figcaption")!.hidden = false;
 
     let t = 0;
     const mostrar = (novo: number) => {
@@ -110,6 +119,9 @@ const rss = Astro.locals.rss;
       segurarAte = 0;
       botao.setAttribute("aria-pressed", "true");
       botao.setAttribute("aria-label", "Pausar");
+      // Tocando sozinha, a lousa não fala a cada estado (em loop, até fora da tela); o leitor de tela
+      // volta a ouvir nos gestos da pessoa e ao pausar (D54).
+      rotuloDoEstado.setAttribute("aria-live", "off");
       cancelAnimationFrame(quadro);
       quadro = requestAnimationFrame(passo);
     };
@@ -118,9 +130,24 @@ const rss = Astro.locals.rss;
       cancelAnimationFrame(quadro);
       botao.setAttribute("aria-pressed", "false");
       botao.setAttribute("aria-label", "Reproduzir");
+      rotuloDoEstado.setAttribute("aria-live", "polite");
       lousa.desenhar(t * lousa.fim, false);
     };
     botao.addEventListener("click", () => (tocando ? parar() : tocar()));
+
+    // As setas do controle vão de um estado para o vizinho (o passo de 1/1000 quase não andava, D54);
+    // PageUp/PageDown e Home/End continuam como no navegador.
+    const marcas = [...new Set([...estados.map((e) => e.de), 1])].sort((a, b) => a - b);
+    faixa.addEventListener("keydown", (e) => {
+      const frente = e.key === "ArrowRight" || e.key === "ArrowUp";
+      const tras = e.key === "ArrowLeft" || e.key === "ArrowDown";
+      if (!frente && !tras) return;
+      const alvo = frente ? marcas.find((m) => m > t + 0.001) : marcas.findLast((m) => m < t - 0.001);
+      if (alvo === undefined) return;
+      e.preventDefault();
+      parar();
+      mostrar(alvo);
+    });
 
     // O gesto da pessoa tem prioridade e pausa a reprodução.
     faixa.addEventListener("input", () => {
@@ -157,6 +184,19 @@ const rss = Astro.locals.rss;
         area.classList.remove("arrastando");
       });
     }
+    // Na impressão, o desenho sai inteiro (o quadro do fim), e volta a ser o que era depois (D54).
+    let antesDaImpressao: { t: number; tocando: boolean } | null = null;
+    addEventListener("beforeprint", () => {
+      antesDaImpressao = { t, tocando };
+      parar();
+      lousa.desenhar(lousa.fim, false);
+    });
+    addEventListener("afterprint", () => {
+      if (!antesDaImpressao) return;
+      mostrar(antesDaImpressao.t);
+      if (antesDaImpressao.tocando) tocar();
+      antesDaImpressao = null;
+    });
     mostrar(0);
   }
 </script>

@@ -245,9 +245,15 @@ export function cssDosTokens(): string {
     `--marca-texto:${rgba(MARCA_TEXTO[t].cor, MARCA_TEXTO[t].alfa)};` +
     `--link-tinta:${LINK_TINTA[t]}%;`;
   const temaEscuro = `${variaveis(escuro)}${lousa(LOUSA.escuro)}${proporcoes("escuro")}--branco-no-escuro:${BRANCO_NO_ESCURO}%;color-scheme:dark;`;
+  // Na impressão (D54): sempre o tema claro (o escuro saía cinza-claro no papel, que não leva o fundo), e
+  // a lousa no quadro branco, com a caneta escura (a do vidro escuro, clara, sumia no papel).
+  const lousaNoPapel =
+    `--lousa:${escuro.lousa};--lousa-borda:${escuro["lousa-borda"]};--lousa-caneta:${escuro["lousa-caneta"]};` +
+    `--lousa-mistura:${escuro["lousa-mistura"]};${lousa(LOUSA.escuro)}`;
   return (
     `:root{${variaveis(claro)}${lousa(LOUSA.claro)}${proporcoes("claro")}--branco-no-escuro:0%;color-scheme:light;}` +
-    `@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){${temaEscuro}}}` +
-    `:root[data-theme="dark"]{${temaEscuro}}`
+    `@media screen and (prefers-color-scheme:dark){:root:not([data-theme="light"]){${temaEscuro}}}` +
+    `@media screen{:root[data-theme="dark"]{${temaEscuro}}}` +
+    `@media print{.lousa{${lousaNoPapel}}}`
   );
 }

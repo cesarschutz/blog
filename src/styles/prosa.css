@@ -44,7 +44,7 @@
 .prose h2,
 .prose h3,
 .prose h4 {
-  scroll-margin-top: 24px;
+  scroll-margin-top: calc(var(--folga-ancora) + 24px);
 }
 
 .prose h3 {
@@ -127,6 +127,14 @@
   :root:not([data-theme="light"]) .prose img[src$=".svg"] {
     border-color: transparent;
     filter: invert(0.9) hue-rotate(180deg);
+  }
+}
+
+/* No papel, o tema é sempre o claro (tokens.ts): o diagrama sai como é, sem a inversão do escuro (D54). */
+@media print {
+  .prose img[src$=".svg"] {
+    border-color: var(--rule) !important;
+    filter: none !important;
   }
 }
 

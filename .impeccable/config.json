@@ -22,6 +22,15 @@
         "value": "sf mono",
         "createdAt": "2026-09-27T13:51:58.785Z",
         "reason": "base.css: monoespaçada do sistema no kbd de propósito (comentário no CSS: o ⌘K não pode baixar a JetBrains Mono em toda página)"
+      },
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "src/scripts/artigo.ts"
+        ],
+        "createdAt": "2026-09-29T10:32:34.495Z",
+        "reason": "Claude: o <img> do visor nasce vazio no molde do <dialog> e recebe o src em mostrar() antes do showModal(); não chega vazio à tela"
       }
     ]
   },

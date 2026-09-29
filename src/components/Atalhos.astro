@@ -39,7 +39,7 @@ const TITULO: TituloAMao = "Atalhos do teclado";
     <div><dt><kbd>Espaço</kbd></dt><dd>Próxima seção</dd></div>
     <div><dt><kbd>Shift</kbd> <kbd>Espaço</kbd></dt><dd>Seção anterior</dd></div>
     <div><dt><kbd>T</kbd></dt><dd>Voltar ao topo</dd></div>
-    <div><dt><kbd aria-label="seta para a esquerda">←</kbd> <kbd aria-label="seta para a direita">→</kbd></dt><dd>Artigo anterior e próximo</dd></div>
+    <div><dt><kbd><span aria-hidden="true">←</span><span class="sr">seta para a esquerda</span></kbd> <kbd><span aria-hidden="true">→</span><span class="sr">seta para a direita</span></kbd></dt><dd>Artigo anterior e próximo</dd></div>
     <div><dt><kbd>?</kbd></dt><dd>Esta ficha</dd></div>
   </dl>
   <label class="desligar"><input type="checkbox" data-atalhos-desligar /> Desligar os atalhos</label>
@@ -138,9 +138,8 @@ const TITULO: TituloAMao = "Atalhos do teclado";
 
     // ---------- os atalhos ----------
 
-    // Os títulos do texto (os mesmos do sumário) e a folga do cabeçalho fixo (scroll-padding-top).
-    const titulos = () => [...document.querySelectorAll<HTMLElement>("[data-corpo] > :is(h2, h3)[id]")];
-    const folga = () => parseFloat(getComputedStyle(raiz).scrollPaddingTop) || 0;
+    // Os títulos do texto (os mesmos do sumário; o da apresentação fica dentro da seção dela).
+    const titulos = () => [...document.querySelectorAll<HTMLElement>("[data-corpo] > :is(h2, h3)[id], [data-corpo] > section > h2[id]")];
 
     // Com a rolagem suave em andamento, o próximo Espaço conta a partir do título de destino.
     let destino: number | null = null;
@@ -148,9 +147,9 @@ const TITULO: TituloAMao = "Atalhos do teclado";
 
     function irPara(passo: 1 | -1) {
       const lista = titulos();
-      const topo = folga();
-      // Onde o título para ao rolar até ele: a folga do cabeçalho mais a margem dele (scroll-margin-top).
-      const dist = (h: HTMLElement) => h.getBoundingClientRect().top - topo - (parseFloat(getComputedStyle(h).scrollMarginTop) || 0);
+      // Onde o título para ao rolar até ele: a margem dele (scroll-margin-top), que já desconta o
+      // cabeçalho fixo (D54).
+      const dist = (h: HTMLElement) => h.getBoundingClientRect().top - (parseFloat(getComputedStyle(h).scrollMarginTop) || 0);
       let i: number;
       if (destino !== null) i = destino + passo;
       else if (passo === 1) i = lista.findIndex((h) => dist(h) > 4);

@@ -126,6 +126,19 @@ const rss = Astro.locals.rss;
       visivel = v;
       andar();
     });
+    // Na impressão, o quadro parado (o mesmo de quem não tem JS), e depois volta a andar (D54).
+    let antesDaImpressao: { t: number; pausado: boolean } | null = null;
+    addEventListener("beforeprint", () => {
+      antesDaImpressao = { t, pausado };
+      marcarPausa(true);
+      mostrar(parado);
+    });
+    addEventListener("afterprint", () => {
+      if (!antesDaImpressao) return;
+      mostrar(antesDaImpressao.t);
+      marcarPausa(antesDaImpressao.pausado);
+      antesDaImpressao = null;
+    });
     // Com movimento reduzido, fica no quadro parado até a pessoa pedir.
     if (reduzir.matches) {
       mostrar(parado);
