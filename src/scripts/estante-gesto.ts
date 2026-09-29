@@ -11,12 +11,20 @@
 import type { GSAP } from "./gsap";
 
 /**
+ * As lombadas ficam sempre com uma transformação 3D, como no CSS (`rotateX(0deg)`, estante.css), também
+ * paradas: o GSAP, por padrão, volta ao 2D no fim de cada movimento, e no celular (Safari) a lombada
+ * girada só em 2D, dentro da prateleira em 3D, perdia o desenho (o vizinho que tomba, D54). O `force3D`
+ * fica guardado no GSAP de cada lombada: vale para os movimentos seguintes dela.
+ */
+export const EM_3D = { force3D: true } as const;
+
+/**
  * Onde a lombada descansa: em pé, girando pela borda de baixo; a última da coleção, inclinada 6° sobre
  * o aparador, gira pelo canto de baixo à direita.
  */
 export function descanso(el: HTMLElement) {
   const inclinada = el.classList.contains("inclinada");
-  return { rotation: inclinada ? 6 : 0, transformOrigin: inclinada ? "100% 100%" : "50% 100%" };
+  return { rotation: inclinada ? 6 : 0, transformOrigin: inclinada ? "100% 100%" : "50% 100%", ...EM_3D };
 }
 
 /** O livro na mão (`segurando`) ou na gaveta (`retirado`): quem mexe nele é a gaveta. */
@@ -68,7 +76,7 @@ export function tombar(gsap: GSAP, t: Tombado | null, dur: number, direto = fals
   if (!t) return;
   t.el.dataset.tombado = "";
   gsap.killTweensOf(t.el, "rotation,rotationX");
-  gsap.set(t.el, { transformOrigin: "0% 100%" });
+  gsap.set(t.el, { transformOrigin: "0% 100%", ...EM_3D });
   if (direto) return void gsap.set(t.el, { rotation: -t.graus, rotationX: 0 });
   gsap
     .timeline()
@@ -82,6 +90,7 @@ export function endireitar(gsap: GSAP, t: Tombado | null, dur: number, direto = 
   if (!t) return;
   delete t.el.dataset.tombado;
   gsap.killTweensOf(t.el, "rotation");
+  gsap.set(t.el, EM_3D);
   const emPe = () => gsap.set(t.el, { transformOrigin: "50% 100%" });
   if (direto) {
     gsap.set(t.el, { rotation: 0 });
