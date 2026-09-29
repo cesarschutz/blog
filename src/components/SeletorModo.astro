@@ -51,10 +51,10 @@ import { ICONES } from "../lib/icones";
     s.style.setProperty("--tinta-l", `${l.toFixed(2)}px`);
     s.style.setProperty("--tinta-r", `${r.toFixed(2)}px`);
   };
-  const marcar = (animar = false) => {
+  const marcar = (animar = false, medir = true) => {
     for (const s of seletores) {
       s.querySelectorAll<HTMLButtonElement>("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.valor === alvo)));
-      if (!s.hidden) posicionar(s, animar);
+      if (medir && !s.hidden) posicionar(s, animar);
     }
   };
   const reduzir = matchMedia("(prefers-reduced-motion: reduce)");
@@ -81,14 +81,16 @@ import { ICONES } from "../lib/icones";
       f.animate([{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 220, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)" });
   };
 
+  const montarCartoes = () => {
+    const moldes = document.querySelectorAll<HTMLTemplateElement>("template[data-cartoes]");
+    moldes.forEach((t) => t.replaceWith(t.content));
+    if (moldes.length) dispatchEvent(new Event("cartoes:prontos"));
+  };
+
   for (const seletor of seletores) {
     seletor.querySelectorAll<HTMLButtonElement>("button").forEach((b) =>
       b.addEventListener("click", () => {
-        if (b.dataset.valor === "cards") {
-          const moldes = document.querySelectorAll<HTMLTemplateElement>("template[data-cartoes]");
-          moldes.forEach((t) => t.replaceWith(t.content));
-          if (moldes.length) dispatchEvent(new Event("cartoes:prontos"));
-        }
+        if (b.dataset.valor === "cards") montarCartoes();
         trocar(b.dataset.valor!);
         try {
           localStorage.setItem(CHAVE, b.dataset.valor!);
@@ -100,7 +102,17 @@ import { ICONES } from "../lib/icones";
     );
     seletor.hidden = false;
   }
-  marcar();
+  // A primeira medida fica com o ResizeObserver, depois do layout: medir aqui forçava o layout da página
+  // inteira no carregamento (a tarefa longa de "Todos os artigos", D54).
+  marcar(false, false);
+  // Voltando pelo histórico (bfcache), o script do <head> relê o modo, que pode ter mudado em outra página.
+  addEventListener("preferencias:relidas", () => {
+    const agora = raiz.dataset.postView === "cards" ? "cards" : "list";
+    if (agora === alvo) return;
+    if (agora === "cards") montarCartoes();
+    alvo = agora;
+    marcar();
+  });
   // As fontes que chegam depois (ou a largura que muda) mexem na largura dos botões.
   const medida = new ResizeObserver((entradas) => entradas.forEach((e) => posicionar(e.target as HTMLElement, false)));
   seletores.forEach((s) => medida.observe(s));

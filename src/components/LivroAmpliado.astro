@@ -32,7 +32,7 @@ import "../styles/visor.css";
 import "../styles/paginas.css";
 ---
 
-<dialog class="visor visor-livro" data-livro-ampliado aria-label="Livro ampliado">
+<dialog class="visor visor-livro" data-livro-ampliado aria-label="Livro ampliado" data-pagefind-ignore>
   <div class="palco-ampliado" data-palco-ampliado></div>
   <div class="legenda-livro">
     <p><strong data-nome></strong> <span data-dados></span></p>
@@ -701,10 +701,14 @@ import "../styles/paginas.css";
       location.assign(a.href);
     }
     // Voltar pelo histórico traz a página como ficou: o livro de origem volta a ter o nome dele.
-    addEventListener("pageshow", () => {
+    // O livro que ficou aberto volta aberto, com o foco dentro dele (vinha no <body>, e as setas e o Esc
+    // não chegavam ao livro, D54).
+    addEventListener("pageshow", (e) => {
       seguindo = false;
       if (nomeDaOrigem) nomeDaOrigem.el.style.viewTransitionName = nomeDaOrigem.nome;
       nomeDaOrigem = null;
+      if (e.persisted && dialogo!.open && !dialogo!.contains(document.activeElement))
+        dialogo!.querySelector<HTMLElement>("[data-fechar]")?.focus({ preventScroll: true });
     });
 
     // Um clique no livro: num link da página à vista, segue o link; na página da direita, vira; na da

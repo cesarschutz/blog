@@ -59,6 +59,11 @@ export function aoMudarTema(ao: () => void) {
 }
 
 pintarBarra(lerEscolha());
+// Voltando pelo histórico (bfcache), o script do <head> relê a escolha, que pode ter mudado em outra página.
+addEventListener("preferencias:relidas", () => {
+  pintarBarra(lerEscolha());
+  dispatchEvent(new CustomEvent("tema:mudou"));
+});
 
 /** Desfaz o que a troca em andamento pôs na página (a classe, o color-scheme e as cores do botão). */
 let desfazer: (() => void) | null = null;

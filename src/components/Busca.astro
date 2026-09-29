@@ -296,6 +296,14 @@ import { url } from "../lib/url";
     }
   });
 
+  // Esc fecha a busca de uma vez, mesmo com texto no campo (no Chrome, o type="search" gastava o primeiro
+  // Esc limpando o campo, D54).
+  campo.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    e.preventDefault();
+    fechar();
+  });
+
   // O marcador segue o foco (as setas e o Tab) e o mouse (ou o dedo).
   lista.addEventListener("focusin", (e) => marcar((e.target as HTMLElement).closest<HTMLAnchorElement>(".resultado") ?? undefined));
   lista.addEventListener("pointerover", (e) => marcar((e.target as HTMLElement).closest<HTMLAnchorElement>(".resultado") ?? undefined));
@@ -319,6 +327,10 @@ import { url } from "../lib/url";
 
   const inicial = new URLSearchParams(location.search).get("q");
   if (inicial) abrir(inicial);
+  // Voltando de um resultado pelo histórico (bfcache), a busca volta aberta, com o foco no campo (D54).
+  addEventListener("pageshow", (e) => {
+    if (e.persisted && dialogo.open && !dialogo.contains(document.activeElement)) campo.focus();
+  });
 </script>
 
 <style>
@@ -382,6 +394,12 @@ import { url } from "../lib/url";
     background: transparent;
     font-size: 18px;
     outline: none;
+  }
+
+  /* O cinza padrão do navegador dava 3,5:1 no tema escuro (D54). */
+  input::placeholder {
+    color: var(--ink-2);
+    opacity: 1;
   }
 
   input::-webkit-search-cancel-button {

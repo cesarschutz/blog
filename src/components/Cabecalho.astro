@@ -768,6 +768,52 @@ const ITENS = [
     }
   }
 
+  /* Sem JS, a busca não abre: o botão some (o script do <head> põe o data-js). */
+  :global(:root:not([data-js])) .campo-busca {
+    display: none;
+  }
+
+  /* Sem JS, até 860px, o botão do menu não abre a folha: as seções ficam à vista numa linha embaixo. */
+  @media (max-width: 860px) {
+    :global(:root:not([data-js])) .cabecalho {
+      flex-wrap: wrap;
+    }
+
+    :global(:root:not([data-js])) .botao-menu,
+    :global(:root:not([data-js])) .menu .nota,
+    :global(:root:not([data-js])) .menu-perfis {
+      display: none;
+    }
+
+    :global(:root:not([data-js])) .menu {
+      position: static;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 18px;
+      order: 1;
+      width: 100%;
+      padding: 0;
+      border: 0;
+      background: none;
+      box-shadow: none;
+      clip-path: none;
+      visibility: visible;
+    }
+
+    :global(:root:not([data-js])) .menu a {
+      padding: 4px 0;
+      border: 0;
+      opacity: 1;
+      translate: 0 0;
+    }
+
+    :global(:root:not([data-js])) .menu .nome {
+      font-family: var(--font-ui);
+      font-weight: 500;
+      font-size: 15px;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .menu,
     .menu a,
