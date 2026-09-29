@@ -220,10 +220,13 @@
 
 /*
  * O desenho do topo do artigo (D51): ao abrir o artigo por uma troca de página ou pela abertura, ele
- * fica escondido até a folha pousar e a sequência começar (desenho-vivo.ts; no máximo 4s).
+ * fica escondido até a folha pousar e a sequência começar (desenho-vivo.ts; no máximo 4s, ou 2s depois
+ * da abertura). Antes do script, pelo atributo do <html>; depois, pelo `data-desenhar-espera` que ele põe,
+ * porque a abertura tira o dela antes de a folha pousar (D54).
  */
 @media screen and (prefers-reduced-motion: no-preference) {
-  :root:is([data-chegando], [data-vai-chegar], [data-abertura]) [data-desenhar-topo]:not([data-desenhado]) .ilustracao {
+  :root:is([data-chegando], [data-vai-chegar], [data-abertura]) [data-desenhar-topo]:not([data-desenhado]) .ilustracao,
+  [data-desenhar-topo][data-desenhar-espera]:not([data-desenhado]) .ilustracao {
     visibility: hidden;
   }
 }

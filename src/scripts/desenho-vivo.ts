@@ -160,11 +160,19 @@ export function desenharTopoDoArtigo() {
   const pelaHistoria = nav?.activation?.navigationType === "traverse";
   const vai = !pelaHistoria && ["data-chegando", "data-vai-chegar", "data-abertura"].some((a) => raiz.hasAttribute(a));
   if (!vai || movimentoReduzido.matches) return mostrar(area);
-  const reserva = window.setTimeout(() => mostrar(area), 4000);
+  // Escondido até a sequência começar (desenho.css), mesmo depois que a abertura tira o data-abertura do
+  // <html>: ela acaba antes de a folha pousar, e o desenho pronto aparecia e sumia nesse meio (D54).
+  area.setAttribute("data-desenhar-espera", "");
+  let foi = false;
+  // Se a sequência não começar, o desenho aparece inteiro: 4s depois de abrir ou, com a abertura (que
+  // numa carga lenta passa dos 4s), 2s depois de ela acabar.
+  let reserva = 0;
+  const reservar = (ms: number) => (reserva = window.setTimeout(() => mostrar(area), ms));
+  if (raiz.hasAttribute("data-abertura")) addEventListener("cs:aberto", () => foi || reservar(2000), { once: true });
+  else reservar(4000);
   const gsap = carregarTraco();
   gsap.catch(() => mostrar(area));
   // O primeiro aviso que vier: a folha pousou (troca) ou a chegada acabou (abertura, ou troca sem folha).
-  let foi = false;
   const comecar = () => {
     if (foi) return;
     foi = true;
