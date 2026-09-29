@@ -113,6 +113,11 @@ peça que aparece e some, piscada, camada errada, salto.
 | 59 | A nota à mão da caneta mudava de lugar conforme a maneira de chegar ao artigo | `caneta.ts` |
 | 60 | A frase em destaque ficava com as palavras acesas erradas depois de rolar durante a chegada | `FraseDestaque.astro` |
 | 61 | Com movimento reduzido, a lousa de linha do tempo começava vazia, e não no estado final | `LousaTempo.astro` |
+| 62 | Com o armazenamento do navegador bloqueado, a página seguia o tema do sistema, abria em Lista e o primeiro clique no tema não fazia nada | `Base.astro` |
+| 63 | O desenho do destaque da home dependia do script: com a rede muito lenta ficava vazio por segundos, e com o script falhando (um HTML guardado de antes de um deploy) nunca aparecia. Agora aparece inteiro em 4s se o script não assumir | `desenho-vivo.ts`, `desenho.css` |
+| 64 | No celular, com o livro aberto na gaveta, girar para deitado e voltar deixava o livro acima da tela, embaixo do cabeçalho | `Gaveta.astro` |
+| 65 | Se a busca falhasse uma vez (a rede caiu), o "Tente de novo" repetia a falha para sempre | `pagefind.ts` |
+| 66 | Se o GSAP não carregasse, os livros ficavam mortos: a lombada não abria nem navegava, a pilha não trocava e o filtro mudava os números mas não a lista. Agora cada um cai no caminho sem animação (o link, a lista direta), e a próxima tentativa baixa de novo | `gsap.ts`, `Gaveta.astro`, `PainelHome.astro`, `ListaFiltrada.astro`, `estante-viva.ts`, `categories/index.astro` |
 
 ## Para o Cesar decidir (não mexi)
 
@@ -134,3 +139,16 @@ peça que aparece e some, piscada, camada errada, salto.
 8. **Comportamentos novos para confirmar:** a roda do mouse pula a abertura (item 15); sem JS, o botão
    "Buscar" some (item 21, como o do tema); no visor, ao chegar ao último slide pelo teclado, o foco
    passa para "Anterior" (item 6).
+9. **Da segunda varredura** (não mexi):
+   - **Fonte padrão maior do navegador** (acessibilidade): não tem efeito, porque os tamanhos de texto
+     estão em px (o `DESIGN.md` fixa 17px). Passar para `rem` é uma mudança grande.
+   - **Voltar pelo histórico depois de trocar o tema em outra página:** a página aparece no tema antigo por
+     ~0,25s e vira (o navegador mostra a imagem guardada antes do `pageshow`). Tirá-la do bfcache quando
+     a preferência muda resolve, mas a volta passa a recarregar a página.
+   - **Clique duplo rápido no tema:** o segundo clique do mouse é ignorado; pelo teclado, o segundo Enter
+     pula a primeira troca e a tela escurece de uma vez num quadro.
+   - **Fumaça da caneca:** saindo com o mouse no meio da animação, ela volta ao lugar de uma vez.
+   - **Com movimento reduzido, `?livro=`** mostra a lista inteira por um quadro antes de filtrar.
+   - **Desfile de Categorias:** 80 a 160ms de mesa vazia entre a saída da página e o primeiro cartão.
+   - **O toque que pula a abertura** deixa em hover o que está sob o dedo (o título do card fica azul).
+   - **Trocar o tema com o livro voando para a gaveta:** o livro some até o círculo passar.
