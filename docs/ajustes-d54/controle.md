@@ -80,6 +80,40 @@ de mais de um grupo e foram no commit do grupo em que a maior parte deles está 
 | 39 | Links de compartilhar ("LinkedIn", "WhatsApp") ambíguos e sem aviso de nova aba | `RodapeArtigo.astro` |
 | 40 | RSS: links de nota relativos (quebravam nos leitores) e ícones SVG gigantes no texto | `rss.xml.ts` |
 
+### Depois da publicação (achado pelo Cesar)
+
+| # | Bug | Onde |
+|---|---|---|
+| 41 | Ao recarregar um artigo, o desenho do topo aparecia pronto, sumia e só então se desenhava: a abertura tira o `data-abertura` (que o escondia) antes de a folha pousar. Agora o script marca a área com `data-desenhar-espera` e ela fica escondida até a sequência começar; a reserva conta 2s do fim da abertura (antes, 4s da carga, o que numa carga lenta repetia o salto) | `desenho-vivo.ts`, `desenho.css` |
+| 42 | No celular, ao abrir um livro da estante, o vizinho que tomba para o lado perdia o desenho. Toda lombada parada tem transformação 3D (o `rotateX(0deg)` do CSS), mas o GSAP terminava o tombo numa rotação só 2D, e o Safari do celular não pintava o desenho nesse caso. Agora as lombadas ficam sempre em 3D (`force3D`, `EM_3D` em `estante-gesto.ts`). Conferido no Chrome (nenhum quadro com lombada girada só em 2D); o Safari de verdade não dá para testar aqui | `estante-gesto.ts` |
+| 43 | Depois da abertura da home, o livro inclinado (Carreira) ficava 1,6 a 2,9px afundado na tábua: a abertura o girava pelo meio da base, e não pelo canto de baixo à direita, como no CSS | `Abertura.astro` |
+
+### Segunda varredura (29/09/2026, depois dos achados do Cesar)
+
+Quatro agentes, quadro a quadro (gravação pelo CDP), com CPU 4× e rede lenta, atrás de falhas passageiras:
+peça que aparece e some, piscada, camada errada, salto.
+
+| # | Bug | Onde |
+|---|---|---|
+| 44 | No celular, o toque pintava o realce azul do navegador por uns quadros: a tela inteira ao pular a abertura, e a lombada, a pilha, os cartões, o menu e os botões | `base.css` |
+| 45 | Pular a abertura antes de o GSAP chegar não pulava: o papel ficava até o GSAP, a curva e as fontes chegarem (1,7 a 2,5s com a rede lenta). Agora termina na hora; no artigo, o desenho do topo começa em seguida | `Abertura.astro` |
+| 46 | Com a fonte lenta, o papel da abertura da home ficava 11s ou mais: a trava de 7s saía antes das esperas, e a estante esperava as fontes sem limite (agora 2,2s, como o caderno) | `Abertura.astro` |
+| 47 | O seletor Lista/Cards aparecia depois da primeira pintura e empurrava a lista 58px no meio da chegada (celular); com movimento reduzido, a pílula nascia do lado errado | `SeletorModo.astro` |
+| 48 | Girar o celular no meio do gesto da gaveta deixava o livro no tamanho de celular | `Gaveta.astro` |
+| 49 | Girar o celular no meio da abertura deixava ~1s de papel vazio (ou o caderno cortado): girar agora pula | `Abertura.astro` |
+| 50 | O cabeçalho inteiro sumia por 1 a 3 quadros no meio da troca de página (no computador, em até metade das trocas): a imagem antiga saía antes de a nova ser pintada | `base.css` |
+| 51 | Seguindo um link com a busca ou o livro ampliado abertos, o cabeçalho saía "aceso", sem o véu, por cima do diálogo | `troca.js` |
+| 52 | No celular, a folha do menu aberto ia junto com o cabeçalho e ficava congelada por cima da troca | `troca.js`, `Cabecalho.astro` |
+| 53 | Busca: fechando logo depois de abrir, o conteúdo voltava enquanto a janela encolhia | `Busca.astro` |
+| 54 | O contador que rola passava por números maiores quando uma coluna sumia (22 → 2 mostrava 32, 42… 92) | `contador.ts` |
+| 55 | Voltando pelo histórico a uma página deixada no meio da chegada, ela aparecia por um quadro congelada no meio do voo | `troca.js`, `categories/index.astro` |
+| 56 | Fora do Mac, a tecla da busca trocava de "⌘K" para "Ctrl K" depois da primeira pintura, e o campo alargava | `Base.astro`, `Cabecalho.astro` |
+| 57 | Anterior/próximo do mesmo livro, em telas de 1300px ou mais: a ficha "Do livro" duplicava, o livro escorregava de uma para a outra e a lateral velha sumia num corte | `troca.js` |
+| 58 | Recarregar um artigo com `#seção` em 1600 e 768px parava longe do título (às vezes fora da tela): a abertura media com as folhas em voo; agora vai ao título antes de elas chegarem | `Abertura.astro` |
+| 59 | A nota à mão da caneta mudava de lugar conforme a maneira de chegar ao artigo | `caneta.ts` |
+| 60 | A frase em destaque ficava com as palavras acesas erradas depois de rolar durante a chegada | `FraseDestaque.astro` |
+| 61 | Com movimento reduzido, a lousa de linha do tempo começava vazia, e não no estado final | `LousaTempo.astro` |
+
 ## Para o Cesar decidir (não mexi)
 
 1. **Chegada da folha longa no celular lento:** no Java 21 com CPU 4×, a folha que chega do fundo em 3D

@@ -1964,6 +1964,22 @@ nada muda.
   `src/plugins/rehype-tabela.mjs`, `src/scripts/` (artigo, estante-viva, tema), `src/styles/` (base,
   estante, lousa, paginas, prosa, tokens) e `.impeccable/config.json` (o `<img>` vazio do molde do visor
   é falso positivo do detector).
+- **Depois, no mesmo dia (achado pelo Cesar):** ao recarregar um artigo, o desenho do topo aparecia
+  pronto e sumia antes de se desenhar. A abertura acaba (e tira o `data-abertura`) ~0,1 a 0,6s antes de
+  a folha pousar; o desenho agora espera pelo `data-desenhar-espera`, posto pelo `desenho-vivo.ts`
+  (item 41 do controle). Também achados pelo Cesar e por mim: o vizinho que tomba na estante perdia o
+  desenho no celular (lombadas agora sempre em transformação 3D, `EM_3D`, item 42) e o livro inclinado
+  terminava a abertura afundado na tábua (item 43).
+- **Segunda varredura (29/09/2026, itens 44 a 61, guardada no branch `d54-varredura-2`, sem publicar):**
+  sem o realce de toque do navegador (no `html`); pular a abertura antes de a cena montar termina na
+  hora (e avisa `cs:chegou`); a estante espera as fontes no máximo 2,2s e a trava de 7s só sai com a
+  cena montada; girar a tela pula a abertura; a abertura vai ao `#seção` antes de as folhas chegarem;
+  na troca, a imagem antiga do cabeçalho fica por baixo até o fim; com diálogo aberto, o cabeçalho sai
+  com a página; a folha do menu some antes da troca; as animações de chegada terminam antes do bfcache;
+  "mesmo livro" no anterior/próximo só com a lateral no mesmo lugar; o atalho ⌘K/Ctrl K é decidido no
+  `<head>`; o contador tem o vazio antes do 0; o seletor Lista/Cards reserva o lugar desde a primeira
+  pintura; nota da caneta e frase em destaque medem de novo no fim da chegada; a `LousaTempo` com
+  movimento reduzido começa no estado final.
 - **Alternativas descartadas:** cabeçalho `position: fixed` em vez de `sticky` (mexia no layout de
   todas as páginas); fechar a busca e o livro ampliado ao voltar pelo histórico (a busca que reabre
   com os resultados parece intencional; só o foco foi corrigido).
