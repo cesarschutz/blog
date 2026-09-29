@@ -118,6 +118,16 @@ peça que aparece e some, piscada, camada errada, salto.
 | 64 | No celular, com o livro aberto na gaveta, girar para deitado e voltar deixava o livro acima da tela, embaixo do cabeçalho | `Gaveta.astro` |
 | 65 | Se a busca falhasse uma vez (a rede caiu), o "Tente de novo" repetia a falha para sempre | `pagefind.ts` |
 | 66 | Se o GSAP não carregasse, os livros ficavam mortos: a lombada não abria nem navegava, a pilha não trocava e o filtro mudava os números mas não a lista. Agora cada um cai no caminho sem animação (o link, a lista direta), e a próxima tentativa baixa de novo | `gsap.ts`, `Gaveta.astro`, `PainelHome.astro`, `ListaFiltrada.astro`, `estante-viva.ts`, `categories/index.astro` |
+| 67 | Com a rede lenta, o papel da abertura aparecia segundos antes do script dela, e tocar, clicar ou apertar uma tecla não pulava nada até a trava de 7s. Agora o script do `<head>` já pula (engole o clique e não rola com as teclas) e vai ao `#seção` | `Base.astro`, `Abertura.astro` |
+
+A reconferência no navegador achou pontos ainda falhando nos itens 51, 53, 55, 57 e 58, e eles foram
+refeitos e conferidos de novo: o cabeçalho sai sem o desfoque durante a troca e, com diálogo aberto, os
+livros saem sem nome (a lupa acesa); o conteúdo da busca fica escondido enquanto ela fecha; a chegada
+termina já no `pageswap`, e o desfile de Categorias assenta sem a transição dos cartões; no
+anterior/próximo, o livro da lateral vai dentro da imagem dela (não sai mais à parte, por cima da ficha
+nova) e o "mesmo livro" compara a posição do livro; a trava de 7s também vai ao `#seção`. Duas
+regressões das próprias correções também saíram antes de publicar: os livros da estante esmaecendo
+depois de pular a abertura cedo, e o "VOLUME 01" solto no alto do papel no começo da abertura da home.
 
 ## Para o Cesar decidir (não mexi)
 
