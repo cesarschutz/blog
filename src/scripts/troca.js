@@ -230,7 +230,19 @@
     try { sessionStorage.removeItem(CHAVE); } catch (err) {}
     if (!e.viewTransition || reduzido.matches) return;
     naoEsticarALombada(e);
-    if (raiz.hasAttribute("data-troca-propria") || document.querySelector("dialog[open]")) return;
+    // No celular, a folha do menu (fechando, ou fechada) sai da imagem do cabeçalho: ela ia junto com ele
+    // e ficava congelada por cima da troca (D54). Volta no pageshow, se a página voltar do bfcache.
+    raiz.setAttribute("data-troca-sem-menu", "");
+    if (document.querySelector("dialog[open]")) {
+      // Com a busca ou o livro ampliado abertos, a página sai inteira, com o véu: o cabeçalho e o traço da
+      // seção não saem à parte, acesos por cima dela (D54).
+      var topo = document.querySelector(".topo-fixo");
+      if (topo) nomear(topo, "none");
+      var traco = document.querySelector(".cabecalho .traco-atual");
+      if (traco) nomear(traco, "none");
+      return;
+    }
+    if (raiz.hasAttribute("data-troca-propria")) return;
     var destino = e.activation && e.activation.entry && e.activation.entry.url;
     if (!destino) return;
     var para = new URL(destino).pathname;
@@ -253,6 +265,9 @@
         dados.tipo = "lado";
         dados.lado = lado;
         dados.livro = sobre ? new URL(sobre.href).pathname : "";
+        // Onde a lateral está (no fim do artigo, a lateral grudada sobe junto com ele): o livro só fica parado
+        // se a nova estiver no mesmo lugar.
+        dados.lateralTopo = lateral && lateral.getBoundingClientRect().width > 0 ? lateral.getBoundingClientRect().top : null;
         // O nome do livro da lateral (a imagem dele sai à parte): se o livro mudar, ele sai junto com ela.
         var livroLateral = lateral && lateral.querySelector(".livro-em-pe");
         var nomeLivro = livroLateral && getComputedStyle(livroLateral).viewTransitionName;
@@ -314,6 +329,15 @@
   function guardar(dados) {
     try { sessionStorage.setItem(CHAVE, JSON.stringify(dados)); } catch (err) {}
   }
+  // As animações de chegada ainda no ar. A página que vai para o bfcache no meio delas termina a chegada
+  // antes de sair: senão, ao voltar, aparecia por um quadro congelada no meio do voo (D54).
+  var emCurso = [];
+  addEventListener("pagehide", function (e) {
+    if (!e.persisted) return;
+    emCurso.forEach(function (a) { try { a.finish(); } catch (err) {} });
+    emCurso = [];
+    dispatchEvent(new CustomEvent("cs:congelar"));
+  });
   // Voltar pelo histórico (bfcache) traz a página como ficou: sem os nomes da troca. E sem a troca: a
   // página restaurada aparecia pronta num quadro e a antiga voltava por cima; um corte limpo é melhor.
   var restaurada = false;
@@ -321,6 +345,7 @@
     if (!e.persisted) return;
     esconderCarga();
     limparNomes();
+    raiz.removeAttribute("data-troca-sem-menu");
     restaurada = true;
   });
 
@@ -355,6 +380,7 @@
    * (segundos) segura a opacidade das novas até lá, mesmo com o voo já começado.
    */
   function chegar(novas, opcoes) {
+    emCurso = emCurso.filter(function (a) { return a.playState !== "finished"; });
     opcoes = opcoes || {};
     var W = innerWidth, H = innerHeight, cel = celular();
     var m = document.getElementById("conteudo");
@@ -370,6 +396,7 @@
     var animar = function (el, quadros, tempo) {
       var a = el.animate(quadros, tempo);
       anims.push(a);
+      emCurso.push(a);
       return a;
     };
     var desenho = document.querySelector("[data-desenhar-topo]");
@@ -572,6 +599,7 @@
     // As folhas novas ficam escondidas desde o primeiro quadro, mas o relógio delas começa junto com a
     // queda das antigas (vt.ready, que pode vir alguns quadros depois deste evento).
     var fimDaChegada = propria ? 0 : chegar(novas, { volta: volta, t0: curta ? 0.06 : VOO, visivel: curta ? 0 : CHEGA, anims: anims, curta: curta });
+    anims.forEach(function (a) { if (emCurso.indexOf(a) < 0) emCurso.push(a); });
     var comecou = vt.ready.then(function () {
       anims.forEach(function (a) { a.currentTime = 0; });
     }, function () {});
@@ -599,7 +627,11 @@
     var folha = document.querySelector("#conteudo .artigo-principal");
     var lateral = document.querySelector("#conteudo .lateral");
     var sobre = document.querySelector("#conteudo .lateral a.sobre");
-    var mesmoLivro = !!d.livro && !!sobre && new URL(sobre.href).pathname === d.livro;
+    // O mesmo livro, e a lateral no mesmo lugar: aí o livro fica parado. Com a lateral em outro lugar (saindo
+    // do fim de um artigo, ela estava empurrada para cima), a ficha duplicava e o livro escorregava de uma
+    // para a outra: troca como se fosse outro livro (D54).
+    var mesmoLugar = !!lateral && d.lateralTopo != null && Math.abs(lateral.getBoundingClientRect().top - d.lateralTopo) <= 2;
+    var mesmoLivro = mesmoLugar && !!d.livro && !!sobre && new URL(sobre.href).pathname === d.livro;
     var proximo = d.lado === "proximo";
     // As animações da página nova andam no relógio das imagens (recomeçam no vt.ready, como na troca geral).
     var anims = [];
@@ -624,6 +656,7 @@
       anims.push(pouso);
       pouso.finished.then(function () { dispatchEvent(new CustomEvent("cs:pousou")); }, function () {});
     }
+    emCurso.push.apply(emCurso, anims);
     vt.ready.then(function () {
       anims.forEach(function (a) { a.currentTime = 0; });
       if (proximo) {

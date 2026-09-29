@@ -71,6 +71,9 @@ html {
   overflow-x: clip;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* Sem o realce de toque do navegador (um retângulo azul por uns quadros sobre o que foi tocado, a tela
+     inteira na abertura): cada peça responde com o gesto dela e com o anel de foco (D54). */
+  -webkit-tap-highlight-color: transparent;
 }
 
 /*
@@ -486,18 +489,19 @@ a:hover > .titulo-sub,
  * a fonte da interface ainda não está pronta, e o menu aparecia um instante na fonte de reserva (mais
  * larga), e o cabeçalho tremia. O traço da seção atual desliza por cima o tempo todo.
  */
+::view-transition-old(topo),
+::view-transition-new(topo) {
+  mix-blend-mode: normal;
+}
+
+/* O antigo fica por baixo até o fim: se o novo demorasse a ser pintado, o cabeçalho sumia por 1 a 3 quadros
+   no meio da troca (D54). O novo, opaco, chega por cima aos 0,12s. */
 ::view-transition-old(topo) {
-  animation: topo-sai 0.12s steps(1, end) both;
+  animation: none;
 }
 
 ::view-transition-new(topo) {
   animation: topo-entra 0.12s steps(1, end) both;
-}
-
-@keyframes topo-sai {
-  to {
-    opacity: 0;
-  }
 }
 
 @keyframes topo-entra {

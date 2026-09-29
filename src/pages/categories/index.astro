@@ -90,6 +90,8 @@ const livros = (await montarLivros()).filter((l) => !l.serie);
           gsap.fromTo(nome, { yPercent: 70, opacity: 0 }, { yPercent: 0, opacity: 1, duration: 0.24, ease: "power2.out", overwrite: true });
         }, undefined, t + 0.3);
     });
+    // Saindo para o bfcache no meio do desfile, ele termina antes (troca.js, cs:congelar, D54).
+    addEventListener("cs:congelar", () => tl.progress(1), { once: true });
     // Da pilha para a grade: sai primeiro o de cima (o último volume); cada um sobe um pouco no caminho.
     const tDist = t0 + 0.1 + (cartoes.length - 1) * passo + dur + 0.1;
     tl.to(ficha, { opacity: 0, duration: 0.25 }, tDist - 0.1);

@@ -96,7 +96,7 @@ const ITENS = [
     <svg class="circulo" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path pathLength="1" d={circuloDeCaneta("Buscar")} /></svg>
     <svg class="lupa-busca" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.busca} />
     <span>Buscar</span>
-    <kbd data-atalho>⌘K</kbd>
+    <kbd data-atalho><span class="tecla-mac">⌘K</span><span class="tecla-ctrl">Ctrl K</span></kbd>
   </button>
   <div class="perfis">
     <a href={AUTOR.github} aria-label="GitHub de Cesar Schutz" title="GitHub" rel="me">
@@ -157,12 +157,6 @@ const ITENS = [
     celular.addEventListener("change", () => alternar(false));
     // Voltar pelo histórico (bfcache) não pode trazer o menu aberto.
     addEventListener("pageshow", () => alternar(false));
-  }
-
-  // Fora do macOS e do iOS, o atalho é Ctrl+K.
-  const apple = /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent);
-  if (!apple) {
-    document.querySelectorAll("[data-atalho]").forEach((tecla) => (tecla.textContent = "Ctrl K"));
   }
 </script>
 
@@ -464,6 +458,17 @@ const ITENS = [
   }
 
   /* A tecla desenhada responde à de verdade: afunda 1,5px e perde a sombra (Busca.astro, .apertada). */
+  /* Fora do macOS e do iOS, o atalho é Ctrl+K: quem decide é o script do <head> (data-ctrl-k), antes da
+     primeira pintura; trocado depois, o campo alargava e o "Buscar" andava (D54). */
+  .tecla-ctrl,
+  :global(:root[data-ctrl-k]) .tecla-mac {
+    display: none;
+  }
+
+  :global(:root[data-ctrl-k]) .tecla-ctrl {
+    display: inline;
+  }
+
   .campo-busca kbd {
     margin-left: auto;
     box-shadow: 0 1.5px 0 var(--rule);
@@ -656,6 +661,12 @@ const ITENS = [
       clip-path: inset(0 0 -60px 0);
       visibility: visible;
       transition: clip-path 0.46s cubic-bezier(0.2, 0.75, 0.2, 1);
+    }
+
+    /* Na troca de página, a folha sai de uma vez, antes de o navegador fotografar o cabeçalho (troca.js, D54). */
+    :global(:root[data-troca-sem-menu]) .menu {
+      visibility: hidden;
+      transition: none;
     }
 
     .menu a {
