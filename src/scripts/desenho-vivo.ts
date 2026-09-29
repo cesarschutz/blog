@@ -194,6 +194,8 @@ export function desenharTopoDoArtigo() {
     foi = true;
     gsap.then((g) => {
       clearTimeout(reserva);
+      // A reserva já o mostrou inteiro (o GSAP chegou tarde): fica assim, sem se desenhar de novo (D54).
+      if (area.hasAttribute("data-desenhado")) return;
       // O desenho à vista (no celular, o recorte médio) e com o topo na tela; senão, pronto.
       const svg = [...area.querySelectorAll<SVGSVGElement>("svg.ilustracao")].find((s) => s.getBoundingClientRect().width > 0);
       const r = area.getBoundingClientRect();
