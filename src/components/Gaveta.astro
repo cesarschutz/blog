@@ -305,6 +305,9 @@ function linhas(l: Livro): Linha[] {
       const gsap = gsapNoAr!;
       const dur = DUR();
       const terminar = () => {
+        // Com o foco dentro da gaveta (o "Fechar livro" clicado com o mouse ou o dedo), ele volta para a
+        // lombada: senão, ficaria no <body> quando a gaveta some (D54).
+        const focoDentro = gaveta!.contains(document.activeElement);
         gaveta!.replaceChildren();
         gaveta!.hidden = true;
         if (!depois) gsap.set(gaveta!, { clearProps: MEDIDAS });
@@ -312,6 +315,7 @@ function linhas(l: Livro): Linha[] {
         lombada.setAttribute("aria-expanded", "false");
         ocupado = false;
         if (devolverFoco) lombada.focus();
+        else if (focoDentro && !depois) lombada.focus({ preventScroll: true });
         if (depois) return depois();
         seguirPendente();
       };

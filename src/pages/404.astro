@@ -111,6 +111,12 @@ const enderecos = [
     return nota <= Math.max(2, Math.round(pedido.length * 0.25)) ? melhor : null;
   }
 
+  // Com a abertura na tela, a rasura e a sugestão esperam ela acabar (senão, aconteceriam debaixo do papel).
+  function quandoAberto(fazer: () => void) {
+    if (document.documentElement.hasAttribute("data-abertura")) addEventListener("cs:aberto", fazer, { once: true });
+    else fazer();
+  }
+
   const endereco = document.querySelector<HTMLElement>("[data-endereco]");
   const texto = document.querySelector<HTMLElement>("[data-texto-endereco]");
   const rasura = document.querySelector<SVGSVGElement>(".rasura");
@@ -135,7 +141,7 @@ const enderecos = [
           rasura.append(traco);
         });
       });
-      rasura.classList.add("escrevendo");
+      quandoAberto(() => rasura.classList.add("escrevendo"));
     });
   }
 
@@ -156,6 +162,9 @@ const enderecos = [
       achado.tipo === "artigo" ? "Ler o artigo" : achado.tipo === "livro" ? "Ver o livro" : "Ver os artigos da tag";
     sugestao.classList.toggle("com-cor", Boolean(achado.cor));
     talvez.hidden = false;
+    // Já no lugar (a página não salta), mas à espera da abertura para chegar.
+    talvez.classList.add("esperando");
+    quandoAberto(() => talvez.classList.remove("esperando"));
   }
 </script>
 
@@ -257,6 +266,11 @@ const enderecos = [
   .talvez {
     margin-top: 22px;
     animation: chegar 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) 1s backwards;
+  }
+
+  .talvez.esperando {
+    opacity: 0;
+    animation: none;
   }
 
   @keyframes chegar {

@@ -89,22 +89,53 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
       avisarPulo();
       tl?.progress(1);
     };
-    cena.addEventListener("pointerdown", pular);
-    const tecla = (e: KeyboardEvent) => { if (!e.metaKey && !e.ctrlKey && e.key !== "Tab") pular(); };
+    // O toque (ou o clique) que pula só pula: o clique que o navegador gera em seguida cairia no que está
+    // embaixo da cena, que some na hora (abria o livro da gaveta, navegava), e é engolido (D54).
+    cena.addEventListener("pointerdown", () => {
+      const engolir = (e: Event) => {
+        e.preventDefault();
+        e.stopPropagation();
+      };
+      addEventListener("click", engolir, { capture: true, once: true });
+      setTimeout(() => removeEventListener("click", engolir, { capture: true }), 700);
+      pular();
+    });
+    // A tecla que pula também não rola a página (Espaço, PageDown, End, setas), D54.
+    const ROLAM = new Set([" ", "PageDown", "PageUp", "End", "Home", "ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"]);
+    const tecla = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.key === "Tab") return;
+      if (ROLAM.has(e.key)) e.preventDefault();
+      pular();
+    };
     addEventListener("keydown", tecla);
+    // A roda do mouse também pula, como o dedo que começa a rolar no celular (D54).
+    addEventListener("wheel", pular, { passive: true });
     let terminou = false;
     const fim = () => {
       if (terminou) return;
       terminou = true;
       removeEventListener("keydown", tecla);
+      removeEventListener("wheel", pular);
       history.scrollRestoration = rolagem;
       delete raiz.dataset.abertura;
       cena.remove();
+      // Com #título na URL (um link para a seção, ou o recarregar em cima dela), a página vai até ele
+      // depois da abertura, que começou do alto; se a pessoa já rolou, fica onde está (D54).
+      let alvo: HTMLElement | null = null;
+      try {
+        alvo = location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
+      } catch {
+        alvo = null;
+      }
+      if (alvo && scrollY === 0) alvo.scrollIntoView({ block: "start", behavior: "instant" });
       dispatchEvent(new CustomEvent("cs:aberto"));
     };
 
     try {
       const gsap = await carregarTraco();
+      // Se o GSAP chegou depois da trava de 7s do <head>, a página já está à vista: a abertura não toca
+      // mais por cima dela (D54).
+      if (!raiz.dataset.abertura) return fim();
       // Daqui em diante, quem termina a abertura é este script (a trava de 7s do <head> sai).
       clearTimeout((window as unknown as { csTravaDaAbertura?: number }).csTravaDaAbertura);
       const controle: Controle = { pulou: () => pulou, pulado, fim };
@@ -204,6 +235,8 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     // O livro inclina pelo atrito enquanto desliza e, ao parar, passa um pouco do prumo e assenta.
     const assenta = CustomEase.create("assenta", "M0,0 C0.2,0 0.35,1.22 0.55,1.1 0.7,1.02 0.82,0.98 1,1");
     await document.fonts.ready;
+    // As esperas acima podem passar da trava de 7s do <head>: com a página já à vista, não toca (D54).
+    if (!raiz.dataset.abertura) return { tl: null };
     const papel = cena.querySelector<HTMLElement>(".abertura-papel")!;
     const conta = cena.querySelector<HTMLElement>(".abertura-conta")!;
     const celular = matchMedia("(max-width: 640px)").matches;

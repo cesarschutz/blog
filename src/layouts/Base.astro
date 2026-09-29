@@ -110,8 +110,10 @@ const preCarregar = {
       // sistema. A escolha do leitor (tema e/ou modo Lista/Cards) fica em localStorage com a data da
       // última troca ("cs-prefs-quando") e vale por 3 dias; passado isso, some e volta ao padrão. As
       // chaves antigas (tema para sempre em localStorage, som e frases, que saíram) também são limpas.
+      // Voltando pelo histórico (bfcache), a página volta como estava: a escolha feita em outra página
+      // depois dela é relida no pageshow (D54), e tema.ts e SeletorModo acompanham.
       document.documentElement.dataset.js = "";
-      try {
+      function aplicarPreferencias() {
         var raiz = document.documentElement;
         var TRES_DIAS = 3 * 24 * 60 * 60 * 1000;
         var quando = Number(localStorage.getItem("cs-prefs-quando"));
@@ -125,8 +127,17 @@ const preCarregar = {
         }
         raiz.dataset.theme = tema === "dark" ? "dark" : "light";
         if (modo !== "list") raiz.dataset.postView = "cards";
+        else delete raiz.dataset.postView;
+      }
+      try {
+        aplicarPreferencias();
         localStorage.removeItem("cs-som");
         ["cs-frases", "cs-frase-ultima"].forEach(function (k) { localStorage.removeItem(k); });
+        addEventListener("pageshow", function (e) {
+          if (!e.persisted) return;
+          try { aplicarPreferencias(); } catch (erro) {}
+          dispatchEvent(new CustomEvent("preferencias:relidas"));
+        });
       } catch (e) {}
     </script>
     <script is:inline define:vars={{ modoDaAbertura: abertura ? "estante" : "caderno" }}>
@@ -143,6 +154,8 @@ const preCarregar = {
           // A abertura cancela esta trava quando assume (Abertura.astro); ela só vale se o script não vier.
           window.csTravaDaAbertura = setTimeout(function () {
             delete raizDaAbertura.dataset.abertura;
+            // Quem espera o fim da abertura (o desenho do destaque da home) fica sabendo (D54).
+            dispatchEvent(new CustomEvent("cs:aberto"));
           }, 7000);
         }
       } catch (e) {}
@@ -223,10 +236,12 @@ const preCarregar = {
     <main id="conteudo" data-chegada={chegada?.propria ? "propria" : undefined} data-chegada-passo={chegada?.passo}>
       <slot />
     </main>
+    <!-- A abertura antes do marcador que libera a primeira pintura: em rede lenta, a página não
+         aparece sem o papel por cima (D54). -->
+    <Abertura modo={abertura ? "estante" : "caderno"} />
     <span id="fim-do-conteudo" hidden></span>
     <Rodape />
     <VoltarTopo />
     <Busca />
-    <Abertura modo={abertura ? "estante" : "caderno"} />
   </body>
 </html>
