@@ -113,6 +113,8 @@ const preCarregar = {
       // Voltando pelo histórico (bfcache), a página volta como estava: a escolha feita em outra página
       // depois dela é relida no pageshow (D54), e tema.ts e SeletorModo acompanham.
       document.documentElement.dataset.js = "";
+      // Fora do macOS e do iOS, o atalho da busca é Ctrl+K (Cabecalho.astro).
+      if (!/Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent)) document.documentElement.dataset.ctrlK = "";
       function aplicarPreferencias() {
         var raiz = document.documentElement;
         var TRES_DIAS = 3 * 24 * 60 * 60 * 1000;

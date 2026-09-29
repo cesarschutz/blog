@@ -8,7 +8,9 @@
  * .cartoes-modo, em base.css). Os cards vêm num <template> (D37): viram DOM na página (script logo
  * depois dele) se o modo já for Cards, ou aqui, na primeira troca para Cards.
  * A troca esmaece a forma atual e traz a nova com um deslize de 8px (D42, Web Animations; direta com
- * movimento reduzido). Sem JS, fica a lista e o seletor some.
+ * movimento reduzido). Sem JS, fica a lista e o seletor some. Com JS, ele ocupa o lugar desde a
+ * primeira pintura, invisível até o script marcar o modo e medir a tinta: aparecendo depois, ele empurrava
+ * a lista 58px no meio da chegada, no celular (D54).
  *
  * A pílula que escorre (D49, protótipo E2): o azul do botão ativo é uma tinta só, atrás dos dois
  * botões, que vai de um para o outro como uma gota: a borda da frente corre primeiro (0,2s) e a de
@@ -18,7 +20,7 @@
 import { ICONES } from "../lib/icones";
 ---
 
-<div class="modo" role="group" aria-label="Modo de exibição" data-modo hidden>
+<div class="modo" role="group" aria-label="Modo de exibição" data-modo>
   <span class="tinta" aria-hidden="true"></span>
   <button type="button" data-valor="list"
     ><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.lista} />Lista</button
@@ -32,7 +34,8 @@ import { ICONES } from "../lib/icones";
   const CHAVE = "cs-post-view";
   const QUANDO = "cs-prefs-quando";
   const raiz = document.documentElement;
-  const seletores = [...document.querySelectorAll<HTMLElement>("[data-modo]")];
+  // Só o seletor: a cena da abertura também tem um data-modo (estante ou caderno), e o data-pronto dela é outro.
+  const seletores = [...document.querySelectorAll<HTMLElement>(".modo[data-modo]")];
   // O modo para onde a página vai (durante a troca, o <html> ainda mostra o anterior).
   let alvo = raiz.dataset.postView === "cards" ? "cards" : "list";
   // A tinta vai para baixo do botão ativo: `animar` diz o lado (a transição de CSS faz o resto); sem
@@ -114,7 +117,13 @@ import { ICONES } from "../lib/icones";
     marcar();
   });
   // As fontes que chegam depois (ou a largura que muda) mexem na largura dos botões.
-  const medida = new ResizeObserver((entradas) => entradas.forEach((e) => posicionar(e.target as HTMLElement, false)));
+  const medida = new ResizeObserver((entradas) =>
+    entradas.forEach((e) => {
+      const s = e.target as HTMLElement;
+      posicionar(s, false);
+      s.dataset.pronto = "";
+    }),
+  );
   seletores.forEach((s) => medida.observe(s));
 </script>
 
@@ -130,8 +139,13 @@ import { ICONES } from "../lib/icones";
     font-family: var(--font-ui);
   }
 
-  .modo[hidden] {
+  .modo[hidden],
+  :global(:root:not([data-js])) .modo {
     display: none;
+  }
+
+  .modo:not([data-pronto]) {
+    visibility: hidden;
   }
 
   .modo button {

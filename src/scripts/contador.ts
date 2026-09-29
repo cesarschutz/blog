@@ -8,7 +8,9 @@
  */
 import "../styles/contador.css";
 
-const ALGARISMOS = [..."0123456789", " "];
+// O vazio vem antes do 0: a coluna que some desce até ele (22 → 2 passa por 12), e a que volta sobe dele. Com
+// o vazio depois do 9, ela passava por todos os números maiores (22 → 2 mostrava 32, 42… 92, D54).
+const ALGARISMOS = [" ", ..."0123456789"];
 
 /** Troca o número escrito em `el` pelas fitas, com `colunas` algarismos no máximo. */
 export function criarContador(el: HTMLElement, valor: number, colunas = String(valor).length) {
@@ -44,6 +46,6 @@ export function mudarContador(el: HTMLElement, valor: number) {
   colunas.forEach((coluna, i) => {
     const vazia = algarismos[i] === " ";
     coluna.classList.toggle("vazia", vazia);
-    coluna.style.setProperty("--d", vazia ? "10" : algarismos[i]);
+    coluna.style.setProperty("--d", vazia ? "0" : String(Number(algarismos[i]) + 1));
   });
 }

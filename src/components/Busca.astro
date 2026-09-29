@@ -223,6 +223,9 @@ import { url } from "../lib/url";
     const { gsap, Flip } = flip;
     fechando = true;
     dialogo.classList.add("fechando");
+    // Fechando logo depois de abrir: o nascer (a janela crescendo e o conteúdo chegando) para aqui, senão o
+    // conteúdo voltava enquanto a janela encolhia (D54).
+    gsap.killTweensOf([dialogo, ...conteudo()]);
     gsap.to(conteudo(), { opacity: 0, duration: 0.15 });
     Flip.fit(dialogo, botao, { duration: 0.35, ease: "power2.in", scale: true, onComplete: fim });
   }

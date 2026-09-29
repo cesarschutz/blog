@@ -1,6 +1,6 @@
 /*
  * O contador que rola (D49, src/scripts/contador.ts): uma janela da altura da linha por algarismo, com
- * a fita de 0 a 9 (e um espaço, para a coluna vazia) andando por baixo. A fita anda em `--rola`
+ * a fita de 0 a 9 (com um espaço antes do 0, para a coluna vazia) andando por baixo. A fita anda em `--rola`
  * (0,55s no filtro por livro; 0,4s nos minutos do sumário), com `power3.out`; a coluna vazia fecha a
  * largura em 0,4s. Com movimento reduzido, troca seco.
  */

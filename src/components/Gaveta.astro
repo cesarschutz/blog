@@ -357,9 +357,23 @@ function linhas(l: Livro): Linha[] {
       if (!depois) volta.to(gaveta!, { ...FECHADA, duration: 0.5, ease: "power3.inOut", overwrite: true }, "pouso");
     }
 
-    /** O pedido feito durante o último movimento, se houver. */
+    let tamanhoMudou = false;
+    function remontar() {
+      tamanhoMudou = false;
+      if (!aberto) return;
+      const { id, vizinho, tl } = aberto;
+      tl.kill();
+      aberto = null;
+      carregarGsap().then((gsap) => abrir(gsap, id, false, { direto: true, naMao: { vizinho } }));
+    }
+
+    /** O pedido feito durante o último movimento, se houver (e a tela que mudou de tamanho nele). */
     function seguirPendente() {
-      if (!pendente) return;
+      if (!pendente) {
+        if (tamanhoMudou) remontar();
+        return;
+      }
+      tamanhoMudou = false;
       const p = pendente;
       pendente = null;
       if (!p.id) return fechar(undefined, p.foco);
@@ -406,14 +420,9 @@ function linhas(l: Livro): Linha[] {
       if (e.key === "Escape" && (aberto || ocupado) && !document.querySelector("dialog[open]")) pedir({ foco: true });
     });
     // Passou do celular para a tela larga (ou o contrário) com o livro aberto: remonta no tamanho novo,
-    // no estado final.
-    pequeno.addEventListener("change", () => {
-      if (!aberto || ocupado) return;
-      const { id, vizinho, tl } = aberto;
-      tl.kill();
-      aberto = null;
-      carregarGsap().then((gsap) => abrir(gsap, id, false, { direto: true, naMao: { vizinho } }));
-    });
+    // no estado final. No meio de um movimento, remonta quando ele acaba (antes, o pedido se perdia e o
+    // livro ficava no tamanho do celular, D54).
+    pequeno.addEventListener("change", () => (ocupado ? (tamanhoMudou = true) : remontar()));
 
     /*
      * ---------- arrastar pela cabeça (só com mouse, D49) ----------
