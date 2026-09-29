@@ -123,6 +123,7 @@ const LINGUAGENS: Record<string, string> = {
   yml: "YAML",
   toml: "TOML",
   properties: "Properties",
+  ini: "INI",
   sql: "SQL",
   js: "JavaScript",
   javascript: "JavaScript",

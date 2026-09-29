@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="28 24 526 346">
+  <g class="traco">
+    <path d="M540 47 H547 V177 H387 V170 H540 Z" class="hachura"/>
+    <rect x="380" y="40" width="160" height="130" rx="6"/>
+    <path d="M40 150 A70 15 0 0 1 180 150 V300 A70 15 0 0 1 40 300 Z"/>
+    <path d="M40 150 A70 15 0 0 0 180 150" class="fino"/>
+    <path d="M428 115 m-15 0 a15 15 0 1 0 30 0 a15 15 0 1 0 -30 0 M443 115 H500 M488 115 V128 M500 115 V129" class="destaque"/>
+    <path d="M272 280 m-11 0 a11 11 0 1 0 22 0 a11 11 0 1 0 -22 0 M283 280 H330 M318 280 V290 M330 280 V291"/>
+    <path d="M248 272 C228 266 208 256 190 245" data-traco="0.03 0.1"/>
+    <path d="M199 242 L189 245 L196 253" data-aparece="0.1 0.12"/>
+    <path d="M384 152 C352 172 332 212 322 250" class="destaque" data-traco="0.27 0.34"/>
+    <path d="M315 243 L322 252 L328 243" class="destaque" data-aparece="0.34 0.36"/>
+    <g data-esmaece="0.64 0.7 0.25">
+      <rect x="252" y="256" width="96" height="48" rx="3" data-traco="0.36 0.43"/>
+      <path d="M252 256 L300 272 L348 256" data-traco="0.43 0.47"/>
+    </g>
+    <path d="M354 286 C396 288 420 236 424 182" data-traco="0.52 0.58"/>
+    <path d="M417 190 L424 180 L431 190" data-aparece="0.58 0.6"/>
+    <path d="M505 70 L513 79 L528 60" class="destaque" data-traco="0.6 0.63" data-some="0.77 0.79"/>
+    <path d="M418 96 L505 136 M505 96 L418 136" class="destaque" data-traco="0.77 0.83"/>
+    <rect x="252" y="256" width="96" height="48" rx="3" class="destaque" data-traco="0.84 0.89"/>
+    <path d="M252 256 L300 272 L348 256" class="destaque" data-traco="0.89 0.92"/>
+  </g>
+  <g>
+    <text x="394" y="64">KMS</text>
+    <text x="460" y="158" text-anchor="middle" class="secundario" data-some="0.8 0.82">chave mestra</text>
+    <text x="460" y="158" text-anchor="middle" class="destaque" data-aparece="0.82 0.85">desativada</text>
+    <text x="540" y="198" text-anchor="end" class="secundario" data-aparece="0.61 0.63" data-some="0.77 0.79">permissão ok</text>
+    <text x="58" y="198" class="codigo" data-some="0.12 0.14">CPF 123.456…</text>
+    <text x="58" y="228" class="codigo" data-some="0.14 0.16">4111 1111 11…</text>
+    <text x="58" y="258" class="codigo" data-some="0.16 0.18">Maria Souza</text>
+    <text x="58" y="198" class="codigo" data-escrita="0.14 0.2">9fQk2xPzA…</text>
+    <text x="58" y="228" class="codigo" data-escrita="0.16 0.22">Zx81wTq0e…</text>
+    <text x="58" y="258" class="codigo" data-escrita="0.18 0.24">p0Lr7cVbN…</text>
+    <text x="110" y="334" text-anchor="middle" class="secundario">dados e backups</text>
+    <text x="110" y="358" text-anchor="middle" class="destaque" data-escrita="0.92 0.98">ilegíveis</text>
+    <text x="220" y="284" text-anchor="middle" class="secundario" data-aparece="0.08 0.12">cifra</text>
+    <text x="318" y="190" text-anchor="middle" class="secundario destaque" data-aparece="0.32 0.35">cifra</text>
+    <text x="300" y="334" text-anchor="middle" class="secundario" data-some="0.46 0.48">chave de dados</text>
+    <text x="300" y="334" text-anchor="middle" class="secundario" data-aparece="0.47 0.49" data-some="0.65 0.67">chave de dados cifrada</text>
+    <text x="300" y="334" text-anchor="middle" class="secundario" data-aparece="0.67 0.69" data-some="0.87 0.89">aberta na memória do banco</text>
+    <text x="300" y="334" text-anchor="middle" class="secundario destaque" data-aparece="0.89 0.91">ninguém mais abre</text>
+    <text x="412" y="256" class="secundario" data-aparece="0.55 0.58">pede ao KMS</text>
+  </g>
+</svg>

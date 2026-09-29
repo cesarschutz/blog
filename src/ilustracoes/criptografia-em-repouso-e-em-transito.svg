@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -40 1200 907"
+  aria-label="O banco com um cadeado (em repouso), o cabo de rede com outro cadeado (em trânsito) e, na ponta, um chip de memória em linha fantasma (em uso, o menos comum)."
+  data-largo="80 191 1100 468" data-medio="206 118 921 614" data-quadrado="226 -15 880 880" data-og="230 -16 871 883" data-segura="270 210 792 430">
+  <g class="tinta">
+    <path d="M880 400 H858 M880 430 H858 M880 490 H858 M880 520 H858 M900 380 V358 M930 380 V358 M960 380 V358 M990 380 V358 M1020 380 V358 M900 540 V562 M930 540 V562 M960 540 V562 M990 540 V562 M1020 540 V562 M1040 400 H1062 M1040 430 H1062 M1040 460 H1062 M1040 490 H1062 M1040 520 H1062" class="fantasma"/>
+    <path d="M892 380 H1028 A12 12 0 0 1 1040 392 V528 A12 12 0 0 1 1028 540 H892 A12 12 0 0 1 880 528 V392 A12 12 0 0 1 892 380 Z" class="fantasma"/>
+    <path d="M918 415 H1002 V505 H918 Z" class="fantasma"/>
+    <path d="M944 458 V442 A16 16 0 0 1 976 442 V458" class="fantasma"/>
+    <path d="M936 458 H984 V490 H936 Z" class="fantasma"/>
+    <path d="M284 264 A150 40 0 0 1 584 264 V554 A150 40 0 0 1 284 554 Z" class="hachura"/>
+    <path d="M270 250 A150 40 0 0 1 570 250 V540 A150 40 0 0 1 270 540 Z" class="papel"/>
+    <path d="M270 250 A150 40 0 0 1 570 250 V540 A150 40 0 0 1 270 540 Z" class="linha"/>
+    <path d="M270 250 A150 40 0 0 0 570 250 M270 290 A150 40 0 0 0 570 290" class="linha"/>
+    <path d="M570 460 C630 460 640 495 725 495 C810 495 820 460 880 460" class="linha"/>
+    <path d="M384 415 V385 A36 36 0 0 1 456 385 V415" class="linha"/>
+    <path d="M362 415 H478 A10 10 0 0 1 488 425 V495 A10 10 0 0 1 478 505 H362 A10 10 0 0 1 352 495 V425 A10 10 0 0 1 362 415 Z" class="papel"/>
+    <path d="M362 415 H478 A10 10 0 0 1 488 425 V495 A10 10 0 0 1 478 505 H362 A10 10 0 0 1 352 495 V425 A10 10 0 0 1 362 415 Z" transform="translate(7 6)" class="cor"/>
+    <path d="M362 415 H478 A10 10 0 0 1 488 425 V495 A10 10 0 0 1 478 505 H362 A10 10 0 0 1 352 495 V425 A10 10 0 0 1 362 415 Z" class="linha"/>
+    <path d="M429 452 A9 9 0 1 1 411 452 A9 9 0 1 1 429 452 Z M420 461 V478" class="linha"/>
+    <path d="M707 525 V495 A18 18 0 0 1 743 495 V525" class="linha"/>
+    <path d="M700 525 H750 A7 7 0 0 1 757 532 V568 A7 7 0 0 1 750 575 H700 A7 7 0 0 1 693 568 V532 A7 7 0 0 1 700 525 Z" transform="translate(7 7)" class="hachura"/>
+    <path d="M700 525 H750 A7 7 0 0 1 757 532 V568 A7 7 0 0 1 750 575 H700 A7 7 0 0 1 693 568 V532 A7 7 0 0 1 700 525 Z" class="papel"/>
+    <path d="M700 525 H750 A7 7 0 0 1 757 532 V568 A7 7 0 0 1 750 575 H700 A7 7 0 0 1 693 568 V532 A7 7 0 0 1 700 525 Z" transform="translate(7 6)" class="cor"/>
+    <path d="M700 525 H750 A7 7 0 0 1 757 532 V568 A7 7 0 0 1 750 575 H700 A7 7 0 0 1 693 568 V532 A7 7 0 0 1 700 525 Z" class="linha"/>
+    <path d="M731 546 A6 6 0 1 1 719 546 A6 6 0 1 1 731 546 Z" class="linha"/>
+  </g>
+  <text x="420" y="632" text-anchor="middle" class="rotulo">em repouso</text>
+  <text x="725" y="632" text-anchor="middle" class="rotulo">em trânsito</text>
+  <text x="960" y="632" text-anchor="middle" class="rotulo">em uso</text>
+  <g class="anotacao">
+    <text x="610" y="342" class="nota">TLS no caminho</text>
+    <text x="610" y="368" class="nota-pequena">com o certificado conferido</text>
+    <path d="M700 382 C 712 410 716 440 721 470" class="chamada"/>
+    <text x="880" y="290" class="nota">o menos comum</text>
+    <text x="880" y="316" class="nota-pequena">cifrado até na memória</text>
+  </g>
+</svg>
