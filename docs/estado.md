@@ -41,6 +41,15 @@ impostor, `pg_tde`, MongoDB com TLS, Enterprise em repouso, Queryable Encryption
 no moto), e o post tem o campo `codigo`. O LocalStack ficou de fora: o RDS é pago (plano Base) e,
 desde a 2026.03, toda imagem exige token.
 
+Bug de 29/09/2026 (relatado pelo Cesar: no celular, a tela subia e descia sozinha durante a leitura):
+era a `LousaTempo`. Depois do play, ela fica em loop mesmo fora da tela, e o texto do estado passava
+de uma para duas linhas e voltava, a lousa crescia e encolhia ~25px (39px no Jackson) e o artigo abaixo
+ia junto; no Safari do iPhone, sem ancoragem de rolagem, o salto aparecia até com a lousa longe. O dedo
+que começava a rolar em cima do desenho também mudava o estado. Corrigido: os textos de todos os
+estados ficam na mesma célula da grade, só o atual à vista e no `aria-live` (`LousaTempo.astro`,
+`lousa.css`). A altura fica constante em todos os estados, de 320 a 1600px; onde algum estado ocupa
+duas linhas, a lousa parada ganha a linha reservada embaixo do texto.
+
 ## Como ver
 
 - Dev: `fnm exec --using=24 npm run dev -- --host 127.0.0.1` (<http://127.0.0.1:4322>); parar com
@@ -102,6 +111,14 @@ Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
    conferência post a post.
 10. **Lousa `tempo` da idempotência:** a linha que marca o instante passa por cima dos rótulos
     "pede", "cobra" e "tenta de novo" (achado pela `/amostra/lousas/`). Corrige?
+11. **`LousaTempo` fora da tela e no toque (achados de 29/09/2026):** pausar o loop quando a lousa sai
+    da tela, como a `LousaLoop` já faz (economiza bateria), e, no celular, só tomar o gesto do desenho
+    depois de um movimento horizontal (hoje o toque que só queria rolar leva a lousa para outro
+    instante). Faço?
+12. **Blocos de código com `content-visibility: auto`** (`prosa.css`): a altura estimada erra de −38 a
+    +23px em 390px; depois de pular pelo sumário ou pelo "voltar ao topo" e rolar para cima, o Safari
+    pode dar um salto único. Não é o sobe e desce que o Cesar viu. Troco por `contain-intrinsic-size`
+    mais justo ou tiro o `content-visibility`?
 
 ## Riscos a acompanhar
 

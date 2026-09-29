@@ -4,6 +4,8 @@
  * de reproduzir e pausar (percorre em ~7 s, para 1,5 s no resultado e recomeça), controle
  * deslizante, arrasto sobre o desenho e roda do mouse (com ou sem Shift; nas pontas, a roda volta a
  * rolar a página). Qualquer gesto manual pausa. O estado atual é lido por leitores de tela.
+ * O texto do estado ocupa sempre o lugar do maior deles (todos na mesma célula da grade, só o atual
+ * à vista, lousa.css): trocar de estado não muda a altura da lousa nem mexe no texto de baixo.
  * Sem JS: o desenho no fim, sem controles.
  *
  *   <LousaTempo desenho="<slug>/<nome>" rotulo="…" estados={[{ de: 0, texto: "Antes do pedido" }, …]} />
@@ -45,7 +47,10 @@ const rss = Astro.locals.rss;
         </button>
         <label class="sr" for={id}>Tempo</label>
         <input id={id} type="range" min="0" max="1000" step="1" value="0" />
-        <span class="estado" aria-live="polite">{estados[0]?.texto}</span>
+        <span class="estado">
+          <span class="atual" aria-live="polite">{estados[0]?.texto}</span>
+          {estados.map((e) => <span class="reserva" aria-hidden="true">{e.texto}</span>)}
+        </span>
       </div>
       <figcaption>{legenda}</figcaption>
     </figure>
@@ -65,7 +70,7 @@ const rss = Astro.locals.rss;
     const controles = figura.querySelector<HTMLElement>(".controles")!;
     const botao = figura.querySelector<HTMLButtonElement>(".tocar")!;
     const faixa = figura.querySelector<HTMLInputElement>("input[type=range]")!;
-    const rotuloDoEstado = figura.querySelector<HTMLElement>(".estado")!;
+    const rotuloDoEstado = figura.querySelector<HTMLElement>(".estado .atual")!;
     const estados: { de: number; texto: string }[] = JSON.parse(figura.dataset.estados ?? "[]");
     controles.hidden = false;
 

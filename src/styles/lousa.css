@@ -239,11 +239,26 @@
   accent-color: var(--acento);
 }
 
+/*
+ * O texto do estado guarda o lugar do maior: os textos de todos os estados ficam na mesma célula da
+ * grade, só o atual à vista (e no aria-live). No celular um estado cabia numa linha e o seguinte
+ * quebrava em duas (ou saía da linha da faixa), e a lousa crescia e encolhia a cada troca (no play, no
+ * arrasto e no dedo que só queria rolar a página), empurrando o artigo abaixo.
+ */
 .lousa-tempo .estado {
+  display: grid;
   min-width: 14ch;
   font-family: var(--font-ui);
   font-size: 14.5px;
   color: var(--ink-2);
+}
+
+.lousa-tempo .estado > * {
+  grid-area: 1 / 1;
+}
+
+.lousa-tempo .estado .reserva {
+  visibility: hidden;
 }
 
 .lousa-tempo .tocar {
