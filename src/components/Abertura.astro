@@ -73,6 +73,23 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
   else cena?.remove();
 
   const esperar = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+  /** Se a abertura já pôs as folhas da página para chegar (no fim do caderno). */
+  let chegadaPedida = false;
+
+  /**
+   * Com #título na URL (um link para a seção, ou o recarregar em cima dela), a página vai até ele, que a
+   * abertura começou do alto; se a pessoa já rolou, fica onde está. Vai antes de as folhas chegarem, ainda
+   * embaixo do papel (e elas chegam dali): medido com as folhas em voo, o título caía longe (D54).
+   */
+  function irAoAlvo() {
+    let alvo: HTMLElement | null = null;
+    try {
+      alvo = location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
+    } catch {
+      alvo = null;
+    }
+    if (alvo && scrollY === 0) alvo.scrollIntoView({ block: "start", behavior: "instant" });
+  }
 
   async function abrir(cena: HTMLElement, modo: "estante" | "caderno") {
     // A abertura começa do alto da página (ao recarregar, o navegador devolveria o lugar de antes).
@@ -87,7 +104,10 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     const pular = () => {
       pulou = true;
       avisarPulo();
-      tl?.progress(1);
+      // Antes de a cena montar (o GSAP, as fontes e a curva ainda chegando), a página embaixo já está
+      // pronta: termina na hora, em vez de esperar tudo chegar para então pular (D54).
+      if (tl) tl.progress(1);
+      else fim();
     };
     // O toque (ou o clique) que pula só pula: o clique que o navegador gera em seguida cairia no que está
     // embaixo da cena, que some na hora (abria o livro da gaveta, navegava), e é engolido (D54).
@@ -110,25 +130,31 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     addEventListener("keydown", tecla);
     // A roda do mouse também pula, como o dedo que começa a rolar no celular (D54).
     addEventListener("wheel", pular, { passive: true });
+    // Girar a tela também: a cena foi medida na orientação de antes (D54).
+    const retrato = matchMedia("(orientation: portrait)");
+    retrato.addEventListener("change", pular);
     let terminou = false;
     const fim = () => {
       if (terminou) return;
       terminou = true;
       removeEventListener("keydown", tecla);
       removeEventListener("wheel", pular);
+      retrato.removeEventListener("change", pular);
       history.scrollRestoration = rolagem;
+      // Sem a cena (pulada antes de ela montar, ou sem o GSAP), a estante que o CSS da abertura escondia
+      // aparece de uma vez: a trava das transições sai junto, e os livros apareciam esmaecendo (D54).
+      if (!tl) {
+        const pecas = [...document.querySelectorAll<HTMLElement>("[data-estante] :is(.prateleira-livros > *, .tabua)")];
+        pecas.forEach((p) => (p.style.transition = "none"));
+        requestAnimationFrame(() => requestAnimationFrame(() => pecas.forEach((p) => p.style.removeProperty("transition"))));
+      }
       delete raiz.dataset.abertura;
       cena.remove();
-      // Com #título na URL (um link para a seção, ou o recarregar em cima dela), a página vai até ele
-      // depois da abertura, que começou do alto; se a pessoa já rolou, fica onde está (D54).
-      let alvo: HTMLElement | null = null;
-      try {
-        alvo = location.hash ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
-      } catch {
-        alvo = null;
-      }
-      if (alvo && scrollY === 0) alvo.scrollIntoView({ block: "start", behavior: "instant" });
+      irAoAlvo();
       dispatchEvent(new CustomEvent("cs:aberto"));
+      // Pulada antes de as folhas chegarem, a página já está no lugar: quem espera a chegada (o desenho do
+      // topo do artigo) começa agora, e não pela reserva (D54).
+      if (!chegadaPedida) dispatchEvent(new CustomEvent("cs:chegou"));
     };
 
     try {
@@ -136,14 +162,15 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
       // Se o GSAP chegou depois da trava de 7s do <head>, a página já está à vista: a abertura não toca
       // mais por cima dela (D54).
       if (!raiz.dataset.abertura) return fim();
-      // Daqui em diante, quem termina a abertura é este script (a trava de 7s do <head> sai).
-      clearTimeout((window as unknown as { csTravaDaAbertura?: number }).csTravaDaAbertura);
       const controle: Controle = { pulou: () => pulou, pulado, fim };
       // A timeline vem dentro de um objeto: ela é "thenable", e devolvê-la direto de uma função async
       // faria o await esperar a abertura inteira (e o clique não pularia nada).
       const r = modo === "estante" ? await estante(gsap, cena, controle) : await caderno(gsap, cena, controle);
       tl = r.tl;
       if (!tl) return fim();
+      // Com a cena montada, quem termina a abertura é este script: a trava de 7s do <head> sai. Antes,
+      // ela saía antes das esperas (a curva e as fontes), e com a fonte lenta o papel ficava 11s (D54).
+      clearTimeout((window as unknown as { csTravaDaAbertura?: number }).csTravaDaAbertura);
       if (pulou) tl.progress(1);
     } catch {
       // Sem o GSAP (rede, bloqueio), a página aparece como está.
@@ -234,7 +261,8 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     gsap.registerPlugin(CustomEase);
     // O livro inclina pelo atrito enquanto desliza e, ao parar, passa um pouco do prumo e assenta.
     const assenta = CustomEase.create("assenta", "M0,0 C0.2,0 0.35,1.22 0.55,1.1 0.7,1.02 0.82,0.98 1,1");
-    await document.fonts.ready;
+    // As fontes, no máximo 2,2s (como no caderno): a estante se monta com a de reserva, se preciso (D54).
+    await Promise.race([document.fonts.ready, esperar(2200)]);
     // As esperas acima podem passar da trava de 7s do <head>: com a página já à vista, não toca (D54).
     if (!raiz.dataset.abertura) return { tl: null };
     const papel = cena.querySelector<HTMLElement>(".abertura-papel")!;
@@ -287,10 +315,13 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
       const fora = x0 + (W - rb.left) / s + 24;
       const t = t0 + i * passo;
       const revista = b.classList.contains("de-serie");
+      // O inclinado gira pelo canto de baixo à direita, como no CSS (estante.css): pelo meio, ele terminava
+      // a abertura 2 a 3px afundado na tábua (D54).
+      const giro = b.classList.contains("inclinada") ? "100% 100%" : "50% 100%";
       const rotulo = revista ? "E a revista" : `Volume ${String(i + 1).padStart(2, "0")}`;
       tl.set(b, { opacity: 1 }, t)
         .fromTo(b, { x: fora }, { x: x0, duration: dur, ease: "power3.out" }, t)
-        .fromTo(b, { rotation: r0 - 3.5 }, { rotation: r0, duration: dur, ease: assenta, transformOrigin: "50% 100%" }, t)
+        .fromTo(b, { rotation: r0 - 3.5 }, { rotation: r0, duration: dur, ease: assenta, transformOrigin: giro }, t)
         .call(() => { conta.textContent = rotulo; }, undefined, t + 0.12);
       // O aparador só aparece quando a revista está chegando nele.
       if (revista && aparador) tl.to(aparador, { opacity: 1, duration: 0.2 }, t + dur * 0.6);
@@ -365,6 +396,9 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     await Promise.race([Promise.all([carga.then(), Promise.race([pronto, esperar(2200)])]), pulado]);
     if (pulou()) carga.progress(1);
     else await gsap.to(p, { v: 1, duration: 0.15, ease: "power2.out", onUpdate: escrever }).then();
+    // Pulada (ou vencida a trava de 7s) durante a carga, a página já está à vista: a cena não segue,
+    // senão as folhas chegariam de novo por cima dela (D54).
+    if (!raiz.dataset.abertura) return { tl: null };
 
     const marca = document.querySelector<HTMLElement>(".cabecalho .marca-livro-3d");
     const rm = marca?.getBoundingClientRect();
@@ -392,6 +426,8 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     } else tl.to(livro, { opacity: 0, duration: 0.3 }, t3);
     tl.to(papel, { opacity: 0, duration: 0.35, ease: "power1.inOut" }, tPapel)
       .call(() => {
+        chegadaPedida = true;
+        irAoAlvo();
         if (propria) dispatchEvent(new CustomEvent("cs:abertura-chega"));
         else if (troca) {
           // Quando a última folha pousa, o desenho do artigo pode se desenhar (desenho-vivo.ts).
