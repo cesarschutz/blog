@@ -115,32 +115,38 @@ const preCarregar = {
       document.documentElement.dataset.js = "";
       // Fora do macOS e do iOS, o atalho da busca é Ctrl+K (Cabecalho.astro).
       if (!/Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent)) document.documentElement.dataset.ctrlK = "";
+      // Com o armazenamento bloqueado (ele lança exceção), valem os padrões: antes, a página ficava sem
+      // tema nenhum, seguia o do sistema e abria em Lista (D54).
       function aplicarPreferencias() {
         var raiz = document.documentElement;
-        var TRES_DIAS = 3 * 24 * 60 * 60 * 1000;
-        var quando = Number(localStorage.getItem("cs-prefs-quando"));
-        var validas = quando > 0 && Date.now() - quando < TRES_DIAS;
-        var tema = validas ? localStorage.getItem("cs-theme") : null;
-        var modo = validas ? localStorage.getItem("cs-post-view") : null;
-        if (!validas) {
-          localStorage.removeItem("cs-theme");
-          localStorage.removeItem("cs-post-view");
-          localStorage.removeItem("cs-prefs-quando");
-        }
+        var tema = null;
+        var modo = null;
+        try {
+          var TRES_DIAS = 3 * 24 * 60 * 60 * 1000;
+          var quando = Number(localStorage.getItem("cs-prefs-quando"));
+          var validas = quando > 0 && Date.now() - quando < TRES_DIAS;
+          tema = validas ? localStorage.getItem("cs-theme") : null;
+          modo = validas ? localStorage.getItem("cs-post-view") : null;
+          if (!validas) {
+            localStorage.removeItem("cs-theme");
+            localStorage.removeItem("cs-post-view");
+            localStorage.removeItem("cs-prefs-quando");
+          }
+        } catch (e) {}
         raiz.dataset.theme = tema === "dark" ? "dark" : "light";
         if (modo !== "list") raiz.dataset.postView = "cards";
         else delete raiz.dataset.postView;
       }
+      aplicarPreferencias();
       try {
-        aplicarPreferencias();
         localStorage.removeItem("cs-som");
         ["cs-frases", "cs-frase-ultima"].forEach(function (k) { localStorage.removeItem(k); });
-        addEventListener("pageshow", function (e) {
-          if (!e.persisted) return;
-          try { aplicarPreferencias(); } catch (erro) {}
-          dispatchEvent(new CustomEvent("preferencias:relidas"));
-        });
       } catch (e) {}
+      addEventListener("pageshow", function (e) {
+        if (!e.persisted) return;
+        aplicarPreferencias();
+        dispatchEvent(new CustomEvent("preferencias:relidas"));
+      });
     </script>
     <script is:inline define:vars={{ modoDaAbertura: abertura ? "estante" : "caderno" }}>
       // A abertura do site (D51, Abertura.astro): ao chegar de fora (link de outro site, endereço

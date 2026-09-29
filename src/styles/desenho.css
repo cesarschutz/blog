@@ -216,6 +216,19 @@
   :root[data-js] [data-desenhar]:not([data-desenhado]) .ilustracao {
     visibility: hidden;
   }
+
+  /* Se o script não chegar (a rede falhou, ou um HTML guardado pede um arquivo que já não existe depois de
+     um deploy), o desenho aparece inteiro em 4s; o script, quando assume a área, desliga esta reserva
+     (data-desenho-vivo, desenho-vivo.ts). Antes, ele ficava escondido para sempre (D54). */
+  :root[data-js] [data-desenhar]:not([data-desenhado], [data-desenho-vivo]) .ilustracao {
+    animation: desenho-reserva 0s linear 4s forwards;
+  }
+}
+
+@keyframes desenho-reserva {
+  to {
+    visibility: visible;
+  }
 }
 
 /*

@@ -171,10 +171,11 @@ export function estanteViva(raiz: HTMLElement, { emRepouso = false } = {}) {
       if (!el.matches(":focus-visible") || naAbertura()) return;
       // Pelo tocar (que não anima com movimento reduzido), para o blur saber limpar a legenda (D54).
       if (movimentoReduzido.matches) return tocar(el);
+      // Sem o GSAP (a rede falhou), a lombada só não tomba: o foco e o link continuam.
       carregarGsap().then((g) => {
         preparar(g);
         if (document.activeElement === el) tocar(el);
-      });
+      }, () => {});
     });
     el.addEventListener("blur", (e) => {
       // Indo para outra lombada, quem cuida é o foco dela.
@@ -186,7 +187,7 @@ export function estanteViva(raiz: HTMLElement, { emRepouso = false } = {}) {
   raiz.addEventListener("pointermove", (e) => {
     if (e.pointerType !== "mouse" || naAbertura()) return;
     if (!gsap && !movimentoReduzido.matches) {
-      carregarGsap().then(preparar);
+      carregarGsap().then(preparar, () => {});
       return;
     }
     tocar(naColuna(e.clientX));

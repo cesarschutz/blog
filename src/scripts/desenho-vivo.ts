@@ -104,10 +104,22 @@ const mostrar = (area: Element) => area.setAttribute("data-desenhado", "");
 // uma vez por página; a outra, quando aparecer (na troca Lista / Cards), já vem pronta.
 let desenhou = false;
 
+/**
+ * O script assume a área: desliga a reserva do CSS (desenho.css), que mostra o desenho inteiro em 4s se o
+ * script não chegar. Se ele chegou depois disso, o desenho já está à vista e fica como está (D54).
+ */
+function assumir(area: Element) {
+  if (area.hasAttribute("data-desenhado") || area.hasAttribute("data-desenho-vivo")) return;
+  const svg = area.querySelector("svg.ilustracao");
+  if (!movimentoReduzido.matches && svg && getComputedStyle(svg).visibility === "visible") mostrar(area);
+  else area.setAttribute("data-desenho-vivo", "");
+}
+
 /** O desenho de `[data-desenhar]` (o destaque da home) se desenha quando entra na tela, uma vez. */
 export function desenharAoEntrar() {
   const areas = [...document.querySelectorAll("[data-desenhar]")];
   if (!areas.length) return;
+  areas.forEach(assumir);
   if (movimentoReduzido.matches) return areas.forEach(mostrar);
   // Com a abertura na tela, o desenho espera ela acabar (senão, se desenharia debaixo do papel).
   if (raiz.hasAttribute("data-abertura")) {
@@ -144,7 +156,11 @@ export function desenharAoEntrar() {
   areas.forEach((a) => olhar.observe(a));
   // Os cards chegam do <template> na primeira troca para Cards (SeletorModo, D37).
   addEventListener("cartoes:prontos", () =>
-    document.querySelectorAll("[data-desenhar]:not([data-desenhado])").forEach((a) => (desenhou ? mostrar(a) : olhar.observe(a))),
+    document.querySelectorAll("[data-desenhar]:not([data-desenhado])").forEach((a) => {
+      assumir(a);
+      if (desenhou) mostrar(a);
+      else olhar.observe(a);
+    }),
   );
 }
 

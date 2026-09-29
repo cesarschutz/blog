@@ -40,10 +40,14 @@ interface Pagefind {
 const LIMITE = 10;
 
 let carregando: Promise<Pagefind> | undefined;
+let tentativas = 0;
 
 function carregar(): Promise<Pagefind> {
   carregando ??= (async (): Promise<Pagefind> => {
-    const pagefind: Pagefind = await import(/* @vite-ignore */ url("/pagefind/pagefind.js"));
+    // O navegador guarda o módulo que falhou pelo endereço: a nova tentativa vai num endereço novo, senão
+    // o "Tente de novo" repetia a falha para sempre (D54).
+    const endereco = url("/pagefind/pagefind.js") + (tentativas++ ? `?tentativa=${tentativas}` : "");
+    const pagefind: Pagefind = await import(/* @vite-ignore */ endereco);
     await pagefind.options({
       baseUrl: url("/"),
       excerptLength: 24,

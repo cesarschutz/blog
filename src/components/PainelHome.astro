@@ -929,7 +929,8 @@ const rotulo = (l: Livro) => {
       // O GSAP chega sozinho logo depois de a página abrir; um clique antes disso (ou o do livro
       // ampliado, que abre o próximo livro pela pilha) espera por ele.
       if (gsap) trocar(link);
-      else carregarGsap().then((g) => (ligar(g), trocar(link)));
+      // Sem o GSAP (a rede falhou), o livro vai direto para a página dele, como sem JS (D54).
+      else carregarGsap().then((g) => (ligar(g), trocar(link)), () => location.assign(link.href));
     });
 
     // Voltar pelo histórico (bfcache) traz a página como ficou: a pilha, o topo e o texto voltam ao lugar.

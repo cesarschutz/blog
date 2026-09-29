@@ -225,7 +225,9 @@ const temIndices = Astro.slots.has("default") || indiceDosAnos.length > 0;
       contar(id);
       if (movimentoReduzido.matches) return aplicar(id);
       trocando = trocando.then(async () => {
-        const gsap = await carregarGsap();
+        // Sem o GSAP (a rede falhou), a lista troca direto: antes, os números mudavam e a lista não (D54).
+        const gsap = await carregarGsap().catch(() => null);
+        if (!gsap) return aplicar(id);
         await gsap.to(blocos, { opacity: 0, y: 6, duration: 0.18, ease: "power2.in" }).then();
         aplicar(id);
         gsap.set(blocos, { opacity: 1, y: 0 });

@@ -179,9 +179,14 @@ function linhas(l: Livro): Linha[] {
     }
 
     /** A gaveta à vista: rola até o livro, se ele ficar fora da tela (`ate` em coordenadas da página). */
-    function rolarAte(ate: number, direto: boolean) {
+    function rolarAte(ate: number, direto: boolean, topo?: number) {
+      const comportamento = direto || movimentoReduzido.matches ? "auto" : "smooth";
+      // O livro acima da tela, embaixo do cabeçalho (girar o celular e voltar, com o livro aberto, levava a
+      // página para baixo dele): sobe até ele aparecer inteiro abaixo do cabeçalho (D54).
+      const cabecalho = document.querySelector(".topo-fixo")?.getBoundingClientRect().bottom ?? 0;
+      if (topo !== undefined && topo - scrollY < cabecalho) return void scrollTo({ top: topo - cabecalho - 16, behavior: comportamento });
       const falta = ate - scrollY - innerHeight;
-      if (falta > 0) scrollBy({ top: falta + 24, behavior: direto || movimentoReduzido.matches ? "auto" : "smooth" });
+      if (falta > 0) scrollBy({ top: falta + 24, behavior: comportamento });
     }
 
     type Aberto = { id: string; lombada: HTMLElement; no: HTMLElement; vizinho: Tombado | null; tl: gsap.core.Timeline };
@@ -224,7 +229,8 @@ function linhas(l: Livro): Linha[] {
       const dur = DUR();
       // Onde a gaveta termina, para rolar até ela: medido agora, com ela já no tamanho final.
       const r = no.getBoundingClientRect();
-      const ate = r.top + scrollY + Math.min(r.height, caixa.offsetHeight + 120);
+      const topo = r.top + scrollY;
+      const ate = topo + Math.min(r.height, caixa.offsetHeight + 120);
       const troca = alturaDaTroca;
       alturaDaTroca = 0;
       const animar = !direto && !movimentoReduzido.matches;
@@ -251,7 +257,7 @@ function linhas(l: Livro): Linha[] {
         gsap.set(lombada, { x: 0, y: 0, z: 0, rotationX: 0, ...descanso(lombada) });
         tombar(gsap, registro.vizinho, dur, true);
         tl.set(livro, { rotationY: GIRO });
-        rolarAte(ate, true);
+        rolarAte(ate, true, topo);
         return tl;
       }
 
@@ -275,7 +281,7 @@ function linhas(l: Livro): Linha[] {
       tl.add(() => {
         gsap.set(voo, { ...sobreALombada(caixa, lombada), autoAlpha: 1, transformOrigin: "50% 50%", zIndex: 6 });
         lombada.classList.add("retirado");
-        rolarAte(ate, false);
+        rolarAte(ate, false, topo);
       })
         .to(voo, { x: 0, y: 0, scaleX: 1, scaleY: 1, duration: 0.9 * dur, ease: "power3.inOut" })
         .to(livro, { rotationY: GIRO, duration: 0.9 * dur, ease: "power3.inOut" }, "<")
@@ -391,7 +397,15 @@ function linhas(l: Livro): Linha[] {
     async function escolher(id: string, foco: boolean, naMao?: NaMao) {
       if (ocupado) return void (pendente = { id, foco, naMao });
       if (aberto?.id === id) return fechar(undefined, foco);
-      const gsap = (gsapNoAr = await carregarGsap());
+      let gsap: GSAP;
+      try {
+        gsap = gsapNoAr = await carregarGsap();
+      } catch {
+        // Sem o GSAP (a rede falhou), a lombada é o que ela é sem JS: o link para a página do livro (D54).
+        const lombada = lombadas.find((l) => l.dataset.livro === id);
+        if (lombada instanceof HTMLAnchorElement) location.assign(lombada.href);
+        return;
+      }
       fechar(() => {
         ocupado = true;
         abrir(gsap, id, foco, { naMao }).then(() => {

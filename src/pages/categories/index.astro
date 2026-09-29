@@ -112,7 +112,7 @@ const livros = (await montarLivros()).filter((l) => !l.serie);
         chegada.comecou = true;
         janela.csChegada = null;
         void desfilar(chegada.novas, Math.max(0, (chegada.t0 ?? 0.2) - (performance.now() - chegada.inicio) / 1000));
-      });
+      }, () => {});
     }
     // Entrando direto: o caderno da abertura avisa quando o papel começa a sair.
     addEventListener("cs:abertura-chega", () => janela.csTroca && void desfilar(janela.csTroca.unidades(), 0, true), { once: true });
