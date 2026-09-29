@@ -47,6 +47,10 @@ const palavras = texto.trim().split(/\s+/).map((p) => `<span class="palavra">${e
       },
       { passive: true },
     );
+    // Medida com a folha ainda chegando (em 3D), a frase acendia errado até a próxima rolagem: acende de
+    // novo quando a chegada acaba e quando a tela muda de tamanho (D54).
+    addEventListener("cs:chegou", acender);
+    addEventListener("resize", acender, { passive: true });
     acender();
   }
 </script>

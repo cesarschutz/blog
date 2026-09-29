@@ -197,6 +197,8 @@ const rss = Astro.locals.rss;
       if (antesDaImpressao.tocando) tocar();
       antesDaImpressao = null;
     });
-    mostrar(0);
+    // Com movimento reduzido, a lousa começa no estado final, com todos os passos à vista (skill lousa);
+    // começava vazia, no primeiro estado (D54).
+    mostrar(matchMedia("(prefers-reduced-motion: reduce)").matches ? 1 : 0);
   }
 </script>

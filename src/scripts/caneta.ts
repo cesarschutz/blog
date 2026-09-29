@@ -4,7 +4,7 @@
  * riscado com correção). Se a nota passaria da margem direita do texto, ela fica acima, mas terminando
  * sobre a palavra (só a nota na margem); se ainda assim não couber, vai logo depois da palavra, na
  * mesma letra. No celular (≤ 640px) o CSS já as põe depois. Mede de novo quando a largura do texto
- * muda e quando a letra à mão termina de carregar.
+ * muda, quando a letra à mão termina de carregar e quando a folha pousa, no fim da chegada.
  */
 export function canetaNoLugar() {
   const prosa = document.querySelector<HTMLElement>(".prose");
@@ -32,4 +32,6 @@ export function canetaNoLugar() {
     medir();
   }).observe(prosa);
   document.fonts?.ready.then(medir);
+  // As medidas feitas com a folha chegando (em 3D) saíam erradas: mede de novo quando ela pousa (D54).
+  addEventListener("cs:chegou", medir);
 }
