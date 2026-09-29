@@ -35,7 +35,11 @@ outras), a ilustração, duas lousas (envelope encryption e TLS com `require` ×
 em destaque e 12 marcações da caneta. O código foi rodado: AWS CLI e Terraform no moto, Postgres 16
 com TLS, `pg_tde` no Percona 18, pgBackRest, JDBC, MongoDB 8.0 Community e Enterprise (TLS, KMIP e
 Queryable Encryption). Ficou sem rodar: o `open`/`mount` do LUKS (o kernel da sessão na nuvem não tem
-device-mapper) e o Atlas de verdade.
+device-mapper) e o Atlas de verdade. O código está no `blog-exemplos`
+(`criptografia-em-repouso-e-em-transito/`, 28 testes com Testcontainers: Postgres com TLS e um servidor
+impostor, `pg_tde`, MongoDB com TLS, Enterprise em repouso, Queryable Encryption, AWS CLI e Terraform
+no moto), e o post tem o campo `codigo`. O LocalStack ficou de fora: o RDS é pago (plano Base) e,
+desde a 2026.03, toda imagem exige token.
 
 ## Como ver
 
@@ -70,13 +74,7 @@ device-mapper) e o Atlas de verdade.
 3. **Medir no site publicado:** busca (regra 4 da D2) e Lighthouse (não medido desde a D26).
 4. **Peso das páginas (B14):** 160 a 440 KB abertos, pelos SVGs embutidos; merece um item próprio.
 5. **Página Sobre:** o Cesar escreve (D33). Até lá, `/about/` leva à home.
-6. **Código do post de criptografia** no `cesarschutz/blog-exemplos` (proposta de 29/09/2026, falta
-   o OK): Docker Compose com Postgres e TLS (`disable` recusado, `require` aceitando uma CA impostora,
-   `verify-full` recusando), `pg_tde` da Percona, MongoDB com `requireTLS` e o Enterprise com
-   criptografia em repouso e Queryable Encryption, e o moto para os comandos da AWS (confere a API,
-   não a cifragem). O LocalStack ficou de fora: o RDS é pago (plano Base) e, desde a 2026.03, toda
-   imagem exige token. Com a pasta no ar, entra o campo `codigo` no post.
-7. **`scripts/desenho/render.mjs` fotografa a abertura do site (D51)** em vez da folha de conferência:
+6. **`scripts/desenho/render.mjs` fotografa a abertura do site (D51)** em vez da folha de conferência:
    falta `reducedMotion: "reduce"` na página que ele abre (achado em 29/09/2026; contornado com uma
    cópia local).
 
