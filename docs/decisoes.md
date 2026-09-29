@@ -1970,7 +1970,8 @@ nada muda.
   (item 41 do controle). Também achados pelo Cesar e por mim: o vizinho que tomba na estante perdia o
   desenho no celular (lombadas agora sempre em transformação 3D, `EM_3D`, item 42) e o livro inclinado
   terminava a abertura afundado na tábua (item 43).
-- **Segunda varredura (29/09/2026, itens 44 a 61, guardada no branch `d54-varredura-2`, sem publicar):**
+- **Segunda varredura (29/09/2026, itens 44 a 67, publicada com o OK do Cesar; as condições de borda,
+  itens 62 a 67, estão só no controle):**
   sem o realce de toque do navegador (no `html`); pular a abertura antes de a cena montar termina na
   hora (e avisa `cs:chegou`); a estante espera as fontes no máximo 2,2s e a trava de 7s só sai com a
   cena montada; girar a tela pula a abertura; a abertura vai ao `#seção` antes de as folhas chegarem;

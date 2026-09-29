@@ -59,12 +59,12 @@ cabeçalho sem JS no celular, o tema que voltava errado pelo histórico, o foco 
 sumário, na gaveta e no livro ampliado, o pé da estante das listas, o RSS e outros. Lista completa,
 arquivos e o que ficou para o Cesar decidir: `docs/ajustes-d54/controle.md`.
 
-Segunda varredura de 29/09/2026 (D54, **não publicada**: guardada no branch `d54-varredura-2`, a pedido
-do Cesar, "só guarda"): depois de dois bugs achados por ele (o desenho do topo que aparecia e sumia ao
-recarregar e o livro que tomba na estante e perdia o desenho no celular), quatro agentes procuraram
-falhas passageiras quadro a quadro. Itens 41 a 61 do controle, corrigidos; a home foi reconferida no
-build novo; faltam a reconferência das trocas e do artigo e a varredura das condições de borda (tema,
-zoom, rede lenta, sem JS), que o reinício do contêiner interrompeu e foram refeitas.
+Segunda varredura de 29/09/2026 (D54, publicada na `main` com o OK do Cesar; antes guardada no branch
+`d54-varredura-2`, que o Cesar apaga à mão): depois de dois bugs achados por ele (o desenho do topo que
+aparecia e sumia ao recarregar e o livro que tomba na estante e perdia o desenho no celular), agentes
+procuraram falhas passageiras quadro a quadro (gravação pelo CDP, CPU 4×, rede lenta) e as condições de
+borda (tema, zoom, rede e scripts falhando, sem JS). Itens 41 a 67 do controle, corrigidos e
+reconferidos no navegador. O item 42 (Safari do iPhone) não dá para testar aqui: conferir no aparelho.
 
 ## Como ver
 
@@ -105,10 +105,12 @@ zoom, rede lenta, sem JS), que o reinício do contêiner interrompeu e foram ref
 
 ## Perguntas abertas para o Cesar
 
-0. **D54:** as oito perguntas do fim de `docs/ajustes-d54/controle.md` (chegada da folha longa no
-   celular lento, voltar sem bfcache, trava de rolagem do menu, desfile de Categorias no celular,
+0. **D54:** as perguntas do fim de `docs/ajustes-d54/controle.md` (chegada da folha longa no celular
+   lento, voltar sem bfcache, trava de rolagem do menu, desfile de Categorias no celular,
    redirecionamentos em inglês, busca que volta aberta, textos dos slides e das tags, comportamentos
-   novos). Respondidas, o controle vai para `docs/historico/`.
+   novos e, da segunda varredura, a fonte padrão maior do navegador, o tema antigo por ~0,25s ao voltar
+   pelo histórico, o clique duplo no tema e as menores). Respondidas, o controle vai para
+   `docs/historico/`. E conferir no iPhone o livro que tomba na estante (item 42).
 
 Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
 
