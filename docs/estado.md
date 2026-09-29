@@ -28,6 +28,15 @@ da busca sem anel de foco, medida do artigo em 1280/1600px (D46), `text-wrap: ba
 cards, foco fino da lombada e do bloco de código, `:hover` em "Ver a série" e "Todos os N", cores soltas
 fora de token, `aria-pressed` redundante nos botões das lousas e "do Java" a 4,11:1.
 
+Post novo de 29/09/2026: `criptografia-em-repouso-e-em-transito` (Segurança; tags Criptografia, Banco
+de Dados e AWS), texto do Cesar adaptado pela skill `post`, com as 29 correções da revisão aprovadas
+(PCI DSS 3.5.1.2, o *grant* do RDS na chave KMS, Nitro Enclaves, Terraform sem a chave declarada e
+outras), a ilustração, duas lousas (envelope encryption e TLS com `require` × `verify-full`), a frase
+em destaque e 12 marcações da caneta. O código foi rodado: AWS CLI e Terraform no moto, Postgres 16
+com TLS, `pg_tde` no Percona 18, pgBackRest, JDBC, MongoDB 8.0 Community e Enterprise (TLS, KMIP e
+Queryable Encryption). Ficou sem rodar: o `open`/`mount` do LUKS (o kernel da sessão na nuvem não tem
+device-mapper) e o Atlas de verdade.
+
 ## Como ver
 
 - Dev: `fnm exec --using=24 npm run dev -- --host 127.0.0.1` (<http://127.0.0.1:4322>); parar com
@@ -61,6 +70,15 @@ fora de token, `aria-pressed` redundante nos botões das lousas e "do Java" a 4,
 3. **Medir no site publicado:** busca (regra 4 da D2) e Lighthouse (não medido desde a D26).
 4. **Peso das páginas (B14):** 160 a 440 KB abertos, pelos SVGs embutidos; merece um item próprio.
 5. **Página Sobre:** o Cesar escreve (D33). Até lá, `/about/` leva à home.
+6. **Código do post de criptografia** no `cesarschutz/blog-exemplos` (proposta de 29/09/2026, falta
+   o OK): Docker Compose com Postgres e TLS (`disable` recusado, `require` aceitando uma CA impostora,
+   `verify-full` recusando), `pg_tde` da Percona, MongoDB com `requireTLS` e o Enterprise com
+   criptografia em repouso e Queryable Encryption, e o moto para os comandos da AWS (confere a API,
+   não a cifragem). O LocalStack ficou de fora: o RDS é pago (plano Base) e, desde a 2026.03, toda
+   imagem exige token. Com a pasta no ar, entra o campo `codigo` no post.
+7. **`scripts/desenho/render.mjs` fotografa a abertura do site (D51)** em vez da folha de conferência:
+   falta `reducedMotion: "reduce"` na página que ele abre (achado em 29/09/2026; contornado com uma
+   cópia local).
 
 ## Perguntas abertas para o Cesar
 

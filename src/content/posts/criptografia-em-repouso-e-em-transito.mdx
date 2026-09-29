@@ -55,7 +55,7 @@ A frase do começo fala em KMS. O KMS (*Key Management Service*) é o cofre de c
 2. A chave de dados, por sua vez, é cifrada com uma chave mestra que nunca sai do KMS.
 3. Para usar a chave de dados, o banco pede ao KMS que a decifre, e o KMS só atende quem tem permissão.
 
-O ganho é que o acesso ao dado passa a depender também de quem pode usar a chave. Se a chave for desativada ou apagada, os dados ficam ilegíveis, inclusive os backups. Tirar a permissão de um usuário não basta: no RDS, o banco guarda uma autorização própria na chave (um *grant*), criada junto com a instância.
+O ganho é que o acesso ao dado passa a depender também de quem pode usar a chave. Se a chave for desativada ou apagada, os dados ficam ilegíveis, inclusive os backups. Tirar a permissão de um usuário :ondulado[não basta]: no RDS, o banco guarda uma autorização própria na chave (um *grant*), criada junto com a instância.
 
 ### O que ela protege e o que não protege
 
@@ -63,7 +63,7 @@ Ela protege contra:
 
 - roubo ou descarte indevido de disco;
 - acesso a snapshots e backups por quem não tem permissão na chave;
-- parte das exigências de auditoria: as normas do Banco Central (Resolução CMN 4.893) põem a criptografia entre os controles mínimos de segurança cibernética, e a LGPD, que pede medidas de segurança sem citar a criptografia, leva em conta, num incidente, se os dados vazados estavam ininteligíveis. Para número de cartão ela ajuda, mas não basta: desde a versão 4.0, o PCI DSS (requisito 3.5.1.2) não aceita a criptografia de disco como única proteção do número do cartão, e é preciso também tokenizar, truncar ou cifrar o campo.
+- parte das exigências de auditoria: as normas do Banco Central (Resolução CMN 4.893) põem a criptografia entre os controles mínimos de segurança cibernética, e a LGPD, que pede medidas de segurança sem citar a criptografia, leva em conta, num incidente, se os dados vazados estavam ininteligíveis. Para número de cartão ela ajuda, mas não basta: desde a versão 4.0, o PCI DSS (:nota[requisito 3.5.1.2]{texto="vale desde 31/03/2025"}) não aceita a criptografia de disco como única proteção do número do cartão, e é preciso também tokenizar, truncar ou cifrar o campo.
 
 Ela **não** protege contra:
 
@@ -171,7 +171,9 @@ aws rds restore-db-instance-from-db-snapshot \
   --db-snapshot-identifier pedidos-cripto
 ```
 
+:::exclamacao
 Na restauração, informe também o parameter group e os security groups da instância original (`--db-parameter-group-name` e `--vpc-security-group-ids`). Sem eles, o RDS usa os padrões, e um `rds.force_ssl = 1` configurado à mão, como na seção seguinte, se perde.
+:::
 
 **Réplicas herdam a criptografia.** Uma réplica de uma primária criptografada é obrigatoriamente criptografada, e é daí que vem o "como a primária" da frase do começo. Uma réplica em outra região usa uma chave KMS daquela região.
 
@@ -181,7 +183,7 @@ Na restauração, informe também o parameter group e os security groups da inst
 
 O RDS já cria o certificado da instância. Faltam duas coisas: o servidor exigir TLS e o cliente validar o certificado.
 
-No servidor, quem manda é o parâmetro `rds.force_ssl`. A partir do PostgreSQL 15 ele já vem ligado (`1`) por padrão. Nas versões anteriores ele vem desligado, e você precisa criar um *parameter group* customizado com `rds.force_ssl = 1` e associá-lo à instância (com reboot, se ela já estiver rodando).
+No servidor, quem manda é o parâmetro `rds.force_ssl`. A partir do :circulo[PostgreSQL 15] ele já vem ligado (`1`) por padrão. Nas versões anteriores ele vem desligado, e você precisa criar um *parameter group* customizado com `rds.force_ssl = 1` e associá-lo à instância (com reboot, se ela já estiver rodando).
 
 No cliente, baixe o pacote de certificados da AWS e use `verify-full`:
 
@@ -198,7 +200,7 @@ Em Java, pela URL do JDBC:
 jdbc:postgresql://pedidos-db.xxxx.sa-east-1.rds.amazonaws.com:5432/pedidos?sslmode=verify-full&sslrootcert=/etc/certs/global-bundle.pem
 ```
 
-Por que não confiar no padrão? Porque tanto o `psql` quanto o driver JDBC usam `sslmode=prefer`: tentam TLS, aceitam cair para uma conexão sem criptografia e não validam o certificado.
+Por que não confiar no padrão? Porque tanto o `psql` quanto o driver JDBC usam :nota[`sslmode=prefer`]{texto="aceita conexão sem TLS"}: tentam TLS, aceitam cair para uma conexão sem criptografia e não validam o certificado.
 
 Para ver quem está conectado com TLS (com o usuário mestre ou um usuário com `pg_monitor`, porque um usuário comum só vê as próprias sessões):
 
@@ -228,7 +230,7 @@ O arquivo da chave precisa pertencer ao usuário `postgres`, com permissão `060
 
 No `pg_hba.conf`, aceite conexões remotas só com TLS. Essas linhas entram no lugar das linhas `host` que já existem, porque vale a primeira linha que casar:
 
-```text title="pg_hba.conf"
+```text title="pg_hba.conf" linhas="4-5|sem TLS, recusado"
 # TYPE     DATABASE  USER  ADDRESS     METHOD
 hostssl    all       all   0.0.0.0/0   scram-sha-256
 hostssl    all       all   ::/0        scram-sha-256
@@ -240,7 +242,9 @@ Depois, recarregue a configuração com `SELECT pg_reload_conf();` e confira no 
 
 ### Em repouso
 
+:::colchete
 Aqui está a maior diferença em relação ao RDS: **o PostgreSQL da comunidade não tem criptografia em repouso nativa.** Não existe um `ssl = on` para o disco. As opções são três.
+:::
 
 **1. Criptografar o volume.** LUKS (dm-crypt) em servidor próprio, ou um volume criptografado na nuvem, como um EBS criptografado numa EC2. É o caminho mais comum, e protege contra roubo do disco e de snapshots do volume.
 
@@ -253,7 +257,7 @@ mount /dev/mapper/pgdata /var/lib/postgresql
 # depois: chown postgres:postgres /var/lib/postgresql e as entradas no /etc/crypttab e no /etc/fstab
 ```
 
-A limitação é que, com o volume montado, o sistema de arquivos já enxerga tudo decifrado. Quem tem acesso ao servidor ligado lê os arquivos normalmente. Também é preciso decidir como o volume é destravado no boot (senha manual, TPM, Clevis/Tang), e essa é a parte que dá trabalho.
+A limitação é que, com o volume montado, o sistema de arquivos :ondulado[já enxerga tudo decifrado]. Quem tem acesso ao servidor ligado lê os arquivos normalmente. Também é preciso decidir como o volume é destravado no boot (senha manual, TPM, Clevis/Tang), e essa é a parte que dá trabalho.
 
 **2. Usar TDE de uma distribuição.** O Percona Distribution for PostgreSQL tem a extensão open source `pg_tde`, que cifra dentro do próprio banco as tabelas criadas com `tde_heap` (com os índices delas e, se você ligar, o WAL), com as chaves guardadas num Vault, OpenBao ou servidor KMIP. Ela depende do Percona Server for PostgreSQL, uma versão do Postgres modificada pela Percona, e não roda no Postgres da comunidade. Há também opções comerciais, como o EDB Postgres Advanced Server.
 
@@ -278,7 +282,7 @@ CREATE TABLE cartao (
 
 No Atlas, a criptografia em repouso já vem ligada em todos os clusters, sem configuração. O Atlas usa a criptografia de volume do provedor de nuvem (na AWS, EBS criptografado).
 
-Se você precisa controlar a chave para rotacionar, revogar e auditar o uso, existe a opção **Encryption at Rest using Customer Key Management**, também chamada de BYOK (*bring your own key*). Com ela, o Atlas cifra os dados uma segunda vez, no Encrypted Storage Engine do MongoDB, usando uma chave sua no AWS KMS, no Azure Key Vault ou no Google Cloud KMS. Ela só está disponível em clusters dedicados, do M10 para cima.
+Se você precisa controlar a chave para rotacionar, revogar e auditar o uso, existe a opção **Encryption at Rest using Customer Key Management**, também chamada de BYOK (*bring your own key*). Com ela, o Atlas cifra os dados uma segunda vez, no Encrypted Storage Engine do MongoDB, usando uma chave sua no AWS KMS, no Azure Key Vault ou no Google Cloud KMS. Ela só está disponível em clusters dedicados, do :circulo[M10] para cima.
 
 Na AWS, os passos são:
 
@@ -309,7 +313,9 @@ resource "mongodbatlas_advanced_cluster" "pedidos" {
 }
 ```
 
+:::exclamacao
 Um cuidado: se a chave for desativada ou apagada, ou se o role perder a permissão, o Atlas percebe na verificação seguinte (ele confere a cada 15 minutos) e desliga os processos do cluster. Ninguém lê nem grava até a chave voltar, e os snapshots cifrados com ela não podem ser restaurados. É o outro lado de ter o controle da chave.
+:::
 
 ### Em trânsito
 
@@ -336,7 +342,7 @@ net:
 
 Com `requireTLS`, a comunicação entre os membros do replica set também passa a exigir TLS. Se o certificado não tiver o uso `clientAuth`, os membros não conseguem conversar entre si. Gere-o com `clientAuth` ou use `setParameter: tlsWithholdClientCertificate: true` com autenticação interna por keyFile.
 
-Para migrar um ambiente que já está no ar sem derrubar tudo, reinicie os membros um de cada vez com `allowTLS`, passe os clientes para TLS e só então troque todos para `preferTLS` e, por fim, para `requireTLS` (com `setParameter`, sem reiniciar). Cada etapa precisa chegar a todos os membros antes da próxima, e no fim o `mongod.conf` fica com `requireTLS`.
+Para migrar um ambiente que já está no ar sem derrubar tudo, reinicie os membros um de cada vez com `allowTLS`, passe os clientes para TLS e só então troque todos para `preferTLS` e, por fim, para `requireTLS` (com `setParameter`, sem reiniciar). Cada etapa precisa chegar a :nota[todos os membros]{texto="senão, o primário cai"} antes da próxima, e no fim o `mongod.conf` fica com `requireTLS`.
 
 No cliente:
 
@@ -385,7 +391,7 @@ db.portadores.find({ cpf: "123.456.789-09" })
 
 Um DBA conectado direto no banco, sem a chave, vê isto:
 
-```js
+```js anotar="cpf|o CPF, cifrado"
 db.portadores.findOne()
 // { nome: 'Maria Souza', cpf: Binary.createFromBase64('DkH2...', 6), __safeContent__: [ ... ], ... }
 ```
