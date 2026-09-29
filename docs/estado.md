@@ -1,7 +1,7 @@
 # Estado do projeto
 
 Painel, não diário: fase atual, próximos passos, perguntas abertas e riscos. O detalhe de cada rodada
-fica em `docs/decisoes.md` (D1 a D52) e no histórico do git; controles de rodadas fechadas, em
+fica em `docs/decisoes.md` (D1 a D54) e no histórico do git; controles de rodadas fechadas, em
 `docs/historico/`.
 
 ## Fase atual
@@ -50,6 +50,15 @@ estados ficam na mesma célula da grade, só o atual à vista e no `aria-live` (
 `lousa.css`). A altura fica constante em todos os estados, de 320 a 1600px; onde algum estado ocupa
 duas linhas, a lousa parada ganha a linha reservada embaixo do texto.
 
+Caça aos bugs de 29/09/2026 (D54, publicada na `main` com o OK do Cesar, um commit por grupo):
+cinco agentes varreram o site (artigos, acessibilidade e SEO, listas, home e navegação) e 40 bugs foram
+corrigidos e conferidos no navegador: a marca do topo do artigo que abria o sumário, a página que
+pulava ~450px com o foco no cabeçalho, o `#seção` perdido depois da abertura, o toque e a tecla que
+pulavam a abertura e ainda agiam na página, a impressão (lousas, tema escuro, peças de tela), o
+cabeçalho sem JS no celular, o tema que voltava errado pelo histórico, o foco perdido no visor, no
+sumário, na gaveta e no livro ampliado, o pé da estante das listas, o RSS e outros. Lista completa,
+arquivos e o que ficou para o Cesar decidir: `docs/ajustes-d54/controle.md`.
+
 ## Como ver
 
 - Dev: `fnm exec --using=24 npm run dev -- --host 127.0.0.1` (<http://127.0.0.1:4322>); parar com
@@ -88,6 +97,11 @@ duas linhas, a lousa parada ganha a linha reservada embaixo do texto.
    cópia local).
 
 ## Perguntas abertas para o Cesar
+
+0. **D54:** as oito perguntas do fim de `docs/ajustes-d54/controle.md` (chegada da folha longa no
+   celular lento, voltar sem bfcache, trava de rolagem do menu, desfile de Categorias no celular,
+   redirecionamentos em inglês, busca que volta aberta, textos dos slides e das tags, comportamentos
+   novos). Respondidas, o controle vai para `docs/historico/`.
 
 Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
 

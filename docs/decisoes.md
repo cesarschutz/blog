@@ -64,6 +64,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D51 | As animações revistas: abertura, troca de tela e as trocas especiais | em vigor |
 | D52 | Ajustes de 27/09/2026: acabamento das animações, a leitura, as listas, as tags e o destaque | em vigor |
 | D53 | Faxina: docs só com documentos, dados dos livros em src/livros | em vigor |
+| D54 | Caça aos bugs de 29/09/2026: 40 correções de interação, teclado, impressão, listas e RSS | em vigor |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -1935,3 +1936,34 @@ nada muda.
     de oito funções usadas só no próprio arquivo.
   - Descartada: gerar a lista dos passos da `LousaTempo` a partir dos estados (são textos diferentes).
 
+## D54 · Caça aos bugs de 29/09/2026
+- **Data:** 29/09/2026 · **Status:** aplicada e publicada (pedido do Cesar: "procure bugs nesse site
+  [...] arrume se achar"; publicar: "Pública"). Um commit por grupo do controle.
+- **Decisão:** corrigir os 40 bugs confirmados pela varredura (cinco agentes: artigos, acessibilidade
+  e SEO, listas, home e navegação), cada um reproduzido antes e conferido depois no navegador. A
+  lista, os arquivos e o que ficou para o Cesar decidir estão em `docs/ajustes-d54/controle.md`.
+- **O que muda no jeito de fazer:**
+  - Âncoras e foco sob o cabeçalho fixo: sai o `scroll-padding-top` do `html` (ele fazia o navegador
+    rolar a página ~450px quando o foco ia para o próprio cabeçalho); entra `--folga-ancora` (base.css)
+    como `scroll-margin-top` nos alvos dentro do `main`, e os títulos da prosa somam 24px (pouso em
+    100px, como antes).
+  - Os tokens do tema escuro valem só na tela (`@media screen`): impresso, o site sai sempre claro.
+    Na impressão, as lousas desenham o estado final, sem controles, e os `<details>` abrem.
+  - A abertura (D51): clique, toque, tecla e agora a roda do mouse pulam; o clique do toque que pula é
+    engolido; a tecla que pula não rola; ela fica antes do marcador `#fim-do-conteudo` (primeira
+    pintura já com o papel); a trava de 7s do `<head>` também avisa `cs:aberto`.
+  - Voltando pelo histórico (bfcache), o script do `<head>` relê tema e modo (`preferencias:relidas`).
+  - Sem JS, até 860px, as seções do menu ficam numa linha embaixo da marca; o botão "Buscar" some (como
+    o do tema).
+  - Foco nos painéis: a folha do sumário recebe o foco dois quadros depois de abrir (antes, os itens
+    ainda herdavam o `visibility: hidden` e o Chrome recusava); o Tab que sai dela devolve o foco ao
+    botão da seção; seta desabilitada no visor passa o foco para a outra.
+- **Mudado:** `src/components/` (Abertura, Atalhos, Busca, Cabecalho, Gaveta, ListaFiltrada,
+  LivroAmpliado, LousaLoop, LousaTempo, MetaItem, RodapeArtigo, SeletorModo, TopoLivro),
+  `src/layouts/Base.astro`, `src/pages/404.astro`, `src/pages/rss.xml.ts`, `src/pages/tags/[tag].astro`,
+  `src/plugins/rehype-tabela.mjs`, `src/scripts/` (artigo, estante-viva, tema), `src/styles/` (base,
+  estante, lousa, paginas, prosa, tokens) e `.impeccable/config.json` (o `<img>` vazio do molde do visor
+  é falso positivo do detector).
+- **Alternativas descartadas:** cabeçalho `position: fixed` em vez de `sticky` (mexia no layout de
+  todas as páginas); fechar a busca e o livro ampliado ao voltar pelo histórico (a busca que reabre
+  com os resultados parece intencional; só o foco foi corrigido).
