@@ -470,6 +470,13 @@ a:hover > .titulo-sub,
   view-transition-name: topo;
 }
 
+/* Durante uma troca, o cabeçalho novo, ainda transparente e sozinho (saindo com a busca aberta), borrava a
+   página de baixo por alguns quadros com o desfoque dele (D54). */
+:root:active-view-transition .topo-fixo {
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
 /* Por baixo da troca, a mesa (nunca a tela branca entre a folha que sai e a que chega). */
 ::view-transition {
   background-color: var(--paper);

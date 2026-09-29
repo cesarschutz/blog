@@ -369,6 +369,13 @@ import { url } from "../lib/url";
     transition-duration: 0.25s;
   }
 
+  /* Fechando, o conteúdo sai e não volta, mesmo que a janela ainda estivesse nascendo (o conteúdo chegava
+     com atraso e aparecia enquanto ela encolhia, D54). */
+  .busca.fechando :is(.campo, .estado, .resultados) {
+    opacity: 0 !important;
+    transition: opacity 0.15s;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .busca::backdrop {
       transition: none;

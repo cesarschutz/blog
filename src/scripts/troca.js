@@ -226,6 +226,7 @@
     // A caneta fica na tela até a página nova chegar; só o relógio para (não aparece mais depois disto:
     // daqui até a página nova ser pintada, a tela fica parada na última imagem desta).
     clearTimeout(relogio);
+    terminarChegada();
     limparNomes();
     try { sessionStorage.removeItem(CHAVE); } catch (err) {}
     if (!e.viewTransition || reduzido.matches) return;
@@ -240,6 +241,10 @@
       if (topo) nomear(topo, "none");
       var traco = document.querySelector(".cabecalho .traco-atual");
       if (traco) nomear(traco, "none");
+      // Os livros com nome (o de origem do livro ampliado, os da página) também: a lupa do livro de origem
+      // aparecia acesa por cima do véu (D54).
+      var nomeados = document.querySelectorAll('.livro-em-pe, [data-vt], [style*="view-transition-name"]');
+      for (var k = 0; k < nomeados.length; k++) if (!nomeados[k].closest("dialog[open]")) nomear(nomeados[k], "none");
       return;
     }
     if (raiz.hasAttribute("data-troca-propria")) return;
@@ -265,9 +270,11 @@
         dados.tipo = "lado";
         dados.lado = lado;
         dados.livro = sobre ? new URL(sobre.href).pathname : "";
-        // Onde a lateral está (no fim do artigo, a lateral grudada sobe junto com ele): o livro só fica parado
-        // se a nova estiver no mesmo lugar.
-        dados.lateralTopo = lateral && lateral.getBoundingClientRect().width > 0 ? lateral.getBoundingClientRect().top : null;
+        // Onde o livro da lateral está (no fim do artigo, a lateral grudada sobe junto com ele; no alto, o
+        // post-it de cima tem a altura do sumário de cada artigo): ele só fica parado se o novo estiver no
+        // mesmo lugar.
+        var livroNaLateral = lateral && lateral.getBoundingClientRect().width > 0 && lateral.querySelector(".livro-em-pe");
+        dados.livroTopo = livroNaLateral ? livroNaLateral.getBoundingClientRect().top : null;
         // O nome do livro da lateral (a imagem dele sai à parte): se o livro mudar, ele sai junto com ela.
         var livroLateral = lateral && lateral.querySelector(".livro-em-pe");
         var nomeLivro = livroLateral && getComputedStyle(livroLateral).viewTransitionName;
@@ -329,14 +336,17 @@
   function guardar(dados) {
     try { sessionStorage.setItem(CHAVE, JSON.stringify(dados)); } catch (err) {}
   }
-  // As animações de chegada ainda no ar. A página que vai para o bfcache no meio delas termina a chegada
-  // antes de sair: senão, ao voltar, aparecia por um quadro congelada no meio do voo (D54).
+  // As animações de chegada ainda no ar. A página que sai no meio delas termina a chegada antes (no
+  // pageswap, ainda a tempo de o navegador pintar e guardar a imagem dela): senão, voltando pelo bfcache, ela
+  // aparecia por um quadro congelada no meio do voo (D54). No pagehide, de novo, para a saída sem troca.
   var emCurso = [];
-  addEventListener("pagehide", function (e) {
-    if (!e.persisted) return;
+  function terminarChegada() {
     emCurso.forEach(function (a) { try { a.finish(); } catch (err) {} });
     emCurso = [];
     dispatchEvent(new CustomEvent("cs:congelar"));
+  }
+  addEventListener("pagehide", function (e) {
+    if (e.persisted) terminarChegada();
   });
   // Voltar pelo histórico (bfcache) traz a página como ficou: sem os nomes da troca. E sem a troca: a
   // página restaurada aparecia pronta num quadro e a antiga voltava por cima; um corte limpo é melhor.
@@ -627,10 +637,11 @@
     var folha = document.querySelector("#conteudo .artigo-principal");
     var lateral = document.querySelector("#conteudo .lateral");
     var sobre = document.querySelector("#conteudo .lateral a.sobre");
-    // O mesmo livro, e a lateral no mesmo lugar: aí o livro fica parado. Com a lateral em outro lugar (saindo
-    // do fim de um artigo, ela estava empurrada para cima), a ficha duplicava e o livro escorregava de uma
-    // para a outra: troca como se fosse outro livro (D54).
-    var mesmoLugar = !!lateral && d.lateralTopo != null && Math.abs(lateral.getBoundingClientRect().top - d.lateralTopo) <= 2;
+    // O mesmo livro, e no mesmo lugar: aí ele fica parado. Em outro lugar (saindo do fim de um artigo, a
+    // lateral estava empurrada para cima; ou o post-it de cima tem outra altura), a ficha duplicava e o livro
+    // escorregava de uma para a outra: troca como se fosse outro livro (D54).
+    var livroNovo = lateral && lateral.querySelector(".livro-em-pe");
+    var mesmoLugar = !!livroNovo && d.livroTopo != null && Math.abs(livroNovo.getBoundingClientRect().top - d.livroTopo) <= 2;
     var mesmoLivro = mesmoLugar && !!d.livro && !!sobre && new URL(sobre.href).pathname === d.livro;
     var proximo = d.lado === "proximo";
     // As animações da página nova andam no relógio das imagens (recomeçam no vt.ready, como na troca geral).

@@ -92,6 +92,8 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
   }
 
   async function abrir(cena: HTMLElement, modo: "estante" | "caderno") {
+    // Daqui em diante, o pular é deste script (o do <head>, para quando ele ainda não tinha chegado, sai).
+    (window as unknown as { csAberturaAssumiu?: boolean }).csAberturaAssumiu = true;
     // A abertura começa do alto da página (ao recarregar, o navegador devolveria o lugar de antes).
     const rolagem = history.scrollRestoration;
     history.scrollRestoration = "manual";

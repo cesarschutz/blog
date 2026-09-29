@@ -159,12 +159,46 @@ const preCarregar = {
         var deFora = !document.referrer || new URL(document.referrer).origin !== location.origin;
         if ((tipoDaNavegacao === "reload" || (tipoDaNavegacao === "navigate" && deFora)) && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
           raizDaAbertura.dataset.abertura = modoDaAbertura;
-          // A abertura cancela esta trava quando assume (Abertura.astro); ela só vale se o script não vier.
-          window.csTravaDaAbertura = setTimeout(function () {
+          // Sai da abertura sem a cena (a trava de 7s, ou o leitor pulando antes de o script dela chegar): a
+          // página vai ao #título, se houver, e quem espera o fim (os desenhos) fica sabendo (D54).
+          var encerrarAbertura = function () {
+            clearTimeout(window.csTravaDaAbertura);
+            if (!raizDaAbertura.dataset.abertura) return;
             delete raizDaAbertura.dataset.abertura;
-            // Quem espera o fim da abertura (o desenho do destaque da home) fica sabendo (D54).
+            try {
+              var alvo = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+              if (alvo && scrollY === 0) alvo.scrollIntoView({ block: "start", behavior: "instant" });
+            } catch (e) {}
             dispatchEvent(new CustomEvent("cs:aberto"));
-          }, 7000);
+            dispatchEvent(new CustomEvent("cs:chegou"));
+          };
+          // A abertura cancela esta trava quando assume (Abertura.astro); ela só vale se o script não vier.
+          window.csTravaDaAbertura = setTimeout(encerrarAbertura, 7000);
+          // Com a rede lenta, o papel aparece antes de o script da abertura chegar: o toque, o clique, a tecla
+          // e a roda já pulam daqui, como pulariam nele (D54). Quando ele assume, estes saem.
+          var ROLAM = [" ", "PageDown", "PageUp", "End", "Home", "ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"];
+          var EVENTOS = ["pointerdown", "keydown", "wheel"];
+          var soltarPulo = function () {
+            EVENTOS.forEach(function (t) { removeEventListener(t, pularCedo, true); });
+          };
+          var engolirClique = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          };
+          var pularCedo = function (e) {
+            if (window.csAberturaAssumiu || !raizDaAbertura.dataset.abertura) return soltarPulo();
+            if (e.type === "keydown") {
+              if (e.metaKey || e.ctrlKey || e.key === "Tab") return;
+              if (ROLAM.indexOf(e.key) >= 0) e.preventDefault();
+            }
+            if (e.type === "pointerdown") {
+              addEventListener("click", engolirClique, { capture: true, once: true });
+              setTimeout(function () { removeEventListener("click", engolirClique, true); }, 700);
+            }
+            soltarPulo();
+            encerrarAbertura();
+          };
+          EVENTOS.forEach(function (t) { addEventListener(t, pularCedo, { capture: true, passive: t === "wheel" }); });
         }
       } catch (e) {}
     </script>
