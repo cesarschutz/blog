@@ -103,6 +103,9 @@ const tags = [...contagem]
   }
 
   .trilha {
+    /* Acima do h1 logo abaixo: a caixa do texto grande (line-height 1,02) sobe e pegava o clique (D54). */
+    position: relative;
+    z-index: 1;
     font-family: var(--font-ui);
     font-size: 14.5px;
     color: var(--ink-2);

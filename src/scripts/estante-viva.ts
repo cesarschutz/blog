@@ -169,7 +169,8 @@ export function estanteViva(raiz: HTMLElement, { emRepouso = false } = {}) {
   for (const el of lombadas) {
     el.addEventListener("focus", () => {
       if (!el.matches(":focus-visible") || naAbertura()) return;
-      if (movimentoReduzido.matches) return mostrarLegenda(el);
+      // Pelo tocar (que não anima com movimento reduzido), para o blur saber limpar a legenda (D54).
+      if (movimentoReduzido.matches) return tocar(el);
       carregarGsap().then((g) => {
         preparar(g);
         if (document.activeElement === el) tocar(el);

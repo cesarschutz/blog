@@ -47,7 +47,8 @@ const { post } = Astro.props;
 
   .com-codigo {
     display: inline-flex;
-    align-items: center;
+    /* Quando a data e o tempo quebram em duas linhas (320px), o sinal fica na linha do tempo (D54). */
+    align-items: last baseline;
     gap: 4px 14px;
   }
 

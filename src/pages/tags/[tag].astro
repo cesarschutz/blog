@@ -27,8 +27,15 @@ interface Props {
 
 const { grupo } = Astro.props;
 const n = grupo.posts.length;
-const livros = new Set(grupo.posts.map((p) => p.livro)).size;
-const descricao = `${n === 1 ? "1 artigo marcado" : `${n} artigos marcados`} com ${grupo.nome}, em ${livros} ${livros === 1 ? "livro" : "livros"}.`;
+// Livros e séries separados, como em "Todos os artigos" (D54): os 7 artigos de LTS são da série Java.
+const onde = new Set(grupo.posts.map((p) => p.livro));
+const series = [...onde].filter((l) => l.startsWith("serie-")).length;
+const livros = onde.size - series;
+const partes = [
+  livros ? `${livros} ${livros === 1 ? "livro" : "livros"}` : "",
+  series ? `${series} ${series === 1 ? "série" : "séries"}` : "",
+].filter(Boolean);
+const descricao = `${n === 1 ? "1 artigo marcado" : `${n} artigos marcados`} com ${grupo.nome}, em ${partes.join(" e ")}.`;
 // As tags que mais aparecem nos mesmos artigos (até 6), para seguir por assunto.
 const vizinhas = new Map<string, number>();
 for (const p of grupo.posts) for (const t of p.tags) if (t !== grupo.nome) vizinhas.set(t, (vizinhas.get(t) ?? 0) + 1);

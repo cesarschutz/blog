@@ -276,8 +276,10 @@
   visibility: hidden;
 }
 
+/* Invisível, mas não escondido: o "Limpar filtro" continua no caminho do Tab, que sai da última lombada
+   com a legenda ainda escrita (D54). */
 .estante-filtro .pe-estante:has(.legenda-estante:not(:empty)) > :not(.legenda-estante) {
-  visibility: hidden;
+  opacity: 0;
 }
 
 .estante-filtro.filtrando .lombada:not([aria-pressed="true"]) {
