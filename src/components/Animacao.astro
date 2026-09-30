@@ -1,0 +1,151 @@
+---
+/**
+ * Animação própria do artigo, em GSAP, com play e pausa (D58): para o que as lousas
+ * não cobrem (uma fila enchendo, um gráfico se formando, um algoritmo rodando). O desenho fica em
+ * src/animacoes/<slug>/<nome>.svg e é o quadro final, completo e parado, que aparece antes do
+ * play, sem JS e na impressão. O movimento fica em <nome>.ts, ao lado:
+ *
+ *   export default function montar(gsap: GSAP, svg: SVGSVGElement): gsap.core.Timeline
+ *
+ * que devolve a linha do tempo (feita com from/fromTo, terminando no quadro do arquivo). O GSAP só é
+ * baixado quando a pessoa chega perto do botão. O play começa do início, chega ao fim, espera um pouco
+ * e recomeça; fora da tela, pausa. Anime só transform, opacity e stroke-dashoffset, e deixe o que se
+ * move fora do grupo .tinta (o tremor refaria o filtro a cada quadro).
+ *
+ *   <Animacao animacao="<slug>/<nome>" legenda="…" />
+ */
+import { animacao as lerAnimacao } from "../lib/figuras";
+import "../styles/figura.css";
+import "../styles/lousa-nova.css";
+
+interface Props {
+  animacao: string;
+  legenda?: string;
+}
+
+const { animacao, legenda } = Astro.props;
+const { svg } = lerAnimacao(animacao);
+const rss = Astro.locals.rss;
+---
+
+{
+  rss ? null : (
+    <figure class="figura animacao" data-animacao={animacao} data-pagefind-ignore>
+      <div class="figura-palco painel" set:html={svg} />
+  <p class="dica-rolar" aria-hidden="true">Arraste para o lado para ver a figura inteira.</p>
+      <div class="controles-animacao" hidden>
+        <span class="botao-com-anel">
+          <svg class="anel" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+            <circle class="trilho" cx="24" cy="24" r="22" />
+            <circle class="progresso" cx="24" cy="24" r="22" pathLength="1" />
+          </svg>
+          <button type="button" class="tocar" aria-pressed="false" aria-label="Reproduzir a animação desde o início">
+            <svg class="icone-tocar" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5z" /></svg>
+            <svg class="icone-pausar" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2h3v12H3zM10 2h3v12h-3z" /></svg>
+          </button>
+        </span>
+        <button type="button" class="recomecar" aria-label="Recomeçar a animação do início">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.2 8a4.8 4.8 0 1 0 1.5-3.5" /><path d="M3 2.2v3.2h3.2" /></svg>
+        </button>
+        {legenda && <p class="legenda-animacao">{legenda}</p>}
+      </div>
+      {legenda && <figcaption class="sem-js">{legenda}</figcaption>}
+    </figure>
+  )
+}
+
+<script>
+  import { carregarGsap, type GSAP } from "../scripts/gsap";
+
+  type Montar = (gsap: GSAP, svg: SVGSVGElement) => gsap.core.Timeline;
+  // As animações dos posts (src/animacoes/<slug>/<nome>.ts).
+  const modulos = import.meta.glob<{ default: Montar }>("../animacoes/**/*.ts");
+  // No fim, a animação fica parada no quadro final por 5 s antes de recomeçar (pedido do Cesar).
+  const PAUSA_NO_FIM = 5;
+  const reduzido = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  for (const figura of document.querySelectorAll<HTMLElement>("[data-animacao]")) {
+    const nome = figura.dataset.animacao!;
+    const carregar = modulos[`../animacoes/${nome}.ts`];
+    const palco = figura.querySelector<HTMLElement>(".figura-palco")!;
+    const svg = palco.querySelector<SVGSVGElement>("svg")!;
+    const botao = figura.querySelector<HTMLButtonElement>(".tocar")!;
+    const anel = figura.querySelector<SVGCircleElement>(".anel .progresso")!;
+    const envolta = figura.querySelector<HTMLElement>(".botao-com-anel")!;
+    if (!carregar) continue;
+    figura.querySelector<HTMLElement>(".controles-animacao")!.hidden = false;
+    figura.querySelector<HTMLElement>(".sem-js")?.remove();
+    figura.classList.add("com-js");
+
+    let linha: gsap.core.Timeline | undefined;
+    // Abre tocando quando aparece na tela; com movimento reduzido, só com o play.
+    let querTocar = !reduzido;
+    let visivel = false;
+    const adiantar = () => void carregarGsap().catch(() => {});
+    botao.addEventListener("pointerenter", adiantar, { once: true });
+    botao.addEventListener("focus", adiantar, { once: true });
+
+    // O anel em volta do botão: o progresso da volta; cheio e pulsando durante a espera do fim.
+    let quadro = 0;
+    const acompanhar = () => {
+      if (!linha) return;
+      const p = linha.progress();
+      anel.style.strokeDashoffset = String(1 - p);
+      envolta.classList.toggle("no-fim", p >= 0.999);
+      if (!linha.paused()) quadro = requestAnimationFrame(acompanhar);
+    };
+    const marcar = (tocando: boolean) => {
+      botao.setAttribute("aria-pressed", String(tocando));
+      botao.setAttribute("aria-label", tocando ? "Pausar a animação" : "Continuar a animação");
+      cancelAnimationFrame(quadro);
+      if (tocando) quadro = requestAnimationFrame(acompanhar);
+    };
+    const tocar = async () => {
+      if (!linha) {
+        try {
+          const [gsap, modulo] = await Promise.all([carregarGsap(), carregar()]);
+          linha = modulo.default(gsap, svg);
+          linha.repeat(-1).repeatDelay(PAUSA_NO_FIM);
+          linha.restart();
+        } catch {
+          return; // sem o GSAP, a figura fica parada, inteira
+        }
+      } else linha.play();
+      marcar(true);
+    };
+    const pausar = () => {
+      linha?.pause();
+      marcar(false);
+    };
+    const alternar = () => {
+      querTocar = !(linha && !linha.paused());
+      if (querTocar) void tocar();
+      else pausar();
+    };
+    botao.addEventListener("click", alternar);
+    // Recomeçar: volta ao início e toca.
+    figura.querySelector<HTMLButtonElement>(".recomecar")!.addEventListener("click", () => {
+      querTocar = true;
+      if (linha) {
+        linha.restart();
+        marcar(true);
+      } else void tocar();
+    });
+    // Clicar em qualquer parte da imagem também dá play ou pausa.
+    palco.addEventListener("click", alternar);
+
+    new IntersectionObserver(
+      ([entrada]) => {
+        visivel = entrada.isIntersecting;
+        if (!visivel && linha && !linha.paused()) pausar();
+        else if (visivel && querTocar && (!linha || linha.paused())) void tocar();
+      },
+      { threshold: 0.35 },
+    ).observe(palco);
+
+    addEventListener("beforeprint", () => {
+      pausar();
+      linha?.progress(1);
+    });
+  }
+</script>

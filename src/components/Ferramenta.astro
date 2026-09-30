@@ -1,0 +1,23 @@
+---
+/**
+ * O logo de uma ferramenta no meio do texto (D58): o desenho de
+ * src/marcas/<nome>.svg, do tamanho da letra, antes do nome. Com `href`, o logo vira um
+ * easter egg (pedido do Cesar, rodada 1): clicar nele abre, em outra aba, a página mais específica da
+ * ferramenta (a do DynamoDB, a do Java 21), sem mudar o cursor. Fica fora do Tab e dos leitores de tela:
+ * o nome já vem escrito ao lado.
+ *
+ *   <Ferramenta nome="dynamodb" href="https://aws.amazon.com/dynamodb/">Amazon DynamoDB</Ferramenta>
+ */
+import { marca } from "../lib/figuras";
+import "../styles/figura.css";
+
+interface Props {
+  nome: string;
+  href?: string;
+}
+
+const { nome, href } = Astro.props;
+const desenho = `<svg class="ilustracao diagrama marca-inline" viewBox="0 0 100 100" aria-hidden="true" focusable="false">${marca(nome)}</svg>`;
+---
+
+<span class="marca-no-texto">{href ? <a class="marca-link" href={href} target="_blank" rel="noopener" tabindex="-1" aria-hidden="true" set:html={desenho} /> : <Fragment set:html={desenho} />}<slot /></span>

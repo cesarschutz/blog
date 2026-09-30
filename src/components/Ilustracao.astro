@@ -5,6 +5,7 @@
  * o de compartilhamento usa "meet". Post sem ilustração não mostra nada.
  */
 import { ilustracao, type Recorte } from "../lib/ilustracoes";
+import "../styles/capa-viva.css";
 
 interface Props {
   slug: string;
@@ -44,3 +45,8 @@ const desenho = ilustracao(slug);
     />
   )
 }
+
+<script>
+  // A capa viva (D58, capa-viva.css): o detalhe que se mexe com o mouse vai até o fim.
+  import "../scripts/capa-viva.ts";
+</script>

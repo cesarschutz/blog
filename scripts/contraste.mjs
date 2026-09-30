@@ -10,7 +10,7 @@
  *
  * Uso: npm run contraste. Lê os tokens e os cadastros direto dos .ts (Node 24).
  */
-import { claro, escuro, misturar, BRANCO_NO_ESCURO, CHIP, LINK_TINTA, LOUSA, MARCA_TEXTO, PAINEL } from "../src/styles/tokens.ts";
+import { claro, escuro, misturar, BRANCO_NO_ESCURO, CHIP, DIAGRAMA, LINK_TINTA, LOUSA, MARCA_TEXTO, PAINEL } from "../src/styles/tokens.ts";
 import { CATEGORIAS } from "../src/data/taxonomia.ts";
 import { SERIES } from "../src/data/series.ts";
 import { PAPEL, TINTA_PAPEL } from "../src/livros/cores.js";
@@ -74,6 +74,21 @@ for (const [tema, p] of Object.entries({ claro, escuro })) {
   const naCor = (cor) => (tema === "escuro" ? misturar(cor, "#FFFFFF", BRANCO_NO_ESCURO) : cor);
   for (const [nome, cor] of CORES) conferir(graficos, `quadradinho de ${nome}`, naCor(cor), p["paper-hi"], 3, false);
   for (const [nome, cor] of CORES) conferir(graficos, `nome no chip, ${nome} / --paper`, nomeNoChip(cor), p.paper, 4.5, false);
+}
+
+// Tons dos diagramas (D58): texto no tom sobre a folha e sobre o painel de cada livro, e a tinta sobre
+// o tom lavado (o fundo das caixas: 16% do tom no claro, 30% no escuro).
+for (const [tema, p] of Object.entries({ claro, escuro })) {
+  const grupo = `Tons dos diagramas, tema ${tema} (4,5:1)`;
+  for (const [nome, tom] of Object.entries(DIAGRAMA)) {
+    const noTema = tema === "escuro" ? misturar(tom, "#FFFFFF", BRANCO_NO_ESCURO) : tom;
+    conferir(grupo, `--diag-${nome} / --paper-hi`, noTema, p["paper-hi"], 4.5, true);
+    for (const [livro, cor] of CORES) {
+      const painel = misturar(p["paper-hi"], cor, PAINEL[tema]);
+      conferir(grupo, `--diag-${nome} no painel de ${livro}`, noTema, painel, 4.5, true);
+      conferir(grupo, `--ink sobre ${nome} lavado, painel de ${livro}`, p.ink, misturar(painel, noTema, tema === "escuro" ? 30 : 16), 4.5, true);
+    }
+  }
 }
 
 // Lousa (briefing §7): caneta e destaques sobre o vidro (tema claro) e o quadro (tema escuro).

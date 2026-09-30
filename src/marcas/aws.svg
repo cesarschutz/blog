@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <text x="50" y="56" text-anchor="middle" class="marca-texto">aws</text>
+  <g class="tinta tom-ambar">
+    <path d="M17 67 C 36 80 64 80 82 66" class="linha-tom"/>
+    <path d="M73 61 L83 65 L78 74" class="linha-tom"/>
+  </g>
+</svg>

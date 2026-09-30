@@ -1,0 +1,654 @@
+/*
+ * Diagramas, gráficos e animações dos posts (D58, skill figura). O traço é o das
+ * ilustrações (desenho.css: tinta, linha, papel, hachura, fantasma, rotulo, nota…); o que muda é a cor:
+ * cada ator ou lado ganha um tom (tokens --diag-*, tokens.ts), para a cor ajudar a memorizar.
+ *
+ * Tons, num <g> ou numa forma: tom-azul, tom-verde, tom-ambar, tom-vermelho, tom-roxo, tom-petroleo.
+ * Dentro de um tom:
+ *   lavado      fundo da caixa: o tom bem claro (a tinta por cima passa de 4,5:1)
+ *   cor         a cópia fora do registro (como na ilustração), agora no tom
+ *   linha-tom   traço no tom (setas de um fluxo, contorno de destaque)
+ *   texto-tom   texto no tom (rótulo do ator, número); passa de 4,5:1
+ *   selo        bolinha cheia no tom (número do passo); o texto dentro é selo-texto
+ *   carimbo     contorno no tom (em vez da cor do livro)
+ * Gráficos: eixo, grade, serie (linha no tom), area (área lavada no tom), limite (linha de limite),
+ * ponto, valor-eixo (números dos eixos), titulo-eixo. Logo que é só letra: marca-texto.
+ * Detalhes que se mexem sozinhos (só na tela, nunca com movimento reduzido), fora do grupo .tinta. Eles
+ * não mudam a imagem (mudar a imagem é da animação com play):
+ *   fluxo       pontinhos correndo pela linha, sem parar
+ *   formiga     tracejado andando pela linha (um fio que corre)
+ *   pacote      um ponto só percorre a linha, na ordem do que acontece: com etapa-1 … etapa-7 (e
+ *               pathLength="1" no path); a mesma etapa anda junta; o ciclo é de 8,4 s (1,2 s por etapa)
+ *   pulsa, pisca, gira, balanca, anda (vai e volta de lado)
+ * Legenda de cores: um <g class="legenda tom-x"> por cor; com o mouse na legenda ou no próprio componente,
+ * as outras cores apagam (só nas figuras que têm legenda).
+ */
+
+.ilustracao.diagrama {
+  --traco: 3;
+  --lavado: 16%;
+  height: auto;
+  overflow: visible;
+}
+
+:root[data-theme="dark"] .ilustracao.diagrama {
+  --lavado: 30%;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .ilustracao.diagrama {
+    --lavado: 30%;
+  }
+}
+
+/* ---------- a moldura: a figura no painel do livro, como os desenhos ---------- */
+
+.figura {
+  margin: 1.8em 0;
+}
+
+.figura-palco {
+  padding: clamp(10px, 2.4vw, 22px);
+}
+
+.figura-palco > svg {
+  display: block;
+  width: 100%;
+}
+
+/* Em tela estreita, a figura não encolhe até a letra sumir: fica larga e rola de lado dentro do quadro,
+   como os blocos de código (a página não rola). */
+.figura .dica-rolar {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .figura-palco {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+
+  .figura-palco > svg {
+    width: 720px;
+    max-width: none;
+  }
+
+  .figura .dica-rolar {
+    display: block;
+    margin: 8px 0 0;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+}
+
+.figura figcaption,
+.figura .legenda-animacao {
+  margin: 10px 0 0;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+/* ---------- tons ---------- */
+
+.diagrama .tom-azul {
+  --tom: color-mix(in oklab, var(--diag-azul), #fff var(--branco-no-escuro));
+}
+
+.diagrama .tom-verde {
+  --tom: color-mix(in oklab, var(--diag-verde), #fff var(--branco-no-escuro));
+}
+
+.diagrama .tom-ambar {
+  --tom: color-mix(in oklab, var(--diag-ambar), #fff var(--branco-no-escuro));
+}
+
+.diagrama .tom-vermelho {
+  --tom: color-mix(in oklab, var(--diag-vermelho), #fff var(--branco-no-escuro));
+}
+
+.diagrama .tom-roxo {
+  --tom: color-mix(in oklab, var(--diag-roxo), #fff var(--branco-no-escuro));
+}
+
+.diagrama .tom-petroleo {
+  --tom: color-mix(in oklab, var(--diag-petroleo), #fff var(--branco-no-escuro));
+}
+
+/* Dentro de um tom, o que era da cor do livro (cor, carimbo) passa a ser do tom. */
+.diagrama [class*="tom-"] {
+  --cor-desenho: var(--tom);
+}
+
+.diagrama .tinta .lavado,
+.diagrama .lavado {
+  fill: color-mix(in oklab, var(--tom, var(--cor-desenho)) var(--lavado), var(--superficie));
+}
+
+.diagrama .tinta .linha-tom {
+  fill: none;
+  stroke: var(--tom, var(--cor-desenho));
+}
+
+.diagrama .tinta .cheio-tom {
+  fill: var(--tom, var(--cor-desenho));
+  stroke: none;
+}
+
+.diagrama text.texto-tom,
+.diagrama .texto-tom text {
+  fill: var(--tom, var(--cor-desenho));
+}
+
+.diagrama .selo {
+  fill: var(--tom, var(--ink));
+  stroke: none;
+}
+
+.diagrama .selo-texto {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 22px;
+  fill: var(--paper-hi);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+/* Um rótulo de caixa mais firme que o itálico das ilustrações, para ler de longe. */
+.diagrama .titulo-caixa {
+  font-family: var(--font-titulo);
+  font-weight: 700;
+  font-size: 27px;
+  fill: var(--ink);
+}
+
+.diagrama .texto-caixa {
+  font-family: var(--font-texto);
+  font-style: italic;
+  font-size: 21px;
+  fill: var(--ink-2);
+}
+
+/* ---------- gráficos ---------- */
+
+.diagrama .tinta .eixo {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: calc(var(--traco) * 0.7);
+}
+
+.diagrama .grade {
+  fill: none;
+  stroke: var(--ink-3);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 7;
+  opacity: 0.7;
+}
+
+.diagrama .tinta .serie {
+  fill: none;
+  stroke: var(--tom, var(--ink));
+  stroke-width: calc(var(--traco) * 1.15);
+}
+
+.diagrama .tinta .area,
+.diagrama .area {
+  fill: color-mix(in oklab, var(--tom, var(--cor-desenho)) 28%, var(--superficie));
+  stroke: none;
+}
+
+.diagrama .tinta .limite,
+.diagrama .limite {
+  fill: none;
+  stroke: color-mix(in oklab, var(--diag-vermelho), #fff var(--branco-no-escuro));
+  stroke-width: calc(var(--traco) * 0.8);
+  stroke-dasharray: 14 9;
+}
+
+.diagrama .ponto {
+  fill: var(--tom, var(--ink));
+  stroke: var(--superficie);
+  stroke-width: 3;
+}
+
+.diagrama .valor-eixo {
+  font-family: var(--font-ui);
+  font-size: 19px;
+  font-variant-numeric: tabular-nums;
+  fill: var(--ink-2);
+}
+
+.diagrama .titulo-eixo {
+  font-family: var(--font-texto);
+  font-style: italic;
+  font-size: 22px;
+  fill: var(--ink-2);
+}
+
+/* ---------- logos (marcas) ---------- */
+
+/* O nome escrito de um logo que é só letra (o "aws"), no tamanho do desenho de 100×100. */
+.diagrama .marca-texto {
+  font-family: var(--font-ui);
+  font-weight: 700;
+  font-size: 40px;
+  letter-spacing: -0.02em;
+  fill: var(--ink);
+}
+
+.diagrama .marca .tinta {
+  filter: none;
+}
+
+.marca-no-texto {
+  white-space: nowrap;
+}
+
+/* O logo que é um link (easter egg): o cursor não muda e nada sublinha. */
+.marca-no-texto .marca-link {
+  cursor: default;
+  text-decoration: none;
+  background: none;
+}
+
+/* Blindado contra o que o lugar põe nos SVGs (o aviso pinta traço e cor em todo svg dele). */
+.marca-no-texto .marca-inline {
+  margin-top: 0;
+  stroke: none;
+  stroke-width: 0;
+  fill: none;
+  display: inline-block;
+  width: 1.15em;
+  height: 1.15em;
+  margin-right: 0.28em;
+  vertical-align: -0.2em;
+  overflow: visible;
+  --traco: 4.2;
+  --superficie: var(--paper-hi);
+}
+
+.marca-inline .tinta {
+  filter: none;
+}
+
+/* ---------- detalhes que se mexem sozinhos ---------- */
+
+.diagrama .fluxo {
+  fill: none;
+  stroke: var(--tom, var(--ink-2));
+  stroke-width: calc(var(--traco) * 2.6);
+  stroke-linecap: round;
+  stroke-dasharray: 0.1 26;
+}
+
+.diagrama .formiga {
+  fill: none;
+  stroke: var(--tom, var(--ink-2));
+  stroke-width: calc(var(--traco) * 0.9);
+  stroke-linecap: round;
+  stroke-dasharray: 10 12;
+}
+
+/* Traços fora do grupo .tinta (o que se move na animação não pode tremer): no tom, ou o risco firme que
+   corta um texto que deixou de valer ("risca e escreve o novo embaixo"). */
+.diagrama .traco-tom {
+  fill: none;
+  stroke: var(--tom, var(--ink));
+  stroke-width: var(--traco);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.diagrama .risco {
+  fill: none;
+  stroke: var(--tom, var(--ink));
+  stroke-width: calc(var(--traco) * 0.9);
+  stroke-linecap: round;
+}
+
+/* O pacote: um ponto só, que só aparece na vez da etapa dele (as outras linhas descansam). */
+.diagrama .pacote {
+  fill: none;
+  stroke: var(--tom, var(--ink-2));
+  stroke-width: calc(var(--traco) * 3.2);
+  stroke-linecap: round;
+  stroke-dasharray: 0.001 2;
+  stroke-opacity: 0;
+}
+
+.diagrama :is(.pulsa, .gira, .balanca, .anda) {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  [data-na-tela] .diagrama .fluxo {
+    animation: figura-fluxo 1.4s linear infinite;
+  }
+
+  [data-na-tela] .diagrama .pulsa {
+    animation: figura-pulsa 2.4s ease-in-out infinite;
+  }
+
+  [data-na-tela] .diagrama .pisca {
+    animation: figura-pisca 2s ease-in-out infinite;
+  }
+
+  [data-na-tela] .diagrama .gira {
+    animation: figura-gira 9s linear infinite;
+  }
+
+  [data-na-tela] .diagrama .balanca {
+    animation: figura-balanca 3.2s ease-in-out infinite;
+  }
+
+  [data-na-tela] .diagrama .anda {
+    animation: figura-anda 2.6s ease-in-out infinite;
+  }
+
+  [data-na-tela] .diagrama .formiga {
+    animation: figura-formiga 1.2s linear infinite;
+  }
+
+  [data-na-tela] .diagrama .pacote {
+    animation: figura-pacote 8.4s linear infinite;
+  }
+
+  [data-na-tela] .diagrama .pacote.etapa-2 {
+    animation-delay: 1.2s;
+  }
+
+  [data-na-tela] .diagrama .pacote.etapa-3 {
+    animation-delay: 2.4s;
+  }
+
+  [data-na-tela] .diagrama .pacote.etapa-4 {
+    animation-delay: 3.6s;
+  }
+
+  [data-na-tela] .diagrama .pacote.etapa-5 {
+    animation-delay: 4.8s;
+  }
+
+  [data-na-tela] .diagrama .pacote.etapa-6 {
+    animation-delay: 6s;
+  }
+
+  [data-na-tela] .diagrama .pacote.etapa-7 {
+    animation-delay: 7.2s;
+  }
+}
+
+@keyframes figura-formiga {
+  to {
+    stroke-dashoffset: -22;
+  }
+}
+
+@keyframes figura-pacote {
+  0% {
+    stroke-dashoffset: 0;
+    stroke-opacity: 0;
+  }
+
+  1.5% {
+    stroke-opacity: 1;
+  }
+
+  13% {
+    stroke-opacity: 1;
+  }
+
+  14.3% {
+    stroke-dashoffset: -1;
+    stroke-opacity: 0;
+  }
+
+  100% {
+    stroke-dashoffset: -1;
+    stroke-opacity: 0;
+  }
+}
+
+/* ---------- destaque: o mouse numa cor (na legenda ou no próprio componente) apaga as outras ---------- */
+
+.diagrama [class*="tom-"] {
+  transition: opacity 0.3s ease;
+}
+
+.diagrama .legenda {
+  cursor: default;
+}
+
+/* O quadradinho da legenda com a cor forte: lavado, petróleo e verde (ou azul e roxo) se confundiam. */
+.diagrama .legenda .lavado {
+  fill: color-mix(in oklab, var(--tom) 70%, var(--superficie));
+}
+
+/* Só nas figuras com legenda. Os tons de dentro de um logo não contam: o logo acompanha o componente
+   em que está. */
+.diagrama:has(.legenda):has(.tom-azul:not(.marca *):hover) [class*="tom-"]:not(.tom-azul, .marca *),
+.diagrama:has(.legenda):has(.tom-verde:not(.marca *):hover) [class*="tom-"]:not(.tom-verde, .marca *),
+.diagrama:has(.legenda):has(.tom-ambar:not(.marca *):hover) [class*="tom-"]:not(.tom-ambar, .marca *),
+.diagrama:has(.legenda):has(.tom-vermelho:not(.marca *):hover) [class*="tom-"]:not(.tom-vermelho, .marca *),
+.diagrama:has(.legenda):has(.tom-roxo:not(.marca *):hover) [class*="tom-"]:not(.tom-roxo, .marca *),
+.diagrama:has(.legenda):has(.tom-petroleo:not(.marca *):hover) [class*="tom-"]:not(.tom-petroleo, .marca *) {
+  opacity: 0.22;
+}
+
+/* Os logos acompanham o componente em que estão: dentro do grupo do tom, apagam com ele; soltos na
+   figura, pegam o tom do componente pelo marcador (<g data-marca="…" class="tom-x">); sem tom, apagam
+   com qualquer destaque. */
+.diagrama .marca {
+  transition: opacity 0.3s ease;
+}
+
+.diagrama:has(.legenda):has(.tom-azul:not(.marca *):hover) .marca:not(.tom-azul, .tom-azul .marca),
+.diagrama:has(.legenda):has(.tom-verde:not(.marca *):hover) .marca:not(.tom-verde, .tom-verde .marca),
+.diagrama:has(.legenda):has(.tom-ambar:not(.marca *):hover) .marca:not(.tom-ambar, .tom-ambar .marca),
+.diagrama:has(.legenda):has(.tom-vermelho:not(.marca *):hover) .marca:not(.tom-vermelho, .tom-vermelho .marca),
+.diagrama:has(.legenda):has(.tom-roxo:not(.marca *):hover) .marca:not(.tom-roxo, .tom-roxo .marca),
+.diagrama:has(.legenda):has(.tom-petroleo:not(.marca *):hover) .marca:not(.tom-petroleo, .tom-petroleo .marca) {
+  opacity: 0.22;
+}
+
+@keyframes figura-fluxo {
+  to {
+    stroke-dashoffset: -26.1;
+  }
+}
+
+@keyframes figura-pulsa {
+  0%,
+  100% {
+    scale: 1;
+  }
+
+  50% {
+    scale: 1.12;
+  }
+}
+
+@keyframes figura-pisca {
+  0%,
+  55%,
+  100% {
+    fill-opacity: 1;
+    stroke-opacity: 1;
+  }
+
+  70%,
+  85% {
+    fill-opacity: 0.25;
+    stroke-opacity: 0.25;
+  }
+}
+
+@keyframes figura-gira {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes figura-balanca {
+  0%,
+  100% {
+    rotate: -4deg;
+  }
+
+  50% {
+    rotate: 4deg;
+  }
+}
+
+@keyframes figura-anda {
+  0%,
+  100% {
+    translate: -6px 0;
+  }
+
+  50% {
+    translate: 6px 0;
+  }
+}
+
+/* ---------- animação própria (Animacao.astro) ---------- */
+
+.animacao .controles-animacao {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.animacao .controles-animacao .legenda-animacao {
+  margin: 0;
+}
+
+/* O botão com o anel de progresso da volta (Animacao.astro). */
+.animacao .botao-com-anel {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+}
+
+.animacao .anel {
+  position: absolute;
+  inset: 0;
+  width: 48px;
+  height: 48px;
+  rotate: -90deg;
+  fill: none;
+  pointer-events: none;
+}
+
+.animacao .anel .trilho {
+  stroke: var(--rule);
+  stroke-width: 2;
+}
+
+.animacao .anel .progresso {
+  stroke: color-mix(in oklab, var(--cor, var(--acento)), #fff var(--branco-no-escuro));
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animacao .botao-com-anel.no-fim .anel {
+    animation: anel-fim 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes anel-fim {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.animacao.com-js .figura-palco {
+  cursor: pointer;
+}
+
+.animacao .recomecar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  background: var(--paper-hi);
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.animacao .recomecar:hover {
+  border-color: var(--acento);
+  color: var(--acento);
+}
+
+.animacao .recomecar svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.animacao .tocar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  background: var(--paper-hi);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.animacao .tocar:hover {
+  border-color: var(--acento);
+  color: var(--acento);
+}
+
+.animacao .tocar svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.animacao .icone-pausar,
+.animacao .tocar[aria-pressed="true"] .icone-tocar {
+  display: none;
+}
+
+.animacao .tocar[aria-pressed="true"] .icone-pausar {
+  display: block;
+}
+
+@media print {
+  .animacao .controles-animacao {
+    display: none !important;
+  }
+
+  .figura-palco {
+    break-inside: avoid;
+  }
+}

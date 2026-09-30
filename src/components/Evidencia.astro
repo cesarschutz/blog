@@ -1,0 +1,68 @@
+---
+/**
+ * O print como evidência (pedido do Cesar, rodada 1): com borda, para não se confundir com o texto
+ * quando é branco como a folha; embaixo, uma linha dizendo o que é e de onde veio; e o clique abre a
+ * página de origem, em outra aba (em vez do visor de imagens). Só print que prova algo do texto e que
+ * dá para garantir que está certo; tela que pede login (console da AWS etc.) é o Cesar quem tira.
+ *
+ *   import print from "../evidencias/<slug>/documentacao.png";
+ *   <Evidencia imagem={print} alt="…" fonte="https://…" legenda="Documentação da AWS: …" />
+ */
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  imagem: ImageMetadata;
+  /** O que a imagem prova, em uma frase (texto alternativo). */
+  alt: string;
+  /** O endereço da página fotografada. */
+  fonte: string;
+  /** O que é, curto: "Documentação da AWS, chaves de partição". */
+  legenda: string;
+}
+
+const { imagem, alt, fonte, legenda } = Astro.props;
+const site = new URL(fonte).hostname.replace(/^www\./, "");
+---
+
+<figure class="evidencia">
+  <a class="evidencia-imagem" href={fonte} target="_blank" rel="noopener">
+    <Image src={imagem} alt={alt} widths={[640, 1120, 1600]} sizes="(max-width: 760px) 100vw, 760px" />
+  </a>
+  <figcaption>
+    {legenda} · <a href={fonte} target="_blank" rel="noopener">{site}</a>
+  </figcaption>
+</figure>
+
+<style>
+  .evidencia {
+    margin: 1.8em 0;
+  }
+
+  .evidencia-imagem {
+    display: block;
+    overflow: hidden;
+    border: 1px solid var(--rule);
+    border-radius: var(--raio-painel);
+    box-shadow: 0 1px 0 var(--rule);
+  }
+
+  .evidencia-imagem :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  figcaption {
+    margin-top: 8px;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+
+  figcaption a {
+    color: inherit;
+  }
+</style>

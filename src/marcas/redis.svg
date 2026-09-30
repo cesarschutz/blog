@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <g class="tinta tom-vermelho">
+    <path d="M10 68 L50 53 L90 68 V76 L50 91 L10 76 Z" class="cheio-tom"/>
+    <path d="M10 68 L50 53 L90 68 V76 L50 91 L10 76 Z M10 68 L50 83 L90 68" class="linha"/>
+    <path d="M10 50 L50 35 L90 50 V58 L50 73 L10 58 Z" class="cheio-tom"/>
+    <path d="M10 50 L50 35 L90 50 V58 L50 73 L10 58 Z M10 50 L50 65 L90 50" class="linha"/>
+    <path d="M10 32 L50 17 L90 32 V40 L50 55 L10 40 Z" class="cheio-tom"/>
+    <path d="M10 32 L50 17 L90 32 V40 L50 55 L10 40 Z M10 32 L50 47 L90 32" class="linha"/>
+    <path d="M40 23 L43 29 L49 32 L43 35 L40 41 L37 35 L31 32 L37 29 Z" class="area"/>
+  </g>
+</svg>

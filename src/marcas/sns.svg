@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <g class="tinta tom-roxo">
+    <circle cx="48" cy="50" r="36" class="lavado"/>
+    <path d="M70.2 21.6 A36 36 0 1 0 70.2 78.4" class="linha-tom"/>
+    <path d="M28 38 H54 L45 53 V64 L37 60 V53 Z" class="cheio-tom"/>
+    <path d="M17 50 H33 M48 50 H64 M64 28 V72 M64 28 H76 M64 72 H76 M64 50 H80" class="linha"/>
+    <circle cx="12" cy="50" r="6" class="cheio-tom"/>
+    <circle cx="82" cy="28" r="7" class="cheio-tom"/>
+    <circle cx="86" cy="50" r="7" class="cheio-tom"/>
+    <circle cx="82" cy="72" r="7" class="cheio-tom"/>
+  </g>
+</svg>

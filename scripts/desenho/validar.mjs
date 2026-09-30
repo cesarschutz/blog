@@ -14,13 +14,27 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "src");
-const pasta = join(raiz, "ilustracoes");
-const pastaDasLousas = join(raiz, "lousas");
+const pastas = [join(raiz, "ilustracoes")];
+const pastasDasLousas = [join(raiz, "lousas")];
+const pastasDasFiguras = [join(raiz, "figuras"), join(raiz, "animacoes")];
+const pastaDasMarcas = join(raiz, "marcas");
 const CLASSES_DA_LOUSA = new Set(["traco", "fino", "guia", "destaque", "fantasma", "tracejado", "hachura", "cheio", "secundario", "codigo"]);
 const TEMPO = { traco: 2, escrita: 2, revela: 2, aparece: 2, some: 2, esmaece: 3, desloca: 4 };
 const CLASSES = new Set([
   "tinta", "linha", "fumaca", "papel", "cor", "hachura", "fantasma", "carimbo",
   "rotulo", "valor", "numero", "codigo", "carimbo-texto", "anotacao", "nota", "nota-pequena", "chamada",
+  // A capa viva (D58, src/styles/capa-viva.css): o detalhe que se mexe no hover.
+  "mexe-balanca", "mexe-gira", "mexe-pulsa", "mexe-pisca", "mexe-sobe", "mexe-desliza", "mexe-treme", "mexe-escreve", "mexe-enche",
+]);
+// Diagramas, gráficos e animações (D58, src/styles/figura.css): as classes da
+// ilustração, os tons e as peças dos gráficos. As animações GSAP acham as peças por data-parte.
+const CLASSES_DA_FIGURA = new Set([
+  ...CLASSES,
+  "tom-azul", "tom-verde", "tom-ambar", "tom-vermelho", "tom-roxo", "tom-petroleo",
+  "lavado", "linha-tom", "cheio-tom", "texto-tom", "selo", "selo-texto", "titulo-caixa", "texto-caixa",
+  "eixo", "grade", "serie", "area", "limite", "ponto", "valor-eixo", "titulo-eixo", "marca-texto",
+  "fluxo", "pulsa", "pisca", "gira", "balanca", "anda", "formiga", "pacote", "legenda", "traco-tom", "risco",
+  "etapa-1", "etapa-2", "etapa-3", "etapa-4", "etapa-5", "etapa-6", "etapa-7",
 ]);
 const PROPORCOES = { largo: 1100 / 468, medio: 3 / 2, quadrado: 1 };
 const PROIBIDOS = [
@@ -146,19 +160,64 @@ function validarLousa(arquivo) {
   return erros;
 }
 
+function validarFigura(arquivo, { marca = false } = {}) {
+  const erros = [];
+  const fonte = readFileSync(arquivo, "utf8");
+  const raiz = fonte.match(/<svg\b[^>]*>/)?.[0] ?? "";
+  const corpo = fonte.slice(fonte.indexOf(raiz) + raiz.length);
+  if (!raiz.includes('xmlns="http://www.w3.org/2000/svg"')) erros.push("raiz sem xmlns do SVG");
+  const vb = raiz.match(/\sviewBox="([^"]*)"/)?.[1];
+  if (!caixa(vb)) erros.push("raiz sem viewBox válido");
+  if (marca && vb?.trim() !== "0 0 100 100") erros.push('logo com viewBox diferente de "0 0 100 100"');
+  if (!marca && !/\saria-label="[^"]{12,}"/.test(raiz)) erros.push("falta aria-label (o texto alternativo, uma frase)");
+  for (const [padrao, motivo] of PROIBIDOS) if (padrao.test(corpo)) erros.push(motivo);
+  const pilha = [];
+  for (const [, fecha, nome, attrs, auto] of corpo.matchAll(/<(\/?)([a-zA-Z]+)([^>]*?)(\/?)>/g)) {
+    if (fecha) {
+      pilha.pop();
+      continue;
+    }
+    const classes = (attrs.match(/\sclass="([^"]*)"/)?.[1] ?? "").split(/\s+/).filter(Boolean);
+    for (const c of classes) if (!CLASSES_DA_FIGURA.has(c)) erros.push(`classe desconhecida: ${c}`);
+    if (nome === "text" && pilha.some((c) => c.includes("tinta"))) erros.push("texto dentro do grupo .tinta (ficaria tremido)");
+    for (const [, atributo] of attrs.matchAll(/\sdata-([a-z-]+)="/g)) {
+      if (!["marca", "parte"].includes(atributo)) erros.push(`atributo desconhecido: data-${atributo} (só data-marca e data-parte)`);
+    }
+    if (!auto && nome !== "svg") pilha.push(classes);
+  }
+  return erros;
+}
+
 const pedidos = process.argv.slice(2);
 const pedido = (slug) => !pedidos.length || pedidos.includes(slug);
+const lista = (pasta) => (existsSync(pasta) ? readdirSync(pasta) : []);
 const alvos = [
-  ...readdirSync(pasta)
-    .filter((f) => f.endsWith(".svg") && pedido(f.replace(/\.svg$/, "")))
-    .map((f) => ({ nome: `ilustracoes/${f}`, erros: validar(join(pasta, f)) })),
-  ...(existsSync(pastaDasLousas) ? readdirSync(pastaDasLousas) : [])
-    .filter((slug) => pedido(slug) && statSync(join(pastaDasLousas, slug)).isDirectory())
-    .flatMap((slug) =>
-      readdirSync(join(pastaDasLousas, slug))
-        .filter((f) => f.endsWith(".svg"))
-        .map((f) => ({ nome: `lousas/${slug}/${f}`, erros: validarLousa(join(pastaDasLousas, slug, f)) })),
-    ),
+  ...pastas.flatMap((pasta) =>
+    lista(pasta)
+      .filter((f) => f.endsWith(".svg") && pedido(f.replace(/\.svg$/, "")))
+      .map((f) => ({ nome: `${pasta.slice(raiz.length + 1)}/${f}`, erros: validar(join(pasta, f)) })),
+  ),
+  ...pastasDasLousas.flatMap((pastaDasLousas) =>
+    lista(pastaDasLousas)
+      .filter((slug) => pedido(slug) && statSync(join(pastaDasLousas, slug)).isDirectory())
+      .flatMap((slug) =>
+        readdirSync(join(pastaDasLousas, slug))
+          .filter((f) => f.endsWith(".svg"))
+          .map((f) => ({ nome: `${pastaDasLousas.slice(raiz.length + 1)}/${slug}/${f}`, erros: validarLousa(join(pastaDasLousas, slug, f)) })),
+      ),
+  ),
+  ...pastasDasFiguras.flatMap((pastaDasFiguras) =>
+    lista(pastaDasFiguras)
+      .filter((slug) => pedido(slug) && statSync(join(pastaDasFiguras, slug)).isDirectory())
+      .flatMap((slug) =>
+        readdirSync(join(pastaDasFiguras, slug))
+          .filter((f) => f.endsWith(".svg"))
+          .map((f) => ({ nome: `${pastaDasFiguras.slice(raiz.length + 1)}/${slug}/${f}`, erros: validarFigura(join(pastaDasFiguras, slug, f)) })),
+      ),
+  ),
+  ...lista(pastaDasMarcas)
+    .filter((f) => f.endsWith(".svg") && (!pedidos.length || pedidos.includes("marcas") || pedidos.includes(f.replace(/\.svg$/, ""))))
+    .map((f) => ({ nome: `marcas/${f}`, erros: validarFigura(join(pastaDasMarcas, f), { marca: true }) })),
 ];
 let falhas = 0;
 for (const { nome, erros } of alvos) {

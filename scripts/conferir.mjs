@@ -34,7 +34,8 @@ const TEMAS = [
   ["claro", "light"],
   ["escuro", "dark"],
 ];
-const endereco = `${base}/posts/${encodeURIComponent(slug)}/`;
+// Um caminho começando com "/" abre a página direto (uma página que não é post).
+const endereco = slug.startsWith("/") ? `${base}${slug}` : `${base}/posts/${encodeURIComponent(slug)}/`;
 
 try {
   const resposta = await fetch(endereco);
@@ -55,7 +56,7 @@ try {
   process.exit(2);
 }
 
-const pastaCapturas = join(raiz, ".astro", "conferir", slug);
+const pastaCapturas = join(raiz, ".astro", "conferir", slug.replace(/^\/|\/$/g, "").replace(/\//g, "-"));
 if (capturas) mkdirSync(pastaCapturas, { recursive: true });
 
 /** Mede a página já assentada; roda no navegador. */

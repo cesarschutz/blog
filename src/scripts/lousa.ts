@@ -69,8 +69,13 @@ export function prepararLousa(svg: SVGSVGElement): Lousa {
     }
     return parte;
   });
-  svg.insertAdjacentHTML("beforeend", CANETA);
-  const caneta = svg.lastElementChild as SVGGElement;
+  // Até três canetas: quando duas partes são feitas ao mesmo tempo, cada uma tem a sua (uma caneta só
+  // não escreve em dois lugares, pedido do Cesar).
+  const canetas = [0, 1, 2].map(() => {
+    svg.insertAdjacentHTML("beforeend", CANETA);
+    const g = svg.lastElementChild as SVGGElement;
+    return { g, mao: g.firstElementChild as SVGGElement };
+  });
 
   // A caixa dos textos depende da fonte: mede de novo quando ela chega.
   const medir = () => {
@@ -95,7 +100,7 @@ export function prepararLousa(svg: SVGSVGElement): Lousa {
   function desenhar(t: number, comCaneta = true) {
     ultimo = t;
     caneteando = comCaneta;
-    let ativa: { inicio: number; x: number; y: number; destaque: boolean } | undefined;
+    const ativas: { inicio: number; x: number; y: number; destaque: boolean; giro: number }[] = [];
     for (const p of partes) {
       const e = estado(p.marcas, t);
       const s = p.el.style;
@@ -104,11 +109,14 @@ export function prepararLousa(svg: SVGSVGElement): Lousa {
       if (!p.tipo) continue;
       s.visibility = e.desenho > 0 ? "" : "hidden";
       let ponto: [number, number] | undefined;
+      let giro = 0;
       if (p.tipo === "traco") {
         s.strokeDashoffset = String(1 - e.desenho);
         if (e.desenho > 0 && e.desenho < 1) {
           const q = (p.el as SVGGeometryElement).getPointAtLength(e.desenho * p.comprimento);
           ponto = [q.x, q.y];
+          // A mão acompanha o traço com um balanço leve, como quem desenha.
+          giro = Math.sin(e.desenho * p.comprimento * 0.045) * 4;
         }
       } else if (p.caixa && p.recorte) {
         const c = p.caixa;
@@ -116,20 +124,31 @@ export function prepararLousa(svg: SVGSVGElement): Lousa {
         p.recorte.setAttribute("width", String(largura));
         p.recorte.setAttribute("x", String(p.daDireita ? c.x + c.width + 2 - largura : c.x - 2));
         if (e.desenho > 0 && e.desenho < 1) {
-          ponto = [p.daDireita ? c.x + c.width * (1 - e.desenho) : c.x + c.width * e.desenho, c.y + c.height * 0.8];
+          const x = p.daDireita ? c.x + c.width * (1 - e.desenho) : c.x + c.width * e.desenho;
+          if (p.tipo === "escrita") {
+            // Escrevendo, a ponta sobe e desce a cada letra (uma letra ~ 0,55 da altura) e a mão gira um pouco.
+            const letras = Math.max(1, c.width / (c.height * 0.55));
+            const fase = e.desenho * letras * Math.PI * 2;
+            ponto = [x + Math.cos(fase) * c.height * 0.08, c.y + c.height * (0.55 + Math.sin(fase) * 0.22)];
+            giro = Math.sin(fase) * 6;
+          } else {
+            // Revelando (um tracejado, uma faixa de linhas): a caneta corre na frente, no meio, com um balanço leve.
+            ponto = [x, c.y + c.height * 0.5];
+            giro = Math.sin(e.desenho * c.width * 0.05) * 3;
+          }
         }
       }
-      if (ponto && e.opacidade > 0 && (!ativa || p.inicio >= ativa.inicio)) {
-        ativa = { inicio: p.inicio, ...naRaiz(p.el, ...ponto), destaque: p.destaque };
-      }
+      if (ponto && e.opacidade > 0) ativas.push({ inicio: p.inicio, ...naRaiz(p.el, ...ponto), destaque: p.destaque, giro });
     }
-    if (ativa && comCaneta) {
-      caneta.setAttribute("transform", `translate(${ativa.x.toFixed(1)} ${ativa.y.toFixed(1)})`);
-      caneta.style.setProperty("--tinta-da-caneta", ativa.destaque ? "var(--destaque)" : "var(--caneta)");
-      caneta.classList.add("ativa");
-    } else {
-      caneta.classList.remove("ativa");
-    }
+    ativas.sort((a, b) => b.inicio - a.inicio);
+    canetas.forEach((caneta, i) => {
+      const ativa = comCaneta ? ativas[i] : undefined;
+      if (!ativa) return caneta.g.classList.remove("ativa");
+      caneta.g.setAttribute("transform", `translate(${ativa.x.toFixed(1)} ${ativa.y.toFixed(1)})`);
+      caneta.mao.setAttribute("transform", `rotate(${(-52 + ativa.giro).toFixed(1)})`);
+      caneta.g.style.setProperty("--tinta-da-caneta", ativa.destaque ? "var(--destaque)" : "var(--caneta)");
+      caneta.g.classList.add("ativa");
+    });
   }
 
   medir();

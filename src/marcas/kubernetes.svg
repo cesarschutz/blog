@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <g class="tinta tom-azul">
+    <path d="M43.2 9.4 Q50 6.1 56.8 9.4 L78.8 20 Q85.6 23.2 87.2 30.5 L92.7 54.4 Q94.4 61.7 89.7 67.6 L74.4 86.7 Q69.7 92.6 62.2 92.6 L37.8 92.6 Q30.3 92.6 25.6 86.7 L10.3 67.6 Q5.6 61.7 7.3 54.4 L12.8 30.5 Q14.4 23.2 21.2 20 Z" class="cheio-tom"/>
+    <path d="M43.2 9.4 Q50 6.1 56.8 9.4 L78.8 20 Q85.6 23.2 87.2 30.5 L92.7 54.4 Q94.4 61.7 89.7 67.6 L74.4 86.7 Q69.7 92.6 62.2 92.6 L37.8 92.6 Q30.3 92.6 25.6 86.7 L10.3 67.6 Q5.6 61.7 7.3 54.4 L12.8 30.5 Q14.4 23.2 21.2 20 Z" class="linha"/>
+  </g>
+  <g class="papel">
+    <path d="M71 51.6 A21 21 0 1 1 29 51.6 A21 21 0 1 1 71 51.6 Z M65 51.6 A15 15 0 1 0 35 51.6 A15 15 0 1 0 65 51.6 Z" fill-rule="evenodd"/>
+    <circle cx="50" cy="51.6" r="5.6"/>
+    <rect x="47.4" y="18.2" width="5.2" height="33.4" rx="2.6"/>
+    <rect x="47.4" y="18.2" width="5.2" height="33.4" rx="2.6" transform="rotate(51.43 50 51.6)"/>
+    <rect x="47.4" y="18.2" width="5.2" height="33.4" rx="2.6" transform="rotate(102.86 50 51.6)"/>
+    <rect x="47.4" y="18.2" width="5.2" height="33.4" rx="2.6" transform="rotate(154.29 50 51.6)"/>
+    <rect x="47.4" y="18.2" width="5.2" height="33.4" rx="2.6" transform="rotate(205.71 50 51.6)"/>
+    <rect x="47.4" y="18.2" width="5.2" height="33.4" rx="2.6" transform="rotate(257.14 50 51.6)"/>
+    <rect x="47.4" y="18.2" width="5.2" height="33.4" rx="2.6" transform="rotate(308.57 50 51.6)"/>
+  </g>
+</svg>

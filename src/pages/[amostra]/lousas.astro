@@ -46,7 +46,8 @@ const usos = new Map<string, Uso[]>();
 for (const [arquivo, fonte] of Object.entries(fontesDosPosts)) {
   const post = arquivo.split("/").pop()!.replace(/\.mdx$/, "");
   const resumo = resumos.get(post);
-  for (const [, componente, props] of fonte.matchAll(/<(LousaTempo|LousaLoop)\b([\s\S]*?)\/>/g)) {
+  for (const [, nomeDoComponente, props] of fonte.matchAll(/<(LousaTempo|LousaLoop|Lousa)\b([\s\S]*?)\/>/g)) {
+    const componente = nomeDoComponente === "Lousa" ? "LousaTempo" : nomeDoComponente;
     const desenho = props.match(/\bdesenho="([^"]+)"/)?.[1];
     if (!desenho) continue;
     const uso: Uso = {

@@ -1,0 +1,202 @@
+/*
+ * A capa viva (D58): como a fumaça da caneca da série Java (C04,
+ * D52), cada ilustração pode ter um detalhe que se mexe uma vez quando o mouse passa pelo topo do
+ * artigo, pelo card ou pelo item da lista. Discreto: um detalhe só, ~1s, só transform, opacity ou
+ * stroke-dashoffset. Com movimento reduzido, nada se mexe.
+ *
+ * Dois tipos (pedido do Cesar, rodada 1 de ajustes):
+ * - evento: acontece e volta sozinho, com o mouse ainda em cima (balança, pulsa, pisca, sobe, treme,
+ *   escreve, enche); vai até o fim mesmo que o mouse saia no meio (a classe .mexendo, posta por
+ *   src/scripts/capa-viva.ts);
+ * - estado: muda e fica enquanto o mouse está em cima (gira, desliza); ao tirar o mouse, volta ao lugar
+ *   animado, um pouco mais rápido que a ida, nunca pulando.
+ *
+ * A classe vai num <g> SEM transform próprio (se a peça tem transform, embrulhe-a num <g> por dentro):
+ * o giro e a escala usam o centro da própria peça (transform-box: fill-box).
+ *
+ *   mexe-balanca   balança pendurada pelo alto (etiqueta, placa, pêndulo)
+ *   mexe-gira      (estado) gira 120° e fica; volta girando (engrenagem, ponteiro, roda)
+ *   mexe-pulsa     cresce um pouco e volta (luz, coração, alerta)
+ *   mexe-pisca     apaga e acende duas vezes (LED, cursor, status)
+ *   mexe-sobe      sobe e some, e volta de baixo (vapor, bolha, mensagem que sai)
+ *   mexe-desliza   (estado) anda 22 unidades para a direita e fica; volta deslizando (envelope,
+ *                  plugue, lupa). Para outra direção, gire o <g> de fora.
+ *   mexe-treme     treme rápido (alarme, erro, telefone)
+ *   mexe-escreve   o traço se escreve de novo (assinatura, gráfico, seta); ponha pathLength="1" no path
+ *   mexe-enche     enche de baixo para cima (barra, copo, medidor)
+ */
+
+.ilustracao :is(.mexe-balanca, .mexe-gira, .mexe-pulsa, .mexe-treme, .mexe-enche, .mexe-sobe, .mexe-desliza) {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.ilustracao .mexe-balanca {
+  transform-origin: 50% 0;
+}
+
+.ilustracao .mexe-enche {
+  transform-origin: 50% 100%;
+}
+
+/* Estado: a volta (sem o mouse) é a transição de base, mais curta; a ida é a do :hover. */
+@media (prefers-reduced-motion: no-preference) {
+  .ilustracao .mexe-gira {
+    transition: rotate 0.75s cubic-bezier(0.3, 0, 0.25, 1);
+  }
+
+  .ilustracao .mexe-desliza {
+    transition: translate 0.6s cubic-bezier(0.3, 0, 0.25, 1);
+  }
+
+  :is(.cartao, .item.completo, [data-desenhar-topo]):hover .ilustracao .mexe-gira {
+    rotate: 120deg;
+    transition: rotate 1.3s cubic-bezier(0.3, 0, 0.2, 1);
+  }
+
+  :is(.cartao, .item.completo, [data-desenhar-topo]):hover .ilustracao .mexe-desliza {
+    translate: 22px 0;
+    transition: translate 1s cubic-bezier(0.45, 0, 0.25, 1);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-balanca {
+    animation: mexe-balanca 1.3s cubic-bezier(0.36, 0, 0.3, 1) both;
+  }
+
+  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-pulsa {
+    animation: mexe-pulsa 0.9s ease-in-out both;
+  }
+
+  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-pisca {
+    animation: mexe-pisca 1s steps(1, end) both;
+  }
+
+  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-sobe {
+    animation: mexe-sobe 1.2s cubic-bezier(0.33, 0, 0.2, 1) both;
+  }
+
+  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-treme {
+    animation: mexe-treme 0.6s linear both;
+  }
+
+  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-escreve {
+    stroke-dasharray: 1 2;
+    animation: mexe-escreve 1.1s cubic-bezier(0.33, 0, 0.2, 1) both;
+  }
+
+  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-enche {
+    animation: mexe-enche 1.2s cubic-bezier(0.33, 0, 0.2, 1) both;
+  }
+}
+
+@keyframes mexe-balanca {
+  0% {
+    rotate: 0deg;
+  }
+
+  22% {
+    rotate: 7deg;
+  }
+
+  50% {
+    rotate: -4.5deg;
+  }
+
+  75% {
+    rotate: 2deg;
+  }
+
+  100% {
+    rotate: 0deg;
+  }
+}
+
+@keyframes mexe-pulsa {
+  0%,
+  100% {
+    scale: 1;
+  }
+
+  45% {
+    scale: 1.14;
+  }
+}
+
+@keyframes mexe-pisca {
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  25%,
+  75% {
+    opacity: 0.15;
+  }
+}
+
+@keyframes mexe-sobe {
+  0% {
+    translate: 0 0;
+    opacity: 1;
+  }
+
+  40% {
+    translate: 0 -40px;
+    opacity: 0;
+  }
+
+  41% {
+    translate: 0 18px;
+    opacity: 0;
+  }
+
+  100% {
+    translate: 0 0;
+    opacity: 1;
+  }
+}
+
+@keyframes mexe-treme {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+
+  15%,
+  45%,
+  75% {
+    translate: -3px 0;
+  }
+
+  30%,
+  60%,
+  90% {
+    translate: 3px 0;
+  }
+}
+
+@keyframes mexe-escreve {
+  from {
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes mexe-enche {
+  0% {
+    scale: 1 1;
+  }
+
+  35% {
+    scale: 1 0.2;
+  }
+
+  100% {
+    scale: 1 1;
+  }
+}

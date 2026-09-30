@@ -205,6 +205,21 @@ export const LOUSA = {
   },
 };
 
+/**
+ * Tons dos diagramas e gráficos (D58): cada ator ou lado do
+ * diagrama ganha um tom, para a cor ajudar a memorizar. Iguais nos dois temas; no escuro, o CSS mistura
+ * `--branco-no-escuro` de branco, como a cor da categoria. Todos passam de 4,5:1 como texto sobre a
+ * folha e sobre o painel de todos os livros, nos dois temas (`npm run contraste` confere).
+ */
+export const DIAGRAMA = {
+  azul: "#2F5FB3",
+  verde: "#25734E",
+  ambar: "#955A0A",
+  vermelho: "#B23A2C",
+  roxo: "#7C4FAB",
+  petroleo: "#1A6F7A",
+} as const;
+
 // ---------- mistura em oklab, igual ao color-mix(in oklab, …) do CSS ----------
 
 const canais = (hex: string) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255);
@@ -258,6 +273,7 @@ export function cssDosTokens(): string {
     `--painel-mistura:${PAINEL[t]}%;--chip-tinta:${CHIP[t].tinta}%;--chip-branco:${CHIP[t].branco}%;` +
     `--marca-texto:${rgba(MARCA_TEXTO[t].cor, MARCA_TEXTO[t].alfa)};` +
     `--link-tinta:${LINK_TINTA[t]}%;`;
+  const diagrama = Object.entries(DIAGRAMA).map(([nome, cor]) => `--diag-${nome}:${cor};`).join("");
   const temaEscuro = `${variaveis(escuro)}${lousa(LOUSA.escuro)}${proporcoes("escuro")}--branco-no-escuro:${BRANCO_NO_ESCURO}%;color-scheme:dark;`;
   // Na impressão (D54): sempre o tema claro (o escuro saía cinza-claro no papel, que não leva o fundo), e
   // a lousa no quadro branco, com a caneta escura (a do vidro escuro, clara, sumia no papel).
@@ -265,7 +281,7 @@ export function cssDosTokens(): string {
     `--lousa:${escuro.lousa};--lousa-borda:${escuro["lousa-borda"]};--lousa-caneta:${escuro["lousa-caneta"]};` +
     `--lousa-mistura:${escuro["lousa-mistura"]};${lousa(LOUSA.escuro)}`;
   return (
-    `:root{${variaveis(claro)}${lousa(LOUSA.claro)}${proporcoes("claro")}--branco-no-escuro:0%;color-scheme:light;}` +
+    `:root{${variaveis(claro)}${lousa(LOUSA.claro)}${proporcoes("claro")}${diagrama}--branco-no-escuro:0%;color-scheme:light;}` +
     `@media screen and (prefers-color-scheme:dark){:root:not([data-theme="light"]){${temaEscuro}}}` +
     `@media screen{:root[data-theme="dark"]{${temaEscuro}}}` +
     `@media print{.lousa{${lousaNoPapel}}}`

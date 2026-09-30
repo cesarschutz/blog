@@ -1,0 +1,319 @@
+---
+/**
+ * A lousa (D58): substitui a linha do tempo (LousaTempo) e a animação em loop (LousaLoop). Dois usos, o mesmo componente:
+ *
+ * - passos: a caneta desenha uma sequência; os passos ficam numa lista numerada logo abaixo, e o passo
+ *   da vez acende na cor do livro enquanto a lousa toca ou é arrastada;
+ * - comparação: duas linhas (com e sem, antes e depois) avançando juntas no tempo; o texto do estado
+ *   fica só no controle, para leitores de tela.
+ *
+ * Comportamento: a lousa aparece com o desenho completo e parado. O play começa do início (ou continua
+ * de onde a pessoa pausou), chega ao fim, espera um pouco e recomeça, até ser pausado. Só a rolagem
+ * horizontal (trackpad, ou Shift com a roda) e o arrasto sobre o desenho movem o tempo; a rolagem
+ * vertical continua rolando a página. No toque, só o arrasto horizontal. Fora da tela, ela pausa e
+ * volta a tocar quando reaparece. Nada ao lado do controle: a lousa nunca muda de tamanho.
+ * Sem JS: o desenho completo, sem controles, e a lista dos passos.
+ *
+ *   <Lousa desenho="<slug>/<nome>" rotulo="…" passos={[{ de: 0, texto: "…" }, { de: 0.25, texto: "…" }]} />
+ *   <Lousa desenho="<slug>/<nome>" rotulo="…" estados={[{ de: 0, texto: "…" }, …]} />
+ */
+import { quadroDaLousa } from "../lib/lousas";
+import { mdEmLinha } from "../lib/formato";
+import "../styles/lousa.css";
+import "../styles/lousa-nova.css";
+
+interface Estado {
+  de: number;
+  texto: string;
+}
+
+interface Props {
+  desenho: string;
+  rotulo: string;
+  /** Passos da sequência (de 0 a 1), em ordem: viram a lista numerada abaixo da lousa. */
+  passos?: Estado[];
+  /** Estados da comparação (de 0 a 1), em ordem: só no controle, para leitores de tela. */
+  estados?: Estado[];
+  /** Uma volta inteira, em segundos (padrão: 7). */
+  duracao?: number;
+}
+
+const { desenho, rotulo, passos = [], estados = [], duracao = 7 } = Astro.props;
+const { svg } = quadroDaLousa(desenho, rotulo);
+const id = `lousa-${desenho.replace(/[^a-z0-9]+/gi, "-")}`;
+const marcas = (passos.length ? passos : estados).map((e) => e.de);
+const rss = Astro.locals.rss;
+---
+
+{
+  rss ? (
+    <p>
+      <em>{rotulo}</em> <a href={rss.endereco}>A lousa interativa está no site.</a>
+    </p>
+  ) : (
+    <figure
+      class:list={["lousa-nova", passos.length ? "com-passos" : "comparacao"]}
+      data-lousa-nova
+      data-passos={JSON.stringify(passos)}
+      data-estados={JSON.stringify(estados)}
+      data-duracao={duracao}
+      data-pagefind-ignore
+    >
+      <div class="lousa area" set:html={svg} />
+      <div class="controles" hidden>
+        <button type="button" class="tocar" aria-pressed="false" aria-label="Reproduzir desde o início" aria-controls={id}>
+          <svg class="icone-tocar" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5z" /></svg>
+          <svg class="icone-pausar" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2h3v12H3zM10 2h3v12h-3z" /></svg>
+        </button>
+        <div class="trilho">
+          <label class="sr" for={id}>Tempo da lousa</label>
+          <input id={id} type="range" min="0" max="1000" step="1" value="1000" aria-valuetext="Desenho completo" />
+          <div class="marcas" aria-hidden="true">
+            {marcas.map((m, i) => (
+              <span class="marca" style={`left:${m * 100}%`}>
+                {passos.length > 0 && <span class="numero">{i + 1}</span>}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+      {
+        passos.length > 0 && (
+          <ol class="passos-lousa">
+            {passos.map((p) => (
+              <li>
+                <button type="button" class="passo" aria-controls={id} set:html={mdEmLinha(p.texto)} />
+              </li>
+            ))}
+          </ol>
+        )
+      }
+    </figure>
+  )
+}
+
+<script>
+  import { prepararLousa, quandoVisivel } from "../scripts/lousa";
+
+  // No fim, espera o bastante para a pessoa ler o desenho inteiro antes de recomeçar (pedido do Cesar).
+  const PAUSA_NO_FIM = 5000;
+  const LIMIAR_DO_DEDO = 8;
+
+  interface Estado {
+    de: number;
+    texto: string;
+  }
+
+  for (const figura of document.querySelectorAll<HTMLElement>("[data-lousa-nova]")) {
+    const area = figura.querySelector<HTMLElement>(".area")!;
+    const svg = area.querySelector("svg")!;
+    const lousa = prepararLousa(svg);
+    const controles = figura.querySelector<HTMLElement>(".controles")!;
+    const botao = figura.querySelector<HTMLButtonElement>(".tocar")!;
+    const faixa = figura.querySelector<HTMLInputElement>("input[type=range]")!;
+    const itens = [...figura.querySelectorAll<HTMLLIElement>(".passos-lousa li:not(.marcador-passo)")];
+    const passos: Estado[] = JSON.parse(figura.dataset.passos ?? "[]");
+    const estados: Estado[] = JSON.parse(figura.dataset.estados ?? "[]");
+    const falas = passos.length ? passos.map((p, i) => ({ ...p, texto: `Passo ${i + 1} de ${passos.length}: ${p.texto}` })) : estados;
+    const duracao = Number(figura.dataset.duracao ?? 7) * 1000;
+    controles.hidden = false;
+
+    // Começa no fim: o desenho completo, parado. Até a pessoa mexer, nenhum passo acende.
+    let t = 1;
+    let mexeu = false;
+    let tocando = false;
+    let querTocar = false;
+
+    const semMarcacao = (s: string) => s.replace(/[`*_]/g, "");
+    // A caneta aparece sempre que o desenho está sendo feito: no play, no arrasto, na rolagem e no controle.
+    const mostrar = (novo: number, comCaneta = true) => {
+      t = Math.min(1, Math.max(0, novo));
+      faixa.value = String(Math.round(t * 1000));
+      lousa.desenhar(t * lousa.fim, comCaneta);
+      const i = mexeu ? falas.findLastIndex((e) => t >= e.de) : -1;
+      const texto = i >= 0 ? semMarcacao(falas[i].texto) : "Desenho completo";
+      if (faixa.getAttribute("aria-valuetext") !== texto) faixa.setAttribute("aria-valuetext", texto);
+      itens.forEach((item, j) => {
+        if (j === i) item.setAttribute("aria-current", "step");
+        else item.removeAttribute("aria-current");
+      });
+    };
+
+    let quadro = 0;
+    let anterior = 0;
+    let segurarAte = 0;
+    const passo = (agora: number) => {
+      if (!tocando) return;
+      const dt = anterior ? Math.min(agora - anterior, 64) : 0;
+      anterior = agora;
+      if (segurarAte) {
+        if (agora >= segurarAte) {
+          segurarAte = 0;
+          mostrar(0);
+        }
+      } else {
+        mostrar(t + dt / duracao);
+        if (t >= 1) {
+          segurarAte = agora + PAUSA_NO_FIM;
+          lousa.desenhar(lousa.fim, false);
+        }
+      }
+      quadro = requestAnimationFrame(passo);
+    };
+    const tocar = () => {
+      mexeu = true;
+      if (t >= 1) mostrar(0);
+      tocando = true;
+      anterior = 0;
+      segurarAte = 0;
+      botao.setAttribute("aria-pressed", "true");
+      botao.setAttribute("aria-label", "Pausar");
+      cancelAnimationFrame(quadro);
+      quadro = requestAnimationFrame(passo);
+    };
+    const parar = () => {
+      tocando = false;
+      cancelAnimationFrame(quadro);
+      botao.setAttribute("aria-pressed", "false");
+      botao.setAttribute("aria-label", t >= 1 ? "Reproduzir desde o início" : "Continuar");
+      lousa.desenhar(t * lousa.fim, false);
+    };
+    botao.addEventListener("click", () => {
+      querTocar = !tocando;
+      if (tocando) parar();
+      else tocar();
+    });
+
+    // Fora da tela, pausa; volta a tocar quando reaparece, se a pessoa tinha dado o play.
+    quandoVisivel(figura, (visivel) => {
+      if (!visivel && tocando) parar();
+      else if (visivel && querTocar && !tocando) tocar();
+    });
+
+    // O gesto da pessoa pausa a reprodução.
+    const gesto = (novo: number) => {
+      querTocar = false;
+      mexeu = true;
+      if (tocando) parar();
+      mostrar(novo);
+      botao.setAttribute("aria-label", t >= 1 ? "Reproduzir desde o início" : "Continuar");
+    };
+
+    // Os passos: o marcador desliza até o passo sob o mouse (ou o foco), como na busca; o clique leva a
+    // lousa ao fim daquele passo, com tudo o que a linha diz já desenhado.
+    const lista = figura.querySelector<HTMLOListElement>(".passos-lousa");
+    if (lista) {
+      const marcador = document.createElement("li");
+      marcador.className = "marcador-passo";
+      marcador.setAttribute("aria-hidden", "true");
+      lista.prepend(marcador);
+      const botoes = [...lista.querySelectorAll<HTMLButtonElement>(".passo")];
+      const marcar = (li: HTMLElement | null) => {
+        if (!li) return marcador.classList.remove("visivel");
+        const primeiro = !marcador.classList.contains("visivel");
+        marcador.classList.toggle("direto", primeiro);
+        marcador.style.transform = `translateY(${li.offsetTop}px)`;
+        marcador.style.height = `${li.offsetHeight}px`;
+        marcador.classList.add("visivel");
+        if (primeiro) {
+          void marcador.offsetWidth;
+          marcador.classList.remove("direto");
+        }
+      };
+      // O clique num passo leva a lousa ao fim dele, com tudo o que a linha diz já desenhado. Passar o
+      // mouse só move o marcador (a prévia no hover saiu, a pedido do Cesar).
+      const fimDoPasso = (i: number) => (i + 1 < passos.length ? passos[i + 1].de - 0.0005 : 1);
+      botoes.forEach((botao, i) => {
+        const li = botao.parentElement!;
+        botao.addEventListener("pointerenter", () => marcar(li));
+        botao.addEventListener("focus", () => marcar(li));
+        botao.addEventListener("click", () => {
+          gesto(fimDoPasso(i));
+          lousa.desenhar(t * lousa.fim, false);
+        });
+      });
+      lista.addEventListener("pointerleave", () => marcar(null));
+      lista.addEventListener("focusout", (e) => !lista.contains(e.relatedTarget as Node) && marcar(null));
+    }
+
+    // As setas do controle vão de um passo (ou estado) para o vizinho.
+    const pontos = [...new Set([...falas.map((e) => e.de), 1])].sort((a, b) => a - b);
+    faixa.addEventListener("keydown", (e) => {
+      const frente = e.key === "ArrowRight" || e.key === "ArrowUp";
+      const tras = e.key === "ArrowLeft" || e.key === "ArrowDown";
+      if (!frente && !tras) return;
+      const alvo = frente ? pontos.find((m) => m > t + 0.001) : pontos.findLast((m) => m < t - 0.001);
+      if (alvo === undefined) return;
+      e.preventDefault();
+      gesto(alvo);
+    });
+    faixa.addEventListener("input", () => gesto(Number(faixa.value) / 1000));
+
+    // Só a rolagem horizontal mexe no tempo (o trackpad de lado, ou Shift com a roda). A vertical rola a
+    // página. O evento horizontal é sempre segurado sobre a lousa, também nas pontas: solto, o trackpad
+    // do Mac voltaria a página do navegador.
+    area.addEventListener(
+      "wheel",
+      (e) => {
+        const horizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.shiftKey ? e.deltaY : 0;
+        if (!horizontal) return;
+        e.preventDefault();
+        gesto(t + horizontal * (e.deltaMode === 1 ? 0.03 : 0.0012));
+      },
+      { passive: false },
+    );
+
+    // Arrastar sobre o desenho: com o mouse, na hora; com o dedo, só depois de um movimento de lado
+    // (o dedo que sobe ou desce rola a página, pelo touch-action).
+    const noDesenho = (e: PointerEvent) => {
+      const caixa = svg.getBoundingClientRect();
+      return (e.clientX - caixa.left) / caixa.width;
+    };
+    let arrastando = false;
+    let inicio: { x: number; y: number; id: number } | null = null;
+    const comecar = (e: PointerEvent) => {
+      arrastando = true;
+      area.classList.add("arrastando");
+      area.setPointerCapture(e.pointerId);
+      gesto(noDesenho(e));
+    };
+    area.addEventListener("pointerdown", (e) => {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      if (e.pointerType === "touch") inicio = { x: e.clientX, y: e.clientY, id: e.pointerId };
+      else comecar(e);
+    });
+    area.addEventListener("pointermove", (e) => {
+      if (arrastando) return gesto(noDesenho(e));
+      if (!inicio || e.pointerId !== inicio.id) return;
+      const dx = Math.abs(e.clientX - inicio.x);
+      const dy = Math.abs(e.clientY - inicio.y);
+      if (dx > LIMIAR_DO_DEDO && dx > dy) {
+        inicio = null;
+        comecar(e);
+      }
+    });
+    for (const tipo of ["pointerup", "pointercancel", "lostpointercapture"]) {
+      area.addEventListener(tipo, () => {
+        inicio = null;
+        arrastando = false;
+        area.classList.remove("arrastando");
+      });
+    }
+
+    // Na impressão, o desenho sai inteiro.
+    let antes: { t: number; tocando: boolean } | null = null;
+    addEventListener("beforeprint", () => {
+      antes = { t, tocando };
+      parar();
+      lousa.desenhar(lousa.fim, false);
+    });
+    addEventListener("afterprint", () => {
+      if (!antes) return;
+      mostrar(antes.t);
+      if (antes.tocando) tocar();
+      antes = null;
+    });
+
+    mostrar(1, false);
+  }
+</script>

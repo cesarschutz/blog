@@ -1,0 +1,42 @@
+---
+/**
+ * Diagrama ou gráfico do artigo (D58): o SVG da casa (traço de caneta, hachura,
+ * tracejado do que não acontece), no painel do livro, agora com tons: cada ator ou lado do diagrama tem
+ * uma cor (figura.css), para a cor ajudar a memorizar. Pode ter logos de ferramentas (data-marca) e
+ * detalhes que se mexem sozinhos (fluxo, pulsa, pisca, gira, balanca, anda), que só andam com a figura
+ * na tela e param com movimento reduzido. Sem JS: a figura parada, inteira.
+ *
+ *   <Figura figura="<slug>/<nome>" legenda="…" />
+ */
+import { figura as lerFigura } from "../lib/figuras";
+import "../styles/figura.css";
+
+interface Props {
+  figura: string;
+  /** Uma linha embaixo da figura, dizendo o que olhar nela. */
+  legenda?: string;
+}
+
+const { figura, legenda } = Astro.props;
+const { svg, viva } = lerFigura(figura);
+---
+
+<figure class="figura" data-pagefind-ignore data-figura-viva={viva ? "" : undefined}>
+  <div class="figura-palco painel" set:html={svg} />
+  <p class="dica-rolar" aria-hidden="true">Arraste para o lado para ver a figura inteira.</p>
+  {legenda && <figcaption>{legenda}</figcaption>}
+</figure>
+
+<script>
+  // Os detalhes que se mexem só andam com a figura na tela (figura.css: [data-na-tela]).
+  const vivas = document.querySelectorAll<HTMLElement>("[data-figura-viva]");
+  if (vivas.length) {
+    const observador = new IntersectionObserver(
+      (entradas) => {
+        for (const e of entradas) e.target.toggleAttribute("data-na-tela", e.isIntersecting);
+      },
+      { rootMargin: "80px 0px" },
+    );
+    vivas.forEach((f) => observador.observe(f));
+  }
+</script>

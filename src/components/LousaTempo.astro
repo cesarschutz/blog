@@ -43,7 +43,7 @@ const rss = Astro.locals.rss;
       <div class="controles" hidden>
         <button type="button" class="tocar" aria-pressed="false" aria-label="Reproduzir">
           <svg class="icone-tocar" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5z"></path></svg>
-          <svg class="icone-pausar" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 2.5h3v11h-3zM9.5 2.5h3v11h-3z"></path></svg>
+          <svg class="icone-pausar" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2h3v12H3zM10 2h3v12h-3z"></path></svg>
         </button>
         <label class="sr" for={id}>Tempo</label>
         <input id={id} type="range" min="0" max="1000" step="1" value="0" />

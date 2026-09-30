@@ -50,6 +50,9 @@ const livroDoPost = resumo.serie
   : livros.find((l) => resumo.categoria && l.slug === resumo.categoria.slug);
 const endereco = new URL(Astro.url.pathname, Astro.site).href;
 const modificado = post.data.updated ?? post.data.published;
+// A caneta da leitura na cor do livro (D58): a barra do topo e o sumário (o fio, o ponto, os vistos, o
+// sublinhado da seção e o título do post-it). As marcações da caneta no texto (D48) continuam azuis.
+const canetaDoLivro = `.barra-leitura,aside.lateral,#folha-sumario,details.recolhivel{--caneta:color-mix(in oklab, ${resumo.cor}, #fff var(--branco-no-escuro));}`;
 
 const absoluto = (caminho: string) => new URL(caminho, Astro.site).href;
 const origem = new URL(Astro.site ?? endereco).origin;
@@ -102,6 +105,7 @@ const jsonLd = {
   {/* Os títulos à mão da papelaria (C05, D52): o post-it, as fichas do livro e a dos atalhos. */}
   <link slot="head" rel="preload" href={arquivoDaMao} as="font" type="font/woff" crossorigin />
   <style slot="head" set:html={fonteDaMao} />
+  <style slot="head" set:html={canetaDoLivro} />
   <BarraLeitura />
   <article class="artigo wrap" data-artigo data-pagefind-body style={`--cor:${resumo.cor}`}>
     <div class:list={["artigo-grade", { "com-lateral": temSumario || livroDoPost }]}>

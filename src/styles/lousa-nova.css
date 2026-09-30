@@ -1,0 +1,268 @@
+/*
+ * A lousa nova (Lousa.astro, D58): o quadro de sempre (lousa.css) com o controle
+ * limpo embaixo, o play à esquerda e a faixa do tempo, com as marcas de cada passo (numeradas) ou de
+ * cada estado. Nada ao lado da faixa: a lousa nunca muda de tamanho. A lista dos passos vem logo
+ * abaixo, e o passo da vez acende na cor do livro.
+ */
+
+.lousa-nova {
+  --cor-livro: color-mix(in oklab, var(--cor, var(--ink-2)), #fff var(--branco-no-escuro));
+  margin: 1.8em 0;
+}
+
+.lousa-nova .area {
+  touch-action: pan-y;
+  cursor: ew-resize;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.lousa-nova .area.arrastando {
+  cursor: grabbing;
+}
+
+.lousa-nova .controles {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.lousa-nova .tocar {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  background: var(--paper-hi);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.lousa-nova .tocar:hover {
+  border-color: var(--acento);
+  color: var(--acento);
+}
+
+.lousa-nova .tocar svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.lousa-nova .icone-pausar,
+.lousa-nova .tocar[aria-pressed="true"] .icone-tocar {
+  display: none;
+}
+
+.lousa-nova .tocar[aria-pressed="true"] .icone-pausar {
+  display: block;
+}
+
+.lousa-nova .trilho {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  padding-top: 5px;
+}
+
+.lousa-nova input[type="range"] {
+  display: block;
+  width: 100%;
+  height: 32px;
+  margin: 0;
+  accent-color: var(--acento);
+}
+
+/* As marcas ficam embaixo da faixa, cada uma no instante em que o passo (ou o estado) começa. */
+.lousa-nova .marcas {
+  position: relative;
+  height: 18px;
+  margin: 0 8px;
+}
+
+.lousa-nova .marca {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 6px;
+  background: var(--ink-3);
+}
+
+.lousa-nova .marca .numero {
+  position: absolute;
+  top: 6px;
+  left: 0;
+  font-family: var(--font-ui);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--ink-2);
+  transform: translateX(-50%);
+}
+
+.lousa-nova.comparacao .marcas {
+  height: 8px;
+}
+
+/* ---------- a lista dos passos ---------- */
+
+.lousa-nova .passos-lousa {
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: passo;
+}
+
+.lousa-nova .passos-lousa {
+  position: relative;
+}
+
+/* O marcador (como o da busca, D49): um fundo só, com o fio na cor do livro, que desliza até o passo
+   sob o mouse ou o foco. */
+.lousa-nova .marcador-passo {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--acento) 6%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.28s cubic-bezier(0.215, 0.61, 0.355, 1),
+    height 0.28s cubic-bezier(0.215, 0.61, 0.355, 1),
+    opacity 0.2s;
+}
+
+.lousa-nova .marcador-passo::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  bottom: 8px;
+  left: 2px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--acento);
+}
+
+.lousa-nova .marcador-passo.visivel {
+  opacity: 1;
+}
+
+.lousa-nova .marcador-passo.direto {
+  transition: opacity 0.2s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lousa-nova .marcador-passo {
+    transition: none;
+  }
+}
+
+.lousa-nova .passos-lousa .passo {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.lousa-nova .passos-lousa .passo:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.lousa-nova .passos-lousa li:not(.marcador-passo) {
+  position: relative;
+  margin: 0;
+  padding: 6px 12px 6px 46px;
+  border-radius: 8px;
+  counter-increment: passo;
+  transition:
+    background-color 0.25s,
+    color 0.25s;
+}
+
+.lousa-nova .passos-lousa li:not(.marcador-passo) + li {
+  margin-top: 2px;
+}
+
+.lousa-nova .passos-lousa li:not(.marcador-passo)::before {
+  content: counter(passo);
+  position: absolute;
+  top: 9px;
+  left: 8px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1.5px solid var(--ink-3);
+  border-radius: 50%;
+  font-family: var(--font-ui);
+  font-size: 13.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--ink-2);
+  transition:
+    background-color 0.25s,
+    border-color 0.25s,
+    color 0.25s;
+}
+
+.lousa-nova .passos-lousa li[aria-current="step"] {
+  background: color-mix(in oklab, var(--cor-livro) 12%, transparent);
+}
+
+.lousa-nova .passos-lousa li[aria-current="step"]::before {
+  border-color: var(--cor-livro);
+  background: var(--cor-livro);
+  color: var(--paper-hi);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lousa-nova .passos-lousa li,
+  .lousa-nova .passos-lousa li:not(.marcador-passo)::before {
+    transition: none;
+  }
+}
+
+.lousa-nova .dica {
+  margin-top: 10px;
+  font-family: var(--font-ui);
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+
+.lousa-nova .dica-toque {
+  display: none;
+}
+
+@media (hover: none) {
+  .lousa-nova .dica-mouse {
+    display: none;
+  }
+
+  .lousa-nova .dica-toque {
+    display: inline;
+  }
+}
+
+@media print {
+  .lousa-nova .controles,
+  .lousa-nova .dica {
+    display: none !important;
+  }
+}

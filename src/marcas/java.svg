@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <g class="tinta tom-ambar">
+    <path d="M38 39 C 31 33 44 27 37 20 C 32 15 37 10 41 7" class="linha-tom"/>
+    <path d="M55 39 C 48 33 61 27 54 20 C 50 16 53 12 56 10" class="linha-tom"/>
+  </g>
+  <g class="tinta tom-azul">
+    <path d="M17 46 H73 V60 C73 75 62 84 45 84 C28 84 17 75 17 60 Z" class="lavado"/>
+    <path d="M17 46 H73 V60 C73 75 62 84 45 84 C28 84 17 75 17 60 Z" class="linha"/>
+    <path d="M73 51 C 88 49 90 68 71 70" class="linha"/>
+    <path d="M9 91 C 30 98 62 98 83 91" class="linha-tom"/>
+  </g>
+</svg>
