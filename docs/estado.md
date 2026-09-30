@@ -70,7 +70,8 @@ Caneta com 34 tipos (D56, 29/09/2026, branch `amostra-caneta`): numa amostra, o 
 com os 20 tipos aplicados e escolheu, entre 20 propostos, 15 tipos novos; saiu o sinal ≠. Os limites
 mudaram: sem teto de total, marca-texto até 3, o mesmo tipo até 5, nunca duas no mesmo parágrafo. O
 catálogo `/amostra/caneta/` mostra os 34. Achado junto: o riscado com correção quebrava num espaço no
-celular (corrigido). Em seguida, o post de criptografia é remarcado com as regras novas.
+celular (corrigido). O post de criptografia foi remarcado pelas regras novas em 30/09/2026: 56
+marcações (antes 12), conferidas em 320 a 1600px nos dois temas.
 
 ## Como ver
 

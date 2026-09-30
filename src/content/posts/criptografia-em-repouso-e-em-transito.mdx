@@ -15,7 +15,7 @@ Outro dia, revisando a documentação de infraestrutura de um banco, encontrei e
 
 > Criptografada em repouso com KMS (`StorageEncrypted=true`), como a primária.
 
-É o tipo de frase que aparece em todo documento de arquitetura, checklist de auditoria e questionário de segurança. Todo mundo marca "sim" e segue em frente. Mas vale entender o que ela garante, o que ela **não** garante e qual é a irmã dela, a criptografia em trânsito.
+É o tipo de frase que aparece em todo documento de arquitetura, checklist de auditoria e questionário de segurança. Todo mundo marca "sim" e segue em frente. Mas vale entender o que ela garante, :duplo[o que ela **não** garante] e qual é a irmã dela, a criptografia em trânsito.
 
 Neste post vou passar pelos dois conceitos e mostrar como ativar cada um no PostgreSQL (no RDS e fora dele) e no MongoDB (no Atlas e fora dele). No final, falo rapidamente de um terceiro tipo, bem menos comum: a criptografia em uso.
 
@@ -33,13 +33,15 @@ Neste post vou passar pelos dois conceitos e mostrar como ativar cada um no Post
 
 ## Criptografia em repouso
 
+:::moldura
 A ideia é simples: tudo o que o banco grava fica cifrado. Arquivos de dados, logs, backups e snapshots. Se alguém sair com o disco, copiar o volume ou conseguir um snapshot, vai encontrar só bytes sem sentido.
+:::
 
-Na maioria das implementações ela é **transparente**: o banco (ou o storage por baixo dele) cifra ao gravar e decifra ao ler, e a aplicação não percebe nada. Não muda query, não muda driver. Quando é o próprio banco que cifra os arquivos, o recurso costuma se chamar TDE, de *Transparent Data Encryption*, como no Oracle e no SQL Server. No RDS, a criptografia acontece no storage, e a AWS não a chama de TDE.
+Na maioria das implementações ela é **transparente**: o banco (ou o storage por baixo dele) cifra ao gravar e decifra ao ler, e a aplicação não percebe nada. Não muda query, não muda driver. Quando é o próprio banco que cifra os arquivos, o recurso costuma se chamar TDE, de *Transparent Data Encryption*, como no Oracle e no SQL Server. No RDS, a criptografia acontece no storage, e :nota[a AWS não a chama de TDE]{texto="é no storage, não no banco"}.
 
 ### Onde entra o KMS
 
-A frase do começo fala em KMS. O KMS (*Key Management Service*) é o cofre de chaves, e o esquema usado quase sempre é o de **envelope encryption**:
+A frase do começo fala em KMS. O KMS (*Key Management Service*) é o cofre de chaves, e :grifo[o esquema usado quase sempre é o de **envelope encryption**]:
 
 <LousaTempo
   desenho="criptografia-em-repouso-e-em-transito/envelope"
@@ -52,9 +54,11 @@ A frase do começo fala em KMS. O KMS (*Key Management Service*) é o cofre de c
   ]}
 />
 
+:::passos
 1. Os dados são cifrados com uma chave de dados (*data key*), que fica perto do banco.
 2. A chave de dados, por sua vez, é cifrada com uma chave mestra que nunca sai do KMS.
 3. Para usar a chave de dados, o banco pede ao KMS que a decifre, e o KMS só atende quem tem permissão.
+:::
 
 O ganho é que o acesso ao dado passa a depender também de quem pode usar a chave. Se a chave for desativada ou apagada, os dados ficam ilegíveis, inclusive os backups. Tirar a permissão de um usuário :ondulado[não basta]: no RDS, o banco guarda uma autorização própria na chave (um *grant*), criada junto com a instância.
 
@@ -68,15 +72,17 @@ Ela protege contra:
 
 Ela **não** protege contra:
 
+:::chave{nota="nada disso muda com o disco cifrado"}
 - quem tem usuário e senha do banco. Para essa pessoa, o dado aparece em texto claro, porque a decifragem acontece por baixo;
 - uma aplicação comprometida ou uma injeção de SQL;
 - o dado viajando pela rede. Para isso existe a criptografia em trânsito.
+:::
 
 O primeiro item é o mais mal-entendido.
 
 <FraseDestaque texto="Criptografia em repouso não é controle de acesso." />
 
-Ela protege o **meio** onde o dado está gravado, e não o dado contra quem pode consultá-lo.
+:marca[Ela protege o **meio** onde o dado está gravado, e não o dado contra quem pode consultá-lo.]
 
 ## Criptografia em trânsito
 
@@ -85,7 +91,9 @@ Aqui o dado está saindo da aplicação e indo para o banco, voltando, ou indo d
 - **Sigilo:** quem intercepta o tráfego não consegue ler.
 - **Autenticidade:** quando o cliente valida o certificado, ele tem certeza de que está falando com o banco certo, e não com alguém no meio do caminho.
 
+:::exclamacao
 O segundo ponto é o que mais se perde na prática. Muita configuração liga o TLS mas não valida o certificado. O tráfego fica cifrado, mas nada impede um ataque *man-in-the-middle*. No Postgres, essa é a diferença entre `sslmode=require`, que cifra mas não confere quem está do outro lado, e `sslmode=verify-full`, que confere a CA e o nome do servidor.
+:::
 
 <LousaTempo
   desenho="criptografia-em-repouso-e-em-transito/tls"
@@ -102,11 +110,11 @@ O segundo ponto é o que mais se perde na prática. Muita configuração liga o 
 
 ### Em repouso
 
-No RDS, a criptografia em repouso é ligada na criação da instância e usa uma chave do AWS KMS. Ela cobre o storage, os backups automáticos, os snapshots, os logs e as réplicas de leitura. No console é a opção *Enable encryption*. Na API, na CLI e no CloudFormation é o `StorageEncrypted`.
+No RDS, a criptografia em repouso :duplo[é ligada na criação da instância] e usa uma chave do AWS KMS. Ela cobre o storage, os backups automáticos, os snapshots, os logs e as réplicas de leitura. No console é a opção *Enable encryption*. Na API, na CLI e no CloudFormation é o `StorageEncrypted`.
 
 Pela CLI:
 
-```bash
+```bash anotar="--storage-encrypted|é isto que liga"
 aws rds create-db-instance \
   --db-instance-identifier pedidos-db \
   --engine postgres \
@@ -120,7 +128,7 @@ aws rds create-db-instance \
 
 Com Terraform:
 
-```hcl title="main.tf"
+```hcl title="main.tf" linhas="13-14|liga e escolhe a chave"
 resource "aws_kms_key" "rds" {
   description = "Chave do RDS de pedidos"
 }
@@ -151,7 +159,9 @@ aws rds describe-db-instances \
 
 Três pontos de atenção:
 
+:::asterisco
 **Não dá para ligar numa instância que já existe.** O caminho é tirar um snapshot, copiar o snapshot informando uma chave KMS (a cópia sai criptografada) e restaurar uma instância nova a partir dela. Isso significa uma instância nova, com outro endpoint (a menos que você renomeie a antiga e dê o nome dela à nova), e janela de manutenção. Se o downtime for um problema, dá para migrar com replicação lógica ou AWS DMS.
+:::
 
 ```bash
 aws rds create-db-snapshot \
@@ -176,17 +186,19 @@ aws rds restore-db-instance-from-db-snapshot \
 Na restauração, informe também o parameter group e os security groups da instância original (`--db-parameter-group-name` e `--vpc-security-group-ids`). Sem eles, o RDS usa os padrões, e um `rds.force_ssl = 1` configurado à mão, como na seção seguinte, se perde.
 :::
 
-**Réplicas herdam a criptografia.** Uma réplica de uma primária criptografada é obrigatoriamente criptografada, e é daí que vem o "como a primária" da frase do começo. Uma réplica em outra região usa uma chave KMS daquela região.
+**Réplicas herdam a criptografia.** Uma réplica de uma primária criptografada é obrigatoriamente criptografada, e é daí que vem o "como a primária" da frase do começo. :grifo[Uma réplica em outra região usa uma chave KMS daquela região.]
 
+:::visto
 **Prefira uma chave gerenciada por você** (*customer managed key*) em vez da padrão `aws/rds`. Com a chave padrão, não dá para compartilhar snapshots com outra conta AWS, e você não controla a política de acesso da chave.
+:::
 
 ### Em trânsito
 
-O RDS já cria o certificado da instância. Faltam duas coisas: o servidor exigir TLS e o cliente validar o certificado.
+O RDS já cria o certificado da instância. Faltam duas coisas: o servidor exigir TLS e :duplo[o cliente validar o certificado].
 
 No servidor, quem manda é o parâmetro `rds.force_ssl`. A partir do :circulo[PostgreSQL 15] ele já vem ligado (`1`) por padrão. Nas versões anteriores ele vem desligado, e você precisa criar um *parameter group* customizado com `rds.force_ssl = 1` e associá-lo à instância (com reboot, se ela já estiver rodando).
 
-No cliente, baixe o pacote de certificados da AWS e use `verify-full`:
+No cliente, baixe o pacote de certificados da AWS e use :caixa[`verify-full`]:
 
 ```bash
 curl -o global-bundle.pem https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
@@ -205,7 +217,7 @@ Por que não confiar no padrão? Porque tanto o `psql` quanto o driver JDBC usam
 
 Para ver quem está conectado com TLS (com o usuário mestre ou um usuário com `pg_monitor`, porque um usuário comum só vê as próprias sessões):
 
-```sql
+```sql anotar="pg_stat_ssl|uma linha por conexão"
 SELECT a.usename, a.client_addr, s.ssl, s.version
 FROM pg_stat_ssl s
 JOIN pg_stat_activity a ON a.pid = s.pid
@@ -216,7 +228,7 @@ WHERE a.backend_type = 'client backend';
 
 ### Em trânsito
 
-O TLS é nativo no Postgres. Com o certificado e a chave do servidor em mãos (de uma CA interna ou pública), é só configuração.
+O TLS é nativo no Postgres. Com o certificado e a chave do servidor em mãos (de uma CA interna ou pública), :grifo[é só configuração].
 
 No `postgresql.conf`:
 
@@ -227,9 +239,11 @@ ssl_key_file  = '/etc/postgresql/tls/server.key'
 ssl_min_protocol_version = 'TLSv1.2'
 ```
 
+:::exclamacao
 O arquivo da chave precisa pertencer ao usuário `postgres`, com permissão `0600`, ou ao `root`, com `0640` e o `postgres` no grupo do arquivo. Senão, o servidor se recusa a usá-lo.
+:::
 
-No `pg_hba.conf`, aceite conexões remotas só com TLS. Essas linhas entram no lugar das linhas `host` que já existem, porque vale a primeira linha que casar:
+No `pg_hba.conf`, aceite conexões remotas só com TLS. Essas linhas entram no lugar das linhas `host` que já existem, porque :ondulado[vale a primeira linha que casar]:
 
 ```text title="pg_hba.conf" linhas="4-5|sem TLS, recusado"
 # TYPE     DATABASE  USER  ADDRESS     METHOD
@@ -239,7 +253,9 @@ hostnossl  all       all   0.0.0.0/0   reject
 hostnossl  all       all   ::/0        reject
 ```
 
+:::carimbo{texto="testado no Postgres 16"}
 Depois, recarregue a configuração com `SELECT pg_reload_conf();` e confira no log que não apareceu `SSL configuration was not reloaded`. No cliente vale a mesma regra do RDS: `sslmode=verify-full`, com `sslrootcert` apontando para a CA que assinou o certificado do servidor.
+:::
 
 ### Em repouso
 
@@ -247,7 +263,7 @@ Depois, recarregue a configuração com `SELECT pg_reload_conf();` e confira no 
 Aqui está a maior diferença em relação ao RDS: **o PostgreSQL da comunidade não tem criptografia em repouso nativa.** Não existe um `ssl = on` para o disco. As opções são três.
 :::
 
-**1. Criptografar o volume.** LUKS (dm-crypt) em servidor próprio, ou um volume criptografado na nuvem, como um EBS criptografado numa EC2. É o caminho mais comum, e protege contra roubo do disco e de snapshots do volume.
+**1. Criptografar o volume.** LUKS (dm-crypt) em servidor próprio, ou um volume criptografado na nuvem, como um EBS criptografado numa EC2. :duplo[É o caminho mais comum], e protege contra roubo do disco e de snapshots do volume.
 
 ```bash
 # Atenção: apaga o disco. Use um disco dedicado aos dados.
@@ -260,9 +276,9 @@ mount /dev/mapper/pgdata /var/lib/postgresql
 
 A limitação é que, com o volume montado, o sistema de arquivos :ondulado[já enxerga tudo decifrado]. Quem tem acesso ao servidor ligado lê os arquivos normalmente. Também é preciso decidir como o volume é destravado no boot (senha manual, TPM, Clevis/Tang), e essa é a parte que dá trabalho.
 
-**2. Usar TDE de uma distribuição.** O Percona Distribution for PostgreSQL tem a extensão open source `pg_tde`, que cifra dentro do próprio banco as tabelas criadas com `tde_heap` (com os índices delas e, se você ligar, o WAL), com as chaves guardadas num Vault, OpenBao ou servidor KMIP. Ela depende do Percona Server for PostgreSQL, uma versão do Postgres modificada pela Percona, e não roda no Postgres da comunidade. Há também opções comerciais, como o EDB Postgres Advanced Server.
+**2. Usar TDE de uma distribuição.** O Percona Distribution for PostgreSQL tem a extensão open source `pg_tde`, que cifra dentro do próprio banco as tabelas criadas com `tde_heap` (com os índices delas e, se você ligar, o WAL), com as chaves guardadas num Vault, OpenBao ou servidor KMIP. Ela depende do :circulo[Percona Server for PostgreSQL], uma versão do Postgres modificada pela Percona, e não roda no Postgres da comunidade. Há também opções comerciais, como o EDB Postgres Advanced Server.
 
-```sql
+```sql anotar="tde_heap|só estas tabelas são cifradas"
 -- postgresql.conf: shared_preload_libraries = 'pg_tde' (e reinicie o servidor)
 CREATE EXTENSION pg_tde;
 
@@ -275,26 +291,28 @@ CREATE TABLE cartao (
 ) USING tde_heap;
 ```
 
-**3. Não esquecer dos backups.** Um banco criptografado com backups em texto claro num bucket qualquer não resolve nada. O pgBackRest, por exemplo, cifra o repositório de backups com `repo1-cipher-type=aes-256-cbc` e `repo1-cipher-pass`.
+**3. Não esquecer dos backups.** Um banco criptografado com backups em texto claro num bucket qualquer não resolve nada. O pgBackRest, por exemplo, cifra o repositório de backups com :caixa[`repo1-cipher-type=aes-256-cbc`] e `repo1-cipher-pass`.
 
 ## MongoDB Atlas
 
 ### Em repouso
 
-No Atlas, a criptografia em repouso já vem ligada em todos os clusters, sem configuração. O Atlas usa a criptografia de volume do provedor de nuvem (na AWS, EBS criptografado).
+No Atlas, a criptografia em repouso :grifo[já vem ligada em todos os clusters], sem configuração. O Atlas usa a criptografia de volume do provedor de nuvem (na AWS, EBS criptografado).
 
 Se você precisa controlar a chave para rotacionar, revogar e auditar o uso, existe a opção **Encryption at Rest using Customer Key Management**, também chamada de BYOK (*bring your own key*). Com ela, o Atlas cifra os dados uma segunda vez, no Encrypted Storage Engine do MongoDB, usando uma chave sua no AWS KMS, no Azure Key Vault ou no Google Cloud KMS. Ela só está disponível em clusters dedicados, do :circulo[M10] para cima.
 
 Na AWS, os passos são:
 
+:::passos
 1. Criar uma chave simétrica no AWS KMS.
 2. Criar um IAM role que o Atlas possa assumir, com permissão de `kms:Encrypt`, `kms:Decrypt` e `kms:DescribeKey` nessa chave.
 3. No projeto do Atlas, configurar o Encryption at Rest com o AWS KMS, informando a chave, a região e o role.
 4. Ligar a opção em cada cluster que deve usar a chave.
+:::
 
 Com Terraform:
 
-```hcl title="main.tf"
+```hcl title="main.tf" linhas="14-15|o cluster espera a chave"
 resource "mongodbatlas_encryption_at_rest" "this" {
   project_id = var.atlas_project_id
 
@@ -320,7 +338,9 @@ Um cuidado: se a chave for desativada ou apagada, ou se o role perder a permiss�
 
 ### Em trânsito
 
+:::validade{data="set/2026"}
 No Atlas, o TLS é obrigatório e não dá para desligar. A string de conexão `mongodb+srv://` já liga o TLS no driver. O que dá para ajustar é a versão mínima do TLS nas configurações do cluster: o Atlas já recusa o 1.0 e o 1.1, então a escolha é entre 1.2 e 1.3.
+:::
 
 ## MongoDB fora do Atlas
 
@@ -328,7 +348,7 @@ No Atlas, o TLS é obrigatório e não dá para desligar. A string de conexão `
 
 No `mongod.conf`:
 
-```yaml title="mongod.conf"
+```yaml title="mongod.conf" anotar="requireTLS|recusa conexão sem TLS"
 net:
   port: 27017
   bindIp: 127.0.0.1,10.0.1.15
@@ -341,7 +361,7 @@ net:
     disabledProtocols: TLS1_0,TLS1_1
 ```
 
-Com `requireTLS`, a comunicação entre os membros do replica set também passa a exigir TLS. Se o certificado não tiver o uso `clientAuth`, os membros não conseguem conversar entre si. Gere-o com `clientAuth` ou use `setParameter: tlsWithholdClientCertificate: true` com autenticação interna por keyFile.
+Com `requireTLS`, a comunicação entre os membros do replica set também passa a exigir TLS. Se o certificado não tiver o uso :caixa[`clientAuth`], os membros não conseguem conversar entre si. Gere-o com `clientAuth` ou use `setParameter: tlsWithholdClientCertificate: true` com autenticação interna por keyFile.
 
 Para migrar um ambiente que já está no ar sem derrubar tudo, reinicie os membros um de cada vez com `allowTLS`, passe os clientes para TLS e só então troque todos para `preferTLS` e, por fim, para `requireTLS` (com `setParameter`, sem reiniciar). Cada etapa precisa chegar a :nota[todos os membros]{texto="senão, o primário cai"} antes da próxima, e no fim o `mongod.conf` fica com `requireTLS`.
 
@@ -355,9 +375,9 @@ mongodb://app:<senha>@mongo1.interno:27017,mongo2.interno:27017/?replicaSet=rs0&
 
 Aqui depende da edição do MongoDB.
 
-**Community:** não tem criptografia em repouso nativa. O caminho é o mesmo do Postgres autogerenciado: volume criptografado (LUKS, EBS criptografado e afins).
+**Community:** :grifo[não tem criptografia em repouso nativa]. O caminho é o mesmo do Postgres autogerenciado: volume criptografado (LUKS, EBS criptografado e afins).
 
-**Enterprise:** tem o Encrypted Storage Engine, que cifra os arquivos do WiredTiger. O recomendado é que a chave mestra venha de um servidor KMIP:
+**Enterprise:** tem o Encrypted Storage Engine, que cifra os arquivos do WiredTiger. O recomendado é que a chave mestra :duplo[venha de um servidor KMIP]:
 
 ```yaml title="mongod.conf"
 security:
@@ -369,19 +389,23 @@ security:
     clientCertificateFile: /etc/mongodb/kmip/mongod-client.pem
 ```
 
+:::visto
 Também existe a opção `encryptionKeyFile`, com a chave num arquivo local. Ela deixa a chave no mesmo servidor dos dados e, segundo a própria MongoDB, não atende à maioria das exigências regulatórias de gestão de chaves. Em produção, prefira o KMIP.
+:::
 
-**Percona Server for MongoDB:** alternativa gratuita e compatível com o MongoDB, de código-fonte disponível (*source available*, pela licença SSPL), que também tem criptografia em repouso, com as chaves num Vault (ou OpenBao) ou num servidor KMIP.
+**Percona Server for MongoDB:** alternativa gratuita e compatível com o MongoDB, de código-fonte disponível (:aspas[*source available*], pela licença SSPL), que também tem criptografia em repouso, com as chaves num Vault (ou OpenBao) ou num servidor KMIP.
 
+:::asterisco
 Um detalhe operacional: não dá para ligar a criptografia em cima de arquivos que já existem. Num replica set, o jeito é fazer membro a membro, começando pelos secundários e, por último, o primário, depois de um `rs.stepDown()`: parar o membro, limpar o `dbPath`, subir com a criptografia ligada e deixar o *initial sync* repopular os dados.
+:::
 
 ## E a criptografia em uso?
 
 Existe um terceiro estado, bem menos comum no dia a dia: o dado **em uso**, enquanto está na memória sendo processado.
 
-Repare que as duas proteções anteriores têm um ponto cego em comum: dentro do servidor do banco, o dado fica aberto. Um DBA, um backup lógico (`pg_dump`, `mongodump`) ou alguém que invadiu o servidor enxerga tudo.
+Repare que as duas proteções anteriores têm um ponto cego em comum: :marca[dentro do servidor do banco, o dado fica aberto]. Um DBA, um backup lógico (`pg_dump`, `mongodump`) ou alguém que invadiu o servidor enxerga tudo.
 
-A criptografia em uso tenta fechar esse buraco. Um bom exemplo é o **Queryable Encryption** do MongoDB. A aplicação cifra os campos sensíveis no próprio driver, antes de enviar, e o servidor guarda e consulta o dado sem nunca ver o valor original. A chave mestra fica num KMS que só a aplicação acessa. O banco guarda apenas as chaves de dados, cifradas por ela, e nunca consegue abri-las.
+A criptografia em uso tenta fechar esse buraco. Um bom exemplo é o **Queryable Encryption** do MongoDB. A aplicação cifra os campos sensíveis no próprio driver, antes de enviar, e o servidor guarda e consulta o dado :ondulado[sem nunca ver o valor original]. A chave mestra fica num KMS que só a aplicação acessa. O banco guarda apenas as chaves de dados, cifradas por ela, e nunca consegue abri-las.
 
 Imagine uma coleção de portadores de cartão com o CPF cifrado. A aplicação, que tem acesso à chave, consulta normalmente:
 
@@ -397,19 +421,23 @@ db.portadores.findOne()
 // { nome: 'Maria Souza', cpf: Binary.createFromBase64('DkH2...', 6), __safeContent__: [ ... ], ... }
 ```
 
-O subtipo `6` é o formato de dado cifrado do MongoDB. O banco não consegue ler o CPF e, mesmo assim, consegue responder à consulta de igualdade. A cifragem automática do exemplo exige MongoDB Enterprise ou Atlas (7.0 ou mais novo) num replica set. Na Community, só com cifragem explícita no código.
+O subtipo :circulo[`6`] é o formato de dado cifrado do MongoDB. O banco não consegue ler o CPF e, mesmo assim, consegue responder à consulta de igualdade. A cifragem automática do exemplo exige MongoDB Enterprise ou Atlas (7.0 ou mais novo) num replica set. Na Community, só com cifragem explícita no código.
 
-Outro exemplo é a computação confidencial, que protege o dado de quem controla a máquina (o host, o hypervisor, o operador da nuvem). Nas VMs com AMD SEV-SNP ou Intel TDX, o processador cifra a memória da VM com uma chave que nem o hypervisor acessa. Nos AWS Nitro Enclaves, a proteção vem do isolamento: uma VM à parte, sem rede externa, sem disco e sem acesso interativo. Nenhuma das duas impede quem tem credencial do banco de consultar o dado.
+Outro exemplo é a computação confidencial, que protege o dado de quem controla a máquina (o host, o hypervisor, o operador da nuvem). Nas VMs com :explica[AMD SEV-SNP ou Intel TDX]{nota="memória cifrada"}, o processador cifra a memória da VM com uma chave que nem o hypervisor acessa. Nos AWS Nitro Enclaves, a proteção vem do isolamento: uma VM à parte, sem rede externa, sem disco e sem acesso interativo. Nenhuma das duas impede quem tem credencial do banco de consultar o dado.
 
-No Postgres, o `pgcrypto` pode parecer a mesma coisa, mas não é. A chave e o valor aberto passam pelo servidor na própria query e podem acabar em logs. Para ter o efeito de "em uso", a criptografia precisa acontecer na aplicação.
+No Postgres, o `pgcrypto` pode parecer a mesma coisa, :ondulado[mas não é]. A chave e o valor aberto passam pelo servidor na própria query e podem acabar em logs. Para ter o efeito de "em uso", a criptografia precisa acontecer na aplicação.
 
 Por que é pouco usado? Porque cobra caro:
 
+:::chave{nota="o preço da criptografia em uso"}
 - a aplicação passa a gerenciar chaves e o esquema de criptografia dos campos;
 - as consultas sobre campos cifrados ficam limitadas (nada de ordenar ou agregar livremente por eles);
 - ferramentas de BI, pipelines de dados e o próprio suporte deixam de enxergar o valor.
+:::
 
+:::visto
 Por isso ela costuma ficar reservada para poucos campos muito sensíveis. Em domínios como o de cartões, a tokenização muitas vezes resolve o mesmo problema com menos atrito.
+:::
 
 ## Resumo
 
@@ -420,7 +448,7 @@ Por isso ela costuma ficar reservada para poucos campos muito sensíveis. Em dom
 | **MongoDB Atlas** | Sempre ligada. Chave própria (BYOK) a partir do M10 | Sempre ligado, com TLS 1.2 ou 1.3 |
 | **MongoDB fora do Atlas** | Community: volume criptografado. Enterprise: Encrypted Storage Engine com KMIP. Ou Percona Server | `requireTLS` no `mongod.conf` e cliente com `tls=true` e a CA |
 
-Se for para guardar uma coisa deste post: criptografia em repouso e em trânsito são o mínimo, e hoje custam quase nada para ligar. Mas nenhuma das duas impede quem tem credencial de ler o dado. Para isso você precisa de controle de acesso bem feito, auditoria e, nos casos mais sensíveis, criptografia em uso ou tokenização.
+Se for para guardar uma coisa deste post: criptografia em repouso e em trânsito são o mínimo, e hoje custam quase nada para ligar. Mas :marca[nenhuma das duas impede quem tem credencial de ler o dado]. Para isso você precisa de controle de acesso bem feito, auditoria e, nos casos mais sensíveis, criptografia em uso ou tokenização.
 
 ## Fontes
 
