@@ -416,10 +416,11 @@ Referência: aba "Artigo" do protótipo.
   caneta, **estático**, como se tivesse sido riscado antes de publicar (sem animação). Caneta **azul
   fixa** em todos os livros (#1F4FB5 no claro, #8FA8FF no escuro), que **nunca pinta o texto**: só os
   riscos, círculos, caixas, setas e notas à mão ficam azuis, e as notas não parecem link.
-  **Marca-texto amarelo** (#FFE27A; no escuro, rgba(255, 214, 90, .30)), no máximo uma ou duas vezes
-  por post. **20 tipos**, cada um com um papel (catálogo `docs/prototipos/caneta-do-caderno.html`;
-  guia vivo em `docs/marcacoes.md`, com os critérios, os limites, as regras de tela e os "Ajustes do
-  Cesar"): de 6 a 12 marcações por post, marcadas como um arquiteto experiente marcaria. A pintura
+  **Marca-texto amarelo** (#FFE27A; no escuro, rgba(255, 214, 90, .30)), no máximo três vezes por
+  post. **34 tipos** (D56), cada um com um papel (catálogo no dev, `/amostra/caneta/`; guia vivo em
+  `docs/marcacoes.md`, com os critérios, os limites, as regras de tela e os "Ajustes do Cesar"): sem
+  teto de total, o post bem marcado, como um arquiteto experiente marcaria, nunca duas marcações no
+  mesmo parágrafo. A pintura
   dos termos das listas saiu; no lugar, a caixa à mão. É a **última etapa** de todo post (skill
   `caneta`), com a proposta (trecho, tipo, motivo) aprovada pelo Cesar antes de aplicar.
 - **Apresentação** (quando existir): seção logo antes de "Fontes", com o título

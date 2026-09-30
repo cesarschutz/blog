@@ -135,7 +135,7 @@ divergirem, vale o projeto.
 | `npm run conferir -- <slug> [--base URL] [--capturas]` | O post em 320, 390, 768, 1280 e 1600px, nos dois temas, mais o movimento reduzido: rolagem lateral, console, rede, `alt`, marcas da caneta cortadas e notas por cima do texto. Sai 1 com problema. Capturas em `.astro/conferir/<slug>/`. Não mede trace de performance nem se as animações andam. |
 | `/amostra/lousas/` (dev) | Os quadros-chave de cada lousa, parados, no instante de cada marca, com o estado do post. `?lousa=`, `?tema=escuro`, `?quadros=todos`. |
 | `/amostra/desenhos/` (dev) e `render.mjs` | A ilustração em todos os recortes, claro e escuro. |
-| `/amostra/caneta/`, `/amostra/livros/`, `/amostra/tags/` (dev) | Os 20 tipos da caneta, as capas planas e os ícones das tags. |
+| `/amostra/caneta/`, `/amostra/livros/`, `/amostra/tags/` (dev) | Os 34 tipos da caneta, as capas planas e os ícones das tags. |
 | `npm run check`, `build`, `links`, `contraste` | Tipos, build, links e âncoras, contraste dos tokens. |
 
 ## Recursos de escrita de post
@@ -149,7 +149,7 @@ caneta, é `/posts/cobranca-duplicada-no-retry/` ("Chave de idempotência").
 
 | Recurso | Onde está configurado | Quando usar |
 |---|---|---|
-| Caneta azul (20 tipos) | skill `caneta`, guia `docs/marcacoes.md`, plugin `src/plugins/marcacoes.mjs`, `src/styles/caneta.css` | Última etapa de todo post, depois de texto, desenhos e animações aprovados. |
+| Caneta azul (34 tipos) | skill `caneta`, guia `docs/marcacoes.md`, plugin `src/plugins/marcacoes.mjs`, `src/styles/caneta.css` | Última etapa de todo post, depois de texto, desenhos e animações aprovados. |
 | Marca-texto amarelo | é o tipo 1 da caneta (`:marca[…]`) | O essencial do post: a premissa ou a regra que o resume. No máximo 2. |
 | Ilustração do post | skill `desenho`, `docs/estilo-desenho.md`, `src/ilustracoes/<slug>.svg` | Sempre, uma por post. |
 | Lousas animadas | skill `lousa`, `LousaLoop` e `LousaTempo`, desenhos em `src/lousas/<slug>/` | Só onde há fluxo: sequência, passo a passo, antes e depois, linha do tempo. |
@@ -168,10 +168,12 @@ caneta, é `/posts/cobranca-duplicada-no-retry/` ("Chave de idempotência").
 
 - As marcações são **estáticas**: já vêm feitas, nada se desenha ao rolar. A caneta é azul em todos
   os livros e nunca pinta o texto. Só os traços e as notas à mão ficam azuis.
-- Os 20 tipos: marca-texto, ondulado, círculo, colchete na margem, sublinhado duplo, caixa à mão, nota
-  na margem, riscado com correção, asterisco, certo e errado, números circulados, chave agrupando,
-  riscado simples, seta ligando, exclamação, interrogação com nota, sinal ≠, anotação no código,
-  linhas marcadas no código e comentário do autor.
+- Os 34 tipos (D56): marca-texto, ondulado, círculo, colchete na margem, sublinhado duplo, caixa à
+  mão, nota na margem, riscado com correção, asterisco, certo e errado, números circulados, chave
+  agrupando, riscado simples, seta ligando, exclamação, interrogação com nota, anotação no código,
+  linhas marcadas no código, comentário do autor, marca-texto baixo, aspas à mão, parênteses à mão,
+  chave por baixo, seta de tendência, ressalva com asterisco, moldura, visto na margem, validade, novo
+  na atualização, post-it, carimbo, opção escolhida, números no código e linha riscada no código.
 - O tipo é escolhido **pelo papel no texto**, nunca por rodízio. Exemplos: ondulado para a palavra que
   muda o sentido, círculo para o número que costuma ser confundido, exclamação para a armadilha que
   derruba produção.
@@ -183,8 +185,8 @@ caneta, é `/posts/cobranca-duplicada-no-retry/` ("Chave de idempotência").
   5. Testar em 320, 390, 768, 1280 e 1600px, nos dois temas (`npm run conferir -- <slug> --capturas`
      mede e fotografa; as capturas se olham de perto em 390 e 1280px).
   6. Entregar o relatório e atualizar a coluna "Caneta" do `.claude/revisao-posts.md`.
-- **Limites (o build recusa o que passar):** de 6 a 12 por post, marca-texto no máximo 2, o mesmo tipo
-  no máximo 3, nunca duas marcações no mesmo parágrafo, nada em títulos, trecho sem quebra de até 32
+- **Limites (o build recusa o que passar, D56):** sem teto de total, marca-texto no máximo 3, o mesmo
+  tipo no máximo 5, nunca duas marcações no mesmo parágrafo, nada em títulos, trecho sem quebra de até 32
   caracteres, notas de até 40.
 - O comentário do autor só entra com uma frase escrita ou aprovada pelo Cesar.
 - Não se marca: aviso, nota lateral, frase em destaque, lousa, legenda e tabela de referência.

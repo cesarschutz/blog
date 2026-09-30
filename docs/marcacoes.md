@@ -5,7 +5,8 @@ Guia editorial das marcações à caneta dos artigos (D48, que substitui o cader
 Cesar pedir entra na seção "Ajustes do Cesar", no fim, com a data. O visual está no `DESIGN.md`
 ("Caneta do caderno"); o código, em `src/plugins/marcacoes.mjs` (Markdown), `src/lib/codigo.ts`
 (blocos de código), `src/styles/caneta.css` e `src/scripts/caneta.ts`. O catálogo de referência é
-`docs/prototipos/caneta-do-caderno.html`; no dev, `/amostra/caneta/` mostra os 20 tipos no blog.
+`docs/prototipos/caneta-do-caderno.html` (os 20 primeiros); no dev, `/amostra/caneta/` mostra os 34 tipos
+no blog.
 
 ## A ideia
 
@@ -19,14 +20,15 @@ custa caro, a distinção que confunde, o valor que precisa ser lembrado. Nada d
 nem frase solta sem importância. A caneta é a **última etapa** do post: entra depois que texto,
 desenhos e animações estão prontos e aprovados (skill `caneta`).
 
-## Os 20 tipos
+## Os 34 tipos
 
 Cada tipo tem um papel. Escolha o tipo **pelo papel dele no texto**, nunca por rodízio: posts
-diferentes pedem marcas diferentes, e a variedade vem do conteúdo.
+diferentes pedem marcas diferentes, e a variedade vem do conteúdo. Os tipos 20 a 34 entraram na D56
+(o sinal ≠, que abria um vão entre as palavras, saiu).
 
 | # | Tipo | Papel | Escrita |
 |---|---|---|---|
-| 1 | Marca-texto amarelo | o essencial do post; **raro** | `:marca[trecho]` |
+| 1 | Marca-texto amarelo | o essencial do post | `:marca[trecho]` |
 | 2 | Sublinhado ondulado | a palavra exata que muda o sentido | `:ondulado[não basta]` |
 | 3 | Círculo | o número ou nome que costuma ser confundido | `:circulo[P-521]` |
 | 4 | Colchete na margem | o parágrafo que resume uma seção | `:::colchete` em volta do parágrafo |
@@ -42,10 +44,24 @@ diferentes pedem marcas diferentes, e a variedade vem do conteúdo.
 | 14 | Seta ligando | causa e consequência dentro da mesma frase | `:liga[timeout, então reenvio]` |
 | 15 | Exclamação na margem | a armadilha, o erro que derruba produção | `:::exclamacao` em volta do parágrafo |
 | 16 | Interrogação com nota | a pergunta que o leitor faria, respondida logo depois | `:::pergunta{nota="…"}` em volta do parágrafo |
-| 17 | Sinal entre termos | dois conceitos que parecem iguais e não são | `**codificado** :sinal[≠] **criptografado**` |
-| 18 | Anotação no código | um valor dentro de um bloco de código, explicado ao lado | na cerca: `anotar="1789564500\|15 min depois"` |
-| 19 | Linhas marcadas no código | o trecho do código que importa, com o motivo | na cerca: `linhas="2-3\|o banco decide"` |
-| 20 | Comentário do autor | opinião em primeira pessoa | `:::comentario` em volta da frase |
+| 17 | Anotação no código | um valor dentro de um bloco de código, explicado ao lado | na cerca: `anotar="1789564500\|15 min depois"` |
+| 18 | Linhas marcadas no código | o trecho do código que importa, com o motivo | na cerca: `linhas="2-3\|o banco decide"` |
+| 19 | Comentário do autor | opinião em primeira pessoa | `:::comentario` em volta da frase |
+| 20 | Marca-texto baixo | o importante que não chega a ser o essencial | `:grifo[trecho]` |
+| 21 | Aspas à mão | o termo que o mercado usa solto e não quer dizer o que parece | `:aspas[exactly-once]` |
+| 22 | Parênteses à mão | o aparte, que dá para pular na primeira leitura | `:aparte[trecho]` |
+| 23 | Chave por baixo | decompõe um pedaço da frase ou de uma conta | `:explica[3 × 3 × 3]{nota="um 3 por camada"}` |
+| 24 | Seta de tendência | o que aumenta ou diminui por causa do que a frase diz | `:sobe[latência]` e `:desce[carga]` |
+| 25 | Ressalva com asterisco | a exceção que o leitor precisa saber, mas atrapalharia a frase | `:ressalva[trecho]{texto="…"}` |
+| 26 | Moldura | a regra ou a definição que o leitor copia, como um enunciado | `:::moldura` em volta do parágrafo |
+| 27 | Visto na margem | a recomendação final: é assim que se faz | `:::visto` em volta do parágrafo |
+| 28 | Validade | a informação que envelhece (preço, limite, cota, versão), com a data da conferência | `:::validade{data="set/2026"}` |
+| 29 | Novo na atualização | o que mudou na última atualização do post | `:::novo{data="29/09/2026"}` |
+| 30 | Post-it | o lembrete prático, para levar para o dia a dia | `:::postit` em volta de uma frase curta |
+| 31 | Carimbo | o que o autor conferiu na fonte ou rodou de verdade | `:::carimbo{texto="conferido na RFC 9110"}` |
+| 32 | Opção escolhida | numa lista de alternativas, a que o texto recomenda | `:::escolha{nota="…"}`, o item escolhido começa com `:esta` |
+| 33 | Números no código | guia de leitura do código: o texto logo abaixo explica cada número | na cerca: `numeros="5,6,7"` |
+| 34 | Linha riscada no código | a linha errada, que está ali para mostrar o que não fazer | na cerca: `riscar="3\|espera fixa"` |
 
 ~~~markdown
 O parâmetro `alg` é o :ondulado[único obrigatório] do header.
@@ -73,11 +89,12 @@ Um validador que confia no `alg` do token aceita um token sem assinatura.
 
 Detalhes de cada tipo:
 
-- **Marca-texto** (1): amarelo clássico, chama muita atenção. **No máximo uma ou duas vezes por
-  post**, só no que for realmente essencial (a premissa, a regra que resume o post). O trecho pode
-  quebrar linha, mas fique em uma linha e meia.
-- **Ondulado, duplo, círculo, caixa, riscado, seta ligando e a palavra da nota** não quebram linha:
-  o trecho tem **até 32 caracteres** (o build recusa mais), para caber numa linha de 320px.
+- **Marca-texto** (1): amarelo clássico, chama muita atenção. **No máximo três vezes por post**, só no
+  que for realmente essencial (a premissa, a regra que resume o post). O trecho pode quebrar linha,
+  mas fique em uma linha e meia. Para o importante que não é o essencial, o marca-texto baixo (20).
+- **Ondulado, duplo, círculo, caixa, riscado, seta ligando, aspas, tendência, ressalva e a palavra da
+  nota** não quebram linha: o trecho tem **até 32 caracteres** (o build recusa mais), para caber numa
+  linha de 320px. A chave por baixo (23): trecho e nota de até 24 caracteres.
 - **Caixa** (6): em `:::caixas`, a caixa vai no **primeiro `código`** de cada item. É o que substitui
   a pintura dos termos da D41.
 - **Nota na margem** (7) e **riscado com correção** (8): a nota tem até 40 caracteres, em letra
@@ -88,12 +105,22 @@ Detalhes de cada tipo:
 - **Chave** (12): nota curta (até 40 caracteres) que vale para todos os itens juntos.
 - **Seta ligando** (14): o trecho vai da causa à consequência, curto ("timeout, então reenvio").
 - **Interrogação** (16): a nota é a pergunta que o leitor faria; o parágrafo seguinte a responde.
-- **Sinal** (17): só `≠`, entre os dois termos (de preferência em negrito).
-- **Código** (18, 19): o valor de `anotar` precisa aparecer inteiro numa cor só do código (um número,
+- **Código** (17, 18, 33, 34): o valor de `anotar` precisa aparecer inteiro numa cor só do código (um número,
   uma string); se o build reclamar, circule um trecho menor. A nota fica ao lado da linha quando
   cabe e embaixo dela quando a linha é longa; no celular, sempre embaixo.
-- **Comentário do autor** (20): **só com uma frase escrita ou aprovada pelo Cesar**, nunca inventada.
+- **Comentário do autor** (19): **só com uma frase escrita ou aprovada pelo Cesar**, nunca inventada.
   Na proposta, deixe o lugar e o assunto; a frase vem dele.
+- **Parênteses** (22): o aparte pode quebrar linha; os parênteses ficam no começo e no fim dele.
+- **Ressalva** (25): o asterisco fica depois do trecho, e a nota (até 40 caracteres) vai para o pé do
+  parágrafo, à mão. Só no texto do parágrafo (fora de negrito ou link).
+- **Validade** (28) e **novo** (29): a data vai escrita à mão, embaixo ("conferido em set/2026") ou
+  em cima ("novo em 29/09/2026") do parágrafo.
+- **Post-it** (30): até 140 caracteres; fica no canto direito do texto, no papel do "Neste artigo".
+- **Carimbo** (31): só com o que foi mesmo conferido ou rodado; texto até 40 caracteres.
+- **Opção escolhida** (32): um item só por lista; a nota (até 24 caracteres) é "a recomendada" se
+  nada for dito.
+- **Números no código** (33): a lista logo depois do bloco (de preferência `:::passos`) explica cada
+  número, na mesma ordem.
 
 ## O que nunca marcar
 
@@ -106,11 +133,12 @@ Detalhes de cada tipo:
 
 ## Limites
 
-- **De 6 a 12 marcações por post** (o build recusa mais de 12). Cada contêiner (`:::colchete`,
-  `:::caixas`, `:::chave`…) e cada `anotar` ou `linhas` conta como uma.
-- **Marca-texto: no máximo 2** por post (o build recusa o terceiro).
-- **O mesmo tipo no máximo 3 vezes** por post, fora os de lista (`:::caixas`, `:::certo-errado`,
-  `:::passos`, `:::chave`); o build recusa a quarta.
+- **Sem teto de total** (D56): o post pode ser bem marcado, com quase todo parágrafo que tenha algo
+  que valha levando uma marca. Sem mínimo fixo: post curto pede menos. A régua continua sendo o
+  arquiteto que marca o que importa, nunca marcar por marcar.
+- **Marca-texto: no máximo 3** por post (o build recusa o quarto).
+- **O mesmo tipo no máximo 5 vezes** por post, fora os de lista (`:::caixas`, `:::certo-errado`,
+  `:::passos`, `:::chave`, `:::escolha`); o build recusa a sexta.
 - **Nunca duas marcações no mesmo parágrafo** (o build recusa). Exceções: as de lista (cada item é um
   parágrafo) e as de código. Marca de margem já é a marcação do parágrafo: nada em linha dentro dela.
 - Nada em títulos; nada dentro de outra marcação.
@@ -132,7 +160,7 @@ Detalhes de cada tipo:
 - **Notas no código** não são cortadas pela rolagem do bloco: embaixo da linha, ficam paradas na
   esquerda do bloco.
 - Os traços (SVG) são decorativos (`aria-hidden`); as notas escritas são texto de verdade, lido pelo
-  leitor de tela entre parênteses ("(nota: …)"). O sinal ≠ é lido "diferente de"; o riscado, como
+  leitor de tela entre parênteses ("(nota: …)"). Os sinais de tendência são lidos "aumenta" e "diminui"; o riscado, como
   texto riscado (`<s>`). Na impressão, tudo aparece; em alto contraste, os traços seguem a cor do texto.
 - **Teste de todo post marcado** pelo `chrome-devtools`, em **320, 390, 768, 1280 e 1600px**, nos dois
   temas, antes de mostrar ao Cesar (passo 5 da skill `caneta`).
@@ -191,6 +219,11 @@ idempotência (longa demais para um traço sem quebra) e o "(não P-512)" do JWT
 
 Toda vez que o Cesar pedir um ajuste nas marcações, em qualquer sessão, a regra entra aqui com a data,
 para os próximos posts já saírem certos. Regra que muda o visual vai também para o `DESIGN.md`.
+
+- **29/09/2026 (D56):** mais marcações por post (sem teto de total; marca-texto até 3; o mesmo tipo
+  até 5); 15 tipos novos (20 a 34), escolhidos numa amostra de 20; sai o sinal ≠ (abria um vão entre
+  as palavras). Recusados na amostra: sublinhado pontilhado, círculo tracejado, troca ⇄, equivalência
+  = e estrela na margem.
 
 - **26/09/2026 (D48):** marcações estáticas, sem animação; caneta azul fixa (#1F4FB5 no claro,
   #8FA8FF no escuro) que nunca pinta o texto; marca-texto amarelo, no máximo uma ou duas vezes por

@@ -58,13 +58,14 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D45 | A caneta que escreve o progresso da leitura | em vigor |
 | D46 | Livros de lado, pilha que troca de livro, menu do celular e o artigo mais largo | em vigor |
 | D47 | Marca em degrau, estante que só sobe, abertura do site e o movimento das páginas | em vigor |
-| D48 | A caneta do caderno: marcações estáticas, azuis e com 20 tipos | em vigor |
+| D48 | A caneta do caderno: marcações estáticas, azuis e com 20 tipos | em vigor (tipos e limites mudaram na D56) |
 | D49 | As ideias de movimento revistas: sumário, estante, livros, cabeçalho, listas e artigo | em vigor |
 | D50 | Ajustes de 27/09/2026: o traço da leitura, a troca de livro, o livro ampliado, o cabeçalho, o tema, a marca d'água e os atalhos | em vigor |
 | D51 | As animações revistas: abertura, troca de tela e as trocas especiais | em vigor |
 | D52 | Ajustes de 27/09/2026: acabamento das animações, a leitura, as listas, as tags e o destaque | em vigor |
 | D53 | Faxina: docs só com documentos, dados dos livros em src/livros | em vigor |
 | D54 | Caça aos bugs de 29/09/2026: 40 correções de interação, teclado, impressão, listas e RSS | em vigor |
+| D56 | Caneta com 34 tipos e mais marcações por post | em vigor |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -1984,3 +1985,26 @@ nada muda.
 - **Alternativas descartadas:** cabeçalho `position: fixed` em vez de `sticky` (mexia no layout de
   todas as páginas); fechar a busca e o livro ampliado ao voltar pelo histórico (a busca que reabre
   com os resultados parece intencional; só o foco foi corrigido).
+
+## D56 · Caneta com 34 tipos e mais marcações por post
+- **Data:** 29/09/2026 · **Status:** aprovada pelo Cesar ("é isso mesmo que você falou"). O número D55
+  ficou para o redesenho, em outra sessão.
+- **Contexto:** numa amostra (branch `amostra-caneta`), um post com os 20 tipos aplicados de uma vez
+  mostrou ao Cesar o que ele quer: posts bem marcados. O limite de 12 marcações "limita muito".
+- **Decisão:**
+  - Limites: sem teto de total e sem mínimo fixo; marca-texto até 3 por post (antes 2); o mesmo tipo
+    até 5 (antes 3), fora os de lista. Continua proibido duas marcações no mesmo parágrafo, o que deixa
+    o post denso sem ficar poluído.
+  - Tipos: de 20 foram para 34. Entram 15 (marca-texto baixo, aspas à mão, parênteses à mão, chave por
+    baixo, seta de tendência, ressalva com asterisco, moldura, visto na margem, validade, novo na
+    atualização, post-it, carimbo, opção escolhida, números no código e linha riscada no código),
+    escolhidos entre 20 propostos. Sai o sinal ≠, que abria um vão entre as palavras.
+  - A numeração do guia passa a ir de 1 a 34 (os antigos na mesma ordem, sem o ≠; depois os novos).
+- **Alternativas descartadas:** sublinhado pontilhado, círculo tracejado, troca ⇄, equivalência = e
+  estrela na margem (vistos na amostra e recusados); manter o teto de 12.
+- **Achado junto:** no celular, e quando a nota vai para depois da palavra, o riscado com correção
+  quebrava o trecho num espaço e o traço se partia; o trecho riscado e a palavra da nota agora não
+  quebram (`caneta.css`).
+- **Mudado:** `src/plugins/marcacoes.mjs`, `src/styles/caneta.css`, `src/lib/codigo.ts`,
+  `src/amostra/caneta.md` (o catálogo com os 34), `docs/marcacoes.md`, `DESIGN.md`, `docs/briefing.md`,
+  as skills `caneta` e `post`, `CLAUDE.md` e `CLAUDE-CODE.md`.
