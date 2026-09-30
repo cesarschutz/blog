@@ -40,6 +40,10 @@ export const TOKENS = [
   "post-it",
   "pauta",
   "pauta-cabeca",
+  "etiqueta",
+  "etiqueta-papel",
+  "etiqueta-sombra",
+  "etiqueta-luz",
 ] as const;
 
 export type Token = (typeof TOKENS)[number];
@@ -91,6 +95,12 @@ export const claro: Paleta = {
   "post-it": "#FFF1BE",
   pauta: "#D4DFF3",
   "pauta-cabeca": "#D6A192",
+  // As etiquetas do livro deitado da ficha "Do livro" (D57): a do artigo aberto no amarelo do post-it,
+  // as outras no papel dos livros, com a luz e a sombra da foto. Como os livros, iguais nos dois temas.
+  etiqueta: "#FFF1BE",
+  "etiqueta-papel": "#F2EDE2",
+  "etiqueta-sombra": "#000000",
+  "etiqueta-luz": "#FFFFFF",
 };
 
 export const escuro: Paleta = {
@@ -131,6 +141,10 @@ export const escuro: Paleta = {
   "post-it": "#39372D",
   pauta: "#2C3746",
   "pauta-cabeca": "#7A594F",
+  etiqueta: "#FFF1BE",
+  "etiqueta-papel": "#F2EDE2",
+  "etiqueta-sombra": "#000000",
+  "etiqueta-luz": "#FFFFFF",
 };
 
 /**

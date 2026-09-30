@@ -1,0 +1,46 @@
+---
+/**
+ * O livro aberto com as páginas em branco e uma folha virando (D57, prancha 06), pequeno e discreto:
+ * no livro ainda sem artigos (a página do livro e a gaveta da home), na cor daquele livro, e na busca
+ * sem resultado, no livro da marca. Uma imagem parada (`public/livros/fotos/<slug>-aberto.webp`, de
+ * scripts/livros/fotos.mjs); decorativa, o texto fica ao lado. Sem JS.
+ */
+import type { Livro } from "../lib/estante";
+import { fotoAberta } from "../lib/fotos";
+
+interface Props {
+  /** O livro sem artigos, ou "busca" (a busca sem resultado). */
+  livro: Livro | "busca";
+  /** Largura na tela, em px. */
+  largura?: number;
+  /** Carregar só quando aparecer (a gaveta e a busca já montam o livro na hora). */
+  preguicoso?: boolean;
+}
+
+const { livro, largura = 160, preguicoso = true } = Astro.props;
+const foto = fotoAberta(livro);
+---
+
+{
+  foto && (
+    <img
+      class="livro-em-branco"
+      src={foto.src}
+      width={foto.largura}
+      height={foto.altura}
+      style={`--largura:${largura}px`}
+      alt=""
+      aria-hidden="true"
+      loading={preguicoso ? "lazy" : "eager"}
+      decoding="async"
+    />
+  )
+}
+
+<style>
+  .livro-em-branco {
+    display: block;
+    width: min(100%, var(--largura));
+    height: auto;
+  }
+</style>

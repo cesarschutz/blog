@@ -12,6 +12,7 @@ import { url } from "../../lib/url";
 import ComPainel from "../../components/ComPainel.astro";
 import TopoLivro from "../../components/TopoLivro.astro";
 import Recentes from "../../components/Recentes.astro";
+import LivroEmBranco from "../../components/LivroEmBranco.astro";
 import { montarLivros } from "../../lib/estante";
 import { getCategorias, type Grupo } from "../../lib/posts";
 import type { Categoria } from "../../data/taxonomia";
@@ -44,6 +45,7 @@ const livro = (await montarLivros()).find((l) => !l.serie && l.nome === categori
           <Recentes posts={posts} titulo="Artigos" subtitulo={`${posts.length} ${posts.length === 1 ? "artigo" : "artigos"}`} />
         ) : (
           <div class="folha vazio">
+            <LivroEmBranco livro={livro} largura={150} />
             <p>Este livro ainda não tem artigos.</p>
             <p class="saidas">
               <a href={url("/categories/")}>Veja os outros livros</a>
@@ -65,9 +67,12 @@ const livro = (await montarLivros()).find((l) => !l.serie && l.nome === categori
     margin-top: 40px;
   }
 
-  /* Livro sem artigos (IA, Carreira): numa folha, com saída para os outros livros e o RSS (D37). */
+  /*
+   * Livro sem artigos (IA, Carreira): numa folha, com saída para os outros livros e o RSS (D37). Em cima,
+   * pequeno, o livro aberto com as páginas em branco, na cor dele (D57).
+   */
   .vazio {
-    padding: 24px 28px;
+    padding: 16px 28px 24px;
     font-family: var(--font-ui);
     font-size: 16px;
     color: var(--ink-2);
@@ -75,6 +80,10 @@ const livro = (await montarLivros()).find((l) => !l.serie && l.nome === categori
 
   .vazio p {
     margin: 0;
+  }
+
+  .vazio :global(.livro-em-branco) {
+    margin: 0 0 6px -10px;
   }
 
   .vazio .saidas {

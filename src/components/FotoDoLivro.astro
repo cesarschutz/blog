@@ -1,0 +1,152 @@
+---
+/**
+ * A foto do livro deitado (D57, prancha 04): o livro de capa dura na mesa, com a fita marcadora, e
+ * uma etiqueta de papel por artigo saindo das folhas. A do artigo aberto é a amarela (o amarelo do
+ * post-it), um pouco mais puxada para fora; as outras ficam no papel dos livros. É a foto da ficha "Do livro" do artigo (Sumario e
+ * RodapeArtigo).
+ *
+ * A foto é uma imagem (`public/livros/fotos/<id>-deitado.webp`, de scripts/livros/fotos.mjs); as
+ * etiquetas são desenhadas por cima em SVG, nos lugares que o gerador projetou (src/livros/fotos.json):
+ * a tira com a luz da foto, recortada onde passa por baixo da capa, e a sombra na mesa. Os artigos
+ * ocupam os lugares na ordem de leitura (lugarDaEtiqueta). Decorativa: o texto de verdade fica ao lado,
+ * na ficha. Sem JS.
+ */
+import type { Livro } from "../lib/estante";
+import { fotoDeitada, lugarDaEtiqueta, ordemDeLeitura, type Etiqueta } from "../lib/fotos";
+import type { Resumo } from "../lib/posts";
+
+interface Props {
+  livro: Livro;
+  /** O artigo aberto: a etiqueta dele sai amarela. */
+  atual?: Resumo;
+  /** Prefixo dos ids do SVG (a página pode ter duas fichas). */
+  prefixo: string;
+  /** Largura na tela, em px (a foto encolhe junto com a coluna). */
+  largura: number;
+}
+
+const { livro, atual, prefixo, largura } = Astro.props;
+const foto = fotoDeitada(livro);
+
+const artigos = ordemDeLeitura(livro);
+const n = artigos.length;
+const usados = new Map<number, boolean>();
+artigos.forEach((p, i) => {
+  const lugar = lugarDaEtiqueta(i, n);
+  usados.set(lugar, (usados.get(lugar) ?? false) || p.url === atual?.url);
+});
+// Da folha mais funda (perto da contracapa, o último lugar) para a de cima: a de cima fica por cima.
+// A do artigo aberto sai puxada, um pouco mais para fora que as outras.
+const etiquetas = foto
+  ? [...usados.entries()].sort((a, b) => b[0] - a[0]).map(([lugar, amarela]) => ({ e: (amarela ? foto.puxadas : foto.etiquetas)[lugar], lugar, amarela }))
+  : [];
+
+const pts = (ps: [number, number][]) => ps.map(([x, y]) => `${x},${y}`).join(" ");
+const caminho = (ps: [number, number][]) => `M${ps.map(([x, y]) => `${x} ${y}`).join("L")}Z`;
+const id = (nome: string, lugar?: number) => `${prefixo}-${nome}${lugar === undefined ? "" : `-${lugar}`}`;
+const [cw, ch] = foto?.caixa ?? [1, 1];
+const moldura = `M0 0H${cw}V${ch}H0Z`;
+const paradas = (lista: [number, number][], cor: string) =>
+  lista.map(([s, a]) => `<stop offset="${s}" style="stop-color:var(${cor})" stop-opacity="${a}"/>`).join("");
+const gradiente = (nome: string, lugar: number, de: [number, number], ate: [number, number], corpo: string) =>
+  `<linearGradient id="${id(nome, lugar)}" gradientUnits="userSpaceOnUse" x1="${de[0]}" y1="${de[1]}" x2="${ate[0]}" y2="${ate[1]}">${corpo}</linearGradient>`;
+const defsDaEtiqueta = (e: Etiqueta, lugar: number) =>
+  gradiente("escuro", lugar, e.luz.de, e.luz.ate, paradas(e.luz.pretas, "--etiqueta-sombra")) +
+  gradiente("claro", lugar, e.luz.de, e.luz.ate, paradas(e.luz.brancas, "--etiqueta-luz")) +
+  gradiente("veu", lugar, e.veu.de, e.veu.ate, paradas([[0, 0.12], [1, 0]], "--etiqueta-sombra")) +
+  `<filter id="${id("desfoque", lugar)}" filterUnits="userSpaceOnUse" x="0" y="0" width="${cw}" height="${ch}"><feGaussianBlur stdDeviation="${e.sombra.desvio}"/></filter>`;
+---
+
+{
+  foto && (
+    <span class="foto-do-livro" style={`--largura:${largura}px;aspect-ratio:${foto.largura}/${foto.altura}`} aria-hidden="true">
+      <img src={foto.src} width={foto.largura} height={foto.altura} alt="" loading="lazy" decoding="async" />
+      {etiquetas.length > 0 && (
+        <svg class="etiquetas" viewBox={`0 0 ${cw} ${ch}`} focusable="false">
+          <defs>
+            <clipPath id={id("fora-da-capa")}>
+              <path clip-rule="evenodd" d={`${moldura}${caminho(foto.capa)}`} />
+            </clipPath>
+            <clipPath id={id("na-mesa")}>
+              <path clip-rule="evenodd" d={`${moldura}${caminho(foto.livro)}`} />
+            </clipPath>
+            <Fragment set:html={etiquetas.map(({ e, lugar }) => defsDaEtiqueta(e, lugar)).join("")} />
+          </defs>
+          <g clip-path={`url(#${id("na-mesa")})`}>
+            {etiquetas.map(({ e, lugar }) => (
+              <polygon class="sombra" points={pts(e.sombra.contorno)} filter={`url(#${id("desfoque", lugar)})`} />
+            ))}
+          </g>
+          <g clip-path={`url(#${id("fora-da-capa")})`}>
+            {etiquetas.map(({ e, lugar, amarela }) => (
+              <g class:list={["etiqueta", { amarela }]}>
+                <polygon class="papel" points={pts(e.contorno)} />
+                <polygon points={pts(e.contorno)} fill={`url(#${id("escuro", lugar)})`} />
+                <polygon points={pts(e.contorno)} fill={`url(#${id("claro", lugar)})`} />
+                <polygon points={pts(e.contorno)} fill={`url(#${id("veu", lugar)})`} />
+                {e.dobra && <line class="vinco" x1={e.dobra[0][0]} y1={e.dobra[0][1]} x2={e.dobra[1][0]} y2={e.dobra[1][1]} />}
+                <polygon class="corte" points={pts(e.contorno)} />
+              </g>
+            ))}
+          </g>
+        </svg>
+      )}
+    </span>
+  )
+}
+
+<style>
+  /*
+   * A foto ocupa a largura pedida (ou a da coluna, se for menor); o SVG das etiquetas fica exatamente
+   * por cima, na mesma caixa. Os livros não mudam com o tema (D39): as etiquetas também não.
+   */
+  .foto-do-livro {
+    position: relative;
+    display: block;
+    width: min(100%, var(--largura));
+  }
+
+  .foto-do-livro img,
+  .etiquetas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .etiquetas {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+  }
+
+  .sombra {
+    fill: var(--etiqueta-sombra);
+    fill-opacity: 0.12;
+  }
+
+  .papel {
+    fill: var(--etiqueta-papel);
+    fill-opacity: 0.96;
+  }
+
+  .amarela .papel {
+    fill: var(--etiqueta);
+  }
+
+  /* O vinco da dobra pega um fio de luz; o corte do papel é um fio quase invisível. */
+  .vinco {
+    stroke: var(--etiqueta-luz);
+    stroke-opacity: 0.35;
+    stroke-width: 0.5px;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .corte {
+    fill: none;
+    stroke: var(--etiqueta-sombra);
+    stroke-opacity: 0.16;
+    stroke-width: 0.5px;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+</style>
