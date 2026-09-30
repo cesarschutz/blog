@@ -1,0 +1,1038 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Livros realistas</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="fontes/interface.css">
+<script>
+/* Tema e fundo escolhidos, antes da primeira pintura (a página não pisca). */
+(() => {
+  const raiz = document.documentElement;
+  let tema = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  let fundo = "pagina";
+  try {
+    const t = localStorage.getItem("livros-realistas:tema");
+    if (t === "light" || t === "dark") tema = t;
+    const f = localStorage.getItem("livros-realistas:fundo");
+    if (f === "pagina" || f === "folha") fundo = f;
+  } catch {
+    // Sem armazenamento: vale o tema do sistema e o fundo da página.
+  }
+  raiz.dataset.theme = tema;
+  raiz.dataset.fundo = fundo;
+})();
+</script>
+<style>
+/* ------------------------------------------------------------------------------------------
+   Tokens. As cores do site (src/styles/tokens.ts) e as cores dos livros (src/livros/livros.json).
+   Nenhuma cor fica fora deste bloco.
+   ------------------------------------------------------------------------------------------ */
+:root {
+  color-scheme: light;
+  /* tema claro */
+  --paper: #F1F0EB;
+  --paper-hi: #FFFFFE;
+  --ink: #1A2124;
+  --ink-2: #57605E;
+  --ink-3: #868D8A;
+  --rule: #E2E0D8;
+  --acento: #2549B8;
+  --sobre-acento: #FFFFFF;
+  --sombra-folha: 0 1px 2px rgb(40 38 30 / 0.04), 0 10px 28px -18px rgb(40 38 30 / 0.28);
+  /* os livros: não mudam com o tema (D39) */
+  --livro-arquitetura-de-software: #2d4b46;
+  --livro-desenvolvimento-de-software: #7a4430;
+  --livro-dados: #5f4662;
+  --livro-ia: #6e2f45;
+  --livro-seguranca: #606a37;
+  --livro-devops: #465976;
+  --livro-sre: #c4a050;
+  --livro-carreira: #9a7650;
+  --livro-serie-java: #c24d1c;
+  /* o fundo atrás das pranchas: a página ou a folha (controle Fundo) */
+  --palco: var(--paper);
+  /* medidas */
+  --pad: clamp(16px, 2.4vw, 32px);
+  --largura: 1452px; /* prancha de até 1100px, vão de 32px e legenda de 320px */
+  --raio-folha: 14px;
+  /* fontes */
+  --font-ui: "IBM Plex Sans Variable", "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-titulo: "Besley Variable", Besley, Georgia, serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --paper: #111618;
+    --paper-hi: #1A2124;
+    --ink: #E7E9E4;
+    --ink-2: #A9B0AC;
+    --ink-3: #7F8884;
+    --rule: #2A3336;
+    --acento: #93AEFF;
+    --sobre-acento: #0D1530;
+    --sombra-folha: 0 12px 30px -18px rgb(0 0 0 / 0.8);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #111618;
+  --paper-hi: #1A2124;
+  --ink: #E7E9E4;
+  --ink-2: #A9B0AC;
+  --ink-3: #7F8884;
+  --rule: #2A3336;
+  --acento: #93AEFF;
+  --sobre-acento: #0D1530;
+  --sombra-folha: 0 12px 30px -18px rgb(0 0 0 / 0.8);
+}
+
+:root[data-fundo="folha"] {
+  --palco: var(--paper-hi);
+}
+
+/* ------------------------------------------------------------------------------------------ base */
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 16px/1.55 var(--font-ui);
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  width: 100%;
+  max-width: calc(var(--largura) + 2 * var(--pad));
+  margin-inline: auto;
+  padding-inline: var(--pad);
+}
+
+a {
+  color: var(--acento);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+
+button { font: inherit; color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 3px;
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ------------------------------------------------------------------------------------------ topo */
+.topo { padding-top: clamp(28px, 5vw, 60px); }
+
+h1 {
+  margin: 0;
+  font: 800 clamp(34px, 5.4vw, 52px)/1.02 var(--font-titulo);
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.apoio {
+  max-width: 62ch;
+  margin: 14px 0 0;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.controles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+  margin-top: 24px;
+}
+
+.controle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rotulo {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.seg {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--paper-hi);
+}
+
+.seg button {
+  min-height: 34px;
+  padding: 4px 15px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--ink-2);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.seg button:hover { color: var(--ink); }
+
+/* O anel de foco cabe no respiro de 3px do segmento, sem encostar na borda dele. */
+.seg button:focus-visible { outline-offset: 1px; }
+
+.seg button[aria-pressed="true"] {
+  background: var(--acento);
+  color: var(--sobre-acento);
+  cursor: default;
+}
+
+.dica {
+  max-width: 62ch;
+  margin: 12px 0 0;
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+
+.indice { margin-top: 26px; }
+
+.indice ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.indice a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 14px 6px 11px;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  background: var(--paper-hi);
+  color: var(--ink);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.indice a:hover { color: var(--acento); }
+
+.indice .n {
+  color: var(--ink-2);
+  font-weight: 500;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.indice a:hover .n { color: inherit; }
+
+/* ------------------------------------------------------------------------------------------ blocos */
+.bloco { margin-top: clamp(48px, 7vw, 88px); }
+
+.aviso-geral {
+  margin: clamp(28px, 4vw, 40px) 0 0;
+  padding: 14px 18px;
+  border: 1px solid var(--rule);
+  border-radius: var(--raio-folha);
+  background: var(--paper-hi);
+  color: var(--ink-2);
+  font-size: 14.5px;
+}
+
+/* Como está hoje */
+.hoje h2 {
+  margin: 0 0 16px;
+  font: 700 clamp(24px, 3vw, 30px)/1.2 var(--font-titulo);
+}
+
+.faixa {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 16px;
+  max-width: 1100px;
+}
+
+.faixa figure { min-width: 0; margin: 0; }
+
+.quadro {
+  height: clamp(260px, 26vw, 360px);
+  padding: 12px;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: var(--raio-folha);
+  background: var(--palco);
+}
+
+.quadro img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: scale-down;
+}
+
+.faixa figcaption {
+  margin-top: 8px;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+/* Uma prancha: o palco e a legenda */
+.prancha {
+  display: grid;
+  gap: 20px;
+  scroll-margin-top: 20px;
+}
+
+.palco {
+  min-width: 0;
+  max-width: 1100px;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: var(--raio-folha);
+  background: var(--palco);
+}
+
+.palco[data-estado="vazio"],
+.palco[data-estado="erro"] {
+  border-style: dashed;
+  border-color: var(--ink-3);
+}
+
+.palco > object {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* As pranchas têm fundo transparente. Com o tema escuro (color-scheme: dark) e o SVG sem esquema próprio
+     (claro), o Chrome pinta um fundo opaco branco atrás do SVG; o mesmo esquema no <object> evita isso. */
+  color-scheme: light;
+}
+
+.aviso {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 8px;
+  aspect-ratio: 16 / 10;
+  padding: 24px;
+  text-align: center;
+  color: var(--ink-2);
+}
+
+.aviso p { margin: 0; max-width: 100%; }
+.aviso p:empty { display: none; }
+
+.aviso-titulo {
+  font: 700 clamp(19px, 2.4vw, 26px)/1.2 var(--font-titulo);
+}
+
+.aviso-arquivo {
+  font: 400 12.5px/1.4 var(--font-mono);
+  overflow-wrap: anywhere;
+}
+
+.aviso-detalhe { font-size: 13.5px; }
+
+.sem-objeto {
+  margin: 0;
+  padding: 24px;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+/* A legenda */
+.legenda {
+  min-width: 0;
+  max-width: 46rem;
+  padding: 22px 22px 20px;
+  border: 1px solid var(--rule);
+  border-radius: var(--raio-folha);
+  background: var(--paper-hi);
+  box-shadow: var(--sombra-folha);
+}
+
+.legenda h2 {
+  margin: 0;
+  font-family: var(--font-titulo);
+  font-weight: 700;
+  line-height: 1.2;
+  text-wrap: balance;
+}
+
+.legenda .num {
+  display: block;
+  margin-bottom: 10px;
+  font-size: clamp(44px, 5vw, 58px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: lining-nums;
+}
+
+.legenda .nome {
+  display: block;
+  font-size: clamp(20px, 2.2vw, 23px);
+}
+
+.legenda .livro {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.cor {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border: 1px solid color-mix(in oklab, var(--ink) 24%, transparent);
+  border-radius: 2px;
+  background: var(--cor-livro);
+}
+
+.legenda h3 {
+  margin: 18px 0 6px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+  font: 600 13.5px/1.3 var(--font-ui);
+  color: var(--ink-2);
+}
+
+.legenda p,
+.legenda li {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.legenda ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.legenda li {
+  position: relative;
+  padding-left: 16px;
+}
+
+.legenda li::before {
+  content: "";
+  position: absolute;
+  top: 0.82em;
+  left: 0;
+  width: 8px;
+  height: 1px;
+  background: var(--ink-3);
+}
+
+.legenda .notas {
+  font-size: 13.5px;
+  color: var(--ink-2);
+  white-space: pre-line;
+}
+
+.legenda .nota-json {
+  margin-top: 14px;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.legenda .abrir-p {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+  font-size: 14.5px;
+}
+
+.abrir { font-weight: 500; }
+.abrir:not([href]) { color: var(--ink-2); font-weight: 400; }
+
+@media (min-width: 1100px) {
+  .prancha {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 32px;
+    align-items: start;
+  }
+}
+
+/* ------------------------------------------------------------------------------------------ rodapé */
+.rodape {
+  margin-top: clamp(56px, 8vw, 104px);
+  padding-block: 20px clamp(28px, 4vw, 48px);
+  border-top: 1px solid var(--rule);
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+
+.rodape p { margin: 0; overflow-wrap: anywhere; }
+
+/* Só a cor muda de forma suave; com movimento reduzido, nada se anima. */
+@media (prefers-reduced-motion: no-preference) {
+  .seg button,
+  .indice a,
+  .abrir {
+    transition: color 0.15s, background-color 0.15s;
+  }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="topo">
+    <h1>Livros realistas</h1>
+    <p class="apoio">Dez propostas para os livros do blog: as mesmas capas, cores, desenhos e textos, com cara de objeto de verdade. Protótipo na branch livros-realistas, sem commit.</p>
+
+    <div class="controles">
+      <div class="controle">
+        <span class="rotulo" id="rotulo-tema">Tema</span>
+        <div class="seg" role="group" aria-labelledby="rotulo-tema" data-controle="tema">
+          <button type="button" data-valor="light" aria-pressed="false">Claro</button>
+          <button type="button" data-valor="dark" aria-pressed="false">Escuro</button>
+        </div>
+      </div>
+      <div class="controle">
+        <span class="rotulo" id="rotulo-fundo">Fundo</span>
+        <div class="seg" role="group" aria-labelledby="rotulo-fundo" data-controle="fundo">
+          <button type="button" data-valor="pagina" aria-pressed="false">Página</button>
+          <button type="button" data-valor="folha" aria-pressed="false">Folha</button>
+        </div>
+      </div>
+    </div>
+    <p class="dica">No site, o livro 3D fica sobre a página, e a estante, sobre uma folha branca: o controle Fundo troca o que aparece atrás das pranchas.</p>
+
+    <p style="margin:0 0 16px"><a href="maquetes/">Ver as maquetes: cada livro no lugar do site →</a></p>
+    <nav class="indice" aria-label="Índice das pranchas">
+      <ol id="indice"></ol>
+    </nav>
+  </header>
+
+  <main>
+    <noscript><p class="aviso-geral">Esta galeria precisa de JavaScript para mostrar as pranchas.</p></noscript>
+    <p class="aviso-geral" id="aviso-arquivo" hidden>Abra a galeria pelo servidor da pasta: <code>fnm exec --using=24 node ferramentas/servidor.mjs 4341</code> e depois <code>http://127.0.0.1:4341/</code>. Aberta como arquivo, a página não consegue ler as pranchas.</p>
+
+    <section class="bloco hoje" id="hoje" aria-labelledby="hoje-titulo" hidden>
+      <h2 id="hoje-titulo">Como está hoje</h2>
+      <div class="faixa" id="faixa"></div>
+    </section>
+
+    <div id="pranchas"></div>
+  </main>
+
+  <footer class="rodape">
+    <p>Pasta: <code>docs/prototipos/livros-realistas</code> · servidor: <code>node ferramentas/servidor.mjs 4341</code></p>
+  </footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  /* ----------------------------------------------------------------------------------------
+     Os dados. As pranchas ficam em pranchas/<arquivo>.svg; se existir pranchas/<arquivo>.json, os
+     campos dele (nome, ideia, realismo, ondeEntra e, opcional, notas) substituem os desta lista.
+     `cor` é o nome do livro nos tokens (--livro-<cor>); `curto` é o nome que vai no índice.
+     ---------------------------------------------------------------------------------------- */
+  const PRANCHAS = [
+    {
+      id: "p01", arquivo: "p01-capa-dura", curto: "Capa dura",
+      nome: "Capa dura em três quartos", livro: "Arquitetura de Software", cor: "arquitetura-de-software",
+      ideia: "O livro 3D de hoje, construído como uma capa dura de verdade.",
+      realismo: [
+        "seixa: as capas um pouco maiores que o miolo",
+        "lombada arredondada com a luz correndo pela curva",
+        "vinco da dobradiça e cabeceado",
+        "bloco de folhas à vista no alto",
+        "sombra de contato e oclusão no chão",
+      ],
+      ondeEntra: "O livro 3D: topo da página do livro, gaveta, grade de categorias e livro ampliado.",
+    },
+    {
+      id: "p02", arquivo: "p02-tecido-e-papel", curto: "Tecido e papel",
+      nome: "Meia-encadernação: tecido e papel", livro: "Dados", cor: "dados",
+      ideia: "A parte colorida em tecido de encadernação e a parte clara em papel colado por cima.",
+      realismo: [
+        "trama do tecido com luz rasante",
+        "papel com textura e a borda colada",
+        "título em tipografia com leve baixo-relevo",
+        "desenho impresso sobre a trama",
+      ],
+      ondeEntra: "A capa vista de perto: grade de categorias, página do livro e o “Do livro” do artigo.",
+    },
+    {
+      id: "p03", arquivo: "p03-brochura", curto: "Brochura",
+      nome: "Brochura com orelhas", livro: "Carreira", cor: "carreira",
+      ideia: "Uma brochura elegante, de papel sem brilho, com orelhas e corte irregular nas folhas.",
+      realismo: [
+        "cartão da capa com vinco de leitura na lombada",
+        "orelha dobrada aparecendo na borda",
+        "corte irregular (deckle) nas folhas",
+        "leve curvatura da capa",
+      ],
+      ondeEntra: "As capas pequenas: cards, “Do livro” e listas.",
+    },
+    {
+      id: "p04", arquivo: "p04-edicao-de-estudo", curto: "Edição de estudo",
+      nome: "Edição de estudo, marcada", livro: "Segurança", cor: "seguranca",
+      ideia: "O livro deitado na mesa, com fita marcadora e marcadores de página, como quem está estudando.",
+      realismo: [
+        "livro deitado visto de cima, em perspectiva",
+        "fita marcadora saindo do miolo",
+        "marcadores de papel entre as folhas",
+        "bloco de folhas com as linhas das páginas",
+      ],
+      ondeEntra: "O livro do artigo (“Do livro”) e a papelaria de estudo.",
+    },
+    {
+      id: "p05", arquivo: "p05-entreaberto", curto: "Entreaberto",
+      nome: "Capa entreaberta", livro: "IA", cor: "ia",
+      ideia: "A capa abrindo e mostrando o verso e a folha de rosto.",
+      realismo: [
+        "capa girando pela dobradiça",
+        "verso da capa com a assinatura do blog",
+        "folha de rosto e folhas em leque",
+        "sombra da capa sobre as páginas",
+      ],
+      ondeEntra: "O hover que entreabre a capa na grade e a gaveta abrindo.",
+    },
+    {
+      id: "p06", arquivo: "p06-folheando", curto: "Folheando",
+      nome: "Folheando", livro: "Desenvolvimento de Software", cor: "desenvolvimento-de-software",
+      ideia: "O livro aberto, com as páginas curvas e uma folha virando.",
+      realismo: [
+        "páginas que sobem da calha em curva",
+        "sombra funda na calha",
+        "uma folha no meio da virada",
+        "sumário com os artigos de verdade",
+      ],
+      ondeEntra: "A gaveta aberta e o livro ampliado (“Abrir o livro”).",
+    },
+    {
+      id: "p07", arquivo: "p07-estante", curto: "Estante",
+      nome: "A estante", livro: "Todos os livros", cor: "arquitetura-de-software",
+      ideia: "A estante da home com lombadas de verdade.",
+      realismo: [
+        "lombadas arredondadas, com luz e sombra",
+        "cabeceado e topo das folhas",
+        "oclusão entre os livros",
+        "o livro inclinado no aparador e a revista",
+      ],
+      ondeEntra: "A estante da home e a estante de filtro.",
+    },
+    {
+      id: "p08", arquivo: "p08-pilha", curto: "Pilha",
+      nome: "A pilha", livro: "Todos os livros", cor: "devops",
+      ideia: "A pilha deitada da lateral, com volume.",
+      realismo: [
+        "lombadas deitadas com a curva",
+        "capas e bordas de cada livro",
+        "desalinhamento natural da pilha",
+        "sombra de um livro sobre o outro",
+      ],
+      ondeEntra: "A pilha lateral das páginas de livro.",
+    },
+    {
+      id: "p09", arquivo: "p09-revista", curto: "Revista",
+      nome: "A revista", livro: "Atualizações do Java", cor: "serie-java",
+      ideia: "A revista da série em papel com brilho, fina e flexível.",
+      realismo: [
+        "capa de papel couché com reflexo",
+        "lombada quadrada fina",
+        "leve curvatura das folhas",
+        "miolo de folhas finas",
+      ],
+      ondeEntra: "A capa da série (grade de séries e página da série).",
+    },
+    {
+      id: "p10", arquivo: "p10-luz-de-janela", curto: "Luz de janela",
+      nome: "Luz de janela", livro: "SRE", cor: "sre",
+      ideia: "O mesmo livro sob uma luz de janela, quente e rasante, como numa fotografia.",
+      realismo: [
+        "luz dura com a sombra da janela sobre o livro",
+        "sombra longa e nítida no chão",
+        "brilho e textura revelados pela luz rasante",
+        "tons quentes sem mudar as cores do livro",
+      ],
+      ondeEntra: "Direção de arte para o livro 3D, em qualquer lugar do site.",
+    },
+  ];
+
+  /* Como está hoje: capturas do site, em hoje/. O item que não existe não aparece. */
+  const HOJE = [
+    { arquivo: "livro-3d.webp", legenda: "O livro 3D", alt: "Captura do livro 3D como está hoje no site: a capa de lado, com a lombada à vista." },
+    { arquivo: "estante.webp", legenda: "A estante", alt: "Captura da estante como está hoje na home: livros em pé, lado a lado, sobre a prateleira." },
+    { arquivo: "pilha.webp", legenda: "A pilha", alt: "Captura da pilha lateral como está hoje: livros deitados, empilhados." },
+  ];
+
+  const INTERVALO = 20000; // ms entre as conferências do que ainda não existe
+
+  /* ---------------------------------------------------------------------------------------- utilitários */
+  const raiz = document.documentElement;
+  const porArquivo = location.protocol === "file:";
+  const $ = (seletor) => document.querySelector(seletor);
+
+  const criar = (tag, classe, texto) => {
+    const e = document.createElement(tag);
+    if (classe) e.className = classe;
+    if (texto != null) e.textContent = texto;
+    return e;
+  };
+
+  /* O servidor da pasta responde 204 (e não 404) a um endereço com ?opcional quando o arquivo não existe:
+     assim a conferência não deixa erro no console. Em outro servidor, o 404 também vale como "não existe". */
+  async function pedir(url, metodo = "GET") {
+    try {
+      const r = await fetch(`${url}${url.includes("?") ? "&" : "?"}opcional`, { method: metodo, cache: "no-store" });
+      if (r.status === 200 && metodo === "GET") return { ok: true, r };
+      // Sem corpo para ler (HEAD, 204, 404): esvazia a resposta, senão o Chrome marca o pedido como cancelado.
+      await r.arrayBuffer();
+      if (r.status === 200) return { ok: true };
+      if (r.status === 204 || r.status === 404) return { ok: false };
+      return { ok: false, erro: `o servidor respondeu ${r.status}` };
+    } catch {
+      return { ok: false, erro: "sem resposta do servidor" };
+    }
+  }
+
+  /* ---------------------------------------------------------------------------------------- tema e fundo */
+  const controles = {
+    tema: { atributo: "theme", valores: ["light", "dark"] },
+    fundo: { atributo: "fundo", valores: ["pagina", "folha"] },
+  };
+
+  function marcarControle(nome) {
+    const atual = raiz.dataset[controles[nome].atributo];
+    document.querySelectorAll(`[data-controle="${nome}"] button`).forEach((b) => {
+      b.setAttribute("aria-pressed", String(b.dataset.valor === atual));
+    });
+  }
+
+  function escolher(nome, valor, gravar) {
+    if (!controles[nome].valores.includes(valor)) return;
+    raiz.dataset[controles[nome].atributo] = valor;
+    marcarControle(nome);
+    if (!gravar) return;
+    try {
+      localStorage.setItem(`livros-realistas:${nome}`, valor);
+    } catch {
+      // Sem armazenamento: a escolha vale só até recarregar.
+    }
+  }
+
+  for (const nome of Object.keys(controles)) {
+    marcarControle(nome);
+    document.querySelectorAll(`[data-controle="${nome}"] button`).forEach((b) => {
+      b.addEventListener("click", () => escolher(nome, b.dataset.valor, true));
+    });
+  }
+
+  // Sem escolha guardada, o tema acompanha o do sistema.
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+    let guardado = false;
+    try {
+      guardado = localStorage.getItem("livros-realistas:tema") !== null;
+    } catch {
+      // Sem armazenamento.
+    }
+    if (!guardado) escolher("tema", e.matches ? "dark" : "light", false);
+  });
+
+  /* ---------------------------------------------------------------------------------------- o índice */
+  for (const [i, p] of PRANCHAS.entries()) {
+    p.num = String(i + 1).padStart(2, "0");
+    const li = criar("li");
+    const a = criar("a");
+    a.href = `#${p.id}`;
+    a.append(criar("span", "n", p.num), document.createTextNode(p.curto));
+    li.append(a);
+    $("#indice").append(li);
+  }
+
+  /* ---------------------------------------------------------------------------------------- as pranchas */
+  function montarSecao(p) {
+    const el = {};
+    const secao = criar("section", "bloco prancha");
+    secao.id = p.id;
+    secao.setAttribute("aria-labelledby", `${p.id}-titulo`);
+
+    // O palco: o quadro em que a prancha aparece (ou o aviso, enquanto ela não existe).
+    el.palco = criar("div", "palco");
+    el.palco.dataset.estado = "carregando";
+    el.aviso = criar("div", "aviso");
+    el.avisoTitulo = criar("p", "aviso-titulo");
+    el.avisoArquivo = criar("p", "aviso-arquivo");
+    el.avisoDetalhe = criar("p", "aviso-detalhe");
+    el.aviso.append(el.avisoTitulo, el.avisoArquivo, el.avisoDetalhe);
+    el.palco.append(el.aviso);
+
+    // A legenda.
+    const legenda = criar("div", "legenda");
+    const titulo = criar("h2");
+    titulo.id = `${p.id}-titulo`;
+    el.nome = criar("span", "nome");
+    titulo.append(criar("span", "num", p.num), el.nome);
+
+    const livro = criar("p", "livro");
+    const cor = criar("span", "cor");
+    cor.style.setProperty("--cor-livro", `var(--livro-${p.cor})`);
+    cor.setAttribute("aria-hidden", "true");
+    livro.append(cor, criar("span", "sr", "Livro: "), document.createTextNode(p.livro));
+
+    el.ideia = criar("p");
+    el.lista = criar("ul");
+    el.onde = criar("p");
+    el.notasBloco = criar("div");
+    el.notasBloco.hidden = true;
+    el.notas = criar("p", "notas");
+    el.notasBloco.append(criar("h3", null, "Notas do desenho"), el.notas);
+    el.jsonRuim = criar("p", "nota-json", "O JSON desta prancha tem erro e não foi lido: valem os textos da lista fixa.");
+    el.jsonRuim.hidden = true;
+
+    el.abrir = criar("a", "abrir", "Abrir o SVG sozinho");
+    el.abrir.setAttribute("aria-disabled", "true");
+    const abrirP = criar("p", "abrir-p");
+    abrirP.append(el.abrir);
+
+    legenda.append(
+      titulo, livro,
+      criar("h3", null, "A ideia"), el.ideia,
+      criar("h3", null, "O que dá o realismo"), el.lista,
+      criar("h3", null, "Onde entraria no site"), el.onde,
+      el.notasBloco, el.jsonRuim, abrirP,
+    );
+    secao.append(el.palco, legenda);
+    p.el = el;
+    p.estado = "carregando";
+    p.jsonVisto = false;
+    p.json = null;
+    p.jsonRuim = false;
+    atualizarLegenda(p);
+    $("#pranchas").append(secao);
+  }
+
+  // Os textos: a lista fixa, com os campos do JSON por cima (quando existe e é válido).
+  function textosDe(p) {
+    const d = { nome: p.nome, ideia: p.ideia, realismo: p.realismo, ondeEntra: p.ondeEntra, notas: "" };
+    const j = p.json;
+    if (j && typeof j === "object" && !Array.isArray(j)) {
+      const texto = (v) => typeof v === "string" && v.trim() !== "";
+      if (texto(j.nome)) d.nome = j.nome.trim();
+      if (texto(j.ideia)) d.ideia = j.ideia.trim();
+      if (Array.isArray(j.realismo) && j.realismo.length && j.realismo.every(texto)) d.realismo = j.realismo;
+      if (texto(j.ondeEntra)) d.ondeEntra = j.ondeEntra.trim();
+      if (texto(j.notas)) d.notas = j.notas.trim();
+      else if (Array.isArray(j.notas) && j.notas.every(texto)) d.notas = j.notas.join("\n");
+    }
+    return d;
+  }
+
+  function atualizarLegenda(p) {
+    const d = textosDe(p);
+    const el = p.el;
+    el.nome.textContent = d.nome;
+    el.ideia.textContent = d.ideia;
+    el.lista.replaceChildren(...d.realismo.map((t) => criar("li", null, t)));
+    el.onde.textContent = d.ondeEntra;
+    el.notasBloco.hidden = d.notas === "";
+    el.notas.textContent = d.notas;
+    el.jsonRuim.hidden = !p.jsonRuim;
+    el.objeto?.setAttribute("aria-label", `Prancha ${p.num}: ${d.nome}. ${d.ideia}`);
+  }
+
+  function mostrarAviso(p, estado, titulo, detalhe = "") {
+    p.estado = estado;
+    p.el.palco.dataset.estado = estado;
+    p.el.avisoTitulo.textContent = titulo;
+    p.el.avisoArquivo.textContent = titulo ? `pranchas/${p.arquivo}.svg` : "";
+    p.el.avisoDetalhe.textContent = detalhe;
+  }
+
+  // A proporção da prancha: o viewBox do SVG (ou, sem ele, a largura e a altura).
+  function medirSvg(texto) {
+    const doc = new DOMParser().parseFromString(texto, "image/svg+xml");
+    const erro = doc.getElementsByTagName("parsererror")[0];
+    if (erro) {
+      // A mensagem do Chrome traz um texto de apresentação; fica só o "error on line N at column M: …".
+      const texto = erro.textContent.replace(/\s+/g, " ").trim();
+      const achado = texto.match(/error on line (\d+) at column (\d+): (.*?)(?: Below is a rendering.*)?$/i);
+      return { erro: (achado ? `linha ${achado[1]}, coluna ${achado[2]}: ${achado[3]}` : texto).slice(0, 220) };
+    }
+    const svg = doc.documentElement;
+    if (svg.localName !== "svg") return { erro: "O arquivo não é um SVG." };
+    const numero = (v) => (v && !/%\s*$/.test(v) ? parseFloat(v) : NaN);
+    const vb = (svg.getAttribute("viewBox") || "").trim().split(/[\s,]+/).map(Number);
+    let w = vb.length === 4 ? vb[2] : NaN;
+    let h = vb.length === 4 ? vb[3] : NaN;
+    if (!(w > 0 && h > 0)) {
+      w = numero(svg.getAttribute("width"));
+      h = numero(svg.getAttribute("height"));
+    }
+    return w > 0 && h > 0 ? { w, h } : { w: 16, h: 10 };
+  }
+
+  function mostrarPrancha(p, { w, h }) {
+    if (p.estado === "ok") return;
+    const url = `pranchas/${p.arquivo}.svg`;
+    const objeto = document.createElement("object");
+    objeto.type = "image/svg+xml";
+    objeto.data = url;
+    objeto.setAttribute("role", "img");
+    objeto.tabIndex = -1;
+    objeto.style.aspectRatio = `${w} / ${h}`;
+    objeto.append(criar("p", "sem-objeto", "Não consegui mostrar esta prancha aqui. Use o link “Abrir o SVG sozinho”."));
+    p.el.objeto = objeto;
+    p.estado = "ok";
+    p.el.aviso.remove();
+    p.el.palco.dataset.estado = "ok";
+    p.el.palco.append(objeto);
+    p.el.abrir.href = url;
+    p.el.abrir.target = "_blank";
+    p.el.abrir.rel = "noopener";
+    p.el.abrir.removeAttribute("aria-disabled");
+    p.el.abrir.append(criar("span", "sr", " (abre em outra aba)"));
+    atualizarLegenda(p);
+  }
+
+  // Confere a prancha e o JSON dela. O SVG só é pedido enquanto não apareceu; o JSON, até ser lido.
+  async function carregar(p) {
+    const pedidoSvg = p.estado === "ok" ? null : pedir(`pranchas/${p.arquivo}.svg`);
+    const pedidoJson = p.jsonVisto ? null : pedir(`pranchas/${p.arquivo}.json`);
+    const [svg, json] = await Promise.all([pedidoSvg, pedidoJson]);
+
+    if (json?.ok) {
+      try {
+        p.json = await json.r.json();
+        p.jsonRuim = false;
+      } catch {
+        p.json = null;
+        p.jsonRuim = true;
+      }
+      p.jsonVisto = !p.jsonRuim;
+      atualizarLegenda(p);
+    }
+
+    if (!svg) return;
+    if (!svg.ok) {
+      if (svg.erro) mostrarAviso(p, "erro", "Não consegui ler o arquivo", svg.erro);
+      else mostrarAviso(p, "vazio", "Em produção", `A página confere de novo a cada ${INTERVALO / 1000} s.`);
+      return;
+    }
+    try {
+      const medida = medirSvg(await svg.r.text());
+      if (medida.erro) mostrarAviso(p, "erro", "O SVG tem erro", medida.erro);
+      else mostrarPrancha(p, medida);
+    } catch {
+      mostrarAviso(p, "erro", "Não consegui ler o arquivo", "a leitura foi interrompida");
+    }
+  }
+
+  /* ---------------------------------------------------------------------------------------- como está hoje */
+  function montarHoje() {
+    for (const item of HOJE) {
+      item.fig = criar("figure");
+      item.fig.hidden = true;
+      item.quadro = criar("div", "quadro");
+      item.fig.append(item.quadro, criar("figcaption", null, item.legenda));
+      $("#faixa").append(item.fig);
+    }
+  }
+
+  async function conferirHoje() {
+    await Promise.all(
+      HOJE.filter((item) => !item.achou).map(async (item) => {
+        const r = await pedir(`hoje/${item.arquivo}`, "HEAD");
+        if (!r.ok) return;
+        item.achou = true;
+        const img = document.createElement("img");
+        img.loading = "lazy";
+        img.decoding = "async";
+        img.alt = item.alt;
+        img.src = `hoje/${item.arquivo}`;
+        item.quadro.append(img);
+        item.fig.hidden = false;
+      }),
+    );
+    $("#hoje").hidden = !HOJE.some((item) => item.achou);
+  }
+
+  /* ---------------------------------------------------------------------------------------- partida */
+  montarHoje();
+  PRANCHAS.forEach(montarSecao);
+
+  if (porArquivo) {
+    $("#aviso-arquivo").hidden = false;
+    for (const p of PRANCHAS) mostrarAviso(p, "erro", "Sem servidor", "Abra a galeria pelo servidor da pasta.");
+    return;
+  }
+
+  // Volta ao pedaço da página do #pNN quando as proporções das pranchas acabam de chegar, a não ser que
+  // quem lê já tenha começado a rolar.
+  let rolou = false;
+  for (const evento of ["wheel", "touchstart", "keydown"]) addEventListener(evento, () => (rolou = true), { once: true, passive: true });
+  Promise.all([...PRANCHAS.map(carregar), conferirHoje()]).then(() => {
+    let alvo = null;
+    try {
+      alvo = location.hash.length > 1 ? document.getElementById(decodeURIComponent(location.hash.slice(1))) : null;
+    } catch {
+      // #endereço malformado: nada a alinhar.
+    }
+    if (alvo && !rolou) alvo.scrollIntoView();
+  });
+
+  let conferindo = false;
+  async function conferir() {
+    if (conferindo || document.hidden) return;
+    conferindo = true;
+    try {
+      const faltam = PRANCHAS.filter((p) => p.estado !== "ok" || !p.jsonVisto);
+      await Promise.all([...faltam.map(carregar), conferirHoje()]);
+    } finally {
+      conferindo = false;
+    }
+  }
+  setInterval(conferir, INTERVALO);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) conferir();
+  });
+})();
+</script>
+</body>
+</html>
