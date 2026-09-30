@@ -528,7 +528,8 @@ difusa, que sobe um pouco quando o mouse passa:
   `0 2px 4px rgba(40,38,30,.05), 0 18px 36px -18px rgba(40,38,30,.35)`;
 - escuro: `0 12px 30px -18px rgba(0,0,0,.8)`; ao passar o mouse, `0 18px 36px -16px rgba(0,0,0,.9)`.
 
-Os livros têm volume próprio (sombra, grão e o gradiente da lombada, pelo `CAPAS.md`). Painéis,
+Os livros têm volume próprio (a construção de capa dura, a luz da lombada arredondada, o grão e a
+sombra de contato; na estante e na pilha, a cabeça, os lados, a tábua com espessura; pelo `CAPAS.md`, D57). Painéis,
 caixas e desenhos dentro de uma folha **não** levam sombra.
 
 ## Shapes
@@ -627,23 +628,28 @@ frase e desenho; medidas em `docs/capas/CAPAS.md`):
   divisão à mesma altura em todos, formando uma linha contínua na estante. **É uma lombada só em
   todo lugar** (D39): a pilha lateral usa a mesma, girada 90° e **mais fina** (a espessura a 62% da
   escala do comprimento, D46), com o título e o número em corpo próprio, de uns 10px.
-- **Livro escolhido:** o da página atual na pilha e os não escolhidos do filtro aparecem
-  **escurecidos** (opacidade 0,4 e metade da saturação), nunca com contorno azul. A exceção é o livro
+- **Livro escolhido:** os não escolhidos do filtro aparecem **apagados** (um véu do papel da folha a
+  62%, `--apagado`, com a cara da opacidade de 0,4 de antes; opacidade e filtro achatariam o 3D, D57),
+  nunca com contorno azul. A exceção é o livro
   que foi para a gaveta da home (D43): ele sai da estante, e o lugar dele fica **vazio**. O foco do teclado é um anel fino e discreto.
 - **Livro 3D em todo lugar** (gaveta, grade de categorias e séries, topo da página do livro, livro
   do artigo e livro ampliado): **de lado, a 38° da frente**, com a lombada bem à vista (`GIRO` em
   `lib/livro-3d.ts`, D46; era 18° fora da gaveta). A perspectiva acompanha a altura do livro
-  (4,7 vezes, a da gaveta), para o pequeno e o grande terem a mesma cara. **A quina entre a lombada e
-  a capa é contínua** (D52, B08): a sombra da lombada encontra a capa, sem fio claro entre as duas; o
-  miolo (a página de dentro, as camadas e, no livro ampliado, as folhas) fica 1px para dentro da
-  lombada (`--recuo-miolo`).
+  (4,7 vezes, a da gaveta), para o pequeno e o grande terem a mesma cara. **Capa dura de verdade**
+  (D57, prancha 01; medidas em `docs/capas/CAPAS.md`, "Livro 3D: capa dura"): capas de papelão com a
+  borda forrada na cor impressa, seixa, lombada arredondada (a arte no meio e facetas até as capas, com
+  a luz correndo pela curva), o alto do livro à vista (a vista de um pouco acima, fora do giro), com o
+  miolo creme e o cabeceado, o vinco da dobradiça, o grão e a sombra de contato no chão (a gaveta da
+  home não tem a sombra). O miolo (a página de dentro, as camadas e, no livro ampliado, as folhas) fica
+  1px para dentro da lombada (`--recuo-miolo`, D52, B08).
 - O número nas lombadas é o total de artigos, contado pelos posts (some quando é zero). O
   "VOLUME 0N" é a posição na coleção.
 
-### Séries: "revista técnica"
+### Séries: livro com capa de "revista técnica"
 
-As séries também são livros, mas no formato **revista técnica**, para nunca se confundirem com as
-categorias: cada post é uma edição. Hoje só existe **Atualizações do Java** (destaque #c24d1c):
+As séries também são livros de capa dura (D57, muda a D32), fora da coleção, com a capa no formato
+**revista técnica**, para nunca se confundirem com as categorias: cada post é uma edição. A lombada é
+de papel com a faixa no destaque no alto. Hoje só existe **Atualizações do Java** (destaque #c24d1c):
 faixa no topo, "Atualizações" e *do Java* em itálico, linha de dados, o número da última edição
 enorme com a lista das edições ao lado e a **tarja escura que destaca o guia de atualização** ("do
 Java 8 ao 25, passo a passo"), com a xícara e o subtítulo no pé. Uma série nova usa o mesmo formato,

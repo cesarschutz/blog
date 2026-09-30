@@ -171,6 +171,9 @@ MCP `chrome-devtools`:
   SEO e boas práticas) e corrija o que aparecer.
 - **Projeto:** `npm run check` com 0 erros, `npm run build`, `npm run links` (0 quebrados) e
   `npm run contraste` (0 falhas), sempre com `fnm exec --using=24`.
+- **Fotos dos livros (D57):** o número de artigos da lombada está na foto do livro deitado. Post novo
+  (ou o primeiro de um livro vazio): `node scripts/livros/fotos.mjs` com o dev no ar; o build avisa
+  "[fotos dos livros]" quando uma foto ficou para trás. As etiquetas se ajustam sozinhas.
 
 ### 9. Caneta (a última etapa)
 

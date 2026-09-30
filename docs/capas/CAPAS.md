@@ -1,6 +1,6 @@
 # Capas, lombadas e estante
 
-Este é o padrão visual dos livros do blog. As categorias são livros de uma coleção no estilo "edição de estudo". As séries são revistas técnicas. Tudo é montado em HTML e CSS com SVG inline, nunca como imagem pronta.
+Este é o padrão visual dos livros do blog. As categorias são livros de uma coleção no estilo "edição de estudo". As séries são livros também, fora da coleção, com a capa de revista técnica (D57; antes, D32, eram revistas). Tudo o que se mexe é montado em HTML e CSS com SVG inline, nunca como imagem pronta; desde a D57, as peças paradas (a ficha "Do livro", o livro aberto em branco) podem ser imagens geradas das pranchas.
 
 As imagens em `referencia/` são o alvo visual:
 
@@ -67,16 +67,55 @@ A ordem, de cima para baixo, é: ícone, título e número. O ícone e o número
 
 - **Medidas:** alturas e larguras em `livros.json`. A largura é cerca de um quarto da altura.
 - **Duas partes:** em cima, a cor do livro. Embaixo, o papel, com 400px de altura medidos da base em todos os livros, para que a divisão forme uma linha contínua na estante. Na animação de girar, quando a lombada assume a altura da capa, o bloco de cor passa a ter 300 de 720, alinhado com a capa.
-- **Forma e volume:** cantos de 3px em cima e 1px embaixo, sombra `0 1px 0 rgba(0,0,0,.18), 5px 0 12px rgba(0,0,0,.1)`, grão, e um gradiente horizontal que escurece as bordas e clareia o meio (`rgba(0,0,0,.22) 0%, rgba(0,0,0,.03) 12%, rgba(255,255,255,.08) 42%, rgba(0,0,0,.06) 86%, rgba(0,0,0,.26) 100%`).
+- **Forma e volume:** cantos de 3px em cima e 1px embaixo, grão e, desde a D57, a luz da lombada arredondada: um gradiente horizontal que escurece bem as beiradas e leva um brilho largo um pouco antes do meio (`rgba(0,0,0,.34) 0%, .16 5%, .05 14%`, branco `.04 28%, .13 43%, .09 56%`, preto `.02 70%, .12 87%, .32 100%`), um fio de luz no alto (4) e o pé um nada mais escuro (14). Na estante, a sombra é a de contato na tábua; os lados e a cabeça dão o volume (seção "Estante").
 - **Ícone:** o SVG de `icones/` girado 90° no sentido horário (`transform: rotate(90deg)`), centralizado no bloco de cor, com cerca de 22px de margem lateral e 32px acima e abaixo. O traço usa a `tinta`, e `--lombada-cor` recebe a cor do livro.
 - **Título:** 26px abaixo da divisão, em `writing-mode: vertical-rl`, Bitter 800 30/33px, letter-spacing −0.01em, no `destaque`. Cada linha do título vira uma coluna.
 - **Número:** 26px acima da base, em `vertical-rl`, Bitter 700 28px, no `destaque`.
+
+## Livro 3D: capa dura (D57)
+
+O livro em pé (grade de Categorias e de Séries, topo da página do livro, livro ampliado e gaveta da home) é
+um livro de capa dura de verdade, com as mesmas artes de capa e de lombada (`Livro3D.astro`, a parte
+"livro 3D inteiro" de `src/styles/livro.css`; referência: a prancha 01 de
+`docs/prototipos/livros-realistas/`). Medidas em unidades da referência (capa de 480 × 720):
+
+- **Capas de papelão de 8** (`--papelao`): a capa é uma placa, com a arte por fora e o verso por dentro, e a
+  borda de cima forrada na cor impressa no alto dela (o papel; na série, a faixa laranja). A contracapa é
+  lisa, na cor de baixo do livro (na série, o papel), com a borda de cima na mesma cor e, por dentro, a
+  dobra do material (18) e a guarda em papel.
+- **Seixa de 9** (`--seixa`): o miolo é 9 menor que as capas no alto, no pé e na frente. A página de dentro,
+  as folhas do livro ampliado e o alto do miolo seguem a seixa.
+- **Lombada arredondada:** a arte da lombada (a mesma da estante) numa face plana 0,1 da espessura para
+  fora das capas, com só o meio dela à vista (de 15% a 85%); dos dois lados, duas facetas que fazem a curva
+  até as capas, nas mesmas duas cores, divididas na mesma altura. A luz corre pela curva: o lado de trás
+  escurece, a frente leva um brilho largo e suave e cai um pouco na quina com a capa.
+- **O alto:** o miolo em creme (o papel clareado), com as linhas das folhas (mais marcadas a cada caderno)
+  e a sombra das capas nas beiradas; na lombada, a borda do material, o oco escuro e o **cabeceado**, um
+  fio listrado em papel e na cor do livro escurecida (um SVG deitado, gerado em `Livro3D.astro`).
+- **Na capa:** o vinco da dobradiça a 22 da lombada, de alto a baixo; a queda suave da luz da lombada para
+  a frente e do alto para o pé; um brilho acetinado largo e fraco; as bordas arredondadas (fio de luz no
+  alto, escuro na frente e no pé). Tudo em camadas pretas e brancas translúcidas, por cima do grão.
+- **A vista e a sombra:** o olho um pouco acima do livro (a vista gira 15° em X, fora do giro do livro),
+  para o alto aparecer. No chão, a sombra de contato, justa, e a projetada, larga e fraca, para a direita
+  (a luz vem do alto à esquerda). A gaveta da home não tem a sombra no chão.
+- **Os movimentos continuam:** girar no mouse (38° → 24°), a capa que abre no livro ampliado (com o verso e
+  as folhas), o voo da estante para a gaveta e da pilha para o topo, e as trocas de página. Só o `rotateY`
+  do livro se mexe; nada de `filter` nas peças (achataria o 3D).
 
 ## Estante
 
 - **Livros e prateleira:** livros em pé com 6px entre eles, sobre uma prateleira de 14px em `#b5bab4` com borda inferior de 6px em `#9ba19b`.
 - **Livro inclinado:** o último livro da coleção fica inclinado 6°, girando pelo canto de baixo do lado direito, com o topo apoiado no alto do aparador.
 - **Aparador:** uma barra de 12 × 470px (gradiente `#6f7775`, `#9aa19f`, `#7a8280`) com base de 48 × 9px. Ele separa as categorias das séries, que vêm depois dele.
+- **Com volume (D57, prancha 07):** o olho fica um pouco acima dos livros (190 acima do mais alto), e cada
+  lombada é um livro em 3D: a cabeça (as bordas das capas, o miolo e o cabeceado) e o começo dos dois
+  lados (60, escuros), que deixam os vãos entre os livros no fundo escuro; a prateleira é um espaço 3D só,
+  e os vizinhos se tapam de verdade. A lombada tem a luz correndo pela curva. A tábua tem espessura (a face
+  de cima, um pouco na frente dos livros e subindo atrás deles, a borda da frente com um fio de luz, a de
+  baixo e a sombra na folha), e cada livro faz a sombra de contato nela. O aparador é uma haste de metal
+  redonda, com a ponta arredondada, sobre uma base redonda.
+- **Livro escolhido no filtro:** os outros apagam com um véu do papel da folha a 62% (`--apagado`), e não
+  com opacidade e filtro, que achatariam o 3D e deixariam a tábua aparecer através deles.
 
 ## Lombada deitada (lateral)
 
@@ -87,12 +126,18 @@ na largura da lateral (teto de 0,42px por unidade, o da estante). Só na pilha, 
 mais grossa que isso, com o texto na mesma proporção, para o título chegar a uns 11 ou 12px (D40);
 o comprimento e a divisão do papel não mudam. O volume 1 fica embaixo, cada livro
 deslocado pelo `deslocamento` de `livros.json` (em unidades da lombada em pé), com uma prateleira
-embaixo na cor da estante. Os campos `comprimento` e `espessura` de `lombadaDeitada` não são mais
+embaixo na cor da estante. **Com volume (D57, prancha 08):** a luz da curva vem de cima; em cima de
+cada livro, a capa vista de um pouco acima (uma faixa fina, inclinada, que foge para trás, nas cores
+impressas), que o livro de cima tapa onde ele é mais longo; embaixo, a sombra que ele faz no de baixo; a
+prateleira com espessura, como a da estante. Os campos `comprimento` e `espessura` de `lombadaDeitada` não são mais
 usados. O livro da página atual continua na pilha, escurecido.
 
-## Séries: revista técnica
+## Séries: livro com capa de revista (D57)
 
-As séries têm formato de revista, para nunca serem confundidas com as categorias: cada post é uma edição. De uma série para outra mudam a cor de destaque, o título, o emblema, o número de capa, a lista de edições e a tarja (os dados estão em `livros.json`).
+Desde a D57 (muda a D32), a série é um livro de capa dura como os outros, fora da coleção: a capa é a de
+revista técnica descrita abaixo, a lombada é de papel com a faixa laranja no alto (e a borda de cima da
+capa, também na faixa), e a contracapa é de papel. Continua sem se confundir com as categorias, que têm o
+papel e a cor divididos na capa: cada post é uma edição. De uma série para outra mudam a cor de destaque, o título, o emblema, o número de capa, a lista de edições e a tarja (os dados estão em `livros.json`).
 
 **Capa (480 × 720):**
 
@@ -114,7 +159,7 @@ As séries têm formato de revista, para nunca serem confundidas com as categori
 ## Livros novos
 
 - **Categoria:** escolha um instrumento de ofício que represente a categoria inteira e desenhe no estilo do projeto, com traço de 1,8, 1,2 e 0,7px, leve tremor, hachura nas sombras e um único elemento fantasma tracejado. Gere o ícone da lombada com só os traços principais. A frase segue o molde do subtítulo, e o volume é o próximo número.
-- **Série:** use o formato revista. Defina a cor de destaque, o título (palavra principal e complemento em itálico), o emblema no mesmo traço, o número de capa, a lista de edições e, se houver material especial, a tarja.
+- **Série:** um livro de capa dura com a capa de revista. Defina a cor de destaque, o título (palavra principal e complemento em itálico), o emblema no mesmo traço, o número de capa, a lista de edições e, se houver material especial, a tarja.
 
 ## Tags (D52)
 

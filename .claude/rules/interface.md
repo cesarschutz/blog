@@ -49,10 +49,24 @@ Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
   abre na gaveta (`/livros/<slug>.svg`).
 - Os componentes são `Capa`, `MioloLombada` (a lombada, em pé e, girada, deitada no `PainelHome`),
   `Estante` (também no modo "filtro" do arquivo e das tags), `Gaveta`, `Livro3D`, `LivroEmPe`,
-  `TopoLivro` e `GradeLivros`: altere esses, sem criar outros em paralelo. `LivroAmpliado` copia o
+  `TopoLivro` e `GradeLivros`: altere esses, sem criar outros em paralelo. As peças paradas da D57
+  são imagens: `FotoDoLivro` (o livro deitado da ficha "Do livro", com as etiquetas em SVG por cima)
+  e `LivroEmBranco` (o livro aberto do livro sem artigos e da busca sem resultado), de
+  `node scripts/livros/fotos.mjs` (`src/lib/fotos.ts`). `LivroAmpliado` copia o
   livro 3D para o visor e monta nele as páginas de dentro, de `/livros/<slug>.json` (D49).
 - As peças usam os **papéis de cor** de `livro.css` (`--cima`, `--baixo`, `--revista-*`), nunca as
   cores cruas `--livro-*`. Os livros **não mudam com o tema** (D39).
+- **O livro 3D é de capa dura** (D57, `CAPAS.md`, "Livro 3D: capa dura"): placas de papelão
+  (`--papelao`), seixa (`--seixa`), lombada em facetas (a arte no meio, `FACETAS` em `Livro3D.astro`),
+  o alto com o cabeceado (SVG deitado) e a sombra no chão (`.chao`). A vista de um pouco acima fica em
+  `.livro-3d-vista` (rotateX), **fora** do giro: quem anima (GSAP, trocas de página, livro ampliado) mexe
+  só no `rotateY` do `.livro-3d`. Para pôr o livro sobre uma lombada (o voo da gaveta e da pilha), meça
+  a `.face-lombada` na tela com o livro a 90°, nunca calcule pela caixa.
+- **Estante e pilha com volume** (D57): a prateleira é um espaço 3D só (`preserve-3d`), com o olho um
+  pouco acima dos livros; cada lombada tem a cabeça e os lados (`.lado`) em 3D. Opacidade ou `filter`
+  numa lombada achatam esse 3D (a cabeça e os lados somem) e deixam a tábua aparecer através dela: para
+  apagar um livro, use o véu `--apagado` (estante.css). Não use `--veu` como nome local: é o token do
+  visor.
 - O número das lombadas, da capa da revista e da página do livro é o total de artigos, contado pelos
   posts (some quando é zero); o "VOLUME 01" é a posição na coleção.
 - A marca "cs" (`src/lib/marca.ts`, `favicon.*`, `apple-touch-icon.png`) sai de
