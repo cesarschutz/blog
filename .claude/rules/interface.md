@@ -60,7 +60,7 @@ Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
   (`--papelao`), seixa (`--seixa`), lombada em facetas (a arte no meio, `FACETAS` em `Livro3D.astro`),
   o alto com o cabeceado (SVG deitado) e a sombra no chão (`.chao`). A vista de um pouco acima fica em
   `.livro-3d-vista` (rotateX), **fora** do giro: quem anima (GSAP, trocas de página, livro ampliado) mexe
-  só no `rotateY` do `.livro-3d`. Para pôr o livro sobre uma lombada (o voo da gaveta e da pilha), meça
+  só no `rotateY` do `.livro-3d`; o livro ampliado, ao abrir, só endireita a vista por `--aberto`. Para pôr o livro sobre uma lombada (o voo da gaveta e da pilha), meça
   a `.face-lombada` na tela com o livro a 90°, nunca calcule pela caixa.
 - **Estante e pilha com volume** (D57): a prateleira é um espaço 3D só (`preserve-3d`), com o olho um
   pouco acima dos livros; cada lombada tem a cabeça e os lados (`.lado`) em 3D. Opacidade ou `filter`

@@ -548,6 +548,36 @@
   }
 }
 
+/*
+ * Lista longa (a série, com os títulos inteiros): enquanto há mais para rolar, o pé dela esmaece, para a
+ * linha cortada não parecer o fim; perto do fim, o esmaecido sai. Sem rolagem, a linha do tempo da
+ * rolagem fica inativa e nada esmaece. Onde o navegador não liga animação à rolagem, corta como antes.
+ */
+@property --esmaece {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@supports (animation-timeline: scroll()) {
+  .indice-livro {
+    mask-image: linear-gradient(to bottom, black calc(100% - var(--esmaece)), transparent);
+    animation: fim-da-lista linear both;
+    animation-timeline: scroll(self);
+    animation-range: calc(100% - 36px) 100%;
+  }
+}
+
+@keyframes fim-da-lista {
+  from {
+    --esmaece: 36px;
+  }
+
+  to {
+    --esmaece: 0px;
+  }
+}
+
 .indice-livro .ano {
   position: sticky;
   top: 0;

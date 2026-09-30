@@ -610,12 +610,20 @@
 /*
  * A vista (D57): o olho um pouco acima do livro, para o alto aparecer (as bordas das capas, o miolo e o
  * cabeceado), como na prancha 01. Fica fora do giro: o `rotateY` do `.livro-3d` continua sendo o único
- * movimento do livro, e o GSAP, a troca de página e o livro ampliado mexem só nele.
+ * movimento do livro, e o GSAP, a troca de página e o livro ampliado mexem só nele. A exceção é o livro
+ * ampliado que abre (LivroAmpliado): --aberto vai de 0 a 1 com a capa, e a vista se endireita, para o
+ * livro aberto ficar de frente, um livro só (não herda: muda a cada quadro sem recalcular o livro inteiro).
  */
+@property --aberto {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
 .livro-3d-vista {
   position: absolute;
   inset: 0;
-  transform: rotateX(var(--vista, -15deg));
+  transform: rotateX(calc(var(--vista, -15deg) * (1 - var(--aberto))));
   transform-style: preserve-3d;
 }
 
@@ -938,7 +946,11 @@
   backface-visibility: hidden;
 }
 
-.face-capa > .capa-topo {
+/*
+ * A borda de cima da placa da capa, forrada na cor impressa no alto dela (não confundir com
+ * `.capa-topo`, a linha "VOLUME 01 · CESAR SCHUTZ" da arte, em Capa.astro).
+ */
+.face-capa > .capa-borda {
   position: absolute;
   top: 0;
   left: 0;
@@ -984,8 +996,8 @@
 
 /*
  * O livro que gira ao passar o mouse (D46; o efeito de antes da D40): na grade de categorias e séries,
- * no topo da página do livro, no destaque de Séries e no livro do artigo. Parado a --giro (38°), vira
- * um pouco para o leitor. Só CSS; com movimento reduzido, fica parado.
+ * no topo da página do livro e no destaque de Séries. Parado a --giro (38°), vira um pouco para o
+ * leitor. Só CSS; com movimento reduzido, fica parado.
  */
 @media (prefers-reduced-motion: no-preference) {
   [data-livro-gira] .livro-3d {
@@ -1008,7 +1020,6 @@
   box-shadow: none;
 }
 
-/* O verso fica na face de dentro da placa e passa da dobradiça o recuo do miolo: aberto, ele encosta na primeira página (B08). */
 .capa-verso {
   display: grid;
   place-items: center;
@@ -1018,6 +1029,10 @@
   transform: rotateY(180deg);
 }
 
+/*
+ * O verso fica na face de dentro da placa (a uma espessura de papelão da arte) e passa da dobradiça o
+ * recuo do miolo: aberto, ele encosta na primeira página (B08).
+ */
 .face-capa > .capa-verso {
   left: calc(-1 * var(--recuo-miolo, 0px));
   transform: translateZ(calc(-1 * var(--papelao))) rotateY(180deg);

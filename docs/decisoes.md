@@ -2064,3 +2064,10 @@ nada muda.
   sombra no de baixo, e a prateleira tem espessura. Medido: HTML de 2 a 3 kB a mais (gzip) nas páginas
   com livros; quadros de 16,7 ms (mediana e p95) no hover da grade, no voo da gaveta e na troca pela
   pilha, com a CPU 4× mais lenta.
+- **Revisão antes do push (30/09/2026):** conferência (fotos de 320 a 1600px, dois temas, movimento
+  reduzido, `conferir` em quatro posts) e revisão de código. Corrigido: o livro ampliado aberto (a vista
+  se endireita ao abrir, as duas capas passam o miolo, sem a ponta da lombada no vinco), o livro do topo
+  da página do livro centrado, a pilha que pousava 18px fora, o livro puxado da estante que flutuava, a
+  prateleira sozinha em "Séries", o esmaecer da lista que rola na gaveta, a classe `.capa-topo`
+  duplicada (virou `.capa-borda`) e código morto. Ficam como estão: cabeceado e seixa quase invisíveis
+  no ampliado (1,5px com a vista a 15°) e a curva da cabeça na estante.

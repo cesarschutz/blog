@@ -321,32 +321,6 @@ export function vistoDeCaneta(texto: string) {
   );
 }
 
-/**
- * O clipe da ficha do livro (C05, D52), numa caixa de 14 × 46: um clipe comum, desenhado de uma vez — a
- * ponta de dentro sobe, faz a curva pequena no alto, desce pela direita, dá a volta grande embaixo, sobe
- * por fora até o alto, faz a curva larga e desce pela borda de fora, terminando no meio. Quatro pernas e
- * três voltas, com o tremor da mão. É a caneta preta: desenho, não estado.
- */
-export function clipeDeCaneta(texto = "clipe") {
-  const arco = (cx: number, cy: number, raio: number, de: number, ate: number, n = 6): Ponto[] =>
-    Array.from({ length: n + 1 }, (_, i) => {
-      const a = de + ((ate - de) * i) / n;
-      return [cx + Math.cos(a) * raio, cy + Math.sin(a) * raio];
-    });
-  const p: Ponto[] = [
-    [5, 32],
-    [5, 20],
-    ...arco(7.2, 9, 2.2, Math.PI, 2 * Math.PI, 4),
-    [9.4, 24],
-    ...arco(5.5, 39, 3.9, 0, Math.PI, 6),
-    [1.6, 22],
-    ...arco(7, 6, 5.4, Math.PI, 2 * Math.PI, 6),
-    [12.4, 18],
-    [12.4, 30],
-  ];
-  return curva(tremer(p, texto, 0.35));
-}
-
 /** Pontos ao longo da curva Catmull-Rom que passa por `p` (`porTrecho` em cada trecho). */
 function amostrar(p: Ponto[], porTrecho = 16) {
   const fora: Ponto[] = [];

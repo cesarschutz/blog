@@ -133,7 +133,8 @@ node scripts/desenho/java.mjs             # as ilustrações da série Java (pad
 node scripts/desenho/tags.mjs [slug]      # os ícones das tags (src/livros/tags/, D52)
 node scripts/marca.mjs                    # a marca e os ícones do navegador (precisa do pdftocairo)
 node scripts/caveat-titulos.mjs           # a Caveat dos títulos à mão (título novo em src/data/mao.ts, C05)
-node scripts/livros/fotos.mjs             # as fotos dos livros (D57; dev no ar, ENDERECO=…): livro, capa ou nº de artigos novo
+node scripts/livros/fotos.mjs             # as fotos da ficha "Do livro" e dos vazios (D57), com o dev no ar
+                                          # (outra porta: ENDERECO=http://127.0.0.1:NNNN): livro, capa, lombada ou nº de artigos novo
 ```
 
 A porta 4321 desta máquina está ocupada por outra ferramenta do Cesar, que não deve ser tocada. O
@@ -195,7 +196,8 @@ src/plugins/             Markdown: avisos, notas laterais, apresentação, tabel
 src/lib/                 posts, formatos, busca (Pagefind), código (Expressive Code), PDF, estante
                          (livros), livros-svg (desenhos e ícones), livro-3d (medidas do livro aberto),
                          marca (traçado da marca, gerado), caderno (miolo do caderno "cs", D52),
-                         tags-svg (ícones das tags, D52), traco (traços e ícones à caneta: menu,
+                         tags-svg (ícones das tags, D52), fotos (as fotos paradas dos livros e o lugar
+                         das etiquetas, D57), traco (traços e ícones à caneta: menu,
                          colchete, círculo, rasura, ondinha, ícones de data, tempo, código, lupa, lua,
                          sol, contornos dos botões e a assinatura, D52, C04)
 src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, apresentação)

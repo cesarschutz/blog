@@ -15,7 +15,7 @@
  * e gira até ficar de lado (o livro da página nova, tirado do HTML dela). A página nova abre quando ele
  * começa a girar e continua o giro (o script da ordem, abaixo, lê `cs-pilha-chegada`). Com movimento
  * reduzido, a página só abre.
- * Uma série só: a pilha fica vazia, com um texto curto.
+ * Uma série só: a pilha fica vazia, só com um texto curto (sem a prateleira).
  */
 import { ICONES } from "../lib/icones";
 import { coresDoLivroCss, type Livro } from "../lib/estante";
@@ -160,8 +160,8 @@ const rotulo = (l: Livro) => {
           } catch (e) {}
         })();
       </script>
-      {outros === 0 && <p class="pilha-vazia">Outras séries aparecem aqui.</p>}
-      <div class="tampo" aria-hidden="true"></div>
+      {/* Sem outro livro, só o aviso: a prateleira com espessura (D57) sobraria sozinha, pesada. */}
+      {outros === 0 ? <p class="pilha-vazia">Outras séries aparecem aqui.</p> : <div class="tampo" aria-hidden="true"></div>}
     </div>
   </section>
   <a class="rss" href={url("/rss.xml")}
@@ -267,8 +267,11 @@ const rotulo = (l: Livro) => {
   // ---------- o voo: estado, trajeto e a camada ----------
   /** Um livro no ar: centro, ângulo (0 = deitado, com a cabeça à esquerda; 90 = em pé), comprimento e espessura, em px da tela. */
   type Pose = { cx: number; cy: number; ang: number; len: number; esp: number };
-  /** O centro de uma peça parada e as medidas dela na pose de partida (a lombada, no livro 3D). */
-  type Base = { x: number; y: number; w: number; h: number };
+  /**
+   * O centro de uma peça parada e as medidas dela na pose de partida (a lombada, no livro 3D). `origem`:
+   * onde fica esse centro dentro da peça, quando não é o meio dela (a lombada do livro 3D).
+   */
+  type Base = { x: number; y: number; w: number; h: number; origem?: string };
 
   const limitar = (v: number) => Math.min(1, Math.max(0, v));
   const bezier = (a: number, b: number, c: number, d: number, u: number) => {
@@ -302,7 +305,7 @@ const rotulo = (l: Livro) => {
 
   /** O livro 3D (em pé, de lombada para o leitor) na pose: b.w e b.h são a espessura e a altura da lombada. */
   function poseEmPe(g: GSAP, el: HTMLElement, b: Base, p: Pose) {
-    g.set(el, { x: p.cx - b.x, y: p.cy - b.y, rotation: p.ang - 90, scaleX: p.esp / b.w, scaleY: p.len / b.h, transformOrigin: "50% 50%" });
+    g.set(el, { x: p.cx - b.x, y: p.cy - b.y, rotation: p.ang - 90, scaleX: p.esp / b.w, scaleY: p.len / b.h, transformOrigin: b.origem ?? "50% 50%" });
   }
 
   /** A camada dos voos: por cima da página e da pilha, por baixo do cabeçalho. */
@@ -338,8 +341,11 @@ const rotulo = (l: Livro) => {
   }
 
   /**
-   * Uma cópia do livro 3D na camada dos voos, no lugar dele. Devolve a cópia, o livro dela e a Base: o
-   * centro da caixa e a lombada medida a 90° (a pose em pé de partida).
+   * Uma cópia do livro 3D na camada dos voos, no lugar dele. Devolve a cópia, o livro dela e a Base: a
+   * lombada medida a 90° (a pose em pé de partida), com o centro dela como origem do giro e da escala.
+   * Com a vista de um pouco acima (D57), a lombada a 90° fica abaixo do centro da caixa (uns 25px no
+   * topo da página do livro): girando e escalando pela caixa, o livro pousava uns 18px fora da lombada
+   * da pilha, e ela pulava na troca.
    */
   function copiaQueVoa(g: GSAP, el: HTMLElement) {
     const r = el.getBoundingClientRect();
@@ -351,9 +357,12 @@ const rotulo = (l: Livro) => {
     const livro = c.querySelector<HTMLElement>(".livro-3d")!;
     const antes = Number(g.getProperty(livro, "rotationY"));
     g.set(livro, { rotationY: 90 });
+    const rc = c.getBoundingClientRect();
     const rl = c.querySelector(".face-lombada")!.getBoundingClientRect();
     g.set(livro, { rotationY: antes });
-    const base: Base = { x: r.left + r.width / 2, y: r.top + r.height / 2, w: rl.width, h: rl.height };
+    const x = rl.left + rl.width / 2;
+    const y = rl.top + rl.height / 2;
+    const base: Base = { x, y, w: rl.width, h: rl.height, origem: `${x - rc.left}px ${y - rc.top}px` };
     return { copia: c, livro, base, giro: antes };
   }
 

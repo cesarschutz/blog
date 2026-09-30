@@ -16,7 +16,6 @@ const ler = (caminho) => JSON.parse(readFileSync(new URL(caminho, import.meta.ur
 const dados = ler("../../src/livros/livros.json");
 
 export const PAPEL = dados.papel; // #f2ede2
-export const TINTA_PAPEL = dados.tintaPapel; // #1f1c18
 export const BITTER = "'Bitter Variable', Rockwell, Georgia, serif";
 export const NEWSREADER = "'Newsreader Variable', Georgia, serif";
 

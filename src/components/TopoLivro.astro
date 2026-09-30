@@ -89,11 +89,16 @@ const tags = [...contagem]
     z-index: 1;
   }
 
+  /*
+   * O livro fica no meio do palco pelo que se vê dele, e não pela caixa (D57): de lado e visto de um
+   * pouco acima, a lombada, mais perto do olho, passa da caixa embaixo e à esquerda (uns 6px), e o alto
+   * aparece em cima. O padding desigual compensa.
+   */
   .palco {
     display: grid;
     place-items: center;
     min-height: 360px;
-    padding: 30px 24px;
+    padding: 24px 19px 36px 29px;
   }
 
   /* O título acompanha a largura da coluna: "Observabilidade" cabe inteiro no celular. */

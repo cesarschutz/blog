@@ -101,10 +101,14 @@ um livro de capa dura de verdade, com as mesmas artes de capa e de lombada (`Liv
 - **Os movimentos continuam:** girar no mouse (38° → 24°), a capa que abre no livro ampliado (com o verso e
   as folhas), o voo da estante para a gaveta e da pilha para o topo, e as trocas de página. Só o `rotateY`
   do livro se mexe; nada de `filter` nas peças (achataria o 3D).
+- **O livro ampliado aberto:** enquanto a capa abre, a vista se endireita (`--aberto`, `livro.css`) e o
+  livro fica de frente, um livro só: a capa aberta à esquerda e, atrás das folhas da direita, a guarda da
+  contracapa (`.guarda-de-tras`, `paginas.css`), as duas na cor do livro (na série, no papel) e passando o
+  miolo pela seixa. A sombra no chão sai; a do palco fica.
 
 ## Estante
 
-- **Livros e prateleira:** livros em pé com 6px entre eles, sobre uma prateleira de 14px em `#b5bab4` com borda inferior de 6px em `#9ba19b`.
+- **Livros e prateleira:** livros em pé com 6px entre eles, sobre uma prateleira de 20px em `#b5bab4` (14 até a D57, que deu a ela a face de cima e a borda da frente) com borda inferior de 6px em `#9ba19b`.
 - **Livro inclinado:** o último livro da coleção fica inclinado 6°, girando pelo canto de baixo do lado direito, com o topo apoiado no alto do aparador.
 - **Aparador:** uma barra de 12 × 470px (gradiente `#6f7775`, `#9aa19f`, `#7a8280`) com base de 48 × 9px. Ele separa as categorias das séries, que vêm depois dele.
 - **Com volume (D57, prancha 07):** o olho fica um pouco acima dos livros (190 acima do mais alto), e cada
@@ -129,8 +133,9 @@ deslocado pelo `deslocamento` de `livros.json` (em unidades da lombada em pé), 
 embaixo na cor da estante. **Com volume (D57, prancha 08):** a luz da curva vem de cima; em cima de
 cada livro, a capa vista de um pouco acima (uma faixa fina, inclinada, que foge para trás, nas cores
 impressas), que o livro de cima tapa onde ele é mais longo; embaixo, a sombra que ele faz no de baixo; a
-prateleira com espessura, como a da estante. Os campos `comprimento` e `espessura` de `lombadaDeitada` não são mais
-usados. O livro da página atual continua na pilha, escurecido.
+prateleira com espessura, como a da estante. Os campos `comprimento` e `espessura` de `lombadaDeitada`
+não são mais usados. O livro aberto no topo da página não fica na pilha (D46): ao trocar de livro, ele
+volta para o alto dela.
 
 ## Séries: livro com capa de revista (D57)
 

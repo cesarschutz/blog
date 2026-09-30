@@ -13,7 +13,10 @@ interface Props {
   livro: Livro | "busca";
   /** Largura na tela, em px. */
   largura?: number;
-  /** Carregar só quando aparecer (a gaveta e a busca já montam o livro na hora). */
+  /**
+   * Carregar só perto da tela (o padrão; na busca, a imagem só vem quando a busca não acha nada). A
+   * gaveta passa false: o livro dela sai de um <template> já na hora de aparecer.
+   */
   preguicoso?: boolean;
 }
 

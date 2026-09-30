@@ -133,12 +133,15 @@ o foco do teclado igual ao mouse, Esc fecha, movimento reduzido): `DESIGN.md`, M
 ## Livro que gira e livro ampliado
 
 - **Livro que gira** (D46, `data-livro-gira`, só CSS): na grade de categorias e séries, no topo da
-  página do livro, no destaque de Séries e no livro do artigo, o livro vira de 38° para 24° ao
-  passar o mouse (0,5s). A capa que seguia o mouse, com a luz e a capa entreaberta (`capa-viva.ts`,
+  página do livro e no destaque de Séries, o livro vira de 38° para 24° ao passar o mouse (0,5s). Na
+  ficha "Do livro" do artigo, o livro é uma foto parada desde a D57. A capa que seguia o mouse, com a luz e a capa entreaberta (`capa-viva.ts`,
   D40), saiu na D46.
 - **O livro que abre** (o livro ampliado, D49, no lugar do giro com embalo): a capa gira pela
   lombada (0,95s, `power2.inOut`; no celular, 0,71s) e, ao pousar, bate e volta um nada (0,07s e
-  0,12s); o livro vira de 38° para de frente enquanto abre, e a lombada vai para o meio. A folha é
+  0,12s); o livro vira de 38° para de frente enquanto abre, e a lombada vai para o meio. Junto, a
+  vista de um pouco acima (D57) se endireita (`--aberto`, de 0 a 1 com a capa): aberto, ele fica de
+  frente, sem o alto à mostra, com a sombra do chão saindo e, no último quinto da abertura, a guarda
+  da contracapa chegando atrás das folhas da direita (as duas capas passam o miolo). A folha é
   leve: vira em 0,75s (`sine.inOut`), com a metade de fora até 24° atrás da de dentro (a folha curva
   no meio da virada e chega reta) e uma sombra de até 22% no meio do caminho. Arrastar segue o dedo
   e, ao soltar, a inércia leva a folha até aberta ou fechada (0,25 a 0,7s; a capa, até 0,9s), sem

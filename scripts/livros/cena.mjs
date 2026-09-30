@@ -1,7 +1,8 @@
 /**
- * Copiado de docs/prototipos/livros-realistas/ferramentas/cena.mjs (D57), para o site não depender da
- * pasta de protótipos. A cena das pranchas, sem dependências: vetores, câmera com perspectiva, a arte plana da base
- * mapeada em superfícies 3D (planas ou curvas), luz, sombras e texturas, e o montador do SVG.
+ * Copiado de docs/prototipos/livros-realistas/ferramentas/cena.mjs (D57), só com o que as fotos usam,
+ * para o site não depender da pasta de protótipos. A cena das pranchas, sem dependências: vetores,
+ * câmera com perspectiva, a arte plana da base mapeada em superfícies 3D (planas ou curvas), sombras e
+ * texturas, e o montador do SVG.
  *
  * Mundo: X para a direita, Y para cima, Z para o observador (mão direita). A unidade é a da
  * referência dos livros: a capa tem 480 × 720 e a espessura do livro é a largura da lombada
@@ -13,7 +14,6 @@
  * pequenas na tela (uns 4 a 12 px), o erro some. Na face plana e com a câmera pouco inclinada, basta
  * fatiar na direção do encurtamento (nu × 1 ou 1 × nv).
  */
-import { writeFileSync } from "node:fs";
 import { documento } from "./base.mjs";
 
 // ---------- números e vetores ----------
@@ -45,9 +45,7 @@ export function girar(p, eixo, graus, centro = [0, 0, 0]) {
   const r = soma(soma(mul(q, c), mul(cross(k, q), s)), mul(k, dot(k, q) * (1 - c)));
   return soma(r, centro);
 }
-export const girarX = (p, g, c) => girar(p, [1, 0, 0], g, c);
 export const girarY = (p, g, c) => girar(p, [0, 1, 0], g, c);
-export const girarZ = (p, g, c) => girar(p, [0, 0, 1], g, c);
 
 /** Aleatório com semente (mulberry32): a mesma prancha sai igual a cada vez. */
 export function aleatorio(semente = 1) {
@@ -128,7 +126,7 @@ export function enquadrar(cam, pontos, [bx, by, bw, bh]) {
   return [x0, y0, x1 - x0, y1 - y0];
 }
 
-// ---------- afins e homografias ----------
+// ---------- afins ----------
 
 /** A afim (matrix(a b c d e f) do SVG) que leva três pontos de origem a três de destino. */
 export function afim([s0, s1, s2], [d0, d1, d2]) {
@@ -146,38 +144,6 @@ export function afim([s0, s1, s2], [d0, d1, d2]) {
   return [m00, m10, m01, m11, e, f];
 }
 export const matriz = (m) => `matrix(${m.map((x) => (Math.round(x * 10000) / 10000).toString()).join(" ")})`;
-
-/** Homografia (3 × 3, por linhas) que leva os quatro cantos de origem aos quatro de destino. */
-export function homografia(de, para) {
-  // Resolve A·h = b (8 incógnitas, h33 = 1) por eliminação de Gauss.
-  const A = [];
-  const b = [];
-  for (let i = 0; i < 4; i++) {
-    const [x, y] = de[i];
-    const [X, Y] = para[i];
-    A.push([x, y, 1, 0, 0, 0, -x * X, -y * X]);
-    b.push(X);
-    A.push([0, 0, 0, x, y, 1, -x * Y, -y * Y]);
-    b.push(Y);
-  }
-  const m = A.map((l, i) => [...l, b[i]]);
-  for (let c = 0; c < 8; c++) {
-    let p = c;
-    for (let l = c + 1; l < 8; l++) if (Math.abs(m[l][c]) > Math.abs(m[p][c])) p = l;
-    [m[c], m[p]] = [m[p], m[c]];
-    for (let l = 0; l < 8; l++) {
-      if (l === c) continue;
-      const k = m[l][c] / m[c][c];
-      for (let k2 = c; k2 < 9; k2++) m[l][k2] -= k * m[c][k2];
-    }
-  }
-  const h = m.map((l, i) => l[8] / l[i]);
-  return [...h, 1];
-}
-export function aplicarH(H, [x, y]) {
-  const w = H[6] * x + H[7] * y + H[8];
-  return [(H[0] * x + H[1] * y + H[2]) / w, (H[3] * x + H[4] * y + H[5]) / w];
-}
 
 // ---------- polígonos na tela ----------
 
@@ -230,10 +196,6 @@ export class Prancha {
   }
   svg() {
     return documento({ largura: this.largura, altura: this.altura, titulo: this.titulo, descricao: this.descricao, defs: this.defs.join("\n"), miolo: this.camadas.join("\n") });
-  }
-  salvar(caminhoDoArquivo) {
-    writeFileSync(caminhoDoArquivo, this.svg());
-    return caminhoDoArquivo;
   }
 }
 
@@ -309,91 +271,6 @@ export function superficie(prancha, { ref, refCostas, w, h, P, cam, nu = 16, nv 
   return { svg: saida.join(""), celulas };
 }
 
-/** P(u, v) de uma face plana: `origem` é o canto (u=0, v=0) e `eixoU`, `eixoV` os vetores de 1 unidade da arte. */
-export const plano = (origem, eixoU, eixoV) => (u, v) => soma(origem, soma(mul(eixoU, u), mul(eixoV, v)));
-
-/**
- * Sombreamento de Lambert por célula, por cima de uma superfície: preto onde a face foge da luz e
- * (opcional) branco onde ela encara a luz. `luz`: direção PARA a luz (normalizada aqui).
- * `ambiente` é o piso de claridade. Devolve polígonos (sem costura, com folga) para uma camada.
- */
-export function sombrear(celulas, { luz, ambiente = 0.35, forca = 0.55, brilho = 0, folga = 0.5, cor = "#000", corBrilho = "#fff" }) {
-  const L = normal(luz);
-  const partes = [];
-  for (const c of celulas) {
-    if (!c.deFrente) continue;
-    const lamb = Math.max(0, dot(c.normal, L));
-    const claro = ambiente + (1 - ambiente) * lamb; // 0..1
-    const escuro = (1 - claro) * forca;
-    const ps = pontos(alargar(c.tela, folga));
-    if (escuro > 0.004) partes.push(`<polygon points="${ps}" fill="${cor}" fill-opacity="${n(escuro * 1000) / 1000}"/>`);
-    if (brilho > 0) {
-      const b = Math.max(0, lamb - 0.75) * 4 * brilho;
-      if (b > 0.004) partes.push(`<polygon points="${ps}" fill="${corBrilho}" fill-opacity="${n(b * 1000) / 1000}"/>`);
-    }
-  }
-  return partes.join("");
-}
-
-/** O contorno (polígono da tela) de uma superfície P(u, v), com `amostras` pontos por borda. */
-export function contorno(cam, P, w, h, amostras = 24) {
-  const ps = [];
-  for (let i = 0; i <= amostras; i++) ps.push(cam.p(P((w * i) / amostras, 0)));
-  for (let i = 1; i <= amostras; i++) ps.push(cam.p(P(w, (h * i) / amostras)));
-  for (let i = amostras - 1; i >= 0; i--) ps.push(cam.p(P((w * i) / amostras, h)));
-  for (let i = amostras - 1; i >= 1; i--) ps.push(cam.p(P(0, (h * i) / amostras)));
-  return ps;
-}
-
-/**
- * Luz de uma superfície cuja normal só muda com u (face plana, lombada arredondada, folha curvada em
- * uma direção): um polígono só, com o contorno da superfície, e um gradiente ao longo de u (na tela,
- * na altura `vRef`) com o Lambert de cada amostra. Sem costura nenhuma. `luz`: direção PARA a luz.
- * `ambiente`: o piso de claridade; `forca`: quanto o escuro pesa; `brilho`: realce onde a face
- * encara a luz (0 a 1), a partir de `limiarBrilho`. Devolve o SVG (duas camadas, sombra e brilho).
- */
-export function sombrearFace(prancha, { P, w, h, cam, luz, ambiente = 0.4, forca = 0.6, brilho = 0, limiarBrilho = 0.8, amostras = 32, vRef, cor = "#000", corBrilho = "#fff", especular }) {
-  const L = normal(luz);
-  const v = vRef ?? h / 2;
-  const du = w / 400;
-  const dv = h / 400;
-  const a = cam.p(P(0, v));
-  const b = cam.p(P(w, v));
-  const eixo = [b[0] - a[0], b[1] - a[1]];
-  const l2 = eixo[0] ** 2 + eixo[1] ** 2 || 1;
-  const escuro = [];
-  const claro = [];
-  for (let i = 0; i <= amostras; i++) {
-    const u = (w * i) / amostras;
-    const u0 = Math.max(0, u - du);
-    const u1 = Math.min(w, u + du);
-    const nrm = normal(cross(sub(P(u1, v), P(u0, v)), sub(P(u, Math.max(0, v - dv)), P(u, Math.min(h, v + dv)))));
-    const q = cam.p(P(u, v));
-    const t = limitar(((q[0] - a[0]) * eixo[0] + (q[1] - a[1]) * eixo[1]) / l2);
-    const lamb = Math.max(0, dot(nrm, L));
-    const c = ambiente + (1 - ambiente) * lamb;
-    escuro.push([t, cor, n((1 - c) * forca * 1000) / 1000]);
-    let bri = brilho > 0 ? Math.max(0, lamb - limiarBrilho) / (1 - limiarBrilho) * brilho : 0;
-    if (especular) {
-      // Brilho especular (Blinn-Phong) com o olho: a meia direção entre a luz e o olhar.
-      const V = normal(sub(cam.olho, P(u, v)));
-      const Hh = normal(soma(L, V));
-      bri += Math.pow(Math.max(0, dot(nrm, Hh)), especular.expoente ?? 40) * (especular.forca ?? 0.3);
-    }
-    claro.push([t, corBrilho, n(bri * 1000) / 1000]);
-  }
-  escuro.sort((x, y) => x[0] - y[0]);
-  claro.sort((x, y) => x[0] - y[0]);
-  const forma = pontos(contorno(cam, P, w, h));
-  const g1 = gradiente(prancha, a, b, escuro);
-  let svg = `<polygon points="${forma}" fill="url(#${g1})"/>`;
-  if (claro.some((c) => c[2] > 0)) {
-    const g2 = gradiente(prancha, a, b, claro);
-    svg += `<polygon points="${forma}" fill="url(#${g2})"/>`;
-  }
-  return svg;
-}
-
 // ---------- luz, sombra e textura ----------
 
 /** Um filtro de desfoque (feGaussianBlur) nas defs; devolve o id. `margem` alarga a região do filtro. */
@@ -452,38 +329,6 @@ export function gradienteRadial(prancha, [cx, cy], r, paradas, { fx, fy, transfo
     `<radialGradient id="${id}" gradientUnits="userSpaceOnUse" cx="${n(cx)}" cy="${n(cy)}" r="${n(r)}"${fx != null ? ` fx="${n(fx)}" fy="${n(fy)}"` : ""}${transformacao ? ` gradientTransform="${transformacao}"` : ""}>${paradas.map(([o, c, a = 1]) => `<stop offset="${o}" stop-color="${c}" stop-opacity="${a}"/>`).join("")}</radialGradient>`,
   );
   return id;
-}
-
-/**
- * As linhas das folhas no corte do miolo (topo, pé ou frente), num quadrilátero 3D [a, b, c, d]
- * (a→b ao longo da folha, a→d atravessando as folhas). Linhas finas, com espessura e tom que variam
- * um pouco, como papel de verdade. Devolve o SVG (sem o fundo: pinte o papel por baixo).
- */
-export function linhasDasFolhas(cam, [a, b, c, d], { quantas = 60, cor = "#000", opacidade = 0.12, largura = 0.5, semente = 7, ondulacao = 0 } = {}) {
-  const rnd = aleatorio(semente);
-  const linhas = [];
-  for (let i = 1; i < quantas; i++) {
-    const t = (i + (rnd() - 0.5) * 0.6) / quantas;
-    const p0 = lerp(a, d, t);
-    const p1 = lerp(b, c, t);
-    const op = opacidade * (0.45 + rnd() * 1.1);
-    const lw = largura * (0.6 + rnd() * 0.8);
-    if (ondulacao) {
-      const passos = 8;
-      const ps = [];
-      for (let k = 0; k <= passos; k++) {
-        const q = lerp(p0, p1, k / passos);
-        const [x, y] = cam.p(q);
-        ps.push([x, y + Math.sin(k * 1.7 + i) * ondulacao * rnd()]);
-      }
-      linhas.push(`<path d="${caminho(ps, false)}" fill="none" stroke="${cor}" stroke-opacity="${n(op * 1000) / 1000}" stroke-width="${n(lw * 100) / 100}"/>`);
-    } else {
-      const [x0, y0] = cam.p(p0);
-      const [x1, y1] = cam.p(p1);
-      linhas.push(`<line x1="${n(x0)}" y1="${n(y0)}" x2="${n(x1)}" y2="${n(y1)}" stroke="${cor}" stroke-opacity="${n(op * 1000) / 1000}" stroke-width="${n(lw * 100) / 100}"/>`);
-    }
-  }
-  return linhas.join("");
 }
 
 /** O polígono (tela) de uma face 3D. */

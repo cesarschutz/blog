@@ -1,7 +1,7 @@
 ---
 /**
- * O livro ampliado (D33, D49): clicar no livro aberto (na gaveta da home, no topo das páginas de
- * categoria e de série e no livro do artigo) abre o mesmo livro 3D, grande, sobre a página escurecida
+ * O livro ampliado (D33, D49): clicar no livro aberto (na gaveta da home e no topo das páginas de
+ * categoria e de série) abre o mesmo livro 3D, grande, sobre a página escurecida
  * (o visor, visor.css), com o nome e o volume embaixo e, fora da página dele, o link "Ver o livro". O
  * livro cresce a partir do livro de onde saiu (o de origem some enquanto isso) e, ao fechar, volta
  * para ele (D47).
@@ -186,6 +186,7 @@ import "../styles/paginas.css";
     let conteudo: ReturnType<typeof impresso> | null = null;
     let capa: HTMLElement | null = null;
     let pagina: HTMLElement | null = null;
+    let guardaDeTras: HTMLElement | null = null;
     const estado = { p: 0, q: [] as number[] };
     // No celular, a página que está à vista (o livro aberto é mais largo que a tela) e o quanto a vista correu.
     let lado: "dir" | "esq" = "dir";
@@ -200,15 +201,34 @@ import "../styles/paginas.css";
 
     // Quem escreve as transformações a cada quadro (quickSetter: sem criar um tween por quadro).
     type Escrever = (v: number) => void;
-    let escrita: { livroGiro: Escrever; livroX: Escrever; capa: Escrever; folhas: { z: Escrever; s1: Escrever; s2: Escrever }[] } | null = null;
+    let escrita: {
+      livroGiro: Escrever;
+      livroX: Escrever;
+      capa: Escrever;
+      aberto: Escrever;
+      folhas: { z: Escrever; s1: Escrever; s2: Escrever }[];
+    } | null = null;
     function prepararEscrita() {
       if (!gsap || !livro || !capa) return;
       const g = gsap;
       const qs = (el: Element, prop: string, unidade: string) => g.quickSetter(el, prop, unidade) as Escrever;
+      const vistaDoLivro = livro.parentElement!;
+      const chao = livro.querySelector<HTMLElement>(".chao");
+      const tras = guardaDeTras;
       escrita = {
         livroGiro: qs(livro, "rotationY", "deg"),
         livroX: qs(livro, "x", "px"),
         capa: qs(capa, "rotationY", "deg"),
+        /*
+         * Abrindo, a vista de um pouco acima (D57, livro.css) se endireita: aberto, o livro fica de frente,
+         * sem o alto à mostra (a lombada vista de cima parecia um colchete solto no meio). A sombra no
+         * chão, que é a do livro fechado, sai; a guarda da contracapa chega no fim da abertura.
+         */
+        aberto: (p) => {
+          vistaDoLivro.style.setProperty("--aberto", p.toFixed(4));
+          if (chao) chao.style.opacity = (1 - p).toFixed(3);
+          if (tras) tras.style.opacity = Math.min(1, Math.max(0, (p - 0.8) / 0.2)).toFixed(3);
+        },
         folhas: folhas.map((f) => ({ z: qs(f.el, "z", "px"), s1: qs(f.s1, "rotationY", "deg"), s2: qs(f.s2, "rotationY", "deg") })),
       };
     }
@@ -220,6 +240,7 @@ import "../styles/paginas.css";
       escrita.livroGiro(GIRO * (1 - p));
       escrita.livroX((m.cw / 2) * p + vista.x);
       escrita.capa(-180 * p);
+      escrita.aberto(p);
       folhas.forEach((f, k) => {
         const q = estado.q[k];
         const e = escrita!.folhas[k];
@@ -412,6 +433,10 @@ import "../styles/paginas.css";
       for (const camada of livro.querySelectorAll(".folha-livro")) camada.remove();
       livro.querySelector<HTMLElement>(".capa-verso")!.innerHTML = conteudo.guarda;
       pagina!.innerHTML = conteudo.proximo;
+      // A guarda da contracapa (paginas.css): aberto, a capa de trás passa o miolo como a da frente.
+      guardaDeTras = document.createElement("div");
+      guardaDeTras.className = "f guarda-de-tras";
+      livro.insertBefore(guardaDeTras, pagina);
       const face = (lado: "frente" | "costas", html: string, meia: boolean) =>
         `<div class="face ${lado}${meia ? " meia-dir" : ""}">${html}</div>`;
       folhas = conteudo.folhas.map((f) => {
@@ -433,10 +458,14 @@ import "../styles/paginas.css";
       atualizarBarra();
     }
 
-    /** A última página (o próximo livro) fica abaixo de todas as folhas; a capa, acima delas. */
+    /**
+     * A última página (o próximo livro) fica abaixo de todas as folhas, e a guarda da contracapa logo
+     * abaixo dela; a capa, acima delas.
+     */
     function medirPagina() {
       if (!gsap || !pagina || !capa) return;
       gsap.set(pagina, { z: zDir(folhas.length) - 0.3 });
+      if (guardaDeTras) gsap.set(guardaDeTras, { z: zDir(folhas.length) - 0.9 });
       gsap.set(capa, { z: m.sw / 2 + 0.6 });
     }
 
@@ -535,13 +564,17 @@ import "../styles/paginas.css";
       // O giro da origem (o GSAP da gaveta o deixa no style) não vem junto.
       livro?.style.removeProperty("transform");
       livro?.style.setProperty("--giro", `${GIRO}deg`);
+      // O livro da gaveta não tem a sombra no chão (D57): a cópia também não, senão ela sumia de uma vez
+      // quando o livro volta para a gaveta.
+      const chaoDaOrigem = caixa.querySelector(".chao");
+      if (chaoDaOrigem && getComputedStyle(chaoDaOrigem).display === "none") nova.querySelector(".chao")?.remove();
       palco.replaceChildren(nova);
       copia = nova;
       caixaDeOrigem = caixa;
       folhas = [];
       conteudo = null;
       escrita = null;
-      capa = pagina = null;
+      capa = pagina = guardaDeTras = null;
       linkSobOMouse = null;
       estado.p = 0;
       estado.q = [];
@@ -633,7 +666,7 @@ import "../styles/paginas.css";
       conteudo = null;
       escrita = null;
       origem?.querySelector<HTMLElement>("[data-ampliar]")?.focus({ preventScroll: true });
-      origem = livro = capa = pagina = null;
+      origem = livro = capa = pagina = guardaDeTras = null;
     });
     dialogo.querySelector("[data-fechar]")!.addEventListener("click", () => fechar());
     // Esc também fecha o livro e o leva de volta.

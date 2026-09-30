@@ -123,6 +123,31 @@
   box-shadow: 0 calc(var(--bh) * 0.08) calc(var(--bh) * 0.12) calc(var(--bh) * -0.06) rgb(0 0 0 / 0.45);
 }
 
+/*
+ * A guarda da contracapa (D57): aberto e de frente, o livro mostra as duas capas passando o miolo (a
+ * seixa) dos dois lados, um livro só. A contracapa de verdade fica uma espessura de livro atrás das
+ * folhas, e a perspectiva a esconde atrás delas: esta placa, na cor da guarda e com a sombra da capa
+ * aberta na mesa, fica logo atrás da última folha da direita (LivroAmpliado, medirPagina) e só aparece
+ * no fim da abertura, quando o alto do livro já não está à vista (a opacidade acompanha a capa).
+ */
+.livro-que-abre .guarda-de-tras {
+  width: var(--cw);
+  height: var(--bh);
+  border-radius: max(1px, var(--u)) max(2px, calc(3 * var(--u))) max(2px, calc(3 * var(--u))) max(1px, var(--u));
+  background:
+    var(--grao) 0 0 / 180px 180px,
+    var(--livro-cor);
+  box-shadow: 0 calc(var(--bh) * 0.08) calc(var(--bh) * 0.12) calc(var(--bh) * -0.06) rgb(0 0 0 / 0.45);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.livro-que-abre .livro-serie .guarda-de-tras {
+  background:
+    var(--grao) 0 0 / 180px 180px,
+    var(--revista-papel);
+}
+
 /* ---------- a guarda: o verso da capa, na cor do livro, com o ex-libris colado ---------- */
 
 .guarda {

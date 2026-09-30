@@ -38,14 +38,15 @@ export const profundidade = (el: HTMLElement) => (el.offsetHeight * 480) / 720;
  * da prateleira na projeção. Levantando isso (mais 3px de folga para passar a borda da tábua), o pé
  * continua na linha da tábua, como quem ergue o livro um nada para tirá-lo. O olho é o
  * perspective-origin da prateleira (estante.css: um pouco acima dos livros, D57), e o pé fica embaixo
- * dela.
+ * dela, `abaixo` px abaixo do olho. Na projeção, o pé a z vai para abaixo · d / (d − z); o y do GSAP
+ * entra antes dela (translate3d), e quem zera o desvio é −abaixo · z / d.
  */
 export function levantar(prateleira: HTMLElement, z: number) {
   const estilo = getComputedStyle(prateleira);
   const perspectiva = parseFloat(estilo.perspective) || 1400;
   const olho = parseFloat(estilo.perspectiveOrigin.split(" ")[1]);
   const abaixo = prateleira.offsetHeight - (Number.isFinite(olho) ? olho : prateleira.offsetHeight * 0.45);
-  return -(abaixo * z) / Math.max(1, perspectiva - z) - 3;
+  return -(abaixo * z) / perspectiva - 3;
 }
 
 export type Tombado = { el: HTMLElement; graus: number };

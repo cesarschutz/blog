@@ -500,7 +500,8 @@ A partir de 1300px, a coluna da esquerda começa no topo da página: o sumário 
 com "NN% lido" e os minutos que faltam embaixo (sem barra, D52, B05); o fio, os vistos, o ponto atual
 e o sublinhado da seção atual são da **caneta azul** (`--caneta`, D52, B05; antes, a cor do livro do
 post e o marca-texto do sumário), e embaixo da folha do sumário
-fica **o livro do artigo, grande e de lado** (D46), num painel tingido, com a lupa, o nome e "Ver o livro".
+fica a ficha **"Do livro"** (D46, C05; D57): a foto do livro deitado, com a fita e uma etiqueta por
+artigo (a deste, amarela), o nome e "Ver o livro".
 **O sumário acompanha a leitura (D49):** um fio de tinta à mão desce pelo trilho até a altura lida;
 a seção em que o leitor ficou por 0,6s ou mais ganha um visto desenhado no marco ao ficar para trás, e
 a seção atual é sublinhada à mão, uma linha por vez (D52, B04 e B05), sem mudar o peso da letra — fica
@@ -529,8 +530,8 @@ difusa, que sobe um pouco quando o mouse passa:
 - escuro: `0 12px 30px -18px rgba(0,0,0,.8)`; ao passar o mouse, `0 18px 36px -16px rgba(0,0,0,.9)`.
 
 Os livros têm volume próprio (a construção de capa dura, a luz da lombada arredondada, o grão e a
-sombra de contato; na estante e na pilha, a cabeça, os lados, a tábua com espessura; pelo `CAPAS.md`, D57). Painéis,
-caixas e desenhos dentro de uma folha **não** levam sombra.
+sombra de contato; na estante e na pilha, a cabeça, os lados e a tábua com espessura; pelo
+`CAPAS.md`, D57). Painéis, caixas e desenhos dentro de uma folha **não** levam sombra.
 
 ## Shapes
 
@@ -630,11 +631,11 @@ frase e desenho; medidas em `docs/capas/CAPAS.md`):
   escala do comprimento, D46), com o título e o número em corpo próprio, de uns 10px.
 - **Livro escolhido:** os não escolhidos do filtro aparecem **apagados** (um véu do papel da folha a
   62%, `--apagado`, com a cara da opacidade de 0,4 de antes; opacidade e filtro achatariam o 3D, D57),
-  nunca com contorno azul. A exceção é o livro
-  que foi para a gaveta da home (D43): ele sai da estante, e o lugar dele fica **vazio**. O foco do teclado é um anel fino e discreto.
-- **Livro 3D em todo lugar** (gaveta, grade de categorias e séries, topo da página do livro, livro
-  do artigo e livro ampliado): **de lado, a 38° da frente**, com a lombada bem à vista (`GIRO` em
-  `lib/livro-3d.ts`, D46; era 18° fora da gaveta). A perspectiva acompanha a altura do livro
+  nunca com contorno azul. A exceção é o livro que foi para a gaveta da home (D43): ele sai da
+  estante, e o lugar dele fica **vazio**. O foco do teclado é um anel fino e discreto.
+- **Livro 3D em todo lugar** (gaveta, grade de categorias e séries, topo da página do livro e livro
+  ampliado; na ficha "Do livro" do artigo, a foto do livro deitado, D57): **de lado, a 38° da
+  frente**, com a lombada bem à vista (`GIRO` em `lib/livro-3d.ts`, D46; era 18° fora da gaveta). A perspectiva acompanha a altura do livro
   (4,7 vezes, a da gaveta), para o pequeno e o grande terem a mesma cara. **Capa dura de verdade**
   (D57, prancha 01; medidas em `docs/capas/CAPAS.md`, "Livro 3D: capa dura"): capas de papelão com a
   borda forrada na cor impressa, seixa, lombada arredondada (a arte no meio e facetas até as capas, com
