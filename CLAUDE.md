@@ -95,7 +95,8 @@ Detalhes e casos especiais estão em `docs/decisoes.md` (D7).
 Aprovada em 23/09/2026. Detalhes em `docs/decisoes.md`.
 
 - Astro 7, site estático, com TypeScript 6 estrito (o `astro check` ainda não aceita o TS 7)
-- Posts em Markdown (`.md`). `.mdx` só quando o post usa componente (lousa)
+- Posts em Markdown (`.md`). `.mdx` só quando o post usa componente (lousa, figura, animação, ícone
+  de ferramenta, print)
 - Expressive Code para código (título, linhas destacadas, diff, Copiar). KaTeX só em post com fórmula
 - CSS próprio com tokens, sem Tailwind e sem framework de UI. Visual "Folhas claras" (D26): folhas
   (`.folha`), painéis dos desenhos (`.painel`) e azul-tinta (`--acento`) no que é clicável
@@ -123,10 +124,14 @@ npm run preview      # serve o dist/; é onde a busca funciona (no dev não há 
 npm run contraste    # contraste dos tokens (D22); falha se texto ficar abaixo do mínimo
 npm run links        # confere links internos, âncoras e redirecionamentos do dist/
 npm run conferir -- <slug> [--base URL] [--capturas]   # o post em 320–1600px × claro/escuro: rolagem
-                     # lateral, console, rede, alt e marcas da caneta (D53); sai 1 com problema
+                     # lateral, console, rede, alt e marcas da caneta (D53); sai 1 com problema.
+                     # Aceita um caminho no lugar do slug (/<caminho>/)
 npm run setup        # confere o ambiente (Node, dependências, skills, Chrome, motor do Impeccable)
 npm run apresentacao -- <slug> --pptx <arquivo> --titulo "…"   # slides do NotebookLM
-node scripts/desenho/validar.mjs [slug]   # regras da ilustração e das lousas
+node scripts/desenho/validar.mjs [slug]   # regras da capa, das lousas, das figuras e das animações
+node scripts/desenho/validar.mjs marcas   # os logos das ferramentas (src/marcas/)
+node scripts/foto.mjs <url> <saida.png> [--seletor css] [--tema escuro] [--largura 390] …
+                                          # foto de uma página ou de uma peça (Chrome próprio; opções no script)
 node scripts/desenho/centrar.mjs <slug>   # centra os recortes no desenho (dev no ar)
 node scripts/desenho/render.mjs [slug]    # folha da ilustração, claro e escuro (dev no ar)
 node scripts/desenho/java.mjs             # as ilustrações da série Java (padrão fixo, D17)
@@ -163,7 +168,7 @@ entrada/                 posts trazidos para adaptar (fora do git)
 docs/briefing.md         decisões de produto e design (fonte da verdade)
 docs/estado.md           painel: fase, pronto, próximos passos, perguntas
 docs/decisoes.md         registro de decisões (data, decisão, motivo, alternativas)
-docs/estilo-desenho.md   estilo das ilustrações e das lousas
+docs/estilo-desenho.md   estilo da capa (e da capa viva), das figuras coloridas e das lousas
 docs/marcacoes.md        guia vivo da caneta do caderno: 34 tipos, limites, tela, ajustes do Cesar (D48, D56)
 docs/movimento.md        o detalhe de cada animação (durações, curvas, ordem); as regras ficam no DESIGN.md
 docs/capas/              a regra dos livros (CAPAS.md) e as imagens de referência
@@ -183,11 +188,13 @@ src/amostra/             o conteúdo das páginas /amostra/ (recursos.md, recurs
 src/styles/tokens.ts     cores dos dois temas: fonte única, gera as variáveis CSS (D4)
 src/styles/              base (folha, painel, transição de página), fontes, avisos, prosa, artigo (grade,
                          notas), paginas, estante e livro (lombada, livro 3D e capa), desenho
-                         (ilustrações), lousa, caneta (marcações, D48), traco (traços à caneta, C04),
-                         visor, contador e copiado (D49)
+                         (ilustrações), capa-viva, figura (figuras, animações e logos, D58), lousa e
+                         lousa-nova, caneta (marcações, D48), traco (traços à caneta, C04), visor,
+                         contador e copiado (D49)
 src/assets/              caveat-titulos.woff: a Caveat 600 só com as letras dos títulos à mão (C05)
 src/layouts/Base.astro   head, anti-piscada, cabeçalho, rodapé e busca
-src/components/          peças das páginas (estante, gaveta, sumário, avisos, busca…)
+src/components/          peças das páginas (estante, gaveta, sumário, avisos, busca…) e dos posts (Lousa,
+                         Figura, Animacao, Ferramenta, Evidencia; LousaTempo e LousaLoop só nos antigos)
 src/pages/               rotas; a home é [...page].astro (paginada, D27); livros/[slug].svg (desenho
                          da capa, que a gaveta busca ao abrir o livro, D30);
                          posts/[slug]/apresentacao.pdf.ts (PDF) e og/[slug] (imagem, D10)
@@ -199,16 +206,22 @@ src/lib/                 posts, formatos, busca (Pagefind), código (Expressive 
                          tags-svg (ícones das tags, D52), fotos (as fotos paradas dos livros e o lugar
                          das etiquetas, D57), traco (traços e ícones à caneta: menu,
                          colchete, círculo, rasura, ondinha, ícones de data, tempo, código, lupa, lua,
-                         sol, contornos dos botões e a assinatura, D52, C04)
+                         sol, contornos dos botões e a assinatura, D52, C04), figuras (lê figuras,
+                         animações e logos, e troca `data-marca` pelo logo, D58)
 src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, apresentação)
 src/scripts/tema.ts      tema: o botão do cabeçalho alterna claro e escuro (D39)
 scripts/                 contraste, links, apresentacao, og, copiar-katex, desenho/, bench-busca/,
                          marca, caveat-titulos (subconjunto da Caveat, C05), verificar-ambiente
-                         (npm run setup e hook do início da sessão), livros/ (as fotos dos livros, D57)
+                         (npm run setup e hook do início da sessão), livros/ (as fotos dos livros, D57),
+                         foto.mjs (foto de uma página ou peça, sem MCP, D58)
 public/posts/<slug>/     diagramas antigos e slides das apresentações (deck/)
 public/livros/fotos/     as fotos dos livros (D57): o deitado de cada livro e o aberto em branco
 src/ilustracoes/         uma ilustração SVG por post (<slug>.svg), com os recortes na raiz (D11)
 src/lousas/<slug>/       desenhos das lousas de cada post .mdx
+src/figuras/<slug>/      diagramas e gráficos coloridos do post (D58)
+src/animacoes/<slug>/    animações com play: o quadro final (<nome>.svg) e o movimento (<nome>.ts, GSAP)
+src/marcas/              logos das ferramentas (viewBox 100×100), reaproveitados em todo post
+src/evidencias/<slug>/   prints que provam algo do texto (PNG)
 .github/workflows/       deploy no GitHub Pages (a cada push na main, D34)
 .claude/skills/          procedimentos (carregados sob demanda); as de terceiros são cópias lidas
 .claude/agents/          subagentes do Impeccable
@@ -221,9 +234,10 @@ src/lousas/<slug>/       desenhos das lousas de cada post .mdx
 
 - `post`: todo post, nos modos Novo e Adaptar, com o checklist único e a revisão em lote
   (`.claude/revisao-posts.md`)
-- `desenho`: a ilustração de cada post (o que desenhar, regras técnicas, recortes, validação)
-- `lousa`: diagramas na lousa (linha do tempo de arrastar, também para passos, e animação curta em
-  loop) e frase em destaque
+- `desenho`: a capa de cada post (o que desenhar, capa viva, regras técnicas, recortes, validação)
+- `figura`: figuras coloridas, animação com play, logos das ferramentas e print como evidência (D58)
+- `lousa`: a lousa (`Lousa`, de passos ou de comparação) e a frase em destaque; `LousaTempo` e
+  `LousaLoop` só nos posts antigos
 - `caneta`: a passada de caneta num post (a última etapa da skill `post`, ou sozinha: "passa a caneta
   no post X"), pelo guia `docs/marcacoes.md`
 - `apresentacao`: PowerPoint do NotebookLM → slides WebP e PDF

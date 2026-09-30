@@ -67,6 +67,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D54 | Caça aos bugs de 29/09/2026: 40 correções de interação, teclado, impressão, listas e RSS | em vigor |
 | D56 | Caneta com 34 tipos e mais marcações por post | em vigor |
 | D57 | Livros realistas: capa dura em todos os livros, estante e pilha com volume, livro deitado no "Do livro", livro aberto nos vazios e a série como livro | em vigor |
+| D58 | Recursos visuais novos: capa viva, figuras coloridas, a lousa nova, a animação com play, os ícones das ferramentas, o print e a caneta da leitura na cor do livro | decidido |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -2071,3 +2072,99 @@ nada muda.
   prateleira sozinha em "Séries", o esmaecer da lista que rola na gaveta, a classe `.capa-topo`
   duplicada (virou `.capa-borda`) e código morto. Ficam como estão: cabeceado e seixa quase invisíveis
   no ampliado (1,5px com a vista a 15°) e a curva da cabeça na estante.
+
+## D58 · Recursos visuais novos
+- **Data:** 29 e 30/09/2026 · **Status:** decidido; publicado em 30/09/2026 com os três primeiros
+  posts revistos. Os dez artigos de exemplo, o controle (`CONTROLE.md`) e as duas rodadas de ajustes
+  (`AJUSTES-1.md`, `AJUSTES-2.md`) ficaram fora da `main`, a pedido do Cesar: estão só na branch local
+  `exemplos-arquivo` (pasta `../blog-exemplos`, git worktree), que não vai para o GitHub.
+- **Pedido do Cesar (29/09/2026):** ver no lugar os recursos que os posts vão ter. A capa segue "A +
+  C", com um detalhe que se mexe no hover, como a fumaça da caneca; a lousa perde o "videozinho" e fica
+  com passos e comparação no mesmo componente; diagramas coloridos, porque a cor ajuda a memorizar;
+  desenhos, gráficos, logos das ferramentas e animações próprias com play; o print como evidência; a
+  caneta da leitura na cor do livro. Em 30/09, uma rodada de ajustes nos exemplos 01 a 03 (conferida
+  item a item) e, aprovada ("ficou muito bom"), a ordem de levar os componentes para o site e as
+  regras para as skills e os docs.
+- **Decidido:**
+  - **Quatro tipos de desenho, cada um com um dono do movimento:** a capa (parada; um detalhe reage ao
+    mouse); a figura (gráfico, diagrama ou outro desenho; parada, ou com detalhes que se mexem sozinhos
+    sem mudar a imagem); a lousa (o leitor comanda o tempo); a animação com play (a imagem muda; o
+    leitor só dá play e pausa). Nem todo post tem os quatro: entra o que o assunto pede.
+  - **Capa viva** (`capa-viva.css`, `capa-viva.ts`): um detalhe só, que conta algo do assunto, se mexe
+    no hover do topo do artigo, do card e do item da lista, com as classes `mexe-*`. **Evento**
+    (balança, pulsa, pisca, sobe, treme, escreve, enche) acontece e volta sozinho, e vai até o fim mesmo
+    que o mouse saia; **estado** (gira, desliza) muda e fica enquanto o mouse está em cima e volta
+    animado, um pouco mais rápido que a ida, nunca pulando. Generaliza a fumaça da caneca (D52, C04).
+  - **Figura colorida** (`Figura`, `figura.css`, `src/figuras/<slug>/`): o traço da capa, no painel do
+    livro, com seis tons (`--diag-*` em `tokens.ts`, todos com 4,5:1 nos dois temas e no painel de
+    todos os livros, conferidos por `npm run contraste`). Cada ator, lado ou papel ganha um tom, o
+    mesmo em todas as figuras do post; o vermelho é só para erro, limite e recusa. Selos numerados
+    quando há ordem, legenda de cores que destaca um ator com o mouse (nela ou no próprio componente;
+    o resto esmaece, logos, rótulos e detalhes que piscam incluídos) e
+    detalhes que se mexem na ordem do que acontece (`pacote` por etapas, `fluxo`, `formiga`, `pulsa`,
+    `pisca`, `gira`, `balanca`, `anda`), só com a figura na tela. Até 700px, a figura fica com 720px e
+    rola de lado dentro do quadro. A "cor do livro como única cor" (briefing §6) continua valendo para a
+    capa.
+  - **Lousa nova** (`Lousa`, `lousa-nova.css`, motor em `src/scripts/lousa.ts`): um componente, dois
+    usos. **Passos** (`passos=`): a caneta monta a sequência, e a lista numerada embaixo acende o passo
+    da vez na cor do livro. **Comparação** (`estados=`): duas linhas no mesmo tempo (sem × com, antes ×
+    depois); os estados vão só para o leitor de tela. A lousa aparece completa e parada; o play vai do
+    início ao fim (7 s por padrão), espera 5 s e recomeça. O tempo anda com o play, o arrasto sobre o
+    desenho, a rolagem horizontal sobre ela e o controle; a rolagem da página não mexe nela (a D46
+    continua). Nada ao lado do controle e nenhuma frase embaixo: a lousa nunca muda de tamanho. A caneta
+    aparece sempre que algo está sendo desenhado, com movimento de mão, uma por lugar (até três). Nos
+    passos, o marcador desliza pela lista como na busca, e o clique num passo leva a lousa até ele.
+  - **A `LousaLoop` sai dos posts novos** (o "videozinho"): o que ela mostrava vira lousa de passos ou
+    animação com play. A `LousaTempo` e a `LousaLoop` ficam só nos posts antigos, até serem revistos.
+  - **Animação com play** (`Animacao`; `src/animacoes/<slug>/<nome>.svg` e `<nome>.ts`, GSAP sob
+    demanda): o SVG é o quadro final, completo e parado (antes do play, sem JS e na impressão); o `.ts`
+    monta a linha do tempo que termina nele. Abre tocando quando aparece na tela (nunca com movimento
+    reduzido); o anel em volta do botão mostra o andamento da volta e pulsa nos 5 s de espera do fim; há
+    um botão para recomeçar; o clique na imagem dá play ou pausa. De 6 a 12 s por volta, num ritmo que
+    dá para ler; o que foi escrito não some (risca e escreve o novo embaixo). Pouca animação também vale.
+  - **Ícones das ferramentas** (`src/marcas/<nome>.svg`, `Ferramenta`, `data-marca`): logos desenhados
+    à mão no traço da casa, reconhecíveis, sem copiar o arquivo oficial, só de ferramenta de que o post
+    fala. Entram no texto (na primeira menção e espalhados pelo post, não só no começo; o ícone leva, em
+    outra aba e sem mudar o cursor, à página mais específica) e dentro das figuras e das animações (a
+    xícara do Java na caixa do app). Não confundir com os ícones das tags (D52, B11), que nunca são
+    logotipo.
+  - **Print como evidência** (`Evidencia`, `src/evidencias/<slug>/`): só o que prova algo do texto e dá
+    para garantir que está certo; tela que pede login (console da AWS, painéis internos) é o Cesar quem
+    tira. Com borda, uma linha dizendo o que é e de onde, e o clique abre a página de origem em outra
+    aba (não o visor de imagens).
+  - **Caneta da leitura na cor do livro:** a barra do topo (o fio e a caneta) e o sumário (o fio, o
+    ponto, os vistos, o sublinhado da seção atual e o título do post-it), com 42% de branco no escuro.
+    **Revê parte da B05 da D52** (a leitura tinha passado para a caneta azul) e o que o C04 dizia da
+    caneta da leitura; a barra de porcentagem e o marca-texto do sumário continuam fora. Seguem azuis:
+    as marcações da caneta no texto (D48), a seção atual do menu e a caneta do carregando (B14).
+  - **Regras de todo post:** todo desenho conversa com o texto (o texto apresenta o desenho e diz o que
+    olhar nele); nem todo post tem todos os tipos; nas lousas e animações, pouco texto trocando e mais
+    desenho que texto.
+- **Motivo:** a cor por ator ajuda a lembrar quem faz o quê; o que se mexe mostra o sistema
+  funcionando; o logo e o print dão contexto e prova. Nas lousas de hoje, a `LousaLoop` anda sozinha, e
+  a `LousaTempo` troca o texto ao lado do controle, o que mudava o tamanho dela (o sobe e desce no
+  celular de 29/09/2026 veio daí).
+- **Descartado nas rodadas:** a frase "Aperte o play…" embaixo da lousa; uma caneta escrevendo em dois
+  lugares ao mesmo tempo; a caneta andando reta; o texto que some ou troca dentro da animação (o "1 de
+  3" do 02); o detalhe da capa que pulava de volta ao tirar o mouse; a prévia do passo com o mouse na
+  lista da lousa (o Cesar pediu para tirar em 30/09/2026: o clique basta).
+- **Aplicado:** os três primeiros posts (criptografia em repouso e em trânsito, filtros do Jackson e
+  CronJob ou endpoint + fila, este passando de `.md` a `.mdx`, com os diagramas antigos de
+  `public/posts/` redesenhados em `src/figuras/`), cada um com a passada de caneta da D56 no fim
+  (56, 37 e 59 marcações). No da criptografia, uma marcação de passos se perdeu na revisão e ficou
+  assim (decisão do Cesar).
+- **Ficou para depois:** os outros posts continuam com `LousaTempo` e `LousaLoop` até serem revistos
+  pela skill `post` (modo Adaptar). Nos exemplos, o 04 a 10 ficaram como na primeira versão (o ícone do
+  Java no 04 deveria abrir a página do Java 21; a capa do 09 parece sem relação com o texto). Slides
+  entram como no 08 e no 09 quando houver apresentação.
+- **Mudado:** `src/components/` (novos: `Lousa`, `Figura`, `Animacao`, `Evidencia`, `Ferramenta`;
+  `Ilustracao` carrega a capa viva; `LousaTempo`, o ícone de pausa em coordenadas inteiras),
+  `src/styles/` (novos: `figura.css`, `capa-viva.css`, `lousa-nova.css`; `tokens.ts` com os tons
+  `DIAGRAMA`), `src/scripts/` (`lousa.ts` com a mão e até três canetas, `capa-viva.ts`), `src/lib/`
+  (`figuras.ts`), `src/pages/posts/[slug].astro` (a caneta da leitura), as pastas `src/figuras/`,
+  `src/animacoes/`, `src/marcas/` e `src/evidencias/`, `scripts/contraste.mjs` (os tons),
+  `scripts/desenho/validar.mjs` (classes da capa viva, figuras, animações e logos),
+  `scripts/conferir.mjs` (aceita um caminho no lugar do slug), `scripts/foto.mjs` (novo) e
+  `/amostra/lousas/` (lê a `Lousa`); nas regras,
+  `DESIGN.md`, `docs/` (briefing, estilo, movimento, estado), `CLAUDE.md`, as skills `post`, `desenho`,
+  `lousa` e `figura` (nova) e as regras `desenho` e `interface`.

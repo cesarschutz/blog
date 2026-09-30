@@ -1,4 +1,4 @@
-# Estilo das ilustrações e das lousas
+# Estilo das ilustrações, das figuras e das lousas
 
 Este arquivo guarda **só o estilo**. O Cesar pode trocá-lo sem mexer nas regras técnicas (skill
 `desenho`) nem na regra do que desenhar. Os valores marcados como "de partida" vêm dos protótipos
@@ -17,7 +17,7 @@ Onde protótipo e briefing divergirem, vale o briefing.
 - **Linha fantasma** (traço e ponto) para o que não acontece, para alternativas e para estados anteriores.
 - **Uma cor só**, a da categoria do post, aplicada como preenchimento levemente fora do registro
   (deslocado alguns pixels do contorno). O resto é tinta (`--ink`). No tema escuro, o destaque usa a
-  cor da categoria misturada com 42% de branco.
+  cor da categoria misturada com 42% de branco. (Vale para a capa; as figuras têm tons, abaixo.)
 - **Sem fundo próprio.** O SVG não pinta fundo, e as áreas preenchidas usam a cor da superfície
   onde ele aparece (`var(--fig-bg, var(--paper))`). Assim funciona igual nos dois temas e dentro
   dos slides.
@@ -52,6 +52,73 @@ basta para uma mancha de cor, mas não para traço fino nem texto. O protótipo 
 `#9C7A26`, mas a tabela do briefing manda `#C39A3E`, e ela vale até decisão contrária. No escuro, os
 destaques com 42% de branco passam em todas as categorias (5,1 a 9,8:1).
 
+## Capa viva (D58)
+
+- **Um detalhe só**, que conta algo do assunto (o vapor que sobe, o ponteiro que gira, o envelope que
+  desliza), se mexe quando o mouse passa pelo topo do artigo, pelo card ou pelo item da lista. O resto
+  da capa fica parado. É a fumaça da caneca da série Java (D52, C04) levada para toda capa.
+- **Evento:** acontece e volta sozinho, em até 1,3 s, e vai até o fim mesmo que o mouse saia no
+  meio. Balança (pendurado pelo alto), pulsa, pisca (duas vezes), sobe (sobe e some, volta de baixo),
+  treme, escreve (o traço se escreve de novo) e enche (de baixo para cima).
+- **Estado:** muda e fica enquanto o mouse está em cima: gira (120°) ou desliza (22 unidades para a
+  direita; para outra direção, o grupo de fora gira). Ao tirar o mouse, volta animado, um pouco mais
+  rápido que a ida. **Nada pula de volta.**
+- Só `transform`, `opacity` e `stroke-dashoffset`. Com movimento reduzido, nada se mexe.
+- Classes e onde pôr: skill `desenho`. Tempos: `docs/movimento.md`.
+
+## Figuras dos posts: diagramas e gráficos coloridos (D58)
+
+- **O traço é o da capa** (tremor, hachura, linha fantasma, `papel`, a cor fora do registro), no
+  painel do livro. O que muda é a cor: **cada ator, lado ou papel ganha um tom**, e o mesmo ator tem o
+  mesmo tom em todas as figuras do post. A cor ajuda a memorizar quem faz o quê.
+- **Tons** (`--diag-*`, tabela abaixo). Vermelho é para erro, limite, recusa e o que dá errado, nunca
+  para um ator comum.
+- **Lavado:** o fundo das caixas é o tom bem claro sobre o painel, com a tinta por cima passando de
+  4,5:1.
+- **Cor fora do registro no tom:** a mesma cópia deslocada da capa, agora no tom do ator. A hachura
+  continua na tinta.
+- **Traço no tom** nas setas de um fluxo e no contorno de destaque; o contorno das caixas, na tinta.
+- **Selo:** a bolinha cheia no tom, com o número do passo, quando a figura conta uma ordem.
+- **Textos:** o nome da caixa em Besley 700; o complemento em Literata itálica; números dos eixos em
+  IBM Plex Sans, com algarismos tabulares. Letra mínima de 20 unidades (19 nos valores dos eixos),
+  porque no celular a figura fica com 720px e rola de lado dentro do quadro.
+- **Legenda que destaca:** a legenda embaixo (uma frase) diz como ler as cores; uma legenda de cores
+  dentro da figura só com 4 tons ou mais. Com o mouse numa cor da legenda, ou no próprio componente,
+  as outras cores apagam e aquele ator fica em destaque.
+- **Setas à mão** (a ponta é um traço), nunca a ponta pronta do SVG. Nada cruza texto: as setas
+  desviam das caixas e dos rótulos.
+- **Gráficos:** eixo na tinta, grade pontilhada e apagada, a série num tom, a área lavada, o limite
+  tracejado no vermelho e uma anotação com chamada apontando o que importa. Números plausíveis e
+  coerentes com o texto, eixos com unidade.
+- **Detalhes que se mexem** (opcional): leves, sem mudar a imagem, na ordem em que as coisas
+  acontecem. Um ponto que percorre cada seta na vez dela (`pacote`), pontinhos correndo sem parar
+  (`fluxo`), um tracejado andando (`formiga`), um pulso, um piscar, um giro, um balanço, um vai e
+  vem. Em quantas setas fizer sentido, não só uma. Um gráfico também pode ter (um ponto pulsando no
+  pico, um cursor correndo na série). Só andam com a figura na tela; com movimento reduzido, param.
+- **Logos das ferramentas:** desenhados à mão no traço da casa, a forma que todo mundo conhece,
+  simplificada, com os tons (AWS: "aws" e o sorriso em âmbar; Kubernetes: o heptágono azul com o leme;
+  Java: a xícara). Sem tremor e sem copiar o arquivo oficial. Dentro das figuras, no lugar que
+  identifica a peça (a xícara na caixa do app, o logo da AWS na caixa da nuvem).
+- **Animação com play:** o mesmo desenho, e o quadro final é o desenho parado. O que se move fica
+  fora do grupo que treme. O que foi escrito não some: se mudou, um traço firme risca e o novo vem
+  embaixo. Mais desenho que texto.
+
+### Tons das figuras
+
+| Tom | Classe | Token | Claro |
+|---|---|---|---|
+| azul | `tom-azul` | `--diag-azul` | `#2F5FB3` |
+| verde | `tom-verde` | `--diag-verde` | `#25734E` |
+| âmbar | `tom-ambar` | `--diag-ambar` | `#955A0A` |
+| vermelho (só erro, limite, recusa) | `tom-vermelho` | `--diag-vermelho` | `#B23A2C` |
+| roxo | `tom-roxo` | `--diag-roxo` | `#7C4FAB` |
+| petróleo | `tom-petroleo` | `--diag-petroleo` | `#1A6F7A` |
+
+No escuro, cada tom leva 42% de branco (`--branco-no-escuro`), como a cor do livro. Todos passam de
+4,5:1 como texto sobre a folha e sobre o painel de todos os livros, nos dois temas, e a tinta passa de
+4,5:1 sobre o lavado (`npm run contraste`). O lavado é 16% do tom sobre o painel no claro e 30% no
+escuro; a cor fora do registro, 78% do tom, como na capa.
+
 ## Lousas dos diagramas: "Invertida, canetinha"
 
 A lousa é sempre o **contrário da página**:
@@ -68,8 +135,19 @@ A lousa é sempre o **contrário da página**:
 - **A caneta aparece desenhando.** Enquanto uma seta é traçada, a caneta fica na ponta do traço e
   acompanha o desenho. Os textos são escritos da esquerda para a direita, com a caneta seguindo. A
   caneta assume a cor do que está desenhando (a cor de destaque, nos destaques).
-- A caneta segue a linha do tempo ou o loop: parou o play (ou o arrasto), a caneta para; voltou no
-  tempo, o desenho se apaga até ali. Nada é comandado pela rolagem (D46).
+- **Com mão** (D58): escrevendo, a ponta sobe e desce a cada letra e a mão gira um pouco; no traço,
+  ela balança de leve. Nunca anda reta de um lado para o outro.
+- **Uma caneta por lugar** (D58): uma caneta nunca escreve em dois lugares. Quando duas partes são
+  feitas ao mesmo tempo, cada uma tem a sua (até três); melhor ainda, desenhe um lugar por vez. Na
+  comparação, uma caneta por linha, como um cursor do tempo.
+- **Desenhar, não só aparecer** (D58): onde a lousa desenha (caixas, blocos, barras), a caneta traça
+  o contorno e o preenchimento vem logo depois. Aparecer de uma vez fica para o cenário montado antes
+  da aula e para as pontas de seta.
+- A caneta aparece sempre que algo está sendo desenhado (play, arrasto, rolagem horizontal sobre a
+  lousa, controle) e some quando para; voltou no tempo, o desenho se apaga até ali. A rolagem da
+  página não mexe na lousa (D46).
+- **Pouco texto trocando** (D58): o que foi escrito não some; se mudou, risca e escreve o novo
+  embaixo. O quadro final (o que aparece antes do play) fica completo e legível.
 - Os rótulos e as caixas iniciais do cenário podem já estar desenhados ("o professor montou o quadro
   antes da aula").
 - **Frase em destaque** (recurso raro): uma citação cujas palavras acendem com a rolagem.
@@ -85,7 +163,7 @@ A lousa é sempre o **contrário da página**:
 | Espessura | 2,7 em caixas e setas e 1,5 nas divisórias de tabela (viewBox de referência 560×430) |
 | Hachura | A mesma de 7×7 a 45°, com a tinta a 22% (vidro) ou 30% (quadro) e traço 1,2 |
 | Rótulos | Literata itálica 17. Secundários em 13,5, com a tinta atenuada. Código em mono 12, sem itálico |
-| Caneta | Marcador simples girado −52° (mão direita), com sombra leve como no protótipo. Some quando nada está sendo traçado |
+| Caneta | Marcador simples girado −52° (mão direita), com sombra leve como no protótipo. Some quando nada está sendo traçado. Balança até 4° no traço e 6° na escrita, com a ponta subindo e descendo 22% da altura do texto a cada letra (D58) |
 
 Contraste dos destaques (conferido por `npm run contraste`, 24/09/2026):
 - Na lousa de vidro, todos passam sem ajuste (traço e texto de 6,2 a 10,3:1).

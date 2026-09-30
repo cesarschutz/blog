@@ -18,7 +18,9 @@ Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
 - Cores só por tokens CSS (`var(--ink)`, `var(--cat)`…), de `src/styles/tokens.ts`. Nada de hex solto
   em componente ou SVG.
 - Ícone novo de interface: função em `src/lib/traco.ts`, na caneta preta, nunca SVG solto (D52, C04).
-  A caneta preta desenha; a azul marca (estado: seção e página atuais, leitura, marcações da D48).
+  A caneta preta desenha; a azul marca (estado: seção e página atuais, marcações da D48). A caneta da
+  leitura (barra do topo e sumário) usa a cor do livro: a página do post põe a cor no `--caneta` desses
+  blocos (D58). Logo de ferramenta não é ícone de interface: fica em `src/marcas/` (skill `figura`).
 - Toda animação respeita `prefers-reduced-motion`: com ele ligado, tudo aparece no estado final, sem
   prender a tela. Anime `transform` e `opacity` (e `stroke-dashoffset` nos traços desenhados), nunca
   `filter` no livro 3D (`DESIGN.md`, Movimento).
@@ -35,7 +37,11 @@ Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
   - a ficha dos atalhos, o hover do livro ampliado (o `:hover` nativo se perde na pilha 3D), a
     preferência de tema e de modo válida por 3 dias (o script anti-piscada do `<head>`), o aceno dos
     dois cadernos no fim da abertura da home, a caneta que escreve o fio do cabeçalho quando a página
-    demora, a assinatura da home e a fumaça da caneca no hover (D52).
+    demora, a assinatura da home e a fumaça da caneca no hover (D52);
+  - a `Lousa` (play, arrasto, rolagem horizontal, passos, a caneta), a `Animacao` (a timeline GSAP de
+    cada animação, carregada sob demanda), a `Figura` (só um observador que liga os detalhes que se
+    mexem enquanto ela está na tela; o movimento é CSS) e a capa viva (`capa-viva.ts`: o evento vai
+    até o fim mesmo que o mouse saia) (D58).
 
   Artigo sem esses componentes funciona sem JS (as marcações da caneta são estáticas). Peça nova com
   JS entra nesta lista.

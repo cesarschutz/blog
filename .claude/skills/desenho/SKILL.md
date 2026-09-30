@@ -1,6 +1,6 @@
 ---
 name: desenho
-description: Cria ou altera a ilustração SVG de um post no estilo de docs/estilo-desenho.md, seguindo as regras técnicas (classes e variáveis CSS, sem id nem defs, recortes com área segura, alt) e validando antes de aceitar. Use ao desenhar ou corrigir a ilustração de um post.
+description: Cria ou altera a ilustração SVG de um post (a capa) no estilo de docs/estilo-desenho.md, seguindo as regras técnicas (classes e variáveis CSS, sem id nem defs, recortes com área segura, alt), com o detalhe da capa viva (classes mexe-*, D58), e validando antes de aceitar. Use ao desenhar ou corrigir a ilustração de um post. Figuras, animações, logos e print do corpo do post ficam na skill figura; lousas, na skill lousa.
 ---
 
 # Desenho (ilustração do post)
@@ -9,6 +9,9 @@ Formato, definições globais e scripts desde a Fase 5 (D11); os 27 posts têm i
 `src/ilustracoes/cobranca-duplicada-no-retry.svg`.
 
 **Antes de desenhar, leia `docs/estilo-desenho.md`**, porque o estilo pode ter mudado.
+
+Esta skill é da capa. Os desenhos do corpo do post têm as suas: figuras (diagramas e gráficos
+coloridos), animação com play, logos das ferramentas e print, na skill `figura`; lousas, na `lousa`.
 
 ## O que desenhar
 
@@ -86,8 +89,56 @@ Classes (definidas em `src/styles/desenho.css`; nenhuma outra passa no validador
 | `rotulo`, `valor`, `numero`, `codigo`, `carimbo-texto` | textos do desenho (poucos: até 60 caracteres) |
 | `anotacao` | grupo das anotações, que só aparece no recorte largo |
 | `nota`, `nota-pequena`, `chamada` | texto e linha de chamada das anotações |
+| `mexe-*` | o detalhe da capa viva (abaixo), num `<g>` |
 
 Transformações (`translate`, `rotate`) e `fill-rule` são geometria e podem ficar no arquivo.
+
+## Capa viva (D58)
+
+A capa continua parada, mas **um detalhe só**, que conta algo do assunto, se mexe quando o mouse
+passa pelo topo do artigo, pelo card ou pelo item da lista (`src/styles/capa-viva.css` e
+`src/scripts/capa-viva.ts`, carregados pelo `Ilustracao.astro`). Discreto, cerca de 1 s, uma vez. É a
+fumaça da caneca da série Java (`fumaca`, D52) levada para toda capa. Escolha o detalhe pelo assunto:
+o vapor que sobe, o ponteiro que gira, o envelope que desliza, o alarme que treme.
+
+| Classe | Tipo | O que faz | Para |
+|---|---|---|---|
+| `mexe-balanca` | evento | balança pendurada pelo alto | etiqueta, placa, pêndulo |
+| `mexe-pulsa` | evento | cresce um pouco e volta | luz, coração, alerta |
+| `mexe-pisca` | evento | apaga e acende duas vezes | LED, cursor, status |
+| `mexe-sobe` | evento | sobe e some, volta de baixo | vapor, bolha, mensagem que sai |
+| `mexe-treme` | evento | treme rápido | alarme, erro, telefone |
+| `mexe-escreve` | evento | o traço se escreve de novo (`pathLength="1"` no path) | assinatura, gráfico, seta |
+| `mexe-enche` | evento | esvazia e enche de baixo para cima | barra, copo, medidor |
+| `mexe-gira` | estado | gira 120° e fica; volta girando | engrenagem, ponteiro, roda |
+| `mexe-desliza` | estado | anda 22 unidades para a direita e fica; volta deslizando | envelope, plugue, lupa |
+
+- **Evento:** acontece e volta sozinho, com o mouse ainda em cima, e vai até o fim mesmo que o mouse
+  saia no meio (o `capa-viva.ts` segura a classe `mexendo` por 1,4 s).
+- **Estado:** muda e fica enquanto o mouse está em cima; ao tirar o mouse, volta animado, um pouco
+  mais rápido que a ida. **Nada pode pular de volta.** Para deslizar em outra direção, gire o `<g>` de
+  fora.
+- **Onde pôr a classe:** num `<g>` **sem `transform` próprio**, dentro do grupo `.tinta` (se a peça já
+  tem transform, ponha o `<g class="mexe-…">` por dentro dela, em volta do desenho). O giro e a escala usam o centro da própria peça
+  (`transform-box: fill-box`; `mexe-balanca` gira pelo alto, `mexe-enche` cresce pela base). A classe
+  nunca vai direto num `.cor` ou num `.papel` solto: ponha a peça inteira (cor, papel e linha) dentro
+  do `<g>`, para ela se mexer junta.
+
+```svg
+<g class="tinta">
+  …
+  <g class="mexe-gira">
+    <circle cx="671" cy="352" r="68" class="linha"/>
+    <path d="M660.7 364.3 L710.9 304.5" class="linha"/>
+  </g>
+</g>
+```
+
+- Um detalhe por capa. Só `transform`, `opacity` e `stroke-dashoffset` (as classes já cuidam disso).
+- Com movimento reduzido, nada se mexe. A série Java continua com a `fumaca` da caneca.
+- Conferir: no dev, passe o mouse no topo do artigo, num card e num item da lista, e tire o mouse no
+  meio do movimento (não pode pular). Foto: `node scripts/foto.mjs <url> <saida.png>
+  --hover "[data-desenhar-topo]" --antes 7000 --esperar 500`.
 
 ## Validar e conferir
 

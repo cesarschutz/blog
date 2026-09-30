@@ -59,8 +59,8 @@ protótipo divergirem, vale o briefing.
 **Decidido**
 - Site estático, publicado no GitHub Pages por GitHub Actions, sem backend.
 - Fontes servidas pelo próprio site (`@fontsource`), nunca Google Fonts em produção.
-- JavaScript só onde há interação (estante, busca, lousas, apresentação, alternância
-  lista/cards, tema). Página de artigo sem esses componentes deve funcionar sem JS.
+- JavaScript só onde há interação (estante, busca, lousas, animações dos posts, apresentação,
+  alternância lista/cards, tema). Página de artigo sem esses componentes deve funcionar sem JS.
 - Respeitar `prefers-reduced-motion` em toda animação: com ele ligado, tudo aparece no
   estado final, sem prender a tela.
 
@@ -175,8 +175,8 @@ livro aparece na estante e na lateral, mesmo sem artigos; o número de artigos, 
   categorias continuam nos livros, nos chips e nos desenhos.
 - **A caneta preta desenha; a azul marca** (D52, C04): o preto (a tinta de sempre) é o traço de quem
   fez a página — ícones, contornos e o rascunho do mouse; o azul continua só no estado (o que é
-  clicável e a leitura). Na abertura da home, a assinatura embaixo de "Cesar Schutz" é o **único
-  traço grande do site**.
+  clicável e as marcações do texto). A caneta da leitura do artigo usa a cor do livro (D58). Na
+  abertura da home, a assinatura embaixo de "Cesar Schutz" é o **único traço grande do site**.
 - **Desenhos com palco**: cada ilustração fica num painel tingido pela cor da categoria
   (`color-mix` da cor com 11% sobre a superfície no claro, 20% no escuro). As áreas preenchidas do
   desenho usam a mesma cor do painel, o traço fica um pouco mais grosso (×1,2) e o preenchimento de
@@ -372,14 +372,16 @@ Referência: aba "Artigo" do protótipo.
   continua o original (o travessão fica escondido para leitor de tela e busca). Na navegação
   (anterior / próximo), na gaveta e na busca, o título segue inteiro, numa linha.
 - **Barra de progresso de leitura** (D45): um traço de 2px sobre o fio embaixo do cabeçalho, na
-  **caneta azul** (D52, B05; antes, a cor da categoria), escrito por uma **caneta** pequena (22px,
-  corpo na cor do papel, ponta na caneta azul) que vai na ponta dele; a caneta aparece depois que a
-  leitura começa. O cabeçalho fica sempre à vista, também no celular (D46).
+  **cor do livro** (D58; de D52, B05, até a D58, a caneta azul), escrito por uma **caneta** pequena
+  (22px, corpo na cor do papel, ponta na cor do livro) que vai na ponta dele; a caneta aparece depois
+  que a leitura começa. No escuro, a cor leva 42% de branco. O cabeçalho fica sempre à vista, também
+  no celular (D46).
 - **Sumário**: em telas ≥ 1300px, à esquerda do texto, numa folha própria e fixa; recolhível no
   início do texto nas menores. Só aparece com 3 ou mais seções. No lateral (D33), um trilho: um ponto
   em cada seção, sem número (D36; o "3. " do título sai do nome, nas duas variantes); o fio, os
-  vistos, o ponto atual e o sublinhado da seção atual são da **caneta azul** (D52, B05; antes, a cor
-  do livro do post e o marca-texto), com as subseções da atual abertas e a atual sempre à vista. Uma
+  vistos, o ponto atual, o sublinhado da seção atual e o título do post-it são da **cor do livro**
+  (D58; de D52, B05, até a D58, a caneta azul; o marca-texto não volta), com as subseções da atual
+  abertas e a atual sempre à vista. Uma
   seção só ganha o visto depois de ter sido a atual por 0,6s ou mais e ter ficado para trás; toda
   entrada (link, troca de página, recarga, `#título`, histórico) começa **sem nenhum visto** (D52,
   B04; antes, tudo antes da atual vinha marcado). Embaixo, "NN% lido" e o tempo que falta (em fonte
@@ -411,7 +413,9 @@ Referência: aba "Artigo" do protótipo.
   (`ins`/`del`) com fundo tingido e `+`/`−` na margem. "Copiar" leva a versão final, sem as
   linhas removidas, e diz "Copiado" no próprio botão, com o visto da caneta (D49). Tema de cores feito
   com os tokens do blog nos dois temas. A barra do bloco tem sempre a mesma altura, com ou sem título.
-- **Lousas** (seção 7) sempre que houver fluxo ou sequência a explicar.
+- **Desenhos do artigo** (seções 6 e 7, D58): a capa, as figuras coloridas, as lousas, a animação
+  com play, os ícones das ferramentas e o print como evidência, cada um só onde o assunto pede e
+  sempre apresentado no texto.
 - **Caneta do caderno** (D48, decidido; substitui o caderno marcado da D41): o texto vem marcado à
   caneta, **estático**, como se tivesse sido riscado antes de publicar (sem animação). Caneta **azul
   fixa** em todos os livros (#1F4FB5 no claro, #8FA8FF no escuro), que **nunca pinta o texto**: só os
@@ -440,11 +444,12 @@ Referência: aba "Artigo" do protótipo.
   cartão dobra (D49). Sem bloco de "artigos relacionados". Os links do texto ganham a tinta azul por
   baixo ao passar o mouse (D49).
 - Botão "voltar ao topo" depois de uma tela de rolagem, **em toda página longa** (D49), não só no
-  artigo. O sumário acompanha a leitura (D49): fio de tinta, visto nas seções lidas e marca-texto na
-  seção atual; abaixo de 1300px, o cabeçalho mostra "N de M · seção" e abre o sumário numa folha.
+  artigo. O sumário acompanha a leitura (D49): fio de tinta, visto nas seções lidas e a seção atual
+  sublinhada à mão (D52, B05), na cor do livro (D58); abaixo de 1300px, o cabeçalho mostra "N de M · seção" e abre o sumário numa folha.
   Comentários (Giscus) e estatísticas (GoatCounter) continuam opcionais e desligados.
 - Imagens do corpo abrem num visor sobre a página escurecida (D33), com fechar, setas e contador na
-  apresentação. Tabelas rolam na horizontal no celular.
+  apresentação; o print como evidência não abre no visor: o clique leva à página de onde ele veio
+  (D58). Tabelas rolam na horizontal no celular.
   Matemática com KaTeX, carregado só em posts que usam.
 
 ### 5.4 SEO e distribuição
@@ -468,7 +473,8 @@ trocar o estilo sem mexer na regra do que desenhar. Conteúdo inicial desse arqu
 - **Hachura** a 45° para sombras e volume; **linha fantasma** (traço e ponto) para o que não
   acontece, alternativas e estados anteriores.
 - **Uma cor só**, a da categoria do post, aplicada como preenchimento levemente fora do
-  registro (deslocado alguns pixels do contorno). O resto em tinta.
+  registro (deslocado alguns pixels do contorno). O resto em tinta. (Vale para a capa; as figuras
+  do corpo têm tons, §7.2.)
 - **Sem fundo próprio**: o SVG não pinta fundo; as áreas preenchidas usam a cor da superfície
   onde ele aparece (`var(--fig-bg, var(--paper))`), então funciona igual nos dois temas e dentro
   dos slides. No site, essa superfície é o painel tingido pela categoria (§4.3).
@@ -478,6 +484,12 @@ trocar o estilo sem mexer na regra do que desenhar. Conteúdo inicial desse arqu
   celular e nas miniaturas.
 - Proibido: cores fixas no SVG, degradês, sombras, `<image>`, fontes de letra de mão,
   emojis, texto demais.
+
+**Capa viva** (D58): a capa continua parada, mas **um detalhe só**, que conta algo do assunto, se
+mexe quando o mouse passa pelo topo do artigo, pelo card ou pelo item da lista (como a fumaça da
+caneca da série Java, D52). Evento (acontece e volta sozinho, em até 1,3 s) ou estado (muda, fica
+enquanto o mouse está em cima e volta animado, sem pular). Com movimento reduzido, nada se mexe.
+Classes e tempos em `docs/estilo-desenho.md` e na skill `desenho`.
 
 **Regras técnicas** (ficam na skill de desenho, não no arquivo de estilo):
 - SVG usa só classes e variáveis CSS. Filtros e padrões (tremor, hachura) ficam definidos
@@ -491,10 +503,17 @@ trocar o estilo sem mexer na regra do que desenhar. Conteúdo inicial desse arqu
   um que valida as regras acima e outro que renderiza todos os recortes, claro e escuro, num
   PNG só, para conferência visual antes de aceitar o desenho.
 
-## 7. Lousas: diagramas que explicam (decidido)
+## 7. Lousas e figuras: os desenhos que explicam (decidido)
 
-Os diagramas de explicação dentro do post aparecem numa **lousa**. A lousa é sempre o
-**contrário da página**:
+Os desenhos do corpo do post são de três tipos além da capa (D58), cada um com um dono do
+movimento: a **figura** (parada, ou com detalhes que se mexem sozinhos sem mudar a imagem), a
+**lousa** (o leitor comanda o tempo) e a **animação com play** (a imagem muda; o leitor só dá play e
+pausa). Nem todo post tem todos: entra o que o assunto pede e o que fica bom. **Todo desenho conversa
+com o texto**: o texto o apresenta e diz o que olhar nele; nada de imagem solta.
+
+### 7.1 A lousa
+
+A lousa é sempre o **contrário da página**:
 - Página no tema claro: **lousa de vidro escura** (`#15191C`, reflexo diagonal sutil, borda
   `#2C3438`), traço de caneta clara (`#F4F6F5`), destaque na cor da categoria clareada
   (`color-mix(in oklab, cor, #9ff5dc 55%)`).
@@ -505,27 +524,66 @@ Os diagramas de explicação dentro do post aparecem numa **lousa**. A lousa é 
   itálica do blog; nada de letra de mão.
 - **A caneta aparece desenhando**: enquanto uma seta é traçada, a caneta fica na ponta do
   traço e acompanha o desenho; textos são escritos da esquerda para a direita com a caneta
-  seguindo. A caneta assume a cor do que está desenhando (cor da categoria nos destaques).
-  Parou de rolar, a caneta para; rolou para cima, o desenho se apaga.
+  seguindo. A caneta assume a cor do que está desenhando (cor da categoria nos destaques). Ela
+  aparece sempre que algo está sendo desenhado (play, arrasto, rolagem horizontal, controle), com
+  movimento de mão, e é **uma por lugar** (até três ao mesmo tempo; melhor ainda, um lugar por vez).
+  Parou, a caneta some; voltou no tempo, o desenho se apaga até ali (D58).
 - Os rótulos e caixas iniciais do cenário podem já estar desenhados ("o professor montou o
   quadro antes da aula").
 
-Dois componentes, todos na lousa, com a mesma linguagem (eram três até a D46):
+**Um componente, `Lousa`, com dois usos** (D58; na Fase 0 eram três componentes, e depois da D46,
+dois):
 
-1. ~~Passo a passo com a rolagem~~: **saiu na D46** (26/09/2026, a pedido do Cesar: "a caneta
-   desenhando enquanto o texto rola ficou ruim"). Sequência de passos vira linha do tempo de
-   arrastar, com um estado por passo e os passos numa lista logo abaixo da lousa.
-2. **Linha do tempo de arrastar**: comparação que avança no tempo (ex.: "com e sem a chave").
-   Controle deslizante + **botão play/pausa** à esquerda (percorre em ~7 s, para 1,5 s no
-   resultado e recomeça). Também responde a arrastar sobre o desenho e à roda do mouse (com
-   ou sem Shift); nas pontas, a roda volta a rolar a página. Qualquer gesto manual pausa a
-   reprodução. Texto do estado atual com `aria-live`.
-3. **Animação curta em loop**: poucos segundos, com **barra de tempo** por baixo (marcas de
-   início, eventos e fim), botões **Recomeçar** e **Pausar**, e uma pausa perceptível no fim
-   antes de reiniciar.
+1. **Passos**: a caneta monta uma sequência em que a ordem importa. A lista numerada dos passos fica
+   logo abaixo e acende o passo da vez, na cor do livro; o clique num passo leva a lousa até ele, com
+   tudo o que a linha diz já desenhado.
+2. **Comparação**: duas linhas, uma em cima da outra, avançando no mesmo tempo (sem × com, antes ×
+   depois). Os rótulos do desenho dizem o que é cada linha; o texto de cada estado vai só para o
+   leitor de tela.
+
+Nos dois: a lousa aparece com o desenho **completo e parado**. O **play** começa do início, chega ao
+fim, espera 5 s e recomeça, até ser pausado; o controle deslizante, o arrasto sobre o desenho e a
+rolagem horizontal sobre ela (trackpad de lado, ou Shift com a roda) também mexem no tempo, e
+qualquer gesto pausa. A rolagem da página nunca mexe na lousa (o passo a passo com a rolagem saiu na
+D46, a pedido do Cesar: "a caneta desenhando enquanto o texto rola ficou ruim"). **Nada ao lado do
+controle** e nenhuma frase embaixo: a lousa nunca muda de tamanho. Fora da tela, pausa. Sem JS, o
+desenho completo e a lista dos passos.
+
+A **animação curta em loop** (`LousaLoop`, o "videozinho") **sai dos posts novos** (D58): o que ela
+mostrava vira lousa de passos ou animação com play. A `LousaTempo` (a linha do tempo de arrastar
+anterior) e a `LousaLoop` ficam só nos posts antigos, até serem revistos.
 
 Existe também um recurso raro, a **frase em destaque**: uma citação cujas palavras acendem
 com a rolagem. Use no máximo de vez em quando; o Cesar pode removê-la.
+
+### 7.2 Figuras, animações, ícones e print (D58)
+
+- **Figura** (diagrama, gráfico ou qualquer outro desenho): o traço da capa, no painel do livro, mas
+  **colorida**: cada ator, lado ou papel ganha um tom, o mesmo em todas as figuras do post, para a
+  cor ajudar a memorizar. Seis tons (azul, verde, âmbar, vermelho, roxo, petróleo), com 4,5:1 nos
+  dois temas; o vermelho é só para erro, limite e recusa. Passos numerados com selos quando há
+  ordem; legenda de cores que destaca um ator com o mouse. Pode ter **detalhes que se mexem**
+  sozinhos, leves e na ordem do que acontece (um ponto correndo pela seta, um tracejado andando, um
+  pulso), que só andam com a figura na tela. No celular, a figura mantém a letra legível e rola de
+  lado dentro do quadro. Gráfico com números plausíveis e coerentes com o texto (ou de fonte), eixos
+  com unidade e o limite, quando houver.
+- **Animação com play**: para o que a lousa não cobre (o sistema funcionando, uma fila enchendo, um
+  gráfico se formando no tempo). O desenho parado é o quadro final; abre tocando quando aparece na
+  tela (nunca com movimento reduzido); um anel em volta do botão mostra o andamento da volta, há um
+  botão para recomeçar, e o clique na imagem pausa. De 6 a 12 s por volta, 5 s parada no fim. Pouco
+  texto trocando: o que foi escrito não some; se mudou, é riscado e o novo vem embaixo. Pouca animação
+  também vale (só o ponto principal se mexendo).
+- **Ícones das ferramentas**: os logos das ferramentas de que o post fala (AWS, Kubernetes, Java…),
+  desenhados à mão no traço da casa, reconhecíveis. No texto, antes do nome, na primeira menção e
+  espalhados pelo post (não só no começo), sem poluir; o ícone é um link discreto para a página mais
+  específica da ferramenta. Dentro das figuras e das animações também (a xícara do Java na caixa do
+  app). Não confundir com os ícones das tags, que nunca são logotipo (D52).
+- **Print como evidência**: só quando prova algo que o texto diz e dá para garantir que está certo
+  (a documentação oficial dizendo o número citado, um erro, um painel). Tela que pede login (console
+  da AWS, painéis internos): o Cesar tira o print. Com borda, uma linha embaixo dizendo o que é e de
+  onde veio, e o clique abre a página de origem em outra aba.
+
+Regras técnicas, classes e tempos: skill `figura`, `docs/estilo-desenho.md` e `docs/movimento.md`.
 
 ## 8. Conteúdo
 
@@ -554,8 +612,13 @@ com a rolagem. Use no máximo de vez em quando; o Cesar pode removê-la.
   (25/09/2026, D35); exemplo grande linka o código completo.
   Links conferidos. **`## Fontes`** no fim, sempre.
 - **Estrutura**: introdução com o problema concreto em 2 ou 3 frases; seções `##` claras;
-  pelo menos **uma lousa** quando houver fluxo, sequência, antes/depois ou linha do tempo
-  (post simples fica sem); avisos só quando ajudam; diff quando mostrar antes e depois.
+  avisos só quando ajudam; diff quando mostrar antes e depois.
+- **Desenhos** (D58, §7): uma lousa, uma figura ou uma animação quando houver fluxo, sequência,
+  antes e depois ou um sistema funcionando (post simples fica só com a capa). **Nem todo post tem
+  todos os tipos**: entra o que o assunto pede e o que fica bom (um post pode ter só a capa e um
+  gráfico; outro, uma lousa e uma animação). **Todo desenho é explicado no texto**, que diz o que
+  olhar nele. Ícones das ferramentas sempre que couberem, no texto e nos desenhos, sem poluir.
+  **Print** só o que prova algo do texto e dá para garantir; tela com login é o Cesar quem tira.
 - **Frontmatter**: `title` (aparece inteiro; o " — " só divide a imagem de compartilhamento),
   `description` até ~200 caracteres,
   `published`, `updated` opcional, `category` **ou** `series`, `tags` (2 a 4, reaproveitando o
@@ -565,7 +628,7 @@ com a rolagem. Use no máximo de vez em quando; o Cesar pode removê-la.
 - **Categoria**: encaixe numa existente; se nenhuma servir de verdade, pode criar uma nova
   dentro do escopo do blog, com cor distinta, e avise o Cesar.
 - **Fluxo** (vale para post do zero e para texto que o Cesar traz pronto): classificar →
-  escrever ou melhorar → revisar contra fontes → desenhar ilustração e lousas → validar
+  escrever ou melhorar → revisar contra fontes → desenhar a capa e os desenhos do corpo → validar
   (build, claro e escuro, celular) → mostrar ao Cesar → **passada de caneta** (skill `caneta`, D48),
   com a proposta aprovada por ele. **Nunca** commitar nem publicar sem
   pedido explícito dele.
@@ -598,7 +661,8 @@ com `@` organiza, mas não economiza contexto; o que economiza é skill e regra 
 - Skills em `.claude/skills/<nome>/SKILL.md` (com `name` e `description` no frontmatter),
   por exemplo: `post` (fluxo completo e checklist da seção 8.2; era `novo-post` até a D35), `desenho` (regras
   técnicas da seção 6, lendo `docs/estilo-desenho.md`, e os scripts de validação), `lousa`
-  (como montar os três componentes da seção 7), `apresentacao` (seção 8.3), `serie-java`.
+  (a lousa da seção 7.1), `figura` (figuras, animação com play, ícones e print da seção 7.2, D58),
+  `apresentacao` (seção 8.3), `serie-java`.
 - Regras em `.claude/rules/` com `paths`: uma para os arquivos de post (tamanho, fontes,
   frontmatter) e uma para os arquivos de desenho (aponta para o estilo e para a skill).
 - Quando o Cesar corrigir a mesma coisa duas vezes, isso vira regra no lugar certo.

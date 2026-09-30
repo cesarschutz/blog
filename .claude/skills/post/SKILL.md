@@ -46,16 +46,20 @@ Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
 - **Série:** se entra numa, e em que posição. Post da série Java segue a skill `serie-java`.
 - **Slug:** o nome do arquivo e a URL (`/posts/<slug>/`), curto, em pt-BR, sem acento. Adaptado de
   um post que já existiu no blog: o slug antigo, ou um redirecionamento (passo 3).
-- **Inventário visual:**
-  - Para **cada imagem existente**, diga se ela vai ser **redesenhada no estilo** (vira SVG da casa),
-    **virar diagrama** (lousa) ou **sair** por ser só decorativa. Print de tela ou foto que é
-    evidência (um erro no console, um painel real) pode ficar como imagem, com `alt` descritivo;
-    diga por quê.
-  - A **ilustração do post** (sempre existe): o que ela vai mostrar.
-  - Cada recurso escolhido pela tabela [Qual recurso para qual conteúdo](#qual-recurso-para-qual-conteúdo).
-  - Onde entram **desenhos e animações novos**: linha do tempo de arrastar (também para passo a
-    passo, com a lista dos passos embaixo), animação curta em loop, frase em destaque (rara) ou
-    animação GSAP com play/pause, cada um com o trecho do texto que ele explica.
+- **Inventário visual** (regras dos desenhos no passo 5):
+  - Para **cada imagem existente**, diga se ela vai ser **redesenhada no estilo** (vira SVG da casa:
+    figura, lousa ou animação), virar **print como evidência** (`Evidencia`, só se prova algo do texto
+    e dá para garantir que está certo) ou **sair** por ser só decorativa; diga por quê.
+  - A **capa** (sempre existe): o que ela vai mostrar e o **detalhe da capa viva** (o que se mexe no
+    hover e com qual classe `mexe-*`).
+  - Cada recurso escolhido pela tabela [Qual recurso para qual conteúdo](#qual-recurso-para-qual-conteúdo),
+    com o trecho do texto que ele explica e o que o texto vai dizer para apresentá-lo: **figura**
+    (diagrama ou gráfico colorido, parado ou com detalhe que se mexe; os tons de cada ator),
+    **lousa** (de passos ou de comparação), **animação com play**, **frase em destaque** (rara),
+    **print** (o que prova e de onde; tela com login, peça ao Cesar).
+  - Os **ícones das ferramentas**: quais, onde no texto (primeira menção e mais adiante) e em quais
+    desenhos, e se algum logo precisa ser desenhado (os que existem estão em `src/marcas/`).
+  - Nem todo post tem todos os tipos: proponha só o que o assunto pede.
 - **Caneta (D48):** as marcações **não entram no plano**. Elas são a última etapa (passo 9), pela
   skill `caneta`, depois que texto, desenhos e animações estiverem prontos e aprovados.
 - **Modo Adaptar:** a lista de **sugestões de conteúdo**, separadas do plano (passo 3).
@@ -102,41 +106,65 @@ Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
 - **Espaço opcional para a apresentação:** não se escreve no post. Quando o Cesar trouxer o `.pptx`
   (skill `apresentacao`), os slides vão para `public/posts/<slug>/deck/` e a entrada para
   `src/data/decks.json`, e a seção entra sozinha antes de `## Fontes`.
-- `$` em texto com escape (`US\$ 10`). Post com lousa ou animação é `.mdx`.
+- `$` em texto com escape (`US\$ 10`). Post com lousa, figura, animação, ícone de ferramenta ou print
+  é `.mdx`.
 - Recursos de Markdown (código, avisos, notas laterais, tabelas, KaTeX): veja
   [Recursos de Markdown](#recursos-de-markdown) e `/amostra/markdown/` no dev.
 
 ### 5. Desenhos
 
-Siga a skill `desenho` (ilustração) e a skill `lousa` (diagramas), no estilo do `DESIGN.md` e do
-`docs/estilo-desenho.md`:
+Siga a skill `desenho` (a capa e a capa viva), a skill `figura` (figuras coloridas, animação com
+play, logos das ferramentas e print) e a skill `lousa` (lousas de passos e de comparação), no estilo
+do `DESIGN.md` e do `docs/estilo-desenho.md`.
 
+**Regras dos desenhos (D58):**
+- **Todo desenho conversa com o texto.** O texto apresenta o desenho e diz o que olhar nele (o que é
+  cada cor, a ordem dos números, o que o play mostra). Nada de imagem solta que o leitor não entende.
+- **Nem todo post tem todos os tipos.** Entra o que o assunto pede e o que fica bom: um post pode ter
+  só a capa e um gráfico; outro, uma lousa e uma animação.
+- **Ícones das ferramentas sempre que couberem**, no texto e dentro dos desenhos (a xícara do Java na
+  caixa do app), espalhados pelo post e não só no começo, sem poluir. No texto, o ícone leva à página
+  mais específica (a do Java 21, não a do Java).
+- **Print** só quando prova algo do texto e dá para garantir que está certo. Tela que pede login
+  (console da AWS, painéis internos): peça ao Cesar, ele tira o print. Sempre com o `Evidencia`.
+
+Técnica:
 - **SVG desenhado à mão**, em coordenadas, com classes e variáveis CSS: sem cor fixa, sem `id` nem
   `defs` próprios, sem `<image>`. O **tremor** é o filtro SVG global (`feTurbulence` +
   `feDisplacementMap`, definido uma vez no layout) aplicado só no grupo dos traços. Hachura a 45°,
-  linha fantasma para o que não acontece, a cor do livro como única cor, no painel da categoria.
+  linha fantasma para o que não acontece. Na **capa**, a cor do livro como única cor, no painel da
+  categoria; nas **figuras**, um tom por ator (`tom-*`), o mesmo em todas as figuras do post.
   **Não use Rough.js** nem gerador de traço (D35).
 - **Texto alternativo descritivo** em todo desenho: o que ele mostra e o que isso explica, não
-  "ilustração do post".
-- Antes de aceitar: `node scripts/desenho/validar.mjs <slug>`, `centrar.mjs` e o render claro e
-  escuro (`render.mjs`, com o dev no ar).
+  "ilustração do post". Na lousa, o `rotulo=`; no print, o `alt` diz o que a imagem prova.
+- Antes de aceitar: `node scripts/desenho/validar.mjs <slug>` (capa, lousas, figuras e animações;
+  `validar.mjs marcas` para os logos), `centrar.mjs` e o render claro e escuro da capa (`render.mjs`,
+  com o dev no ar), e a foto das figuras e das lousas (`scripts/foto.mjs`, skill `figura`).
 - **Tag nova:** o ícone dela, pela seção "Tags" do `docs/capas/CAPAS.md` (o desenho em
   `scripts/desenho/tags.mjs`, gravado em `src/livros/tags/<slug>.svg` e conferido em `/amostra/tags/`
   ao lado dos outros, nos dois temas). Sem ele, o build quebra.
 
 ### 6. Animações
 
-- **Só onde há fluxo** (sequência, passo a passo, antes e depois, linha do tempo). Post sem fluxo não
-  tem animação.
-- **Primeiro, os componentes da lousa** (`LousaTempo`, `LousaLoop`, `FraseDestaque`; a lousa de
-  passos com a rolagem saiu na D46 e não volta): eles têm play/pause, respeitam `prefers-reduced-motion` e funcionam sem
-  JS. A frase em destaque é rara.
-- **GSAP** só para uma animação que os componentes não cobrem: em SVG, com play/pause (diagrama
-  comandado pela rolagem saiu na D46), **importado só no post que a usa** (script do componente ou do
-  `.mdx`, nunca no layout). Consulte as skills `gsap-core`, `gsap-timeline`, `gsap-plugins` (DrawSVG) e
-  `gsap-performance`. Use `gsap.matchMedia()` com `(prefers-reduced-motion: reduce)` para mostrar a
-  **versão estática** (estado final, sem prender a tela) e anime só `transform`, `opacity` e
-  `stroke-dashoffset`. Sem JS, o SVG aparece completo.
+Quem manda no movimento (D58): a **capa** só mexe um detalhe no hover (`mexe-*`, skill `desenho`); a
+**figura** fica parada ou tem detalhes que se mexem sozinhos sem mudar a imagem (skill `figura`); na
+**lousa**, o leitor comanda o tempo (skill `lousa`); a **animação com play** muda a imagem e o leitor
+só dá play e pausa (skill `figura`). Nenhum desenho é comandado pela rolagem da página (D46).
+
+- **Só onde há fluxo** (sequência, passo a passo, antes e depois, o sistema funcionando). Post sem
+  fluxo fica com a capa viva e, se ajudar, figuras paradas.
+- **Sequência em que a ordem importa, ou comparação no tempo:** a `Lousa` (passos ou comparação). A
+  frase em destaque (`FraseDestaque`) é rara.
+- **O que a lousa não cobre** (uma fila enchendo, um gráfico se formando, um algoritmo rodando): a
+  `Animacao`, com o SVG do quadro final e o `.ts` que monta a timeline GSAP (skill `figura`), de 6 a
+  12 s por volta. Consulte as skills `gsap-core`, `gsap-timeline` e `gsap-performance`. O componente já
+  carrega o GSAP sob demanda, abre tocando na tela (nunca com movimento reduzido) e mostra o quadro
+  final sem JS; anime só `transform`, `opacity` e `stroke-dashoffset`, fora do grupo que treme.
+- **Pouco texto trocando** nas lousas e nas animações: o que foi escrito não some; se mudou, risca e
+  escreve o novo embaixo. Mais desenho que texto, num ritmo que dá para ler. Pouca animação também
+  vale (às vezes só o ponto principal se mexe).
+- **`LousaLoop` e `LousaTempo` não entram em post novo** (D58). Ao revisar um post antigo (modo
+  Adaptar), a `LousaTempo` vira `Lousa` e a `LousaLoop` vira lousa de passos ou animação com play.
 - **Vídeo de verdade** (MP4/WebM) só se o Cesar pedir: comprimido, com `poster`, `preload="none"` e
   carregado sob demanda.
 
@@ -152,8 +180,11 @@ MCP `chrome-devtools`:
 
 - **Tela larga (1440 px) e celular (390 px)**, nos temas claro e escuro. Sem rolagem lateral.
 - **Console sem erros** nem avisos novos.
-- **Animações funcionando:** rolar até cada lousa ou animação e ver que avança, pausa e volta; ligar
-  a emulação de `prefers-reduced-motion: reduce` e ver a versão estática.
+- **Animações funcionando:** a capa viva no topo, no card e na lista (tirar o mouse no meio não pode
+  pular); os detalhes das figuras andando só na tela, na ordem do fluxo, e o destaque da legenda; em
+  cada lousa, o play inteiro (5 s no fim), o arrasto e os passos (mouse e clique); a animação abrindo
+  sozinha, o anel, recomeçar e o clique que pausa. Com `prefers-reduced-motion: reduce`, nada se mexe
+  sozinho e tudo aparece no quadro final.
 - **Trace de performance** da página do post, com CPU 4× no celular. Olhe o **custo do filtro de
   tremor** (`feTurbulence`/`feDisplacementMap` aparece como "Paint"/"Rasterize" longo),
   principalmente em desenho animado: a animação precisa ficar perto de 60 quadros por segundo, sem
@@ -216,25 +247,27 @@ mesma coisa duas vezes, a mudança vira regra (CLAUDE.md).
 ## Qual recurso para qual conteúdo
 
 Escolha pelo papel do trecho, não para enfeitar. Post sem fluxo não tem animação; a maioria dos
-trechos fica só no texto.
+trechos fica só no texto. Nem todo post tem todos os recursos, e todo desenho é apresentado no texto.
 
 | O trecho é… | Recurso | Onde está |
 |---|---|---|
-| o assunto do post inteiro | a ilustração (sempre, uma por post) | skill `desenho` |
-| um evento curto que se repete (o problema acontecendo) | animação em loop, `LousaLoop` | skill `lousa` |
-| uma sequência em que a ordem importa | linha do tempo com passos, `LousaTempo` com um estado por passo e a lista numerada embaixo | skill `lousa` |
-| antes e depois, ou "com e sem", ao longo do tempo | linha do tempo com duas linhas, `LousaTempo` | skill `lousa` |
+| o assunto do post inteiro | a capa (sempre, uma por post), com o detalhe da capa viva | skill `desenho` |
+| quem fala com quem, a arquitetura, os papéis | figura colorida (`Figura`), um tom por ator, selos se há ordem, detalhes que se mexem se ajudarem | skill `figura` |
+| um número, uma curva, o que o leitor veria no painel | gráfico (`Figura`), com eixos, unidade, o limite e a anotação | skill `figura` |
+| uma sequência em que a ordem importa | lousa de passos (`Lousa` com `passos`), com a lista numerada embaixo | skill `lousa` |
+| antes e depois, ou "com e sem", ao longo do tempo | lousa de comparação (`Lousa` com `estados`), duas linhas | skill `lousa` |
+| o sistema funcionando, algo que enche, esvazia ou se forma no tempo | animação com play (`Animacao`) | skill `figura` |
+| a ferramenta de que o post fala | o ícone no texto (`Ferramenta`) e dentro dos desenhos (`data-marca`) | skill `figura` |
+| a prova de um número ou de um comportamento (documentação oficial, erro, painel) | print (`Evidencia`); com login, o Cesar tira | skill `figura` |
 | uma frase que resume o post e merece ser lida duas vezes (rara) | `FraseDestaque` | skill `lousa` |
-| um fluxo que nenhuma lousa cobre | animação GSAP em SVG, com play/pause | passo 6 |
 | alerta, dica ou ressalva fora do fluxo do texto | aviso (`> [!DICA]`, `NOTA`, `IMPORTANTE`, `ATENCAO`, `CUIDADO`) | Recursos de Markdown |
 | um comentário curto ao lado do parágrafo | nota lateral (`texto[^chave]`) | Recursos de Markdown |
 | dado para consultar (parâmetros, comparação) | tabela | Recursos de Markdown |
 | detalhe que a maioria pula | `<details>` com `<summary>` | Recursos de Markdown |
-| evidência real (erro no console, painel) | imagem com `alt` descritivo | passo 2 |
 | o que um arquiteto marcaria lendo | caneta (34 tipos, marca-texto no máximo 3) | skill `caneta`, só no fim |
 
-Não use dois recursos para a mesma ideia (a lousa e a frase dizendo a mesma coisa, ou a caneta
-marcando um aviso).
+Não use dois recursos para a mesma ideia (a lousa e a frase dizendo a mesma coisa, a figura e a
+animação mostrando o mesmo quadro, ou a caneta marcando um aviso).
 
 ## Recursos de Markdown
 

@@ -56,8 +56,8 @@ dúvida. Animação nova ou mudada: a regra vai para lá, o detalhe vem para cá
 - **Carregando, quando a página demora** (D52, B14): regras de especulação do navegador
   (`speculationrules`, JSON no `<head>`, sem biblioteca) pré-carregam o HTML dos links ao parar o
   ponteiro sobre eles (0,2s) ou ao toque. Se a página nova ainda assim não vem em 0,2s desde o
-  clique, a caneta azul da leitura escreve um traço no fio do cabeçalho, cada vez mais devagar, até
-  ela chegar; nunca um spinner. A caneta tem nome de transição próprio e esmaece em 0,2s ao sumir
+  clique, a caneta azul escreve um traço no fio do cabeçalho, cada vez mais devagar, até ela chegar
+  (ela continua azul; a caneta da leitura passou à cor do livro na D58); nunca um spinner. A caneta tem nome de transição próprio e esmaece em 0,2s ao sumir
   (D52, revisão 13; antes, ela ficava na raiz antiga, que a troca por folhas esconde de uma vez).
   Quando a espera passou de 0,7s (antes, 1s; D52, revisão 7), quando o aparelho não deu conta de uma
   troca anterior nesta visita ou com pouca memória, a chegada é curta: as folhas antigas só somem,
@@ -208,9 +208,9 @@ o foco do teclado igual ao mouse, Esc fecha, movimento reduzido): `DESIGN.md`, M
   tecla ⌘K afunda 1,5px por 120ms quando é usada e o campo dá um toque (98,5% para 100%) quando a
   busca nasce dele. No rodapé, os arcos do RSS se escrevem a partir do ponto, um depois do outro
   (0,18s cada).
-- **Caneta da leitura** (D45, `BarraLeitura.astro`): o traço do progresso corre sobre o fio do
-  cabeçalho e a caneta acompanha a ponta, ligada à rolagem (sem animação própria; só a caneta
-  aparece por opacidade, 0,2s). No celular, o traço acompanha o cabeçalho que some e volta (`top`,
+- **Caneta da leitura** (D45, `BarraLeitura.astro`; na cor do livro desde a D58): o traço do
+  progresso corre sobre o fio do cabeçalho e a caneta acompanha a ponta, ligada à rolagem (sem
+  animação própria; só a caneta aparece por opacidade, 0,2s). No celular, o traço acompanha o cabeçalho que some e volta (`top`,
   0,25s).
 
 ## Busca
@@ -246,7 +246,8 @@ o foco do teclado igual ao mouse, Esc fecha, movimento reduzido): `DESIGN.md`, M
 - **A caneca** (D52, C04, classe `fumaca`): no hover do card, do item da lista ou do topo de um post
   da série Java, a fumaça de agora sobe e some pelo alto e uma nova se escreve de baixo (1,15s, a
   segunda 0,12s depois), uma vez; com movimento reduzido, a fumaça fica parada. O emblema da revista
-  (a xícara da capa e da lombada) não anima: é livro, não caneta.
+  (a xícara da capa e da lombada) não anima: é livro, não caneta. A capa viva (D58, abaixo) leva o
+  mesmo gesto para toda capa.
 
 ## Artigo
 
@@ -265,6 +266,52 @@ o foco do teclado igual ao mouse, Esc fecha, movimento reduzido): `DESIGN.md`, M
   (0,3s) e o canto de fora dobra (a orelha, 0,26s); o voltar ao topo entra subindo 14px e assenta
   (0,4s, a curva do back.out em `linear()`), sai em 0,25s e, no clique, a seta sai por cima e volta
   por baixo (0,44s).
+
+## Desenhos do artigo (D58)
+
+- **Capa viva** (`capa-viva.css`, `capa-viva.ts`): no hover do topo do artigo, do card ou do item da
+  lista, o detalhe `mexe-*` da capa se mexe. **Eventos**, até 1,3s, uma vez: balança 1,3s (7°,
+  −4,5°, 2°, pendurado pelo alto), pulsa 0,9s (até 1,14), pisca 1s (duas vezes, a 15%), sobe 1,2s
+  (sobe 40 unidades e some, volta de 18 abaixo), treme 0,6s (±3), escreve 1,1s e enche 1,2s (esvazia
+  até 20% da altura e enche de novo, pela base). O script põe a classe `mexendo` por 1,4s no primeiro
+  `pointerenter`, para o evento ir até o fim mesmo que o mouse saia no meio. **Estados:** ida de 1 a
+  1,3s (gira 120° em 1,3s, `cubic-bezier(0.3, 0, 0.2, 1)`; desliza 22 unidades em 1s,
+  `cubic-bezier(0.45, 0, 0.25, 1)`) e volta, sem o mouse, de 0,6 a 0,75s (desliza 0,6s, gira 0,75s,
+  `cubic-bezier(0.3, 0, 0.25, 1)`); a volta é a transição de base, então nunca pula. Com movimento
+  reduzido, nada.
+- **Detalhes das figuras** (`figura.css`), só com a figura na tela (`data-na-tela`, posto por um
+  observador com 80px de folga) e nunca com movimento reduzido:
+  - `pacote`: um ponto só percorre a linha na vez da etapa dele (`etapa-1` a `etapa-7`), **1,2s por
+    etapa**, num ciclo de **8,4s** (a etapa N começa (N − 1) × 1,2s depois); ele aparece em 1,5% do
+    ciclo, corre até 13% e some em 14,3%. Linhas da mesma etapa andam juntas;
+  - `fluxo`: pontinhos (0,1 a cada 26) correndo sem parar, 1,4s por passo do tracejado, linear;
+  - `formiga`: tracejado de 10 e 12 andando, 1,2s por passo, linear;
+  - `pulsa` 2,4s (até 1,12), `pisca` 2s (até 25%), `gira` 9s por volta, `balanca` 3,2s (±4°) e `anda`
+    2,6s (±6px), todos em laço.
+- **Legenda que destaca** (`figura.css`, só nas figuras com legenda): com o mouse numa cor da legenda
+  ou no componente, as outras cores apagam a 22% em 0,3s.
+- **A lousa** (`Lousa.astro`, motor `src/scripts/lousa.ts`): começa no fim, completa e parada. O play
+  vai do início ao fim em **7s** por padrão (`duracao`, em segundos), para **5s** no quadro final sem
+  caneta e recomeça. Fora da tela (200px de folga), pausa e volta a tocar se tocava. A rolagem
+  horizontal sobre a lousa anda 0,0012 da volta por pixel (0,03 por linha, com Shift e a roda); no
+  toque, o arrasto só começa depois de 8px de lado (o dedo que sobe ou desce rola a página). A caneta
+  aparece e some por opacidade (0,2s), na ponta do que está sendo feito; na escrita, sobe e desce 22%
+  da altura do texto a cada letra e gira até 6°; no traço, gira até 4°; até três canetas ao mesmo
+  tempo, a mais recente com a primeira.
+- **Marcador dos passos** (lista embaixo da lousa de passos, como o da busca, D49): desliza até o
+  passo sob o mouse ou o foco em **0,28s** (`cubic-bezier(0.215, 0.61, 0.355, 1)`, altura junto) e
+  aparece ou some em 0,2s; na primeira vez, aparece direto no lugar. O passo da vez acende na cor do
+  livro (fundo e número, 0,25s).
+- **Clique num passo:** leva a lousa ao fim daquele passo, com a caneta. O mouse na lista só move o
+  marcador (a prévia da lousa no hover saiu em 30/09/2026).
+- **A animação com play** (`Animacao.astro`, GSAP sob demanda): **6 a 12s** por volta, **5s** parada
+  no quadro final (`repeatDelay`) e recomeça. Abre tocando quando 35% dela aparece na tela (com
+  movimento reduzido, só com o play); fora da tela, pausa. O anel do botão acompanha o andamento da
+  volta, quadro a quadro; nos 5s do fim, cheio, pulsa de 100% a 35% de opacidade em 1,6s. O GSAP é
+  baixado quando o mouse ou o foco chegam ao botão, ou no primeiro play. Na impressão, o quadro final.
+- Com movimento reduzido: a lousa e a animação continuam começando no quadro final, a animação não
+  abre tocando (só com o play), a caneta da lousa não aparece e o marcador dos passos vai direto, sem
+  deslizar.
 
 ## A 404
 

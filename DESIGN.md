@@ -39,6 +39,13 @@ colors:
   veu-tinta: "#EEF1EE"
   caneta: "#1F4FB5"
   marca-texto: "#FFE27A"
+  # Tons das figuras (tokens.ts, DIAGRAMA, D58); no escuro, com 42% de branco
+  diag-azul: "#2F5FB3"
+  diag-verde: "#25734E"
+  diag-ambar: "#955A0A"
+  diag-vermelho: "#B23A2C"
+  diag-roxo: "#7C4FAB"
+  diag-petroleo: "#1A6F7A"
   # Interface, tema escuro (tokens.ts, escuro)
   primary-escuro: "#93AEFF"
   on-primary-escuro: "#0D1530"
@@ -347,7 +354,7 @@ components:
 # Blog de Cesar Schutz: sistema visual
 
 Este arquivo é a **fonte de verdade do visual** do blog. Toda página e todo post seguem o que está
-aqui. As decisões vêm de `docs/briefing.md` §4, §6 e §7 e das decisões D26, D30, D32, D33 e D35 de
+aqui. As decisões vêm de `docs/briefing.md` §4, §6 e §7 e das decisões D26, D30, D32, D33, D35 e D58 de
 `docs/decisoes.md`, e os detalhes de medida estão em `docs/capas/CAPAS.md` (livros) e
 `docs/estilo-desenho.md` (desenhos e lousas). O código lê as cores de `src/styles/tokens.ts` e de
 `src/livros/cores.js`. Os valores do bloco YAML acima espelham esses arquivos: **quem muda um valor
@@ -401,13 +408,20 @@ mexer na página. O site não tem som.
   tinta clara). É o traço de quem fez a página — ícones (calendário, relógio, `</>`, lupa, lua, sol),
   o rascunho do mouse (hover do menu, o círculo dos perfis, da paginação e dos botões redondos, o
   colchete da lista), os contornos a lápis do botão de tema e da busca, e a assinatura. O azul-tinta e
-  a caneta azul (`--caneta`) continuam só no estado: a seção e a página atuais, a caneta da leitura, as
-  marcações do texto (D48). Nada no rodapé, que segue com o traço leve azul da D49.
+  a caneta azul (`--caneta`) continuam só no estado: a seção e a página atuais e as marcações do texto
+  (D48). A caneta da leitura usa a cor do livro (D58). Nada no rodapé, que segue com o traço leve azul
+  da D49.
 - **Avisos:** Nota, Dica (também a linha adicionada no diff), Importante, Atenção e Cuidado (também
   a linha removida): fio fino na cor do aviso e fundo só levemente tingido (briefing §5.3), nunca a
   caixa pintada da cor inteira.
 - **Lousa:** sempre o contrário da página. No tema claro é vidro escuro (#15191C) com caneta clara;
   no escuro, quadro branco suavizado (#CFD5D1, nunca branco puro) com caneta escura.
+- **Tons das figuras** (D58, `--diag-*`: azul, verde, âmbar, vermelho, roxo e petróleo; no escuro,
+  com 42% de branco): só nas figuras do corpo do post (diagramas, gráficos, animações e logos). Cada
+  ator tem um tom, o mesmo em todas as figuras do post; o vermelho é só para erro, limite e recusa. O
+  fundo das caixas é o tom lavado (16% no claro, 30% no escuro). Todos passam de 4,5:1 sobre a folha e
+  o painel de todos os livros, e a tinta sobre o lavado também (`npm run contraste`). A capa continua
+  com a cor do livro como única cor.
 - **Marca e véu** (D33): o livro "cs" e o fundo do visor de imagens.
 - **Pauta do caderno** (D52, `caderno-pauta`, #BEBAB0, igual nos dois temas): as linhas do miolo do
   caderno "cs", onde a capa abre (a marca do cabeçalho, a marca grande da home e o caderno da
@@ -416,17 +430,15 @@ mexer na página. O site não tem som.
   dos artigos, **igual em todos os livros**. Não é cor de interação: fica só nos traços (riscos,
   círculos, caixas, setas, marcas de margem) e nas notas à mão, **nunca no texto marcado**, que
   continua na cor normal, para não se confundir com os links (azul-tinta). As notas à mão não têm
-  sublinhado nem cara de link. Passa de 4,5:1 sobre a folha, o fundo e o código nos dois temas.
-  **Também é a cor da leitura do artigo** (D52, B05): o fio e a caneta do cabeçalho, e, no sumário, o
-  fio, os vistos, o ponto atual e o sublinhado da seção atual (no lugar da cor do livro e do
-  marca-texto de antes).
+  sublinhado nem cara de link. Passa de 4,5:1 sobre a folha, o fundo e o código nos dois temas. Foi
+  também a cor da leitura do artigo de D52 (B05) até a D58, que a devolveu à cor do livro.
 - **Marca-texto** (D48, `marca-texto`, #FFE27A; no escuro, o mesmo amarelo a 30% sobre a folha):
   amarelo clássico, igual em todos os livros, com o texto sempre em `on-surface` por cima (12,75:1
   no claro, 5,92:1 no escuro). Chama muita atenção: no máximo uma ou duas vezes por post.
 
 **Livros (cor principal de cada categoria, `src/livros/livros.json`).** A mesma cor pinta a capa, a
-lombada, o chip da categoria (quadradinho e nome tingido) e o **painel dos desenhos** dos posts da
-categoria (a barra de leitura e o sumário passaram para a caneta azul, D52, B05):
+lombada, o chip da categoria (quadradinho e nome tingido), o **painel dos desenhos** dos posts da
+categoria e a **caneta da leitura** (a barra do topo e o sumário, D58; no escuro, com 42% de branco):
 
 | Vol. | Categoria | Cor | Tinta sobre a cor | Destaque sobre o papel |
 |---|---|---|---|---|
@@ -497,9 +509,10 @@ código, das tabelas, dos diagramas, das lousas e da apresentação (D46); o top
 tem a mesma largura e a mesma margem. No
 celular, o corpo do artigo não fica num cartão: o texto usa a largura da página, com a margem normal.
 A partir de 1300px, a coluna da esquerda começa no topo da página: o sumário numa folha própria e fixa,
-com "NN% lido" e os minutos que faltam embaixo (sem barra, D52, B05); o fio, os vistos, o ponto atual
-e o sublinhado da seção atual são da **caneta azul** (`--caneta`, D52, B05; antes, a cor do livro do
-post e o marca-texto do sumário), e embaixo da folha do sumário
+com "NN% lido" e os minutos que faltam embaixo (sem barra, D52, B05); o fio, os vistos, o ponto atual,
+o sublinhado da seção atual e o título do post-it são da **cor do livro** (D58: a página põe a cor do
+livro no `--caneta` da barra e do sumário; de D52, B05, até a D58, a caneta azul), e embaixo da folha
+do sumário
 fica a ficha **"Do livro"** (D46, C05; D57): a foto do livro deitado, com a fita e uma etiqueta por
 artigo (a deste, amarela), o nome e "Ver o livro".
 **O sumário acompanha a leitura (D49):** um fio de tinta à mão desce pelo trilho até a altura lida;
@@ -512,7 +525,7 @@ página, recarga, `#título`, histórico) começa **sem nenhum visto**, e quem s
 não a marca. Medir a posição durante a troca de página é sempre pelo layout (`offsetTop`), nunca pelo
 `getBoundingClientRect` (D52, B04). Abaixo de 1300px, o
 cabeçalho mostra "N de M · seção" no lugar da marca e abre o sumário numa folha que desce dele, com
-o mesmo trilho da caneta azul (D52, B05). Toda página tem o **voltar ao topo** depois de uma tela de rolagem
+o mesmo trilho, na cor do livro (D58). Toda página tem o **voltar ao topo** depois de uma tela de rolagem
 (`VoltarTopo.astro`, no `Base.astro`). A home tem 12 lugares por página; na primeira, o destaque ocupa
 dois (D52, C02). A estante tem 6px entre os livros.
 Nada pode rolar para o lado em 390px nem em 320px. O sumário nunca rola para o lado. Toda área que
@@ -665,23 +678,32 @@ Cada post tem uma ilustração, e os diagramas seguem o mesmo traço:
 - **Hachura a 45°** nas sombras e no volume.
 - **Linha fantasma** (traço e ponto, `24 8 4 8 4 8`) para o que não acontece, alternativas e estados
   anteriores.
-- **A cor do livro como única cor**, num preenchimento levemente fora do registro. O resto é tinta.
+- **A cor do livro como única cor** na capa, num preenchimento levemente fora do registro. O resto é
+  tinta. As figuras do corpo (diagramas, gráficos, animações) usam o mesmo traço com os **tons** (D58,
+  Colors): cada ator, um tom.
 - **Painel tingido pela cor da categoria** como palco. O SVG não pinta fundo.
 - Anotações em Literata itálica, só nos recortes grandes.
 - **Texto alternativo descritivo** em todo desenho: o que ele mostra e o que isso explica.
+- **Todo desenho é explicado no texto** (D58): o texto apresenta o desenho e diz o que olhar nele.
+- **Os desenhos do corpo** (D58; regras na skill `figura` e na `lousa`): a figura (`Figura`), a lousa
+  (`Lousa`, de passos ou de comparação), a animação com play (`Animacao`), os logos das ferramentas
+  (`src/marcas/`, no texto com `Ferramenta`) e o print como evidência (`Evidencia`: borda, a linha com
+  o que é e de onde, e o clique abre a origem). Nem todo post tem todos.
 
 **Técnica (D11, D35):** SVG **desenhado à mão**, em coordenadas, com classes e variáveis CSS (sem
 `id`, sem `defs` próprios e sem cor fixa). O tremor é o filtro SVG global `feTurbulence`
 (`fractalNoise`, `baseFrequency` 0.018, `numOctaves` 2, `seed` 7) seguido de `feDisplacementMap`
 (`scale` 4), aplicado só no grupo dos traços, para os textos ficarem nítidos. Nas lousas, o tremor é
 mais leve (`baseFrequency` 0.02, `scale` 2). O Rough.js não é usado. Regras técnicas, recortes e
-validação: skill `desenho` e `node scripts/desenho/validar.mjs`. **Custo:** o filtro é refeito a
-cada quadro enquanto o traço se move, então todo desenho animado passa por um trace de performance
-(CPU 4×) antes de ser aceito. Se pesar, o plano B é gravar o tremor na geometria, no build. **Exceção
-(D52, C04):** os ícones de interface (`src/lib/traco.ts`) já usam esse plano B — o tremor está gravado
-na geometria, sem o filtro, porque são muitos e pequenos e aparecem dezenas de vezes por tela. A caneca
-das ilustrações da série Java tem a classe `fumaca` (D52, C04): no hover, a fumaça de agora sobe e some
-e uma nova se escreve embaixo, sem tocar o emblema da revista (que não anima).
+validação: skills `desenho` (capa), `figura` e `lousa`, e `node scripts/desenho/validar.mjs`.
+**Custo:** o filtro é refeito a cada quadro enquanto o traço se move, então todo desenho animado passa
+por um trace de performance (CPU 4×) antes de ser aceito, e o que se move nas figuras e nas animações
+fica fora do grupo que treme (D58). Se pesar, o plano B é gravar o tremor na geometria, no build.
+**Exceção (D52, C04):** os ícones de interface (`src/lib/traco.ts`) já usam esse plano B — o tremor
+está gravado na geometria, sem o filtro, porque são muitos e pequenos e aparecem dezenas de vezes por
+tela; os logos das ferramentas (D58) ficam sem tremor. A caneca das ilustrações da série Java tem a
+classe `fumaca` (D52, C04): no hover, a fumaça de agora sobe e some e uma nova se escreve embaixo, sem
+tocar o emblema da revista (que não anima). A capa viva (D58) leva esse gesto para toda capa.
 
 ### Movimento
 
@@ -717,11 +739,26 @@ caso de dúvida, vale este arquivo.
   tudo no estado final.
 - **Caneta do caderno (D48):** **não anima.** As marcações já vêm feitas (a animação por rolagem do
   caderno marcado da D41, com ScrollTrigger e DrawSVG, saiu).
-- **Sem lousa de passos** (D46): a lousa que a caneta desenha enquanto o texto rola saiu. Nos posts,
-  só a linha do tempo de arrastar e a animação curta em loop.
-- **Diagrama animado só em posts que explicam um fluxo** (passo a passo, linha do tempo, antes e
-  depois), sempre com play/pause ou arrastar, nunca comandado pela rolagem (D46). Em outros casos,
-  desenho parado. Animações novas desse tipo usam GSAP em SVG, carregado só no post que as usa.
+- **Nenhum desenho dos posts é comandado pela rolagem da página** (D46): a lousa que a caneta
+  desenhava enquanto o texto rolava saiu e não volta. A frase em destaque (abaixo) é o único recurso
+  ligado à rolagem.
+- **Quem manda no movimento dos desenhos** (D58; o detalhe em `docs/movimento.md`):
+  - **capa viva:** um detalhe só se mexe no hover do topo, do card ou do item da lista. Evento (até
+    1,3s, vai até o fim) ou estado (fica enquanto o mouse está em cima e volta animado, mais rápido,
+    nunca pulando). Só CSS;
+  - **detalhes das figuras:** leves, sem mudar a imagem, na ordem do que acontece, fora do grupo que
+    treme. CSS, ligado por um observador só enquanto a figura está na tela;
+  - **lousa:** o leitor comanda o tempo (play, arrasto, rolagem horizontal sobre ela, controle).
+    Aparece completa e parada; o play vai do início ao fim, para 5s e recomeça. A caneta aparece
+    sempre que algo está sendo desenhado, com mão, uma por lugar. Nunca muda de tamanho;
+  - **animação com play:** a imagem muda; GSAP em SVG, carregado só quando ela vai tocar. Abre tocando
+    quando aparece na tela; o anel em volta do botão mostra a volta e pulsa nos 5s de espera do fim;
+    recomeçar; clique na imagem pausa. De 6 a 12s por volta.
+  - com movimento reduzido: nada se mexe sozinho (a capa e as figuras ficam paradas, a animação não
+    abre tocando), a lousa e a animação começam no quadro final e a caneta da lousa não aparece; o
+    play continua com o leitor.
+- **Sai a animação curta em loop** (`LousaLoop`) dos posts novos (D58); ela e a `LousaTempo` ficam só
+  nos posts antigos, até serem revistos.
 - **Frase em destaque** (palavras que acendem com a rolagem): recurso raro dos posts, usado só de
   vez em quando.
 - **Na home, só coisas discretas:** um livro que tomba um nada para a frente ao passar o mouse, a
@@ -754,13 +791,17 @@ caso de dúvida, vale este arquivo.
 | **Cabeçalho no celular** | `Cabecalho.astro` | CSS (`clip-path`) | D46 |
 | **Troca de tema** | `tema.ts`, `SeletorTema.astro` | View Transition do documento e GSAP (MorphSVG, DrawSVG) | D42, D44, D49; D52 (C04) |
 | **A caneta que navega** | `traco.css`, `src/lib/traco.ts`, `Cabecalho.astro` | View Transition (`traco-do-menu`) e CSS | D49; D52 (C04) |
-| **Caneta da leitura** | `BarraLeitura.astro` | Rolagem (sem animação própria) e CSS | D45 |
+| **Caneta da leitura** | `BarraLeitura.astro` | Rolagem (sem animação própria) e CSS | D45; D58 (cor do livro) |
 | **A busca nasce do campo** | `Busca.astro` | GSAP (Flip) e `@starting-style` | D44, D49; D52 (B06) |
 | **Filtro por livro** | `ListaFiltrada.astro`, `contador.ts` | GSAP e CSS (o contador) | D47, D49 |
 | **Troca Lista / Cards** | `SeletorModo.astro` | Web Animations API | D42, D49 |
 | **A caneta que marca** | `traco.css` | CSS | D49; D52 (C04) |
 | **O ícone de tag inclina** | `IconeTag.astro`, `PilulaTag.astro` | CSS | D52 (B11) |
 | **A caneca** | classe `fumaca` (`desenho.css`) | CSS | D52 (C04) |
+| **Capa viva** | classes `mexe-*` (`capa-viva.css`), `capa-viva.ts` | CSS | D58 |
+| **Detalhes das figuras** | `Figura.astro`, `figura.css` | CSS e um observador de tela | D58 |
+| **A lousa** | `Lousa.astro`, `lousa-nova.css`, `src/scripts/lousa.ts` | JS próprio (quadro a quadro) e CSS | D58 |
+| **A animação com play** | `Animacao.astro`, `src/animacoes/<slug>/<nome>.ts` | GSAP (timeline) | D58 |
 | **A ficha dos atalhos** | `Atalhos.astro` | CSS | D52 (B06) |
 | **Os minutos que faltam** | `Sumario.astro`, `contador.ts` | CSS | D49 |
 | **O artigo de perto** | `copiado.ts`, `RodapeArtigo.astro`, `VoltarTopo.astro` | CSS e Web Animations API | D49 |
@@ -768,8 +809,8 @@ caso de dúvida, vale este arquivo.
 
 ## Do's and Don'ts
 
-- Faça: azul-tinta só no que é clicável; a cor da categoria só nos livros, chips e desenhos (a
-  leitura do artigo é da caneta azul, D52, B05).
+- Faça: azul-tinta só no que é clicável; a cor da categoria só nos livros, chips, desenhos e na
+  caneta da leitura (D58).
 - Faça: todo conteúdo em folha; desenhos sempre no painel da categoria.
 - Faça: cores por token (`var(--ink)`, `var(--cat)`, papéis `--cima`/`--baixo` nos livros).
 - Faça: conferir os dois temas, a largura de 390px e `prefers-reduced-motion`.
@@ -777,6 +818,7 @@ caso de dúvida, vale este arquivo.
   na interface, fonte de letra de mão (a exceção é a Caveat das notas da caneta, D48), fonte de CDN.
 - Não faça: pintar o texto marcado na cor da caneta, ou marcar em rodízio de tipos (a caneta segue o
   guia `docs/marcacoes.md`).
-- Não faça: mais de uma cor num desenho, fundo pintado no SVG, `<image>` dentro de ilustração.
+- Não faça: mais de uma cor na capa, fundo pintado no SVG, `<image>` dentro de ilustração, tom de
+  figura fora dos seis `--diag-*`, vermelho num ator comum.
 - Não faça: livro caindo ou texto mudando de cor na home.
 - Não faça: seguir uma sugestão de ferramenta (Impeccable ou outra) que contradiga este arquivo.
