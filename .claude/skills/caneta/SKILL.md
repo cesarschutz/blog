@@ -1,6 +1,6 @@
 ---
 name: caneta
-description: A passada de caneta num post (D48): marca o texto à caneta azul, estática, com os 20 tipos do guia docs/marcacoes.md, depois de propor a lista (trecho, tipo e motivo) e ter o OK do Cesar. É a última etapa da skill post, depois que texto, desenhos e animações estão prontos e aprovados. Use também quando o Cesar pedir sozinho para marcar ou remarcar um post ("passa a caneta no post X", "refaz as marcações do X").
+description: A passada de caneta num post (D48): marca o texto à caneta azul, estática, com os 34 tipos do guia docs/marcacoes.md, depois de propor a lista (trecho, tipo e motivo) e ter o OK do Cesar. É a última etapa da skill post, depois que texto, desenhos e animações estão prontos e aprovados. Use também quando o Cesar pedir sozinho para marcar ou remarcar um post ("passa a caneta no post X", "refaz as marcações do X").
 ---
 
 # Caneta
@@ -31,8 +31,8 @@ não por rodízio. Apresente ao Cesar:
 
 - uma tabela com **#**, **seção**, **trecho** (as palavras exatas do post), **tipo** e **motivo**
   (uma linha cada; o motivo diz o que a marca ensina);
-- a **contagem** por tipo e o total, conferidos contra os limites: de 6 a 12 no total, marca-texto
-  no máximo 2, o mesmo tipo no máximo 3 (fora os de lista), nunca duas no mesmo parágrafo, nada em
+- a **contagem** por tipo e o total, conferidos contra os limites (D56): sem teto de total (post bem
+  marcado), marca-texto no máximo 3, o mesmo tipo no máximo 5 (fora os de lista), nunca duas no mesmo parágrafo, nada em
   títulos, trecho sem quebra até 32 caracteres, notas até 40;
 - as notas escritas à mão (nota na margem, correção, pergunta, chave, código) com o texto exato;
 - o **comentário do autor** só como lugar e assunto: a frase vem do Cesar (nunca invente);

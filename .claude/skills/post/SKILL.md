@@ -228,7 +228,7 @@ trechos fica só no texto.
 | dado para consultar (parâmetros, comparação) | tabela | Recursos de Markdown |
 | detalhe que a maioria pula | `<details>` com `<summary>` | Recursos de Markdown |
 | evidência real (erro no console, painel) | imagem com `alt` descritivo | passo 2 |
-| o que um arquiteto marcaria lendo | caneta (20 tipos, marca-texto no máximo 2) | skill `caneta`, só no fim |
+| o que um arquiteto marcaria lendo | caneta (34 tipos, marca-texto no máximo 3) | skill `caneta`, só no fim |
 
 Não use dois recursos para a mesma ideia (a lousa e a frase dizendo a mesma coisa, ou a caneta
 marcando um aviso).
@@ -246,7 +246,7 @@ Todos aparecem juntos em `src/amostra/recursos.md`, que o dev mostra em `/amostr
 - `<details>` com `<summary>`, tabelas e KaTeX (`$…$`, `$$…$$`; `$` de texto escapado).
 - **Imagens:** `alt` descritivo; abrem no visor ao clicar.
 - **Sumário:** automático com 3 ou mais seções `##`.
-- **Caneta** (D48, guia em `docs/marcacoes.md`, skill `caneta`): os 20 tipos de marcação em
+- **Caneta** (D48, D56, guia em `docs/marcacoes.md`, skill `caneta`): os 34 tipos de marcação em
   diretivas (`:marca[…]`, `:ondulado[…]`, `:::colchete`…) e nos atributos da cerca de código
-  (`anotar="…"`, `linhas="…"`). O build recusa mais de 12 por post, mais de 2 marca-textos, mais de 3
-  do mesmo tipo, duas no mesmo parágrafo e marcação em título. Catálogo no dev: `/amostra/caneta/`.
+  (`anotar`, `linhas`, `numeros`, `riscar`). Sem teto de total; o build recusa mais de 3 marca-textos,
+  mais de 5 do mesmo tipo, duas no mesmo parágrafo e marcação em título. Catálogo no dev: `/amostra/caneta/`.

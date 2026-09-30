@@ -588,7 +588,7 @@ têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm can
   `</>` é desenhado à mão em `traco.ts` (`codigoDeCaneta`, D52, C04), com as pontas vivas e as retas
   levemente embarrigadas.
 - **Caneta do caderno** (D48; guia em `docs/marcacoes.md`, catálogo em
-  `docs/prototipos/caneta-do-caderno.html` e, no dev, `/amostra/caneta/`): 20 tipos de marcação,
+  `docs/prototipos/caneta-do-caderno.html` e, no dev, `/amostra/caneta/`): 34 tipos de marcação (D56),
   todos **estáticos** (já vêm feitos, como se o texto tivesse sido riscado antes de publicar). Traço
   à mão de 1,9px na `caneta`, com as pontas redondas, em SVG decorativo (`aria-hidden`); notas em
   Caveat; marca-texto amarelo cobrindo de 18% a 94% da linha. Medidas (`src/styles/caneta.css`):

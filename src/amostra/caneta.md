@@ -2,9 +2,9 @@
 title: Catálogo da caneta
 ---
 
-Esta página só existe no `npm run dev` e mostra os 20 tipos da caneta do caderno (D48), com os
-exemplos do catálogo `docs/prototipos/caneta-do-caderno.html`. Ela passa dos limites de um post
-de propósito; o guia (quando usar cada tipo) é o `docs/marcacoes.md`.
+Esta página só existe no `npm run dev` e mostra os 34 tipos da caneta do caderno (D48, D56), com a
+numeração do guia `docs/marcacoes.md`. Ela junta todos os tipos de propósito; o guia diz quando usar
+cada um.
 
 ## Em linha
 
@@ -26,9 +26,21 @@ de propósito; o guia (quando usar cada tipo) é o `docs/marcacoes.md`.
 
 14\. Seta ligando: :liga[só codificado, então legível] para qualquer pessoa que tenha o token em mãos.
 
-17\. Sinal entre termos: o payload está **codificado** :sinal[≠] **criptografado**; a diferença é quem consegue ler.
+20\. Marca-texto baixo: o jitter só :grifo[espalha as tentativas no tempo], e é esse espaço que deixa o serviço se recuperar.
 
-## Na margem
+21\. Aspas à mão: nenhuma política de retry entrega :aspas[exactly-once] sozinha.
+
+22\. Parênteses à mão: o `Retry-After` traz um número de segundos :aparte[ou uma data, no formato de data do HTTP], e o cliente entende as duas formas.
+
+23\. Chave por baixo: com três camadas que tentam três vezes cada, a conta é :explica[3 × 3 × 3]{nota="um 3 por camada"}, ou 27 chamadas.
+
+24\. Seta de tendência: sem jitter, a :sobe[latência] dispara justo no pico.
+
+24\. Seta de tendência, para baixo: com o limite de retries, a :desce[carga extra] fica pequena.
+
+25\. Ressalva com asterisco: o `Retry-After` costuma vir com o :ressalva[429 e o 503]{texto="também vale nos redirecionamentos 3xx"}, e quem escolhe o número é o servidor.
+
+## Na margem e em volta do parágrafo
 
 :::colchete
 4\. Colchete na margem. **O payload não é criptografado.** Ele só está codificado em Base64URL:
@@ -49,10 +61,34 @@ qualquer pessoa com o token lê o conteúdo.
 
 A tolerância existe justamente para isso: alguns minutos, no máximo.
 
-20\. Comentário do autor, logo depois do parágrafo que ele comenta:
+19\. Comentário do autor, logo depois do parágrafo que ele comenta:
 
 :::comentario
 aqui entra uma frase escrita pelo Cesar
+:::
+
+:::moldura
+26\. Moldura. Repetir só é seguro quando a operação é idempotente ou chega com uma chave de idempotência.
+:::
+
+:::visto
+27\. Visto na margem. Na dúvida, comece com três tentativas, backoff exponencial com teto e jitter completo.
+:::
+
+:::validade{data="set/2026"}
+28\. Validade. Neste exemplo, o provedor aceita 100 requisições por minuto por chave.
+:::
+
+:::novo{data="29/09/2026"}
+29\. Novo na atualização. A política passou a respeitar o `Retry-After` antes do backoff.
+:::
+
+:::postit
+30\. Post-it: o erro passa sozinho? A operação aguenta repetir? Ainda há prazo?
+:::
+
+:::carimbo{texto="conferido na RFC 9110"}
+31\. Carimbo. O `Retry-After` aceita um número de segundos ou uma data no formato de data do HTTP.
 :::
 
 ## Listas
@@ -89,9 +125,17 @@ aqui entra uma frase escrita pelo Cesar
 - `x5u`: URL do certificado
 :::
 
+32\. Opção escolhida:
+
+:::escolha{nota="a recomendada"}
+- espera fixa;
+- backoff exponencial sem jitter;
+- :esta backoff exponencial com jitter completo.
+:::
+
 ## Código
 
-18\. Anotação no código:
+17\. Anotação no código:
 
 ```json title="payload" anotar="1789564500|15 min depois"
 {
@@ -100,7 +144,7 @@ aqui entra uma frase escrita pelo Cesar
 }
 ```
 
-19\. Linhas marcadas no código:
+18\. Linhas marcadas no código:
 
 ```sql linhas="2-3|o banco decide"
 SELECT id FROM cobranca
@@ -113,4 +157,26 @@ Uma linha longa, com a nota embaixo dela (e, no celular, sempre embaixo):
 
 ```sql anotar="uq_cobranca_idempotency_key|o nome da restrição"
 ERROR:  duplicate key value violates unique constraint "uq_cobranca_idempotency_key"
+```
+
+33\. Números no código:
+
+```java title="Chamada.java" numeros="4,5,6"
+for (int feitas = 1; ; feitas++) {
+    Resposta r = cliente.enviar(pedido);
+    if (r.sucesso()) return r;
+    if (!r.transitorio()) return r;
+    if (!Politica.podeRepetir(feitas)) return r;
+    Thread.sleep(r.retryAfter().orElse(Politica.espera(feitas)));
+}
+```
+
+34\. Linha riscada no código:
+
+```java title="O que não fazer" riscar="3|espera fixa: todos voltam juntos"
+Resposta r = cliente.enviar(pedido);
+for (int feitas = 1; !r.sucesso() && feitas < 4; feitas++) {
+    Thread.sleep(1000);
+    r = cliente.enviar(pedido);
+}
 ```

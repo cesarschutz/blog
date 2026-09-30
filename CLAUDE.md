@@ -137,7 +137,7 @@ node scripts/caveat-titulos.mjs           # a Caveat dos títulos à mão (títu
 
 A porta 4321 desta máquina está ocupada por outra ferramenta do Cesar, que não deve ser tocada. O
 Astro usa a próxima livre (4322). Só no dev: `/amostra/` (tokens, fontes, avisos),
-`/amostra/markdown/` e `/amostra/mdx/` (recursos de Markdown e de MDX, de `src/amostra/`), `/amostra/caneta/` (os 20
+`/amostra/markdown/` e `/amostra/mdx/` (recursos de Markdown e de MDX, de `src/amostra/`), `/amostra/caneta/` (os 34
 tipos da caneta, de `src/amostra/caneta.md`), `/amostra/desenhos/` e
 `/amostra/livros/` (as capas planas, para comparar com `docs/capas/referencia/`), `/amostra/tags/`
 (os ícones das tags, lado a lado e da pílula à marca d'água) e `/amostra/lousas/` (os quadros-chave
@@ -162,7 +162,7 @@ docs/briefing.md         decisões de produto e design (fonte da verdade)
 docs/estado.md           painel: fase, pronto, próximos passos, perguntas
 docs/decisoes.md         registro de decisões (data, decisão, motivo, alternativas)
 docs/estilo-desenho.md   estilo das ilustrações e das lousas
-docs/marcacoes.md        guia vivo da caneta do caderno: 20 tipos, limites, tela, ajustes do Cesar (D48)
+docs/marcacoes.md        guia vivo da caneta do caderno: 34 tipos, limites, tela, ajustes do Cesar (D48, D56)
 docs/movimento.md        o detalhe de cada animação (durações, curvas, ordem); as regras ficam no DESIGN.md
 docs/capas/              a regra dos livros (CAPAS.md) e as imagens de referência
 src/livros/              o que o site lê dos livros (D53): livros.json, cores.js, grao.svg, desenhos/,

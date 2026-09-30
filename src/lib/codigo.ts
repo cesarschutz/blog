@@ -274,6 +274,11 @@ export function pluginAlturaEstimada(): ExpressiveCodePlugin {
  * A nota fica na mesma linha quando cabe (linha curta) e embaixo dela quando não cabe; no celular,
  * sempre embaixo, parada na esquerda do bloco, para a rolagem lateral do código não cortá-la. O Copiar
  * leva só o código (ele usa o texto original, não o desenhado).
+ *
+ * Da D56:
+ *   numeros="5,6,7"                      números circulados no respiro da esquerda dessas linhas, na
+ *                                        ordem; o texto logo abaixo explica cada número
+ *   riscar="3|espera fixa"               a linha riscada à mão, com o motivo ao lado (ou embaixo)
  */
 const CABE_NA_LINHA = 58;
 const CANETA = {
@@ -281,6 +286,8 @@ const CANETA = {
   circuloLongo: ["0 0 100 44", ["M58 3.5 C 82 3.5, 98.5 10, 98 22 C 97.5 34, 77 41.5, 50 41 C 23 40.5, 1.5 34, 2 21.5 C 2.5 10, 24 3, 47 3.2 C 57 3.3, 66 4.5, 73 7"]],
   seta: ["0 0 20 12", ["M19 6.5 C 13 5.5, 8 6.5, 2 6", "M6 2 L 1.5 6 L 6 10"]],
   barra: ["0 0 8 100", ["M4 2 C 5 30, 3 70, 4 98"]],
+  roda: ["0 0 22 22", ["M11 2 C 5 2, 2 6, 2.5 11.5 C 3 17, 7 20, 12 19.5 C 17 19, 20 15, 19.5 10 C 19 5, 15 2.5, 9.5 3"]],
+  riscado: ["0 0 100 8", ["M1 5.5 C 30 3.5, 70 4.5, 99 2.5"]],
 } as const;
 
 function tracoDaCaneta(nome: keyof typeof CANETA, classe: string): NoHast {
@@ -349,7 +356,9 @@ export function pluginCaneta(): ExpressiveCodePlugin {
       postprocessRenderedBlock: ({ codeBlock, renderData }) => {
         const anotar = codeBlock.metaOptions.getStrings("anotar");
         const trechos = codeBlock.metaOptions.getStrings("linhas");
-        if (!anotar.length && !trechos.length) return;
+        const numeros = codeBlock.metaOptions.getString("numeros");
+        const riscar = codeBlock.metaOptions.getStrings("riscar");
+        if (!anotar.length && !trechos.length && !numeros && !riscar.length) return;
         const textos = codeBlock.getLines().map((l) => l.text);
         const linhas = linhasDoBloco(renderData.blockAst as NoHast);
 
@@ -372,6 +381,39 @@ export function pluginCaneta(): ExpressiveCodePlugin {
           primeira.properties!.style = `${estilo}--caneta-n:${ate - de + 1}`;
           codigoDaLinha(primeira)!.children!.unshift(tracoDaCaneta("barra", "caneta-linhas-barra"));
           codigoDaLinha(linhas[ate - 1])!.children!.push(notaNoCodigo(nota, textos[ate - 1].trimEnd().length + nota.length > CABE_NA_LINHA));
+        }
+
+        // Números no código (D56): o número circulado no respiro da esquerda, na ordem pedida.
+        numeros?.split(",").forEach((valor, k) => {
+          const n = Number(valor.trim());
+          if (!(n >= 1 && n <= linhas.length)) erro(`numeros="${numeros}": o bloco tem ${linhas.length} linhas`);
+          const linha = linhas[n - 1];
+          linha.properties!.className = [...classes(linha), "caneta-numero-linha"];
+          const numero: NoHast = {
+            type: "element",
+            tagName: "span",
+            properties: { className: ["caneta-codigo-numero"], ariaHidden: "true" },
+            children: [tracoDaCaneta("roda", "caneta-traco"), { type: "element", tagName: "span", properties: {}, children: [{ type: "text", value: String(k + 1) }] }],
+          };
+          codigoDaLinha(linha)!.children!.unshift(numero, lidoNoCodigo(`(${k + 1}) `));
+        });
+
+        // Linha riscada no código (D56): o traço por cima do código da linha, sem pegar o recuo.
+        for (const pedido of riscar) {
+          const [valor, nota] = pedido.split("|").map((s) => s.trim());
+          const n = Number(valor);
+          if (!(n >= 1 && n <= linhas.length) || !nota) erro(`riscar="${pedido}": use "3|nota", com uma linha do bloco`);
+          const codigo = codigoDaLinha(linhas[n - 1])!;
+          const recuo = textos[n - 1].match(/^\s*/)![0].length;
+          codigo.children = [
+            {
+              type: "element",
+              tagName: "s",
+              properties: { className: ["caneta-codigo-riscado"], style: `--recuo:${recuo}` },
+              children: [...(codigo.children ?? []), tracoDaCaneta("riscado", "caneta-traco")],
+            },
+            notaNoCodigo(nota, textos[n - 1].trimEnd().length + nota.length > CABE_NA_LINHA),
+          ];
         }
       },
     },

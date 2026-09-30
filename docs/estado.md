@@ -66,6 +66,12 @@ procuraram falhas passageiras quadro a quadro (gravação pelo CDP, CPU 4×, red
 borda (tema, zoom, rede e scripts falhando, sem JS). Itens 41 a 67 do controle, corrigidos e
 reconferidos no navegador. O item 42 (Safari do iPhone) não dá para testar aqui: conferir no aparelho.
 
+Caneta com 34 tipos (D56, 29/09/2026, branch `amostra-caneta`): numa amostra, o Cesar viu um post
+com os 20 tipos aplicados e escolheu, entre 20 propostos, 15 tipos novos; saiu o sinal ≠. Os limites
+mudaram: sem teto de total, marca-texto até 3, o mesmo tipo até 5, nunca duas no mesmo parágrafo. O
+catálogo `/amostra/caneta/` mostra os 34. Achado junto: o riscado com correção quebrava num espaço no
+celular (corrigido). Em seguida, o post de criptografia é remarcado com as regras novas.
+
 ## Como ver
 
 - Dev: `fnm exec --using=24 npm run dev -- --host 127.0.0.1` (<http://127.0.0.1:4322>); parar com
@@ -86,7 +92,7 @@ reconferidos no navegador. O item 42 (Safari do iPhone) não dá para testar aqu
 | D35 | configuração de posts: skill `post`, `DESIGN.md`, `entrada/`, skills de terceiros, MCPs, `npm run setup` |
 | D36–D45 | sumário sem números, auditoria de acabamento, livros em movimento (GSAP), tema em círculo, gaveta, caneta da leitura |
 | D46–D47 | livros de lado, pilha, menu do celular, sem a lousa de passos, abertura do site |
-| D48 | a caneta do caderno (20 tipos de marcação, guia `docs/marcacoes.md`, skill `caneta`) |
+| D48, D56 | a caneta do caderno (34 tipos de marcação, guia `docs/marcacoes.md`, skill `caneta`) |
 | D49–D51 | ideias de movimento revistas, ajustes de 27/09, animações revistas (abertura, troca por folhas) |
 | D52 | acabamento das animações, leitura, tags com ícone, destaque na grade, campo `codigo`, C04 e C05 |
 

@@ -94,7 +94,7 @@ Porque o lock expira. Se a cobrança demorar mais que o prazo do lock, a segunda
 
 ## Caneta
 
-Os 20 tipos da caneta do caderno (D48) ficam no catálogo, em `/amostra/caneta/`. Aqui, só um
+Os 34 tipos da caneta do caderno (D48, D56) ficam no catálogo, em `/amostra/caneta/`. Aqui, só um
 marca-texto e um círculo: :marca[o texto marcado continua na cor normal].
 
 Com ECDSA, as curvas são P-256, P-384 e :circulo[P-521].
