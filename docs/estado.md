@@ -73,6 +73,15 @@ catálogo `/amostra/caneta/` mostra os 34. Achado junto: o riscado com correçã
 celular (corrigido). O post de criptografia foi remarcado pelas regras novas em 30/09/2026: 56
 marcações (antes 12), conferidas em 320 a 1600px nos dois temas.
 
+Livros realistas de 30/09/2026 (D57, aprovados pelo Cesar e levados à `main`; feitos na branch
+`livros-realistas`, pasta `../blog-livros-realistas`): o livro 3D em capa dura (espessura das capas, seixa, lombada arredondada, cabeceado,
+folhas) em todo livro em pé, com os movimentos mantidos; a gaveta da home sem sombra; a estante e a pilha
+com volume; a série como livro de capa dura; na ficha "Do livro", o livro deitado com fita e uma
+etiqueta por artigo (a amarela é o artigo aberto); o livro aberto em branco no livro sem artigos e na
+busca sem resultado. Estudo e maquetes em `docs/prototipos/livros-realistas/` (galeria:
+`node docs/prototipos/livros-realistas/ferramentas/servidor.mjs 4341`). Fotos das peças paradas:
+`node scripts/livros/fotos.mjs` com o dev no ar. `check`, `build` e `links` passam.
+
 ## Como ver
 
 - Dev: `fnm exec --using=24 npm run dev -- --host 127.0.0.1` (<http://127.0.0.1:4322>); parar com

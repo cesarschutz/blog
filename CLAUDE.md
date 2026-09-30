@@ -133,6 +133,7 @@ node scripts/desenho/java.mjs             # as ilustrações da série Java (pad
 node scripts/desenho/tags.mjs [slug]      # os ícones das tags (src/livros/tags/, D52)
 node scripts/marca.mjs                    # a marca e os ícones do navegador (precisa do pdftocairo)
 node scripts/caveat-titulos.mjs           # a Caveat dos títulos à mão (título novo em src/data/mao.ts, C05)
+node scripts/livros/fotos.mjs             # as fotos dos livros (D57; dev no ar, ENDERECO=…): livro, capa ou nº de artigos novo
 ```
 
 A porta 4321 desta máquina está ocupada por outra ferramenta do Cesar, que não deve ser tocada. O
@@ -166,7 +167,8 @@ docs/marcacoes.md        guia vivo da caneta do caderno: 34 tipos, limites, tela
 docs/movimento.md        o detalhe de cada animação (durações, curvas, ordem); as regras ficam no DESIGN.md
 docs/capas/              a regra dos livros (CAPAS.md) e as imagens de referência
 src/livros/              o que o site lê dos livros (D53): livros.json, cores.js, grao.svg, desenhos/,
-                         icones/, serie/ e tags/ (um ícone por tag, D52)
+                         icones/, serie/, tags/ (um ícone por tag, D52) e fotos.json (as etiquetas do
+                         livro deitado, D57)
 docs/historico/          rodadas fechadas: o prompt da Fase 0, os controles da D46/D47, ajustes-d52/
                          (controle, regras dos agentes, diagnósticos, pesquisa e sugestões da D52) e
                          os protótipos superados
@@ -200,8 +202,9 @@ src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, 
 src/scripts/tema.ts      tema: o botão do cabeçalho alterna claro e escuro (D39)
 scripts/                 contraste, links, apresentacao, og, copiar-katex, desenho/, bench-busca/,
                          marca, caveat-titulos (subconjunto da Caveat, C05), verificar-ambiente
-                         (npm run setup e hook do início da sessão)
+                         (npm run setup e hook do início da sessão), livros/ (as fotos dos livros, D57)
 public/posts/<slug>/     diagramas antigos e slides das apresentações (deck/)
+public/livros/fotos/     as fotos dos livros (D57): o deitado de cada livro e o aberto em branco
 src/ilustracoes/         uma ilustração SVG por post (<slug>.svg), com os recortes na raiz (D11)
 src/lousas/<slug>/       desenhos das lousas de cada post .mdx
 .github/workflows/       deploy no GitHub Pages (a cada push na main, D34)

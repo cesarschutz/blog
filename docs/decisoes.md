@@ -66,6 +66,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D53 | Faxina: docs só com documentos, dados dos livros em src/livros | em vigor |
 | D54 | Caça aos bugs de 29/09/2026: 40 correções de interação, teclado, impressão, listas e RSS | em vigor |
 | D56 | Caneta com 34 tipos e mais marcações por post | em vigor |
+| D57 | Livros realistas: capa dura em todos os livros, estante e pilha com volume, livro deitado no "Do livro", livro aberto nos vazios e a série como livro | em vigor |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -2008,3 +2009,58 @@ nada muda.
 - **Mudado:** `src/plugins/marcacoes.mjs`, `src/styles/caneta.css`, `src/lib/codigo.ts`,
   `src/amostra/caneta.md` (o catálogo com os 34), `docs/marcacoes.md`, `DESIGN.md`, `docs/briefing.md`,
   as skills `caneta` e `post`, `CLAUDE.md` e `CLAUDE-CODE.md`.
+
+## D57 · Livros realistas
+- **Data:** 30/09/2026 · **Status:** aprovada pelo Cesar e levada à `main` em 30/09/2026 (feita na
+  branch `livros-realistas`, pasta irmã `../blog-livros-realistas`). D55 (redesenho) e D56 (caneta)
+  são de outras sessões.
+- **Pedido do Cesar:** os livros o mais realistas possível, com as mesmas cores, desenhos e textos. Dez
+  pranchas de estudo em `docs/prototipos/livros-realistas/` (galeria, maquetes e `DIRECAO.md`); ele
+  escolheu as que valem e onde cada uma entra.
+- **Decidido:**
+  - **Capa dura realista (prancha 01) em todo livro em pé:** grade de Categorias, topo da página do livro,
+    livro ampliado, "Do livro" e a **gaveta da home**, esta sem sombra no chão. Construção de capa dura
+    (espessura das capas, seixa, lombada arredondada com luz, vinco da dobradiça, cabeceado, folhas,
+    grão).
+  - **Os movimentos continuam** (girar no mouse, capa que abre, livro que voa da estante, arrastar no
+    ampliado): o livro 3D é refeito com a construção da 01, e não trocado por uma imagem parada.
+  - **Estante (07) e pilha (08) com volume:** lombadas arredondadas com luz, cabeceado, alto do miolo,
+    prateleira com espessura e sombras de contato.
+  - **Livro deitado com fita e etiquetas (04) na ficha "Do livro" do artigo**, girado para o outro
+    lado: cada etiqueta é um artigo do livro, a amarela é o artigo aberto.
+  - **Livro aberto com as páginas em branco (06), pequeno:** no livro ainda sem artigos e na busca sem
+    resultado.
+  - **A série vira livro, fora da coleção** (muda a D32): a capa de hoje (título, o 25, a lista das
+    versões, a tarja, a xícara) numa capa dura, com lombada própria em papel e a faixa laranja.
+  - **Saem:** a luz de janela (10), a brochura (03), o tecido e papel (02) e a capa entreaberta (05).
+  - **Muda a regra do CAPAS.md (D30, "nunca como imagem pronta"):** o livro deitado da ficha e o livro
+    aberto podem ser imagens (WebP) geradas das pranchas, com o texto de verdade nos rótulos e nas
+    páginas.
+- **Motivo:** o livro 3D de hoje é uma caixa com gradiente; a construção de capa dura dá a cara de
+  objeto sem mudar o design. As peças paradas (ficha, vazios) ficam mais leves e fiéis como imagem.
+- **Como ficaram as peças paradas (ficha e vazios):** `node scripts/livros/fotos.mjs` (com o dev no ar)
+  mede as capas, monta as cenas das pranchas 04 e 06 (copiadas para `scripts/livros/`) e grava WebP 2x
+  em `public/livros/fotos/`. O livro deitado gira para o outro lado (câmera refeita, `GIRO` 19°: a
+  lombada vira para o leitor). As etiquetas não entram na imagem: o gerador grava os oito lugares delas
+  (contorno, luz, sombra) em `src/livros/fotos.json`, e o site desenha por cima, em SVG, uma por artigo
+  na ordem de leitura (`FotoDoLivro`); a do artigo aberto é a amarela (`--etiqueta`, o amarelo do post-it,
+  igual nos dois temas) e sai um pouco mais puxada. Artigo novo ganha a etiqueta sozinho; só o número da
+  lombada, que está na foto, pede rodar o script de novo (o build avisa). Na ficha sai o livro que
+  girava, a lupa do livro ampliado e o voo até a página do livro; o texto "este é o Nº" vai para o leitor
+  de tela. O livro aberto vazio usa a cor do livro; na busca, o da marca (Volume 01).
+
+- **Como ficou o livro 3D, a estante e a pilha:** o livro 3D (`Livro3D.astro`, `livro.css`) virou uma
+  capa dura montada em CSS (placas de papelão de 8, seixa de 9, lombada em facetas com a arte no meio,
+  o alto com o miolo e o cabeceado em SVG, o vinco da dobradiça, a luz em camadas e a sombra no chão),
+  vista de um pouco acima (`.livro-3d-vista`, 15° em X, fora do giro). Os movimentos são os mesmos: o
+  GSAP e as trocas de página mexem só no `rotateY` do `.livro-3d`; o voo da gaveta passou a medir a
+  lombada na tela (a lombada saliente e a vista de cima mudam onde ela aparece), e o livro ampliado põe
+  as folhas abaixo do verso da capa (uma espessura de papelão) e com a seixa. A série usa o mesmo livro,
+  com a capa de revista e a lombada de papel com a faixa. Na estante, a prateleira virou um espaço 3D só,
+  com o olho acima dos livros: cada lombada mostra a cabeça (bordas das capas, miolo, cabeceado) e o
+  começo dos lados, escuros, nos vãos; a tábua e a base do aparador ganharam espessura e luz, e cada livro
+  a sombra de contato. O filtro apaga os outros livros com um véu do papel (`--apagado`), porque a
+  opacidade achatava o 3D. Na pilha, a luz da curva vem de cima, cada livro mostra a capa de cima e faz
+  sombra no de baixo, e a prateleira tem espessura. Medido: HTML de 2 a 3 kB a mais (gzip) nas páginas
+  com livros; quadros de 16,7 ms (mediana e p95) no hover da grade, no voo da gaveta e na troca pela
+  pilha, com a CPU 4× mais lenta.
