@@ -36,4 +36,4 @@ posts em 26/09/2026. Post da série Java também segue a skill `serie-java`.
 | `w3c-trace-context` | SRE | 2026-05-20 | pendente | pendente | |
 | `wide-events-canonical-log-lines` | SRE | 2026-05-19 | pendente | pendente | |
 | `jackson-filtros-mascarando-cartao` | Desenvolvimento de Software | 2026-09-25 | concluído (25/09/2026) | pendente | post novo pela skill `post` |
-| `criptografia-em-repouso-e-em-transito` | Segurança | 2026-09-29 | concluído (29/09/2026) | 12, aplicadas em 29/09/2026 | post novo pela skill `post`: texto do Cesar adaptado, 29 correções aprovadas, código rodado |
+| `criptografia-em-repouso-e-em-transito` | Segurança | 2026-09-29 | concluído (29/09/2026) | 56, remarcado em 30/09/2026 pelas regras da D56 | post novo pela skill `post`: texto do Cesar adaptado, 29 correções aprovadas, código rodado |
