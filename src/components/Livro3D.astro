@@ -1,15 +1,26 @@
 ---
 /**
- * O livro 3D inteiro (D30, D40): contracapa, lombada (a mesma da estante, MioloLombada), bordas das
- * páginas, a página de dentro e a capa, com o verso, presa pela lombada para poder abrir. O livro
- * gira em volta do centro: com `rotateY(90deg)` mostra a lombada de frente; parado, fica a 38° da
- * frente (`--giro`, GIRO em src/lib/livro-3d.ts), com a lombada bem à vista (D46). A capa
- * entreabre com as camadas de página (`folhas`, D40, ideia 5); na gaveta da home, o livro fica
- * fechado (D43).
+ * O livro 3D inteiro (D30, D40; capa dura desde a D57, prancha 01 de
+ * docs/prototipos/livros-realistas): construído como um livro de capa dura de verdade, com as mesmas
+ * artes de capa e lombada. O livro gira em volta do centro: com `rotateY(90deg)` mostra a lombada de
+ * frente; parado, fica a 38° da frente (`--giro`, GIRO em src/lib/livro-3d.ts), com a lombada bem à
+ * vista (D46). A vista (`.livro-3d-vista`) é de um pouco acima, para o alto do livro aparecer; ela fica
+ * fora do giro, que continua sendo só o `rotateY` do `.livro-3d` (o GSAP e as trocas de página mexem
+ * nele).
+ *
+ * A construção, em unidades da referência (capa de 480 × 720; livro.css, "livro 3D inteiro"):
+ * - duas capas de papelão de 8 de espessura (--papelao), com a borda de cima forrada na cor impressa
+ *   daquela altura; a capa, presa pela lombada, abre girando em Y (o verso fica na face de dentro);
+ * - a seixa (--seixa, 9): o miolo é 9 menor que as capas no alto, no pé e na frente;
+ * - a lombada arredondada: a arte (a mesma da estante, MioloLombada) numa face plana no meio e, dos
+ *   dois lados, duas facetas que dobram até as capas (FACETAS, abaixo), com a luz correndo pela curva;
+ * - no alto, a borda da lombada, o oco, o cabeceado listrado e o alto do miolo em creme, com as linhas
+ *   das folhas; o vinco da dobradiça na capa, a 22 da lombada; o grão; a sombra de contato no chão
+ *   (`.chao`, que a gaveta da home esconde).
  *
  * As medidas vêm de src/lib/livro-3d.ts: --cw (largura da capa), --bh (altura), --sw (espessura, a
- * largura da lombada na mesma escala) e --u (px por unidade da referência, para a lombada). As cores,
- * do elemento pai (coresDoLivroCss). O slot "pagina" é o que aparece dentro quando a capa abre.
+ * largura da lombada na mesma escala) e --u (px por unidade da referência). As cores, do elemento pai
+ * (coresDoLivroCss). O slot "pagina" é o que aparece dentro quando a capa abre.
  */
 import MioloLombada from "./MioloLombada.astro";
 import Capa from "./Capa.astro";
@@ -18,35 +29,141 @@ import type { Livro } from "../lib/estante";
 interface Props {
   livro: Livro;
   desenho: "inline" | "adiado";
-  /** Camadas de página por baixo da capa, que aparecem quando ela entreabre (D40). */
+  /** Camadas de página por baixo da capa (D40). */
   folhas?: number;
 }
 
 const { livro, desenho, folhas = 0 } = Astro.props;
+
+/*
+ * O contorno da lombada visto de cima, de trás (a contracapa, z = -1/2) para a frente (a capa, z = +1/2),
+ * em frações da espessura: x negativo é para fora do livro. A face do meio (a arte) fica 0,1 para fora
+ * das capas; as duas facetas de cada lado fazem a curva até elas.
+ */
+const CONTORNO: [number, number][] = [
+  [0, -0.5],
+  [-0.075, -0.44],
+  [-0.1, -0.35],
+  [-0.1, 0.35],
+  [-0.075, 0.44],
+  [0, 0.5],
+];
+const n3 = (v: number) => Math.round(v * 10000) / 10000;
+/** Uma faceta de A a B: onde começa, o comprimento e o giro (a normal de fora aponta para -x). */
+function faceta(a: [number, number], b: [number, number]) {
+  const dx = b[0] - a[0];
+  const dz = b[1] - a[1];
+  const giro = (Math.atan2(-dz, dx) * 180) / Math.PI;
+  return `--fx:${n3(a[0])};--fz:${n3(a[1])};--fl:${n3(Math.hypot(dx, dz))};--fa:${n3(giro)}deg`;
+}
+// As quatro facetas das pontas (a do meio é a própria arte): trás de fora, trás de dentro, frente de dentro, frente de fora.
+const FACETAS = [
+  { classe: "tras-fora", estilo: faceta(CONTORNO[0], CONTORNO[1]) },
+  { classe: "tras-dentro", estilo: faceta(CONTORNO[1], CONTORNO[2]) },
+  { classe: "frente-dentro", estilo: faceta(CONTORNO[3], CONTORNO[4]) },
+  { classe: "frente-fora", estilo: faceta(CONTORNO[4], CONTORNO[5]) },
+];
+
+/*
+ * O alto da lombada (a cabeça), num SVG deitado no alto do livro, em unidades da referência: a borda do
+ * material da capa, o oco entre ela e o miolo, e o cabeceado (o fio listrado colado no alto do miolo).
+ * X = x + 0,1·T (a partir do ponto mais saliente da lombada) e Y = z + T/2 (de trás para a frente).
+ */
+const T = livro.emPe.largura;
+const OMBRO = 26;
+const LARGURA_CABECA = 0.1 * T + OMBRO;
+const contorno = CONTORNO.map(([x, z]) => [(x + 0.1) * T, (z + 0.5) * T] as [number, number]);
+/** O contorno deslocado d para dentro (as retas paralelas, cortadas nas quinas). */
+function paraDentro(d: number) {
+  const linhas = contorno.slice(1).map((b, i) => {
+    const a = contorno[i];
+    const l = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    const nx = (b[1] - a[1]) / l;
+    const nz = -(b[0] - a[0]) / l;
+    return { a: [a[0] + nx * d, a[1] + nz * d], b: [b[0] + nx * d, b[1] + nz * d] };
+  });
+  const pontos: [number, number][] = [linhas[0].a as [number, number]];
+  for (let i = 1; i < linhas.length; i++) {
+    const p = linhas[i - 1];
+    const q = linhas[i];
+    const r = [p.b[0] - p.a[0], p.b[1] - p.a[1]];
+    const s = [q.b[0] - q.a[0], q.b[1] - q.a[1]];
+    const den = r[0] * s[1] - r[1] * s[0];
+    const t = ((q.a[0] - p.a[0]) * s[1] - (q.a[1] - p.a[1]) * s[0]) / den;
+    pontos.push([p.a[0] + r[0] * t, p.a[1] + r[1] * t]);
+  }
+  pontos.push(linhas[linhas.length - 1].b as [number, number]);
+  return pontos;
+}
+/** Só o trecho do contorno entre y0 e y1 (em Y), para o oco e o cabeceado pararem antes das capas. */
+function trecho(ps: [number, number][], y0: number, y1: number) {
+  const saida: [number, number][] = [];
+  for (let i = 0; i < ps.length - 1; i++) {
+    const [a, b] = [ps[i], ps[i + 1]];
+    const corta = (y: number): [number, number] => {
+      const t = (y - a[1]) / (b[1] - a[1]);
+      return [a[0] + (b[0] - a[0]) * t, y];
+    };
+    if (b[1] < y0 || a[1] > y1) continue;
+    saida.push(a[1] < y0 ? corta(y0) : a);
+    if (b[1] > y1) {
+      saida.push(corta(y1));
+      break;
+    }
+    if (i === ps.length - 2) saida.push(b);
+  }
+  return saida;
+}
+const caminho = (ps: [number, number][], fechar = false) =>
+  ps.map(([x, y], i) => `${i ? "L" : "M"}${n3(x)} ${n3(y)}`).join("") + (fechar ? "Z" : "");
+const borda = [...contorno, ...paraDentro(2.6).reverse()];
+const cabeceado = caminho(trecho(paraDentro(7.4), 8.5, T - 8.5));
+const cabecaSvg =
+  `<svg viewBox="0 0 ${n3(LARGURA_CABECA)} ${T}" preserveAspectRatio="none" aria-hidden="true" focusable="false">` +
+  `<path class="cb-oco" d="${caminho(trecho(paraDentro(3.9), 0.08 * T, 0.92 * T))}"/>` +
+  `<path class="cb-fio" d="${cabeceado}"/>` +
+  `<path class="cb-listra" d="${cabeceado}"/>` +
+  `<path class="cb-luz" d="${caminho(trecho(paraDentro(5.6), 9, T - 9))}"/>` +
+  `<path class="cb-sombra" d="${caminho(trecho(paraDentro(9.6), 9, T - 9))}"/>` +
+  `<path class="cb-borda" d="${caminho(borda, true)}"/>` +
+  `</svg>`;
+// O alto do miolo começa dentro da curva da lombada (4,5 para dentro dela) e é recortado por ela
+// (livro.css, .miolo-topo): X a partir do começo dele, Y a partir da face de dentro da contracapa.
+const noMiolo = trecho(paraDentro(4.5), 8, T - 8).map(([x, y]) => `calc(${n3(x - 4.5)} * var(--u)) calc(${n3(y - 8)} * var(--u))`);
+const recorteMiolo = `polygon(${noMiolo.join(", ")}, 100% 100%, 100% 0)`;
 ---
 
 <div class="livro-3d-caixa" aria-hidden={Astro.slots.has("pagina") ? undefined : "true"}>
-  <div class="livro-3d">
-    <div class="f contra"></div>
-    <div class="f miolo-dir"></div>
-    <div class="f miolo-topo"></div>
-    <div class:list={["f", "face-lombada", "lombada-visual", { "de-serie": livro.serie }]} aria-hidden="true">
-      <MioloLombada livro={livro} iconeDaEstante={desenho === "adiado"} />
-    </div>
-    <div class="f pagina">
-      <slot name="pagina" />
-    </div>
-    {Array.from({ length: folhas }, (_, i) => <div class="f folha-livro" style={`--i:${i}`} aria-hidden="true" />)}
-    <div class="f face-capa" aria-hidden="true">
-      <div class="capa-verso">
-        <p class="assinatura-verso">
-          <span>Cesar Schutz</span>
-          <em>blog</em>
-          <small>blog.cesarschutz.com.br</small>
-        </p>
+  <div class="livro-3d-vista">
+    <div class:list={["livro-3d", { "livro-serie": livro.serie }]} style={`--t:${T};--cabeca-w:${n3(LARGURA_CABECA)}`}>
+      <div class="f chao"></div>
+      <div class="f contra"></div>
+      <div class="f contra-dentro"></div>
+      <div class="f contra-topo"></div>
+      <div class="f miolo-dir"></div>
+      <div class="f miolo-topo" style={`--recorte-miolo:${recorteMiolo}`}></div>
+      {FACETAS.map((f) => <div class={`f faceta ${f.classe}`} style={f.estilo} />)}
+      <div class:list={["f", "face-lombada", "lombada-visual", { "de-serie": livro.serie }]} aria-hidden="true">
+        <MioloLombada livro={livro} iconeDaEstante={desenho === "adiado"} />
       </div>
-      <div class="capa-frente">
-        <Capa livro={livro} desenho={desenho} />
+      <div class="f cabeca-lombada" set:html={cabecaSvg} />
+      <div class="f pagina">
+        <slot name="pagina" />
+      </div>
+      {Array.from({ length: folhas }, (_, i) => <div class="f folha-livro" style={`--i:${i}`} aria-hidden="true" />)}
+      <div class="f face-capa" aria-hidden="true">
+        <div class="capa-verso">
+          <p class="assinatura-verso">
+            <span>Cesar Schutz</span>
+            <em>blog</em>
+            <small>blog.cesarschutz.com.br</small>
+          </p>
+        </div>
+        <div class="capa-frente">
+          <Capa livro={livro} desenho={desenho} />
+          <span class="luz-capa"></span>
+        </div>
+        <div class="capa-topo"></div>
       </div>
     </div>
   </div>

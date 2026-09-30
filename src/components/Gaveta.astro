@@ -8,8 +8,9 @@
  * arrastá-lo até a gaveta. Ao lado aparece o sumário, como antes da D40: "Neste livro" (ou "Ordem de
  * leitura", nas séries) e os artigos por ano, com "Ver o livro" (a página do livro) e "Fechar livro".
  * A gaveta abre crescendo, e o que está embaixo desce junto; fecha recolhendo, enquanto o livro volta;
- * na troca de livro, vai da altura de um para a do outro (D47). Clicar no livro, ou na lupa, abre o
- * livro ampliado (D33, D43). "Fechar livro", Esc ou a mesma lombada guardam o livro: ele volta até a
+ * na troca de livro, vai da altura de um para a do outro (D47). Livro sem artigos: no lugar do
+ * sumário, pequeno, o livro aberto com as páginas em branco, na cor dele (D57, LivroEmBranco).
+ * Clicar no livro, ou na lupa, abre o livro ampliado (D33, D43). "Fechar livro", Esc ou a mesma lombada guardam o livro: ele volta até a
  * frente do lugar dele, entra empurrando o vizinho de volta e assenta. Outro livro primeiro guarda o
  * aberto e só depois sai da estante (D49). Com movimento reduzido, tudo direto no estado final.
  *
@@ -20,6 +21,7 @@
  */
 import Livro3D from "./Livro3D.astro";
 import LivroAmpliado from "./LivroAmpliado.astro";
+import LivroEmBranco from "./LivroEmBranco.astro";
 import SinalCodigo from "./SinalCodigo.astro";
 import { ICONES } from "../lib/icones";
 import { coresDoLivroCss, dadosDoLivro, paginasDoLivro, type Livro } from "../lib/estante";
@@ -81,7 +83,12 @@ function linhas(l: Livro): Linha[] {
               <button type="button" class="botao" data-fechar-livro>Fechar livro</button>
             </div>
           </div>
-          {l.posts.length === 0 && <p class="sem-artigos">Este livro ainda não tem artigos.</p>}
+          {l.posts.length === 0 && (
+            <div class="vazio-livro">
+              <LivroEmBranco livro={l} largura={132} preguicoso={false} />
+              <p class="sem-artigos">Este livro ainda não tem artigos.</p>
+            </div>
+          )}
           <ul class="indice-livro" aria-labelledby={`sumario-${l.id}`} hidden={l.posts.length === 0}>
             {linhas(l).map((linha) =>
               linha.tipo === "ano" ? (
@@ -102,6 +109,21 @@ function linhas(l: Livro): Linha[] {
     </template>
   ))
 }
+
+<style>
+  /* O livro sem artigos (D57): o livro aberto em branco, pequeno, e o aviso ao lado. */
+  .vazio-livro {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 14px;
+    margin-top: 10px;
+  }
+
+  .vazio-livro .sem-artigos {
+    margin: 0;
+  }
+</style>
 
 <script>
   import { GIRO, medidasDoLivro3D } from "../lib/livro-3d";
@@ -158,23 +180,32 @@ function linhas(l: Livro): Linha[] {
 
     /**
      * Onde pôr o livro da gaveta (girado 90°, de lombada para a frente) para ele cobrir a lombada da
-     * estante: o deslocamento até o centro dela e a escala que iguala as alturas. A lombada do livro 3D
-     * fica meia capa mais perto do olho e aparece um pouco maior (a perspectiva da caixa, livro.css). Ela
-     * também é mais fina que a da estante (a altura do livro 3D é sempre a de 720, D30): a largura
-     * acompanha a da estante no começo do voo e volta à do livro enquanto ele gira.
+     * estante: o deslocamento até o centro dela e a escala que iguala as medidas. A lombada é medida na
+     * tela, com o livro a 90° e o voo sem transformação: a vista de um pouco acima (D57) e a lombada
+     * arredondada, que fica um pouco para fora das capas, mudam onde ela aparece. A lombada da estante é
+     * mais baixa que a do livro 3D (a altura dele é sempre a de 720, D30) e às vezes mais larga: a escala
+     * de cada eixo iguala as duas no começo do voo, e o livro volta ao tamanho dele enquanto gira.
      */
-    function sobreALombada(caixa: HTMLElement, lombada: HTMLElement) {
+    function sobreALombada(gsap: GSAP, voo: HTMLElement, livro: HTMLElement, lombada: HTMLElement) {
       const l = lombada.getBoundingClientRect();
-      const c = caixa.getBoundingClientRect();
-      const p = parseFloat(getComputedStyle(caixa).perspective) || c.height * 4.7;
-      const scale = l.height / ((c.height * p) / (p - c.width / 2));
-      const espessura = parseFloat(getComputedStyle(caixa).getPropertyValue("--sw")) || lombada.offsetWidth;
-      const largura = lombada.offsetWidth / lombada.offsetHeight / (espessura / caixa.offsetHeight);
+      const props = ["x", "y", "scaleX", "scaleY"] as const;
+      const antes = Object.fromEntries(props.map((p) => [p, gsap.getProperty(voo, p)]));
+      const giro = gsap.getProperty(livro, "rotationY");
+      gsap.set(voo, { x: 0, y: 0, scaleX: 1, scaleY: 1 });
+      gsap.set(livro, { rotationY: 90 });
+      const f = livro.querySelector(".face-lombada")!.getBoundingClientRect();
+      const c = voo.getBoundingClientRect();
+      gsap.set(voo, antes);
+      gsap.set(livro, { rotationY: giro });
+      const cx = c.left + c.width / 2;
+      const cy = c.top + c.height / 2;
+      const scaleX = l.width / f.width;
+      const scaleY = l.height / f.height;
       return {
-        x: l.left + l.width / 2 - (c.left + c.width / 2),
-        y: l.top + l.height / 2 - (c.top + c.height / 2),
-        scaleX: scale * largura,
-        scaleY: scale,
+        x: l.left + l.width / 2 - cx - scaleX * (f.left + f.width / 2 - cx),
+        y: l.top + l.height / 2 - cy - scaleY * (f.top + f.height / 2 - cy),
+        scaleX,
+        scaleY,
       };
     }
 
@@ -279,7 +310,7 @@ function linhas(l: Livro): Linha[] {
       }
       // Na frente dos outros, o livro da gaveta toma o lugar da lombada e anda até a gaveta.
       tl.add(() => {
-        gsap.set(voo, { ...sobreALombada(caixa, lombada), autoAlpha: 1, transformOrigin: "50% 50%", zIndex: 6 });
+        gsap.set(voo, { ...sobreALombada(gsap, voo, livro, lombada), autoAlpha: 1, transformOrigin: "50% 50%", zIndex: 6 });
         lombada.classList.add("retirado");
         rolarAte(ate, false, topo);
       })
@@ -335,7 +366,7 @@ function linhas(l: Livro): Linha[] {
         alturaDaTroca = gaveta!.offsetHeight;
         gsap.set(gaveta!, { height: alturaDaTroca });
       }
-      const { voo, livro, caixa, sumario, lupa } = partes(no);
+      const { voo, livro, sumario, lupa } = partes(no);
       const { rotation, transformOrigin } = descanso(lombada);
       // A lombada espera fora da estante, na frente do lugar dela, para o livro 3D mirar nela.
       const prof = profundidade(lombada);
@@ -347,7 +378,7 @@ function linhas(l: Livro): Linha[] {
         .to([sumario, lupa], { opacity: 0, duration: 0.18 }, 0)
         .set(voo, { zIndex: 6 }, 0)
         .to(livro, { rotationY: 90, duration: 0.6 * dur, ease: "power3.inOut" }, 0)
-        .to(voo, { ...sobreALombada(caixa, lombada), duration: 0.6 * dur, ease: "power3.inOut" }, 0)
+        .to(voo, { ...sobreALombada(gsap, voo, livro, lombada), duration: 0.6 * dur, ease: "power3.inOut" }, 0)
         .add(() => {
           gsap.set(voo, { autoAlpha: 0 });
           lombada.classList.remove("retirado");

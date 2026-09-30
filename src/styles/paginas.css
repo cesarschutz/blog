@@ -14,7 +14,7 @@
    * de dentro, em pixels inteiros (--meia, do script): com a emenda num pixel inteiro, as letras que
    * a atravessam não se partem.
    */
-  --folha-w: calc(var(--cw) - 6px);
+  --folha-w: calc(var(--cw) - 9 * var(--u) - 1px);
   --meia-folha: var(--meia, calc(var(--folha-w) / 2));
 }
 
@@ -29,11 +29,11 @@
 
 .folha-l {
   position: absolute;
-  top: 4px;
-  /* Como a página de dentro, 1px para dentro da lombada (--recuo-miolo, livro.css, B08). */
+  /* Como a página de dentro: com a seixa (D57) e 1px para dentro da lombada (--recuo-miolo, livro.css, B08). */
+  top: var(--seixa, 4px);
   left: var(--recuo-miolo, 0px);
   width: var(--folha-w);
-  height: calc(var(--bh) - 8px);
+  height: calc(var(--bh) - 2 * var(--seixa, 4px));
   transform-style: preserve-3d;
 }
 

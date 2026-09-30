@@ -192,8 +192,11 @@ import "../styles/paginas.css";
     const vista = { x: 0 };
     const curva = () => (celular.matches ? 0 : 24);
     // Onde cada folha fica em z: à direita, debaixo da capa; virada, por cima da guarda.
-    const zDir = (k: number) => m.sw / 2 - 0.3 - k * 0.35;
-    const zEsq = (k: number) => m.sw / 2 + 0.95 + k * 0.35;
+    // A capa é uma placa de papelão (--papelao, 8 unidades, D57): fechada, as folhas ficam abaixo do verso
+    // dela; viradas, por cima dele, que aberto fica a uma espessura de papelão acima do plano da capa.
+    const papelao = () => 8 * m.u;
+    const zDir = (k: number) => m.sw / 2 - papelao() + 0.3 - k * 0.35;
+    const zEsq = (k: number) => m.sw / 2 + 0.6 + papelao() + 0.35 + k * 0.35;
 
     // Quem escreve as transformações a cada quadro (quickSetter: sem criar um tween por quadro).
     type Escrever = (v: number) => void;
@@ -449,8 +452,9 @@ import "../styles/paginas.css";
       const u = altura / 720;
       m = { u, bh: altura, cw: Math.round(480 * u), sw: Math.round(largura * u) };
       for (const [k, v] of Object.entries(m)) palco.style.setProperty(`--${k}`, `${v}px`);
-      // A metade de dentro de cada folha, em pixels inteiros (paginas.css).
-      palco.style.setProperty("--meia", `${Math.floor((m.cw - 6) / 2)}px`);
+      // A metade de dentro de cada folha, em pixels inteiros (paginas.css): a folha tem a largura da capa
+      // menos a seixa e o recuo do miolo (D57).
+      palco.style.setProperty("--meia", `${Math.floor((m.cw - 9 * m.u - 1) / 2)}px`);
     }
 
     // ---------- arrastar a folha (Draggable + InertiaPlugin) ----------

@@ -22,18 +22,23 @@
 }
 
 /*
- * A perspectiva do leitor (D49): o olho na altura do topo dos livros mais altos, a 1400 de distância
- * na estante cheia (0,42px por unidade), e mais perto na estante menor, na mesma proporção. O livro que
- * tomba para a frente mostra a cabeça (estante-gesto.ts).
+ * A perspectiva do leitor (D49, D57): o olho a 3333 de distância e um pouco acima do alto dos livros
+ * mais altos (190), para a cabeça de cada livro aparecer, como na prancha 07; o livro que tomba para a
+ * frente mostra mais dela (estante-gesto.ts). A prateleira é um espaço 3D só (preserve-3d): os lados
+ * dos livros (.lado) se escondem atrás dos vizinhos de verdade. Fica por cima da tábua, para a sombra
+ * de contato de cada livro cair nela.
  */
 .prateleira-livros {
   --u: min(0.42px, 100cqw / var(--natural));
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: flex-end;
   gap: calc(6 * var(--u));
   padding: calc(12 * var(--u) + 8px) calc(16 * var(--u)) 0;
   perspective: calc(3333 * var(--u));
-  perspective-origin: 50% 45%;
+  perspective-origin: 50% calc(12 * var(--u) + 8px - 190 * var(--u));
+  transform-style: preserve-3d;
 }
 
 /*
@@ -46,13 +51,15 @@
   width: calc(var(--w) * var(--u));
   height: calc(var(--h) * var(--u));
   text-decoration: none;
+  /* A capa (a frente, à direita da lombada) tem o papel no alto até 300 de 720; na série, a faixa de 14. */
+  --capa-divisao: calc(var(--h) * 300 / 720 * var(--u));
+  box-shadow: none;
   transform: rotate(0deg) rotateX(0deg);
   transform-origin: 50% 100%;
   transform-style: preserve-3d;
   transition:
     transform 0.3s cubic-bezier(0.2, 0.75, 0.2, 1),
-    opacity 0.25s,
-    filter 0.25s;
+    opacity 0.25s;
 }
 
 @media (hover: hover) {
@@ -61,33 +68,103 @@
   }
 }
 
+.lombada.de-serie {
+  --capa-divisao: calc(14 * var(--u));
+}
+
 /*
- * A cabeça do livro (D49): o topo das páginas entre as duas capas, deitado para trás a partir do alto
- * da lombada, com a profundidade do livro (480 de 720 da altura). O olho está abaixo dela, então só
- * aparece quando o livro tomba para a frente.
+ * A cabeça do livro (D49, D57): o alto dele, deitado para trás a partir do alto da lombada, com a
+ * profundidade do livro (480 de 720 da altura). De um lado a outro: a borda da contracapa (8, na cor
+ * dela), o miolo creme com as folhas (9 mais baixo, com a sombra das capas nas beiradas) e a borda da
+ * capa (no papel do alto dela; na série, na faixa laranja). Junto da lombada, a borda do material dela
+ * e o cabeceado listrado. O olho fica um pouco acima dos livros: ela aparece sempre, fina, e mais
+ * quando o livro tomba para a frente.
  */
 .cabeca {
+  --borda: calc(8 * var(--u));
+  --papel-miolo: color-mix(in oklab, var(--livro-papel), white 45%);
   position: absolute;
   bottom: 100%;
   left: 0;
   width: 100%;
   height: calc(var(--h) * 0.6667 * var(--u));
-  border-radius: 1px;
+  border-radius: max(1px, calc(3 * var(--u))) max(1px, calc(3 * var(--u))) 0 0;
   background:
+    linear-gradient(var(--apagado, transparent), var(--apagado, transparent)),
+    linear-gradient(0deg, color-mix(in oklab, var(--cima), white 28%) 0 calc(2.6 * var(--u)), rgb(0 0 0 / 0.5) calc(2.6 * var(--u)) calc(3.8 * var(--u)), rgb(0 0 0 / 0) calc(3.8 * var(--u))),
+    repeating-linear-gradient(
+        90deg,
+        color-mix(in oklab, var(--livro-papel), white 15%) 0 calc(1.7 * var(--u)),
+        color-mix(in oklab, var(--livro-cor), black 35%) calc(1.7 * var(--u)) calc(3.6 * var(--u))
+      )
+      0 calc(100% - 3.8 * var(--u)) / 100% calc(6 * var(--u)) no-repeat,
+    linear-gradient(0deg, rgb(0 0 0 / 0.28), rgb(0 0 0 / 0) calc(18 * var(--u))),
     linear-gradient(
       90deg,
-      color-mix(in oklab, var(--livro-papel), black 18%) 0 calc(4 * var(--u)),
-      transparent calc(4 * var(--u)) calc(100% - 4 * var(--u)),
-      color-mix(in oklab, var(--livro-papel), black 18%) calc(100% - 4 * var(--u))
+      color-mix(in oklab, var(--baixo), white 16%) 0 var(--borda),
+      rgb(0 0 0 / 0.34) var(--borda),
+      rgb(0 0 0 / 0) calc(var(--borda) + 6 * var(--u)),
+      rgb(0 0 0 / 0) calc(100% - var(--borda) - 6 * var(--u)),
+      rgb(0 0 0 / 0.3) calc(100% - var(--borda)),
+      color-mix(in oklab, var(--cima), white 24%) calc(100% - var(--borda))
     ),
+    linear-gradient(rgb(0 0 0 / 0.1), rgb(255 255 255 / 0.2)),
     repeating-linear-gradient(
       90deg,
-      color-mix(in oklab, var(--livro-papel), black 8%) 0 1px,
-      color-mix(in oklab, var(--livro-papel), white 40%) 1px 3px
+      var(--papel-miolo) 0 calc(3 * var(--u)),
+      color-mix(in oklab, var(--papel-miolo), var(--livro-tinta-papel) 7%) calc(3 * var(--u)) calc(4 * var(--u))
     );
   transform: rotateX(90deg);
   transform-origin: 50% 100%;
   backface-visibility: hidden;
+  pointer-events: none;
+}
+
+/*
+ * Os lados do livro (D57): o começo das capas, que vão para trás a partir das beiradas da lombada. Só
+ * para os vãos entre os livros ficarem escuros, como no fundo de uma estante: por isso, curtos (60), e
+ * a perspectiva não os mostra em cima dos vizinhos mais baixos. À esquerda, a contracapa, na cor dela;
+ * à direita, a capa, com o papel do alto (na série, a faixa).
+ */
+.lado {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: calc(60 * var(--u));
+  backface-visibility: hidden;
+  pointer-events: none;
+}
+
+.lado-tras {
+  right: 100%;
+  background:
+    linear-gradient(var(--apagado, transparent), var(--apagado, transparent)),
+    linear-gradient(90deg, rgb(0 0 0 / 0.66), rgb(0 0 0 / 0.36)),
+    var(--baixo);
+  transform: rotateY(-90deg);
+  transform-origin: 100% 50%;
+}
+
+.lado-frente {
+  left: 100%;
+  background:
+    linear-gradient(var(--apagado, transparent), var(--apagado, transparent)),
+    linear-gradient(90deg, rgb(0 0 0 / 0.4), rgb(0 0 0 / 0.7)),
+    linear-gradient(var(--cima) var(--capa-divisao), var(--baixo) var(--capa-divisao));
+  transform: rotateY(90deg);
+  transform-origin: 0 50%;
+}
+
+/* A sombra de contato do livro na tábua, na frente do pé dele. */
+.lombada::before {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: calc(-3 * var(--u));
+  left: calc(-3 * var(--u));
+  height: calc(9 * var(--u));
+  border-radius: 0 0 50% 50%;
+  background: linear-gradient(rgb(0 0 0 / 0.3), rgb(0 0 0 / 0.08) 55%, rgb(0 0 0 / 0));
   pointer-events: none;
 }
 
@@ -98,7 +175,7 @@
 .prateleira-livros.viva .lombada {
   transition:
     opacity 0.25s,
-    filter 0.25s;
+    --apagado 0.25s;
 }
 
 /*
@@ -195,7 +272,10 @@
   }
 }
 
-/* O aparador separa as categorias das séries: uma barra de 12 × 470 com base de 48 × 9. */
+/*
+ * O aparador separa as categorias das séries: uma haste de metal de 12 × 470, redonda (a luz corre por
+ * ela, com um fio de brilho), com a ponta arredondada, sobre uma base redonda de 48 × 9 (D57).
+ */
 .aparador {
   position: relative;
   flex: none;
@@ -203,8 +283,16 @@
   width: calc(12 * var(--u));
   height: calc(470 * var(--u));
   margin: 0 calc(25 * var(--u)) 0 calc(43 * var(--u));
-  border-radius: max(1px, calc(3 * var(--u))) max(1px, calc(3 * var(--u))) 0 0;
-  background: linear-gradient(90deg, var(--aparador-fundo), var(--aparador-luz) 45%, var(--aparador));
+  border-radius: 999px 999px 0 0;
+  background: linear-gradient(
+    90deg,
+    var(--aparador-fundo),
+    var(--aparador) 18%,
+    color-mix(in oklab, var(--aparador-luz), white 38%) 34%,
+    var(--aparador-luz) 46%,
+    var(--aparador) 72%,
+    color-mix(in oklab, var(--aparador-fundo), black 18%)
+  );
 }
 
 .aparador::after {
@@ -214,16 +302,47 @@
   left: calc(-18 * var(--u));
   width: calc(48 * var(--u));
   height: max(3px, calc(9 * var(--u)));
-  border-radius: max(1px, calc(2 * var(--u))) max(1px, calc(2 * var(--u))) 0 0;
-  background: linear-gradient(90deg, var(--aparador-fundo), var(--aparador-luz) 45%, var(--aparador));
+  border-radius: 50% 50% 42% 42% / 70% 70% 30% 30%;
+  background:
+    radial-gradient(ellipse 60% 55% at 42% 20%, color-mix(in oklab, var(--aparador-luz), white 30%), rgb(0 0 0 / 0) 70%),
+    linear-gradient(var(--aparador-luz), var(--aparador) 55%, var(--aparador-fundo));
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.28);
 }
 
-/* A prateleira: 14 de altura, com borda inferior de 6. */
+/*
+ * A prateleira (D57, prancha 07): uma tábua com espessura. Em cima, a face de cima: um pouco dela na
+ * frente dos livros (6) e, atrás deles, o fundo dela subindo (::before, que aparece nas pontas e entre
+ * os livros). Na frente, a borda da tábua, mais clara, com um fio de luz, e embaixo a borda de 6; a
+ * sombra dela cai na folha.
+ */
 .tabua {
-  height: max(6px, calc(14 * var(--u)));
+  position: relative;
+  height: max(6px, calc(20 * var(--u)));
   border-bottom: max(2px, calc(6 * var(--u))) solid var(--tabua-borda);
   border-radius: 1px 1px 2px 2px;
-  background: var(--tabua);
+  background: linear-gradient(
+    color-mix(in oklab, var(--tabua), black 11%) 0 calc(6 * var(--u)),
+    color-mix(in oklab, var(--tabua), white 22%) calc(6 * var(--u)),
+    var(--tabua) calc(9 * var(--u)),
+    color-mix(in oklab, var(--tabua), black 5%)
+  );
+  box-shadow: 0 calc(10 * var(--u)) calc(16 * var(--u)) calc(-8 * var(--u)) rgb(0 0 0 / 0.28);
+}
+
+.tabua::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  left: 0;
+  height: calc(70 * var(--u));
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(
+    0deg,
+    color-mix(in oklab, var(--tabua), black 11%),
+    color-mix(in oklab, var(--tabua), black 19%) 70%,
+    color-mix(in oklab, var(--tabua), black 26%)
+  );
 }
 
 .prateleira-livros + .tabua {
@@ -282,9 +401,34 @@
   opacity: 0;
 }
 
+/*
+ * Os não escolhidos apagam (D39): um véu do papel da folha a 60% por cima da lombada, da cabeça e dos
+ * lados, o que dá a cara da opacidade de 0,4 de antes. Com opacidade ou filtro, a lombada viraria um
+ * plano só (o 3D se achata e a cabeça e os lados somem) e a tábua de trás apareceria através dela (D57).
+ */
+@property --apagado {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: transparent;
+}
+
+.estante-filtro .lombada {
+  transition:
+    transform 0.3s cubic-bezier(0.2, 0.75, 0.2, 1),
+    --apagado 0.25s;
+}
+
 .estante-filtro.filtrando .lombada:not([aria-pressed="true"]) {
-  opacity: 0.4;
-  filter: saturate(0.5);
+  --apagado: color-mix(in oklab, var(--paper-hi) 62%, transparent);
+}
+
+.lombada::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--apagado, transparent);
+  pointer-events: none;
 }
 
 /* A lombada do filtro é um botão (D38): sem a cara de botão do navegador. */
@@ -349,6 +493,11 @@
 .livro-na-gaveta {
   position: relative;
   justify-self: center;
+}
+
+/* Na gaveta, o livro é o mesmo de Categorias e da página do livro, só sem a sombra no chão (D57). */
+.livro-na-gaveta .chao {
+  display: none;
 }
 
 .topo-sumario {

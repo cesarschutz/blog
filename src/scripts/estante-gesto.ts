@@ -36,12 +36,16 @@ export const profundidade = (el: HTMLElement) => (el.offsetHeight * 480) / 720;
 /**
  * Quanto levantar o livro que vem para a frente: perto do olho ele cresce, e o pé dele desceria abaixo
  * da prateleira na projeção. Levantando isso (mais 3px de folga para passar a borda da tábua), o pé
- * continua na linha da tábua, como quem ergue o livro um nada para tirá-lo. O olho fica a 45% da
- * altura da prateleira (perspective-origin, estante.css).
+ * continua na linha da tábua, como quem ergue o livro um nada para tirá-lo. O olho é o
+ * perspective-origin da prateleira (estante.css: um pouco acima dos livros, D57), e o pé fica embaixo
+ * dela.
  */
 export function levantar(prateleira: HTMLElement, z: number) {
-  const perspectiva = parseFloat(getComputedStyle(prateleira).perspective) || 1400;
-  return -(prateleira.offsetHeight * 0.55 * z) / perspectiva - 3;
+  const estilo = getComputedStyle(prateleira);
+  const perspectiva = parseFloat(estilo.perspective) || 1400;
+  const olho = parseFloat(estilo.perspectiveOrigin.split(" ")[1]);
+  const abaixo = prateleira.offsetHeight - (Number.isFinite(olho) ? olho : prateleira.offsetHeight * 0.45);
+  return -(abaixo * z) / Math.max(1, perspectiva - z) - 3;
 }
 
 export type Tombado = { el: HTMLElement; graus: number };

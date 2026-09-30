@@ -1051,25 +1051,85 @@ const rotulo = (l: Livro) => {
     view-transition-class: livro;
   }
 
-  /* O puxado passa por cima do conteúdo ao lado; o que está no ar, por cima dos outros livros. */
+  /*
+   * O puxado passa por cima do conteúdo ao lado; o que está no ar, por cima dos outros livros. Cada
+   * livro fica por cima do de baixo (D57): a face de cima dele e a sombra que ele faz no de baixo.
+   */
   .pilha li {
     position: relative;
+    z-index: calc(20 - var(--ordem, 0));
   }
 
+  .pilha li:nth-child(1) { --ordem: 1; }
+  .pilha li:nth-child(2) { --ordem: 2; }
+  .pilha li:nth-child(3) { --ordem: 3; }
+  .pilha li:nth-child(4) { --ordem: 4; }
+  .pilha li:nth-child(5) { --ordem: 5; }
+  .pilha li:nth-child(6) { --ordem: 6; }
+  .pilha li:nth-child(7) { --ordem: 7; }
+  .pilha li:nth-child(8) { --ordem: 8; }
+  .pilha li:nth-child(9) { --ordem: 9; }
+  .pilha li:nth-child(n + 10) { --ordem: 10; }
+
   .pilha li.no-ar {
-    z-index: 2;
+    z-index: 30;
   }
 
   .deitado > .lombada-visual {
+    /* Deitada, a luz vem de cima: o brilho da curva fica na metade de cima e o fio de luz, na cabeça. */
+    --luz-lombada: 270deg;
     position: absolute;
     top: 100%;
     left: 0;
     width: max(18px, calc(var(--w) * var(--u)));
     height: calc(var(--h) * var(--u-comprimento));
+    border-radius: max(1.5px, calc(4 * var(--u)));
     transform-origin: 0 0;
     rotate: -90deg;
     /* Girada, a sombra da lombada cai para baixo, como a de um livro deitado. */
     box-shadow: -1px 0 0 rgb(0 0 0 / 0.18);
+  }
+
+  /*
+   * O livro deitado com volume (D57, prancha 08): em cima dele, a capa vista de um pouco acima (uma faixa
+   * fina que foge para trás, na cor impressa: o papel do alto até 300 de 720 e a cor do livro; na
+   * série, a faixa e o papel), que o livro de cima tapa onde ele é mais longo; embaixo, a sombra que ele
+   * faz no livro de baixo (ou na prateleira).
+   */
+  .deitado::before {
+    --divisao: calc(var(--h) * 300 / 720 * var(--u-comprimento));
+    content: "";
+    position: absolute;
+    bottom: calc(100% - 1px);
+    left: calc(2 * var(--u-comprimento));
+    z-index: -1;
+    width: calc(100% - 4 * var(--u-comprimento));
+    height: max(3px, calc(var(--w) * var(--u) * 0.24));
+    border-radius: 2px 3px 0 0;
+    background:
+      linear-gradient(rgb(0 0 0 / 0.22), rgb(0 0 0 / 0.04)),
+      linear-gradient(90deg, var(--livro-papel) var(--divisao), var(--livro-cor) var(--divisao));
+    transform: skewX(-38deg);
+    transform-origin: 0 100%;
+    pointer-events: none;
+  }
+
+  .deitado:has(.de-serie)::before {
+    --divisao: calc(14 * var(--u-comprimento));
+    background:
+      linear-gradient(rgb(0 0 0 / 0.22), rgb(0 0 0 / 0.04)),
+      linear-gradient(90deg, var(--livro-cor) var(--divisao), var(--livro-papel) var(--divisao));
+  }
+
+  .deitado::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    right: 2px;
+    left: 2px;
+    height: max(3px, calc(10 * var(--u)));
+    background: linear-gradient(rgb(0 0 0 / 0.3), rgb(0 0 0 / 0));
+    pointer-events: none;
   }
 
   /* O título e o número, com corpo próprio (a espessura encolheu, eles não). */
@@ -1122,12 +1182,22 @@ const rotulo = (l: Livro) => {
     color: var(--ink-2);
   }
 
-  /* A prateleira sob a pilha: 5 na cor da estante e 2 de borda. */
+  /*
+   * A prateleira sob a pilha, com espessura (D57): a face de cima um pouco à vista, a borda da frente
+   * com um fio de luz e a de baixo, e a sombra dela na folha.
+   */
   .tampo {
-    height: max(4px, calc(12 * var(--u, 0.4px)));
-    border-bottom: 2px solid var(--tabua-borda);
-    background: var(--tabua);
     --u: min(0.42px, 100cqw / 680);
+    height: max(6px, calc(18 * var(--u, 0.4px)));
+    border-bottom: 2px solid var(--tabua-borda);
+    border-radius: 1px 1px 2px 2px;
+    background: linear-gradient(
+      color-mix(in oklab, var(--tabua), black 11%) 0 calc(5 * var(--u)),
+      color-mix(in oklab, var(--tabua), white 22%) calc(5 * var(--u)),
+      var(--tabua) calc(8 * var(--u)),
+      color-mix(in oklab, var(--tabua), black 5%)
+    );
+    box-shadow: 0 5px 8px -5px rgb(0 0 0 / 0.28);
   }
 
   @media (hover: hover) {

@@ -8,7 +8,11 @@
  *   o livro pela cabeça (D49, src/scripts/estante-gesto.ts); o último livro da coleção fica inclinado,
  *   apoiado no alto do aparador.
  * Com mouse, a estante responde a ele (D40, D49, src/scripts/estante-viva.ts): o livro tocado tomba um
- * nada para a frente e mostra a cabeça (o topo das páginas, .cabeca), com a legenda embaixo.
+ * nada para a frente e mostra mais da cabeça (o alto do livro, .cabeca), com a legenda embaixo.
+ *
+ * Cada lombada é um livro com volume (D57, prancha 07): a cabeça (as bordas das capas, o miolo e o
+ * cabeceado) e os dois lados (as capas, .lado), em 3D, dentro da perspectiva da prateleira, com o olho
+ * um pouco acima dos livros; os vizinhos se tapam de verdade.
  *
  * - "filtro" (o arquivo e as tags, D33): menor, sem o livro inclinado, só com os livros que têm
  *   artigos na página; com JS, cada lombada filtra a lista (ListaFiltrada.astro). O número da lombada
@@ -78,6 +82,8 @@ const conta = (l: Livro) => {
           style={estilo(l)}
         >
           <span class="cabeca" aria-hidden="true" />
+          <span class="lado lado-tras" aria-hidden="true" />
+          <span class="lado lado-frente" aria-hidden="true" />
           <MioloLombada livro={l} />
         </Lombada>
       ))
@@ -99,6 +105,8 @@ const conta = (l: Livro) => {
           style={estilo(l)}
         >
           <span class="cabeca" aria-hidden="true" />
+          <span class="lado lado-tras" aria-hidden="true" />
+          <span class="lado lado-frente" aria-hidden="true" />
           <MioloLombada livro={l} />
         </Lombada>
       ))

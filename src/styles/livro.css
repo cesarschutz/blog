@@ -467,20 +467,34 @@
   font-variant-numeric: lining-nums;
   position: relative;
   border-radius: max(1.5px, calc(3 * var(--u))) max(1.5px, calc(3 * var(--u))) max(1px, var(--u)) max(1px, var(--u));
+  /*
+   * A lombada arredondada (D57, pranchas 07 e 08): a luz corre pela curva, com as beiradas fugindo
+   * dela e um brilho largo e suave um pouco antes do meio; um fio de luz no alto e o pé um nada mais
+   * escuro. Deitada (a pilha), a luz vem de cima: --luz-lombada vira a direção.
+   */
   background:
     var(--grao) 0 0 / 180px 180px,
     linear-gradient(
-      90deg,
-      rgb(0 0 0 / 0.22) 0%,
-      rgb(0 0 0 / 0.03) 12%,
-      rgb(255 255 255 / 0.08) 42%,
-      rgb(0 0 0 / 0.06) 86%,
-      rgb(0 0 0 / 0.26) 100%
+      var(--luz-lombada, 90deg),
+      rgb(0 0 0 / 0.34) 0%,
+      rgb(0 0 0 / 0.16) 5%,
+      rgb(0 0 0 / 0.05) 14%,
+      rgb(255 255 255 / 0.04) 28%,
+      rgb(255 255 255 / 0.13) 43%,
+      rgb(255 255 255 / 0.09) 56%,
+      rgb(0 0 0 / 0.02) 70%,
+      rgb(0 0 0 / 0.12) 87%,
+      rgb(0 0 0 / 0.32) 100%
+    ),
+    linear-gradient(
+      var(--luz-alto, 180deg),
+      rgb(255 255 255 / 0.16),
+      rgb(255 255 255 / 0) calc(4 * var(--u)),
+      rgb(0 0 0 / 0) calc(100% - 14 * var(--u)),
+      rgb(0 0 0 / 0.14)
     ),
     linear-gradient(0deg, var(--baixo) var(--papel-h), var(--cima) var(--papel-h));
-  box-shadow:
-    0 1px 0 rgb(0 0 0 / 0.18),
-    calc(5 * var(--u)) 0 calc(12 * var(--u)) rgb(0 0 0 / 0.1);
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.18);
   color: var(--baixo-tinta);
   font-family: var(--font-livro);
 }
@@ -568,13 +582,20 @@
   font-size: calc(26 * var(--u));
 }
 
-/* ---------- livro 3D inteiro (Livro3D.astro, D40) ---------- */
+/* ---------- livro 3D inteiro (Livro3D.astro, D40; capa dura, D57) ---------- */
 
 /*
  * O livro é um bloco de --cw × --bh com --sw de espessura, centrado na caixa e girando em volta do
- * próprio centro. De frente, a capa fica em z = +sw/2 e a contracapa em -sw/2; a lombada é a face da
- * esquerda. Parado, o livro fica a --giro (38°, GIRO em lib/livro-3d.ts) da frente. Tudo com `backface-visibility: hidden`, e
- * nenhuma peça usa `filter`, que achataria o 3D.
+ * próprio centro. De frente, a capa fica em z = +sw/2 e a contracapa em -sw/2; a lombada é o lado da
+ * esquerda. Parado, o livro fica a --giro (38°, GIRO em lib/livro-3d.ts) da frente. Tudo com
+ * `backface-visibility: hidden`, e nenhuma peça usa `filter`, que achataria o 3D.
+ *
+ * A capa dura (D57, prancha 01 de docs/prototipos/livros-realistas), em unidades da referência (--u):
+ * capas de papelão de 8 (--papelao), seixa de 9 (--seixa: o miolo é menor que as capas no alto, no pé
+ * e na frente), a lombada arredondada (a arte no meio, 0,1 da espessura para fora, e duas facetas de
+ * cada lado até as capas, Livro3D.astro), o alto (a borda das capas, o miolo creme com as folhas, a
+ * cabeça da lombada com o cabeceado) e a sombra de contato no chão. A luz é uma só, do alto à esquerda
+ * e à frente, em camadas pretas e brancas translúcidas sobre as cores do livro.
  */
 .livro-3d-caixa {
   position: relative;
@@ -586,14 +607,44 @@
   perspective: calc(var(--bh, 360px) * 4.7);
 }
 
+/*
+ * A vista (D57): o olho um pouco acima do livro, para o alto aparecer (as bordas das capas, o miolo e o
+ * cabeceado), como na prancha 01. Fica fora do giro: o `rotateY` do `.livro-3d` continua sendo o único
+ * movimento do livro, e o GSAP, a troca de página e o livro ampliado mexem só nele.
+ */
+.livro-3d-vista {
+  position: absolute;
+  inset: 0;
+  transform: rotateX(var(--vista, -15deg));
+  transform-style: preserve-3d;
+}
+
 .livro-3d {
   --giro: 38deg;
-  /* O miolo começa 1px para dentro da lombada (B08, ver a quina logo abaixo da lombada). */
+  /* O miolo começa 1px para dentro da lombada (B08). */
   --recuo-miolo: 1px;
+  --papelao: calc(8 * var(--u, 0.5px));
+  --seixa: calc(9 * var(--u, 0.5px));
+  /* As cores impressas das peças: o alto da capa, a contracapa e as duas partes da lombada. */
+  --capa-alto: var(--cima);
+  --contra-cor: var(--baixo);
+  --lombada-cima: var(--cima);
+  --lombada-baixo: var(--livro-cor-texto);
+  --lombada-divisao: calc(var(--bh) * 400 / var(--h, 640));
+  --miolo-cor: color-mix(in oklab, var(--livro-papel), white 45%);
   position: absolute;
   inset: 0;
   transform: rotateY(var(--giro));
   transform-style: preserve-3d;
+}
+
+/* A série é um livro também (D57, muda a D32): capa de papel com a faixa laranja no alto. */
+.livro-3d.livro-serie {
+  --capa-alto: var(--revista-destaque);
+  --contra-cor: var(--revista-papel);
+  --lombada-cima: var(--revista-destaque);
+  --lombada-baixo: var(--revista-papel);
+  --lombada-divisao: calc(var(--bh) - 14 * var(--u, 0.5px));
 }
 
 .livro-3d .f {
@@ -603,57 +654,142 @@
   backface-visibility: hidden;
 }
 
-/* A contracapa, na cor de baixo do livro, com a sombra do livro no chão. */
+/* A contracapa, por fora: lisa, na cor de baixo do livro (quase nunca à vista). */
 .livro-3d .contra {
   width: var(--cw);
   height: var(--bh);
   border-radius: max(2px, calc(3 * var(--u, 0.5px))) max(1px, var(--u, 0.5px)) max(1px, var(--u, 0.5px)) max(2px, calc(3 * var(--u, 0.5px)));
-  background: var(--baixo);
+  background:
+    linear-gradient(90deg, rgb(0 0 0 / 0.16), rgb(0 0 0 / 0.06)),
+    var(--grao) 0 0 / 180px 180px,
+    var(--contra-cor);
   transform: rotateY(180deg) translateZ(calc(var(--sw) / 2));
-  box-shadow: 0 calc(var(--bh) * 0.08) calc(var(--bh) * 0.12) calc(var(--bh) * -0.06) rgb(0 0 0 / 0.45);
-}
-
-.de-serie .livro-3d .contra,
-.livro-3d:has(.de-serie) .contra {
-  background: var(--revista-papel);
-}
-
-/* As bordas das páginas, à direita e em cima: papel com as linhas das folhas. */
-.livro-3d .miolo-dir {
-  top: 4px;
-  left: calc((var(--cw) - var(--sw)) / 2 + 2px);
-  width: calc(var(--sw) - 4px);
-  height: calc(var(--bh) - 8px);
-  background: repeating-linear-gradient(
-    90deg,
-    color-mix(in oklab, var(--livro-papel), black 7%) 0 1px,
-    color-mix(in oklab, var(--livro-papel), white 45%) 1px 3px
-  );
-  transform: rotateY(90deg) translateZ(calc(var(--cw) / 2 - 3px));
-}
-
-.livro-3d .miolo-topo {
-  top: calc((var(--bh) - var(--sw)) / 2 + 2px);
-  left: var(--recuo-miolo);
-  width: calc(var(--cw) - 6px);
-  height: calc(var(--sw) - 4px);
-  background: repeating-linear-gradient(
-    0deg,
-    color-mix(in oklab, var(--livro-papel), black 7%) 0 1px,
-    color-mix(in oklab, var(--livro-papel), white 45%) 1px 3px
-  );
-  transform: rotateX(90deg) translateZ(calc(var(--bh) / 2 - 4px));
 }
 
 /*
- * A lombada, na face da esquerda, com a mesma divisão da lombada da estante (D33): o papel ocupa 400
- * da altura dela (--h, em livros.json), em proporção.
+ * A contracapa, por dentro: no alto, a dobra do material da capa (18 de altura, na cor dela) e, abaixo,
+ * a guarda em papel. Só aparece acima do miolo (a seixa), no fundo do vão: por isso, escura.
  */
-.livro-3d .face-lombada {
-  left: calc((var(--cw) - var(--sw)) / 2);
-  width: var(--sw);
+.livro-3d .contra-dentro {
+  width: var(--cw);
   height: var(--bh);
-  transform: rotateY(-90deg) translateZ(calc(var(--cw) / 2));
+  background:
+    linear-gradient(rgb(0 0 0 / 0.26), rgb(0 0 0 / 0.42) calc(9 * var(--u, 0.5px)), rgb(0 0 0 / 0.5)),
+    linear-gradient(var(--contra-cor) calc(18 * var(--u, 0.5px)), var(--livro-papel) calc(18 * var(--u, 0.5px)));
+  transform: translateZ(calc(var(--papelao) - var(--sw) / 2));
+}
+
+/* A borda de cima da contracapa: o papelão forrado na cor dela, virado para a luz. */
+.livro-3d .contra-topo {
+  width: var(--cw);
+  height: var(--papelao);
+  border-radius: 0 max(1px, calc(3 * var(--u, 0.5px))) max(1px, calc(3 * var(--u, 0.5px))) 0;
+  background: linear-gradient(rgb(255 255 255 / 0.26), rgb(255 255 255 / 0.12)), var(--contra-cor);
+  transform-origin: 0 0;
+  transform: translateZ(calc(var(--sw) / -2)) rotateX(90deg);
+}
+
+/*
+ * O alto do miolo: papel creme, a face mais clara do livro, 9 abaixo das capas (a seixa), com as linhas
+ * das folhas (poucas e fracas, mais marcadas a cada caderno), a sombra das duas capas nas beiradas e a
+ * do oco junto da lombada. Começa dentro da curva da lombada, recortado por ela (--recorte-miolo).
+ */
+.livro-3d .miolo-topo {
+  --inicio: calc(var(--sw) * -0.1 + 4.5 * var(--u, 0.5px));
+  width: calc(var(--cw) - var(--seixa) - var(--inicio));
+  height: calc(var(--sw) - 2 * var(--papelao));
+  border-radius: 0 max(1px, calc(3 * var(--u, 0.5px))) max(1px, calc(3 * var(--u, 0.5px))) 0;
+  background:
+    linear-gradient(90deg, rgb(0 0 0 / 0.2), rgb(0 0 0 / 0) calc(16 * var(--u, 0.5px))),
+    linear-gradient(rgb(0 0 0 / 0.3), rgb(0 0 0 / 0) calc(4 * var(--u, 0.5px)), rgb(0 0 0 / 0) calc(100% - 3.5 * var(--u, 0.5px)), rgb(0 0 0 / 0.34)),
+    linear-gradient(90deg, rgb(255 255 255 / 0.34), rgb(255 255 255 / 0.18)),
+    repeating-linear-gradient(
+      rgb(0 0 0 / 0) 0 calc(23 * var(--u, 0.5px)),
+      color-mix(in oklab, var(--livro-tinta-papel) 13%, transparent) calc(23 * var(--u, 0.5px)) calc(24 * var(--u, 0.5px))
+    ),
+    repeating-linear-gradient(
+      rgb(0 0 0 / 0) 0 calc(3.2 * var(--u, 0.5px)),
+      color-mix(in oklab, var(--livro-tinta-papel) 6%, transparent) calc(3.2 * var(--u, 0.5px)) calc(4 * var(--u, 0.5px))
+    ),
+    var(--miolo-cor);
+  clip-path: var(--recorte-miolo, none);
+  transform-origin: 0 0;
+  transform: translate3d(var(--inicio), var(--seixa), calc(var(--papelao) - var(--sw) / 2)) rotateX(90deg);
+}
+
+/* A frente do miolo (à vista só quando o livro gira de costas): as folhas, em papel. */
+.livro-3d .miolo-dir {
+  width: calc(var(--sw) - 2 * var(--papelao));
+  height: calc(var(--bh) - 2 * var(--seixa));
+  background:
+    linear-gradient(90deg, rgb(0 0 0 / 0.18), rgb(0 0 0 / 0) 20%, rgb(0 0 0 / 0) 80%, rgb(0 0 0 / 0.18)),
+    repeating-linear-gradient(
+      90deg,
+      color-mix(in oklab, var(--livro-papel), black 7%) 0 1px,
+      var(--miolo-cor) 1px 3px
+    );
+  transform-origin: 0 0;
+  transform: translate3d(calc(var(--cw) - var(--seixa)), var(--seixa), calc(var(--sw) / 2 - var(--papelao))) rotateY(90deg);
+}
+
+/*
+ * A lombada arredondada: a arte (a mesma da estante, D33) numa face plana, 0,1 da espessura para fora
+ * das capas, e as quatro facetas das pontas (Livro3D.astro), que fazem a curva até elas. Nas facetas, as
+ * mesmas duas cores da arte, divididas na mesma altura. A luz corre pela curva: a parte de trás, que
+ * foge dela, escurece; a da frente leva um brilho largo e suave; na quina com a capa, cai um pouco.
+ */
+.livro-3d .face-lombada,
+.livro-3d .faceta {
+  height: var(--bh);
+  transform-origin: 0 0;
+}
+
+.livro-3d .faceta {
+  /* Um nada mais larga, por baixo da vizinha: sem fresta entre as facetas. */
+  width: calc(var(--fl) * var(--sw) + 0.5px);
+  background:
+    var(--luz-faceta),
+    linear-gradient(rgb(255 255 255 / 0.1), rgb(255 255 255 / 0) calc(3 * var(--u, 0.5px)), rgb(0 0 0 / 0) 45%, rgb(0 0 0 / 0.07)),
+    var(--grao) 0 0 / 180px 180px,
+    linear-gradient(0deg, var(--lombada-baixo) var(--lombada-divisao), var(--lombada-cima) var(--lombada-divisao));
+  transform: translate3d(calc(var(--fx) * var(--sw)), 0, calc(var(--fz) * var(--sw))) rotateY(var(--fa));
+}
+
+.livro-3d .tras-fora {
+  --luz-faceta: linear-gradient(90deg, rgb(0 0 0 / 0.36), rgb(0 0 0 / 0.23));
+}
+
+.livro-3d .tras-dentro {
+  --luz-faceta: linear-gradient(90deg, rgb(0 0 0 / 0.23), rgb(0 0 0 / 0.11));
+}
+
+.livro-3d .frente-dentro {
+  --luz-faceta: linear-gradient(90deg, rgb(255 255 255 / 0.13), rgb(255 255 255 / 0.07));
+}
+
+.livro-3d .frente-fora {
+  --luz-faceta: linear-gradient(90deg, rgb(255 255 255 / 0.07), rgb(255 255 255 / 0.02) 40%, rgb(0 0 0 / 0.08));
+}
+
+/* A arte da lombada: a face inteira tem a espessura do livro, e só o meio (de 15% a 85%) fica à vista. */
+.livro-3d .face-lombada {
+  width: var(--sw);
+  border-radius: 0;
+  background:
+    linear-gradient(
+      90deg,
+      rgb(0 0 0 / 0.11) 15%,
+      rgb(0 0 0 / 0.04) 30%,
+      rgb(255 255 255 / 0.02) 48%,
+      rgb(255 255 255 / 0.1) 68%,
+      rgb(255 255 255 / 0.13) 85%
+    ),
+    linear-gradient(rgb(255 255 255 / 0.1), rgb(255 255 255 / 0) calc(3 * var(--u, 0.5px)), rgb(0 0 0 / 0) 45%, rgb(0 0 0 / 0.07)),
+    var(--grao) 0 0 / 180px 180px,
+    linear-gradient(0deg, var(--baixo) var(--papel-h), var(--cima) var(--papel-h));
+  box-shadow: none;
+  clip-path: inset(0 14.7%);
+  transform: translate3d(calc(var(--sw) * -0.1), 0, calc(var(--sw) * -0.5)) rotateY(-90deg);
 }
 
 .face-lombada.lombada-visual:not(.de-serie) {
@@ -661,52 +797,131 @@
 }
 
 /*
- * A quina da lombada com a capa (B08, D52). Havia uma linha clara entre as duas, de duas causas:
- * 1. A fresta: as faces só se encostavam, e a capa fica 0,6px à frente da lombada (para as folhas do
- *    livro ampliado caberem por baixo dela); pela fresta aparecia o que estava atrás. A lombada agora
- *    passa 1,5px para a frente, por baixo da borda da capa, com o mesmo fundo (grão, sombreado e
- *    divisão do papel): a sombra da lombada encosta direto na capa, também a 24° (o hover) e em 1x.
- *    É um ::before, e não a largura da face, para as medidas da lombada (e o getBoundingClientRect
- *    que as trocas de livro usam) não mudarem. Do lado da contracapa não precisa: aquela quina nunca
- *    fica à vista.
- * 2. O miolo encostado na lombada: a página de dentro, as camadas e as folhas do livro ampliado
- *    começavam no plano da lombada, e o navegador corta a lombada em faixas no plano de cada página
- *    (a ordem das faces 3D); na emenda de cada faixa, a borda clara da página vazava. O miolo agora
- *    começa --recuo-miolo (1px) para dentro, como o bloco de folhas de um livro de capa dura, e o
- *    verso da capa passa o mesmo tanto da dobradiça, para o livro aberto não mostrar fresta na calha.
+ * A cabeça da lombada (o SVG de Livro3D.astro, deitado no alto do livro): a borda do material da capa,
+ * clara, o oco escuro entre ela e o miolo e o cabeceado, um fio listrado em papel e na cor do livro
+ * escurecida, com a luz em cima e a sombra embaixo.
  */
-.livro-3d .face-lombada::before {
-  content: "";
-  position: absolute;
-  inset: 0 -1.5px 0 0;
-  border-radius: inherit;
-  background: inherit;
+.livro-3d .cabeca-lombada {
+  width: calc(var(--cabeca-w) * var(--u, 0.5px));
+  height: var(--sw);
+  transform-origin: 0 0;
+  transform: translate3d(calc(var(--sw) * -0.1), 0, calc(var(--sw) / -2)) rotateX(90deg);
 }
 
-/* A página de dentro e as camadas de página, logo abaixo da capa. */
+.cabeca-lombada svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.cabeca-lombada path {
+  fill: none;
+  stroke-linejoin: round;
+}
+
+.cabeca-lombada .cb-borda {
+  fill: color-mix(in oklab, var(--lombada-cima), white 30%);
+}
+
+.cabeca-lombada .cb-oco {
+  stroke: rgb(0 0 0 / 0.55);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+
+.cabeca-lombada .cb-fio {
+  stroke: color-mix(in oklab, var(--livro-papel), white 20%);
+  stroke-width: 7;
+}
+
+.cabeca-lombada .cb-listra {
+  stroke: color-mix(in oklab, var(--livro-cor), black 35%);
+  stroke-width: 7;
+  stroke-dasharray: 1.6 1.9;
+  opacity: 0.75;
+}
+
+.cabeca-lombada .cb-luz {
+  stroke: rgb(255 255 255 / 0.32);
+  stroke-width: 1.6;
+}
+
+.cabeca-lombada .cb-sombra {
+  stroke: rgb(0 0 0 / 0.3);
+  stroke-width: 2;
+}
+
+/*
+ * A sombra no chão (D57): a de contato, justa e escura, onde as capas e a lombada tocam o chão, e a
+ * projetada, larga e fraca, para a direita e um pouco para trás (a luz vem do alto à esquerda). Um plano
+ * deitado no pé do livro, que gira com ele; só gradiente e sombra de caixa (nada de `filter`).
+ */
+.livro-3d .chao {
+  --margem: calc(90 * var(--u, 0.5px));
+  width: calc(var(--cw) + var(--sw) * 0.1 + 2 * var(--margem));
+  height: calc(var(--sw) + 2 * var(--margem));
+  pointer-events: none;
+  transform-origin: 0 0;
+  transform: translate3d(calc(var(--sw) * -0.1 - var(--margem)), calc(var(--bh) + 0.5px), calc(var(--sw) / -2 - var(--margem))) rotateX(90deg);
+}
+
+.livro-3d .chao::before,
+.livro-3d .chao::after {
+  content: "";
+  position: absolute;
+  border-radius: 50% 6% 6% 50% / 50% 12% 12% 50%;
+}
+
+.livro-3d .chao::after {
+  top: var(--margem);
+  left: var(--margem);
+  width: calc(var(--cw) + var(--sw) * 0.1);
+  height: var(--sw);
+  background: rgb(0 0 0 / 0.34);
+  box-shadow:
+    0 0 calc(3 * var(--u, 0.5px)) calc(1 * var(--u, 0.5px)) rgb(0 0 0 / 0.3),
+    0 0 calc(16 * var(--u, 0.5px)) calc(4 * var(--u, 0.5px)) rgb(0 0 0 / 0.12);
+}
+
+.livro-3d .chao::before {
+  top: calc(var(--margem) - 22 * var(--u, 0.5px));
+  left: calc(var(--margem) + 26 * var(--u, 0.5px));
+  width: calc(var(--cw) + var(--sw) * 0.1 + 30 * var(--u, 0.5px));
+  height: calc(var(--sw) + 14 * var(--u, 0.5px));
+  border-radius: 40%;
+  background: rgb(0 0 0 / 0.15);
+  box-shadow: 0 0 calc(44 * var(--u, 0.5px)) calc(18 * var(--u, 0.5px)) rgb(0 0 0 / 0.13);
+}
+
+/* A página de dentro e as camadas de página, logo abaixo da capa, com a seixa. */
 .livro-3d .pagina,
 .livro-3d .folha-livro {
-  top: 4px;
+  top: var(--seixa);
   left: var(--recuo-miolo);
-  width: calc(var(--cw) - 6px);
-  height: calc(var(--bh) - 8px);
+  width: calc(var(--cw) - var(--seixa) - var(--recuo-miolo));
+  height: calc(var(--bh) - 2 * var(--seixa));
   border-radius: 0 3px 3px 0;
-  background: color-mix(in oklab, var(--livro-papel), white 55%);
+  background: var(--miolo-cor);
   color: var(--livro-tinta-papel);
   box-shadow: inset 10px 0 18px -14px rgb(0 0 0 / 0.35);
 }
 
 .livro-3d .pagina {
-  transform: translateZ(calc(var(--sw) / 2 - 1px));
+  transform: translateZ(calc(var(--sw) / 2 - var(--papelao)));
 }
 
 .livro-3d .folha-livro {
   background: var(--livro-papel);
-  transform: translateZ(calc(var(--sw) / 2 - 1.2px - var(--i) * 0.6px));
+  transform: translateZ(calc(var(--sw) / 2 - var(--papelao) - 0.3px - var(--i) * 0.6px));
   transform-origin: 0 50%;
 }
 
-/* A capa, presa pela lombada (a borda esquerda): abre girando em Y. O verso leva a assinatura. */
+/*
+ * A capa, presa pela lombada (a borda esquerda): abre girando em Y. É uma placa de papelão: a arte por
+ * fora (em z = 0 da placa), o verso por dentro (em -papelao) e a borda de cima, forrada na cor impressa
+ * no alto da capa.
+ */
 .livro-3d .face-capa {
   width: var(--cw);
   height: var(--bh);
@@ -723,9 +938,48 @@
   backface-visibility: hidden;
 }
 
-/* O verso passa da dobradiça o recuo do miolo: aberto, ele encosta na primeira página (B08). */
-.face-capa > .capa-verso {
-  left: calc(-1 * var(--recuo-miolo, 0px));
+.face-capa > .capa-topo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--cw);
+  height: var(--papelao);
+  border-radius: 0 max(1px, calc(3 * var(--u, 0.5px))) max(1px, calc(3 * var(--u, 0.5px))) 0;
+  background: linear-gradient(rgb(255 255 255 / 0.34), rgb(255 255 255 / 0.2)), var(--capa-alto);
+  backface-visibility: hidden;
+  transform-origin: 0 0;
+  transform: translateZ(calc(-1 * var(--papelao))) rotateX(90deg);
+}
+
+/*
+ * A luz na capa (D57), por cima do grão: a queda suave da lombada para a frente e do alto para o pé, o
+ * brilho acetinado largo e fraco, o vinco da dobradiça a 22 da lombada, as bordas arredondadas (um fio
+ * de luz no alto, escuro na frente e no pé) e a oclusão perto do chão.
+ */
+.luz-capa {
+  --v: var(--u, 0.5px);
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: max(1px, var(--v)) max(2px, calc(3 * var(--v))) max(2px, calc(3 * var(--v))) max(1px, var(--v));
+  background:
+    linear-gradient(
+      90deg,
+      rgb(0 0 0 / 0) calc(18.5 * var(--v)),
+      rgb(0 0 0 / 0.16) calc(21 * var(--v)),
+      rgb(0 0 0 / 0.22) calc(22 * var(--v)),
+      rgb(255 255 255 / 0.2) calc(23.2 * var(--v)),
+      rgb(255 255 255 / 0) calc(27 * var(--v))
+    ),
+    linear-gradient(90deg, rgb(255 255 255 / 0.12), rgb(255 255 255 / 0) calc(4 * var(--v))),
+    linear-gradient(270deg, rgb(0 0 0 / 0.24), rgb(0 0 0 / 0.07) calc(2.5 * var(--v)), rgb(0 0 0 / 0) calc(4 * var(--v))),
+    linear-gradient(rgb(255 255 255 / 0.4), rgb(255 255 255 / 0.14) calc(1.5 * var(--v)), rgb(255 255 255 / 0) calc(3 * var(--v))),
+    linear-gradient(0deg, rgb(0 0 0 / 0.28), rgb(0 0 0 / 0) calc(3 * var(--v))),
+    linear-gradient(0deg, rgb(0 0 0 / 0.1), rgb(0 0 0 / 0) calc(40 * var(--v))),
+    radial-gradient(circle calc(430 * var(--v)) at calc(150 * var(--v)) calc(210 * var(--v)), rgb(255 255 255 / 0.06), rgb(255 255 255 / 0)),
+    linear-gradient(90deg, rgb(0 0 0 / 0.04), rgb(0 0 0 / 0.13)),
+    linear-gradient(rgb(0 0 0 / 0), rgb(0 0 0 / 0.06));
+  pointer-events: none;
 }
 
 /*
@@ -749,11 +1003,12 @@
   }
 }
 
-/* No livro 3D, a sombra é do livro inteiro (a contracapa), e não da capa. */
+/* No livro 3D, a sombra é a do chão (.chao), e não a da capa. */
 .face-capa .capa-face {
-  box-shadow: 0 1px 1px rgb(0 0 0 / 0.22);
+  box-shadow: none;
 }
 
+/* O verso fica na face de dentro da placa e passa da dobradiça o recuo do miolo: aberto, ele encosta na primeira página (B08). */
 .capa-verso {
   display: grid;
   place-items: center;
@@ -761,6 +1016,11 @@
   background: var(--livro-papel);
   color: var(--livro-tinta-papel);
   transform: rotateY(180deg);
+}
+
+.face-capa > .capa-verso {
+  left: calc(-1 * var(--recuo-miolo, 0px));
+  transform: translateZ(calc(-1 * var(--papelao))) rotateY(180deg);
 }
 
 .assinatura-verso {
