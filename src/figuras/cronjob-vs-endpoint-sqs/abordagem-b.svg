@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 790"
+  aria-label="Abordagem B: o CronJob chama POST /processar; o endpoint da API publica uma única mensagem no SQS e responde 202; um listener nos mesmos pods consome a mensagem, lê os pendentes no banco, publica cada registro no SNS e marca o status; se der erro, a mensagem reaparece depois do visibility timeout e, após N recebimentos, vai para a DLQ, de onde volta por redrive.">
+  <g class="tinta">
+    <g class="tom-azul">
+      <rect x="32" y="102" width="210" height="120" rx="12" class="hachura"/>
+      <rect x="25" y="95" width="210" height="120" rx="12" class="lavado"/>
+      <rect x="25" y="95" width="210" height="120" rx="12" class="linha"/>
+      <path d="M235 150 H496 M482 141 L496 150 L482 159" class="linha-tom"/>
+    </g>
+    <g class="tom-ambar">
+      <rect x="482" y="47" width="330" height="430" rx="14" class="hachura"/>
+      <rect x="475" y="40" width="330" height="430" rx="14" class="lavado"/>
+      <rect x="475" y="40" width="330" height="430" rx="14" class="linha"/>
+      <rect x="500" y="100" width="280" height="110" rx="10" class="papel"/>
+      <rect x="500" y="100" width="280" height="110" rx="10" class="linha"/>
+      <rect x="500" y="300" width="280" height="120" rx="10" class="papel"/>
+      <rect x="500" y="300" width="280" height="120" rx="10" class="linha"/>
+      <path d="M780 140 H1020 C 1050 140 1060 160 1060 204 M1051 202 L1060 216 L1069 202" class="linha-tom"/>
+      <path d="M500 395 H255 C 185 395 150 420 150 494 M141 482 L150 496 L159 482" class="linha-tom"/>
+      <path d="M640 420 V528 M631 516 L640 530 L649 516" class="linha-tom"/>
+    </g>
+    <g class="tom-roxo">
+      <rect x="935" y="220" width="245" height="120" rx="12" transform="translate(7 6)" class="cor"/>
+      <rect x="935" y="220" width="245" height="120" rx="12" class="lavado"/>
+      <rect x="935" y="220" width="245" height="120" rx="12" class="linha"/>
+      <path d="M935 290 C 880 290 850 350 796 350 M809 341 L795 350 L809 359" class="linha-tom"/>
+      <path d="M1080 340 V564 M1071 552 L1080 566 L1089 552" class="linha-tom"/>
+      <path d="M1160 580 V356" class="fantasma"/>
+      <path d="M1151 356 L1160 342 L1169 356" class="linha-tom"/>
+      <rect x="942" y="587" width="238" height="100" rx="12" class="hachura"/>
+      <rect x="935" y="580" width="238" height="100" rx="12" class="lavado"/>
+      <rect x="935" y="580" width="238" height="100" rx="12" class="linha"/>
+    </g>
+    <g class="tom-vermelho">
+      <path d="M780 402 H975 V356" class="linha-tom"/>
+      <path d="M966 356 L975 342 L984 356" class="linha-tom"/>
+    </g>
+    <g class="tom-petroleo">
+      <rect x="515" y="545" width="250" height="110" rx="12" transform="translate(7 6)" class="cor"/>
+      <rect x="515" y="545" width="250" height="110" rx="12" class="lavado"/>
+      <rect x="515" y="545" width="250" height="110" rx="12" class="linha"/>
+    </g>
+    <path d="M35 520 V612 A95 18 0 0 0 225 612 V520" transform="translate(10 10)" class="hachura"/>
+    <path d="M35 520 V612 A95 18 0 0 0 225 612 V520 Z" class="papel"/>
+    <path d="M35 520 V612 A95 18 0 0 0 225 612 V520" class="linha"/>
+    <ellipse cx="130" cy="520" rx="95" ry="18" class="papel"/>
+    <ellipse cx="130" cy="520" rx="95" ry="18" class="linha"/>
+  </g>
+
+  <g class="tom-azul">
+    <path d="M237 150 H490" pathLength="1" class="pacote etapa-1"/>
+  </g>
+  <g class="tom-ambar">
+    <path d="M782 140 H1020 C 1050 140 1060 160 1060 210" pathLength="1" class="pacote etapa-2"/>
+    <path d="M498 395 H255 C 185 395 150 420 150 490" pathLength="1" class="pacote etapa-4"/>
+    <path d="M640 422 V524" pathLength="1" class="pacote etapa-5"/>
+    <path d="M498 395 H255 C 185 395 150 420 150 490" pathLength="1" class="pacote etapa-6"/>
+  </g>
+  <g class="tom-roxo">
+    <path d="M933 290 C 880 290 850 350 801 350" pathLength="1" class="pacote etapa-3"/>
+  </g>
+
+  <g class="tom-azul" data-marca="kubernetes" transform="translate(37 108) scale(0.46)"/>
+  <g class="tom-ambar" data-marca="spring" transform="translate(489 52) scale(0.4)"/>
+  <g class="tom-roxo" data-marca="sqs" transform="translate(947 232) scale(0.46)"/>
+  <g class="tom-petroleo" data-marca="sns" transform="translate(527 558) scale(0.44)"/>
+
+  <g class="tom-azul">
+    <text x="92" y="150" class="titulo-caixa">CronJob</text>
+    <text x="92" y="192" class="codigo">03:00</text>
+    <circle cx="268" cy="118" r="16" class="selo"/>
+    <text x="268" y="119" class="selo-texto">1</text>
+    <text x="292" y="125" class="nota-pequena">curl</text>
+    <text x="356" y="192" text-anchor="middle" class="codigo">POST /processar</text>
+  </g>
+  <g class="tom-ambar">
+    <text x="539" y="84" class="titulo-caixa">Pods da API</text>
+    <text x="640" y="147" text-anchor="middle" class="titulo-caixa">Endpoint</text>
+    <text x="640" y="184" text-anchor="middle" class="texto-caixa">responde 202 Accepted</text>
+    <text x="640" y="350" text-anchor="middle" class="titulo-caixa">Listener SQS</text>
+    <text x="640" y="388" text-anchor="middle" class="texto-caixa">processa um a um</text>
+    <circle cx="836" cy="113" r="16" class="selo"/>
+    <text x="836" y="114" class="selo-texto">2</text>
+    <text x="860" y="120" class="nota-pequena">publica 1 mensagem</text>
+    <circle cx="235" cy="355" r="16" class="selo"/>
+    <text x="235" y="356" class="selo-texto">4</text>
+    <text x="259" y="362" class="nota-pequena">lê os pendentes</text>
+    <circle cx="235" cy="438" r="16" class="selo"/>
+    <text x="235" y="439" class="selo-texto">6</text>
+    <text x="259" y="445" class="nota-pequena">marca como enviado</text>
+    <circle cx="667" cy="500" r="16" class="selo"/>
+    <text x="667" y="501" class="selo-texto">5</text>
+    <text x="691" y="507" class="nota-pequena">publica</text>
+  </g>
+  <g class="tom-roxo">
+    <text x="1005" y="264" class="titulo-caixa">Fila SQS</text>
+    <text x="1057" y="302" text-anchor="middle" class="texto-caixa">1 mensagem</text>
+    <text x="1057" y="328" text-anchor="middle" class="texto-caixa">por execução</text>
+    <circle cx="835" cy="262" r="16" class="selo"/>
+    <text x="835" y="263" class="selo-texto">3</text>
+    <text x="857" y="269" class="nota-pequena">entrega</text>
+    <text x="1070" y="530" text-anchor="end" class="nota-pequena">após N</text>
+    <text x="1070" y="554" text-anchor="end" class="nota-pequena">recebimentos</text>
+    <text x="1152" y="470" text-anchor="end" class="nota-pequena">redrive</text>
+    <text x="1054" y="623" text-anchor="middle" class="titulo-caixa">DLQ</text>
+    <text x="1054" y="658" text-anchor="middle" class="texto-caixa">a mensagem do lote</text>
+  </g>
+  <g class="tom-vermelho">
+    <text x="815" y="436" class="texto-tom nota-pequena">erro: a mensagem volta</text>
+    <text x="815" y="460" class="texto-tom nota-pequena">após o visibility timeout</text>
+    <text x="815" y="484" class="texto-tom nota-pequena">e retoma de onde parou</text>
+  </g>
+  <g class="tom-petroleo">
+    <text x="583" y="598" class="titulo-caixa">Tópico SNS</text>
+    <text x="640" y="636" text-anchor="middle" class="texto-caixa">destino dos registros</text>
+  </g>
+  <text x="130" y="585" text-anchor="middle" class="titulo-caixa">Banco</text>
+  <text x="600" y="722" text-anchor="middle" class="nota-pequena">O lote divide o processo com as requisições: pool de conexões, CPU e heap.</text>
+
+  <g class="legenda tom-azul"><rect x="160" y="752" width="22" height="16" rx="3" class="lavado"/><text x="192" y="766" class="nota-pequena">Kubernetes</text></g>
+  <g class="legenda tom-ambar"><rect x="330" y="752" width="22" height="16" rx="3" class="lavado"/><text x="362" y="766" class="nota-pequena">API</text></g>
+  <g class="legenda tom-roxo"><rect x="440" y="752" width="22" height="16" rx="3" class="lavado"/><text x="472" y="766" class="nota-pequena">fila SQS (B)</text></g>
+  <g class="legenda tom-petroleo"><rect x="610" y="752" width="22" height="16" rx="3" class="lavado"/><text x="642" y="766" class="nota-pequena">destino (SNS)</text></g>
+  <g class="legenda tom-vermelho"><rect x="800" y="752" width="22" height="16" rx="3" class="lavado"/><text x="832" y="766" class="nota-pequena">caminho de erro</text></g>
+</svg>

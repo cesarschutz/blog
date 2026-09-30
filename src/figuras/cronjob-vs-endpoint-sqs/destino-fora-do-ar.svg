@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 540"
+  aria-label="Linha do tempo com o SNS fora do ar das 03:20 às 04:20, no mesmo lote: na A, o Job falha em cerca de um minuto e os pendentes esperam o próximo dia ou um disparo manual; na B com timeout de 2 h, a mensagem fica invisível até as 05:00 e aí retoma; na B com timeout curto, três tentativas falham em minutos e a mensagem vai para a DLQ.">
+  <g class="tinta">
+    <g class="tom-vermelho">
+      <rect x="407" y="104" width="323" height="340" rx="4" class="lavado"/>
+    </g>
+    <path d="M300 88 H1172 M1160 80 L1174 88 L1160 96" class="eixo"/>
+    <path d="M300 80 V96 M407 80 V96 M730 80 V96 M945 80 V96 M1160 80 V96" class="eixo"/>
+
+    <g class="tom-verde">
+      <rect x="300" y="160" width="107" height="50" rx="6" class="lavado"/>
+      <rect x="300" y="160" width="107" height="50" rx="6" class="linha"/>
+      <rect x="480" y="160" width="680" height="50" rx="6" class="papel"/>
+      <rect x="480" y="160" width="680" height="50" rx="6" class="fantasma"/>
+    </g>
+    <g class="tom-roxo">
+      <rect x="300" y="260" width="107" height="50" rx="6" class="lavado"/>
+      <rect x="300" y="260" width="107" height="50" rx="6" class="linha"/>
+      <rect x="440" y="260" width="505" height="50" rx="6" class="papel"/>
+      <rect x="440" y="260" width="505" height="50" rx="6" class="linha"/>
+      <rect x="945" y="260" width="215" height="50" rx="6" transform="translate(6 5)" class="cor"/>
+      <rect x="945" y="260" width="215" height="50" rx="6" class="lavado"/>
+      <rect x="945" y="260" width="215" height="50" rx="6" class="linha"/>
+      <rect x="300" y="360" width="107" height="50" rx="6" class="lavado"/>
+      <rect x="300" y="360" width="107" height="50" rx="6" class="linha"/>
+      <rect x="486" y="366" width="72" height="38" rx="5" transform="translate(5 4)" class="cor"/>
+      <rect x="486" y="366" width="72" height="38" rx="5" class="lavado"/>
+      <rect x="486" y="366" width="72" height="38" rx="5" class="linha"/>
+      <rect x="570" y="360" width="590" height="50" rx="6" class="papel"/>
+      <rect x="570" y="360" width="590" height="50" rx="6" class="fantasma"/>
+    </g>
+    <g class="tom-vermelho">
+      <path d="M414 178 l14 14 m0 -14 l-14 14 M436 178 l14 14 m0 -14 l-14 14 M458 178 l14 14 m0 -14 l-14 14" class="linha-tom"/>
+      <path d="M416 278 l14 14 m0 -14 l-14 14" class="linha-tom"/>
+      <path d="M414 378 l14 14 m0 -14 l-14 14 M436 378 l14 14 m0 -14 l-14 14 M458 378 l14 14 m0 -14 l-14 14" class="linha-tom"/>
+    </g>
+  </g>
+
+  <g class="tom-vermelho">
+    <circle cx="569" cy="129" r="7" class="selo pisca"/>
+  </g>
+
+  <text x="300" y="66" text-anchor="middle" class="valor-eixo">03:00</text>
+  <text x="407" y="66" text-anchor="middle" class="valor-eixo">03:20</text>
+  <text x="730" y="66" text-anchor="middle" class="valor-eixo">04:20</text>
+  <text x="945" y="66" text-anchor="middle" class="valor-eixo">05:00</text>
+  <text x="1160" y="66" text-anchor="middle" class="valor-eixo">05:40</text>
+  <g class="tom-vermelho">
+    <text x="584" y="136" class="texto-tom nota-pequena">SNS fora do ar</text>
+  </g>
+
+  <g class="tom-verde">
+    <text x="280" y="180" text-anchor="end" class="texto-tom rotulo">A: CronJob</text>
+    <text x="280" y="206" text-anchor="end" class="nota-pequena">backoffLimit: 2</text>
+    <text x="280" y="230" text-anchor="end" class="nota-pequena">3 tentativas em ~1 min</text>
+    <text x="353" y="192" text-anchor="middle" class="nota-pequena">processa</text>
+    <text x="820" y="192" text-anchor="middle" class="nota-pequena">o Job falha; os pendentes esperam o próximo dia ou um disparo manual</text>
+  </g>
+  <g class="tom-roxo">
+    <text x="280" y="280" text-anchor="end" class="texto-tom rotulo">B: timeout de 2 h</text>
+    <text x="280" y="306" text-anchor="end" class="nota-pequena">cobre o lote</text>
+    <text x="353" y="292" text-anchor="middle" class="nota-pequena">processa</text>
+    <text x="692" y="292" text-anchor="middle" class="nota-pequena">mensagem invisível até 05:00, 2 h desde o recebimento</text>
+    <text x="1052" y="292" text-anchor="middle" class="texto-tom nota-pequena">retoma e termina</text>
+    <text x="280" y="380" text-anchor="end" class="texto-tom rotulo">B: timeout de 1 min</text>
+    <text x="280" y="406" text-anchor="end" class="nota-pequena">estendido enquanto processa</text>
+    <text x="280" y="430" text-anchor="end" class="nota-pequena">3 tentativas em ~3 min</text>
+    <text x="353" y="392" text-anchor="middle" class="nota-pequena">processa</text>
+    <text x="522" y="392" text-anchor="middle" class="texto-tom nota-pequena">DLQ</text>
+    <text x="865" y="392" text-anchor="middle" class="nota-pequena">os pendentes esperam o redrive da DLQ ou o próximo disparo</text>
+  </g>
+  <text x="600" y="490" text-anchor="middle" class="texto-caixa">Nos três casos o estado fica no banco e nenhum pendente se perde:</text>
+  <text x="600" y="522" text-anchor="middle" class="texto-caixa">o que muda é quem retoma, e quando.</text>
+</svg>

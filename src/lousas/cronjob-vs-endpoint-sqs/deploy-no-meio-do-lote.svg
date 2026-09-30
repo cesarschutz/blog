@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 360">
+  <g class="traco">
+    <path d="M170 34 H600" class="guia"/>
+    <path d="M170 29 V39 M248.75 29 V39 M353.75 29 V39 M485 29 V39 M590 29 V39" class="guia"/>
+    <path d="M10 170 H600" class="fino"/>
+
+    <rect x="170" y="78" width="76" height="18" rx="3" class="fino"/>
+    <rect x="251" y="78" width="339" height="18" rx="3" class="fino" data-aparece="0.1725 0.19"/>
+    <g data-revela="0 0.4025">
+      <rect x="170" y="112" width="184" height="22" rx="3"/>
+    </g>
+
+    <g data-revela="0 0.1725">
+      <rect x="170" y="210" width="76" height="22" rx="3"/>
+    </g>
+    <path d="M254 214 l14 14 m0 -14 l-14 14" class="destaque" data-traco="0.175 0.2"/>
+    <g data-aparece="0.005 0.035">
+      <rect x="170" y="248" width="315" height="20" rx="3" class="hachura"/>
+      <rect x="170" y="248" width="315" height="20" rx="3" class="fino"/>
+    </g>
+    <g data-revela="0.25 0.69">
+      <rect x="251" y="286" width="234" height="20" rx="3" class="tracejado"/>
+    </g>
+    <path d="M485 270 V283 M480 277 L485 284 L490 277" class="fino" data-traco="0.69 0.71"/>
+    <g data-revela="0.83 0.94">
+      <rect x="487" y="284" width="103" height="24" rx="3"/>
+    </g>
+    <path d="M251 316 V322 H485 V316" class="destaque" data-traco="0.72 0.77"/>
+
+    <path d="M248.75 42 V242 M248.75 272 V312" class="tracejado" data-aparece="0.1725 0.18"/>
+  </g>
+  <g>
+    <text x="170" y="22" text-anchor="middle" class="codigo">03:00</text>
+    <text x="248.75" y="22" text-anchor="middle" class="codigo">03:30</text>
+    <text x="353.75" y="22" text-anchor="middle" class="codigo">04:10</text>
+    <text x="485" y="22" text-anchor="middle" class="codigo">05:00</text>
+    <text x="590" y="22" text-anchor="middle" class="codigo">05:40</text>
+    <text x="256" y="58" class="secundario destaque" data-aparece="0.1725 0.18">deploy</text>
+
+    <text x="10" y="66">A: CronJob</text>
+    <text x="160" y="92" text-anchor="end" class="secundario">API</text>
+    <text x="208" y="91" text-anchor="middle" class="codigo">v1</text>
+    <text x="420" y="91" text-anchor="middle" class="codigo" data-aparece="0.1725 0.19">v2</text>
+    <text x="160" y="128" text-anchor="end" class="secundario">pod do job</text>
+    <text x="303" y="128" text-anchor="middle" class="secundario" data-aparece="0.2 0.24">processa o lote</text>
+    <text x="364" y="129" data-escrita="0.405 0.46">termina na v1</text>
+
+    <text x="10" y="198">B: fila na API</text>
+    <text x="160" y="226" text-anchor="end" class="secundario">API v1</text>
+    <text x="208" y="226" text-anchor="middle" class="secundario" data-aparece="0.12 0.16">processa</text>
+    <text x="276" y="227" class="destaque" data-escrita="0.2 0.25">cancelado</text>
+    <text x="160" y="263" text-anchor="end" class="secundario">fila SQS</text>
+    <text x="368" y="262" text-anchor="middle" class="secundario" data-aparece="0.005 0.035">mensagem invisível por 2 h</text>
+    <text x="160" y="301" text-anchor="end" class="secundario">API v2</text>
+    <text x="368" y="300" text-anchor="middle" class="secundario" data-aparece="0.43 0.47">no ar, sem mensagem</text>
+    <text x="538" y="301" text-anchor="middle" class="secundario" data-aparece="0.8 0.83">retoma</text>
+    <text x="368" y="342" text-anchor="middle" class="destaque" data-escrita="0.77 0.83">parado 1h30</text>
+    <text x="590" y="342" text-anchor="end" data-escrita="0.94 1">termina na v2</text>
+  </g>
+</svg>

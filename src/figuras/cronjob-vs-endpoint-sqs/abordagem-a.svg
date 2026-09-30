@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700"
+  aria-label="Abordagem A: às 03:00, o CronJob cria um Job, que sobe um pod com a mesma imagem da API e o perfil batch; o pod lê os pendentes no banco, publica no tópico SNS, marca os registros como enviados e termina, devolvendo o exit code ao Job, que tenta de novo até o backoffLimit; a API, no seu Deployment, só divide o banco com o job.">
+  <g class="tinta">
+    <g class="tom-azul">
+      <rect x="37" y="97" width="210" height="130" rx="12" class="hachura"/>
+      <rect x="30" y="90" width="210" height="130" rx="12" class="lavado"/>
+      <rect x="30" y="90" width="210" height="130" rx="12" class="linha"/>
+      <path d="M240 140 H296 M282 131 L296 140 L282 149" class="linha-tom"/>
+      <rect x="307" y="97" width="120" height="130" rx="12" class="hachura"/>
+      <rect x="300" y="90" width="120" height="130" rx="12" class="lavado"/>
+      <rect x="300" y="90" width="120" height="130" rx="12" class="linha"/>
+      <path d="M420 120 H556 M542 111 L556 120 L542 129" class="linha-tom"/>
+    </g>
+    <g class="tom-verde">
+      <rect x="570" y="60" width="320" height="230" rx="12" transform="translate(7 6)" class="cor"/>
+      <rect x="570" y="60" width="320" height="230" rx="12" class="lavado"/>
+      <rect x="570" y="60" width="320" height="230" rx="12" class="linha"/>
+      <rect x="590" y="128" width="280" height="44" rx="6" class="papel"/>
+      <rect x="590" y="128" width="280" height="44" rx="6" class="linha"/>
+      <path d="M570 196 H434 M448 187 L434 196 L448 205" class="linha-tom"/>
+      <path d="M890 160 H971 M957 151 L971 160 L957 169" class="linha-tom"/>
+      <path d="M680 290 V372 M671 358 L680 372 L689 358" class="linha-tom"/>
+      <path d="M800 290 V372 M791 358 L800 372 L809 358" class="linha-tom"/>
+    </g>
+    <g class="tom-petroleo">
+      <rect x="985" y="95" width="195" height="135" rx="12" transform="translate(7 6)" class="cor"/>
+      <rect x="985" y="95" width="195" height="135" rx="12" class="lavado"/>
+      <rect x="985" y="95" width="195" height="135" rx="12" class="linha"/>
+    </g>
+    <g class="tom-ambar">
+      <rect x="37" y="377" width="400" height="200" rx="12" class="hachura"/>
+      <rect x="30" y="370" width="400" height="200" rx="12" class="lavado"/>
+      <rect x="30" y="370" width="400" height="200" rx="12" class="linha"/>
+      <rect x="90" y="428" width="280" height="44" rx="6" class="papel"/>
+      <rect x="90" y="428" width="280" height="44" rx="6" class="linha"/>
+    </g>
+    <path d="M652 404 V504 A93 20 0 0 0 838 504 V404" transform="translate(10 10)" class="hachura"/>
+    <path d="M652 404 V504 A93 20 0 0 0 838 504 V404 Z" class="papel"/>
+    <path d="M652 404 V504 A93 20 0 0 0 838 504 V404" class="linha"/>
+    <ellipse cx="745" cy="404" rx="93" ry="20" class="papel"/>
+    <ellipse cx="745" cy="404" rx="93" ry="20" class="linha"/>
+    <path d="M430 468 H650" class="fantasma"/>
+  </g>
+
+  <g class="tom-azul">
+    <path d="M242 140 H290" pathLength="1" class="pacote etapa-1"/>
+    <path d="M422 120 H550" pathLength="1" class="pacote etapa-2"/>
+  </g>
+  <g class="tom-verde">
+    <path d="M680 292 V366" pathLength="1" class="pacote etapa-3"/>
+    <path d="M892 160 H965" pathLength="1" class="pacote etapa-4"/>
+    <path d="M800 292 V366" pathLength="1" class="pacote etapa-5"/>
+    <path d="M568 196 H440" pathLength="1" class="pacote etapa-6"/>
+  </g>
+
+  <g class="tom-azul" data-marca="kubernetes" transform="translate(44 104) scale(0.48)"/>
+  <g class="tom-verde" data-marca="spring" transform="translate(584 74) scale(0.44)"/>
+  <g class="tom-petroleo" data-marca="sns" transform="translate(1057 106) scale(0.5)"/>
+  <g class="tom-ambar" data-marca="spring" transform="translate(46 384) scale(0.44)"/>
+
+  <g class="tom-azul">
+    <text x="102" y="146" class="titulo-caixa">CronJob</text>
+    <text x="102" y="194" class="codigo">03:00</text>
+    <text x="360" y="164" text-anchor="middle" class="titulo-caixa">Job</text>
+    <circle cx="268" cy="110" r="16" class="selo"/>
+    <text x="268" y="111" class="selo-texto">1</text>
+    <text x="268" y="176" text-anchor="middle" class="nota-pequena">cria</text>
+    <circle cx="488" cy="90" r="16" class="selo"/>
+    <text x="488" y="91" class="selo-texto">2</text>
+    <text x="488" y="158" text-anchor="middle" class="nota-pequena">sobe o pod</text>
+  </g>
+  <g class="tom-verde">
+    <text x="640" y="108" class="titulo-caixa">Pod do job</text>
+    <text x="730" y="159" text-anchor="middle" class="codigo">meu-servico:1.2.3</text>
+    <text x="730" y="208" text-anchor="middle" class="texto-caixa">perfil batch, sem web</text>
+    <text x="730" y="243" text-anchor="middle" class="texto-tom texto-caixa">roda o lote e termina</text>
+    <text x="730" y="273" text-anchor="middle" class="nota-pequena">recurso só durante a execução</text>
+    <circle cx="452" cy="237" r="16" class="selo"/>
+    <text x="452" y="238" class="selo-texto">6</text>
+    <text x="474" y="244" class="nota-pequena">exit code</text>
+    <circle cx="937" cy="128" r="16" class="selo"/>
+    <text x="937" y="129" class="selo-texto">4</text>
+    <text x="937" y="196" text-anchor="middle" class="nota-pequena">publica</text>
+    <circle cx="650" cy="331" r="16" class="selo"/>
+    <text x="650" y="332" class="selo-texto">3</text>
+    <text x="628" y="338" text-anchor="end" class="nota-pequena">lê os pendentes</text>
+    <circle cx="830" cy="331" r="16" class="selo"/>
+    <text x="830" y="332" class="selo-texto">5</text>
+    <text x="854" y="338" class="nota-pequena">marca como enviado</text>
+  </g>
+  <g class="tom-petroleo">
+    <text x="1082" y="206" text-anchor="middle" class="titulo-caixa">Tópico SNS</text>
+  </g>
+  <g class="tom-ambar">
+    <text x="100" y="412" class="titulo-caixa">Deployment da API</text>
+    <text x="230" y="459" text-anchor="middle" class="codigo">meu-servico:1.2.3</text>
+    <text x="230" y="512" text-anchor="middle" class="texto-caixa">perfil padrão, com servidor web</text>
+    <text x="230" y="545" text-anchor="middle" class="texto-caixa">atende HTTP o dia todo</text>
+  </g>
+  <text x="360" y="292" text-anchor="middle" class="nota-pequena">se ≠ 0, o Job tenta de novo,</text>
+  <text x="360" y="316" text-anchor="middle" class="nota-pequena">até o backoffLimit</text>
+  <text x="745" y="470" text-anchor="middle" class="titulo-caixa">Banco</text>
+  <text x="540" y="454" text-anchor="middle" class="nota-pequena">mesmo banco</text>
+  <text x="600" y="620" text-anchor="middle" class="nota-pequena">Um deploy da API não interrompe o job em andamento: a próxima execução usa a imagem que estiver no CronJob.</text>
+
+  <g class="legenda tom-azul"><rect x="200" y="660" width="22" height="16" rx="3" class="lavado"/><text x="232" y="674" class="nota-pequena">Kubernetes</text></g>
+  <g class="legenda tom-verde"><rect x="380" y="660" width="22" height="16" rx="3" class="lavado"/><text x="412" y="674" class="nota-pequena">pod do job (A)</text></g>
+  <g class="legenda tom-ambar"><rect x="590" y="660" width="22" height="16" rx="3" class="lavado"/><text x="622" y="674" class="nota-pequena">API</text></g>
+  <g class="legenda tom-petroleo"><rect x="700" y="660" width="22" height="16" rx="3" class="lavado"/><text x="732" y="674" class="nota-pequena">destino (SNS)</text></g>
+</svg>

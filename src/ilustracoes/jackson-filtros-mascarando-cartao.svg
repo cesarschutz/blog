@@ -14,8 +14,10 @@
       <rect x="360" y="270" width="400" height="252" rx="22" class="papel"/>
       <rect x="400" y="316" width="64" height="48" rx="8" class="linha"/>
       <path d="M400 340 H464 M432 316 V364" class="linha"/>
-      <rect x="508" y="418" width="98" height="30" rx="3" transform="translate(4 3)" class="cor"/>
-      <rect x="508" y="418" width="98" height="30" rx="3" class="linha"/>
+      <g class="mexe-pulsa">
+        <rect x="508" y="418" width="98" height="30" rx="3" transform="translate(4 3)" class="cor"/>
+        <rect x="508" y="418" width="98" height="30" rx="3" class="linha"/>
+      </g>
     </g>
     <g transform="rotate(-8 290 590)"><path d="M234 590 H350" class="linha"/></g>
   </g>

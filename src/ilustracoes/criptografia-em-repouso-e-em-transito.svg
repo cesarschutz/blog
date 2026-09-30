@@ -17,12 +17,14 @@
     <path d="M362 415 H478 A10 10 0 0 1 488 425 V495 A10 10 0 0 1 478 505 H362 A10 10 0 0 1 352 495 V425 A10 10 0 0 1 362 415 Z" transform="translate(7 6)" class="cor"/>
     <path d="M362 415 H478 A10 10 0 0 1 488 425 V495 A10 10 0 0 1 478 505 H362 A10 10 0 0 1 352 495 V425 A10 10 0 0 1 362 415 Z" class="linha"/>
     <path d="M429 452 A9 9 0 1 1 411 452 A9 9 0 1 1 429 452 Z M420 461 V478" class="linha"/>
-    <path d="M707 525 V495 A18 18 0 0 1 743 495 V525" class="linha"/>
-    <path d="M700 525 H750 A7 7 0 0 1 757 532 V568 A7 7 0 0 1 750 575 H700 A7 7 0 0 1 693 568 V532 A7 7 0 0 1 700 525 Z" transform="translate(7 7)" class="hachura"/>
-    <path d="M700 525 H750 A7 7 0 0 1 757 532 V568 A7 7 0 0 1 750 575 H700 A7 7 0 0 1 693 568 V532 A7 7 0 0 1 700 525 Z" class="papel"/>
-    <path d="M700 525 H750 A7 7 0 0 1 757 532 V568 A7 7 0 0 1 750 575 H700 A7 7 0 0 1 693 568 V532 A7 7 0 0 1 700 525 Z" transform="translate(7 6)" class="cor"/>
-    <path d="M700 525 H750 A7 7 0 0 1 757 532 V568 A7 7 0 0 1 750 575 H700 A7 7 0 0 1 693 568 V532 A7 7 0 0 1 700 525 Z" class="linha"/>
-    <path d="M731 546 A6 6 0 1 1 719 546 A6 6 0 1 1 731 546 Z" class="linha"/>
+    <g class="mexe-balanca">
+      <path d="M707 525 V495 A18 18 0 0 1 743 495 V525" class="linha"/>
+      <path d="M700 525 H750 A7 7 0 0 1 757 532 V568 A7 7 0 0 1 750 575 H700 A7 7 0 0 1 693 568 V532 A7 7 0 0 1 700 525 Z" transform="translate(7 7)" class="hachura"/>
+      <path d="M700 525 H750 A7 7 0 0 1 757 532 V568 A7 7 0 0 1 750 575 H700 A7 7 0 0 1 693 568 V532 A7 7 0 0 1 700 525 Z" class="papel"/>
+      <path d="M700 525 H750 A7 7 0 0 1 757 532 V568 A7 7 0 0 1 750 575 H700 A7 7 0 0 1 693 568 V532 A7 7 0 0 1 700 525 Z" transform="translate(7 6)" class="cor"/>
+      <path d="M700 525 H750 A7 7 0 0 1 757 532 V568 A7 7 0 0 1 750 575 H700 A7 7 0 0 1 693 568 V532 A7 7 0 0 1 700 525 Z" class="linha"/>
+      <path d="M731 546 A6 6 0 1 1 719 546 A6 6 0 1 1 731 546 Z" class="linha"/>
+    </g>
   </g>
   <text x="420" y="632" text-anchor="middle" class="rotulo">em repouso</text>
   <text x="725" y="632" text-anchor="middle" class="rotulo">em trânsito</text>

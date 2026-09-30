@@ -1,7 +1,7 @@
 # Estado do projeto
 
 Painel, não diário: fase atual, próximos passos, perguntas abertas e riscos. O detalhe de cada rodada
-fica em `docs/decisoes.md` (D1 a D54) e no histórico do git; controles de rodadas fechadas, em
+fica em `docs/decisoes.md` (D1 a D58) e no histórico do git; controles de rodadas fechadas, em
 `docs/historico/`.
 
 ## Fase atual
@@ -82,6 +82,15 @@ busca sem resultado. Estudo e maquetes em `docs/prototipos/livros-realistas/` (g
 `node docs/prototipos/livros-realistas/ferramentas/servidor.mjs 4341`). Fotos das peças paradas:
 `node scripts/livros/fotos.mjs` com o dev no ar. `check`, `build` e `links` passam.
 
+Recursos visuais novos (D58, 29 e 30/09/2026, **publicados em 30/09/2026**): capa viva, figuras
+coloridas com detalhes que se mexem, a `Lousa` nova (passos e comparação; a `LousaLoop` sai dos posts
+novos), a animação com play, os ícones das ferramentas, o print como evidência e a caneta da leitura
+na cor do livro. Regras nas skills (`post`, `desenho`, `lousa` e a nova `figura`), no `DESIGN.md` e
+nos docs. Os três primeiros posts foram revistos pelas regras novas e passaram pela caneta
+(criptografia em repouso e em trânsito, filtros do Jackson e CronJob ou endpoint + fila); o Cesar
+testa direto no site. Os dez artigos de exemplo ficaram fora da `main`, na branch local
+`exemplos-arquivo` (pasta `../blog-exemplos`).
+
 ## Como ver
 
 - Dev: `fnm exec --using=24 npm run dev -- --host 127.0.0.1` (<http://127.0.0.1:4322>); parar com
@@ -92,6 +101,8 @@ busca sem resultado. Estudo e maquetes em `docs/prototipos/livros-realistas/` (g
   `/amostra/caneta/`, `/amostra/desenhos/`, `/amostra/livros/` e `/amostra/tags/`.
 - Post de referência com ilustração, as lousas, a frase em destaque e a caneta:
   `/posts/cobranca-duplicada-no-retry/`.
+- Exemplos da D58 (só local): `git switch exemplos-arquivo` em `../blog-exemplos`, dev com
+  `--port 4330` e <http://127.0.0.1:4330/exemplos/>.
 
 ## O que existe (resumo)
 
@@ -105,11 +116,13 @@ busca sem resultado. Estudo e maquetes em `docs/prototipos/livros-realistas/` (g
 | D48, D56 | a caneta do caderno (34 tipos de marcação, guia `docs/marcacoes.md`, skill `caneta`) |
 | D49–D51 | ideias de movimento revistas, ajustes de 27/09, animações revistas (abertura, troca por folhas) |
 | D52 | acabamento das animações, leitura, tags com ícone, destaque na grade, campo `codigo`, C04 e C05 |
+| D58 | capa viva, figuras coloridas, `Lousa` nova, animação com play, ícones das ferramentas, print; os três primeiros posts revistos |
 
 ## Próximos passos
 
 1. **Revisão em lote dos posts** (`.claude/revisao-posts.md`): 26 pendentes pela skill `post`, modo
-   Adaptar, cada um terminando na caneta (skill `caneta`, com a proposta aprovada antes).
+   Adaptar, cada um terminando na caneta (skill `caneta`, com a proposta aprovada antes). Com a D58
+   aprovada, a revisão troca `LousaTempo` e `LousaLoop` pela `Lousa` ou pela animação com play.
 2. **Blog antigo (D34):** os dois têm os mesmos artigos. Decidir entre `noindex` no novo até a
    virada, o antigo redirecionando para o novo ou a virada do domínio (`docs/virada.md`).
 3. **Medir no site publicado:** busca (regra 4 da D2) e Lighthouse (não medido desde a D26).
@@ -153,11 +166,15 @@ Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
 11. **`LousaTempo` fora da tela e no toque (achados de 29/09/2026):** pausar o loop quando a lousa sai
     da tela, como a `LousaLoop` já faz (economiza bateria), e, no celular, só tomar o gesto do desenho
     depois de um movimento horizontal (hoje o toque que só queria rolar leva a lousa para outro
-    instante). Faço?
+    instante). Faço? A `Lousa` da D58 já faz os dois; a pergunta vale para os posts antigos até serem
+    revistos.
 12. **Blocos de código com `content-visibility: auto`** (`prosa.css`): a altura estimada erra de −38 a
     +23px em 390px; depois de pular pelo sumário ou pelo "voltar ao topo" e rolar para cima, o Safari
     pode dar um salto único. Não é o sobe e desce que o Cesar viu. Troco por `contain-intrinsic-size`
     mais justo ou tiro o `content-visibility`?
+13. **Logos das ferramentas (D58):** os de AWS, Kubernetes, Java e outros são redesenhados à mão, e a
+    C04 (D52) deixou GitHub e LinkedIn com as marcas oficiais porque as regras das duas proíbem
+    redesenhar. Conferir as regras de marca dessas ferramentas antes de publicar, ou manter assim?
 
 ## Riscos a acompanhar
 

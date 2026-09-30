@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700"
+  aria-label="Quadro com quatro linhas e quatro lugares por onde o dado passa: aplicação, rede, servidor e disco. Só em trânsito, só a rede fica cifrada; só em repouso, só o disco; com os dois juntos, o servidor continua aberto; com a criptografia em uso, só a aplicação vê o dado.">
+  <g class="tinta">
+    <path d="M1020 52 A30 8 0 0 1 1080 52 V96 A30 8 0 0 1 1020 96 Z" class="papel"/>
+    <path d="M1020 52 A30 8 0 0 1 1080 52 V96 A30 8 0 0 1 1020 96 Z M1020 52 A30 8 0 0 0 1080 52" class="linha"/>
+    <path d="M560 80 C 585 50 600 110 625 80 C 640 62 650 70 662 76" class="linha"/>
+    <path d="M548 80 m-7 0 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0 M674 78 m-7 0 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0" class="linha"/>
+    <path d="M480 262 H520 M700 262 H740 M920 262 H960" class="fantasma"/>
+    <g class="tom-vermelho"><rect x="300" y="222" width="180" height="80" rx="12" class="papel"/><rect x="300" y="222" width="180" height="80" rx="12" class="fantasma"/><path d="M372 256 H408 V282 H372 Z" class="linha-tom"/><path d="M379 256 V240 A11 11 0 0 1 401 240 V246" class="linha-tom"/></g>
+    <g class="tom-petroleo"><rect x="520" y="222" width="180" height="80" rx="12" transform="translate(7 6)" class="cor"/><rect x="520" y="222" width="180" height="80" rx="12" class="lavado"/><rect x="520" y="222" width="180" height="80" rx="12" class="linha"/><path d="M592 252 H628 V278 H592 Z" class="cheio-tom"/><path d="M599 252 V244 A11 11 0 0 1 621 244 V252" class="linha-tom"/></g>
+    <g class="tom-vermelho"><rect x="740" y="222" width="180" height="80" rx="12" class="papel"/><rect x="740" y="222" width="180" height="80" rx="12" class="fantasma"/><path d="M812 256 H848 V282 H812 Z" class="linha-tom"/><path d="M819 256 V240 A11 11 0 0 1 841 240 V246" class="linha-tom"/></g>
+    <g class="tom-vermelho"><rect x="960" y="222" width="180" height="80" rx="12" class="papel"/><rect x="960" y="222" width="180" height="80" rx="12" class="fantasma"/><path d="M1032 256 H1068 V282 H1032 Z" class="linha-tom"/><path d="M1039 256 V240 A11 11 0 0 1 1061 240 V246" class="linha-tom"/></g>
+    <path d="M480 372 H520 M700 372 H740 M920 372 H960" class="fantasma"/>
+    <g class="tom-vermelho"><rect x="300" y="332" width="180" height="80" rx="12" class="papel"/><rect x="300" y="332" width="180" height="80" rx="12" class="fantasma"/><path d="M372 366 H408 V392 H372 Z" class="linha-tom"/><path d="M379 366 V350 A11 11 0 0 1 401 350 V356" class="linha-tom"/></g>
+    <g class="tom-vermelho"><rect x="520" y="332" width="180" height="80" rx="12" class="papel"/><rect x="520" y="332" width="180" height="80" rx="12" class="fantasma"/><path d="M592 366 H628 V392 H592 Z" class="linha-tom"/><path d="M599 366 V350 A11 11 0 0 1 621 350 V356" class="linha-tom"/></g>
+    <g class="tom-vermelho"><rect x="740" y="332" width="180" height="80" rx="12" class="papel"/><rect x="740" y="332" width="180" height="80" rx="12" class="fantasma"/><path d="M812 366 H848 V392 H812 Z" class="linha-tom"/><path d="M819 366 V350 A11 11 0 0 1 841 350 V356" class="linha-tom"/></g>
+    <g class="tom-ambar"><rect x="960" y="332" width="180" height="80" rx="12" transform="translate(7 6)" class="cor"/><rect x="960" y="332" width="180" height="80" rx="12" class="lavado"/><rect x="960" y="332" width="180" height="80" rx="12" class="linha"/><path d="M1032 362 H1068 V388 H1032 Z" class="cheio-tom"/><path d="M1039 362 V354 A11 11 0 0 1 1061 354 V362" class="linha-tom"/></g>
+    <path d="M480 482 H520 M700 482 H740 M920 482 H960" class="fantasma"/>
+    <g class="tom-vermelho"><rect x="300" y="442" width="180" height="80" rx="12" class="papel"/><rect x="300" y="442" width="180" height="80" rx="12" class="fantasma"/><path d="M372 476 H408 V502 H372 Z" class="linha-tom"/><path d="M379 476 V460 A11 11 0 0 1 401 460 V466" class="linha-tom"/></g>
+    <g class="tom-petroleo"><rect x="520" y="442" width="180" height="80" rx="12" transform="translate(7 6)" class="cor"/><rect x="520" y="442" width="180" height="80" rx="12" class="lavado"/><rect x="520" y="442" width="180" height="80" rx="12" class="linha"/><path d="M592 472 H628 V498 H592 Z" class="cheio-tom"/><path d="M599 472 V464 A11 11 0 0 1 621 464 V472" class="linha-tom"/></g>
+    <g class="tom-vermelho"><rect x="740" y="442" width="180" height="80" rx="12" class="papel"/><rect x="740" y="442" width="180" height="80" rx="12" class="fantasma"/><path d="M812 476 H848 V502 H812 Z" class="linha-tom"/><path d="M819 476 V460 A11 11 0 0 1 841 460 V466" class="linha-tom"/></g>
+    <g class="tom-ambar"><rect x="960" y="442" width="180" height="80" rx="12" transform="translate(7 6)" class="cor"/><rect x="960" y="442" width="180" height="80" rx="12" class="lavado"/><rect x="960" y="442" width="180" height="80" rx="12" class="linha"/><path d="M1032 472 H1068 V498 H1032 Z" class="cheio-tom"/><path d="M1039 472 V464 A11 11 0 0 1 1061 464 V472" class="linha-tom"/></g>
+    <path d="M480 592 H520 M700 592 H740 M920 592 H960" class="fantasma"/>
+    <g class="tom-vermelho"><rect x="300" y="552" width="180" height="80" rx="12" class="papel"/><rect x="300" y="552" width="180" height="80" rx="12" class="fantasma"/><path d="M372 586 H408 V612 H372 Z" class="linha-tom"/><path d="M379 586 V570 A11 11 0 0 1 401 570 V576" class="linha-tom"/></g>
+    <g class="tom-roxo"><rect x="520" y="552" width="180" height="80" rx="12" transform="translate(7 6)" class="cor"/><rect x="520" y="552" width="180" height="80" rx="12" class="lavado"/><rect x="520" y="552" width="180" height="80" rx="12" class="linha"/><path d="M592 582 H628 V608 H592 Z" class="cheio-tom"/><path d="M599 582 V574 A11 11 0 0 1 621 574 V582" class="linha-tom"/></g>
+    <g class="tom-roxo"><rect x="740" y="552" width="180" height="80" rx="12" transform="translate(7 6)" class="cor"/><rect x="740" y="552" width="180" height="80" rx="12" class="lavado"/><rect x="740" y="552" width="180" height="80" rx="12" class="linha"/><path d="M812 582 H848 V608 H812 Z" class="cheio-tom"/><path d="M819 582 V574 A11 11 0 0 1 841 574 V582" class="linha-tom"/></g>
+    <g class="tom-roxo"><rect x="960" y="552" width="180" height="80" rx="12" transform="translate(7 6)" class="cor"/><rect x="960" y="552" width="180" height="80" rx="12" class="lavado"/><rect x="960" y="552" width="180" height="80" rx="12" class="linha"/><path d="M1032 582 H1068 V608 H1032 Z" class="cheio-tom"/><path d="M1039 582 V574 A11 11 0 0 1 1061 574 V582" class="linha-tom"/></g>
+  </g>
+
+  <g class="tom-vermelho"><rect x="732" y="434" width="196" height="96" rx="16" class="traco-tom pisca"/></g>
+
+  <path d="M300 292 H1140" pathLength="1" class="pacote etapa-1"/>
+  <path d="M300 402 H1140" pathLength="1" class="pacote etapa-2"/>
+  <path d="M300 512 H1140" pathLength="1" class="pacote etapa-3"/>
+  <path d="M300 622 H1140" pathLength="1" class="pacote etapa-4"/>
+
+  <g data-marca="java" transform="translate(360 40) scale(.62)"/>
+  <g data-marca="postgresql" transform="translate(768 40) scale(.62)"/>
+  <g data-marca="mongodb" transform="translate(830 40) scale(.62)"/>
+
+  <text x="390" y="146" text-anchor="middle" class="titulo-caixa">Aplicação</text>
+  <text x="390" y="176" text-anchor="middle" class="texto-caixa">o driver</text>
+  <text x="610" y="146" text-anchor="middle" class="titulo-caixa">Rede</text>
+  <text x="610" y="176" text-anchor="middle" class="texto-caixa">o caminho</text>
+  <text x="830" y="146" text-anchor="middle" class="titulo-caixa">Servidor</text>
+  <text x="830" y="176" text-anchor="middle" class="texto-caixa">a memória do banco</text>
+  <text x="1050" y="146" text-anchor="middle" class="titulo-caixa">Disco</text>
+  <text x="1050" y="176" text-anchor="middle" class="texto-caixa">backups e snapshots</text>
+  <g class="tom-petroleo"><text x="40" y="258" class="titulo-caixa texto-tom">Em trânsito</text></g>
+  <text x="40" y="288" class="texto-caixa">TLS</text>
+  <g class="tom-ambar"><text x="40" y="368" class="titulo-caixa texto-tom">Em repouso</text></g>
+  <text x="40" y="398" class="texto-caixa">disco cifrado</text>
+  <g class="tom-petroleo tom-ambar"><text x="40" y="478" class="titulo-caixa">Os dois juntos</text></g>
+  <g class="tom-vermelho"><text x="40" y="508" class="texto-caixa texto-tom">o servidor fica aberto</text></g>
+  <g class="tom-roxo"><text x="40" y="588" class="titulo-caixa texto-tom">Em uso</text></g>
+  <text x="40" y="618" class="texto-caixa">só a aplicação abre</text>
+
+  <g class="legenda tom-petroleo"><rect x="40" y="668" width="22" height="16" rx="3" class="lavado"/><text x="72" y="682" class="nota-pequena">cifrado na rede</text></g>
+  <g class="legenda tom-ambar"><rect x="300" y="668" width="22" height="16" rx="3" class="lavado"/><text x="332" y="682" class="nota-pequena">cifrado no disco</text></g>
+  <g class="legenda tom-roxo"><rect x="570" y="668" width="22" height="16" rx="3" class="lavado"/><text x="602" y="682" class="nota-pequena">cifrado até no servidor</text></g>
+  <g class="legenda tom-vermelho"><rect x="890" y="668" width="22" height="16" rx="3" class="lavado"/><text x="922" y="682" class="nota-pequena">em texto claro</text></g>
+</svg>

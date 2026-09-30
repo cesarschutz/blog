@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1000"
+  aria-label="Diagrama de sequência da abordagem B: o CronJob faz POST /processar, o endpoint publica a mensagem 1, que vira a execução 1; a resposta 202 se perde, o curl sai com erro, o Kubernetes tenta de novo, e a segunda chamada publica a mensagem 2, que vira a execução 2 com a 1 ainda rodando: os mesmos registros saem duas vezes no SNS.">
+  <path d="M150 124 V868 M450 124 V868 M750 124 V868 M1050 124 V868" class="grade"/>
+  <g class="tinta">
+    <g class="tom-azul">
+      <rect x="32" y="37" width="250" height="88" rx="12" class="hachura"/>
+      <rect x="25" y="30" width="250" height="88" rx="12" class="lavado"/>
+      <rect x="25" y="30" width="250" height="88" rx="12" class="linha"/>
+      <path d="M150 175 H436 M422 166 L436 175 L422 184" class="linha-tom"/>
+      <rect x="25" y="440" width="250" height="64" rx="8" class="lavado"/>
+      <rect x="25" y="440" width="250" height="64" rx="8" class="linha"/>
+      <rect x="25" y="516" width="250" height="64" rx="8" class="lavado"/>
+      <rect x="25" y="516" width="250" height="64" rx="8" class="linha"/>
+      <path d="M150 630 H436 M422 621 L436 630 L422 639" class="linha-tom"/>
+    </g>
+    <g class="tom-ambar">
+      <rect x="332" y="37" width="250" height="88" rx="12" class="hachura"/>
+      <rect x="325" y="30" width="250" height="88" rx="12" class="lavado"/>
+      <rect x="325" y="30" width="250" height="88" rx="12" class="linha"/>
+      <rect x="932" y="37" width="250" height="88" rx="12" class="hachura"/>
+      <rect x="925" y="30" width="250" height="88" rx="12" class="lavado"/>
+      <rect x="925" y="30" width="250" height="88" rx="12" class="linha"/>
+      <path d="M450 230 H736 M722 221 L736 230 L722 239" class="linha-tom"/>
+      <path d="M450 395 H198" class="fantasma"/>
+      <path d="M450 685 H736 M722 676 L736 685 L722 694" class="linha-tom"/>
+      <path d="M450 740 H166" class="fantasma"/>
+      <path d="M178 731 L164 740 L178 749" class="linha"/>
+      <rect x="925" y="306" width="250" height="52" rx="8" class="lavado"/>
+      <rect x="925" y="306" width="250" height="52" rx="8" class="linha"/>
+    </g>
+    <g class="tom-roxo">
+      <rect x="625" y="30" width="250" height="88" rx="12" transform="translate(7 6)" class="cor"/>
+      <rect x="625" y="30" width="250" height="88" rx="12" class="lavado"/>
+      <rect x="625" y="30" width="250" height="88" rx="12" class="linha"/>
+      <path d="M750 285 H1036 M1022 276 L1036 285 L1022 294" class="linha-tom"/>
+      <path d="M750 795 H1036 M1022 786 L1036 795 L1022 804" class="linha-tom"/>
+    </g>
+    <g class="tom-vermelho">
+      <path d="M168 386 l18 18 m0 -18 l-18 18" class="linha-tom"/>
+      <rect x="925" y="815" width="250" height="64" rx="8" transform="translate(6 5)" class="cor"/>
+      <rect x="925" y="815" width="250" height="64" rx="8" class="lavado"/>
+      <rect x="925" y="815" width="250" height="64" rx="8" class="linha"/>
+      <rect x="25" y="910" width="1150" height="74" rx="12" class="lavado"/>
+      <rect x="25" y="910" width="1150" height="74" rx="12" class="linha"/>
+    </g>
+    <g class="tom-ambar">
+      <path d="M1162 358 V815" class="linha-tom"/>
+    </g>
+  </g>
+
+  <g class="tom-azul">
+    <path d="M152 175 H430" pathLength="1" class="pacote etapa-1"/>
+    <path d="M152 630 H430" pathLength="1" class="pacote etapa-5"/>
+  </g>
+  <g class="tom-ambar">
+    <path d="M452 230 H730" pathLength="1" class="pacote etapa-2"/>
+    <path d="M448 395 H200" pathLength="1" class="pacote etapa-4"/>
+    <path d="M452 685 H730" pathLength="1" class="pacote etapa-6"/>
+  </g>
+  <g class="tom-roxo">
+    <path d="M752 285 H1030" pathLength="1" class="pacote etapa-3"/>
+    <path d="M752 795 H1030" pathLength="1" class="pacote etapa-7"/>
+  </g>
+
+  <g class="tom-azul" data-marca="kubernetes" transform="translate(40 50) scale(0.48)"/>
+  <g class="tom-ambar" data-marca="spring" transform="translate(340 52) scale(0.42)"/>
+  <g class="tom-roxo" data-marca="sqs" transform="translate(638 50) scale(0.48)"/>
+  <g class="tom-ambar" data-marca="spring" transform="translate(940 52) scale(0.42)"/>
+  <g class="tom-vermelho" data-marca="sns" transform="translate(56 924) scale(0.46)"/>
+
+  <g class="tom-azul">
+    <text x="100" y="72" class="titulo-caixa">CronJob</text>
+    <text x="100" y="102" class="texto-caixa">com curl</text>
+    <text x="293" y="160" text-anchor="middle" class="codigo">POST /processar</text>
+    <text x="150" y="467" text-anchor="middle" class="nota-pequena">timeout: o curl</text>
+    <text x="150" y="491" text-anchor="middle" class="nota-pequena">sai com erro</text>
+    <text x="150" y="543" text-anchor="middle" class="nota-pequena">o Kubernetes tenta</text>
+    <text x="150" y="567" text-anchor="middle" class="nota-pequena">de novo (backoffLimit)</text>
+    <text x="293" y="615" text-anchor="middle" class="codigo">POST /processar</text>
+  </g>
+  <g class="tom-ambar">
+    <text x="394" y="72" class="titulo-caixa">Endpoint</text>
+    <text x="394" y="102" class="texto-caixa">da API</text>
+    <text x="994" y="72" class="titulo-caixa">Listener</text>
+    <text x="994" y="102" class="texto-caixa">nos pods da API</text>
+    <text x="593" y="216" text-anchor="middle" class="nota-pequena">publica a mensagem 1</text>
+    <text x="1050" y="339" text-anchor="middle" class="texto-caixa">execução 1 começa o lote</text>
+    <text x="593" y="671" text-anchor="middle" class="nota-pequena">publica a mensagem 2</text>
+    <text x="308" y="726" text-anchor="middle" class="nota-pequena">202 Accepted</text>
+  </g>
+  <g class="tom-roxo">
+    <text x="700" y="72" class="titulo-caixa">Fila SQS</text>
+    <text x="700" y="102" class="texto-caixa">standard</text>
+    <text x="893" y="271" text-anchor="middle" class="nota-pequena">entrega a mensagem 1</text>
+    <text x="893" y="781" text-anchor="middle" class="nota-pequena">entrega a mensagem 2</text>
+  </g>
+  <g class="tom-vermelho">
+    <text x="318" y="356" text-anchor="middle" class="nota-pequena">202 Accepted,</text>
+    <text x="318" y="380" text-anchor="middle" class="texto-tom nota-pequena">mas a resposta se perde</text>
+    <text x="1050" y="843" text-anchor="middle" class="texto-tom nota-pequena">execução 2: o mesmo lote,</text>
+    <text x="1050" y="867" text-anchor="middle" class="texto-tom nota-pequena">com a 1 ainda rodando</text>
+    <text x="118" y="942" class="texto-tom texto-caixa">Duas execuções do mesmo lote ao mesmo tempo:</text>
+    <text x="118" y="970" class="nota-pequena">em pods diferentes ou no mesmo pod, os registros que as duas leem como pendentes saem duas vezes no SNS.</text>
+  </g>
+  <g class="tom-ambar">
+    <text x="1150" y="600" text-anchor="end" class="texto-tom nota-pequena">a 1 segue</text>
+  </g>
+</svg>

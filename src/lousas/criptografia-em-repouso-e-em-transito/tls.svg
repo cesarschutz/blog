@@ -7,38 +7,40 @@
     <path d="M295 71 a10 10 0 1 1 -20 0 a10 10 0 1 1 20 0 Z M266 103 C266 87 276 83 285 83 C294 83 304 87 304 103"/>
     <path d="M116 79 H244" data-traco="0.03 0.13"/>
     <path d="M236 73 L245 79 L236 85" data-aparece="0.13 0.15"/>
-    <path d="M244 93 H116" data-traco="0.32 0.42"/>
-    <path d="M124 87 L115 93 L124 99" data-aparece="0.42 0.44"/>
-    <g data-aparece="0.38 0.42"><rect x="169" y="99" width="22" height="16" rx="2" class="fino"/><path d="M173 105 H187 M173 110 H181" class="fino"/></g>
+    <path d="M244 93 H116" data-traco="0.32 0.4"/>
+    <path d="M124 87 L115 93 L124 99" data-aparece="0.4 0.42"/>
+    <rect x="169" y="99" width="22" height="16" rx="2" class="fino" data-traco="0.42 0.48"/>
+    <path d="M173 105 H187 M173 110 H181" class="fino" data-traco="0.48 0.52"/>
     <path d="M62 77 L71 86 L89 68" data-traco="0.62 0.67"/>
-    <path d="M326 79 H474" class="destaque" data-traco="0.87 0.94"/>
-    <path d="M466 73 L475 79 L466 85" class="destaque" data-aparece="0.94 0.96"/>
+    <path d="M326 79 H474" class="destaque" data-traco="0.87 0.93"/>
+    <path d="M466 73 L475 79 L466 85" class="destaque" data-aparece="0.93 0.94"/>
+
     <rect x="48" y="191" width="54" height="34" rx="3"/>
     <path d="M40 229 H110 L104 235 H46 Z"/>
     <path d="M485 197 A30 7 0 0 1 545 197 V231 A30 7 0 0 1 485 231 Z"/>
     <path d="M485 197 A30 7 0 0 0 545 197" class="fino"/>
-    <path d="M295 201 a10 10 0 1 1 -20 0 a10 10 0 1 1 20 0 Z M266 233 C266 217 276 213 285 213 C294 213 304 217 304 233" data-some="0.66 0.7"/>
-    <path d="M295 201 a10 10 0 1 1 -20 0 a10 10 0 1 1 20 0 Z M266 233 C266 217 276 213 285 213 C294 213 304 217 304 233" class="fantasma" data-aparece="0.66 0.7"/>
+    <path d="M295 201 a10 10 0 1 1 -20 0 a10 10 0 1 1 20 0 Z M266 233 C266 217 276 213 285 213 C294 213 304 217 304 233" data-esmaece="0.74 0.8 0.3"/>
     <path d="M116 209 H244" data-traco="0.03 0.13"/>
     <path d="M236 203 L245 209 L236 215" data-aparece="0.13 0.15"/>
-    <path d="M244 223 H116" data-traco="0.32 0.42"/>
-    <path d="M124 217 L115 223 L124 229" data-aparece="0.42 0.44"/>
-    <g data-aparece="0.38 0.42"><rect x="169" y="229" width="22" height="16" rx="2" class="fino"/><path d="M173 235 H187 M173 240 H181" class="fino"/></g>
+    <path d="M244 223 H116" data-traco="0.32 0.4"/>
+    <path d="M124 217 L115 223 L124 229" data-aparece="0.4 0.42"/>
+    <rect x="169" y="229" width="22" height="16" rx="2" class="fino" data-traco="0.42 0.48"/>
+    <path d="M173 235 H187 M173 240 H181" class="fino" data-traco="0.48 0.52"/>
     <path d="M60 197 L90 219 M90 197 L60 219" class="destaque" data-traco="0.62 0.67"/>
-    <path d="M326 209 H474" class="fantasma" data-revela="0.87 0.95"/>
+    <path d="M326 209 H474" class="fantasma" data-revela="0.87 0.93"/>
   </g>
   <g>
     <text x="10" y="41" class="codigo">sslmode=require</text>
     <text x="75" y="125" text-anchor="middle" class="secundario">cliente</text>
     <text x="285" y="125" text-anchor="middle" class="secundario">intermediário</text>
     <text x="515" y="125" text-anchor="middle" class="secundario">banco</text>
-    <text x="180" y="135" text-anchor="middle" class="secundario" data-aparece="0.64 0.68">aceita</text>
-    <text x="400" y="69" text-anchor="middle" class="destaque" data-escrita="0.9 0.97">lê e repassa tudo</text>
+    <text x="180" y="135" text-anchor="middle" class="secundario" data-escrita="0.67 0.74">aceita</text>
+    <text x="400" y="69" text-anchor="middle" class="destaque" data-escrita="0.94 1">lê e repassa tudo</text>
     <text x="10" y="171" class="codigo">sslmode=verify-full</text>
     <text x="75" y="255" text-anchor="middle" class="secundario">cliente</text>
     <text x="285" y="255" text-anchor="middle" class="secundario">intermediário</text>
     <text x="515" y="255" text-anchor="middle" class="secundario">banco</text>
-    <text x="180" y="265" text-anchor="middle" class="secundario destaque" data-aparece="0.64 0.68">recusa</text>
-    <text x="400" y="199" text-anchor="middle" class="secundario" data-aparece="0.9 0.94">a conexão nem abre</text>
+    <text x="180" y="265" text-anchor="middle" class="secundario destaque" data-escrita="0.67 0.74">recusa</text>
+    <text x="400" y="199" text-anchor="middle" class="secundario" data-escrita="0.94 1">a conexão nem abre</text>
   </g>
 </svg>

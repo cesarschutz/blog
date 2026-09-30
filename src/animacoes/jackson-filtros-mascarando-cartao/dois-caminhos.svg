@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520"
+  aria-label="Animação: o pedido vai ao log por dois caminhos. Pelo toString, sem passar pelo filtro, o número e o CVV chegam inteiros e a linha é riscada; pelo logJson.toJson, o MascaraCartaoFilter cobre o meio do número e deixa o CVV para trás.">
+  <g class="tinta">
+    <g class="tom-azul">
+      <rect x="47" y="207" width="280" height="160" rx="12" class="hachura"/>
+      <rect x="40" y="200" width="280" height="160" rx="12" class="lavado"/>
+      <rect x="40" y="200" width="280" height="160" rx="12" class="linha"/>
+    </g>
+    <g class="tom-vermelho">
+      <path d="M320 236 C 420 236 440 170 540 170 H830 M816 161 L830 170 L816 179" class="linha-tom"/>
+    </g>
+    <g class="tom-verde">
+      <path d="M320 320 C 380 320 390 340 444 340 M430 331 L444 340 L430 349" class="linha-tom"/>
+      <rect x="450" y="290" width="330" height="100" rx="10" class="lavado"/>
+      <path d="M505 296 V384 M560 296 V384 M615 296 V384 M670 296 V384 M725 296 V384" class="linha-tom"/>
+      <rect x="450" y="290" width="330" height="100" rx="10" class="linha"/>
+      <path d="M780 340 C 810 340 806 380 830 380 M816 371 L830 380 L816 389" class="linha-tom"/>
+    </g>
+    <rect x="854" y="54" width="320" height="456" rx="8" class="hachura"/>
+    <rect x="840" y="40" width="320" height="456" rx="8" class="papel"/>
+    <rect x="840" y="40" width="320" height="456" rx="8" class="linha"/>
+    <path d="M866 124 H1120 M866 262 H1086 M866 296 H1128 M866 330 H1040 M866 460 H1110 M866 494 H1010" class="linha"/>
+  </g>
+
+  <g data-marca="java" transform="translate(250 208) scale(0.52)"/>
+
+  <g class="tom-azul">
+    <text x="60" y="246" class="titulo-caixa">Pedido</text>
+    <text x="60" y="296" class="codigo">5502091234567890</text>
+    <text x="60" y="336" class="codigo">cvv 123</text>
+  </g>
+  <text x="480" y="128" class="codigo">log.info("{}", pedido)</text>
+  <g class="tom-vermelho">
+    <text x="580" y="228" class="nota-pequena texto-tom">não passa pelo filtro</text>
+  </g>
+  <g class="tom-verde">
+    <text x="450" y="272" class="titulo-caixa">MascaraCartaoFilter</text>
+    <text x="450" y="424" class="texto-caixa">remove o cvv, mascara o número</text>
+  </g>
+  <text x="450" y="470" class="codigo">logJson.toJson(pedido)</text>
+  <text x="866" y="94" class="titulo-caixa">log</text>
+
+  <g class="tom-vermelho">
+    <text x="866" y="180" class="codigo texto-tom">5502091234567890</text>
+    <text x="866" y="214" class="codigo texto-tom">cvv=123</text>
+  </g>
+  <g class="tom-verde">
+    <text x="866" y="380" class="codigo texto-tom">550209******7890</text>
+    <text x="866" y="414" class="nota-pequena texto-tom">sem o cvv</text>
+  </g>
+  <path d="M860 172 C 940 168 1030 174 1112 169" pathLength="1" class="risco" data-parte="risco-1"/>
+  <path d="M860 206 C 900 203 940 208 980 204" pathLength="1" class="risco" data-parte="risco-2"/>
+
+  <rect x="860" y="154" width="258" height="34" class="papel" opacity="0" data-parte="tampa-l1"/>
+  <rect x="860" y="190" width="126" height="32" class="papel" opacity="0" data-parte="tampa-l1b"/>
+  <rect x="860" y="354" width="258" height="34" class="papel" opacity="0" data-parte="tampa-l2"/>
+  <rect x="860" y="394" width="112" height="28" class="papel" opacity="0" data-parte="tampa-l2b"/>
+
+  <g class="tom-azul" opacity="0" data-parte="cartao-1">
+    <rect x="326" y="214" width="68" height="44" rx="6" class="lavado"/>
+    <rect x="326" y="214" width="68" height="44" rx="6" class="traco-tom"/>
+    <rect x="334" y="222" width="12" height="9" rx="2" class="traco-tom"/>
+    <path d="M334 246 H386" class="traco-tom"/>
+    <g class="tom-vermelho">
+      <rect x="380" y="246" width="22" height="14" rx="3" class="lavado"/>
+      <rect x="380" y="246" width="22" height="14" rx="3" class="traco-tom"/>
+    </g>
+  </g>
+  <g class="tom-azul" opacity="0" data-parte="cartao-2">
+    <rect x="326" y="298" width="68" height="44" rx="6" class="lavado"/>
+    <rect x="326" y="298" width="68" height="44" rx="6" class="traco-tom"/>
+    <rect x="334" y="306" width="12" height="9" rx="2" class="traco-tom"/>
+    <path d="M334 330 H386" class="traco-tom"/>
+    <g class="tom-verde" data-parte="fita">
+      <rect x="343" y="322" width="32" height="16" rx="2" class="area"/>
+      <rect x="343" y="322" width="32" height="16" rx="2" class="traco-tom"/>
+    </g>
+    <g class="tom-vermelho" opacity="0" data-parte="cvv">
+      <rect x="380" y="330" width="22" height="14" rx="3" class="lavado"/>
+      <rect x="380" y="330" width="22" height="14" rx="3" class="traco-tom"/>
+    </g>
+  </g>
+</svg>

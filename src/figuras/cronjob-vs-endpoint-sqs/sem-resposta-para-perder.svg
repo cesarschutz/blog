@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 960"
+  aria-label="Diagrama de sequência da abordagem A: o CronJob cria o Job enviar-registros-29837160, com nome derivado do horário; a resposta 201 se perde, a nova tentativa usa o mesmo nome e recebe 409 AlreadyExists; o Job já criado sobe um pod só, que registra a execução do dia no JobRepository, processa o lote e termina com exit code 0.">
+  <path d="M130 124 V800 M560 124 V800 M835 124 V800 M1073 124 V800" class="grade"/>
+  <g class="tinta">
+    <g class="tom-azul">
+      <rect x="27" y="37" width="225" height="88" rx="12" class="hachura"/>
+      <rect x="20" y="30" width="225" height="88" rx="12" class="lavado"/>
+      <rect x="20" y="30" width="225" height="88" rx="12" class="linha"/>
+      <rect x="427" y="37" width="280" height="88" rx="12" class="hachura"/>
+      <rect x="420" y="30" width="280" height="88" rx="12" class="lavado"/>
+      <rect x="420" y="30" width="280" height="88" rx="12" class="linha"/>
+      <path d="M130 225 H546 M532 216 L546 225 L532 234" class="linha-tom"/>
+      <path d="M560 300 H180" class="fantasma"/>
+      <rect x="30" y="330" width="200" height="64" rx="8" class="lavado"/>
+      <rect x="30" y="330" width="200" height="64" rx="8" class="linha"/>
+      <path d="M130 480 H546 M532 471 L546 480 L532 489" class="linha-tom"/>
+      <path d="M560 548 H146" class="fantasma"/>
+      <path d="M158 539 L144 548 L158 557" class="linha"/>
+      <path d="M560 612 H821 M807 603 L821 612 L807 621" class="linha-tom"/>
+    </g>
+    <g class="tom-verde">
+      <rect x="722" y="30" width="215" height="88" rx="12" transform="translate(7 6)" class="cor"/>
+      <rect x="722" y="30" width="215" height="88" rx="12" class="lavado"/>
+      <rect x="722" y="30" width="215" height="88" rx="12" class="linha"/>
+      <path d="M835 672 H1059 M1045 663 L1059 672 L1045 681" class="linha-tom"/>
+      <rect x="700" y="692" width="270" height="52" rx="8" class="lavado"/>
+      <rect x="700" y="692" width="270" height="52" rx="8" class="linha"/>
+      <path d="M835 790 H576" class="fantasma"/>
+      <path d="M588 781 L574 790 L588 799" class="linha"/>
+      <rect x="25" y="830" width="1150" height="110" rx="12" class="lavado"/>
+      <rect x="25" y="830" width="1150" height="110" rx="12" class="linha"/>
+    </g>
+    <rect x="962" y="37" width="236" height="88" rx="12" class="hachura"/>
+    <rect x="955" y="30" width="236" height="88" rx="12" class="papel"/>
+    <rect x="955" y="30" width="236" height="88" rx="12" class="linha"/>
+    <g class="tom-vermelho">
+      <path d="M152 291 l18 18 m0 -18 l-18 18" class="linha-tom"/>
+    </g>
+  </g>
+
+  <g class="tom-azul">
+    <path d="M132 225 H540" pathLength="1" class="pacote etapa-1"/>
+    <path d="M558 300 H182" pathLength="1" class="pacote etapa-2"/>
+    <path d="M132 480 H540" pathLength="1" class="pacote etapa-3"/>
+    <path d="M558 548 H152" pathLength="1" class="pacote etapa-4"/>
+    <path d="M562 612 H815" pathLength="1" class="pacote etapa-5"/>
+  </g>
+  <g class="tom-verde">
+    <path d="M837 672 H1053" pathLength="1" class="pacote etapa-6"/>
+    <path d="M833 790 H580" pathLength="1" class="pacote etapa-7"/>
+  </g>
+
+  <g class="tom-azul" data-marca="kubernetes" transform="translate(34 50) scale(0.48)"/>
+  <g class="tom-azul" data-marca="kubernetes" transform="translate(432 50) scale(0.48)"/>
+  <g class="tom-verde" data-marca="spring" transform="translate(735 52) scale(0.42)"/>
+
+  <g class="tom-azul">
+    <text x="90" y="72" class="titulo-caixa">CronJob</text>
+    <text x="90" y="102" class="texto-caixa">controlador</text>
+    <text x="490" y="72" class="titulo-caixa">API do</text>
+    <text x="490" y="102" class="texto-caixa">Kubernetes</text>
+    <text x="345" y="168" text-anchor="middle" class="nota-pequena">cria o Job</text>
+    <text x="345" y="206" text-anchor="middle" class="codigo">enviar-registros-29837160</text>
+    <text x="345" y="252" text-anchor="middle" class="nota-pequena">o horário agendado, em minutos desde 1970</text>
+    <text x="130" y="356" text-anchor="middle" class="nota-pequena">nova tentativa para</text>
+    <text x="130" y="380" text-anchor="middle" class="nota-pequena">o mesmo horário</text>
+    <text x="345" y="424" text-anchor="middle" class="nota-pequena">cria o Job</text>
+    <text x="345" y="462" text-anchor="middle" class="codigo">enviar-registros-29837160</text>
+    <text x="345" y="532" text-anchor="middle" class="texto-tom nota-pequena">409 AlreadyExists: nenhum Job novo</text>
+    <text x="697" y="596" text-anchor="middle" class="nota-pequena">o Job já criado sobe o pod</text>
+  </g>
+  <g class="tom-vermelho">
+    <text x="360" y="288" text-anchor="middle" class="texto-tom nota-pequena">201 Created, mas a resposta se perde</text>
+  </g>
+  <g class="tom-verde">
+    <text x="779" y="82" class="titulo-caixa">Pod do job</text>
+    <text x="955" y="634" text-anchor="middle" class="nota-pequena">registra a execução</text>
+    <text x="955" y="656" text-anchor="middle" class="nota-pequena">do dia</text>
+    <text x="835" y="726" text-anchor="middle" class="texto-caixa">processa o lote e termina</text>
+    <text x="680" y="778" text-anchor="middle" class="texto-tom nota-pequena">exit code 0</text>
+    <text x="600" y="872" text-anchor="middle" class="texto-tom texto-caixa">Um Job só: o nome derivado do horário é a chave de idempotência.</text>
+    <text x="600" y="904" text-anchor="middle" class="nota-pequena">É a chave que a B teria de construir; se um dia surgir um segundo pod para a mesma data, o JobRepository recusa.</text>
+  </g>
+  <text x="1073" y="72" text-anchor="middle" class="titulo-caixa">JobRepository</text>
+  <text x="1073" y="102" text-anchor="middle" class="texto-caixa">tabelas BATCH_*</text>
+</svg>

@@ -15,7 +15,7 @@ posts em 26/09/2026. Post da série Java também segue a skill `serie-java`.
 | `atomicboolean-parada-graciosa` | Desenvolvimento de Software | 2026-05-19 | pendente | pendente | |
 | `bloqueio-otimista-e-pessimista` | Dados | 2026-09-13 | pendente | pendente | |
 | `cobranca-duplicada-no-retry` | Arquitetura de Software | 2026-09-10 | pendente | 12, aplicadas em 26/09/2026 (piloto da D48) | |
-| `cronjob-vs-endpoint-sqs` | Arquitetura de Software | 2026-09-23 | pendente | pendente | |
+| `cronjob-vs-endpoint-sqs` | Arquitetura de Software | 2026-09-23 | concluído (30/09/2026) | 59, aplicadas em 30/09/2026 | recursos da D58: `.mdx`, cinco figuras com legenda (no lugar dos diagramas de `public/`), `Lousa` de comparação, ícones das ferramentas |
 | `data-lake-vs-data-warehouse` | Dados | 2026-03-31 | pendente | pendente | |
 | `efeito-externo-sem-registro-local` | Arquitetura de Software | 2026-09-11 | pendente | pendente | |
 | `gradle-tipos-de-dependencia` | Desenvolvimento de Software | 2026-05-19 | pendente | pendente | |
@@ -35,5 +35,5 @@ posts em 26/09/2026. Post da série Java também segue a skill `serie-java`.
 | `virtual-threads-pinning-close-wait` | Desenvolvimento de Software | 2026-09-12 | pendente | pendente | |
 | `w3c-trace-context` | SRE | 2026-05-20 | pendente | pendente | |
 | `wide-events-canonical-log-lines` | SRE | 2026-05-19 | pendente | pendente | |
-| `jackson-filtros-mascarando-cartao` | Desenvolvimento de Software | 2026-09-25 | concluído (25/09/2026) | pendente | post novo pela skill `post` |
-| `criptografia-em-repouso-e-em-transito` | Segurança | 2026-09-29 | concluído (29/09/2026) | 56, remarcado em 30/09/2026 pelas regras da D56 | post novo pela skill `post`: texto do Cesar adaptado, 29 correções aprovadas, código rodado |
+| `jackson-filtros-mascarando-cartao` | Desenvolvimento de Software | 2026-09-25 | concluído (25/09/2026) | 37, aplicadas em 30/09/2026 | post novo pela skill `post`; em 30/09/2026, recursos da D58: `Lousa` de passos, figura, animação com play, print e ícones |
+| `criptografia-em-repouso-e-em-transito` | Segurança | 2026-09-29 | concluído (29/09/2026) | 56, remarcado em 30/09/2026 pelas regras da D56 | post novo pela skill `post`: texto do Cesar adaptado, 29 correções aprovadas, código rodado; em 30/09/2026, recursos da D58: `Lousa`, figura, print e ícones |

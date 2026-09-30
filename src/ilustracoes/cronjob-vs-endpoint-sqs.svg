@@ -9,7 +9,10 @@
     <path d="M880 262 A70 70 0 1 1 740 262 A70 70 0 1 1 880 262 Z" transform="translate(12 12)" class="hachura"/>
     <path d="M880 262 A70 70 0 1 1 740 262 A70 70 0 1 1 880 262 Z" transform="translate(7 6)" class="cor"/>
     <path d="M880 262 A70 70 0 1 1 740 262 A70 70 0 1 1 880 262 Z" class="linha"/>
-    <path d="M810 262 V214 M810 262 L848 280" class="linha"/>
+    <g class="mexe-gira">
+      <circle cx="810" cy="262" r="50" opacity="0"/>
+      <path d="M810 262 V214 M810 262 L848 280" class="linha"/>
+    </g>
     <path d="M592 430 C640 450 680 490 722 500" class="linha"/>
     <path d="M710 492 L724 500 L712 512" class="linha"/>
     <path d="M765 470 H965 A35 35 0 0 1 1000 505 V505 A35 35 0 0 1 965 540 H765 A35 35 0 0 1 730 505 V505 A35 35 0 0 1 765 470 Z" transform="translate(14 14)" class="hachura"/>
