@@ -21,7 +21,8 @@
  *               pathLength="1" no path); a mesma etapa anda junta; o ciclo é de 8,4 s (1,2 s por etapa)
  *   pulsa, pisca, gira, balanca, anda (vai e volta de lado)
  * Legenda de cores: um <g class="legenda tom-x"> por cor; com o mouse na legenda ou no próprio componente,
- * as outras cores apagam (só nas figuras que têm legenda).
+ * só aquela cor fica acesa: as outras e o que não tem cor apagam, menos a referência de todas as cores
+ * (<g class="referencia">, como o cabeçalho de uma tabela, e os eixos). Só nas figuras que têm legenda.
  */
 
 .ilustracao.diagrama {
@@ -428,7 +429,10 @@
 }
 
 /* Só nas figuras com legenda. Os tons de dentro de um logo não contam: o logo acompanha o componente
-   em que está. */
+   em que está (dentro do grupo do tom, ou solto com o tom no marcador: <g data-marca="…" class="tom-x">).
+   Com o mouse numa cor, só ela fica acesa (D59): o que é de outra cor apaga (abaixo) e o que não tem
+   cor também (mais abaixo), menos a referência de todas as cores, que fica inteira acesa: o que está
+   num <g class="referencia"> (o cabeçalho de uma tabela, com os ícones e os logos dele) e os eixos. */
 .diagrama:has(.legenda):has(.tom-azul:not(.marca *):hover) [class*="tom-"]:not(.tom-azul, .marca *),
 .diagrama:has(.legenda):has(.tom-verde:not(.marca *):hover) [class*="tom-"]:not(.tom-verde, .marca *),
 .diagrama:has(.legenda):has(.tom-ambar:not(.marca *):hover) [class*="tom-"]:not(.tom-ambar, .marca *),
@@ -438,19 +442,23 @@
   opacity: 0.22;
 }
 
-/* Os logos acompanham o componente em que estão: dentro do grupo do tom, apagam com ele; soltos na
-   figura, pegam o tom do componente pelo marcador (<g data-marca="…" class="tom-x">); sem tom, apagam
-   com qualquer destaque. */
-.diagrama .marca {
+.diagrama:has(.legenda) :is(text, path, rect, circle, ellipse, line, polyline, polygon, g.marca) {
   transition: opacity 0.3s ease;
 }
 
-.diagrama:has(.legenda):has(.tom-azul:not(.marca *):hover) .marca:not(.tom-azul, .tom-azul .marca),
-.diagrama:has(.legenda):has(.tom-verde:not(.marca *):hover) .marca:not(.tom-verde, .tom-verde .marca),
-.diagrama:has(.legenda):has(.tom-ambar:not(.marca *):hover) .marca:not(.tom-ambar, .tom-ambar .marca),
-.diagrama:has(.legenda):has(.tom-vermelho:not(.marca *):hover) .marca:not(.tom-vermelho, .tom-vermelho .marca),
-.diagrama:has(.legenda):has(.tom-roxo:not(.marca *):hover) .marca:not(.tom-roxo, .tom-roxo .marca),
-.diagrama:has(.legenda):has(.tom-petroleo:not(.marca *):hover) .marca:not(.tom-petroleo, .tom-petroleo .marca) {
+.diagrama:has(.legenda):has([class*="tom-"]:not(.marca *):hover)
+  :is(text, path, rect, circle, ellipse, line, polyline, polygon, g.marca):not(
+    [class*="tom-"],
+    [class*="tom-"] *,
+    .referencia,
+    .referencia *,
+    .legenda *,
+    .marca *,
+    .eixo,
+    .grade,
+    .valor-eixo,
+    .titulo-eixo
+  ) {
   opacity: 0.22;
 }
 
