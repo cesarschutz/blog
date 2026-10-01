@@ -1,7 +1,7 @@
 # Estado do projeto
 
 Painel, não diário: fase atual, próximos passos, perguntas abertas e riscos. O detalhe de cada rodada
-fica em `docs/decisoes.md` (D1 a D59) e no histórico do git; controles de rodadas fechadas, em
+fica em `docs/decisoes.md` (D1 a D60) e no histórico do git; controles de rodadas fechadas, em
 `docs/historico/`.
 
 ## Fase atual
@@ -99,6 +99,9 @@ destaque da legenda passou a apagar tudo o que não é da cor do mouse, menos a 
 `node scripts/desenho/revisar.mjs <slug>` (bugs automáticos e fotos) e o checklist da skill `figura`,
 com a tabela dos bugs que já aconteceram.
 
+O escuro dos desenhos do corpo (D60, 01/10/2026, publicado): painel próprio, um pouco acima da folha e
+mais neutro, caixas com o tom puro a 45% e tinta um pouco menos branca. A capa não mudou.
+
 ## Como ver
 
 - Dev: `fnm exec --using=24 npm run dev -- --host 127.0.0.1` (<http://127.0.0.1:4322>); parar com
@@ -126,6 +129,7 @@ com a tabela dos bugs que já aconteceram.
 | D52 | acabamento das animações, leitura, tags com ícone, destaque na grade, campo `codigo`, C04 e C05 |
 | D58 | capa viva, figuras coloridas, `Lousa` nova, animação com play, ícones das ferramentas, print; os três primeiros posts revistos |
 | D59 | a lousa no estilo das figuras (canetinha colorida), o destaque da legenda revisto e a revisão de todo desenho (`revisar.mjs`) |
+| D60 | o escuro dos desenhos do corpo: painel um pouco acima da folha, caixas com cor, tinta menos branca |
 
 ## Próximos passos
 

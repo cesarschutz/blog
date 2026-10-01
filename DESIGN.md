@@ -39,6 +39,10 @@ colors:
   veu-tinta: "#EEF1EE"
   caneta: "#1F4FB5"
   marca-texto: "#FFE27A"
+  # Desenhos do corpo do post (tokens.ts, D60): a base do painel e a tinta
+  painel-desenho: "#FFFFFE"
+  tinta-desenho: "#1A2124"
+  tinta-desenho-2: "#50595A"
   # Tons das figuras (tokens.ts, DIAGRAMA, D58); no escuro, com 42% de branco
   diag-azul: "#2F5FB3"
   diag-verde: "#25734E"
@@ -62,6 +66,9 @@ colors:
   lousa-mistura-escuro: "#0B6F58"
   caneta-escuro: "#8FA8FF"
   marca-texto-escuro: "#FFD65A" # a 30% sobre a folha (rgba(255, 214, 90, .30))
+  painel-desenho-escuro: "#232B2E" # com 10% da cor do livro (D60)
+  tinta-desenho-escuro: "#CDD3CD"
+  tinta-desenho-2-escuro: "#BCC3BE"
   # Livros (src/livros/livros.json e cores.js): a cor principal de cada categoria
   arquitetura-de-software: "#2d4b46"
   desenvolvimento-de-software: "#7a4430"
@@ -421,9 +428,14 @@ mexer na página. O site não tem som.
 - **Tons das figuras** (D58, `--diag-*`: azul, verde, âmbar, vermelho, roxo e petróleo; no escuro,
   com 42% de branco): só nas figuras do corpo do post (diagramas, gráficos, animações e logos). Cada
   ator tem um tom, o mesmo em todas as figuras do post; o vermelho é só para erro, limite e recusa. O
-  fundo das caixas é o tom lavado (16% no claro, 30% no escuro). Todos passam de 4,5:1 sobre a folha e
-  o painel de todos os livros, e a tinta sobre o lavado também (`npm run contraste`). A capa continua
-  com a cor do livro como única cor.
+  fundo das caixas é o tom lavado (16% no claro; no escuro, o tom puro a 45%, D60). Todos passam de
+  4,5:1 sobre a folha e o painel de todos os livros, e a tinta sobre o lavado também (`npm run
+  contraste`). A capa continua com a cor do livro como única cor.
+- **O escuro dos desenhos do corpo** (D60): figuras, animações e lousas ficam num painel próprio, um
+  pouco acima da folha e mais neutro (`painel-desenho`, #232B2E com 10% da cor do livro), com a tinta
+  um pouco menos branca (`tinta-desenho`, #CDD3CD; a secundária, #BCC3BE), caixas com mais cor e a
+  sombra hachurada mais discreta. No claro, nada muda, menos a tinta secundária dos desenhos (#50595A),
+  um pouco mais escura para passar de 4,5:1 sobre o lavado.
 - **Marca e véu** (D33): o livro "cs" e o fundo do visor de imagens.
 - **Pauta do caderno** (D52, `caderno-pauta`, #BEBAB0, igual nos dois temas): as linhas do miolo do
   caderno "cs", onde a capa abre (a marca do cabeçalho, a marca grande da home e o caderno da

@@ -116,9 +116,19 @@ destaques com 42% de branco passam em todas as categorias (5,1 a 9,8:1).
 | petróleo | `tom-petroleo` | `--diag-petroleo` | `#1A6F7A` |
 
 No escuro, cada tom leva 42% de branco (`--branco-no-escuro`), como a cor do livro. Todos passam de
-4,5:1 como texto sobre a folha e sobre o painel de todos os livros, nos dois temas, e a tinta passa de
-4,5:1 sobre o lavado (`npm run contraste`). O lavado é 16% do tom sobre o painel no claro e 30% no
-escuro; a cor fora do registro, 78% do tom, como na capa.
+4,5:1 como texto sobre a folha e sobre o painel de todos os livros, nos dois temas, e a tinta (as duas)
+passa de 4,5:1 sobre o lavado (`npm run contraste`).
+
+**O escuro dos desenhos do corpo** (D60, valores em `DESENHO` e nos tokens `painel-desenho` e
+`tinta-desenho*` de `tokens.ts`): as figuras, as animações e as lousas ficam num painel próprio, um
+pouco acima da folha e mais neutro (`#232B2E` com 10% da cor do livro; no claro, a folha com 11%, como
+sempre). O lavado mistura o **tom puro** (sem o branco do escuro) a 45% sobre esse painel, para a caixa
+ter cor sem clarear demais (com o tom clareado a 30%, as caixas viravam marrom, oliva e cinza). A tinta
+fica um pouco menos branca (`#CDD3CD`; a secundária, `#BCC3BE`), para o traço não brilhar; a cópia fora
+do registro cai para 62% do tom e a sombra hachurada para 35%. No claro, o lavado é 16% do tom, a cópia
+78%, a sombra 75%, e a tinta secundária dos desenhos é um pouco mais escura que o `--ink-2`
+(`#50595A`), para passar de 4,5:1 sobre o lavado. A capa não muda: segue o painel de sempre, na cor do
+livro.
 
 ## Lousas: a figura que se desenha (D59)
 

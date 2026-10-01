@@ -69,6 +69,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D57 | Livros realistas: capa dura em todos os livros, estante e pilha com volume, livro deitado no "Do livro", livro aberto nos vazios e a série como livro | em vigor |
 | D58 | Recursos visuais novos: capa viva, figuras coloridas, a lousa nova, a animação com play, os ícones das ferramentas, o print e a caneta da leitura na cor do livro | decidido |
 | D59 | A lousa no estilo das figuras, com uma canetinha colorida; o destaque da legenda que apaga tudo menos a cor e a referência; a revisão de todo desenho antes de entregar (`revisar.mjs`) | decidido |
+| D60 | O escuro dos desenhos do corpo: painel um pouco acima da folha, caixas com cor, tinta menos branca | decidido |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -2224,4 +2225,31 @@ nada muda.
   lousa vira uma figura que se desenha. Os bugs do destaque (o retângulo que piscava, o rótulo de duas
   cores, os logos soltos, o cabeçalho pela metade) passaram por conferências que só olhavam o quadro
   parado; a revisão agora dispara cada estado e mede.
+
+## D60 · O escuro dos desenhos do corpo
+- **Data:** 01/10/2026 · **Status:** decidido.
+- **Pedido do Cesar:** "no modo claro está muito bonito, mas no modo escuro estou achando feio",
+  lembrando que quem lê no escuro não quer nada muito claro. Viu cinco desenhos dos três posts lado a
+  lado (claro, escuro de hoje e uma sugestão) e escolheu a sugestão.
+- **Diagnóstico:** o fundo das caixas (o tom clareado a 30% sobre o painel quase preto) virava marrom,
+  oliva e cinza, e o colorido que deixa o claro bonito sumia; o painel (a cor do livro a 20% sobre a
+  folha) era mais escuro que a própria folha, e o desenho parecia um buraco; o traço quase branco e a
+  sombra hachurada branca brilhavam demais.
+- **Decidido:** só nos desenhos do corpo (figuras, animações e lousas; a capa, os livros e a página não
+  mudam):
+  - painel próprio, um pouco acima da folha e mais neutro: `painel-desenho` `#232B2E` com 10% da cor do
+    livro (no claro, a folha com 11%, igual a antes);
+  - o fundo das caixas mistura o tom puro (sem o branco do escuro) a 45%: tem cor e deixa o texto claro
+    em cima acima de 4,5:1 (a sugestão mostrada usava o tom clareado a 40%, que deixava o texto em 3,3 a
+    4,2:1);
+  - a tinta dos desenhos um pouco menos branca: `tinta-desenho` `#CDD3CD` e `tinta-desenho-2` `#BCC3BE`;
+  - a cópia fora do registro a 62% (era 78%) e a sombra hachurada a 35% (era 75%);
+  - no claro, a tinta secundária dos desenhos passou a `#50595A` (o `--ink-2` é `#57605E`): o texto
+    secundário dentro das caixas ficava em 4,3:1 sobre o lavado, e a conta de contraste não olhava esse
+    caso.
+- **Mudado:** `tokens.ts` (`painel-desenho`, `tinta-desenho`, `tinta-desenho-2` e `DESENHO`, que gera
+  `--desenho-painel`, `--desenho-lavado`, `--desenho-cor-fora` e `--desenho-hachura`), `figura.css` (o
+  painel das figuras, o lavado com o tom puro, a tinta, a cópia e a sombra pelos tokens), `lousa-nova.css`
+  (o painel da lousa), `scripts/contraste.mjs` (a tinta e a tinta secundária sobre o painel e o lavado
+  dos desenhos), `DESIGN.md` e `docs/estilo-desenho.md`.
 
