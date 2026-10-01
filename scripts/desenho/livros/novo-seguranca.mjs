@@ -6,11 +6,13 @@
  * É um objeto de porta: de frente, com a fuga leve para a direita (o mesmo vetor de fundo da caixa
  * registradora, com pouca profundidade), olho um pouco acima, luz do alto à esquerda. A caixa
  * retangular, mais larga que alta, sem tampa: o aro das paredes à vista, a face interna da parede
- * esquerda na sombra, a chapa de fundo com uma hachura leve (o ferro no escuro da caixa). Dentro, de
- * trás para a frente: o ferrolho no alto, saindo pela face direita; as seis alavancas em leque em
- * torno do pivô no alto à esquerda, cada uma com a sua janela (a passagem do pino do ferrolho); por
- * cima delas, a alavanca detectora, mais fina e com o dente na ponta, e a mola de lâmina que a segura;
- * o buraco da chave embaixo, no centro. Na frente, à esquerda, deitada na mesa, a chave grande: o anel,
+ * esquerda na sombra e, na chapa de fundo, a sombra que as paredes de cima e da esquerda projetam (a
+ * ficha pedia a chapa inteira hachurada de leve, mas na capa de 150 a 270px isso virava um bloco
+ * escuro e as alavancas perdiam o contraste; a sombra em L dá a profundidade sem apagar o mecanismo).
+ * Dentro, de trás para a frente: o ferrolho no alto, saindo pela face direita; as seis alavancas em
+ * leque em torno do pivô no alto à esquerda, cada uma com a sua janela (a passagem do pino do
+ * ferrolho), com a sombra do leque na chapa; por cima delas, a alavanca detectora, mais fina e com o
+ * dente na ponta, e a mola de lâmina que a segura; o buraco da chave embaixo, no centro. Na frente, à esquerda, deitada na mesa, a chave grande: o anel,
  * a haste com o colar e o palhetão com os seis degraus (um por alavanca) e o batente do ferrolho.
  *
  * O fantasma é a alavanca detectora na posição travada, levantada até prender o ferrolho: a prova de
@@ -24,7 +26,7 @@ const P = (x, y, z = 0) => [x + A * z, y - B * z];
 const rad = (g) => (g * Math.PI) / 180;
 
 // A caixa (a frente, na verdadeira grandeza) e as profundidades.
-const [cx0, cy0, CW, CH] = [106, 432, 294, 196]; // x 106–400, y 432–628; a chave fica na frente, abaixo da base
+const [cx0, cy0, CW, CH] = [106, 428, 294, 196]; // x 106–400, y 428–624; a chave fica na frente, abaixo da base
 const [cx1, cy1] = [cx0 + CW, cy0 + CH];
 const E = 8; // a espessura das paredes (o aro que aparece com a tampa fora)
 const DC = 18; // a profundidade da caixa
@@ -157,7 +159,7 @@ export default {
     t(noPivo(perfilDetector(), repouso - 12), { fantasma: true });
 
     // ---------- a chave, deitada na mesa, na frente e à esquerda ----------
-    const ky = 648; // o eixo da haste
+    const ky = 644; // o eixo da haste
     const [kx0, kx1] = [100, 252]; // a haste, do anel à ponta
     // O palhetão, com os seis degraus (um por alavanca) e o batente do ferrolho na ponta.
     const degraus = [18, 24, 14, 22, 26, 18];
@@ -169,8 +171,8 @@ export default {
     t(retangulo(kx0, ky - 6, kx1 - kx0, 12, 1), { papel: true }); // a haste
     t(linha([kx0 + 12, ky], [bx - 2, ky]), { w: 3, icone: false }); // o fio da haste
     t(retangulo(kx0 + 2, ky - 10, 9, 20, 1.5), { w: 2, papel: true, icone: false }); // o colar
-    t(elipse([72, 650], 32, 28), { papel: true }); // o anel
-    t(elipse([72, 650], 20, 17), { w: 2 }); // o vazio do anel
-    chao(44, 250, 679, { altura: 6, desvio: 3 });
+    t(elipse([72, 646], 32, 28), { papel: true }); // o anel
+    t(elipse([72, 646], 20, 17), { w: 2 }); // o vazio do anel
+    chao(44, 250, 675, { altura: 6, desvio: 3 });
   },
 };
