@@ -12,8 +12,9 @@
  * Dentro, de trás para a frente: o ferrolho no alto, saindo pela face direita; as seis alavancas em
  * leque em torno do pivô no alto à esquerda, cada uma com a sua janela (a passagem do pino do
  * ferrolho), com a sombra do leque na chapa; por cima delas, a alavanca detectora, mais fina e com o
- * dente na ponta, e a mola de lâmina que a segura; o buraco da chave embaixo, no centro. Na frente, à esquerda, deitada na mesa, a chave grande: o anel,
- * a haste com o colar e o palhetão com os seis degraus (um por alavanca) e o batente do ferrolho.
+ * dente na ponta, e a mola de lâmina que a segura; o buraco da chave embaixo, no centro. Na frente, à
+ * esquerda, deitada na mesa, a chave grande: o anel, a haste com o colar e o palhetão com os seis
+ * degraus (um por alavanca) e o batente do ferrolho.
  *
  * O fantasma é a alavanca detectora na posição travada, levantada até prender o ferrolho: a prova de
  * que alguém tentou. No ícone ficam a caixa, o ferrolho, o buraco da chave, a chave e três alavancas.
@@ -42,7 +43,7 @@ export default {
     const quad = (pontos) => poli(pontos, true);
     /** Um ponto do mecanismo: coordenadas na chapa (u, v, da quina de cima à esquerda do vão), no plano z = ZM. */
     const M = (u, v) => P(ix0 + u, iy0 + v, ZM);
-    const [MW, MH] = [ix1 - ix0, iy1 - iy0]; // 284 × 184
+    const [MW, MH] = [ix1 - ix0, iy1 - iy0]; // 278 × 180
 
     // ---------- a chapa de fundo, com a sombra que as paredes de cima e da esquerda projetam nela ----------
     const chapa = quad([P(ix0, iy0, ZP), P(ix1, iy0, ZP), P(ix1, iy1, ZP), P(ix0, iy1, ZP)]);

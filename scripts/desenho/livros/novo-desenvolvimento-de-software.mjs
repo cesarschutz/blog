@@ -105,12 +105,19 @@ export default {
       const x = 158 + 15 * i;
       t(aresta([x, topo, zLico], [x, peito, zLico]), { w: 3, icone: false });
     }
-    // A lançadeira, pousada na urdidura, à esquerda, com a bobina dentro.
+    // A lançadeira, pousada na urdidura, à esquerda: o casco em forma de barco (a face da frente, com
+    // altura, e o tampo), com a bobina à vista no tampo.
     {
-      const [lx, lz, meia] = [131, 30, 4.6]; // o centro e a meia largura
-      const perfil = [[-19, 0], [-13, -0.6], [-7, -0.9], [0, -1], [7, -0.9], [13, -0.6], [19, 0], [13, 0.6], [7, 0.9], [0, 1], [-7, 0.9], [-13, 0.6]];
-      t(poli(perfil.map(([dx, dz]) => P(lx + dx, peito, lz + dz * meia)), true), { papel: true, icone: false });
-      t(aresta([lx - 8, peito, lz], [lx + 8, peito, lz]), { w: 3, icone: false }); // a bobina
+      const [lx, lz, meia, alt] = [134, 30, 5, 6]; // o centro, a meia largura e a altura
+      const meio = [[-13, -0.62], [-7, -0.9], [0, -1], [7, -0.9], [13, -0.62]];
+      const frente = [[-22, 0], ...meio, [22, 0]]; // a borda da frente, de ponta a ponta
+      const tras = [...meio].reverse().map(([dx, dz]) => [dx, -dz]);
+      const topo3 = (dx, dz) => [lx + dx, peito - alt, lz + dz * meia];
+      const lados = frente.map(([dx, dz]) => P(...topo3(dx, dz)));
+      t(poli([...lados, ...[...frente].reverse().map(([dx, dz]) => P(lx + dx, peito, lz + dz * meia))], true), { papel: true, icone: false }); // a face da frente
+      t(poli([...frente, ...tras].map(([dx, dz]) => P(...topo3(dx, dz))), true), { papel: true, icone: false }); // o tampo
+      t(poli([[-9, -0.45], [9, -0.45], [9, 0.45], [-9, 0.45]].map(([dx, dz]) => P(...topo3(dx, dz))), true), { w: 3, icone: false }); // a janela da bobina
+      t(linha(P(...topo3(-9, 0)), P(...topo3(9, 0))), { w: 3, icone: false }); // a bobina
     }
 
     // ---------- a cabeça de Jacquard, em cima do bastidor ----------
