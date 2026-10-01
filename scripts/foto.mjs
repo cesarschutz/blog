@@ -17,7 +17,7 @@
  *                           as externas, como AWS e Kubernetes, às vezes nunca chegam ao load)
  *     --escala 2            densidade da foto (padrão: 2 abaixo de 700px, 1 acima)
  *     --inteira             a página inteira (rola antes, para carregar o que é preguiçoso)
- * Se o dev recarregar no meio (arquivo salvo), tenta de novo, até 3 vezes.
+ * Se o dev recarregar no meio (arquivo salvo), tenta de novo, até 3 vezes. CHROME_PATH troca o navegador.
  */
 import { chromium } from "playwright-core";
 
@@ -38,7 +38,10 @@ const tema = opcao("--tema", "claro") === "escuro" ? "dark" : "light";
 const seletor = opcao("--seletor");
 const indice = Number(opcao("--indice", 0));
 
-const navegador = await chromium.launch({ channel: "chrome", headless: true });
+// CHROME_PATH aponta outro navegador (o Chromium da sessão na nuvem, por exemplo); sem ele, o Chrome instalado.
+const navegador = await chromium.launch(
+  process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH, headless: true } : { channel: "chrome", headless: true },
+);
 try {
   const contexto = await navegador.newContext({
     viewport: { width: largura, height: altura },

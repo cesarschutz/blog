@@ -1,0 +1,208 @@
+{
+  "observacao": "Dados das sugestões de coleção (docs/prototipos/colecoes). A página /amostra/colecoes/ (só no dev) lê daqui. Livro: título, linhas, corpo e entrelinha do título na capa (scripts/livros/titulo-da-capa.mjs), frase, abrange, cor e o motivo, instrumento e o motivo, desenho (o slug do arquivo em src/livros/desenhos e icones), emPe (lombada na estante). Sugestão: os livros na ordem dos volumes e, de cada livro, os posts que iriam para ele.",
+  "livros": {
+    "arquitetura-de-software": {
+      "titulo": "Arquitetura de Software",
+      "linhas": [
+        "Arquitetura",
+        "de Software"
+      ],
+      "corpo": 73,
+      "entrelinha": 70,
+      "frase": "As decisões caras de desfazer.",
+      "abrange": [
+        "Microsserviços",
+        "Domínios",
+        "Eventos",
+        "Consistência"
+      ],
+      "cor": "#2d4b46",
+      "instrumento": "arco e pedra angular",
+      "desenho": "arquitetura-de-software",
+      "emPe": {
+        "altura": 660,
+        "largura": 150
+      },
+      "deHoje": true
+    },
+    "desenvolvimento-de-software": {
+      "titulo": "Desenvolvimento de Software",
+      "linhas": [
+        "Desenvolvimento",
+        "de Software"
+      ],
+      "corpo": 50,
+      "entrelinha": 48,
+      "frase": "O ofício dentro de cada serviço.",
+      "abrange": [
+        "Java",
+        "Spring",
+        "Testes",
+        "Refatoração"
+      ],
+      "cor": "#7a4430",
+      "instrumento": "paquímetro medindo uma peça",
+      "desenho": "desenvolvimento-de-software",
+      "emPe": {
+        "altura": 628,
+        "largura": 146
+      },
+      "deHoje": true
+    },
+    "dados": {
+      "titulo": "Dados",
+      "linhas": [
+        "Dados"
+      ],
+      "corpo": 108,
+      "entrelinha": 108,
+      "frase": "Onde o dado mora e por onde ele anda.",
+      "abrange": [
+        "Bancos",
+        "Modelagem",
+        "CDC",
+        "Pipelines"
+      ],
+      "cor": "#5f4662",
+      "instrumento": "gaveta de fichas",
+      "desenho": "dados",
+      "emPe": {
+        "altura": 604,
+        "largura": 128
+      },
+      "deHoje": true
+    },
+    "ia": {
+      "titulo": "IA",
+      "linhas": [
+        "IA"
+      ],
+      "corpo": 108,
+      "entrelinha": 108,
+      "frase": "Software feito com IA e software que usa IA.",
+      "abrange": [
+        "LLMs",
+        "Agentes",
+        "RAG",
+        "Prompts"
+      ],
+      "cor": "#6e2f45",
+      "instrumento": "autômato escritor",
+      "desenho": "ia",
+      "emPe": {
+        "altura": 584,
+        "largura": 120
+      },
+      "deHoje": true
+    },
+    "seguranca": {
+      "titulo": "Segurança",
+      "linhas": [
+        "Segurança"
+      ],
+      "corpo": 82,
+      "entrelinha": 82,
+      "frase": "Quem pode o quê e como provar.",
+      "abrange": [
+        "Identidade",
+        "Segredos",
+        "Criptografia",
+        "Compliance"
+      ],
+      "cor": "#606a37",
+      "instrumento": "carta lacrada e sinete",
+      "desenho": "seguranca",
+      "emPe": {
+        "altura": 642,
+        "largura": 138
+      },
+      "deHoje": true
+    },
+    "devops": {
+      "titulo": "DevOps",
+      "linhas": [
+        "DevOps"
+      ],
+      "corpo": 108,
+      "entrelinha": 108,
+      "frase": "O caminho do commit até a produção.",
+      "abrange": [
+        "Containers",
+        "Kubernetes",
+        "CI/CD",
+        "Nuvem"
+      ],
+      "cor": "#465976",
+      "instrumento": "guindaste de porto",
+      "desenho": "devops",
+      "emPe": {
+        "altura": 598,
+        "largura": 130
+      },
+      "deHoje": true
+    },
+    "sre": {
+      "titulo": "SRE",
+      "linhas": [
+        "SRE"
+      ],
+      "corpo": 108,
+      "entrelinha": 108,
+      "frase": "O que mantém a produção de pé.",
+      "abrange": [
+        "Observabilidade",
+        "SLOs",
+        "Alertas",
+        "Incidentes"
+      ],
+      "cor": "#c4a050",
+      "instrumento": "farol",
+      "desenho": "sre",
+      "emPe": {
+        "altura": 616,
+        "largura": 126
+      },
+      "deHoje": true
+    },
+    "carreira": {
+      "titulo": "Carreira",
+      "linhas": [
+        "Carreira"
+      ],
+      "corpo": 104,
+      "entrelinha": 104,
+      "frase": "O lado humano de construir software.",
+      "abrange": [
+        "O papel do arquiteto",
+        "O estudo",
+        "O time"
+      ],
+      "cor": "#9a7650",
+      "corTexto": "#816342",
+      "instrumento": "compasso",
+      "desenho": "carreira",
+      "emPe": {
+        "altura": 632,
+        "largura": 134
+      },
+      "deHoje": true
+    }
+  },
+  "sugestoes": [
+    {
+      "id": "hoje",
+      "nome": "A coleção de hoje",
+      "ideia": "Os 8 livros como estão, para comparar.",
+      "livros": [
+        "arquitetura-de-software",
+        "desenvolvimento-de-software",
+        "dados",
+        "ia",
+        "seguranca",
+        "devops",
+        "sre",
+        "carreira"
+      ]
+    }
+  ]
+}
