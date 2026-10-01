@@ -35,14 +35,14 @@ export default {
     const montante = (x) => {
       bloco(x - 12, 664, 42, 8, { passo: 3.8 }); // o pé
       bloco(x, 410, 18, 254, { tampo: false }); // o montante, em cima do pé
+      t(curva([[x + 7, 420], [x + 6, 480], [x + 8, 540], [x + 6.5, 600], [x + 8, 655]]), { w: 3 }); // o veio
     };
     montante(54);
     montante(404);
     // as mãos-francesas, do montante à viga
     t(poli([[72, 452], [72, 442], [108, 410], [118, 410]], true), { papel: true });
     t(poli([[404, 452], [404, 442], [368, 410], [358, 410]], true), { papel: true });
-    chao(44, 90, 672);
-    chao(394, 440, 672);
+    chao(44, 440, 672, { altura: 6, passo: 3.8 }); // o chão, de um pé ao outro
 
     // ---------- um relógio ----------
     const relogio = (cx, { minutos, inclinacao, fantasma = false }) => {
@@ -60,11 +60,11 @@ export default {
 
       // a faixa lateral (o lado direito e o alto da capota, que fogem para trás) e a frente
       const faixa = juntar([
-        arco(cArco, meio, meio, 250, 360),
+        arco(cArco, meio, meio, 258, 360),
         linha([cx + meio, cArco[1]], [cx + meio, base]),
         linha([cx + meio, base], [cx + meio + vx, base + vy]),
         linha([cx + meio + vx, base + vy], [cx + meio + vx, cArco[1] + vy]),
-        mover(arco(cArco, meio, meio, 360, 250), { dx: vx, dy: vy }),
+        mover(arco(cArco, meio, meio, 360, 258), { dx: vx, dy: vy }),
       ]);
       t(faixa, { papel: true, icone: false });
       hachura(faixa, { angulo: 60, passo: 4.2 });

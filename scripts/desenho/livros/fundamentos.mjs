@@ -1,34 +1,38 @@
 /**
- * Fundamentos: um ábaco (suanpan, 2 contas em cima e 5 embaixo, 7 varetas), de pé sobre a mesa, visto
+ * Fundamentos: um ábaco (suanpan, 2 contas em cima e 5 embaixo, 6 varetas), de pé sobre a mesa, visto
  * um pouco de cima e da direita: a frente em verdadeira grandeza e a profundidade fugindo para cima e à
  * direita, como a gaveta de Dados. Está no meio de uma conta: algumas contas já encostadas na travessa.
- * O fantasma é a próxima conta a ser movida, tracejada já encostada na travessa.
+ * O fantasma é a próxima conta a ser movida, tracejada já encostada na travessa. No ícone da lombada
+ * fica só a frente da moldura, a travessa, as varetas e as contas (sem as faces de trás, o aro, a
+ * hachura e os pontos da travessa).
  */
 
 // A profundidade da moldura na projeção oblíqua, e a metade (onde ficam as varetas e as contas).
-const D = [20, -12.5];
+const D = [22, -13.5];
 const M = [D[0] / 2, D[1] / 2];
 const fundo = ([x, y], k = 1) => [x + D[0] * k, y + D[1] * k];
 
-const b = 15; // a largura das réguas da moldura
-const viga = 12; // a espessura da travessa
-const n = 7; // varetas
-const vao = 46; // o passo entre as varetas
-const cw = 40; // a largura de uma conta
+const b = 16; // a largura das réguas da moldura
+const viga = 13; // a espessura da travessa
+const n = 6; // varetas
+const vao = 54; // o passo entre as varetas
+const folga = 12; // o ar entre a primeira (e a última) vareta e a régua do lado
+const cw = 38; // a largura de uma conta
 const ch = 21; // a altura de uma conta
+const passoConta = ch + 2.5; // contas empilhadas: os colarinhos quase se tocam
 
-const xL = 47;
-const xR = xL + 2 * b + n * vao; // 383
+const xL = 39;
+const xR = xL + 2 * b + n * vao + 2 * folga; // 419; com a face da direita, chega a 441
 const yB = 670;
-const alturaCima = 3 * ch + 2; // 2 contas e o lugar de uma
-const alturaBaixo = 6 * ch + 3; // 5 contas e o lugar de uma
+const alturaCima = 3.2 * passoConta; // 2 contas e o lugar de uma, com um pouco de folga
+const alturaBaixo = 6 * passoConta; // 5 contas e o lugar de uma
 const yT = yB - (2 * b + alturaCima + viga + alturaBaixo);
 const [xIL, xIR, yIT, yIB] = [xL + b, xR - b, yT + b, yB - b];
 const yVT = yIT + alturaCima; // o alto da travessa
 const yVB = yVT + viga; // a base da travessa
 
 /** O centro (na frente) da vareta i, de 0 a n-1. */
-const xVareta = (i) => xIL + vao / 2 + i * vao;
+const xVareta = (i) => xIL + folga + vao / 2 + i * vao;
 
 /** Recorta uma forma (lista de pontos) por um semiplano: fica o que `dentro` aceita (Sutherland–Hodgman). */
 function recortar(pts, dentro, cruza) {
@@ -62,7 +66,7 @@ function semOLado(pts, sobreALinha) {
 
 export default {
   instrumento: "ábaco",
-  desenho({ t, hachura, chao, ponto, linha, poli, bezier, arco, juntar }) {
+  desenho({ t, hachura, chao, cheio, linha, poli, bezier, arco, circulo, juntar }) {
     // ----- as faces de dentro da moldura que aparecem: a da régua esquerda (sombra) e a da régua de baixo
     const xF = xIL + D[0]; // a aresta de trás da face de dentro da régua esquerda
     // A face esquerda, acima da travessa e abaixo dela (a travessa cobre o meio).
@@ -81,11 +85,13 @@ export default {
     t(linha([xIL, yVT], [xIR, yVT]));
     t(linha([xIL, yVB], [xIR, yVB]));
 
-    // ----- a moldura: a silhueta (frente, face de cima e face da direita), as arestas da frente e o vão
-    t(poli([[xL, yT], fundo([xL, yT]), fundo([xR, yT]), fundo([xR, yB]), [xR, yB], [xL, yB]], true));
-    t(linha([xL, yT], [xR, yT]));
-    t(linha([xR, yT], [xR, yB]));
-    t(linha([xR, yT], fundo([xR, yT])), { w: 2 });
+    // ----- a moldura: a silhueta (frente, face de cima e face da direita), as arestas da frente e o vão.
+    // No ícone, só a frente: a 40px, as faces de trás viram linha dobrada.
+    t(poli([[xL, yT], fundo([xL, yT]), fundo([xR, yT]), fundo([xR, yB]), [xR, yB], [xL, yB]], true), { icone: false });
+    t(linha([xL, yT], [xR, yT]), { icone: false });
+    t(linha([xR, yT], [xR, yB]), { icone: false });
+    t(linha([xR, yT], fundo([xR, yT])), { w: 2, icone: false });
+    t(poli([[xL, yT], [xR, yT], [xR, yB], [xL, yB]], true), { soIcone: true });
     t(poli([[xIL, yIT], [xIR, yIT], [xIR, yIB], [xIL, yIB]], true));
     // As juntas de meia-esquadria nos cantos da frente.
     for (const [c, i] of [[[xL, yT], [xIL, yIT]], [[xR, yT], [xIR, yIT]], [[xR, yB], [xIR, yIB]], [[xL, yB], [xIL, yIB]]]) t(linha(c, i), { w: 3 });
@@ -104,7 +110,7 @@ export default {
       bezier([cx - cw / 2, cy], [cx - cw * 0.22, cy + lado * ch * 0.64], [cx + cw * 0.22, cy + lado * ch * 0.64], [cx + cw / 2, cy]);
     const conta = (c) => juntar([metadeConta(c, -1), { pts: [...metadeConta(c, 1).pts].reverse(), fechada: false }]);
     // O aro: a frente do círculo maior da conta, visto um pouco de cima, de ponta a ponta.
-    const equador = ([cx, cy]) => arco([cx, cy], cw / 2 - 0.6, ch * 0.22, 0, 180);
+    const equador = ([cx, cy]) => arco([cx, cy], cw / 2 - 0.6, ch * 0.2, 0, 180);
 
     /** Uma conta inteira: o contorno (tapando a vareta), o aro da frente e a sombra do crescente de baixo. */
     const desenharConta = (c, { teto, fantasma = false } = {}) => {
@@ -136,7 +142,7 @@ export default {
       const corte = cx - cw * 0.3;
       const baixo = metadeConta(c, 1).pts.filter((p) => p[0] >= corte && p[0] <= xIR).reverse(); // da ponta direita para a esquerda
       const volta = equador(c).pts.filter((p) => p[0] >= corte && p[0] <= xIR); // do aro, de volta para a direita
-      hachura([...baixo, ...volta], { angulo: 60, passo: 3.4, margem: 0.5 });
+      hachura([...baixo, ...volta], { angulo: 62, passo: 3.2, margem: 0.5 });
     };
 
     // Os dígitos de cada vareta: [contas de cima encostadas na travessa, contas de baixo encostadas].
@@ -146,27 +152,26 @@ export default {
       [0, 0],
       [1, 3],
       [0, 0],
-      [0, 0],
       [0, 1],
     ];
-    const fantasmaNa = 5; // a vareta cuja conta de cima vai descer até a travessa (o fantasma)
+    const fantasmaNa = 4; // a vareta cuja conta de cima vai descer até a travessa (o fantasma)
 
     for (let i = 0; i < n; i++) {
       const [cima, baixo] = digitos[i];
       const x = xVareta(i) + M[0];
       // Deck de cima: as contas em repouso ficam no alto; as usadas descem até a travessa.
       const topo = yIT + M[1]; // onde a régua de cima toca a conta, no meio da profundidade
-      for (let k = 0; k < 2 - cima; k++) desenharConta([x, topo + ch / 2 + k * ch], { teto: yIT });
-      for (let k = 0; k < cima; k++) desenharConta([x, yVT + M[1] - ch / 2 - k * ch]);
+      for (let k = 0; k < 2 - cima; k++) desenharConta([x, topo + ch / 2 + k * passoConta], { teto: yIT });
+      for (let k = 0; k < cima; k++) desenharConta([x, yVT + M[1] - ch / 2 - k * passoConta]);
       // Deck de baixo: as usadas sobem até a travessa; as outras ficam na régua de baixo.
       const base = yIB + M[1];
-      for (let k = 0; k < baixo; k++) desenharConta([x, yVB + M[1] + ch / 2 + k * ch], { teto: yVB });
-      for (let k = 0; k < 5 - baixo; k++) desenharConta([x, base - ch / 2 - k * ch]);
+      for (let k = 0; k < baixo; k++) desenharConta([x, yVB + M[1] + ch / 2 + k * passoConta], { teto: yVB });
+      for (let k = 0; k < 5 - baixo; k++) desenharConta([x, base - ch / 2 - k * passoConta]);
       if (i === fantasmaNa) desenharConta([x, yVT + M[1] - ch / 2], { fantasma: true });
     }
 
-    // Os pontos da travessa, a cada três varetas (a marca das unidades).
-    for (const i of [0, 3, 6]) ponto([xVareta(i), (yVT + yVB) / 2], 1.9);
+    // Os pontos da travessa, a cada três varetas (a marca das unidades); miúdos demais para o ícone.
+    for (const i of [1, 4]) cheio(circulo([xVareta(i), (yVT + yVB) / 2], 1.9), { icone: false });
 
     // A sombra no chão.
     chao(xL + 6, xR + D[0] + 2, yB + 1, { altura: 7, desvio: 5 });

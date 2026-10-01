@@ -37,6 +37,10 @@ const linhas = [
   "Gerado de `colecoes.json` por `gerar-sugestoes.mjs`; não edite à mão. As capas e a estante de cada",
   "sugestão estão na página `/amostra/colecoes/` (só no dev).",
   "",
+  "## Vale para todas",
+  "",
+  ...(dados.valeParaTodas ?? []).map((t) => `- ${t}`),
+  "",
 ];
 
 let n = 0;
