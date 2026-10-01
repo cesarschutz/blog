@@ -30,9 +30,9 @@ Branch: `claude/magical-einstein-tneg5o`. Nada vai para a `main` sem o OK do Ces
 | 1 | Levantar o material (blog, 28 posts, 20 tags, regras dos livros) | feito |
 | 2 | As 16 categorias do dev-note | feito: o Cesar mandou as capturas da página (o domínio está fora da política de rede do ambiente e o clone do repositório foi negado); transcritas no `contexto.md` |
 | 3 | Ferramenta de desenho dos livros (`scripts/desenho/livros.mjs`) | feito (testada com um desenho de teste) |
-| 4 | Cinco sugestões (propostas independentes, crítica cruzada, síntese) | em andamento: três propostas independentes em `propostas/` (editor, arquiteto da informação, pesquisador) |
-| 5 | Cor de cada livro (com o motivo) e contraste pelo `cores.js` | a fazer |
-| 6 | Desenho e ícone de cada livro novo | a fazer |
+| 4 | Cinco sugestões (propostas independentes, crítica cruzada, síntese) | síntese feita (`colecoes.json` → `sugestoes.md`, por `gerar-sugestoes.mjs`): uma escada de 8 a 12 livros. Propostas do editor e do arquiteto da informação prontas; a do pesquisador ainda rodando; crítica de fora (Fable) rodando, vai para `critica.md` |
+| 5 | Cor de cada livro (com o motivo) e contraste pelo `cores.js` | feito: `pesquisa-cores-e-desenhos.md` (paleta de 16, com fontes); os oito de hoje ficam com a cor e o desenho; Pagamentos foi para `#467866` (tinta a 4,16:1); todas as sugestões passam no `conferir-cores.mjs` |
+| 6 | Desenho e ícone de cada livro novo | em andamento: um agente Fable por livro (Pagamentos: caixa registradora; Integração e Eventos: mesa telefônica; Sistemas Distribuídos: os relógios de Huygens; Testes: fio de prumo; Fundamentos: ábaco) |
 | 7 | Página de comparação (`/amostra/colecoes/`) e artifact para o Cesar | a fazer |
 | 8 | Registro: `docs/estado.md`, este controle; commit e push na branch | a fazer |
 
@@ -41,7 +41,16 @@ Branch: `claude/magical-einstein-tneg5o`. Nada vai para a `main` sem o OK do Ces
 - Livro que continua igual numa sugestão (mesmo assunto) mantém o desenho e a cor de hoje: já foram
   aprovados. Livro novo ganha desenho e cor novos.
 - O mesmo livro em sugestões diferentes tem o mesmo desenho e a mesma cor (a identidade não muda de
-  uma sugestão para outra); só o que ele abrange pode mudar.
+  uma sugestão para outra); só o que ele abrange pode mudar. Livro renomeado (Java e Spring, Backend,
+  Observabilidade, Plataforma) fica com o desenho e a cor do livro de hoje.
+- A Arquitetura de Software é o Volume 01 em todas: a marca "cs" é a capa do Volume 01, na cor dela.
+- As sugestões formam uma escada (8, 9, 10, 11 e 12 livros), cada degrau com uma ideia própria; a
+  coleção de hoje aparece na página só para comparar.
+- Regra da casa de cada post: o livro é o que o post ensina; o exemplo (a cobrança) vira tag. Onde não
+  há Sistemas Distribuídos, os dois posts de cobrança (idempotência e efeito externo) vão para
+  Pagamentos.
+- Fundamentos leva o ábaco (e não a régua de cálculo da pesquisa): se lê no ícone pequeno, e a cor
+  cinza-pedra conversa com ele (calculus é a pedrinha de contar).
 
 ## Como retomar
 
