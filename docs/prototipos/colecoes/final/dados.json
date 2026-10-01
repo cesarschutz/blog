@@ -46,8 +46,12 @@
    "fraseDeHoje": true,
    "alternativa": "Escolher sabendo o que cada escolha custa.",
    "motivoCurto": "O azul da cianotipia, a cópia de toda planta das salas de desenho de 1870 aos anos 1940: a cor do que foi decidido no papel.",
-   "textoDesenho": "A prancheta do desenhista, com a régua-tê (em uso desde o século XVII) e a planta presa por percevejos. Das salas de desenho saíam as cópias em cianotipia, o blueprint, padrão de 1870 aos anos 1940. A relação com o livro: arquitetura é decidir antes de construir. Na prancheta, mudar uma parede custa apagar uma linha; depois da obra, custa derrubar a parede. A parede tracejada na planta é uma decisão desfeita ainda no papel.",
-   "textoDesenhoCurto": "Prancheta com régua-tê (século XVII): é no papel que se decide o que depois fica caro desfazer. Mudar uma linha da planta custa muito menos que mudar uma parede."
+   "textoDesenho": "A prancheta do desenhista, com a régua-tê (em uso desde o século XVII) e a planta presa por percevejos. Das salas de desenho saíam as cópias em cianotipia, azuis, padrão de 1870 aos anos 1940, que deram a palavra blueprint: desde os anos 1920 ela quer dizer plano detalhado, e hoje é nome de ferramenta, como os Blueprints do Flask. A relação com o livro: arquitetura é decidir antes de construir. Na prancheta, mudar uma parede custa apagar uma linha; depois da obra, custa derrubar a parede. A parede tracejada na planta é uma decisão desfeita ainda no papel.",
+   "textoDesenhoCurto": "Prancheta com régua-tê (século XVII): é no papel que se decide o que depois fica caro desfazer. A cópia azul da planta deu a palavra blueprint, que hoje quer dizer plano.",
+   "link": {
+    "titulo": "Wikipedia, \"Blueprint\"",
+    "url": "https://en.wikipedia.org/wiki/Blueprint"
+   }
   },
   {
    "volume": 2,
@@ -94,8 +98,12 @@
    "fraseDeHoje": true,
    "alternativa": "Guardar, achar e mover o dado.",
    "motivoCurto": "O roxo de anilina das cópias de mimeógrafo, a cor do registro copiado (é do assunto, não do tabulador).",
-   "textoDesenho": "O tabulador de Herman Hollerith, que apurou o censo dos Estados Unidos de 1890. O censo anterior levou cerca de sete anos para ser contado; com a máquina, a contagem saiu em seis meses. Cada pessoa virou um cartão perfurado: a prensa lia os furos, os mostradores somavam e o separador mandava o cartão para a gaveta certa. A relação com o livro: o cartão é onde o dado mora (a posição do furo é a coluna) e a máquina é por onde ele anda (ler, somar, separar). A empresa de Hollerith está na origem da IBM.",
-   "textoDesenhoCurto": "Tabulador de Hollerith (1890): contou o censo americano lendo cartões perfurados. Guardar, somar e separar dados em escala, antes do computador."
+   "textoDesenho": "O tabulador de Herman Hollerith apurou o censo dos Estados Unidos de 1890: o anterior levou cerca de sete anos para ser contado, e com a máquina a contagem saiu em seis meses. Cada pessoa virou um cartão perfurado; a prensa lia os furos, os mostradores somavam e o separador mandava o cartão para a gaveta certa. A relação com o livro: o cartão é onde o dado mora (a posição do furo é a coluna) e a máquina é por onde ele anda. A empresa de Hollerith virou a IBM, e o cartão de 80 colunas que ela lançou em 1928 está na origem das 80 colunas do terminal e do limite de 79 ou 80 caracteres por linha que muitos guias de estilo ainda pedem. O cartão tracejado está caindo na gaveta certa.",
+   "textoDesenhoCurto": "Tabulador de Hollerith (1890): contou o censo americano lendo cartões perfurados. A empresa virou a IBM, e das 80 colunas do cartão vêm as 80 do terminal e da linha de código.",
+   "link": {
+    "titulo": "U.S. Census Bureau, \"The Hollerith Machine\"",
+    "url": "https://www.census.gov/about/history/bureau-history/census-innovations/technology/hollerith-machine.html"
+   }
   },
   {
    "volume": 3,
@@ -143,8 +151,12 @@
    "motivoCor": "fato (pesquisa): a garança é o vermelho dos tecidos desde a Antiguidade; a calça *garance* do exército francês (1829–1914) sustentou a indústria de Avignon. O pano que sai do tear.",
    "desenho": "novo-desenvolvimento-de-software",
    "motivoCurto": "Garança, o vermelho dos tecidos desde a Antiguidade: o pano que sai do tear.",
-   "textoDesenho": "O tear de Jacquard, patenteado em 1804, lê uma cadeia de cartões perfurados: cada cartão diz quais fios levantar numa passada. Trocando os cartões, a mesma máquina tece outro desenho. Babbage se inspirou nele para a Máquina Analítica, e Ada Lovelace escreveu que ela tecia padrões algébricos como o tear de Jacquard tece flores e folhas. A relação com o livro: é a primeira máquina comandada por um programa separado dela, e escrever esse programa é o ofício do desenvolvedor. O cartão tracejado é a próxima instrução chegando.",
-   "textoDesenhoCurto": "Tear de Jacquard (1804): a primeira máquina guiada por um programa em cartões perfurados, que se troca sem trocar a máquina. Escrever esse programa é o ofício do livro."
+   "textoDesenho": "O tear de Jacquard, patenteado em 1804, lê uma cadeia de cartões perfurados: cada cartão diz quais fios levantar numa passada e, trocando os cartões, a mesma máquina tece outro desenho. Babbage se inspirou nele para a Máquina Analítica, e o cartão perfurado foi o jeito de programar computadores até os anos 1970. A relação com o livro: é a primeira máquina comandada por um programa separado dela, e escrever esse programa é o ofício do desenvolvedor. No Java, o projeto que trouxe as virtual threads se chama Loom, tear em inglês: o que um tear faz é tecer fios, threads. O cartão tracejado é a próxima instrução chegando.",
+   "textoDesenhoCurto": "Tear de Jacquard (1804): a primeira máquina guiada por um programa em cartões perfurados, trocável sem trocar a máquina. No Java, o projeto das virtual threads se chama Loom, tear.",
+   "link": {
+    "titulo": "Science and Industry Museum (Manchester), \"Programming patterns: the story of the Jacquard loom\"",
+    "url": "https://www.scienceandindustrymuseum.org.uk/objects-and-stories/jacquard-loom"
+   }
   },
   {
    "volume": 4,
@@ -192,8 +204,12 @@
    "fraseDeHoje": true,
    "alternativa": "Onde o serviço roda e como chega lá.",
    "motivoCurto": "O azul do petit bleu, a carta de papel azul que o tubo pneumático de Paris levava.",
-   "textoDesenho": "A estação de tubo pneumático. Em 1853, em Londres, Latimer Clark ligou a central de telégrafos à Bolsa por um tubo em que as mensagens viajavam numa cápsula puxada pelo ar, para não depender de mensageiros correndo entre os prédios. Paris abriu a sua rede ao público em 1879, e bancos e lojas usaram tubos assim por mais de um século. A relação com o livro: é o caminho automático do lugar onde algo é feito até o lugar onde ele é usado. A cápsula é o contêiner, o tubo é o pipeline, e ninguém carrega nada na mão. A cápsula tracejada é a entrega a caminho.",
-   "textoDesenhoCurto": "Tubo pneumático (1853): levava mensagens numa cápsula de uma estação a outra, sem ninguém carregar. O caminho automático do commit até a produção, com a cápsula no papel do contêiner."
+   "textoDesenho": "A estação de tubo pneumático. Em 1853, em Londres, Latimer Clark ligou a central de telégrafos à Bolsa por um tubo em que as mensagens viajavam numa cápsula puxada pelo ar, para não depender de mensageiros correndo entre os prédios. Paris abriu a sua rede ao público em 1879, e o tubo trabalha até hoje em hospitais e bancos. A relação com o livro: é o caminho automático do lugar onde algo é feito até o lugar onde ele é usado, sem ninguém carregar nada na mão. Como imagem, a cápsula faz o papel do contêiner e o tubo, o do pipeline. A cápsula tracejada é a entrega a caminho.",
+   "textoDesenhoCurto": "Tubo pneumático (1853): a cápsula ia de uma estação a outra sem ninguém carregar, e ainda vai, em hospitais e bancos. Como imagem, a cápsula é o contêiner e o tubo, o pipeline.",
+   "link": {
+    "titulo": "Wikipedia, \"Pneumatic tube\"",
+    "url": "https://en.wikipedia.org/wiki/Pneumatic_tube"
+   }
   },
   {
    "volume": 5,
@@ -236,8 +252,12 @@
    "desenho": "novo-frontend",
    "novo": true,
    "motivoCurto": "Negro de fumo, a fuligem de lamparina em verniz de linhaça: a tinta de toda página impressa, num tom quente para não sumir no tema escuro.",
-   "textoDesenho": "A prensa tipográfica de ferro Albion, criada em Londres por volta de 1820, a prensa manual mais popular da Grã-Bretanha, fabricada até os anos 1930. Nela, tipo, tinta e papel viram a página que o leitor vê. A relação com o livro: frontend é a página que chega à pessoa, e o vocabulário do CSS vem da tipografia: font, leading, kerning, em, e as duas caixas de tipos do tipógrafo, a alta e a baixa, que deram uppercase e lowercase. A folha tracejada é a página saindo da prensa.",
-   "textoDesenhoCurto": "Prensa tipográfica Albion (c. 1820): onde tipo, tinta e papel viram a página que o leitor vê. O vocabulário do CSS (font, leading, kerning, uppercase) vem dela."
+   "textoDesenho": "A prensa tipográfica de ferro Albion, criada em Londres por volta de 1820, a prensa manual mais popular da Grã-Bretanha, fabricada até os anos 1930. Nela, tipo, tinta e papel viram a página que o leitor vê. A relação com o livro: frontend é a página que chega à pessoa, e o vocabulário do CSS vem da oficina que compunha o tipo de metal para a prensa. Font é o jogo de tipos fundido de uma vez; leading é a tira de chumbo entre as linhas; kern é a parte do tipo que sobra do corpo; e uppercase e lowercase são as caixas de cima e de baixo onde o tipógrafo guardava as letras. A folha tracejada é a página saindo da prensa.",
+   "textoDesenhoCurto": "Prensa tipográfica Albion (c. 1820): tipo, tinta e papel viram a página que o leitor vê. O vocabulário do CSS (font, leading, kerning, uppercase) vem do tipo de metal que ela imprimia.",
+   "link": {
+    "titulo": "Wikipedia, \"Albion press\"",
+    "url": "https://en.wikipedia.org/wiki/Albion_press"
+   }
   },
   {
    "volume": 6,
@@ -276,8 +296,12 @@
    "desenho": "novo-fundamentos",
    "novo": true,
    "motivoCurto": "O azul do vitríolo, o sulfato de cobre das pilhas que alimentavam as linhas de telégrafo: o que fica embaixo e ninguém vê.",
-   "textoDesenho": "O telégrafo de Morse: a chave e o registrador. Em 24 de maio de 1844, Morse mandou de Washington para Baltimore a mensagem \"What hath God wrought\", gravada em pontos e traços numa fita de papel. A relação com o livro: é a computação com tudo à vista. O circuito aberto ou fechado é o bit, o Morse é a codificação, o tempo do ponto e do traço é o protocolo, a linha de estação em estação é a rede e a fita é a memória. O que os frameworks escondem, o telégrafo mostra. A fita tracejada é a mensagem que ainda está chegando.",
-   "textoDesenhoCurto": "Telégrafo de Morse (1844): o bit, o código, o protocolo, a rede e a memória à vista numa só máquina. A base que todo framework de hoje esconde."
+   "textoDesenho": "O telégrafo de Morse: a chave e o registrador. Em 24 de maio de 1844, Morse mandou de Washington para Baltimore a mensagem \"What hath God wrought\", gravada em pontos e traços numa fita de papel. A relação com o livro: é a computação com tudo à vista. O circuito aberto ou fechado é o bit, o Morse é a codificação, o tempo do ponto e do traço é o protocolo, a linha é a rede e a fita é a memória. Da família do telégrafo vieram o baud, de Émile Baudot, e o ASCII, herdeiro dos códigos do telégrafo impressor, com o CR e o LF do fim de linha. A fita tracejada é a mensagem que ainda está chegando.",
+   "textoDesenhoCurto": "Telégrafo de Morse (1844): o bit, o código, o protocolo, a rede e a memória à vista numa só máquina. Da família dele vêm o baud e o CR e o LF do fim de linha.",
+   "link": {
+    "titulo": "Smithsonian, National Museum of American History, \"What Hath God Wrought\" Telegraph Message",
+    "url": "https://www.si.edu/object/what-hath-god-wrought-telegraph-message:nmah_713485"
+   }
   },
   {
    "volume": 7,
@@ -320,8 +344,12 @@
    "fraseDeHoje": true,
    "alternativa": "Usar o modelo e construir com ele.",
    "motivoCurto": "Associação, dita como tal: a madeira escura do gabinete (não há registro da cor original).",
-   "textoDesenho": "O Turco, o autômato enxadrista que Wolfgang von Kempelen apresentou em Viena em 1770: um gabinete cheio de engrenagens e uma figura de turbante que jogava xadrez. Enfrentou Napoleão e Benjamin Franklin, levou Babbage a pensar nos limites de uma máquina que pensa e deu nome ao Mechanical Turk da Amazon. Havia um enxadrista escondido no gabinete. A relação com o livro: é a primeira máquina que parecia pensar, e a lembrança de que toda IA tem gente dentro, nos dados com que aprende e em quem a usa. O braço tracejado está movendo uma peça.",
-   "textoDesenhoCurto": "O Turco de Kempelen (1770): o autômato que jogava xadrez e parecia pensar. Tinha um enxadrista escondido dentro, e toda IA tem gente dentro também, nos dados e em quem a usa."
+   "textoDesenho": "O Turco, o autômato enxadrista que Wolfgang von Kempelen apresentou em Viena em 1770: um gabinete cheio de engrenagens e uma figura de turbante que jogava xadrez. Venceu Napoleão e Benjamin Franklin, e Babbage jogou contra ele em 1819 e perdeu. Havia um enxadrista escondido no gabinete. A relação com o livro: é a primeira máquina que parecia pensar, e a lembrança de que toda IA tem gente dentro, nos dados com que aprende e em quem a usa. Em 2005, a Amazon deu o nome dele ao Mechanical Turk, o serviço em que pessoas fazem o que o computador ainda faz mal. O braço tracejado está movendo uma peça.",
+   "textoDesenhoCurto": "O Turco de Kempelen (1770): o autômato que jogava xadrez tinha um enxadrista escondido, e toda IA tem gente dentro. Deu nome ao Mechanical Turk da Amazon.",
+   "link": {
+    "titulo": "Wikipédia em português, \"O Turco\"",
+    "url": "https://pt.wikipedia.org/wiki/O_Turco"
+   }
   },
   {
    "volume": 8,
@@ -366,8 +394,12 @@
    "desenho": "novo-integracao",
    "novo": true,
    "motivoCurto": "O verde-água dos isoladores de vidro das linhas de telégrafo e de telefone, da cor do ferro da areia.",
-   "textoDesenho": "A mesa telefônica manual. A primeira central comercial abriu em New Haven, nos Estados Unidos, em 1878, com 21 assinantes. A telefonista ligava quem chama a quem atende encaixando um cordão nos jaques; mais tarde, uma lâmpada passou a acender quando alguém tirava o fone do gancho. A relação com o livro: a central é o intermediário entre os sistemas. Os jaques são os endereços, o cordão é o roteamento e a lâmpada que acende é o evento. O cordão tracejado é a ligação sendo feita.",
-   "textoDesenhoCurto": "Mesa telefônica (1878): a telefonista ligava quem chama a quem atende. Os jaques são os endereços, o cordão é a rota e a lâmpada que acende é o evento."
+   "textoDesenho": "A mesa telefônica manual. A primeira central comercial abriu em New Haven, nos Estados Unidos, em 1878, com 21 assinantes. A telefonista ligava quem chama a quem atende encaixando um cordão nos jaques; mais tarde, uma lâmpada passou a acender quando alguém tirava o fone do gancho. A relação com o livro: a central é o intermediário entre os sistemas. Os jaques são os endereços, o cordão é o roteamento e a lâmpada que acende é o evento. Em inglês a central se chama telephone exchange, e exchange é a palavra que o RabbitMQ usa até hoje para a peça que recebe cada mensagem e a encaminha às filas. O cordão tracejado é a ligação sendo feita.",
+   "textoDesenhoCurto": "Mesa telefônica (1878): a telefonista ligava quem chama a quem atende. Em inglês a central é a exchange, a mesma palavra que o RabbitMQ usa para quem encaminha a mensagem à fila.",
+   "link": {
+    "titulo": "Wikipedia, \"Telephone switchboard\"",
+    "url": "https://en.wikipedia.org/wiki/Telephone_switchboard"
+   }
   },
   {
    "volume": 9,
@@ -410,8 +442,12 @@
    "desenho": "novo-pagamentos",
    "novo": true,
    "motivoCurto": "O verde do verso das cédulas americanas desde 1861, mantido em 1929 por ser associado ao crédito forte e estável.",
-   "textoDesenho": "A caixa registradora. James Ritty, dono de um bar em Dayton, nos Estados Unidos, patenteou em 1879 o \"caixa incorruptível\": uma máquina que registra cada venda, guarda o dinheiro e permite fechar o caixa no fim do dia. Ela nasceu para acabar com o desvio de dinheiro pelos funcionários. A relação com o livro: cada venda vira um lançamento registrado, e no fim do dia o dinheiro tem de bater com o registro. É o ledger e a conciliação, os dois assuntos centrais de pagamentos. A gaveta tracejada é a que salta quando a venda é registrada.",
-   "textoDesenhoCurto": "Caixa registradora (1879): inventada contra o desvio de dinheiro, registra cada venda e fecha o caixa no fim do dia. O ledger e a conciliação, em ferro."
+   "textoDesenho": "A caixa registradora. James Ritty, dono de um bar em Dayton, nos Estados Unidos, patenteou em 1879 o \"caixa incorruptível\", uma máquina que registra cada venda, guarda o dinheiro e permite fechar o caixa no fim do dia. Ela nasceu para acabar com o desvio de dinheiro pelos funcionários. A relação com o livro: cada venda vira um lançamento registrado, e no fim do dia o dinheiro tem de bater com o registro. É o ledger e a conciliação. A empresa que comprou a patente virou, em 1884, a National Cash Register, a NCR dos caixas eletrônicos e dos pontos de venda de hoje. A gaveta tracejada é a que salta quando a venda é registrada.",
+   "textoDesenhoCurto": "Caixa registradora (1879): inventada contra o desvio de dinheiro, registra cada venda e fecha o caixa. Quem comprou a patente virou a NCR, a dos caixas eletrônicos de hoje.",
+   "link": {
+    "titulo": "Smithsonian, National Museum of American History, \"Ritty Model 1 Cash Register, Possibly a Replica\"",
+    "url": "https://americanhistory.si.edu/collections/object/nmah_694231"
+   }
   },
   {
    "volume": 10,
@@ -456,8 +492,12 @@
    "fraseDeHoje": true,
    "alternativa": "Proteger o dado e provar quem é quem.",
    "motivoCurto": "Vermelho-lacre: o lacre era vermelho e quebradiço de propósito, para mostrar se alguém mexeu na carta. A mesma ideia da fechadura.",
-   "textoDesenho": "A fechadura detectora de Jeremiah Chubb, de 1818. Depois de um roubo com chaves falsas no arsenal de Portsmouth, o governo britânico abriu um concurso por uma fechadura que só a própria chave abrisse. A de Chubb, quando alguém tenta com uma gazua ou com a chave errada, trava e fica travada, e o dono fica sabendo que houve a tentativa. A relação com o livro: segurança é controlar quem pode entrar e conseguir provar o que aconteceu. A chave é a credencial, as alavancas são a verificação e o detector é o registro de auditoria. A alavanca tracejada é o detector disparado.",
-   "textoDesenhoCurto": "Fechadura detectora de Chubb (1818): se alguém tenta abrir com a chave errada, ela trava e o dono fica sabendo. Quem pode entrar, e como provar que alguém tentou."
+   "textoDesenho": "A fechadura detectora de Jeremiah Chubb, de 1818, vencedora do concurso que o governo britânico abriu depois de um roubo com chaves falsas no arsenal de Portsmouth. Quando alguém tenta abri-la com uma gazua ou com a chave errada, ela trava, e o dono fica sabendo que houve a tentativa. A relação com o livro: segurança é controlar quem pode entrar e conseguir provar o que aconteceu; a chave é a credencial e o detector é o registro de auditoria. Alfred Hobbs a abriu em 1851 e escreveu, em 1853, que discutir as falhas das fechaduras não ensina nada aos ladrões, que já as conhecem: o argumento que o debate sobre divulgar vulnerabilidades repete até hoje. A alavanca tracejada é o detector disparado.",
+   "textoDesenhoCurto": "Fechadura de Chubb (1818): com a chave errada, ela trava e o dono fica sabendo. Hobbs a abriu em 1851 e defendeu discutir as falhas em público, como no debate de hoje sobre vulnerabilidades.",
+   "link": {
+    "titulo": "Wikipedia, \"Chubb detector lock\"",
+    "url": "https://en.wikipedia.org/wiki/Chubb_detector_lock"
+   }
   },
   {
    "volume": 11,
@@ -503,8 +543,12 @@
    "desenho": "novo-sistemas-distribuidos",
    "novo": true,
    "motivoCurto": "Azul-marinho: os relógios de Huygens eram relógios de marinha, feitos para achar a longitude no mar.",
-   "textoDesenho": "Os relógios de pêndulo de Christiaan Huygens. Em 1665, ele notou que dois relógios pendurados na mesma viga acabavam balançando sempre no mesmo ritmo e em sentidos opostos, e voltavam a isso mesmo depois de ele desacertar um deles; dias depois, achou a causa: a viga que ligava os dois. Eram relógios feitos para medir a longitude no mar. A relação com o livro: são duas máquinas iguais, cada uma com a sua hora, que só se acertam pelo que as liga, como serviços que dependem da rede para concordar sobre tempo, ordem e estado. O pêndulo tracejado é o do segundo relógio, no lado oposto.",
-   "textoDesenhoCurto": "Relógios de Huygens (1665): pendurados na mesma viga, se acertavam sozinhos pelo que os ligava. Como serviços que só concordam sobre tempo e estado através da rede."
+   "textoDesenho": "Os relógios de pêndulo de Christiaan Huygens, feitos para medir a longitude no mar. Em 1665, ele notou que dois deles, pendurados na mesma viga, acabavam balançando sempre no mesmo ritmo e em sentidos opostos, mesmo depois de ele desacertar um; dias depois, achou a causa: a viga que ligava os dois. A relação com o livro: são duas máquinas iguais, cada uma com a sua hora, que só se acertam pelo que as liga, como serviços que dependem da rede para concordar sobre tempo, ordem e estado. O problema continua: o artigo mais citado de Leslie Lamport, de 1978, se chama \"Time, Clocks, and the Ordering of Events in a Distributed System\". O pêndulo tracejado é o do segundo relógio, no lado oposto.",
+   "textoDesenhoCurto": "Relógios de Huygens (1665): pendurados na mesma viga, se acertavam pelo que os ligava. Acertar relógios pela rede segue central: é o tema do artigo clássico de Lamport, de 1978.",
+   "link": {
+    "titulo": "American Scientist, \"Huygens's Clocks Revisited\"",
+    "url": "https://www.americanscientist.org/article/huygenss-clocks-revisited"
+   }
   },
   {
    "volume": 12,
@@ -551,8 +595,12 @@
    "fraseDeHoje": true,
    "alternativa": "Descobrir o que aconteceu em produção.",
    "motivoCurto": "Latão, o dos reguladores de mostra, e o amarelo da cautela nas placas. É o livro que menos muda de cor: fica no lugar claro e quente da estante.",
-   "textoDesenho": "O regulador centrífugo que James Watt adotou em 1788 nas máquinas a vapor: duas esferas giram com a máquina; se ela acelera, as esferas sobem e fecham a válvula do vapor; se desacelera, descem e abrem. Em 1868, Maxwell publicou a primeira análise matemática desse controle por realimentação. A palavra governor vem do latim gubernator, o timoneiro, da mesma raiz grega de Kubernetes. A relação com o livro: SRE é manter o sistema no ritmo certo quando a carga muda. A rotação certa é o SLO, e as esferas que sobem são o sinal de que algo saiu do normal. As esferas tracejadas são a máquina acelerada.",
-   "textoDesenhoCurto": "Regulador de Watt (1788): quando a máquina acelera, as esferas sobem e fecham o vapor, e a rotação volta ao normal. O controle por realimentação que o SRE faz com a produção."
+   "textoDesenho": "O regulador centrífugo que James Watt adotou em 1788 nas máquinas a vapor: duas esferas giram com a máquina; se ela acelera, as esferas sobem e fecham a válvula do vapor; se desacelera, descem e abrem. Em 1868, Maxwell publicou a primeira análise matemática desse controle por realimentação, e foi a partir desse artigo que Wiener batizou a cibernética, lembrando que governor vem do grego kybernetes, o timoneiro, a mesma palavra que deu nome ao Kubernetes. A relação com o livro: SRE é manter o sistema no ritmo certo quando a carga muda; a rotação certa é o SLO, e as esferas que sobem são o sinal de que algo saiu do normal. As esferas tracejadas são a máquina acelerada.",
+   "textoDesenhoCurto": "Regulador de Watt (1788): se a máquina acelera, as esferas sobem e fecham o vapor. Governor vem do grego kybernetes, o timoneiro, a palavra que deu nome ao Kubernetes.",
+   "link": {
+    "titulo": "Wikipedia, \"Centrifugal governor\"",
+    "url": "https://en.wikipedia.org/wiki/Centrifugal_governor"
+   }
   },
   {
    "volume": 13,
@@ -594,8 +642,12 @@
    "desenho": "novo-testes",
    "novo": true,
    "motivoCurto": "Cinza-chumbo azulado: prumo vem de plumbum, o chumbo do peso.",
-   "textoDesenho": "O fio de prumo, usado desde o Egito antigo para conferir se uma parede está na vertical. A palavra vem do latim plumbum, chumbo, o metal do peso. É o objeto mais antigo da coleção, a única exceção de época, e está aqui por ser o instrumento de conferência por excelência. A relação com o livro: o prumo não dá opinião, compara com uma referência que não erra, a gravidade. No teste, o resultado esperado é o prumo e o código é a parede. A linha tracejada é a vertical verdadeira, ao lado da parede torta.",
-   "textoDesenhoCurto": "Fio de prumo (Egito antigo): confere a parede contra uma referência que não erra, a gravidade. O teste faz o mesmo com o código."
+   "textoDesenho": "O fio de prumo, usado desde o Egito antigo para conferir se uma parede está na vertical. É o objeto mais antigo da coleção, a única exceção de época, e está aqui por ser o instrumento de conferência por excelência. A relação com o livro: o prumo não dá opinião, compara com uma referência que não erra, a gravidade; no teste, o resultado esperado é o prumo e o código é a parede. Prumo vem do latim plumbum, chumbo, a mesma raiz de plumber, o encanador, e uma das explicações para o nome smoke test é o teste em que o encanador enche os canos de fumaça para achar vazamentos (a outra vem da eletrônica: ligar a placa e ver se sai fumaça). A linha tracejada é a vertical verdadeira, ao lado da parede torta.",
+   "textoDesenhoCurto": "Fio de prumo (Egito antigo): confere a parede contra a referência que não erra, a gravidade. Prumo vem de plumbum, chumbo, como plumber, o encanador que testa os canos com fumaça.",
+   "link": {
+    "titulo": "Wikipedia, \"Plumb bob\"",
+    "url": "https://en.wikipedia.org/wiki/Plumb_bob"
+   }
   }
  ]
 }

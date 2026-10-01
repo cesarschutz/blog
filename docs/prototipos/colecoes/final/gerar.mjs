@@ -58,6 +58,7 @@ function livro(l) {
       <div class="sobre-desenho">
         <p><span class="rotulo">O desenho</span> ${esc(l.textoDesenho)}</p>
         <p class="curto"><span class="rotulo">Versão curta</span> ${esc(l.textoDesenhoCurto)}</p>
+        ${l.link ? `<p class="saiba"><span class="rotulo">Para saber mais</span> <a href="${esc(l.link.url)}" target="_blank" rel="noopener">${esc(l.link.titulo)}</a></p>` : ""}
       </div>
     </div>
   </div>
@@ -145,6 +146,7 @@ code { font-family: ui-monospace, "JetBrains Mono", Menlo, monospace; font-size:
 .posts { font-size: 0.92rem; color: var(--ink-2); line-height: 1.5; }
 .identidade { display: grid; gap: 8px; border-top: 1px solid var(--rule); padding-top: 12px; font-size: 0.93rem; line-height: 1.55; }
 .sobre-desenho { display: grid; gap: 8px; }
+.saiba a { overflow-wrap: anywhere; }
 .sobre-desenho .curto { background: var(--well); border-radius: 8px; padding: 8px 12px; }
 .identidade .amostra { display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: var(--cor); box-shadow: inset 0 0 0 1px rgba(0,0,0,.14); margin-right: 7px; vertical-align: -1px; }
 

@@ -2283,6 +2283,15 @@ nada muda.
     a completa e a curta (`textoDesenho` e `textoDesenhoCurto` em
     `docs/prototipos/colecoes/final/dados.json`). O Cesar talvez use o texto num hover no site. O texto
     da cor fica só na proposta: ele não pretende usar.
+  - **A ligação com hoje e o link (01/10/2026):** o Cesar gostou de o texto do Frontend ligar a prensa
+    ao vocabulário do CSS (font, leading, kerning, uppercase, que vêm da composição com tipo de metal)
+    e pediu o mesmo nos outros, só com o que for verdade, e um link por máquina. Cada texto passou a
+    ter uma ligação conferida com algo de hoje (blueprint; as 80 colunas; o Loom do Java; o baud e o
+    CR/LF; o Mechanical Turk; o exchange do RabbitMQ; a NCR; Hobbs e a divulgação de vulnerabilidades;
+    Lamport; Kubernetes; plumbum e o smoke test, este como "uma das explicações"); a do DevOps é só
+    imagem e está dita como imagem. Nenhum desenho mudou. Os links vieram da busca na web (a rede do
+    ambiente não deixou abrir as páginas). Pesquisa em `docs/prototipos/colecoes/final/hoje-e-links-*.md`;
+    os textos e os links em `dados.json` (`textoDesenho`, `textoDesenhoCurto`, `link`).
 - **Alternativas:** as sugestões 1 a 4 (9 a 11 livros, com Carreira); a 5 sem Frontend; os nomes do
   site de notícias para os livros de hoje (Backend, Observabilidade).
 - **Mudado:** a skill `post` e `.claude/rules/posts.md` (a conferência da coleção no plano de cada
