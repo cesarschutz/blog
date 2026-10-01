@@ -13,15 +13,17 @@
  * composição equilibra sem inverter a projeção do conjunto.
  *
  * De trás para a frente: o bastidor (os dois montantes, a cabeça em arco, a travessa de baixo e a
- * base), o tambor da mola com a coroa no ápice, o pistão com o nó da articulação e a platina; os
- * trilhos saindo do bastidor para a frente, com a perna na ponta; o leito sobre os trilhos, com a
- * forma (a rama e o bloco de tipos, hachurado cerrado); o tímpano aberto na ponta do leito, com a
- * folha presa; a alavanca. O fantasma é a folha impressa levantada do tímpano, com as linhas de
- * texto dentro (tracejadas à mão em w3, parte do mesmo fantasma): a página que sai.
+ * base, com a língua que avança sob o leito), o tambor da mola com a coroa no ápice, o pistão com
+ * o nó da articulação e a platina; os trilhos saindo do bastidor para a frente, com a perna na
+ * ponta apoiada na língua; o leito sobre os trilhos, com a forma (a rama e o bloco de tipos,
+ * hachurado cerrado); o tímpano aberto na ponta do leito, com a folha presa; a alavanca. O fantasma
+ * é a folha impressa levantada do tímpano, com as linhas de texto dentro (tracejadas à mão em w3,
+ * parte do mesmo fantasma): a página que sai.
  *
- * No ícone ficam o bastidor com o arco e a coroa, a platina, o leito saindo para a frente com a
- * forma, a perna e a alavanca com a bola; o tímpano, a folha, os parafusos, as faces de dentro e a
- * hachura dos tipos saem.
+ * O ícone é chapado, como o do tear: o contorno do bastidor com a base e a abertura (traços só do
+ * ícone), o tambor com a coroa, o pistão, a platina, o leito saindo para a frente (a frente e o
+ * tampo) e a alavanca com a bola. As faces que fogem, os trilhos, a perna, a forma, o tímpano, a
+ * folha e os parafusos saem: o livro é fino na estante e o ícone aparece com uns 20px.
  */
 
 // O vetor de fundo: cada unidade de profundidade anda A para a direita e B para cima.
@@ -54,15 +56,16 @@ export default {
     const fechada = (forma) => ({ pts: forma.pts.slice(0, -1), fechada: true });
     /**
      * Um bloco de x0 a x1, y0 a y1 (para baixo) e z0 a z1 (para o fundo): a face da direita (na
-     * sombra), o tampo e a frente, nessa ordem, cada uma tapando o que ficou atrás.
+     * sombra), o tampo e a frente, nessa ordem, cada uma tapando o que ficou atrás. `icone` vale
+     * para a frente; o tampo e a face da direita só entram no ícone com `iconeTampo` e `iconeDireita`.
      */
-    const bloco = (x0, x1, y0, y1, z0, z1, { sombra = true, tampo = true, direita = true, frente = true, passo = 4.2, icone, w = 1 } = {}) => {
+    const bloco = (x0, x1, y0, y1, z0, z1, { sombra = true, tampo = true, direita = true, frente = true, passo = 4.2, icone = true, iconeTampo = false, iconeDireita = false, w = 1 } = {}) => {
       if (direita) {
         const lado = face([[x1, y0, z0], [x1, y0, z1], [x1, y1, z1], [x1, y1, z0]]);
-        t(lado, { w, papel: true, icone });
+        t(lado, { w, papel: true, icone: iconeDireita });
         if (sombra) hachura(lado, { angulo: 60, passo });
       }
-      if (tampo) t(face([[x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1]]), { w, papel: true, icone });
+      if (tampo) t(face([[x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1]]), { w, papel: true, icone: iconeTampo });
       if (frente) t(face([[x0, y0, z0], [x1, y0, z0], [x1, y1, z0], [x0, y1, z0]]), { w, papel: true, icone });
     };
     /** Uma barra reta de a a b (2D), com a espessura dada: um retângulo girado, fechado. */
@@ -83,35 +86,45 @@ export default {
     const chaoY = 632; // o chão
     const ryF = 30; // a flecha do arco de fora (ápice em 418)
     const [rxD, ryD] = [rxF - M, 14]; // o arco de dentro (ápice em 434)
-
-    // ---------- a base e a travessa de baixo (o "inverno"), atrás de tudo ----------
-    bloco(xl - 10, xr + M + 10, baseY, chaoY, -8, E + 10, { passo: 4.2 });
+    const [wy0, wy1] = [566, 584]; // a travessa que segura os trilhos (o "inverno")
     const zf = -104; // a ponta da frente dos trilhos
+    // o arco, no plano z: 0 à direita (a mola), 90 no ápice, 180 à esquerda
+    const arcoF = (a0, a1, z) => elipse3([cx, mola, z], [rxF, 0, 0], [0, -ryF, 0], a0, a1);
+    const arcoD = (a0, a1, z) => elipse3([cx, mola, z], [rxD, 0, 0], [0, -ryD, 0], a0, a1);
+
+    // ---------- só no ícone: o contorno chapado do bastidor com a base, e a abertura ----------
+    t(
+      juntar([
+        arcoF(180, 0, 0),
+        poli([[cx + rxF, mola], [cx + rxF, baseY], [cx + rxF + 10, baseY], [cx + rxF + 10, chaoY], [cx - rxF - 10, chaoY], [cx - rxF - 10, baseY], [cx - rxF, baseY], [cx - rxF, mola]]),
+      ]),
+      { soIcone: true },
+    );
+    t(juntar([arcoD(180, 0, 0), poli([[cx + rxD, mola], [cx + rxD, wy0], [cx - rxD, wy0], [cx - rxD, mola]])]), { soIcone: true });
+
+    // ---------- a base e a travessa de baixo, atrás de tudo ----------
+    bloco(xl - 10, xr + M + 10, baseY, chaoY, -8, E + 10, { passo: 4.2, icone: false });
     // a língua da base, que avança sob o leito para a perna da ponta se apoiar
-    bloco(cx - 26, cx + 16, baseY, chaoY, zf + 2, -8, { passo: 4.2 });
-    const [wy0, wy1] = [566, 584]; // a travessa que segura os trilhos
-    bloco(xl + M, xr, wy0, wy1, 0, E, { direita: false });
+    bloco(cx - 26, cx + 16, baseY, chaoY, zf + 2, -8, { passo: 4.2, icone: false });
+    bloco(xl + M, xr, wy0, wy1, 0, E, { direita: false, icone: false });
 
     // ---------- os montantes ----------
-    bloco(xl, xl + M, mola, baseY, 0, E, { tampo: false, passo: 3.8 });
+    bloco(xl, xl + M, mola, baseY, 0, E, { tampo: false, passo: 3.8, icone: false });
     // a face de dentro do montante esquerdo, que aparece pela abertura (vira para a direita: na sombra)
     const dentro = face([[xl + M, mola + 1, 0], [xl + M, mola + 1, E], [xl + M, wy0, E], [xl + M, wy0, 0]]);
     t(dentro, { w: 2, papel: true, icone: false });
     hachura(dentro, { angulo: 60, passo: 5, margem: 1 });
-    bloco(xr, xr + M, mola, baseY, 0, E, { tampo: false, passo: 3.8 });
+    bloco(xr, xr + M, mola, baseY, 0, E, { tampo: false, passo: 3.8, icone: false });
 
     // ---------- a cabeça: o arco achatado ----------
-    // o arco, no plano z: 0 à direita (a mola), 90 no ápice, 180 à esquerda
-    const arcoF = (a0, a1, z) => elipse3([cx, mola, z], [rxF, 0, 0], [0, -ryF, 0], a0, a1);
-    const arcoD = (a0, a1, z) => elipse3([cx, mola, z], [rxD, 0, 0], [0, -ryD, 0], a0, a1);
     // Onde a silhueta do arco passa da frente para o fundo: a tangente paralela ao vetor de fundo.
     const at = 180 - graus(Math.atan2(ryF * A, rxF * B));
     const noArco = (a, z) => [cx + rxF * Math.cos(rad(a)), mola - ryF * Math.sin(rad(a)), z];
     // o flanco do arco (a face que vira para a direita e para cima), fechado pela silhueta de trás
-    t(fechada(juntar([arcoF(0, at, 0), aresta(noArco(at, 0), noArco(at, E)), arcoF(at, 0, E), aresta(noArco(0, E), noArco(0, 0))])), { papel: true });
+    t(fechada(juntar([arcoF(0, at, 0), aresta(noArco(at, 0), noArco(at, E)), arcoF(at, 0, E), aresta(noArco(0, E), noArco(0, 0))])), { papel: true, icone: false });
     hachura(fechada(juntar([arcoF(0, 50, 0), aresta(noArco(50, 0), noArco(50, E)), arcoF(50, 0, E), aresta(noArco(0, E), noArco(0, 0))])), { angulo: 60, passo: 4.2 });
     // a face da frente do arco: de fora, as linhas de arranque e o arco de dentro
-    t(fechada(juntar([arcoF(180, 0, 0), aresta([cx + rxF, mola, 0], [cx + rxD, mola, 0]), arcoD(0, 180, 0), aresta([cx - rxD, mola, 0], [cx - rxF, mola, 0])])), { papel: true });
+    t(fechada(juntar([arcoF(180, 0, 0), aresta([cx + rxF, mola, 0], [cx + rxD, mola, 0]), arcoD(0, 180, 0), aresta([cx - rxD, mola, 0], [cx - rxF, mola, 0])])), { papel: true, icone: false });
     // a face de dentro do arco, à esquerda, que aparece pela abertura
     {
       const a1 = 112;
@@ -129,38 +142,38 @@ export default {
       const em = (y, a) => P(cx + tr * Math.cos(rad(a)), y, zc + tr * Math.sin(rad(a)));
       const yb = 428; // a base do tambor, dentro da cabeça
       t(juntar([horiz(ty0, AT, AE), linha(em(ty0, AE), em(yb, AE)), horiz(yb, AE, AT + 360), linha(em(yb, AT), em(ty0, AT))]), { papel: true });
-      t(horiz(ty0, AE, AT + 360)); // a frente do aro de cima
+      t(horiz(ty0, AE, AT + 360), { icone: false }); // a frente do aro de cima
       hachura(juntar([horiz(ty0, 300, AT + 360), linha(em(ty0, AT), em(yb, AT)), horiz(yb, AT + 360, 300), linha(em(yb, 300), em(ty0, 300))]), { angulo: 60, passo: 3.6 });
     }
     // a coroa: a faixa, as pontas e as bolinhas
     {
       const [bx, by] = P(cx, ty0 - 1, E / 2); // o pé da coroa, no alto do tambor
       const pontas = [[-13, 0], [-13, -5], [-9, -12], [-5, -6], [0, -14], [5, -6], [9, -12], [13, -5], [13, 0]].map(([dx, dy]) => [bx + dx, by + dy]);
-      t(poli(pontas, true), { w: 2, papel: true });
-      for (const [dx, dy] of [[-9, -12], [0, -14], [9, -12]]) ponto([bx + dx, by + dy], 1.5);
+      t(poli(pontas, true), { w: 2, papel: true, icone: true });
+      for (const [dx, dy] of [[-9, -12], [0, -14], [9, -12]]) cheio(circulo([bx + dx, by + dy], 1.5), { icone: false });
     }
 
     // ---------- o mecanismo: o pistão, o nó da articulação e a platina ----------
     const zm = E / 2; // o plano do meio do bastidor
     bloco(cx - 7, cx + 7, 432, 486, zm - 6, zm + 6, { passo: 3, tampo: false }); // o pistão
-    bloco(cx - 15, cx + 15, 460, 474, zm - 10, zm + 10, { passo: 3.2 }); // o nó da articulação
+    bloco(cx - 15, cx + 15, 460, 474, zm - 10, zm + 10, { passo: 3.2, icone: false }); // o nó da articulação
     const [px0, px1, py0, py1] = [cx - 41, cx + 41, 486, 498]; // a platina
     bloco(px0, px1, py0, py1, 2, E - 2, { passo: 3.6 });
     hachura(face([[px0 + 2, py1, 2], [px1 - 2, py1, 2], [px1 - 2, py1 + 6, 2], [px0 + 2, py1 + 6, 2]]), { angulo: 60, passo: 3, margem: 0.5 }); // a sombra dela, embaixo
 
     // ---------- os trilhos, saindo do bastidor para a frente, e a perna na ponta ----------
     const [ty, te] = [558, 8]; // o alto dos trilhos e a altura deles
-    for (const x of [cx - 32, cx + 20]) bloco(x, x + 12, ty, ty + te, zf, E - 4, { sombra: false, w: 2 });
+    for (const x of [cx - 32, cx + 20]) bloco(x, x + 12, ty, ty + te, zf, E - 4, { sombra: false, w: 2, icone: false });
     const [lx0, lx1, ly0, ly1] = [cx - 44, cx + 44, 540, ty]; // o leito
     // a perna, da ponta dos trilhos até a língua da base
     const [pz, pw] = [zf + 12, 9];
-    bloco(cx - 5 - pw / 2, cx - 5 + pw / 2, ty + te, baseY + 0.5, pz - 4.5, pz + 4.5, { passo: 3 });
+    bloco(cx - 5 - pw / 2, cx - 5 + pw / 2, ty + te, baseY + 0.5, pz - 4.5, pz + 4.5, { passo: 3, icone: false });
 
     // ---------- o leito sobre os trilhos, com a forma de tipos ----------
-    bloco(lx0, lx1, ly0, ly1, zf, 0, { passo: 4 });
+    bloco(lx0, lx1, ly0, ly1, zf, 0, { passo: 4, iconeTampo: true });
     // a forma: a rama (o caixilho) com o bloco de tipos dentro, hachurado cerrado (o preto do tipo)
     const [fx0, fx1, fy, fz0, fz1] = [cx - 16, cx + 42, ly0 - 12, -58, -6];
-    bloco(fx0, fx1, fy, ly0, fz0, fz1, { passo: 3.4 });
+    bloco(fx0, fx1, fy, ly0, fz0, fz1, { passo: 3.4, icone: false });
     const tipos = face([[fx0 + 4, fy, fz0 + 4], [fx1 - 4, fy, fz0 + 4], [fx1 - 4, fy, fz1 - 4], [fx0 + 4, fy, fz1 - 4]]);
     t(tipos, { w: 2, icone: false });
     hachura(tipos, { angulo: 60, passo: 2.3, margem: 0.6 });

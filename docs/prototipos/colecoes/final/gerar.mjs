@@ -14,7 +14,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const aqui = dirname(fileURLToPath(import.meta.url));
-const raiz = join(aqui, "..", "..", "..");
+const raiz = join(aqui, "..", "..", "..", "..");
 const { livros } = JSON.parse(readFileSync(join(aqui, "dados.json"), "utf8"));
 const textos = JSON.parse(readFileSync(join(aqui, "artifact.json"), "utf8"));
 const medidas = JSON.parse(readFileSync(join(raiz, ".render", "colecoes", "medidas.json"), "utf8"));
@@ -112,7 +112,8 @@ code { font-family: ui-monospace, "JetBrains Mono", Menlo, monospace; font-size:
 .abertura .lead { max-width: 68ch; font-size: 1.12rem; }
 .abertura .comoler { max-width: 68ch; color: var(--ink-2); }
 .estante { margin: 8px 0 0; display: grid; gap: 8px; }
-.estante img { max-width: 100%; height: auto; display: block; }
+.estante .rolo { overflow-x: auto; }
+.estante img { width: 100%; height: auto; display: block; }
 .estante figcaption { font-family: var(--ui); font-size: 0.82rem; color: var(--ink-3); }
 
 .conjunto { display: grid; gap: 14px; }
@@ -150,6 +151,7 @@ code { font-family: ui-monospace, "JetBrains Mono", Menlo, monospace; font-size:
 .rodape { font-family: var(--ui); font-size: 0.82rem; color: var(--ink-3); max-width: 80ch; }
 
 @media (max-width: 640px) {
+  .estante img { min-width: 620px; }
   .livro { grid-template-columns: minmax(0, 1fr); }
   .capa { max-width: 200px; }
 }
@@ -165,7 +167,7 @@ const html = `<title>${esc(textos.titulo)}</title>
     <p class="lead">${esc(textos.lead)}</p>
     <p class="comoler">${esc(textos.comoLer)}</p>
     <figure class="estante">
-      <img src="estante-final.webp" ${dimensoes("estante-final.webp", 1200, 380)} alt="A estante nova: ${esc(livros.map((l) => l.titulo).join(", "))}, e a revista Atualizações do Java depois do aparador.">
+      <div class="rolo"><img src="estante-final.webp" ${dimensoes("estante-final.webp", 1200, 380)} alt="A estante nova: ${esc(livros.map((l) => l.titulo).join(", "))}, e a revista Atualizações do Java depois do aparador."></div>
       <figcaption>Em ordem alfabética, que é a ordem dos volumes. Os números nas lombadas são os posts de hoje em cada livro (${total} no total); a revista do Java fica fora da coleção, como hoje.</figcaption>
     </figure>
   </header>
