@@ -1,58 +1,111 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="28 24 526 380">
-  <g class="traco">
-    <path d="M540 47 H547 V177 H387 V170 H540 Z" class="hachura"/>
-    <rect x="380" y="40" width="160" height="130" rx="6"/>
-    <path d="M40 150 A70 15 0 0 1 180 150 V300 A70 15 0 0 1 40 300 Z"/>
-    <path d="M40 150 A70 15 0 0 0 180 150" class="fino"/>
-    <path d="M428 115 m-15 0 a15 15 0 1 0 30 0 a15 15 0 1 0 -30 0 M443 115 H500 M488 115 V128 M500 115 V129" class="destaque"/>
-    <path d="M272 280 m-11 0 a11 11 0 1 0 22 0 a11 11 0 1 0 -22 0 M283 280 H330 M318 280 V290 M330 280 V291"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 620">
+  <g class="tinta">
+    <path d="M48 112 A170 22 0 0 1 388 112 V498 A170 22 0 0 1 48 498 Z" class="hachura"/>
+    <path d="M40 104 A170 22 0 0 1 380 104 V490 A170 22 0 0 1 40 490 Z" class="papel"/>
+    <g class="tom-ambar">
+      <path d="M40 104 A170 22 0 0 1 380 104 V490 A170 22 0 0 1 40 490 Z" class="lavado" data-revela="0.83 0.96"/>
+    </g>
+    <path d="M40 104 A170 22 0 0 1 380 104 V490 A170 22 0 0 1 40 490 Z" class="linha"/>
+    <path d="M40 104 A170 22 0 0 0 380 104" class="linha"/>
 
-    <path d="M248 272 C228 266 208 256 190 245" data-traco="0.05 0.3"/>
-    <path d="M199 242 L189 245 L196 253" data-aparece="0.3 0.32"/>
-    <path d="M56 186 H146" class="fino" data-traco="0.46 0.52"/>
-    <path d="M56 228 H154" class="fino" data-traco="0.64 0.7"/>
-    <path d="M56 270 H140" class="fino" data-traco="0.82 0.88"/>
-
-    <path d="M384 152 C352 172 332 212 322 250" class="destaque" data-traco="1.05 1.3"/>
-    <path d="M315 243 L322 252 L328 243" class="destaque" data-aparece="1.3 1.32"/>
-    <g data-esmaece="2.7 2.78 0.25">
-      <rect x="252" y="256" width="96" height="48" rx="3" data-traco="1.46 1.72"/>
-      <path d="M252 256 L300 272 L348 256" data-traco="1.72 1.82"/>
+    <g class="tom-azul">
+      <rect x="768" y="48" width="292" height="272" rx="12" class="hachura"/>
+      <rect x="760" y="40" width="292" height="272" rx="12" class="lavado"/>
+      <rect x="760" y="40" width="292" height="272" rx="12" class="linha"/>
+      <circle cx="874" cy="172" r="28" class="lavado"/>
+      <circle cx="874" cy="172" r="28" class="linha-tom"/>
+      <circle cx="874" cy="172" r="8" class="linha-tom"/>
+      <path d="M902 172 H1016 M990 172 V198 M1012 172 V194" class="linha-tom"/>
     </g>
 
-    <path d="M354 286 C396 288 420 236 424 182" data-traco="2.05 2.3"/>
-    <path d="M417 190 L424 180 L431 190" data-aparece="2.3 2.32"/>
-    <path d="M276 348 H324" class="fino" data-traco="2.72 2.78"/>
+    <g class="tom-azul">
+      <rect x="500" y="350" width="220" height="120" rx="8" transform="translate(7 6)" class="cor" data-aparece="1.72 1.76"/>
+      <rect x="500" y="350" width="220" height="120" rx="8" class="lavado" data-revela="1.6 1.72"/>
+    </g>
+    <g class="tom-ambar">
+      <circle cx="556" cy="418" r="22" class="lavado"/>
+      <circle cx="556" cy="418" r="22" class="linha-tom"/>
+      <circle cx="556" cy="418" r="6" class="linha-tom"/>
+      <path d="M578 418 H690 M664 418 V440 M684 418 V436" class="linha-tom"/>
+    </g>
+    <g class="tom-azul">
+      <rect x="500" y="350" width="220" height="120" rx="8" class="linha-tom" data-traco="1.32 1.52"/>
+      <path d="M500 350 L610 388 L720 350" class="linha-tom" data-traco="1.52 1.6"/>
+    </g>
 
-    <path d="M418 96 L505 136 M505 96 L418 136" class="destaque" data-traco="3.04 3.16"/>
-    <path d="M460 188 H542" class="fino" data-traco="3.18 3.24"/>
-    <rect x="252" y="256" width="96" height="48" rx="3" class="destaque" data-traco="3.38 3.56"/>
-    <path d="M252 256 L300 272 L348 256" class="destaque" data-traco="3.56 3.62"/>
-    <path d="M214 366 H390" class="fino" data-traco="3.64 3.72"/>
+    <g class="tom-ambar">
+      <path d="M488 418 C 462 414 432 416 396 422" class="linha-tom" data-traco="0.05 0.2"/>
+      <path d="M408 412 L394 422 L408 432" class="linha-tom" data-aparece="0.2 0.22"/>
+    </g>
+
+    <g class="tom-azul">
+      <path d="M756 238 C 700 252 652 286 641 334" class="linha-tom" data-traco="1.05 1.2"/>
+      <path d="M630 324 L640 338 L652 326" class="linha-tom" data-aparece="1.2 1.22"/>
+    </g>
+
+    <path d="M728 420 C 820 420 900 392 900 334" class="linha" data-traco="2.05 2.22"/>
+    <path d="M890 344 L900 330 L910 344" class="linha" data-aparece="2.22 2.24"/>
+
+    <g class="tom-ambar">
+      <path d="M754 150 C 640 132 500 136 396 158" class="linha-tom" data-traco="2.62 2.8"/>
+      <path d="M408 148 L394 158 L410 165" class="linha-tom" data-aparece="2.8 2.82"/>
+    </g>
+
+    <g class="tom-vermelho">
+      <path d="M842 136 L1022 208 M1022 136 L842 208" class="linha-tom" data-traco="3.05 3.18"/>
+      <path d="M720 136 L744 160 M744 136 L720 160" class="linha-tom" data-traco="3.58 3.66"/>
+    </g>
   </g>
-  <g>
-    <text x="394" y="64">KMS</text>
-    <text x="460" y="158" text-anchor="middle" class="secundario">chave mestra</text>
-    <text x="58" y="190" class="codigo">CPF 123.456…</text>
-    <text x="58" y="232" class="codigo">4111 1111 11…</text>
-    <text x="58" y="274" class="codigo">Maria Souza</text>
-    <text x="110" y="334" text-anchor="middle" class="secundario">dados e backups</text>
-    <text x="300" y="334" text-anchor="middle" class="secundario">chave de dados</text>
 
-    <text x="220" y="288" text-anchor="middle" class="secundario" data-escrita="0.32 0.44">cifra</text>
-    <text x="58" y="207" class="codigo" data-escrita="0.52 0.62">9fQk2xPzA…</text>
-    <text x="58" y="249" class="codigo" data-escrita="0.7 0.8">Zx81wTq0e…</text>
-    <text x="58" y="291" class="codigo" data-escrita="0.88 0.98">p0Lr7cVbN…</text>
+  <g data-marca="aws" transform="translate(950 34) scale(0.86)"/>
 
-    <text x="312" y="192" text-anchor="middle" class="secundario destaque" data-escrita="1.32 1.44">cifra</text>
-    <text x="300" y="352" text-anchor="middle" class="secundario" data-escrita="1.84 1.96">cifrada</text>
+  <text x="40" y="56" class="titulo-caixa">Banco</text>
+  <text x="74" y="196" class="codigo">CPF 123.456…</text>
+  <text x="74" y="300" class="codigo">4111 1111 11…</text>
+  <text x="74" y="404" class="codigo">Maria Souza</text>
+  <text x="210" y="548" text-anchor="middle" class="texto-caixa">dados e backups</text>
+  <text x="610" y="512" text-anchor="middle" class="texto-caixa">chave de dados</text>
+  <g class="tom-azul">
+    <text x="786" y="90" class="titulo-caixa texto-tom">KMS</text>
+  </g>
+  <text x="930" y="250" text-anchor="middle" class="texto-caixa">chave mestra</text>
 
-    <text x="412" y="258" class="secundario" data-escrita="2.32 2.5">pede ao KMS</text>
-    <text x="540" y="192" text-anchor="end" class="secundario" data-escrita="2.52 2.68">permissão ok</text>
-    <text x="300" y="370" text-anchor="middle" class="secundario" data-escrita="2.8 2.98">aberta na memória do banco</text>
+  <g class="tom-ambar">
+    <circle cx="440" cy="462" r="17" class="selo" data-aparece="0 0.04"/>
+    <text x="440" y="463" class="selo-texto" data-aparece="0 0.04">1</text>
+    <text x="440" y="400" text-anchor="middle" class="texto-caixa texto-tom" data-escrita="0.22 0.3">cifra</text>
+    <text x="74" y="236" class="codigo texto-tom" data-escrita="0.37 0.47">9fQk2xPzA…</text>
+    <text x="74" y="340" class="codigo texto-tom" data-escrita="0.54 0.64">Zx81wTq0e…</text>
+    <text x="74" y="444" class="codigo texto-tom" data-escrita="0.71 0.81">p0Lr7cVbN…</text>
+  </g>
 
-    <text x="540" y="214" text-anchor="end" class="destaque" data-escrita="3.24 3.36">desativada</text>
-    <text x="300" y="388" text-anchor="middle" class="secundario destaque" data-escrita="3.72 3.86">ninguém mais abre</text>
-    <text x="110" y="356" text-anchor="middle" class="destaque" data-escrita="3.88 4">ilegíveis</text>
+  <g class="tom-azul">
+    <circle cx="574" cy="268" r="17" class="selo" data-aparece="1 1.04"/>
+    <text x="574" y="269" class="selo-texto" data-aparece="1 1.04">2</text>
+    <text x="602" y="276" class="texto-caixa texto-tom" data-escrita="1.22 1.3">cifra</text>
+    <text x="610" y="544" text-anchor="middle" class="texto-caixa texto-tom" data-escrita="1.78 1.92">guardada cifrada</text>
+  </g>
+
+  <circle cx="762" cy="456" r="17" class="selo" data-aparece="2 2.04"/>
+  <text x="762" y="457" class="selo-texto" data-aparece="2 2.04">3</text>
+  <text x="790" y="462" class="texto-caixa" data-escrita="2.25 2.4">pede para abrir</text>
+  <g class="tom-azul">
+    <text x="922" y="366" class="texto-caixa texto-tom" data-escrita="2.45 2.58">permissão ok</text>
+  </g>
+  <text x="575" y="118" text-anchor="middle" class="texto-caixa" data-escrita="2.83 2.98">aberta na memória do banco</text>
+
+  <g class="tom-vermelho">
+    <circle cx="806" cy="172" r="17" class="selo" data-aparece="3 3.04"/>
+    <text x="806" y="173" class="selo-texto" data-aparece="3 3.04">4</text>
+    <text x="930" y="286" text-anchor="middle" class="texto-caixa texto-tom" data-escrita="3.2 3.32">desativada</text>
+    <text x="922" y="404" class="texto-caixa texto-tom" data-escrita="3.42 3.56">recusa o pedido</text>
+    <text x="210" y="590" text-anchor="middle" class="titulo-caixa texto-tom" data-escrita="3.72 4">ilegíveis</text>
+  </g>
+
+  <path d="M70 188 H266" class="risco" data-traco="0.32 0.36"/>
+  <path d="M70 292 H280" class="risco" data-traco="0.49 0.53"/>
+  <path d="M70 396 H250" class="risco" data-traco="0.66 0.7"/>
+  <g class="tom-vermelho">
+    <path d="M918 358 H1050" class="risco" data-traco="3.35 3.4"/>
   </g>
 </svg>

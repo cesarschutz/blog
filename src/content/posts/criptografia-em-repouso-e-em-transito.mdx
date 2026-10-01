@@ -103,9 +103,9 @@ Na lousa, as duas linhas mostram a mesma conexão, com alguém no meio do caminh
   rotulo="Linha do tempo comparando sslmode=require e sslmode=verify-full: um intermediário se passa pelo banco com um certificado próprio; com require, o cliente aceita e o intermediário lê o tráfego; com verify-full, o cliente confere a CA e o nome do servidor e recusa a conexão."
   estados={[
     { de: 0, texto: "O cliente abre a conexão" },
-    { de: 0.3, texto: "Alguém no meio do caminho responde com um certificado próprio" },
-    { de: 0.6, texto: "O require aceita; o verify-full confere a CA e o nome e recusa" },
-    { de: 0.85, texto: "Resultado: com require, o intermediário lê tudo; com verify-full, a conexão nem abre" },
+    { de: 0.25, texto: "Alguém no meio do caminho responde com um certificado próprio" },
+    { de: 0.5, texto: "O require aceita; o verify-full confere a CA e o nome e recusa" },
+    { de: 0.75, texto: "Resultado: com require, o intermediário lê tudo; com verify-full, a conexão nem abre" },
   ]}
 />
 

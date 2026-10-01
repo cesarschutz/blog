@@ -1,43 +1,82 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 430">
-  <g class="traco">
-    <path d="M550 33 H557 V113 H17 V106 H550 Z" class="hachura"/>
-    <path d="M400 303 H407 V413 H67 V406 H400 Z" class="hachura"/>
-    <rect x="10" y="26" width="540" height="80" rx="4"/>
-    <path d="M190 26 V106 M370 26 V106" class="fino"/>
-    <rect x="60" y="296" width="340" height="110" rx="4"/>
-    <rect x="10" y="150" width="540" height="44" data-traco="0.05 0.35"/>
-    <path d="M100 106 V148 M280 106 V148 M460 106 V148" data-traco="0.6 0.8"/>
-    <path d="M94 140 L100 148 L106 140 M274 140 L280 148 L286 140 M454 140 L460 148 L466 140" data-aparece="0.78 0.8"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 770">
+  <g class="tinta">
+    <g class="tom-azul">
+      <rect x="48" y="72" width="1020" height="130" rx="12" class="hachura"/>
+      <rect x="40" y="64" width="1020" height="130" rx="12" class="lavado"/>
+      <rect x="40" y="64" width="1020" height="130" rx="12" class="linha"/>
+      <path d="M380 64 V194 M720 64 V194" class="linha"/>
+    </g>
 
-    <path d="M444 67 C 456 69 466 66 477 68" data-traco="1.02 1.12"/>
-    <path d="M460 194 V262" class="fantasma" data-revela="1.15 1.4"/>
-    <path d="M452 264 L468 280 M468 264 L452 280" data-traco="1.4 1.5"/>
+    <path d="M210 198 V242 M550 198 V242 M890 198 V242" class="linha" data-traco="0.6 0.78"/>
+    <path d="M201 231 L210 244 L219 231 M541 231 L550 244 L559 231 M881 231 L890 244 L899 231" class="linha" data-aparece="0.78 0.8"/>
 
-    <path d="M254 67 C 272 69 290 66 307 68" class="destaque" data-traco="2.02 2.12"/>
-    <path d="M280 194 V294" class="destaque" data-traco="2.15 2.38"/>
-    <path d="M274 286 L280 294 L286 286" class="destaque" data-aparece="2.38 2.4"/>
+    <g class="tom-verde">
+      <rect x="40" y="248" width="1020" height="80" rx="10" transform="translate(7 6)" class="cor" data-aparece="0.4 0.46"/>
+      <rect x="40" y="248" width="1020" height="80" rx="10" class="lavado" data-revela="0.25 0.4"/>
+      <rect x="40" y="248" width="1020" height="80" rx="10" class="linha" data-traco="0.05 0.25"/>
+    </g>
 
-    <path d="M76 67 C 92 69 108 66 125 68" data-traco="3.02 3.12"/>
-    <path d="M100 194 V294" data-traco="3.14 3.33"/>
-    <path d="M94 286 L100 294 L106 286" data-aparece="3.33 3.35"/>
+    <g class="tom-vermelho">
+      <path d="M864 122 C 878 124 896 121 916 123" class="linha-tom" data-traco="1.02 1.12"/>
+      <path d="M890 332 V416" class="linha-tom fantasma" data-revela="1.15 1.4"/>
+      <path d="M876 424 L904 452 M904 424 L876 452" class="linha-tom" data-traco="1.4 1.5"/>
+    </g>
+
+    <g class="tom-verde">
+      <path d="M506 122 C 530 124 560 121 594 123" class="linha-tom" data-traco="2.02 2.12"/>
+      <path d="M550 332 V560" class="linha-tom" data-traco="2.15 2.38"/>
+      <path d="M541 549 L550 563 L559 549" class="linha-tom" data-aparece="2.38 2.4"/>
+    </g>
+
+    <path d="M172 122 C 194 124 224 121 248 123" class="linha" data-traco="3.02 3.12"/>
+    <path d="M210 332 V560" class="linha" data-traco="3.14 3.33"/>
+    <path d="M201 549 L210 563 L219 549" class="linha" data-aparece="3.33 3.35"/>
+
+    <rect x="128" y="574" width="700" height="176" rx="8" class="hachura"/>
+    <rect x="120" y="566" width="700" height="176" rx="8" class="papel"/>
+    <rect x="120" y="566" width="700" height="176" rx="8" class="linha"/>
   </g>
-  <g>
-    <text x="10" y="17" class="secundario">Cartao</text>
-    <text x="100" y="60" text-anchor="middle">titular</text>
-    <text x="280" y="60" text-anchor="middle">numero</text>
-    <text x="460" y="60" text-anchor="middle" data-esmaece="1.7 1.8 0.35">cvv</text>
-    <text x="100" y="88" text-anchor="middle" class="codigo">Cesar</text>
-    <text x="280" y="88" text-anchor="middle" class="codigo">5502 0912 3456 7890</text>
-    <text x="460" y="88" text-anchor="middle" class="codigo" data-esmaece="1.7 1.8 0.35">123</text>
-    <text x="24" y="178" class="codigo" data-escrita="0.35 0.6">MascaraCartaoFilter</text>
-    <text x="536" y="178" text-anchor="end" class="codigo" data-escrita="0.8 0.99">writer.getName()</text>
-    <text x="474" y="236" class="secundario" data-escrita="1.5 1.7">omitido</text>
-    <text x="292" y="236" class="destaque" data-escrita="2.4 2.55">mascarado</text>
-    <text x="112" y="236" class="secundario" data-escrita="3.35 3.5">fluxo normal</text>
-    <text x="80" y="322" class="codigo">{</text>
-    <text x="96" y="346" class="codigo" data-escrita="3.5 3.8">"titular":"Cesar",</text>
-    <text x="96" y="370" class="codigo destaque" data-escrita="2.55 2.9">"numero":"550209******7890"</text>
-    <text x="80" y="394" class="codigo">}</text>
-    <text x="410" y="402" class="secundario">JSON do log</text>
+
+  <g data-marca="java" transform="translate(148 8) scale(0.44)"/>
+
+  <g class="tom-azul">
+    <text x="40" y="44" class="titulo-caixa texto-tom">Cartao</text>
   </g>
+  <text x="210" y="112" text-anchor="middle" class="texto-caixa">titular</text>
+  <text x="550" y="112" text-anchor="middle" class="texto-caixa">numero</text>
+  <text x="890" y="112" text-anchor="middle" class="texto-caixa" data-esmaece="1.7 1.8 0.35">cvv</text>
+  <text x="210" y="164" text-anchor="middle" class="codigo">Cesar</text>
+  <text x="550" y="164" text-anchor="middle" class="codigo">5502 0912 3456 7890</text>
+  <text x="890" y="164" text-anchor="middle" class="codigo" data-esmaece="1.7 1.8 0.35">123</text>
+
+  <g class="tom-verde">
+    <circle cx="40" cy="248" r="17" class="selo" data-aparece="0 0.04"/>
+    <text x="40" y="249" class="selo-texto" data-aparece="0 0.04">1</text>
+    <text x="68" y="298" class="titulo-caixa texto-tom" data-escrita="0.42 0.6">MascaraCartaoFilter</text>
+  </g>
+  <text x="1034" y="298" text-anchor="end" class="codigo" data-escrita="0.8 0.99">writer.getName()</text>
+
+  <g class="tom-vermelho">
+    <circle cx="856" cy="372" r="17" class="selo" data-aparece="1 1.04"/>
+    <text x="856" y="373" class="selo-texto" data-aparece="1 1.04">2</text>
+    <text x="920" y="446" class="texto-caixa texto-tom" data-escrita="1.5 1.7">omitido</text>
+  </g>
+
+  <g class="tom-verde">
+    <circle cx="516" cy="372" r="17" class="selo" data-aparece="2 2.04"/>
+    <text x="516" y="373" class="selo-texto" data-aparece="2 2.04">3</text>
+    <text x="566" y="446" class="texto-caixa texto-tom" data-escrita="2.4 2.55">mascarado</text>
+  </g>
+
+  <circle cx="176" cy="372" r="17" class="selo" data-aparece="3 3.04"/>
+  <text x="176" y="373" class="selo-texto" data-aparece="3 3.04">4</text>
+  <text x="226" y="446" class="texto-caixa" data-escrita="3.35 3.5">fluxo normal</text>
+
+  <text x="146" y="610" class="codigo">{</text>
+  <text x="176" y="652" class="codigo" data-escrita="3.5 3.8">"titular":"Cesar",</text>
+  <g class="tom-verde">
+    <text x="176" y="694" class="codigo texto-tom" data-escrita="2.55 2.9">"numero":"550209******7890"</text>
+  </g>
+  <text x="146" y="730" class="codigo">}</text>
+  <text x="846" y="736" class="texto-caixa">JSON do log</text>
 </svg>
