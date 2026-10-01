@@ -7,7 +7,7 @@
  * chão, à direita, um rolo de plantas amarrado. Vista de 3/4 pela frente-direita, em projeção
  * oblíqua como a caixa registradora (a frente plana, o fundo fugindo para cima e para a direita),
  * olho um pouco acima; luz do alto à esquerda: ficam na sombra a espessura do tampo (a frente e o
- * lado direito), as faces laterais do pé direito e o lado de baixo do rolo.
+ * lado direito), as faces laterais dos dois pés do cavalete e o lado de baixo do rolo.
  * O fantasma é uma parede interna da planta na posição anterior, tracejada, ao lado da nova: a
  * decisão desfeita onde desfazer custou uma linha.
  */
@@ -81,7 +81,7 @@ export default {
       };
     };
     const [xe1, xe2] = [110, 306];
-    const esquerdo = pe(xe1, { sombra: false });
+    const esquerdo = pe(xe1, { sombra: true });
     const direito = pe(xe2, { sombra: true });
     esquerdo.tras();
     direito.tras();

@@ -53,6 +53,8 @@ export default {
     const [fv0, fv1] = [12, 38]; // o alto e a base do ferrolho, na chapa
     const fuDentro = 96; // onde começa, dentro da caixa
     const xCabeca = cx1 + A * ZM + 30; // até onde a cabeça sai, fora da caixa
+    // A sombra que ele projeta na chapa, embaixo e à direita da língua.
+    hachura(quad([M(124, fv1 + 1), M(MW, fv1 + 1), M(MW, fv1 + 7), M(130, fv1 + 7), M(130, fv1 + 17), M(fuDentro + 4, fv1 + 17), M(fuDentro + 4, fv1 + 11), M(124, fv1 + 11)]), { angulo: 60, passo: 3.2, margem: 0.4 });
     t(
       poli(
         [M(fuDentro, fv0), [xCabeca, M(0, fv0)[1]], [xCabeca, M(0, fv1)[1]], M(124, fv1), M(124, fv1 + 10), M(fuDentro, fv1 + 10)],
@@ -78,6 +80,8 @@ export default {
     /** Leva um perfil para o pivô, girado `graus` (positivo desce a ponta). */
     const noPivo = (forma, graus) => mover(forma, { giro: graus, centro: [0, 0], dx: pivo[0], dy: pivo[1] });
     const angulos = [25, 20, 15, 10, 5, 0]; // da de trás (mais baixa) para a da frente
+    // A sombra do leque na chapa: uma faixa embaixo da alavanca de trás.
+    hachura(noPivo(quad([[16, 9], [comprimento - 9, 9], [comprimento - 6, 14], [17, 15]]), angulos[0]), { angulo: 60, passo: 3.2, margem: 0.4 });
     for (const graus of angulos) {
       const noIcone = graus % 10 === 5; // três perfis no ícone: 25, 15 e 5
       t(noPivo(perfilAlavanca(9), graus), { w: 2, papel: true, icone: noIcone });
@@ -86,7 +90,7 @@ export default {
       t(janela, { w: 2, icone: false });
     }
     // O pino do ferrolho, que passa pela janela da alavanca da frente.
-    ponto(M(36 + 155, 80 + 4.5), 2.6);
+    cheio(circulo(M(36 + 155, 80 + 4.5), 2.6), { icone: false });
 
     // A alavanca detectora, mais fina, com o dente na ponta, por cima das outras; e a mola de lâmina.
     const perfilDetector = () => {
@@ -101,7 +105,7 @@ export default {
     const repouso = -5; // o detector em repouso; o fantasma sobe 12°
     t(noPivo(perfilDetector(), repouso), { w: 2, papel: true, icone: false });
     ponto(pivo, 3);
-    ponto(M(14, 44), 2.2); // o parafuso da mola
+    cheio(circulo(M(14, 44), 2.2), { icone: false }); // o parafuso da mola
     t(curva([M(14, 44), M(40, 42), M(72, 52), M(104, 66)]), { w: 2, icone: false });
 
     // ---------- o buraco da chave, no centro, embaixo ----------

@@ -96,23 +96,29 @@ export default {
 
     // ---------- a urdidura (do peito ao rolo de trás) e os cordões do liço ----------
     const [ux0, ux1] = [102, 274];
-    t(face([[ux0, peito, H], [ux1, peito, H], [ux1, peito, D - H], [ux0, peito, D - H]]), { w: 2, papel: true, icone: false });
-    for (let i = 1; i < 5; i++) {
-      const x = ux0 + ((ux1 - ux0) * i) / 5;
-      t(aresta([x, peito, H + 1], [x, peito, D - H - 1]), { w: 3, icone: false });
+    for (let i = 0; i <= 8; i++) {
+      const x = ux0 + ((ux1 - ux0) * i) / 8;
+      t(aresta([x, peito, H], [x, peito, D - H]), { w: 3, icone: false });
     }
     const zLico = 38; // os cordões descem no meio da cabeça
     for (let i = 0; i < 7; i++) {
       const x = 158 + 15 * i;
       t(aresta([x, topo, zLico], [x, peito, zLico]), { w: 3, icone: false });
     }
+    // A lançadeira, pousada na urdidura, à esquerda, com a bobina dentro.
+    {
+      const [lx, lz, meia] = [131, 30, 4.6]; // o centro e a meia largura
+      const perfil = [[-19, 0], [-13, -0.6], [-7, -0.9], [0, -1], [7, -0.9], [13, -0.6], [19, 0], [13, 0.6], [7, 0.9], [0, 1], [-7, 0.9], [-13, 0.6]];
+      t(poli(perfil.map(([dx, dz]) => P(lx + dx, peito, lz + dz * meia)), true), { papel: true, icone: false });
+      t(aresta([lx - 8, peito, lz], [lx + 8, peito, lz]), { w: 3, icone: false }); // a bobina
+    }
 
     // ---------- a cabeça de Jacquard, em cima do bastidor ----------
     const [hx0, hx1, hy0, hz0, hz1] = [150, xr, 412, 10, 66];
-    bloco(hx0, hx1, hy0, topo, hz0, hz1, { passo: 4.2 });
+    bloco(hx0, hx1, hy0, topo, hz0, hz1, { passo: 4.2, iconeFaces: true });
     t(aresta([hx0, hy0 + 16, hz0], [hx1, hy0 + 16, hz0]), { w: 2, icone: false }); // a tampa da caixa
-    // O eixo do prisma, saindo pela face direita da cabeça.
-    bloco(hx1, 314, 433, 441, 34, 42, { sombra: false, w: 2, icone: false });
+    // O eixo do prisma, saindo pela face direita da cabeça (fica no ícone: é o que liga a fita à caixa).
+    bloco(hx1, 314, 433, 441, 34, 42, { sombra: false, w: 2 });
 
     // ---------- o prisma quadrado e a cadeia de cartões ----------
     const [px0, px1, py0, py1, pz0, pz1] = [314, 384, 426, 448, 27, 49]; // o prisma: 70 de comprimento, 22 de lado
@@ -156,6 +162,9 @@ export default {
       }
     }
 
+    // No ícone, uma fileira de furos só, no meio da fita (os de verdade são finos demais lá).
+    for (let k = 1; k < n; k += 2) t(circulo(P((px0 + px1) / 2, py0 + cartao * k + 8.5, pz0), 2.4), { w: 1, soIcone: true });
+
     // ---------- o fantasma: o próximo cartão chegando ao prisma ----------
     t(face([[px0, py0 - 12, pz0], [px1, py0 - 12, pz0], [px1, py0 - 12, pz1], [px0, py0 - 12, pz1]]), { fantasma: true });
 
@@ -167,23 +176,38 @@ export default {
     bloco(xl + E, xr, topo, topo + H, 0, H, { direita: false }); // a travessa de cima
     veio([xl + E + 8, topo + 7], [xr - 8, topo + 8], 5, 0.9);
 
-    // O órgão do peito, o pano saindo por cima dele e descendo até o rolo, com o começo do padrão.
-    bloco(xl + E, xr, peito, peito + 12, 0, H, { direita: false });
+    // O órgão do peito, o pano saindo por cima dele e descendo até o rolo, com o começo do padrão
+    // (um ramo que serpenteia com as flores alternadas: o que o tear já teceu). No ícone, o pano são
+    // duas linhas: o peito e o rolo.
+    bloco(xl + E, xr, peito, peito + 12, 0, H, { direita: false, icone: false });
+    t(aresta([xl + E, peito, 0], [xr, peito, 0]), { w: 1, soIcone: true });
     const [rz, ry, rr] = [-14, 622, 10]; // o rolo do pano: centro em z e y, raio
     t(face([[ux0, peito, 0], [ux1, peito, 0], [ux1, ry - rr, rz], [ux0, ry - rr, rz]]), { w: 2, papel: true, icone: false });
-    for (const x of [128, 188, 248]) {
-      const [cx, cy] = P(x, 592, rz / 2);
-      t(poli([[cx, cy - 5], [cx + 7, cy], [cx, cy + 5], [cx - 7, cy]], true), { w: 3, icone: false });
-      t(circulo([cx, cy], 1.8), { w: 3, icone: false });
+    {
+      const zr = rz / 2;
+      const ramo = [];
+      for (let i = 0; i <= 10; i++) {
+        const x = ux0 + 12 + ((ux1 - ux0 - 24) * i) / 10;
+        ramo.push(P(x, 592 + (i % 2 === 0 ? -4 : 4), zr));
+      }
+      t(curva(ramo), { w: 3, icone: false });
+      for (let i = 1; i < 10; i += 2) {
+        const x = ux0 + 12 + ((ux1 - ux0 - 24) * i) / 10;
+        const cy = 592 + (i % 4 === 1 ? -5 : 5) * 1.6;
+        const [fx, fy] = P(x, cy, zr);
+        t(poli([[fx, fy - 4.5], [fx + 5, fy], [fx, fy + 4.5], [fx - 5, fy]], true), { w: 3, icone: false }); // a flor
+        t(aresta([x, 592 + (i % 4 === 1 ? -4 : 4), zr], [x, cy + (i % 4 === 1 ? 4.5 : -4.5), zr]), { w: 3, icone: false }); // o pé
+      }
     }
     // O rolo: um cilindro na frente dos montantes, com a ponta da direita à vista e a barriga de baixo na sombra.
     const aCima = -(Math.atan2(rr, B * rr) * 180) / Math.PI; // a geratriz mais alta (vista de cima) e a mais baixa
     const geratriz = (a) => [ry + rr * Math.sin(rad(a)), rz + rr * Math.cos(rad(a))];
     const [ga, gb] = [geratriz(aCima), geratriz(aCima + 180)];
     const [rx0, rx1] = [68, 308];
-    t(face([[rx0, ga[0], ga[1]], [rx1, ga[0], ga[1]], [rx1, gb[0], gb[1]], [rx0, gb[0], gb[1]]]), { papel: true });
+    t(face([[rx0, ga[0], ga[1]], [rx1, ga[0], ga[1]], [rx1, gb[0], gb[1]], [rx0, gb[0], gb[1]]]), { papel: true, icone: false });
+    t(aresta([rx0, ry, rz], [rx1, ry, rz]), { w: 1, soIcone: true });
     hachura(face([[rx0 + 3, ry + 1, rz - rr + 1], [rx1 - 3, ry + 1, rz - rr + 1], [rx1 - 3, gb[0] - 0.5, gb[1]], [rx0 + 3, gb[0] - 0.5, gb[1]]]), { angulo: 60, passo: 3.6 });
-    t(fechada(elipse3([rx1, ry, rz], [0, 0, rr], [0, rr, 0])), { papel: true });
+    t(fechada(elipse3([rx1, ry, rz], [0, 0, rr], [0, rr, 0])), { papel: true, icone: false });
     ponto(P(rx1, ry, rz), 2);
 
     // ---------- a sombra no chão ----------

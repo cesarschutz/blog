@@ -111,7 +111,7 @@ export default {
     const pivo = [ex, 398];
     cilindro(ex, 390, 402, 8, { sombra: false });
     const L = 118; // o braço, do pivô ao centro da esfera
-    const R = 27; // a esfera
+    const R = 28; // a esfera
     const RECUO = 8; // o pino do tirante fica um pouco acima da esfera
     const braco = (lado, angulo) => {
       const u = [lado * Math.sin(rad(angulo)), Math.cos(rad(angulo))];
@@ -121,10 +121,10 @@ export default {
     const repouso = 34; // os braços em repouso, de cada lado da vertical
     const esq = braco(-1, repouso);
     const dir = braco(1, repouso);
-    for (const b of [esq, dir]) t(barra(pivo, b.esfera, 5), { papel: true }); // os braços
+    for (const b of [esq, dir]) t(barra(pivo, b.esfera, 6), { papel: true }); // os braços
     ponto(pivo, 2.4);
-    t(barra(esq.pino, ombro.E, 3.2), { w: 2, papel: true }); // os tirantes
-    t(barra(dir.pino, ombro.D, 3.2), { w: 2, papel: true });
+    t(barra(esq.pino, ombro.E, 3.6), { w: 2, papel: true }); // os tirantes
+    t(barra(dir.pino, ombro.D, 3.6), { w: 2, papel: true });
     for (const b of [esq, dir]) {
       t(circulo(b.esfera, R), { papel: true });
       sombraEsfera(b.esfera, R);
