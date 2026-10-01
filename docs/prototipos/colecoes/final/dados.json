@@ -1,0 +1,546 @@
+{
+ "observacao": "A coleção de 13 (D61): fonte dos dados da página final. Montado de textos.md e direcao-de-arte.md; depois da crítica, ajustado aqui. final/montar.mjs leva para colecoes.json (sugestão final).",
+ "livros": [
+  {
+   "volume": 1,
+   "slug": "arquitetura-de-software",
+   "titulo": "Arquitetura de Software",
+   "linhas": [
+    "Arquitetura",
+    "de Software"
+   ],
+   "corpo": 73,
+   "entrelinha": 70,
+   "frase": "As decisões caras de desfazer.",
+   "temas": [
+    "Trade-offs",
+    "Domínios",
+    "Padrões",
+    "Microsserviços"
+   ],
+   "subtitulo": "Trade-offs, domínios, padrões e microsserviços: as decisões caras de desfazer.",
+   "abrange": [
+    "decisões e trade-offs (overhead e overkill, overengineering)",
+    "microsserviços ou monólito modular",
+    "DDD e bounded contexts",
+    "Clean, Hexagonal e os padrões de arquitetura corporativa (Fowler)",
+    "atributos de qualidade (custo, latência, disponibilidade)",
+    "C4, ADRs e docs-as-code",
+    "estratégia técnica (dívida técnica, Tech Radar)",
+    "estrutura dos times (Team Topologies, a lei de Conway)",
+    "o papel do arquiteto"
+   ],
+   "vemDe": "Arquitetura de Software de hoje, só com as decisões (o ledger vai para Pagamentos, a idempotência e o outbox para Sistemas Distribuídos, o SNS para Integração e Eventos); o papel do arquiteto, de Carreira, que sai. Do site de notícias, Design & Padrões (menos a refatoração e os padrões GoF, que são de código) e, de Arq. Corporativa, a estrutura organizacional e a estratégia técnica.",
+   "posts": [
+    "cronjob-vs-endpoint-sqs",
+    "overhead-vs-overkill"
+   ],
+   "instrumento": "prancheta com a planta e a régua-tê",
+   "data": "séc. XVII; cópia em cianotipia desde 1870",
+   "trabalho": "decidir no papel o que custa caro desfazer em tijolo",
+   "nomeCor": "azul-de-cianotipia",
+   "cor": "#2d4f77",
+   "tinta": "clara",
+   "motivoCor": "fato: Herschel (1842) chamava o azul do seu processo de azul da Prússia; o blueprint foi a cópia de toda planta das salas de desenho de 1870 aos anos 1940. A cor do que foi decidido no papel.",
+   "desenho": "novo-arquitetura-de-software"
+  },
+  {
+   "volume": 2,
+   "slug": "dados",
+   "titulo": "Dados",
+   "linhas": [
+    "Dados"
+   ],
+   "corpo": 108,
+   "entrelinha": 108,
+   "frase": "Onde o dado mora e por onde ele anda.",
+   "temas": [
+    "Bancos",
+    "Transações",
+    "Streaming",
+    "Lakehouse"
+   ],
+   "subtitulo": "Bancos, transações, streaming e lakehouse: onde o dado mora e por onde ele anda.",
+   "abrange": [
+    "bancos relacionais (PostgreSQL)",
+    "bloqueio otimista e pessimista, isolamento e MVCC",
+    "NoSQL (MongoDB, DynamoDB)",
+    "modelagem, índices e planos de execução",
+    "migração de esquema (Flyway, Liquibase)",
+    "CDC (Debezium)",
+    "streaming de dados (Kafka Streams, Flink)",
+    "lake, warehouse e lakehouse (Iceberg, dbt, DuckDB)",
+    "contratos de dados e Data Mesh",
+    "busca vetorial (pgvector)"
+   ],
+   "vemDe": "Dados de hoje; do site de notícias, Dados & Streaming inteira.",
+   "posts": [
+    "bloqueio-otimista-e-pessimista",
+    "data-lake-vs-data-warehouse"
+   ],
+   "instrumento": "tabulador de Hollerith",
+   "data": "1890",
+   "trabalho": "contar 63 milhões de pessoas em cartões, seis meses em vez de sete anos",
+   "nomeCor": "roxo-de-mimeógrafo",
+   "cor": "#624a72",
+   "tinta": "clara",
+   "motivoCor": "fato (pesquisa): as cópias do mimeógrafo a álcool (1923) eram roxas, de anilina, \"o mais legível pelo maior número de cópias\". A cor do registro copiado; é motivo do assunto, não do tabulador, e está dito. Um tom mais azul que a ameixa de hoje.",
+   "desenho": "novo-dados"
+  },
+  {
+   "volume": 3,
+   "slug": "desenvolvimento-de-software",
+   "titulo": "Desenvolvimento de Software",
+   "linhas": [
+    "Desenvolvimento",
+    "de Software"
+   ],
+   "corpo": 50,
+   "entrelinha": 48,
+   "frase": "Entre o seu código e a máquina.",
+   "temas": [
+    "Java",
+    "Spring",
+    "JVM",
+    "Concorrência"
+   ],
+   "subtitulo": "Java, Spring, JVM e concorrência: entre o seu código e a máquina.",
+   "abrange": [
+    "Java e a JVM (GC, JIT, memória, JFR, thread dump)",
+    "Spring Boot (autoconfiguração, AOP e proxies, Data JPA, Actuator)",
+    "concorrência em Java (virtual threads, atomics, executors, o modelo de memória do Java)",
+    "performance do serviço (profiling, p99)",
+    "build (Gradle, Maven)",
+    "serialização (Jackson)",
+    "padrões de código (GoF) e refatoração",
+    "outros runtimes e linguagens, quando aparecerem (Kotlin, Go, WebAssembly)"
+   ],
+   "vemDe": "Desenvolvimento de Software de hoje, sem três itens que viraram livro: os testes (Testes), \"o que roda por baixo (TCP, sinais, sistema operacional)\" (Fundamentos) e \"web e front-end, quando aparecer\" (Frontend). Do site de notícias, Backend & Runtimes inteira e, de Design & Padrões, a refatoração e os padrões GoF.",
+   "posts": [
+    "aop-jdk-proxy-cglib",
+    "aoputils-gettargetclass",
+    "atomicboolean-parada-graciosa",
+    "gradle-tipos-de-dependencia",
+    "jackson-filtros-mascarando-cartao",
+    "virtual-threads-pinning-close-wait"
+   ],
+   "instrumento": "tear de Jacquard com a cadeia de cartões",
+   "data": "1804",
+   "trabalho": "a máquina que lê o programa e faz o trabalho",
+   "nomeCor": "garança",
+   "cor": "#82555a",
+   "tinta": "clara",
+   "motivoCor": "fato (pesquisa): a garança é o vermelho dos tecidos desde a Antiguidade; a calça *garance* do exército francês (1829–1914) sustentou a indústria de Avignon. O pano que sai do tear.",
+   "desenho": "novo-desenvolvimento-de-software"
+  },
+  {
+   "volume": 4,
+   "slug": "devops",
+   "titulo": "DevOps",
+   "linhas": [
+    "DevOps"
+   ],
+   "corpo": 108,
+   "entrelinha": 108,
+   "frase": "O caminho do commit até a produção.",
+   "temas": [
+    "Kubernetes",
+    "CI/CD",
+    "Nuvem",
+    "Plataforma"
+   ],
+   "subtitulo": "Kubernetes, CI/CD, nuvem e plataforma: o caminho do commit até a produção.",
+   "abrange": [
+    "containers e Kubernetes (pods, Jobs e CronJobs, probes, ciclo de vida do pod, HPA)",
+    "CI/CD (GitHub Actions)",
+    "GitOps (Argo CD)",
+    "infraestrutura como código (Terraform)",
+    "entrega progressiva (canary, feature flags)",
+    "plataforma interna e Platform Engineering (IDP, Backstage)",
+    "DevEx e DORA",
+    "nuvem (AWS: contas e landing zones, rede, computação, Lambda; Azure e GCP quando aparecerem)",
+    "CDN, edge e proxies (HTTP/3, QUIC, Cloudflare)",
+    "Well-Architected e FinOps"
+   ],
+   "vemDe": "DevOps de hoje; do site de notícias, DevOps & Plataformas (menos o AI-augmented SDLC, que é de IA), Cloud (menos o Bedrock, de IA, e menos cada serviço como mecanismo, regra 5) e, de Arq. Corporativa, Platform Engineering, DevEx, DORA, FinOps e landing zones.",
+   "posts": [
+    "kubernetes-cronjob-concorrencia",
+    "sigterm-sigkill-kubernetes"
+   ],
+   "instrumento": "estação de tubo pneumático",
+   "data": "1853",
+   "trabalho": "levar a cápsula intacta do balcão até onde ela é usada, sem ninguém carregar",
+   "nomeCor": "azul-pneumático",
+   "cor": "#92a6c2",
+   "tinta": "escura",
+   "motivoCor": "fato: a carta-bilhete do tubo pneumático de Paris era de papel azul (1897–1902) e ficou para sempre o *petit bleu* (Proust mandava os seus por ele). O papel que viaja na cápsula.",
+   "desenho": "novo-devops"
+  },
+  {
+   "volume": 5,
+   "slug": "frontend",
+   "titulo": "Frontend",
+   "linhas": [
+    "Frontend"
+   ],
+   "corpo": 94,
+   "entrelinha": 94,
+   "frase": "Do servidor até a tela do usuário.",
+   "temas": [
+    "Frameworks",
+    "SSR",
+    "Web Vitals",
+    "Acessibilidade"
+   ],
+   "subtitulo": "Frameworks, SSR, Web Vitals e acessibilidade: do servidor até a tela do usuário.",
+   "abrange": [
+    "frameworks (React, Vue, Svelte) e meta-frameworks (Next, Nuxt, Astro)",
+    "SSR, RSC e streaming",
+    "a plataforma web (HTML, CSS e as APIs do navegador)",
+    "design systems",
+    "Core Web Vitals e performance de página",
+    "renderização no edge",
+    "estado no cliente",
+    "build do front (Vite e bundlers)",
+    "acessibilidade e i18n",
+    "mobile multiplataforma"
+   ],
+   "vemDe": "Novo. Era \"web e front-end, quando aparecer\", um item de Desenvolvimento de Software sem post. Do site de notícias, Frontend & Web inteira.",
+   "posts": [],
+   "instrumento": "prensa tipográfica de ferro (Albion)",
+   "data": "c. 1820",
+   "trabalho": "fazer a página que o leitor vê",
+   "nomeCor": "negro-de-fumo",
+   "cor": "#2a2621",
+   "tinta": "clara",
+   "motivoCor": "fato: a tinta de Gutenberg era negro de fumo (a fuligem de lamparina) em verniz de óleo de linhaça, porque a tinta de escrever escorria do tipo de metal. A tinta de toda página impressa.",
+   "desenho": "novo-frontend"
+  },
+  {
+   "volume": 6,
+   "slug": "fundamentos",
+   "titulo": "Fundamentos",
+   "linhas": [
+    "Fundamentos"
+   ],
+   "corpo": 63,
+   "entrelinha": 63,
+   "frase": "O que fica quando a ferramenta muda.",
+   "temas": [
+    "Processos",
+    "Redes",
+    "Memória",
+    "Algoritmos"
+   ],
+   "subtitulo": "Processos, redes, memória e algoritmos: o que fica quando a ferramenta muda.",
+   "abrange": [
+    "sistema operacional (processos, threads, sinais, PID 1, memória virtual)",
+    "redes (TCP e os estados da conexão, DNS, HTTP)",
+    "concorrência e modelos de memória como conceito (escalonamento, locks, deadlock, visibilidade)",
+    "estruturas de dados e algoritmos",
+    "teoria das filas (lei de Little)",
+    "desempenho do hardware (cache de CPU, memória, disco)"
+   ],
+   "vemDe": "Novo. Era \"o que roda por baixo (TCP, sinais, sistema operacional)\", um item de Desenvolvimento de Software. Do site de notícias, Fundamentos de Computação inteira, com uma ressalva: a concorrência da JVM (`java.util.concurrent`, o modelo de memória do Java) fica em Desenvolvimento de Software.",
+   "posts": [],
+   "instrumento": "telégrafo de Morse: a chave e o registrador",
+   "data": "1844",
+   "trabalho": "o bit, o código, o protocolo e a fita, com tudo à vista",
+   "nomeCor": "azul-vitríolo",
+   "cor": "#26626a",
+   "tinta": "clara",
+   "motivoCor": "fato: as pilhas de gravidade (Callaud, anos 1860), potes de vidro com sulfato de cobre, o \"vitríolo azul\", em camada azul no fundo, alimentaram as linhas de telégrafo dos EUA e do Reino Unido. O que fica embaixo e ninguém vê.",
+   "desenho": "novo-fundamentos"
+  },
+  {
+   "volume": 7,
+   "slug": "ia",
+   "titulo": "IA",
+   "linhas": [
+    "IA"
+   ],
+   "corpo": 108,
+   "entrelinha": 108,
+   "frase": "Software feito com IA e software que usa IA.",
+   "temas": [
+    "LLMs",
+    "Agentes",
+    "RAG",
+    "Evals"
+   ],
+   "subtitulo": "LLMs, agentes, RAG e evals: software feito com IA e software que usa IA.",
+   "abrange": [
+    "LLMs e modelos (Claude, GPT, Gemini, abertos)",
+    "programar com IA (Claude Code, AI coding em produção, o SDLC com IA)",
+    "agentes e MCP",
+    "RAG",
+    "prompts e contexto",
+    "evals e observabilidade de LLM (Langfuse, LangSmith)",
+    "guardrails, prompt injection e segurança de IA",
+    "LLM local (Ollama)",
+    "Bedrock e fine-tuning"
+   ],
+   "vemDe": "IA de hoje; do site de notícias, IA & LLMs e AIOps & Agents inteiras, mais o Bedrock (de Cloud), o MCP (de Integração & Eventos), o AI Security (de Segurança & IAM) e o AI-augmented SDLC (de DevOps & Plataformas).",
+   "posts": [],
+   "instrumento": "fonógrafo de Edison",
+   "data": "1877",
+   "trabalho": "a máquina que fala com a voz que ouviu",
+   "nomeCor": "cera-marrom",
+   "cor": "#5d4128",
+   "tinta": "clara",
+   "motivoCor": "fato: os cilindros de cera marrom de Edison (1888–1902), do bege ao marrom escuro conforme a fornada. A memória da máquina que fala.",
+   "desenho": "novo-ia"
+  },
+  {
+   "volume": 8,
+   "slug": "integracao",
+   "titulo": "Integração e Eventos",
+   "linhas": [
+    "Integração",
+    "e Eventos"
+   ],
+   "corpo": 81,
+   "entrelinha": 78,
+   "frase": "Como um sistema fala com o outro.",
+   "temas": [
+    "Mensageria",
+    "APIs",
+    "Pub/sub",
+    "Contratos"
+   ],
+   "subtitulo": "Mensageria, APIs, pub/sub e contratos: como um sistema fala com o outro.",
+   "abrange": [
+    "mensageria (SQS, SNS, Kafka, RabbitMQ)",
+    "pub/sub e filtros de mensagem",
+    "arquitetura orientada a eventos",
+    "webhooks",
+    "DLQ e redrive",
+    "entrega pelo menos uma vez, ordem e partições",
+    "design de API e API-First (REST, OpenAPI, GraphQL e federation, gRPC)",
+    "versionamento e governança de API",
+    "contratos e evolução de esquema (AsyncAPI, Schema Registry)"
+   ],
+   "vemDe": "Novo. A mensageria de Arquitetura de Software (o SNS Filter Policy e o tema \"eventos\" do subtítulo de hoje); do site de notícias, Integração & Eventos (menos o MCP, que é de IA) e a governança de API de Arq. Corporativa.",
+   "posts": [
+    "sns-filter-policy"
+   ],
+   "instrumento": "mesa telefônica manual",
+   "data": "1878",
+   "trabalho": "ligar quem chama a quem atende; a lâmpada que acende é o evento",
+   "nomeCor": "verde-água",
+   "cor": "#71a49d",
+   "tinta": "escura",
+   "motivoCor": "fato (pesquisa): os isoladores de vidro das linhas de telégrafo e de telefone saíam verde-água por causa do ferro da areia. O vidro que segura o fio entre as estações.",
+   "desenho": "novo-integracao"
+  },
+  {
+   "volume": 9,
+   "slug": "pagamentos",
+   "titulo": "Pagamentos",
+   "linhas": [
+    "Pagamentos"
+   ],
+   "corpo": 70,
+   "entrelinha": 70,
+   "frase": "Dinheiro não pode sumir nem duplicar.",
+   "temas": [
+    "Ledger",
+    "Conciliação",
+    "Cartões",
+    "Pix"
+   ],
+   "subtitulo": "Ledger, conciliação, cartões e Pix: dinheiro não pode sumir nem duplicar.",
+   "abrange": [
+    "ledger e partidas dobradas",
+    "saldo e conciliação",
+    "cartões e bandeiras (Visa, Mastercard, Elo)",
+    "adquirência (autorização, captura, estorno, chargeback)",
+    "Pix, Open Finance e Drex",
+    "cooperativas de crédito (Unicred, Sicoob, Sicredi)",
+    "trilhos de pagamento (payment rails)",
+    "fraude e risco",
+    "regras das bandeiras e do Banco Central",
+    "BaaS e embedded finance"
+   ],
+   "vemDe": "Novo. O ledger de Arquitetura de Software; do site de notícias, Fintech & Pagamentos (menos o PCI DSS, que é de Segurança).",
+   "posts": [
+    "arquitetura-de-ledger"
+   ],
+   "instrumento": "caixa registradora",
+   "data": "1879",
+   "trabalho": "registrar cada venda contra o desvio e fechar o caixa",
+   "nomeCor": "verde-cédula",
+   "cor": "#4f6f57",
+   "tinta": "clara",
+   "motivoCor": "fato (pesquisa): o verso verde das cédulas dos EUA desde 1861, mantido em 1929 por ser \"durável e associado ao crédito forte e estável\"; o papel de razão verde é tradição de fabricante.",
+   "desenho": "novo-pagamentos"
+  },
+  {
+   "volume": 10,
+   "slug": "seguranca",
+   "titulo": "Segurança",
+   "linhas": [
+    "Segurança"
+   ],
+   "corpo": 82,
+   "entrelinha": 82,
+   "frase": "Quem pode o quê e como provar.",
+   "temas": [
+    "Identidade",
+    "Segredos",
+    "Criptografia",
+    "Conformidade"
+   ],
+   "subtitulo": "Identidade, segredos, criptografia e conformidade: quem pode o quê e como provar.",
+   "abrange": [
+    "identidade e acesso (OAuth 2.0, OIDC, JWT, passkeys e WebAuthn)",
+    "Zero Trust",
+    "criptografia em repouso e em trânsito (TLS, KMS)",
+    "segredos (Vault, AWS Secrets Manager)",
+    "OWASP e CVEs",
+    "cadeia de suprimentos (SBOM, SLSA, Sigstore)",
+    "runtime security",
+    "conformidade (PCI DSS, LGPD)"
+   ],
+   "vemDe": "Segurança de hoje; do site de notícias, Segurança & IAM (menos o AI Security, que é de IA) e o PCI DSS de Fintech & Pagamentos.",
+   "posts": [
+    "criptografia-em-repouso-e-em-transito",
+    "jwt-estrutura-e-campos"
+   ],
+   "instrumento": "fechadura detectora de Chubb",
+   "data": "1818",
+   "trabalho": "provar que alguém tentou abrir",
+   "nomeCor": "vermelho-lacre",
+   "cor": "#7c322b",
+   "tinta": "clara",
+   "motivoCor": "fato: o lacre era tingido de vermelho com cinábrio ou vermelhão desde a Idade Média, e a partir do século XVII, à base de goma-laca, mais quebradiço de propósito, \"para mostrar com clareza se alguém mexeu na carta\". A cor da prova de que ninguém abriu, como o Cesar sugeriu; a fechadura detectora é a mesma ideia.",
+   "desenho": "novo-seguranca"
+  },
+  {
+   "volume": 11,
+   "slug": "sistemas-distribuidos",
+   "titulo": "Sistemas Distribuídos",
+   "linhas": [
+    "Sistemas",
+    "Distribuídos"
+   ],
+   "corpo": 70,
+   "entrelinha": 67,
+   "frase": "Quando o timeout não diz o que aconteceu.",
+   "temas": [
+    "Idempotência",
+    "Outbox",
+    "Saga",
+    "Consistência"
+   ],
+   "subtitulo": "Idempotência, outbox, saga e consistência: quando o timeout não diz o que aconteceu.",
+   "abrange": [
+    "idempotência e retry",
+    "escrita dupla, outbox e inbox",
+    "saga e compensação",
+    "CQRS e event sourcing",
+    "modelos de consistência",
+    "resiliência (timeout, circuit breaker, bulkhead, backpressure)",
+    "cache distribuído",
+    "service mesh",
+    "execução durável (Temporal)",
+    "multi-região"
+   ],
+   "vemDe": "Novo. A consistência de Arquitetura de Software (Chave de idempotência e Efeito externo sem registro local, que hoje estão lá); do site de notícias, Sist. Distribuídos, menos três itens que foram para onde moram: \"microsserviços\" como decisão (Arquitetura de Software), post-mortems (SRE) e serverless (DevOps).",
+   "posts": [
+    "cobranca-duplicada-no-retry",
+    "efeito-externo-sem-registro-local"
+   ],
+   "instrumento": "os dois relógios de Huygens na mesma viga",
+   "data": "1665",
+   "trabalho": "duas máquinas iguais que só se acertam pelo que as liga",
+   "nomeCor": "azul-marinho",
+   "cor": "#202c4d",
+   "tinta": "clara",
+   "motivoCor": "fato (pesquisa): o azul escuro dos uniformes da Marinha britânica, fixado em 1748; e os dois relógios de Huygens eram relógios marítimos, feitos para a longitude. A cor do mar para relógios feitos para o mar.",
+   "desenho": "novo-sistemas-distribuidos"
+  },
+  {
+   "volume": 12,
+   "slug": "sre",
+   "titulo": "SRE",
+   "linhas": [
+    "SRE"
+   ],
+   "corpo": 108,
+   "entrelinha": 108,
+   "frase": "O que mantém a produção de pé.",
+   "temas": [
+    "Observabilidade",
+    "Logs",
+    "SLOs",
+    "Incidentes"
+   ],
+   "subtitulo": "Observabilidade, logs, SLOs e incidentes: o que mantém a produção de pé.",
+   "abrange": [
+    "logs estruturados",
+    "tracing (OpenTelemetry, W3C Trace Context)",
+    "métricas e APM (Micrometer, Prometheus)",
+    "wide events e cardinalidade",
+    "SLOs, SLIs e error budgets",
+    "alertas e ruído",
+    "incidentes, on-call e post-mortems",
+    "profiling contínuo e eBPF",
+    "custo de observabilidade"
+   ],
+   "vemDe": "SRE de hoje; do site de notícias, Observabilidade & SRE inteira e os post-mortems de Sist. Distribuídos. O chaos engineering, que as sugestões anteriores punham aqui, vai para Testes (é de onde ele vem no site de notícias, e Testes precisa dele mais do que SRE).",
+   "posts": [
+    "logging-estruturado-spring-boot",
+    "w3c-trace-context",
+    "wide-events-canonical-log-lines"
+   ],
+   "instrumento": "regulador centrífugo de Watt",
+   "data": "1788",
+   "trabalho": "manter a rotação quando a carga muda",
+   "nomeCor": "latão",
+   "cor": "#b59353",
+   "tinta": "escura",
+   "motivoCor": "fato de convenção (pesquisa): o amarelo é a cor da cautela na sinalização (ANSI Z535; o âmbar dos semáforos desde 1914). Associação de material: o latão polido dos reguladores de mostra. Mantém o lugar claro e quente do ocre de hoje, com outro motivo.",
+   "desenho": "novo-sre"
+  },
+  {
+   "volume": 13,
+   "slug": "testes",
+   "titulo": "Testes",
+   "linhas": [
+    "Testes"
+   ],
+   "corpo": 108,
+   "entrelinha": 108,
+   "frase": "Antes que a produção descubra.",
+   "temas": [
+    "TDD",
+    "Pirâmide",
+    "Testcontainers",
+    "Carga"
+   ],
+   "subtitulo": "TDD, pirâmide, Testcontainers e carga: antes que a produção descubra.",
+   "abrange": [
+    "TDD e BDD",
+    "pirâmide de testes (unitário, integração, ponta a ponta)",
+    "JUnit e Testcontainers",
+    "testes de slice do Spring (@WebMvcTest, @DataJpaTest)",
+    "contract testing (Pact)",
+    "testes de carga e de performance (k6, Gatling)",
+    "chaos engineering",
+    "dados de teste e massa",
+    "testes com IA"
+   ],
+   "vemDe": "Novo. Os testes de Desenvolvimento de Software (o item \"testes (JUnit, Testcontainers, contract testing)\" e o tema \"testes\" do subtítulo de hoje); do site de notícias, Testes & Qualidade inteira, inclusive o chaos engineering e os testes com IA.",
+   "posts": [],
+   "instrumento": "fio de prumo",
+   "data": "antes de tudo",
+   "trabalho": "conferir contra a referência que não falha",
+   "nomeCor": "cinza-chumbo",
+   "cor": "#3e4349",
+   "tinta": "clara",
+   "motivoCor": "fato: \"prumo\" vem de *plumbum*, chumbo, o metal do peso desde os romanos. A cor do oráculo.",
+   "desenho": "novo-testes"
+  }
+ ]
+}

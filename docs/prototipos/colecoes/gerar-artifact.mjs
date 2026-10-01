@@ -37,7 +37,7 @@ const maiuscula = (t) => `${t.charAt(0).toUpperCase()}${t.slice(1)}`;
 const lista = (itens) => `${maiuscula(itens.join(", "))}.`;
 const vol = (n) => String(n).padStart(2, "0");
 
-const sugestoes = dados.sugestoes.filter((s) => s.id !== "hoje");
+const sugestoes = dados.sugestoes.filter((s) => s.id !== "hoje" && s.id !== "final");
 const hoje = dados.sugestoes.find((s) => s.id === "hoje");
 const livroDe = (s, slug) => ({ ...dados.livros[slug], ...(s.sobrescreve?.[slug] ?? {}) });
 
