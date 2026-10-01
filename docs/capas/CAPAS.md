@@ -163,7 +163,16 @@ papel e a cor divididos na capa: cada post é uma edição. De uma série para o
 
 ## Livros novos
 
-- **Categoria:** escolha um instrumento de ofício que represente a categoria inteira e desenhe no estilo do projeto, com traço de 1,8, 1,2 e 0,7px, leve tremor, hachura nas sombras e um único elemento fantasma tracejado. Gere o ícone da lombada com só os traços principais. A frase segue o molde do subtítulo, e o volume é o próximo número. A ferramenta: `scripts/desenho/livros.mjs` (o desenho em geometria limpa num módulo `scripts/desenho/livros/<slug>.mjs`; ela passa a caneta, faz a hachura e grava o desenho e o ícone; manual em `docs/prototipos/colecoes/manual-desenho.md`). O corpo do título sai de `scripts/livros/titulo-da-capa.mjs`, e a cor passa por `scripts/livros/conferir-cores.mjs` antes de entrar.
+**Quando mexer na coleção (D61):** a coleção não muda à toa. Ao planejar cada post, o Claude confere
+se ele cabe bem num livro; quando não cabe (um post de carreira, sem livro desde a D61) ou quando a
+coleção ficaria melhor com um livro novo, dividido ou renomeado (arquitetura corporativa pediria um
+livro novo ou "Arquitetura" no lugar de "Arquitetura de Software"), ele avisa o Cesar e sugere. Nada
+muda sem o OK dele, e o endereço antigo de um livro renomeado ou que saiu redireciona.
+
+**Volume (D61):** os volumes seguem a **ordem alfabética** dos títulos, e a estante também. Livro novo
+entra na sua posição, e os que vêm depois dele mudam de número.
+
+- **Categoria:** escolha um instrumento de ofício que represente a categoria inteira e desenhe no estilo do projeto, com traço de 1,8, 1,2 e 0,7px, leve tremor, hachura nas sombras e um único elemento fantasma tracejado. Gere o ícone da lombada com só os traços principais. A frase segue o molde do subtítulo, e o volume é a posição do título na ordem alfabética. A ferramenta: `scripts/desenho/livros.mjs` (o desenho em geometria limpa num módulo `scripts/desenho/livros/<slug>.mjs`; ela passa a caneta, faz a hachura e grava o desenho e o ícone; manual em `docs/prototipos/colecoes/manual-desenho.md`). O corpo do título sai de `scripts/livros/titulo-da-capa.mjs`, e a cor passa por `scripts/livros/conferir-cores.mjs` antes de entrar.
 - **Série:** um livro de capa dura com a capa de revista. Defina a cor de destaque, o título (palavra principal e complemento em itálico), o emblema no mesmo traço, o número de capa, a lista de edições e, se houver material especial, a tarja.
 
 ## Tags (D52)

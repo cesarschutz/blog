@@ -36,10 +36,23 @@ quebrar). **O `DESIGN.md` vence qualquer ferramenta:** o "go all out", o redesig
 
 Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
 
-- **Livro:** um dos livros de `src/livros/livros.json` (Arquitetura de Software, Desenvolvimento de
-  Software, Dados, IA, Segurança, DevOps, SRE, Carreira) **ou** uma série (`src/data/series.ts`). O
-  subtítulo de cada livro diz o que cabe nele. Livro novo só se nenhum servir, pela seção "Livros
-  novos" de `docs/capas/CAPAS.md` e com o OK do Cesar.
+- **Livro:** um dos livros de `src/livros/livros.json` **ou** uma série (`src/data/series.ts`). O
+  subtítulo de cada livro diz o que cabe nele, e a casa do post é o que ele ensina (o exemplo, como a
+  cobrança num post de idempotência, vira tag).
+- **A coleção ainda serve? (D61)** Em todo post, pense se os livros continuam bons com ele. O normal é
+  não mudar nada, e aí basta dizer "a coleção serve". Mas avise o Cesar e sugira, com o motivo e as
+  opções, quando:
+  - o post **não cabe bem em nenhum livro** (um post de carreira, que não tem livro desde a D61):
+    criar um livro, ou o livro mais próximo e por que ele serve;
+  - o post mostra que **um livro ficaria melhor dividido** (um livro que junta assuntos que já têm
+    posts suficientes para andar sozinhos);
+  - **um nome deixou de servir** (um post de arquitetura corporativa pediria um livro novo ou trocar
+    "Arquitetura de Software" por "Arquitetura", mais genérico);
+  - **dois livros se sobrepõem** e o post poderia morar nos dois.
+
+  Só sugestão: nada muda sem o OK do Cesar. Livro novo ou renomeado segue a seção "Livros novos" de
+  `docs/capas/CAPAS.md` (desenho, ícone, cor, volume em ordem alfabética) e não pode quebrar URL
+  (`/categories/<Nome>/` antigo redireciona). Vale também para as tags (abaixo).
 - **Tags:** de 2 a 4, do vocabulário existente, sem repetir o nome do livro. Tag nova só se servir a
   mais de um post, e **com o ícone dela** (D52): proponha o objeto que a representa (a metáfora, nunca
   o logotipo de uma marca) junto com a tag.

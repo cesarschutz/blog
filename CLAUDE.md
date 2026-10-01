@@ -69,7 +69,10 @@ outras portas) sai.
 Cada categoria é um livro de uma coleção numerada ("edição de estudo"); cada série é uma revista
 técnica (cada post, uma edição). A regra é `docs/capas/CAPAS.md` (D30, D32); os dados, as cores e os
 desenhos ficam em `src/livros/` (D53). Categoria ou série nova = pela seção "Livros novos" do
-`CAPAS.md`, com o OK do Cesar. Os livros **não mudam com o tema** (D39). **Toda tag tem um ícone**
+`CAPAS.md`, com o OK do Cesar; os volumes seguem a ordem alfabética (D61). **Ao planejar todo post,
+confira se a coleção ainda serve** (D61): o normal é não mudar, mas, se o post não couber bem em
+nenhum livro ou se valer criar, dividir ou renomear um livro, avise o Cesar e sugira (skill `post`).
+Os livros **não mudam com o tema** (D39). **Toda tag tem um ícone**
 (D52): tag nova num post = ícone novo, pela seção "Tags" do `CAPAS.md`; sem ele, o build quebra.
 Componentes e detalhes em `.claude/rules/interface.md`. Para conferir, `/amostra/livros/` e
 `/amostra/tags/` (só no dev).

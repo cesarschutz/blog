@@ -2253,3 +2253,33 @@ nada muda.
   (o painel da lousa), `scripts/contraste.mjs` (a tinta e a tinta secundária sobre o painel e o lavado
   dos desenhos), `DESIGN.md` e `docs/estilo-desenho.md`.
 
+
+## D61 · A coleção de 13 livros
+- **Data:** 01/10/2026 · **Status:** decidido; no site só depois do OK do Cesar na página final
+  (desenhos, cores e textos ainda em proposta).
+- **Pedido do Cesar:** trocar os 8 livros por uma coleção que junte os de hoje com as 16 categorias do
+  site de notícias dele (dev-note). Viu cinco sugestões (de 9 a 12 livros, em
+  `docs/prototipos/colecoes/`) e escolheu a 5, "mais livro fica melhor dividido os posts", com um livro
+  de **Frontend** a mais, "visto que tem backend".
+- **Decidido:**
+  - 13 livros: Arquitetura de Software, Dados, Desenvolvimento de Software, DevOps, Frontend,
+    Fundamentos, IA, Integração e Eventos, Pagamentos, Segurança, Sistemas Distribuídos, SRE e Testes.
+  - **Carreira sai** (não tem post). Quando for para o site, `/categories/Carreira/` precisa de
+    redirecionamento.
+  - Os livros de hoje **mantêm o nome** ("não, apenas os novos"): Desenvolvimento de Software e SRE não
+    viram Backend e Observabilidade, e a D30 fica como está.
+  - A tag **Pagamentos** pode ser renomeada ou removida, porque passa a ter o nome de um livro.
+  - **Desenhos novos para os 13**, num conjunto novo que combine (inclusive nos livros de hoje),
+    **cores novas** com motivo ("faria mais sentido Segurança ser vermelho, não?") e **frase e texto
+    novos**; o resultado final numa página para o Cesar aprovar.
+  - **Volumes em ordem alfabética**: o Volume 01 é o primeiro pelo nome, e a estante segue essa ordem.
+    Livro novo entra na sua posição e os seguintes mudam de número.
+  - **Regra dos posts:** a coleção não muda à toa, mas, ao planejar um post, o Claude confere se ele
+    cabe bem num livro; se não couber (um post de carreira, que não tem livro) ou se a coleção ficar
+    melhor com um livro novo, dividido ou renomeado (um post de arquitetura corporativa pediria um
+    livro novo ou trocar "Arquitetura de Software" por "Arquitetura"), ele avisa o Cesar e sugere.
+- **Alternativas:** as sugestões 1 a 4 (9 a 11 livros, com Carreira); a 5 sem Frontend; os nomes do
+  site de notícias para os livros de hoje (Backend, Observabilidade).
+- **Mudado:** a skill `post` e `.claude/rules/posts.md` (a conferência da coleção no plano de cada
+  post), `docs/capas/CAPAS.md` (volumes em ordem alfabética e quando mexer na coleção), `CLAUDE.md`.
+  O controle da rodada está em `docs/prototipos/colecoes/final/controle.md`.

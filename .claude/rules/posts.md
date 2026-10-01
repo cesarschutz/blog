@@ -18,10 +18,12 @@ Para criar, adaptar, reescrever ou revisar um post, siga a skill `post` (e o `DE
   - `category` **ou** `series`;
   - `tags`: de 2 a 4, do vocabulário existente, sem repetir nome de categoria;
   - `draft`.
-- **Categoria** = um dos livros da coleção (`src/livros/livros.json`): Arquitetura de Software,
-  Desenvolvimento de Software, Dados, IA, Segurança, DevOps, SRE ou Carreira. **Categoria nova** só se
-  nenhuma servir: é um livro novo, pela seção "Livros novos" de `docs/capas/CAPAS.md` (cor, desenho,
-  ícone, volume). Avise o Cesar antes.
+- **Categoria** = um dos livros da coleção (`src/livros/livros.json`), o do que o post ensina.
+  **A coleção ainda serve? (D61)** Em todo post, pense se os livros continuam bons com ele: o normal é
+  não mudar, mas se o post não cabe bem em nenhum livro, ou se a coleção ficaria melhor com um livro
+  novo, dividido ou renomeado, avise o Cesar e sugira (skill `post`, passo 2). Livro novo segue a seção
+  "Livros novos" de `docs/capas/CAPAS.md` (cor, desenho, ícone, volume em ordem alfabética), só com o OK
+  dele.
 - `$` em texto precisa de escape (`US\$ 10`).
 - Post da série Java: siga a skill `serie-java`.
 - Nunca commite nem publique sem pedido do Cesar.

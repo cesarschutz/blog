@@ -102,20 +102,15 @@ com a tabela dos bugs que já aconteceram.
 O escuro dos desenhos do corpo (D60, 01/10/2026, publicado): painel próprio, um pouco acima da folha e
 mais neutro, caixas com o tom puro a 45% e tinta um pouco menos branca. A capa não mudou.
 
-Coleções (01/10/2026, branch `claude/magical-einstein-tneg5o`, **aguardando a escolha do Cesar**): cinco
-sugestões de livros que juntam os oito de hoje com as 16 categorias do dev-note, de 9 a 12 livros
-(os oito e Pagamentos; mais Integração e Eventos; os nomes do que tem dentro, com Java e Spring e
-Observabilidade; a arquitetura em três, com Sistemas Distribuídos; o espelho do site de notícias).
-Cada livro com título, frase, o que abrange, os posts que iriam para ele, a cor e o desenho com o
-motivo. Cinco desenhos novos no traço da coleção (caixa registradora, mesa telefônica, relógios de
-Huygens, prumo, ábaco), feitos com a ferramenta nova `scripts/desenho/livros.mjs`; os oito de hoje
-ficam com desenho e cor. Tudo em `docs/prototipos/colecoes/` (controle, contexto, três propostas,
-crítica, pesquisa de cores com fontes, `colecoes.json`, `sugestoes.md`); no dev, `/amostra/colecoes/`.
-Ferramentas novas que servem depois: `scripts/livros/titulo-da-capa.mjs` (corpo do título na capa) e
-`scripts/livros/conferir-cores.mjs` (contraste e pares parecidos de cores novas). A página para
-escolher (estantes, capas e textos das cinco) está publicada para o Cesar em
-<https://claude.ai/code/artifact/564ccedf-bf19-48f1-be36-cb247408a804> (gerada por
-`docs/prototipos/colecoes/gerar-artifact.mjs`). Nada disso entra na `main` antes da escolha.
+Coleções (01/10/2026, branch `claude/magical-einstein-tneg5o`): o Cesar viu as cinco sugestões
+(<https://claude.ai/code/artifact/564ccedf-bf19-48f1-be36-cb247408a804>, `docs/prototipos/colecoes/`) e
+**decidiu (D61)**: a sugestão 5 mais Frontend, 13 livros, Carreira sai, os livros de hoje mantêm o nome,
+volumes em ordem alfabética, a tag Pagamentos pode ser renomeada ou removida, e desenhos, cores, frases
+e textos novos para os 13. **Em andamento:** a direção de arte (conjunto novo de desenhos e cores) e os
+textos, com agentes; depois os 13 desenhos e a página do resultado final para ele aprovar. Controle em
+`docs/prototipos/colecoes/final/controle.md`. Já valem a regra dos posts (conferir se a coleção ainda
+serve e avisar, na skill `post`) e os volumes em ordem alfabética (`CAPAS.md`). Nada muda no site antes
+do OK na página final.
 
 ## Como ver
 
@@ -162,10 +157,9 @@ escolher (estantes, capas e textos das cinco) está publicada para o Cesar em
 
 ## Perguntas abertas para o Cesar
 
-00. **Coleções:** qual das cinco sugestões (a página publicada ou `docs/prototipos/colecoes/sugestoes.md`;
-    a recomendação é a 2), e as duas perguntas que valem para qualquer uma: Carreira fica? Trocar nomes (reabre a D30)?
-    E a tag Pagamentos, que passa a ter o nome de um livro: renomear (Cobrança?) ou abrir exceção na
-    regra. A mensagem do pedido terminou em "apos criar essas 5": falta o que vem depois.
+00. **Coleções (D61):** aprovar a página final dos 13 livros (desenhos, cores, frases e textos), e
+    a tag Pagamentos (renomear ou remover). Depois disso, aplicar no site (livros.json, volumes,
+    categorias dos posts, redirecionamento de `/categories/Carreira/`).
 0. **D54:** as perguntas do fim de `docs/ajustes-d54/controle.md` (chegada da folha longa no celular
    lento, voltar sem bfcache, trava de rolagem do menu, desfile de Categorias no celular,
    redirecionamentos em inglês, busca que volta aberta, textos dos slides e das tags, comportamentos

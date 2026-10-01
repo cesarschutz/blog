@@ -151,6 +151,14 @@ camada visual: estrutura, conteúdo, rotas e comportamento seguem as seções 5 
 Categoria nova = livro novo, pela seção "Livros novos" do `CAPAS.md` (desenho, ícone, volume). Todo
 livro aparece na estante e na lateral, mesmo sem artigos; o número de artigos, não.
 
+**A coleção vai passar a 13 livros (D61, decidido em 01/10/2026; entra no site depois do OK do Cesar
+na página final):** Arquitetura de Software, Dados, Desenvolvimento de Software, DevOps, Frontend,
+Fundamentos, IA, Integração e Eventos, Pagamentos, Segurança, Sistemas Distribuídos, SRE e Testes,
+com os **volumes em ordem alfabética**. Carreira sai; os livros de hoje mantêm o nome; desenhos,
+cores, frases e textos novos para os 13 (a proposta em `docs/prototipos/colecoes/final/`). A tabela
+acima é a do site até lá. Ao planejar um post, o Claude confere se a coleção ainda serve e avisa o
+Cesar quando valer criar, dividir ou renomear um livro (skill `post`).
+
 - **Capa de categoria** (D32): em cima, o bloco na cor do livro com "VOLUME 0N", "CESAR SCHUTZ" e o
   título grande; embaixo, o papel claro só com a frase do livro e o desenho grande, no destaque.
 - **Série "Atualizações do Java"** (D32): revista técnica, cada post uma edição. Papel com faixa no
