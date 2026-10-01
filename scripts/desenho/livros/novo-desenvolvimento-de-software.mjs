@@ -188,6 +188,8 @@ export default {
 
     // ---------- a sombra no chão ----------
     chao(xl, xr + E + 9, 670);
-    hachura(poli([[xr + E + 9, 669.5], [xr + E + 9 + A * (D - E), 669.5 - B * (D - E)], [xr + E + 13, 673.5 - B * (D - E)], [xr + E + 13, 673.5]], true), { angulo: 38, passo: 3.6, margem: 0.2 });
+    const [sx, sy] = [xr + E + 9, 669.5];
+    const [fx, fy] = [A * (D - E), -B * (D - E)];
+    hachura(poli([[sx, sy], [sx + fx, sy + fy], [sx + fx + 4, sy + fy + 4], [sx + 4, sy + 4]], true), { angulo: 38, passo: 3.6, margem: 0.2 });
   },
 };

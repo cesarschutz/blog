@@ -42,10 +42,12 @@ export default {
     const M = (u, v) => P(ix0 + u, iy0 + v, ZM);
     const [MW, MH] = [ix1 - ix0, iy1 - iy0]; // 284 × 184
 
-    // ---------- a chapa de fundo, hachurada de leve ----------
+    // ---------- a chapa de fundo, com a sombra que as paredes de cima e da esquerda projetam nela ----------
     const chapa = quad([P(ix0, iy0, ZP), P(ix1, iy0, ZP), P(ix1, iy1, ZP), P(ix0, iy1, ZP)]);
     t(chapa, { w: 3, papel: true });
-    hachura(chapa, { angulo: 60, passo: 11, margem: 1.5 });
+    const S = 15; // o alcance da sombra das paredes sobre a chapa
+    const sombra = quad([P(ix0, iy0, ZP), P(ix1, iy0, ZP), P(ix1, iy0 + S, ZP), P(ix0 + S, iy0 + S, ZP), P(ix0 + S, iy1, ZP), P(ix0, iy1, ZP)]);
+    hachura(sombra, { angulo: 60, passo: 4.2, margem: 1 });
 
     // ---------- o ferrolho, no alto, da língua de dentro até sair pela parede direita ----------
     const [fv0, fv1] = [12, 38]; // o alto e a base do ferrolho, na chapa
@@ -88,15 +90,15 @@ export default {
 
     // A alavanca detectora, mais fina, com o dente na ponta, por cima das outras; e a mola de lâmina.
     const perfilDetector = () => {
-      const meia = 5;
+      const meia = 6;
       const xo = Math.sqrt(11 * 11 - meia * meia);
       const a = (Math.atan2(-meia, xo) * 180) / Math.PI;
       return juntar([
         arco([0, 0], 11, 11, a, -a - 360),
-        poli([[xo, meia], [comprimento, meia], [comprimento, -14], [comprimento - 8, -14], [comprimento - 8, -meia], [xo, -meia]]),
+        poli([[xo, meia], [comprimento, meia], [comprimento, -16], [comprimento - 11, -16], [comprimento - 11, -meia], [xo, -meia]]),
       ]);
     };
-    const repouso = -6; // o detector em repouso; o fantasma sobe 10°
+    const repouso = -5; // o detector em repouso; o fantasma sobe 12°
     t(noPivo(perfilDetector(), repouso), { w: 2, papel: true, icone: false });
     ponto(pivo, 3);
     ponto(M(14, 44), 2.2); // o parafuso da mola
@@ -148,7 +150,7 @@ export default {
     hachura(quad([[cx1 - 1, cy1 + 1.5], [fx - 1, fy + 1], [fx + 3, fy + 4.5], [cx1 + 3, cy1 + 5]]), { angulo: 38, passo: 3.6, margem: 0.2 });
 
     // ---------- o fantasma: o detector levantado, preso no ferrolho ----------
-    t(noPivo(perfilDetector(), repouso - 10), { fantasma: true });
+    t(noPivo(perfilDetector(), repouso - 12), { fantasma: true });
 
     // ---------- a chave, deitada na mesa, na frente e à esquerda ----------
     const ky = 648; // o eixo da haste

@@ -109,7 +109,7 @@ export default {
     t(face([B3(0, 0), B3(W, 0), B3(W, L), B3(0, L)]), { papel: true });
 
     // ---------- a cabeça da régua-tê, encaixada na borda esquerda ----------
-    const [hw, hv0, hv1, hh0, hh1] = [18, 8, 90, 2.5, 13]; // largura, de v a v, do topo à base
+    const [hw, hv0, hv1, hh0, hh1] = [20, 8, 90, 2.5, 13]; // largura, de v a v, do topo à base
     t(face([B3(-hw, hv0, hh0), B3(0, hv0, hh0), B3(0, hv0, hh1), B3(-hw, hv0, hh1)]), { w: 2, papel: true, icone: false }); // a ponta da frente
     t(face([B3(-hw, hv0, hh0), B3(0, hv0, hh0), B3(0, hv1, hh0), B3(-hw, hv1, hh0)]), { papel: true }); // o alto da cabeça
 
