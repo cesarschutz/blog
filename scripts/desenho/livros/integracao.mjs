@@ -5,8 +5,10 @@
  * as fileiras de jaques, cada uma com a régua das tampinhas anunciadoras por cima; na frente, o
  * tampo com os pares de cordões (os plugues em pé nos furos) e as chavinhas; embaixo do tampo,
  * à vista, os cordões descem até os contrapesos, que puxam o cordão de volta quando a ligação
- * acaba. Dois cordões já ligam quem chamou a quem atende; um terceiro atendeu, e o seu par, ainda
- * na mesa, é o fantasma: o cordão tracejado que a telefonista vai plugar no jaque de quem recebe.
+ * acaba. Dois pares de cordões já ligam quem chamou a quem atende; um terceiro par atendeu a
+ * chamada, e o seu outro cordão, ainda na mesa, é o fantasma: o caminho tracejado, com a seta, que
+ * o plugue vai fazer até o jaque de quem recebe. Uma tampinha caída é a próxima chamada esperando.
+ * Os cordões, os contrapesos, as réguas, a manivela e a hachura ficam fora do ícone da lombada.
  */
 
 /** Projeção oblíqua: 1 unidade de profundidade anda (0,53, −0,282) na tela (28°, encurtada a 0,6). */
@@ -19,7 +21,7 @@ const LADO = [0.47, 0.883];
 export default {
   instrumento: "mesa telefônica manual",
   cor: "#72aba5",
-  desenho({ t, hachura, chao, ponto, linha, poli, bezier, elipse, circulo, retangulo }) {
+  desenho({ t, hachura, chao, ponto, cheio, linha, poli, bezier, elipse, circulo, retangulo }) {
     // ---------- medidas ----------
     const X0 = 92; // a mesa, na frente: esquerda
     const X1 = 328; // e direita
@@ -157,7 +159,7 @@ export default {
     t(elipse([mx, my], 3.4, 5.2, -12), { w: 2, papel: true, icone: false });
     t(linha([mx, my], [mx + 6, my + 12]), { w: 2, icone: false });
     t(retangulo(mx + 6, my + 10, 13, 4.4, 1.8), { w: 2, papel: true, icone: false });
-    ponto([mx, my], 1.2);
+    cheio(circulo([mx, my], 1.2), { icone: false });
 
     // ---------- o fantasma: o cordão que ainda vai ser plugado, com a seta de quem o leva ----------
     const [gx, gy] = furo(3, ZT);
