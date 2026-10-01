@@ -30,10 +30,10 @@ Branch: `claude/magical-einstein-tneg5o`. Nada vai para a `main` sem o OK do Ces
 | 1 | Levantar o material (blog, 28 posts, 20 tags, regras dos livros) | feito |
 | 2 | As 16 categorias do dev-note | feito: o Cesar mandou as capturas da página (o domínio está fora da política de rede do ambiente e o clone do repositório foi negado); transcritas no `contexto.md` |
 | 3 | Ferramenta de desenho dos livros (`scripts/desenho/livros.mjs`) | feito (testada com um desenho de teste) |
-| 4 | Cinco sugestões (propostas independentes, crítica cruzada, síntese) | síntese feita (`colecoes.json` → `sugestoes.md`, por `gerar-sugestoes.mjs`): uma escada de 8 a 12 livros. Propostas do editor e do arquiteto da informação prontas; a do pesquisador ainda rodando; crítica de fora (Fable) rodando, vai para `critica.md` |
+| 4 | Cinco sugestões (propostas independentes, crítica cruzada, síntese) | feito: três propostas (`propostas/`: editor, arquiteto da informação, pesquisador), síntese em `colecoes.json` → `sugestoes.md`, crítica de fora em `critica.md`, aplicada (escada de 9 a 12; uma regra para os posts; livro novo com o próximo volume; Carreira e nomes como perguntas à parte; recomendação: a sugestão 2) |
 | 5 | Cor de cada livro (com o motivo) e contraste pelo `cores.js` | feito: `pesquisa-cores-e-desenhos.md` (paleta de 16, com fontes); os oito de hoje ficam com a cor e o desenho; Pagamentos foi para `#467866` (tinta a 4,16:1); todas as sugestões passam no `conferir-cores.mjs` |
-| 6 | Desenho e ícone de cada livro novo | em andamento: um agente Fable por livro (Pagamentos: caixa registradora; Integração e Eventos: mesa telefônica; Sistemas Distribuídos: os relógios de Huygens; Testes: fio de prumo; Fundamentos: ábaco) |
-| 7 | Página de comparação (`/amostra/colecoes/`) e artifact para o Cesar | a fazer |
+| 6 | Desenho e ícone de cada livro novo | Sistemas Distribuídos (relógios de Huygens), Fundamentos (ábaco), Testes (prumo) e Integração e Eventos (mesa telefônica) prontos; Pagamentos (caixa registradora) na última volta, com o retorno de direção de arte |
+| 7 | Página de comparação (`/amostra/colecoes/`) e artifact para o Cesar | página do dev pronta; `capturar.mjs` (fotos) e `gerar-artifact.mjs` (página do app) prontos; falta publicar com os desenhos finais |
 | 8 | Registro: `docs/estado.md`, este controle; commit e push na branch | a fazer |
 
 ## Escolhas feitas para não parar
@@ -51,6 +51,11 @@ Branch: `claude/magical-einstein-tneg5o`. Nada vai para a `main` sem o OK do Ces
   Pagamentos.
 - Fundamentos leva o ábaco (e não a régua de cálculo da pesquisa): se lê no ícone pequeno, e a cor
   cinza-pedra conversa com ele (calculus é a pedrinha de contar).
+- Depois da crítica: a casa de cada post é o que ele ensina, nas cinco (a chave de idempotência e o
+  efeito externo ficam na arquitetura, ou em Sistemas Distribuídos onde ele existe; Pagamentos começa
+  com o ledger); livro novo entra com o próximo número (nenhum livro de hoje muda de volume, regra do
+  CAPAS.md); Carreira fica nas quatro primeiras; a S5 mantém DevOps (sem Plataforma); Pagamentos
+  `#467866`; a frase de Testes virou "A prova de que o código faz o que deve.".
 
 ## Como retomar
 
