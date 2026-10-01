@@ -137,6 +137,9 @@ node scripts/desenho/centrar.mjs <slug>   # centra os recortes no desenho (dev n
 node scripts/desenho/render.mjs [slug]    # folha da ilustração, claro e escuro (dev no ar)
 node scripts/desenho/java.mjs             # as ilustrações da série Java (padrão fixo, D17)
 node scripts/desenho/tags.mjs [slug]      # os ícones das tags (src/livros/tags/, D52)
+node scripts/desenho/livros.mjs <slug> [--ver]   # desenho e ícone de livro novo (scripts/desenho/livros/<slug>.mjs)
+node scripts/livros/titulo-da-capa.mjs "Linha|Linha" [--frase "…"]   # corpo do título na capa (e as linhas da frase)
+node scripts/livros/conferir-cores.mjs "#hex:Nome" …   # cor de livro novo: contraste nos papéis do site e pares parecidos
 node scripts/marca.mjs                    # a marca e os ícones do navegador (precisa do pdftocairo)
 node scripts/caveat-titulos.mjs           # a Caveat dos títulos à mão (título novo em src/data/mao.ts, C05)
 node scripts/livros/fotos.mjs             # as fotos da ficha "Do livro" e dos vazios (D57), com o dev no ar
@@ -150,7 +153,8 @@ tipos da caneta, de `src/amostra/caneta.md`), `/amostra/desenhos/` e
 `/amostra/livros/` (as capas planas, para comparar com `docs/capas/referencia/`), `/amostra/tags/`
 (os ícones das tags, lado a lado e da pílula à marca d'água) e `/amostra/lousas/` (os quadros-chave
 de cada lousa, parados, no instante de cada marca, com o estado do post; `?lousa=<slug>/<nome>`,
-`?tema=escuro`, `?quadros=todos`).
+`?tema=escuro`, `?quadros=todos`) e `/amostra/colecoes/` (as sugestões de coleção de livros, de
+`docs/prototipos/colecoes/colecoes.json`; `/amostra/colecoes/livro/<slug>/` mostra um livro em tamanho real).
 
 Medição da busca (D2): `scripts/bench-busca/` (construir, conferir, medir), com o dev parado.
 
@@ -181,7 +185,8 @@ docs/historico/          rodadas fechadas: o prompt da Fase 0, os controles da D
                          os protótipos superados
 docs/virada.md           plano para o domínio passar ao blog novo (só com OK do Cesar)
 docs/referencias/        protótipos aprovados da Fase 0 (estilo dos desenhos, lousas, "Folhas claras")
-docs/prototipos/         protótipos que ainda são referência (caneta, animações da D51)
+docs/prototipos/         protótipos que ainda são referência (caneta, animações da D51) e as sugestões de
+                         coleção de livros (colecoes/, à espera da escolha do Cesar)
 src/content/posts/       posts; nome do arquivo = slug da URL
 src/data/                taxonomia e series (leem src/livros), java, decks (apresentações), site
                          (autor, perfis e textos), mao (os títulos à mão da papelaria, C05)
@@ -213,8 +218,10 @@ src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, 
 src/scripts/tema.ts      tema: o botão do cabeçalho alterna claro e escuro (D39)
 scripts/                 contraste, links, apresentacao, og, copiar-katex, desenho/, bench-busca/,
                          marca, caveat-titulos (subconjunto da Caveat, C05), verificar-ambiente
-                         (npm run setup e hook do início da sessão), livros/ (as fotos dos livros, D57),
-                         foto.mjs (foto de uma página ou peça, sem MCP, D58)
+                         (npm run setup e hook do início da sessão), livros/ (as fotos dos livros, D57; o
+                         título da capa e a conferência de cores de livro novo), desenho/livros.mjs (a caneta
+                         dos livros novos), foto.mjs (foto de uma página ou peça, sem MCP, D58; CHROME_PATH
+                         troca o navegador)
 public/posts/<slug>/     diagramas antigos e slides das apresentações (deck/)
 public/livros/fotos/     as fotos dos livros (D57): o deitado de cada livro e o aberto em branco
 src/ilustracoes/         uma ilustração SVG por post (<slug>.svg), com os recortes na raiz (D11)

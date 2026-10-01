@@ -163,7 +163,7 @@ papel e a cor divididos na capa: cada post é uma edição. De uma série para o
 
 ## Livros novos
 
-- **Categoria:** escolha um instrumento de ofício que represente a categoria inteira e desenhe no estilo do projeto, com traço de 1,8, 1,2 e 0,7px, leve tremor, hachura nas sombras e um único elemento fantasma tracejado. Gere o ícone da lombada com só os traços principais. A frase segue o molde do subtítulo, e o volume é o próximo número.
+- **Categoria:** escolha um instrumento de ofício que represente a categoria inteira e desenhe no estilo do projeto, com traço de 1,8, 1,2 e 0,7px, leve tremor, hachura nas sombras e um único elemento fantasma tracejado. Gere o ícone da lombada com só os traços principais. A frase segue o molde do subtítulo, e o volume é o próximo número. A ferramenta: `scripts/desenho/livros.mjs` (o desenho em geometria limpa num módulo `scripts/desenho/livros/<slug>.mjs`; ela passa a caneta, faz a hachura e grava o desenho e o ícone; manual em `docs/prototipos/colecoes/manual-desenho.md`). O corpo do título sai de `scripts/livros/titulo-da-capa.mjs`, e a cor passa por `scripts/livros/conferir-cores.mjs` antes de entrar.
 - **Série:** um livro de capa dura com a capa de revista. Defina a cor de destaque, o título (palavra principal e complemento em itálico), o emblema no mesmo traço, o número de capa, a lista de edições e, se houver material especial, a tarja.
 
 ## Tags (D52)
