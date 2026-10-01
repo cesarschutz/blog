@@ -96,21 +96,21 @@ export default {
 
     // ---------- a urdidura (do peito ao rolo de trás) e os cordões do liço ----------
     const [ux0, ux1] = [102, 274];
-    for (let i = 0; i <= 8; i++) {
-      const x = ux0 + ((ux1 - ux0) * i) / 8;
+    for (let i = 0; i <= 7; i++) {
+      const x = ux0 + ((ux1 - ux0) * i) / 7;
       t(aresta([x, peito, H], [x, peito, D - H]), { w: 3, icone: false });
     }
     const zLico = 38; // os cordões descem no meio da cabeça
-    for (let i = 0; i < 7; i++) {
-      const x = 158 + 15 * i;
+    for (let i = 0; i < 5; i++) {
+      const x = 162 + 19 * i;
       t(aresta([x, topo, zLico], [x, peito, zLico]), { w: 3, icone: false });
     }
     // A lançadeira, pousada na urdidura, à esquerda: o casco em forma de barco (a face da frente, com
     // altura, e o tampo), com a bobina à vista no tampo.
     {
-      const [lx, lz, meia, alt] = [134, 30, 5, 6]; // o centro, a meia largura e a altura
-      const meio = [[-13, -0.62], [-7, -0.9], [0, -1], [7, -0.9], [13, -0.62]];
-      const frente = [[-22, 0], ...meio, [22, 0]]; // a borda da frente, de ponta a ponta
+      const [lx, lz, meia, alt] = [136, 30, 5.5, 7]; // o centro, a meia largura e a altura
+      const meio = [[-15, -0.62], [-8, -0.9], [0, -1], [8, -0.9], [15, -0.62]];
+      const frente = [[-25, 0], ...meio, [25, 0]]; // a borda da frente, de ponta a ponta
       const tras = [...meio].reverse().map(([dx, dz]) => [dx, -dz]);
       const topo3 = (dx, dz) => [lx + dx, peito - alt, lz + dz * meia];
       const lados = frente.map(([dx, dz]) => P(...topo3(dx, dz)));
@@ -124,6 +124,8 @@ export default {
     const [hx0, hx1, hy0, hz0, hz1] = [150, xr, 412, 10, 66];
     bloco(hx0, hx1, hy0, topo, hz0, hz1, { passo: 4.2, iconeFaces: true });
     t(aresta([hx0, hy0 + 16, hz0], [hx1, hy0 + 16, hz0]), { w: 2, icone: false }); // a tampa da caixa
+    // A sombra da cabeça sobre a travessa da direita (a luz vem do alto à esquerda).
+    hachura(face([[xr, topo, E + 1], [xr + E, topo, E + 1], [xr + E, topo, D - E - 1], [xr, topo, D - E - 1]]), { angulo: 60, passo: 3.6, margem: 0.5 });
     // O eixo do prisma, saindo pela face direita da cabeça (fica no ícone: é o que liga a fita à caixa).
     bloco(hx1, 314, 433, 441, 34, 42, { sombra: false, w: 2 });
 
