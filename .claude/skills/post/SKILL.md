@@ -139,7 +139,12 @@ Técnica:
   "ilustração do post". Na lousa, o `rotulo=`; no print, o `alt` diz o que a imagem prova.
 - Antes de aceitar: `node scripts/desenho/validar.mjs <slug>` (capa, lousas, figuras e animações;
   `validar.mjs marcas` para os logos), `centrar.mjs` e o render claro e escuro da capa (`render.mjs`,
-  com o dev no ar), e a foto das figuras e das lousas (`scripts/foto.mjs`, skill `figura`).
+  com o dev no ar).
+- **Revisão de todo desenho terminado, antes de mostrar ao Cesar (D59):** `node
+  scripts/desenho/revisar.mjs <slug> --base <dev>` até sair limpo (ou com cada aviso explicado), e as
+  fotos dele olhadas uma a uma pelo checklist da skill `figura` ("Validar, revisar e conferir"), que
+  traz também a tabela dos bugs que já aconteceram. Vale para capa, figura, animação, lousa, logo e
+  print, e de novo depois de cada ajuste.
 - **Tag nova:** o ícone dela, pela seção "Tags" do `docs/capas/CAPAS.md` (o desenho em
   `scripts/desenho/tags.mjs`, gravado em `src/livros/tags/<slug>.svg` e conferido em `/amostra/tags/`
   ao lado dos outros, nos dois temas). Sem ele, o build quebra.

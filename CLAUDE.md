@@ -130,6 +130,7 @@ npm run setup        # confere o ambiente (Node, dependências, skills, Chrome, 
 npm run apresentacao -- <slug> --pptx <arquivo> --titulo "…"   # slides do NotebookLM
 node scripts/desenho/validar.mjs [slug]   # regras da capa, das lousas, das figuras e das animações
 node scripts/desenho/validar.mjs marcas   # os logos das ferramentas (src/marcas/)
+node scripts/desenho/revisar.mjs <slug> --base <dev>   # revisão dos desenhos do post (D59): bugs + fotos
 node scripts/foto.mjs <url> <saida.png> [--seletor css] [--tema escuro] [--largura 390] …
                                           # foto de uma página ou de uma peça (Chrome próprio; opções no script)
 node scripts/desenho/centrar.mjs <slug>   # centra os recortes no desenho (dev no ar)

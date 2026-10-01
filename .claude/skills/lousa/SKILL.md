@@ -5,11 +5,13 @@ description: Monta os diagramas na lousa com o componente Lousa (D58), nos dois 
 
 # Lousa
 
-Componente `src/components/Lousa.astro` (D58), com o estilo em `lousa.css` e `lousa-nova.css` e o
-motor em `src/scripts/lousa.ts` e `src/lib/lousa-tempo.ts`. O estilo (cores, traço, caneta) está em
-`docs/estilo-desenho.md`; os tempos, em `docs/movimento.md`. Exemplos nos posts
-`criptografia-em-repouso-e-em-transito.mdx`, `jackson-filtros-mascarando-cartao.mdx` e
-`cronjob-vs-endpoint-sqs.mdx`, com os desenhos em `src/lousas/<slug>/`.
+Componente `src/components/Lousa.astro` (D58), com o desenho **no estilo das figuras** (D59: o painel
+do livro, o traço da casa, os tons, os selos e os logos de `figura.css`) e uma **canetinha colorida**
+que desenha na cor do que faz. Estilo em `lousa-nova.css` (mais `figura.css` e `desenho.css`); motor em
+`src/scripts/lousa.ts` e `src/lib/lousa-tempo.ts`. O estilo (cores, traço, caneta) está em
+`docs/estilo-desenho.md`; os tempos, em `docs/movimento.md`. **Modelo:**
+`src/lousas/jackson-filtros-mascarando-cartao/passos.svg` (passos); as comparações dos posts
+`criptografia-em-repouso-e-em-transito` (`tls.svg`) e `cronjob-vs-endpoint-sqs`.
 
 ## Quando usar
 
@@ -76,13 +78,18 @@ A cor de destaque vem sozinha do livro do post. **Títulos de seção migrados n
   trackpad de lado, ou Shift com a roda) e o controle deslizante (as setas vão de um passo ou estado ao
   vizinho). Qualquer gesto pausa. **A rolagem da página nunca mexe na lousa** (D46). No toque, o
   arrasto só começa com um movimento de lado; o dedo que sobe ou desce rola a página.
+- **Até 700px, como as figuras** (D59): o desenho fica com 720px e rola de lado dentro do painel, com
+  a linha "Arraste o desenho para o lado…" embaixo (só aí). Nessa largura o dedo e a rolagem de lado
+  são do painel; o tempo anda pelo play, pela faixa e pelos passos (o mouse ainda arrasta o tempo).
 - **Nada ao lado do controle e nenhuma frase embaixo:** a lousa nunca muda de tamanho.
 - **Passos:** a lista numerada embaixo acende o passo da vez (cor do livro). Um marcador desliza pela
   lista até o passo sob o mouse ou o foco, como na busca. O clique num passo leva a lousa até ele, com
   tudo o que a linha diz já desenhado; o mouse sozinho não mexe na lousa.
-- **A caneta** aparece sempre que algo está sendo desenhado (play, arrasto, rolagem, controle), na
-  ponta do traço ou do texto, na cor do que desenha, com movimento de mão (na escrita, sobe e desce a
-  cada letra; no traço, balança). Uma caneta por lugar, até três ao mesmo tempo.
+- **A canetinha** (D59) aparece sempre que algo está sendo desenhado (play, arrasto, rolagem,
+  controle), na ponta do traço ou do texto, com movimento de mão (na escrita, sobe e desce a cada
+  letra; no traço, balança; pintando, corre no meio da caixa). A ponta, o anel e a tampa ficam na cor
+  do que ela faz: o traço (`stroke`), o texto (`fill`) ou o tom que está pintando (`--tom`), lida na
+  hora pelo script. Uma caneta por lugar, até três ao mesmo tempo.
 - Fora da tela, pausa; volta a tocar se tocava. Na impressão, o desenho inteiro.
 - **Sem JS:** o desenho completo, sem controles, e a lista dos passos. **No RSS:** o rótulo e um link
   para o post.
@@ -91,46 +98,57 @@ A cor de destaque vem sozinha do livro do post. **Títulos de seção migrados n
 - **Acessibilidade:** controle e passos pelo teclado, com foco visível; o conteúdo do diagrama também
   existe em texto (a lista dos passos, ou o estado no controle).
 
-## O desenho (`src/lousas/<slug>/<nome>.svg`)
+## O desenho (`src/lousas/<slug>/<nome>.svg`), no estilo das figuras (D59)
 
-Raiz só com `xmlns` e `viewBox`, **sem `aria-label`** (o rótulo vem do `rotulo=`), sem `id` nem
-`<defs>` (os recortes da escrita ganham id na hora, por instância). Traços dentro de
-`<g class="traco">` (o único grupo que treme); textos fora dele.
+A lousa é uma figura que se desenha: **as mesmas classes, tons, selos e logos das figuras** (skill
+`figura`, `figura.css`), com os atributos de tempo. Leia a seção das figuras em
+`docs/estilo-desenho.md` antes de desenhar. O componente recusa (erro no build) lousa sem o grupo
+`<g class="tinta">`.
 
-| Classe | Uso |
-|---|---|
-| `traco` | grupo dos traços (caneta, 2,7) |
-| `fino` | divisórias de tabela, detalhes, contornos de blocos pequenos (1,5) |
-| `guia` | base de uma linha do tempo (fina e apagada) |
-| `destaque` | traço ou texto na cor de destaque (a caneta assume essa cor) |
-| `fantasma`, `tracejado` | o que não chega ao destino; o reenvio; o limite |
-| `hachura` | sombra: cópia da caixa deslocada, antes dela |
-| `cheio` | forma preenchida com a tinta (ou o destaque, com `destaque`) |
-| `secundario`, `codigo` | texto menor e atenuado; código em mono |
+- Raiz só com `xmlns` e `viewBox="0 0 1100 H"`: **largura 1100** (a canetinha é dimensionada para
+  ela; `H` de 600 a 820). **Sem `aria-label`** (o rótulo vem do `rotulo=`), sem `id`, `<defs>`,
+  `<style>`, `style=` nem cor fixa.
+- **Traços dentro de `<g class="tinta">`** (o grupo que treme); **todo `<text>` fora dele**.
+- **Tons com o mesmo significado das figuras do post** (o mesmo ator, a mesma cor em todas as figuras,
+  animações e lousas do post); vermelho só para erro, limite, recusa, ilegível. O que não é ator fica
+  sem tom (tinta).
+- **Caixa de um ator:** num `<g class="tom-x">`, a sombra (`hachura` deslocada +8 +8, ou `cor` com
+  `transform="translate(7 6)"`), depois `lavado`, depois `linha` (o mesmo retângulo).
+- **Texto nas classes das figuras e nunca menor:** `titulo-caixa` (27), `texto-caixa` (21), `codigo`
+  (25), `nota-pequena` (20), `valor-eixo` (19); no tom com `texto-tom`, dentro do grupo do tom. No
+  celular a lousa tem 720px e rola de lado: com essas fontes, nada fica abaixo de 10px na tela.
+- **Passos:** um selo numerado por passo (`<circle class="selo" r="17">` + `<text
+  class="selo-texto">N</text>`, no tom do passo, fora do `.tinta`), que aparece no início do passo,
+  perto do que ele desenha. Liga o desenho à lista embaixo.
+- **Comparação:** um rótulo por linha à esquerda (o que é cada linha); o que acontece no mesmo
+  instante fica na mesma posição horizontal nas duas linhas.
+- **Logos** onde ajudam (`<g data-marca="postgresql" transform="translate(x y) scale(s)"/>`), como nas
+  figuras.
 
-Quando cada parte aparece fica no próprio elemento, com os tempos de 0 a 1 (podem ir de 0 a N: o
-componente estica a escala até o fim; com 0 a 1, os tempos batem com os `de` dos passos):
+Quando cada parte aparece fica no próprio elemento, com os tempos na escala do desenho (de 0 a N; o
+componente estica a escala até o fim; o `de` de cada passo vezes o fim é a fronteira dele):
 
 | Atributo | Efeito |
 |---|---|
-| `data-traco="a b"` | traça de a até b, com a caneta na ponta (não em tracejado) |
-| `data-escrita="a b"` | escreve o texto da esquerda para a direita, com a caneta seguindo |
-| `data-revela="a b"` | descobre da esquerda para a direita (tracejados, grupos); `data-de="direita"` inverte |
+| `data-traco="a b"` | traça o contorno de a até b, com a canetinha na ponta (não em tracejado) |
+| `data-escrita="a b"` | escreve o texto da esquerda para a direita, com a canetinha seguindo |
+| `data-revela="a b"` | descobre da esquerda para a direita: **pinta** o `lavado` de uma caixa ou uma barra (a canetinha corre no meio, no tom), e mostra tracejados; `data-de="direita"` inverte |
 | `data-aparece="a b"` / `data-some="a b"` | opacidade de 0 a 1 / de 1 a 0 |
 | `data-esmaece="a b v"` | de 1 até v (para o que sai de cena) |
 | `data-desloca="a b dx dy"` | anda (dx, dy); use num `<g>` sem transform próprio |
 
 Sem atributo, a parte já está no quadro desde o início ("o professor montou o quadro antes da aula").
 
-### Como desenhar para a caneta
+### Como desenhar para a canetinha
 
 - **O quadro final precisa estar completo e legível:** é o que aparece antes do play, sem JS e na
   impressão.
-- **Desenhe, não só faça aparecer.** Onde a lousa desenha (caixas, blocos, barras), ponha
-  `data-traco` no contorno e deixe o preenchimento aparecer logo depois, curto:
-  `<rect … class="fino" data-traco="0.04 0.09"/>` e, por cima, `<rect … class="cheio"
-  data-aparece="0.09 0.1"/>`. Pontas de seta: `data-aparece` curto (0,02) no fim do traço.
-- **Texto com `data-escrita`**, para a caneta escrever. Um texto por vez.
+- **Desenhe, não só faça aparecer.** Caixa: `data-traco` no contorno (`linha`), depois `data-revela`
+  no `lavado` (a canetinha pinta no tom) e, por fim, a sombra com `data-aparece` curto. Pontas de seta:
+  `data-aparece` curto (0,02) no fim do traço.
+- **Texto com `data-escrita`**, para a canetinha escrever. Um texto por vez.
+- **Cada parte dentro do seu passo:** nenhuma parte começa num passo e termina no seguinte (o clique
+  no passo mostraria a parte pela metade), e todo passo desenha alguma coisa. O `revisar.mjs` acusa.
 - **Um lugar por vez.** A caneta nunca escreve em dois lugares: partes que se sobrepõem no tempo
   ganham canetas diferentes (até três). Prefira encadear os tempos (um termina, o outro começa). Na
   comparação, as duas linhas andam juntas, uma caneta por linha, como um cursor do tempo.
@@ -138,37 +156,39 @@ Sem atributo, a parte já está no quadro desde o início ("o professor montou o
   (`data-traco`) e escreva o novo embaixo. `data-some` só para o que sai de cena de verdade.
 - **Mais desenho que texto**, num ritmo que dá para ler: cada passo com tempo para ser visto antes do
   seguinte. Pouca coisa se mexendo também vale (só o ponto principal).
-- Na comparação, os **rótulos do desenho** dizem o que é cada linha ("sem sufixo", "com sufixo");
-  os estados não aparecem na tela.
-- Usa a mesma geometria e as mesmas convenções da capa (hachura, linha fantasma), com o estilo da
-  lousa.
 
 ## O que não fazer
 
 - Lousa comandada pela rolagem da página (saiu na D46 e não volta).
-- `LousaLoop` ou `LousaTempo` em post novo (a D58 tirou dos posts novos).
-- Frase ou texto de estado ao lado do controle ou embaixo da lousa (ela mudaria de tamanho).
-- Uma caneta escrevendo em dois lugares; mais de três partes sendo feitas ao mesmo tempo.
+- `LousaLoop` ou `LousaTempo` em post novo (a D58 tirou dos posts novos); desenho novo no estilo
+  antigo do quadro (`<g class="traco">`, `destaque`, `secundario`, `fino`): a D59 trocou pelo das
+  figuras.
+- Frase ou texto de estado ao lado do controle ou embaixo da lousa (ela mudaria de tamanho); a única
+  linha embaixo é a de rolar, só até 700px.
+- Fonte menor que a das classes das figuras para caber mais coisa (no celular vira ilegível).
+- Uma caneta escrevendo em dois lugares; mais de três partes sendo feitas ao mesmo tempo; parte
+  atravessando a fronteira de um passo.
 - Apagar o que já foi escrito para escrever outra coisa no lugar.
 - `data-traco` em linha tracejada ou fantasma (o traçado usa o tracejado; use `data-revela`).
 - `aria-label`, `id`, `<defs>`, cor fixa ou `style=` no arquivo.
 - Lousa solta, sem o texto dizendo o que ela mostra; lousa e figura (ou frase em destaque) dizendo a
   mesma coisa.
 
-## Validar e conferir
+## Validar, revisar e conferir (obrigatório antes de mostrar ao Cesar)
 
 ```sh
-fnm exec --using=24 node scripts/desenho/validar.mjs <slug>   # classes e atributos de tempo
+fnm exec --using=24 node scripts/desenho/validar.mjs <slug>                      # classes e atributos de tempo
+fnm exec --using=24 node scripts/desenho/revisar.mjs <slug> --base http://127.0.0.1:4322   # bugs e fotos
 ```
 
-Depois de ajustar os tempos, abra `/amostra/lousas/?lousa=<slug>/<nome>` (só no dev): cada marca vira
-um quadro parado com o instante. Confira ali, nos dois temas (`&tema=escuro`) e com 390px, que nada
-entra por cima do que já está escrito e que os textos não saem da caixa; use `&quadros=todos` quando a
-folha amostrar. Uma parte a meio caminho aparece inteira no quadro (o quadro parado só esconde o que
-ainda não começou). Por fim, no post, pelo navegador: o play inteiro (a caneta nunca em dois lugares,
-os 5 s no fim), o arrasto, o clique e o mouse nos passos, os dois temas, 390px e movimento reduzido.
-Para uma foto de um instante: `node scripts/foto.mjs <url> <saida.png> --seletor
-".lousa-nova" --arrastar 0.4` (com `--tema escuro`, `--largura 390`).
+O `revisar.mjs` (D59) acusa texto encostado, cortado ou pequeno (no fim e no fim de cada passo, em 1280
+e 390px), parte que atravessa a fronteira de um passo, passo vazio, duas canetas no mesmo lugar no
+play e erro no console, e tira as fotos em `.astro/revisar/<slug>/`: a lousa no fim de cada passo,
+três instantes do play, o escuro e 390px. **Olhe todas as fotos** e confira o que o script não vê
+(checklist da skill `figura`, "Revisão"): a canetinha na cor do que desenha; o passo mostrando só o
+que a linha da lista diz; o desenho contando o que o texto conta; os tons iguais aos das figuras do
+post. Corrija e rode de novo até sair limpo; só então mostre. Um instante avulso:
+`node scripts/foto.mjs <url> <saida.png> --seletor ".lousa-nova" --altura 1500 --arrastar 0.4`.
 
 ## Legado: `LousaTempo` e `LousaLoop` (só nos posts antigos)
 
@@ -188,4 +208,6 @@ animação com play. Não use em post novo.
   não muda) e num `aria-live`.
 - `LousaLoop`: anda sozinha quando aparece na tela, com barra de tempo, Recomeçar e Pausar, e uma pausa
   no fim; `parado` é o instante do quadro parado (sem JS e com movimento reduzido).
-- Os desenhos usam as mesmas classes e os mesmos atributos de tempo da `Lousa`.
+- Os desenhos deles ficam no estilo antigo do quadro (`<g class="traco">`, `fino`, `guia`,
+  `destaque`, `fantasma`, `tracejado`, `hachura`, `cheio`, `secundario`, `codigo`, em `lousa.css`),
+  com os mesmos atributos de tempo. Ao revisar o post, a lousa é redesenhada no estilo das figuras.

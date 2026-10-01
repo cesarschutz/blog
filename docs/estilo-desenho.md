@@ -84,7 +84,8 @@ destaques com 42% de branco passam em todas as categorias (5,1 a 9,8:1).
   porque no celular a figura fica com 720px e rola de lado dentro do quadro.
 - **Legenda que destaca:** a legenda embaixo (uma frase) diz como ler as cores; uma legenda de cores
   dentro da figura só com 4 tons ou mais. Com o mouse numa cor da legenda, ou no próprio componente,
-  as outras cores apagam e aquele ator fica em destaque.
+  só aquele ator fica aceso: as outras cores e o que não tem cor apagam, menos a referência de todas as
+  cores (o cabeçalho de uma tabela, num `<g class="referencia">`, e os eixos), que fica inteira (D59).
 - **Setas à mão** (a ponta é um traço), nunca a ponta pronta do SVG. Nada cruza texto: as setas
   desviam das caixas e dos rótulos.
 - **Gráficos:** eixo na tinta, grade pontilhada e apagada, a série num tom, a área lavada, o limite
@@ -119,9 +120,45 @@ No escuro, cada tom leva 42% de branco (`--branco-no-escuro`), como a cor do liv
 4,5:1 sobre o lavado (`npm run contraste`). O lavado é 16% do tom sobre o painel no claro e 30% no
 escuro; a cor fora do registro, 78% do tom, como na capa.
 
-## Lousas dos diagramas: "Invertida, canetinha"
+## Lousas: a figura que se desenha (D59)
 
-A lousa é sempre o **contrário da página**:
+Desde 30/09/2026, a `Lousa` usa **o mesmo estilo das figuras** (a seção acima): o painel do livro, o
+traço da casa com tremor, as caixas com o fundo lavado no tom e a sombra de hachura, os seis tons com o
+mesmo significado das figuras do post, os selos numerados e os logos. O que muda é o tempo: a lousa se
+desenha diante do leitor, e quem desenha é uma **canetinha colorida**. O quadro escuro com o canetão
+ficou só nas lousas antigas (abaixo), porque brigava com as figuras coloridas no mesmo post.
+
+- **A canetinha:** ponta de feltro, cone de plástico claro, corpo fino levemente tingido e a tampa no
+  fundo, com contorno de tinta, como os desenhos. A ponta, o anel e a tampa ficam **na cor do que ela
+  está fazendo**: o traço (`stroke`), o texto (`fill`) ou o tom que está pintando. Girada −52° (mão
+  direita), com sombra leve; feita para o desenho de 1100 de largura (o script ajusta a escala).
+- **Como ela desenha:** traça o contorno da caixa (`data-traco`), **pinta** o fundo lavado
+  (`data-revela`, a canetinha corre no meio da caixa, no tom) e escreve os textos (`data-escrita`). A
+  sombra e as pontas de seta aparecem curtas no fim.
+- **Com mão** (D58): escrevendo, a ponta sobe e desce a cada letra e a mão gira um pouco; no traço,
+  ela balança de leve; pintando, corre com um balanço leve. Nunca anda reta de um lado para o outro.
+- **Uma caneta por lugar** (D58): uma caneta nunca escreve em dois lugares. Quando duas partes são
+  feitas ao mesmo tempo, cada uma tem a sua (até três); melhor ainda, desenhe um lugar por vez. Na
+  comparação, uma caneta por linha, como um cursor do tempo.
+- **Passos com selos:** cada passo tem o selo numerado no tom dele, perto do que ele desenha, ligando o
+  desenho à lista embaixo. **Comparação:** um rótulo por linha, e o que acontece no mesmo instante fica
+  na mesma posição horizontal.
+- A canetinha aparece sempre que algo está sendo desenhado (play, arrasto, rolagem horizontal sobre a
+  lousa, controle) e some quando para; voltou no tempo, o desenho se apaga até ali. A rolagem da
+  página não mexe na lousa (D46).
+- **Pouco texto trocando** (D58): o que foi escrito não some; se mudou, risca e escreve o novo
+  embaixo. O quadro final (o que aparece antes do play) fica completo e legível.
+- Os rótulos e as caixas iniciais do cenário podem já estar desenhados ("o professor montou o quadro
+  antes da aula").
+- **Medidas:** `viewBox` com 1100 de largura; as fontes das figuras, nunca menores (no celular a lousa
+  tem 720px e rola de lado dentro do painel, como as figuras).
+- **Frase em destaque** (recurso raro): uma citação cujas palavras acendem com a rolagem.
+- Com `prefers-reduced-motion`: desenho completo, sem caneta e com todos os passos visíveis.
+
+## O quadro antigo: "Invertida, canetinha" (só `LousaTempo` e `LousaLoop`, nos posts antigos)
+
+Vale só até o post ser revisto pela skill `post`, quando a lousa é redesenhada no estilo acima. A
+lousa antiga é sempre o **contrário da página**:
 
 | | Página clara: lousa de vidro escura | Página escura: quadro branco suavizado |
 |---|---|---|
@@ -130,28 +167,9 @@ A lousa é sempre o **contrário da página**:
 | Caneta | clara, `#F4F6F5` | escura, `#16212B` |
 | Destaque | `color-mix(in oklab, cor, #9ff5dc 55%)` | `color-mix(in oklab, cor, #0b6f58 35%)` |
 
-- Traço de **canetinha** nas duas (sem giz), com leve tremor. Os rótulos usam a mesma Literata
-  itálica do blog, sem letra de mão.
-- **A caneta aparece desenhando.** Enquanto uma seta é traçada, a caneta fica na ponta do traço e
-  acompanha o desenho. Os textos são escritos da esquerda para a direita, com a caneta seguindo. A
-  caneta assume a cor do que está desenhando (a cor de destaque, nos destaques).
-- **Com mão** (D58): escrevendo, a ponta sobe e desce a cada letra e a mão gira um pouco; no traço,
-  ela balança de leve. Nunca anda reta de um lado para o outro.
-- **Uma caneta por lugar** (D58): uma caneta nunca escreve em dois lugares. Quando duas partes são
-  feitas ao mesmo tempo, cada uma tem a sua (até três); melhor ainda, desenhe um lugar por vez. Na
-  comparação, uma caneta por linha, como um cursor do tempo.
-- **Desenhar, não só aparecer** (D58): onde a lousa desenha (caixas, blocos, barras), a caneta traça
-  o contorno e o preenchimento vem logo depois. Aparecer de uma vez fica para o cenário montado antes
-  da aula e para as pontas de seta.
-- A caneta aparece sempre que algo está sendo desenhado (play, arrasto, rolagem horizontal sobre a
-  lousa, controle) e some quando para; voltou no tempo, o desenho se apaga até ali. A rolagem da
-  página não mexe na lousa (D46).
-- **Pouco texto trocando** (D58): o que foi escrito não some; se mudou, risca e escreve o novo
-  embaixo. O quadro final (o que aparece antes do play) fica completo e legível.
-- Os rótulos e as caixas iniciais do cenário podem já estar desenhados ("o professor montou o quadro
-  antes da aula").
-- **Frase em destaque** (recurso raro): uma citação cujas palavras acendem com a rolagem.
-- Com `prefers-reduced-motion`: desenho completo, sem caneta e com todos os passos visíveis.
+- Traço de canetão nas duas (sem giz), com leve tremor; o marcador simples desenha, na cor do traço
+  (a de destaque, nos destaques). Os rótulos usam a mesma Literata itálica do blog. O resto (a mão,
+  uma caneta por lugar, pouco texto trocando) é igual ao da lousa nova.
 
 ### Valores de partida (protótipo "Invertida, canetinha")
 

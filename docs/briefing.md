@@ -513,7 +513,15 @@ com o texto**: o texto o apresenta e diz o que olhar nele; nada de imagem solta.
 
 ### 7.1 A lousa
 
-A lousa é sempre o **contrário da página**:
+**No estilo das figuras (D59, 30/09/2026):** a lousa usa o painel do livro, o traço da casa, os tons
+com o mesmo significado das figuras do post, os selos numerados nos passos e os logos (§7.2), e quem
+desenha é uma **canetinha colorida**, na cor do que está fazendo (o traço, o texto ou o tom que pinta):
+contorna a caixa, pinta o fundo e escreve. O comportamento abaixo (play, passos, comparação, a mão,
+uma caneta por lugar) continua o mesmo. Até 700px, como as figuras, o desenho fica com 720px e rola de
+lado no painel; aí o tempo anda pelo play, pela faixa e pelos passos. O quadro abaixo ("contrário da
+página") ficou só nas lousas antigas (`LousaTempo` e `LousaLoop`), até o post ser revisto.
+
+O quadro antigo era sempre o **contrário da página**:
 - Página no tema claro: **lousa de vidro escura** (`#15191C`, reflexo diagonal sutil, borda
   `#2C3438`), traço de caneta clara (`#F4F6F5`), destaque na cor da categoria clareada
   (`color-mix(in oklab, cor, #9ff5dc 55%)`).

@@ -289,15 +289,18 @@ o foco do teclado igual ao mouse, Esc fecha, movimento reduzido): `DESIGN.md`, M
   - `pulsa` 2,4s (até 1,12), `pisca` 2s (até 25%), `gira` 9s por volta, `balanca` 3,2s (±4°) e `anda`
     2,6s (±6px), todos em laço.
 - **Legenda que destaca** (`figura.css`, só nas figuras com legenda): com o mouse numa cor da legenda
-  ou no componente, as outras cores apagam a 22% em 0,3s.
+  ou no componente, tudo o que não é daquela cor apaga a 22% em 0,3s, menos a referência
+  (`.referencia` e os eixos, D59).
 - **A lousa** (`Lousa.astro`, motor `src/scripts/lousa.ts`): começa no fim, completa e parada. O play
   vai do início ao fim em **7s** por padrão (`duracao`, em segundos), para **5s** no quadro final sem
   caneta e recomeça. Fora da tela (200px de folga), pausa e volta a tocar se tocava. A rolagem
   horizontal sobre a lousa anda 0,0012 da volta por pixel (0,03 por linha, com Shift e a roda); no
-  toque, o arrasto só começa depois de 8px de lado (o dedo que sobe ou desce rola a página). A caneta
-  aparece e some por opacidade (0,2s), na ponta do que está sendo feito; na escrita, sobe e desce 22%
-  da altura do texto a cada letra e gira até 6°; no traço, gira até 4°; até três canetas ao mesmo
-  tempo, a mais recente com a primeira.
+  toque, o arrasto só começa depois de 8px de lado (o dedo que sobe ou desce rola a página); até
+  700px o desenho rola de lado no painel, e o dedo e a rolagem de lado são dele (D59). A canetinha
+  (D59) aparece e some por opacidade (0,2s), na ponta do que está sendo feito, na cor do que faz; na
+  escrita, sobe e desce 22% da altura do texto a cada letra e gira até 6°; no traço, gira até 4°;
+  pintando (`data-revela`), corre no meio da caixa e gira até 3°; até três canetas ao mesmo tempo, a
+  mais recente com a primeira.
 - **Marcador dos passos** (lista embaixo da lousa de passos, como o da busca, D49): desliza até o
   passo sob o mouse ou o foco em **0,28s** (`cubic-bezier(0.215, 0.61, 0.355, 1)`, altura junto) e
   aparece ou some em 0,2s; na primeira vez, aparece direto no lugar. O passo da vez acende na cor do

@@ -1,7 +1,7 @@
 # Estado do projeto
 
 Painel, não diário: fase atual, próximos passos, perguntas abertas e riscos. O detalhe de cada rodada
-fica em `docs/decisoes.md` (D1 a D58) e no histórico do git; controles de rodadas fechadas, em
+fica em `docs/decisoes.md` (D1 a D59) e no histórico do git; controles de rodadas fechadas, em
 `docs/historico/`.
 
 ## Fase atual
@@ -91,6 +91,14 @@ nos docs. Os três primeiros posts foram revistos pelas regras novas e passaram 
 testa direto no site. Os dez artigos de exemplo ficaram fora da `main`, na branch local
 `exemplos-arquivo` (pasta `../blog-exemplos`).
 
+Lousa no estilo das figuras (D59, 30/09/2026, publicada): a `Lousa` usa o painel, o traço, os tons, os
+selos e os logos das figuras, e uma canetinha colorida desenha; no celular, rola de lado como as
+figuras, e o painel acompanha a canetinha. As quatro lousas dos três posts foram redesenhadas. O
+destaque da legenda passou a apagar tudo o que não é da cor do mouse, menos a referência
+(`<g class="referencia">` e os eixos). E todo desenho passa pela revisão antes de ir ao Cesar:
+`node scripts/desenho/revisar.mjs <slug>` (bugs automáticos e fotos) e o checklist da skill `figura`,
+com a tabela dos bugs que já aconteceram.
+
 ## Como ver
 
 - Dev: `fnm exec --using=24 npm run dev -- --host 127.0.0.1` (<http://127.0.0.1:4322>); parar com
@@ -117,6 +125,7 @@ testa direto no site. Os dez artigos de exemplo ficaram fora da `main`, na branc
 | D49–D51 | ideias de movimento revistas, ajustes de 27/09, animações revistas (abertura, troca por folhas) |
 | D52 | acabamento das animações, leitura, tags com ícone, destaque na grade, campo `codigo`, C04 e C05 |
 | D58 | capa viva, figuras coloridas, `Lousa` nova, animação com play, ícones das ferramentas, print; os três primeiros posts revistos |
+| D59 | a lousa no estilo das figuras (canetinha colorida), o destaque da legenda revisto e a revisão de todo desenho (`revisar.mjs`) |
 
 ## Próximos passos
 

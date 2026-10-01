@@ -68,6 +68,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D56 | Caneta com 34 tipos e mais marcações por post | em vigor |
 | D57 | Livros realistas: capa dura em todos os livros, estante e pilha com volume, livro deitado no "Do livro", livro aberto nos vazios e a série como livro | em vigor |
 | D58 | Recursos visuais novos: capa viva, figuras coloridas, a lousa nova, a animação com play, os ícones das ferramentas, o print e a caneta da leitura na cor do livro | decidido |
+| D59 | A lousa no estilo das figuras, com uma canetinha colorida; o destaque da legenda que apaga tudo menos a cor e a referência; a revisão de todo desenho antes de entregar (`revisar.mjs`) | decidido |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -2168,3 +2169,59 @@ nada muda.
   `/amostra/lousas/` (lê a `Lousa`); nas regras,
   `DESIGN.md`, `docs/` (briefing, estilo, movimento, estado), `CLAUDE.md`, as skills `post`, `desenho`,
   `lousa` e `figura` (nova) e as regras `desenho` e `interface`.
+
+## D59 · A lousa no estilo das figuras e a revisão de todo desenho
+- **Data:** 30/09/2026 · **Status:** decidido.
+- **Pedido do Cesar:** olhando os posts publicados com a D58, "a lousa não ficou nada a ver, os
+  coloridos estão bem mais bonitos": manter as regras da lousa (o play, os passos, a comparação) e
+  trocar o canetão no quadro por uma canetinha colorida desenhando no estilo das figuras. Depois de
+  achar bugs no destaque das figuras, pediu que todo desenho seja revisado depois de terminado, que os
+  desenhos e lousas dos três posts revistos passem por essa revisão e que as regras mudem para isso não
+  acontecer de novo. Elogiou como referência a animação do Jackson (o cartão pelos dois caminhos, o CVV
+  vermelho caindo no filtro e a máscara verde entrando: "ficou TOP") e as figuras de sequência do
+  CronJob.
+- **Decidido:**
+  - **A lousa usa o estilo das figuras:** o painel do livro, o traço da casa, os tons com o mesmo
+    significado das figuras do post, os selos numerados nos passos e os logos. O SVG tem o grupo
+    `<g class="tinta">` e as classes de `figura.css`, com os atributos de tempo de sempre; `viewBox`
+    com 1100 de largura. O componente `Lousa` recusa (erro no build) desenho no estilo antigo.
+  - **A canetinha:** ponta de feltro, cone, corpo fino e tampa, com contorno de tinta; a ponta, o anel
+    e a tampa na cor do que ela faz (o `stroke` do traço, o `fill` do texto ou o `--tom` que pinta),
+    lida na hora pelo script. Contorna a caixa (`data-traco`), pinta o fundo (`data-revela`) e escreve
+    (`data-escrita`). O resto da caneta (a mão, uma por lugar, até três) é o da D58.
+  - **No celular, como as figuras:** até 700px o desenho fica com 720px e rola de lado no painel, com a
+    linha "Arraste o desenho para o lado…". Nessa largura, o dedo e a rolagem de lado são do painel, e
+    o tempo anda pelo play, pela faixa e pelos passos (o mouse ainda arrasta o tempo). Antes, a lousa
+    encolhia até a letra ficar com 7 a 10px.
+  - **A `LousaTempo` e a `LousaLoop`** dos posts antigos ficam com o quadro antigo até o post ser
+    revisto; aí a lousa é redesenhada no estilo novo.
+  - **Revisão obrigatória de todo desenho** (capa, figura, animação, lousa, logo, print), depois de
+    terminar e depois de cada ajuste, antes de mostrar ao Cesar: `node scripts/desenho/revisar.mjs
+    <slug>` limpo e as fotos dele olhadas pelo checklist da skill `figura`, que traz a tabela dos bugs
+    que já aconteceram. O script acusa texto encostado, cortado ou com menos de 10px na tela (em 1280 e
+    390px, no fim, em cada passo da lousa e em instantes da animação); na figura com legenda, o que não
+    apaga e o que apaga errado com o mouse em cada cor e a animação que mexe em `opacity`; na lousa,
+    parte que atravessa a fronteira de um passo, passo vazio e duas canetas no mesmo lugar; print e
+    ícone sem link; caixa pela metade (moldura sem tom com texto de cor, ou o contrário); a capa viva que
+    não se mexe ou não volta; erro no console. E avisa de texto sem tom colado num texto com tom.
+  - **Destaque da legenda:** com o mouse numa cor, só ela fica acesa: as outras cores e o que não tem
+    cor apagam. Fica acesa, inteira, só a referência de todas as cores: o que está num `<g
+    class="referencia">` (o cabeçalho de uma tabela, com ícones e logos) e os eixos dos gráficos. Tudo
+    o que é de um ator vai no grupo do tom dele. Antes, o que não tinha cor nunca apagava, e o "Banco",
+    as notas e a "Resposta da API" ficavam acesos com qualquer cor.
+- **Achado na revisão dos três posts** (30/09/2026, com o `revisar.mjs` e as fotos):
+  - criptografia, figura das camadas: o cabeçalho ficava pela metade (os logos apagavam, o disco e a
+    rede não) e "TLS", "disco cifrado" e "só a aplicação abre" ficavam acesos com o título da linha
+    apagado (o bug que o Cesar viu);
+  - Jackson, figura dos dois mappers: a "Resposta da API" ficava acesa com qualquer cor, e a moldura do
+    "JSON do log" ficava acesa com o texto de dentro apagado;
+  - CronJob, figuras das abordagens A e B: o "Banco", as notas, o "mesmo banco" e a linha tracejada
+    ficavam acesos com qualquer cor;
+  - as lousas: no celular encolhiam até a letra ficar com 7 a 10px; com a rolagem de lado, o que a
+    caneta desenhava ficava fora da parte à vista, e agora o painel acompanha a canetinha no play e vai
+    até o passo no clique.
+- **Motivo:** o quadro escuro brigava com as figuras coloridas no mesmo post; com o mesmo estilo, a
+  lousa vira uma figura que se desenha. Os bugs do destaque (o retângulo que piscava, o rótulo de duas
+  cores, os logos soltos, o cabeçalho pela metade) passaram por conferências que só olhavam o quadro
+  parado; a revisão agora dispara cada estado e mede.
+

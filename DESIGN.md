@@ -414,8 +414,10 @@ mexer na página. O site não tem som.
 - **Avisos:** Nota, Dica (também a linha adicionada no diff), Importante, Atenção e Cuidado (também
   a linha removida): fio fino na cor do aviso e fundo só levemente tingido (briefing §5.3), nunca a
   caixa pintada da cor inteira.
-- **Lousa:** sempre o contrário da página. No tema claro é vidro escuro (#15191C) com caneta clara;
-  no escuro, quadro branco suavizado (#CFD5D1, nunca branco puro) com caneta escura.
+- **Lousa** (D59): no estilo das figuras (o painel do livro, o traço da casa, os tons, os selos e os
+  logos), desenhada por uma canetinha colorida na cor do que faz. O quadro antigo (vidro escuro no
+  claro, #15191C, e quadro branco suavizado no escuro, #CFD5D1) ficou só na `LousaTempo` e na
+  `LousaLoop` dos posts antigos.
 - **Tons das figuras** (D58, `--diag-*`: azul, verde, âmbar, vermelho, roxo e petróleo; no escuro,
   com 42% de branco): só nas figuras do corpo do post (diagramas, gráficos, animações e logos). Cada
   ator tem um tom, o mesmo em todas as figuras do post; o vermelho é só para erro, limite e recusa. O
@@ -693,8 +695,10 @@ Cada post tem uma ilustração, e os diagramas seguem o mesmo traço:
 **Técnica (D11, D35):** SVG **desenhado à mão**, em coordenadas, com classes e variáveis CSS (sem
 `id`, sem `defs` próprios e sem cor fixa). O tremor é o filtro SVG global `feTurbulence`
 (`fractalNoise`, `baseFrequency` 0.018, `numOctaves` 2, `seed` 7) seguido de `feDisplacementMap`
-(`scale` 4), aplicado só no grupo dos traços, para os textos ficarem nítidos. Nas lousas, o tremor é
-mais leve (`baseFrequency` 0.02, `scale` 2). O Rough.js não é usado. Regras técnicas, recortes e
+(`scale` 4), aplicado só no grupo dos traços, para os textos ficarem nítidos. A lousa nova (D59) usa
+o mesmo tremor das figuras; nas lousas antigas, ele é mais leve (`baseFrequency` 0.02, `scale` 2).
+**Todo desenho terminado passa pela revisão** (D59, `node scripts/desenho/revisar.mjs <slug>` e as
+fotos dele, pelo checklist da skill `figura`) antes de ir para o Cesar. O Rough.js não é usado. Regras técnicas, recortes e
 validação: skills `desenho` (capa), `figura` e `lousa`, e `node scripts/desenho/validar.mjs`.
 **Custo:** o filtro é refeito a cada quadro enquanto o traço se move, então todo desenho animado passa
 por um trace de performance (CPU 4×) antes de ser aceito, e o que se move nas figuras e nas animações

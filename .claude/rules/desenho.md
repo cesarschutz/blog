@@ -22,9 +22,16 @@ O que nunca pode:
 - cor fixa, `style=`, `stroke-width`, degradê, sombra, `<image>`, `marker`, fonte de letra de mão,
   emoji ou texto demais;
 - `id` ou `<defs>` próprios (filtros e padrões ficam definidos uma vez no layout);
-- texto dentro do grupo que treme (`.tinta` na capa e nas figuras, `.traco` na lousa); nas figuras e
-  nas animações, o que se move também fica fora dele (na capa, o `<g class="mexe-*">` fica dentro);
+- texto dentro do grupo que treme (`.tinta` na capa, nas figuras e nas lousas da D59; `.traco` só nas
+  lousas antigas); nas figuras e nas animações, o que se move também fica fora dele (na capa, o
+  `<g class="mexe-*">` fica dentro);
+- lousa nova no estilo antigo do quadro: a `Lousa` usa o estilo das figuras (D59);
+- numa figura com legenda, parte de um ator fora do grupo do tom dele, referência (o cabeçalho) fora de
+  um `<g class="referencia">`, ou detalhe que se mexe animando `opacity` (o destaque da legenda deixaria
+  de funcionar);
 - nas figuras, um tom de fora dos seis `tom-*`, ou o vermelho num ator comum; na capa, mais de uma
   cor;
 - aceitar o desenho sem passar no validador (`node scripts/desenho/validar.mjs <slug>`; os logos,
-  `validar.mjs marcas`) e sem conferir o render ou a foto, claro e escuro.
+  `validar.mjs marcas`) e sem conferir o render ou a foto, claro e escuro;
+- mostrar ao Cesar um desenho sem a revisão (D59): `node scripts/desenho/revisar.mjs <slug>` limpo e
+  as fotos dele olhadas pelo checklist da skill `figura`, depois de terminar e depois de cada ajuste.

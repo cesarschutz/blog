@@ -69,7 +69,17 @@ Arquivo `src/figuras/<slug>/<nome>.svg`. Qualquer desenho que não muda: diagram
 - **Selos** numerados quando a figura conta uma ordem; o texto diz "na ordem dos números".
 - **Legenda de cores dentro da figura** só com 4 tons ou mais, cada item num `<g class="legenda
   tom-x">`; com o mouse numa cor (na legenda ou no componente), as outras apagam e aquele ator fica em
-  destaque. Com menos tons, a `legenda=` embaixo basta.
+  destaque. Com menos tons, a `legenda=` embaixo basta. Numa figura com legenda (D59):
+  - **com o mouse numa cor, só ela fica acesa**: as outras cores **e o que não tem cor** apagam;
+  - **tudo o que é de um ator vai no grupo do tom dele**: a caixa, o título, o complemento embaixo do
+    título, o ícone e o logo (senão, metade acende e metade apaga);
+  - **a referência de todas as cores** (o cabeçalho de uma tabela, com os ícones e os logos dele) vai
+    inteira num `<g class="referencia">` e fica acesa; os eixos dos gráficos (`eixo`, `grade`,
+    `valor-eixo`, `titulo-eixo`) também;
+  - **logo solto** (fora do grupo do ator) leva o tom do ator no marcador: `<g data-marca="sqs"
+    class="tom-roxo" …/>`;
+  - **detalhe que se mexe nunca anima `opacity`** (o destaque é `opacity`, e a animação venceria):
+    `pisca` e `pacote` usam `fill-opacity` e `stroke-opacity`.
 - **Letra mínima:** `nota-pequena` (20) e `valor-eixo` (19). Até 700px, a figura fica com 720px e rola
   de lado dentro do quadro, com o aviso "Arraste para o lado".
 - Não use `anotacao` em figura (ela só aparece no recorte largo da capa).
@@ -114,6 +124,19 @@ com movimento reduzido (a figura com um deles ganha o observador sozinha).
 O `pacote` vai numa cópia da seta, por cima dela e fora do `.tinta`, dentro do `<g>` do tom. Um gráfico
 também pode ter detalhe: um ponto pulsando no pico, um cursor correndo na série. Se todas as linhas
 acontecem ao mesmo tempo de verdade (mensagens e heartbeats), podem andar juntas.
+
+## Referências aprovadas pelo Cesar (30/09/2026)
+
+Use como régua de qualidade antes de entregar uma figura ou animação:
+
+- **Animação `src/animacoes/jackson-filtros-mascarando-cartao/dois-caminhos`** ("essa animação ficou
+  TOP"): o mesmo objeto (o cartão) vai por dois caminhos; no caminho errado, o que chega ao log fica
+  vermelho e é riscado; no certo, o cartão atravessa o filtro, a peça vermelha (o CVV) cai e a fita
+  verde (a máscara) entra. A cor de cada peça diz o que ela é, o movimento mostra a regra acontecendo,
+  e a frase embaixo resume o que se viu.
+- **Figuras de sequência `src/figuras/cronjob-vs-endpoint-sqs/gatilho-dispara-duas-vezes` e
+  `sem-resposta-para-perder`** ("muito legal"): diagramas de sequência com os pacotes andando pelas
+  setas na ordem em que as coisas acontecem.
 
 ## Animação com play (`Animacao`)
 
@@ -193,23 +216,56 @@ painel.
   DynamoDB, boas práticas para a chave de partição"); o site sai sozinho depois dela.
 - O componente põe a borda (o print branco não se confunde com a folha) e não abre no visor.
 
-## Validar e conferir
+## Validar, revisar e conferir (obrigatório antes de mostrar ao Cesar)
+
+Todo desenho terminado (figura, animação, lousa, capa, logo, print) passa por esta revisão **antes**
+de ir para o Cesar. Desenho entregue com bug que a revisão pegaria é falha do processo.
 
 ```sh
 fnm exec --using=24 node scripts/desenho/validar.mjs <slug>    # capa, lousas, figuras e animações do post
 fnm exec --using=24 node scripts/desenho/validar.mjs marcas    # os logos
-fnm exec --using=24 node scripts/foto.mjs <url> <saida.png> --seletor ".figura" [--indice n] [--tema escuro] [--largura 390]
-fnm exec --using=24 node scripts/foto.mjs <url> <saida.png> --seletor ".figura" --hover ".legenda" --esperar 600
-fnm exec --using=24 node scripts/foto.mjs <url> <saida.png> --seletor ".animacao" --esperar 4000   # um instante da animação
+fnm exec --using=24 node scripts/desenho/revisar.mjs <slug> --base http://127.0.0.1:4322   # bugs e fotos (D59)
 fnm exec --using=24 npm run conferir -- <slug>                 # 320–1600px, dois temas, console, rolagem, alt
 ```
 
-O `foto.mjs` também aceita `--movimento-reduzido`, `--clicar`, `--inteira` e `--antes` (veja o
-cabeçalho do script). O `npm run contraste` confere os tons (`--diag-*`), inclusive sobre o painel de
-cada livro.
+O **`revisar.mjs`** acusa sozinho (e sai 1): texto encostado, cortado na borda ou com menos de 10px na
+tela (em 1280 e 390px, no fim, em cada passo da lousa e em instantes da animação); na figura com
+legenda, o que não apaga e o que apaga errado com o mouse em cada cor, e animação que mexe em
+`opacity`; na lousa, parte que atravessa a fronteira de um passo, passo vazio e duas canetas no mesmo
+lugar; print sem alt, legenda ou link; ícone no texto sem link; erro no console ou página que não abre.
+Ele dá **aviso** (que precisa ser olhado e explicado) para texto sem tom colado num texto com tom. E
+tira as fotos em `.astro/revisar/<slug>/`: cada desenho em 1280 claro e escuro e em 390, cada cor da
+legenda com o mouse, a lousa em cada passo e no play, a animação em quatro instantes.
 
-Olhe cada figura a olho, nos dois temas e em 390px: nada cruza texto, letra legível, o destaque da
-legenda, os detalhes na ordem do fluxo. Na animação, assista a uma volta inteira: dá para ler cada
-coisa, nada some do que foi escrito, o quadro final bate com o arquivo, e com movimento reduzido ela
-não abre tocando. Figura com detalhes ou animação passa pelo trace de performance com CPU 4× (skill
-`post`, passo 7).
+**Olhe todas as fotos** e confira o que o script não vê:
+
+1. O desenho conta o que o texto conta, e o texto apresenta o desenho e diz o que olhar nele.
+2. Cada ator com a mesma cor em todas as figuras, animações e lousas do post; vermelho só para erro.
+3. Com o mouse em cada cor: só aquele ator fica aceso; o resto apaga, e a referência (`.referencia`,
+   eixos) fica inteira acesa, sem metade apagada (o logo apagado e o ícone ao lado aceso é bug).
+4. Nada cruza texto; seta não passa por cima de rótulo; nada encosta na borda do painel.
+5. No escuro, tudo legível (tons, lavados, logos); em 390px, a figura rola de lado e a letra se lê.
+6. Animação: uma volta inteira dá para ler; nada some do que foi escrito; o quadro final bate com o
+   arquivo; com movimento reduzido, não abre tocando.
+7. Lousa: cada passo mostra só o que a linha da lista diz; a canetinha na cor do que desenha; nas
+   comparações, as duas linhas no mesmo instante.
+8. Detalhes que se mexem na ordem do que acontece; a figura com detalhes ou animação passa pelo trace
+   de performance com CPU 4× (skill `post`, passo 7).
+
+Corrija, rode de novo e só entregue com o `revisar.mjs` limpo (ou com cada aviso explicado). Para um
+instante avulso: `node scripts/foto.mjs <url> <saida.png> --seletor ".figura" [--indice n] [--hover
+".legenda.tom-azul"] [--tema escuro] [--largura 390] --altura 1500` (o `--altura` grande evita o
+cabeçalho fixo por cima da foto). O `npm run contraste` confere os tons (`--diag-*`), inclusive sobre
+o painel de cada livro.
+
+### Bugs que já aconteceram (não repetir)
+
+| Bug | Causa | Regra |
+|---|---|---|
+| Com o mouse numa cor, o retângulo que pisca de outra cor não apagava | `pisca` e `pacote` animavam `opacity`, e a animação vence o destaque | detalhe que se mexe usa `fill-opacity`/`stroke-opacity` |
+| "Os dois juntos" ficava sempre aceso | rótulo de duas cores sem tom nenhum | rótulo de mais de um ator leva os tons de todos (`class="tom-petroleo tom-ambar"`) |
+| Logos de outros componentes ficavam acesos (CronJob) | logo solto, fora do grupo do ator, sem tom | o marcador do logo leva o tom do ator |
+| Cabeçalho pela metade: logos apagavam e o disco e a rede ficavam acesos; "TLS" ficava aceso com "Em trânsito" apagado (criptografia) | logos sem tom apagavam e desenhos sem tom não; o complemento da linha ficou fora do grupo do tom | a referência vai inteira num `<g class="referencia">`; tudo de um ator no grupo dele |
+| "Banco", notas e "mesmo banco" (CronJob) e a "Resposta da API" (Jackson) ficavam acesos com qualquer cor; a moldura do "JSON do log" acesa e o texto apagado | o que não tinha cor nunca apagava | o que não tem cor apaga junto (D59); a caixa e o texto de um ator no mesmo tom |
+| Uma caneta escrevendo em dois lugares (lousa) | duas partes do mesmo lugar no mesmo instante | uma caneta por lugar, até três; o `revisar.mjs` acusa |
+| O detalhe da capa pulava de volta ao tirar o mouse | animação de evento cortada no `:hover` | evento vai até o fim (`.mexendo`); estado volta animado |

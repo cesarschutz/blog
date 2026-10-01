@@ -146,7 +146,13 @@ o vapor que sobe, o ponteiro que gira, o envelope que desliza, o alarme que trem
 fnm exec --using=24 node scripts/desenho/validar.mjs <slug>   # regras técnicas
 fnm exec --using=24 node scripts/desenho/centrar.mjs <slug>   # recortes centrados no desenho (dev no ar)
 fnm exec --using=24 node scripts/desenho/render.mjs <slug>    # folha num PNG (precisa do dev no ar)
+fnm exec --using=24 node scripts/desenho/revisar.mjs <slug> --base <dev>   # revisão do post inteiro (D59)
 ```
+
+Terminou a capa (ou qualquer desenho do post)? Antes de mostrar ao Cesar, rode o `revisar.mjs` e olhe
+as fotos dele pelo checklist da skill `figura` ("Validar, revisar e conferir"); na capa, confira também
+o detalhe da capa viva no topo, no card e na lista: o evento vai até o fim mesmo que o mouse saia, e o
+estado volta animado.
 
 Depois de desenhar, rode o `centrar.mjs`: ele mede o conteúdo e reescreve `data-medio`,
 `data-quadrado`, `data-og` e `data-segura` centrados nele (o largo só muda na altura). Desde a
