@@ -1,11 +1,16 @@
 {
   "observacao": "Os textos fixos da página das cinco sugestões (gerar-artifact.mjs). O resto vem de colecoes.json.",
   "data": "1º de outubro de 2026",
-  "lead": "Cinco propostas de coleção para os livros do blog, cada uma juntando os 8 livros de hoje com as 16 categorias do dev-note e com o que o blog publica e deve publicar. Vão de 8 a 12 livros. De cada livro: o título, a frase da capa, o que ele abrange, os posts de hoje que iriam para ele, a cor e o desenho.",
-  "comoLer": "Cada sugestão mostra a estante como ela fica na home, as capas e o que muda para chegar nela. O mesmo livro tem o mesmo desenho e a mesma cor em todas as sugestões; os livros novos foram desenhados agora, no traço dos oito de hoje. Os nomes podem passar de uma sugestão para outra: se você gostar da estante da 2 com o Observabilidade da 3, dá.",
+  "lead": "Cinco propostas de coleção para os livros do blog, cada uma juntando os 8 livros de hoje com as 16 categorias do dev-note e com o que o blog publica e deve publicar. Vão de 9 a 12 livros (sem Carreira, a menor fica com 8). De cada livro: o título, a frase da capa, o que ele abrange, os posts de hoje que iriam para ele, a cor e o desenho.",
+  "comoLer": "Cada sugestão mostra a estante como ela fica na home, as capas e o que muda para chegar nela. O mesmo livro tem o mesmo desenho e a mesma cor em todas as sugestões; os livros novos foram desenhados agora, no traço dos oito de hoje. Livro novo entra com o próximo número da coleção, então nenhum livro de hoje muda de volume. O que vale para todas está logo abaixo da tabela.",
   "recomendacao": {
-    "titulo": "Se eu escolhesse",
-    "paragrafos": []
+    "titulo": "Se fosse eu",
+    "paragrafos": [
+      "A sugestão 2. Ela dá livro aos dois assuntos que mais aparecem nos posts sem ter casa, pagamentos e mensageria, não tira nenhum livro nem troca nome, e cada livro novo já nasce com um post. Fica em dez livros, \"um pouco mais de 8\".",
+      "Dos nomes da sugestão 3, eu levaria o Observabilidade: os três posts do livro são de observabilidade, e é a palavra que o leitor procura. O Java e Spring eu deixaria para quando o livro de código precisar se distinguir de outro.",
+      "A sugestão 4 é o passo seguinte, não uma alternativa: quando a Arquitetura de Software juntar mais posts de consistência (idempotência, outbox, saga), Sistemas Distribuídos sai dela sem mexer no resto, e os endereços antigos continuam funcionando.",
+      "As três propostas independentes de onde as cinco saíram recomendaram coleções de 9 ou 10 livros: o editor, a estante com Pagamentos, Integração e os nomes novos; o arquiteto da informação, Pagamentos e Integração sem Carreira; o pesquisador, os oito e Pagamentos."
+    ]
   },
   "identidades": "Os oito livros de hoje ficam com o desenho e a cor que já têm; para cada cor, a pesquisa achou o motivo (a do IA é a única sem ligação com o assunto, e está dito). Os livros novos têm a cor tirada do próprio assunto, conferida no contraste dos papéis do site e ao lado das outras na estante.",
   "rodape": "Na branch claude/magical-einstein-tneg5o. No dev, /amostra/colecoes/ mostra as estantes e as capas com os componentes do site. Os textos estão em docs/prototipos/colecoes/sugestoes.md, as três propostas de origem e a crítica em docs/prototipos/colecoes/, e a pesquisa de cores e desenhos, com as fontes, em pesquisa-cores-e-desenhos.md.",

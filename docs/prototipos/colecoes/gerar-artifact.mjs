@@ -211,6 +211,10 @@ td.num { font-variant-numeric: tabular-nums; text-align: right; white-space: now
 .muda { border-top: 1px solid var(--rule); padding-top: 16px; display: grid; gap: 8px; max-width: 80ch; }
 .muda .nota { color: var(--ink-2); }
 
+.regras h2 { font-size: 1.35rem; margin-bottom: 12px; }
+.regras ul { margin: 0; padding-left: 1.1em; display: grid; gap: 8px; max-width: 80ch; }
+.regras li { font-size: 0.97rem; }
+.regras li::marker { color: var(--ink-3); }
 .recomendacao { display: grid; gap: 12px; }
 .recomendacao h2 { font-size: 1.5rem; }
 .recomendacao p { max-width: 70ch; }
@@ -258,6 +262,13 @@ ${sugestoes.map((s, i) => linhaComparacao(s, i + 1)).join("\n")}
         </tbody>
       </table>
     </div>
+  </section>
+
+  <section class="regras folha" aria-labelledby="regras-titulo">
+    <h2 id="regras-titulo">Vale para todas</h2>
+    <ul>
+${(dados.valeParaTodas ?? []).map((t) => `      <li>${esc(t)}</li>`).join("\n")}
+    </ul>
   </section>
 
 ${sugestoes.map((s, i) => secaoSugestao(s, i + 1)).join("\n\n")}

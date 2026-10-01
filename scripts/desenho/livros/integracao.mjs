@@ -21,11 +21,11 @@ export default {
   cor: "#72aba5",
   desenho({ t, hachura, chao, ponto, linha, poli, bezier, elipse, circulo, retangulo }) {
     // ---------- medidas ----------
-    const X0 = 105; // a mesa, na frente: esquerda
-    const X1 = 315; // e direita
+    const X0 = 92; // a mesa, na frente: esquerda
+    const X1 = 328; // e direita
     const YS = 574; // o tampo (na frente)
     const YB = 666; // o chão
-    const D = 100; // a profundidade da mesa
+    const D = 104; // a profundidade da mesa
     const ZP = 70; // onde o painel começa (no fundo do tampo)
     const HP = 150; // a altura do painel
     const CH = 9; // a cornija: altura
@@ -40,21 +40,20 @@ export default {
     const PYT = PYB - HP; // o topo do painel
 
     // ---------- os pares de cordões ----------
-    const pares = [137, 171, 205, 239, 273];
+    const pares = [128, 166, 204, 242, 280];
     const ZF = 36; // a fileira da frente (os cordões de chamada)
     const ZT = 50; // a fileira de trás (os cordões de atendimento), logo atrás
     const ZK = 14; // as chavinhas
     // o que está plugado: [par, fileira (ZF ou ZT), jaque [coluna, fileira]]
-    const plugados = [[0, ZF, [0, 2]], [0, ZT, [2, 0]], [1, ZF, [2, 3]], [1, ZT, [4, 1]], [3, ZF, [5, 0]]];
+    const plugados = [[0, ZF, [0, 2]], [0, ZT, [2, 0]], [1, ZF, [2, 3]], [1, ZT, [4, 1]], [3, ZF, [6, 0]]];
     const estaPlugado = (i, z) => plugados.some(([p, pz]) => p === i && pz === z);
     const furo = (i, z) => pr(pares[i], YS, z);
 
-    // ---------- embaixo do tampo: os pés de trás, os cordões e os contrapesos ----------
+    // ---------- embaixo do tampo: o pé de trás, os cordões e os contrapesos ----------
     const YV = YS + ET + EA; // embaixo do avental
-    for (const x of [X0, X1 - EP]) {
-      const [px, py] = pr(x, YS, D);
-      t(retangulo(px, py + ET + EA, EP, YB - py - ET - EA - (YS - py)), { w: 2, papel: true });
-    }
+    // o pé de trás da direita (o da esquerda fica escondido pelos cordões e contrapesos)
+    const [px, py] = pr(X1 - EP, YS, D);
+    t(retangulo(px, py + ET + EA, EP, YB - YS - ET - EA), { w: 2, papel: true });
     // os cordões descem do tampo até os contrapesos (os cordões plugados levantam o seu)
     for (let i = 0; i < pares.length; i++) {
       for (const z of [ZT, ZF]) {
@@ -90,13 +89,13 @@ export default {
     // a moldura interna e o campo de jaques: 4 fileiras de 10, cada uma com a régua das tampinhas por cima
     const inset = 6;
     t(retangulo(PX0 + inset, PYT + inset, X1 - X0 - 2 * inset, HP - 2 * inset), { w: 2 });
-    const colunas = 10;
+    const colunas = 11;
     const fileiras = 4;
     const passoX = 18;
     const jx = (c) => PX0 + (X1 - X0) / 2 + (c - (colunas - 1) / 2) * passoX;
     const jy = (f) => PYT + 41 + f * 27;
     const ocupados = plugados.map(([, , j]) => j);
-    const caida = [8, 1]; // a tampinha que caiu: a próxima chamada esperando
+    const caida = [9, 1]; // a tampinha que caiu: a próxima chamada esperando
     for (let f = 0; f < fileiras; f++) {
       t(retangulo(jx(0) - 9, jy(f) - 19.5, (colunas - 1) * passoX + 18, 7), { w: 3 });
       for (let c = 0; c < colunas; c++) {
@@ -162,7 +161,7 @@ export default {
 
     // ---------- o fantasma: o cordão que ainda vai ser plugado, com a seta de quem o leva ----------
     const [gx, gy] = furo(3, ZT);
-    const alvo = [9, 2];
+    const alvo = [10, 2];
     const Jg = [jx(alvo[0]), jy(alvo[1])];
     const Eg = [Jg[0] + SAI[0] * 13, Jg[1] + SAI[1] * 13];
     t(bezier([gx, gy - 23], [gx - 6, gy - 78], [Eg[0] - 34, Eg[1] - 26], Eg), { fantasma: true });
