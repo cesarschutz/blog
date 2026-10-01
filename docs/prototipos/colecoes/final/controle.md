@@ -60,11 +60,11 @@ Os desenhos novos têm o prefixo `novo-` para não sobrescrever os que o site us
 | # | Etapa | Status |
 |---|---|---|
 | 1 | Decisões registradas (D61, estado, este controle) | feito |
-| 2 | Direção de arte: conceito do conjunto, objeto e cor de cada livro (Fable) | em andamento |
-| 3 | Textos: frase, abrange, posts de cada livro (Fable) | em andamento |
-| 4 | Crítica dos dois e síntese | a fazer |
-| 5 | Os 13 desenhos e ícones | a fazer |
-| 6 | Dados da página (`colecoes.json` → `final`), título na capa, conferência das cores | a fazer |
+| 2 | Direção de arte: conceito do conjunto, objeto e cor de cada livro (Fable) | feito: `direcao-de-arte.md` ("O mesmo problema, um século antes"; paleta em `paleta.png`) |
+| 3 | Textos: frase, abrange, posts de cada livro (Fable) | feito: `textos.md` |
+| 4 | Crítica dos dois e síntese | crítica em andamento (`critica.md`) |
+| 5 | Os 13 desenhos e ícones | em andamento: Arquitetura, Dados, Desenvolvimento, Segurança, SRE e o ajuste dos quatro que ficam (Integração, Pagamentos, Sistemas Distribuídos, Testes); DevOps, Frontend, Fundamentos e IA esperam a crítica |
+| 6 | Dados da página (`colecoes.json` → `final`), título na capa, conferência das cores | feito para os dados de agora: `final/dados.json` → `final/montar.mjs` → `colecoes.json`; refazer depois da crítica |
 | 7 | Página final (dev e artifact) | a fazer |
 | 8 | Regra dos posts (skill `post`, `.claude/rules/posts.md`, `CAPAS.md`, `CLAUDE.md`) | feito (falta ajustar no `CAPAS.md` o "instrumento de ofício" se o conjunto novo for de outra família) |
 | 9 | Estado, commit e push na branch | a fazer |
