@@ -109,7 +109,8 @@ export default defineConfig({
     }),
     mdx(),
     sitemap({
-      filter: (pagina) => !/\/og\//.test(pagina),
+      // Fora do sitemap: as imagens de compartilhamento e os protótipos para escolha (noindex).
+      filter: (pagina) => !/\/(og|prototipos)\//.test(pagina),
       serialize(item) {
         const slug = item.url.match(/\/posts\/([^/]+)\/?$/)?.[1];
         const data = slug && modificadoEm[slug];

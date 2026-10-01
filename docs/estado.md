@@ -102,6 +102,13 @@ com a tabela dos bugs que já aconteceram.
 O escuro dos desenhos do corpo (D60, 01/10/2026, publicado): painel próprio, um pouco acima da folha e
 mais neutro, caixas com o tom puro a 45% e tinta um pouco menos branca. A capa não mudou.
 
+Protótipo dos controles dos desenhos (01/10/2026, no ar em `/prototipos/controles/`, com noindex e fora
+do sitemap e da busca): cinco opções (régua e lápis, marca-texto, caderno e caneta, post-its e fita,
+carimbo e numerador), cada uma resolvendo a animação com play, a lousa de passos e a de comparação num
+cartão só, com os desenhos e o motor de verdade. Código em `src/amostra/controles/` (o relógio comum, os
+auxiliares e uma opção por arquivo). Esperando o Cesar escolher; a escolhida vira os componentes `Lousa`
+e `Animacao`, e a página sai.
+
 ## Como ver
 
 - Dev: `fnm exec --using=24 npm run dev -- --host 127.0.0.1` (<http://127.0.0.1:4322>); parar com

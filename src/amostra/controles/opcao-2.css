@@ -1,0 +1,779 @@
+/* Opção 2, "Marca-texto" (protótipo, /amostra/controles/). */
+
+/* O grifo do texto: a altura e a cor mudam com transição (o passo feito vira um sublinhado fino). */
+@property --m2-altura {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 74%;
+}
+
+@property --m2-cor {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+@property --m2-pairar {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: transparent;
+}
+
+.cartao-proto.m2 {
+  /* A tinta: no claro, o amarelo multiplica com o que está embaixo (os tracinhos escurecem, como texto
+     impresso grifado); no escuro, o marca-texto do tema já é translúcido. */
+  --m2-marca: var(--marca-texto);
+  --m2-mistura: multiply;
+  --m2-poca: color-mix(in oklab, var(--marca-texto), var(--diag-ambar) 13%);
+  --m2-sublinhado: color-mix(in oklab, var(--marca-texto), var(--diag-ambar) 24%);
+  --m2-palavra: color-mix(in oklab, var(--ink-3) 46%, transparent);
+  /* O marca-texto de verdade (plástico amarelo), igual nos dois temas; no escuro, um pouco apagado. */
+  --m2-feltro: color-mix(in oklab, var(--marca-texto), var(--diag-ambar) 6%);
+  --m2-plastico: color-mix(in oklab, var(--marca-texto), var(--diag-ambar) 10%);
+  --m2-plastico-escuro: color-mix(in oklab, var(--marca-texto), var(--diag-ambar) 42%);
+  --m2-contorno: color-mix(in oklab, var(--diag-ambar) 62%, var(--etiqueta-sombra));
+  --m2-sobre-plastico: color-mix(in oklab, var(--etiqueta-sombra) 80%, var(--diag-ambar));
+  --m2-brilho: 1;
+  --m2-chip: var(--m2-sublinhado);
+  --m2-recuo: 64px;
+  /* A altura da passada e o tamanho do marca-texto (o feltro tem a altura da passada). */
+  --m2-passada: 14px;
+  --m2-k: 1;
+  container: m2 / inline-size;
+  padding: 8px;
+  border: 1px solid var(--rule);
+  border-radius: var(--raio-painel);
+  background: var(--paper-hi);
+}
+
+.cartao-proto.m2[data-caso="animacao"] {
+  --m2-recuo: 104px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .cartao-proto.m2 {
+    --m2-mistura: normal;
+    --m2-poca: color-mix(in oklab, var(--marca-texto) 55%, transparent);
+    --m2-sublinhado: color-mix(in oklab, color-mix(in oklab, var(--etiqueta), var(--diag-ambar) 30%) 62%, transparent);
+    --m2-palavra: color-mix(in oklab, var(--ink-3) 52%, transparent);
+    --m2-brilho: 0.8;
+    --m2-chip: var(--marca-texto);
+    --m2-feltro: color-mix(in oklab, var(--etiqueta), var(--diag-ambar) 14%);
+    --m2-plastico: color-mix(in oklab, var(--etiqueta), var(--diag-ambar) 22%);
+    --m2-plastico-escuro: color-mix(in oklab, var(--etiqueta), var(--diag-ambar) 55%);
+  }
+}
+
+:root[data-theme="dark"] .cartao-proto.m2 {
+  --m2-mistura: normal;
+  --m2-poca: color-mix(in oklab, var(--marca-texto) 55%, transparent);
+  --m2-sublinhado: color-mix(in oklab, color-mix(in oklab, var(--etiqueta), var(--diag-ambar) 30%) 62%, transparent);
+  --m2-palavra: color-mix(in oklab, var(--ink-3) 52%, transparent);
+  --m2-brilho: 0.8;
+  --m2-chip: var(--marca-texto);
+  --m2-feltro: color-mix(in oklab, var(--etiqueta), var(--diag-ambar) 14%);
+  --m2-plastico: color-mix(in oklab, var(--etiqueta), var(--diag-ambar) 22%);
+  --m2-plastico-escuro: color-mix(in oklab, var(--etiqueta), var(--diag-ambar) 55%);
+}
+
+/* O desenho fica colado na folha, com uma margem de papel em volta, como uma figura num livro. */
+.m2 .proto-palco {
+  border-radius: calc(var(--raio-painel) - 4px);
+}
+
+/* ---------- a linha: os botões, a faixa e o lugar do marca-texto no fim ---------- */
+
+.m2-linha {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  /* À direita, o lugar do marca-texto quando a passada chega ao fim da linha. */
+  padding: 12px 54px 0 8px;
+}
+
+.m2-botoes {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 10px;
+}
+
+/* O play: um botão redondo no plástico do marca-texto, que afunda ao apertar. */
+.m2-tocar {
+  position: relative;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 3px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid color-mix(in oklab, var(--m2-contorno) 60%, var(--m2-plastico));
+  border-radius: 50%;
+  background: var(--m2-plastico);
+  color: var(--m2-sobre-plastico);
+  box-shadow: 0 3px 0 var(--m2-plastico-escuro);
+  filter: brightness(var(--m2-brilho));
+  cursor: pointer;
+  transition:
+    transform 0.06s,
+    box-shadow 0.06s;
+}
+
+.m2-tocar::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+}
+
+.m2-tocar:hover {
+  background: color-mix(in oklab, var(--m2-plastico), var(--etiqueta-luz) 22%);
+}
+
+.m2-tocar:active {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 var(--m2-plastico-escuro);
+}
+
+.m2-tocar:focus-visible,
+.m2-recomecar:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 3px;
+}
+
+.m2-icone {
+  width: 26px;
+  height: 26px;
+}
+
+.m2-forma {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+}
+
+/* O aperto de mola quando o ícone troca. */
+.m2-tocar.aperta .m2-icone {
+  animation: m2-aperta 0.42s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes m2-aperta {
+  0% {
+    transform: scale(1);
+  }
+
+  30% {
+    transform: scale(0.84);
+  }
+}
+
+/* Nos 5 s parados no fim, um traço de marca-texto dá a volta no botão: quando fechar, recomeça. */
+.m2-anel {
+  position: absolute;
+  inset: -8px;
+  width: calc(100% + 16px);
+  height: calc(100% + 16px);
+  overflow: visible;
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+
+.m2-anel circle {
+  fill: none;
+  stroke: var(--m2-sublinhado);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+}
+
+.m2-tocar.no-fim .m2-anel circle {
+  opacity: 1;
+  animation: m2-conta 5s linear forwards;
+}
+
+@keyframes m2-conta {
+  from {
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Recomeçar: recua um pouco e dá a volta (a passada some da direita para a esquerda junto). */
+.m2-recomecar {
+  position: relative;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 7px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  background: var(--paper-hi);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+
+.m2-recomecar::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+}
+
+.m2-recomecar:hover {
+  border-color: color-mix(in oklab, var(--acento) 40%, var(--rule));
+  color: var(--acento);
+}
+
+.m2-recomecar svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.m2-recomecar.gira svg {
+  animation: m2-gira 0.9s;
+}
+
+@keyframes m2-gira {
+  0% {
+    transform: rotate(0);
+    animation-timing-function: cubic-bezier(0.3, 0, 0.6, 1);
+  }
+
+  22% {
+    transform: rotate(-28deg);
+    animation-timing-function: cubic-bezier(0.2, 0.9, 0.25, 1);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------- a faixa do tempo: a linha impressa ---------- */
+
+.m2-faixa {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  padding: 18px 0 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.m2-faixa.sem-numeros {
+  padding-top: 10px;
+}
+
+.m2-faixa.arrastando {
+  cursor: grabbing;
+}
+
+.m2-faixa:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 4px;
+}
+
+.m2-numeros {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 16px;
+  pointer-events: none;
+}
+
+/* O número do passo: o da vez ganha um toque de marca-texto, que entra com mola. */
+.m2-n {
+  position: absolute;
+  top: 0;
+  z-index: 0;
+  padding: 0 4px;
+  font-family: var(--font-ui);
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 16px;
+  color: var(--ink-2);
+  transition: color 0.25s;
+}
+
+.m2-n::before {
+  content: "";
+  position: absolute;
+  inset: 0 -1px;
+  z-index: -1;
+  background: var(--m2-marca);
+  clip-path: polygon(3px 0.5px, 100% 0, calc(100% - 3px) 100%, 0 calc(100% - 0.5px));
+  opacity: 0;
+  transform: scaleX(0.2);
+  transform-origin: 0 50%;
+  transition:
+    transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.2s;
+}
+
+.m2-n.aceso {
+  color: var(--ink);
+}
+
+.m2-n.aceso::before {
+  opacity: 1;
+  transform: none;
+}
+
+.m2-trilho {
+  position: relative;
+  height: 20px;
+}
+
+.m2-seg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+/* As palavras da linha: tracinhos da altura de uma letra miúda. */
+.m2-palavras {
+  position: absolute;
+  top: 8px;
+  right: 0;
+  left: 0;
+  display: flex;
+  gap: 3px;
+  height: 4px;
+}
+
+.m2-palavra {
+  flex: 1 1 0;
+  min-width: 2px;
+  border-radius: 1.5px;
+  background: var(--m2-palavra);
+  transition: background-color 0.2s;
+}
+
+.m2-faixa:hover .m2-palavra {
+  background: color-mix(in oklab, var(--m2-palavra), var(--ink) 12%);
+}
+
+/* A passada: as pontas chanfradas (paralelas, como a ponta de feltro deixa) e as bordas um pouco tortas. */
+.m2-tinta {
+  position: absolute;
+  top: calc(10px - var(--m2-passada) / 2);
+  left: 0;
+  width: 0;
+  height: var(--m2-passada);
+  background: var(--m2-marca);
+  mix-blend-mode: var(--m2-mistura);
+  clip-path: polygon(
+    4px 0.6px,
+    28% 0,
+    63% 0.9px,
+    100% 0.4px,
+    calc(100% - 1.6px) 52%,
+    calc(100% - 4px) 100%,
+    57% calc(100% - 0.5px),
+    22% 100%,
+    0 calc(100% - 0.8px),
+    1.8px 48%
+  );
+}
+
+.m2-seg.vazio .m2-tinta {
+  visibility: hidden;
+}
+
+/* Onde a ponta encosta e onde ela para, a tinta fica mais forte (a mesma passada, duas vezes). */
+.m2-tinta::before,
+.m2-tinta::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 7px;
+  background: var(--m2-poca);
+  clip-path: polygon(4px 0, 100% 0, 3px 100%, 0 100%);
+}
+
+.m2-tinta::before {
+  left: 0;
+}
+
+.m2-tinta::after {
+  right: 0;
+  opacity: 0;
+  transition: opacity 0.6s ease-out;
+}
+
+/* A caneta parou no meio (pausa, arrasto, clique) ou o trecho acabou: a ponta encharca devagar. */
+.m2-seg.cheio .m2-tinta::after,
+.m2:not(.m2-tocando) .m2-seg.da-vez .m2-tinta::after {
+  opacity: 1;
+}
+
+.m2-tocando .m2-seg.da-vez:not(.cheio) .m2-tinta::after {
+  transition: none;
+}
+
+/* A prévia com o mouse: para a frente, um amarelo fraco; para trás, o trecho que sairia fica pálido. */
+.m2-previa {
+  position: absolute;
+  top: calc(10px - var(--m2-passada) / 2);
+  left: 0;
+  width: 0;
+  height: var(--m2-passada);
+  background: color-mix(in oklab, var(--marca-texto) 38%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.m2-previa.recua {
+  z-index: 1;
+  background: color-mix(in oklab, var(--paper-hi) 58%, transparent);
+}
+
+.m2-previa.visivel {
+  opacity: 1;
+}
+
+/* A borda da prévia: um cursor de texto fino, onde o clique levaria. */
+.m2-previa::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  right: -1px;
+  bottom: -3px;
+  width: 1.5px;
+  border-radius: 1px;
+  background: var(--ink-2);
+}
+
+.m2-previa.recua::after {
+  right: auto;
+  left: -1px;
+}
+
+/* ---------- o marca-texto deitado na linha ---------- */
+
+.m2-cursor {
+  position: absolute;
+  top: calc(10px - 12px * var(--m2-k));
+  left: calc(-4.5px * var(--m2-k));
+  z-index: 2;
+  width: calc(54px * var(--m2-k));
+  height: calc(24px * var(--m2-k));
+  pointer-events: none;
+}
+
+.m2-caneta {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform-origin: 4% 50%;
+  /* Parado, a ponta sai um pouco do papel (a mão fica embaixo, à direita) e deixa ver a tinta mais forte. */
+  transform: translate(4px, 0.5px) rotate(2.5deg);
+  filter: drop-shadow(1px 4px 2.5px rgb(0 0 0 / 0.16)) brightness(var(--m2-brilho));
+  transition:
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    filter 0.4s;
+}
+
+/* Tocando ou arrastando, encostado: a sombra quase some. */
+.m2-tocando .m2-caneta,
+.m2-faixa.arrastando .m2-caneta {
+  transform: rotate(-1deg);
+  filter: drop-shadow(0 1px 0.6px rgb(0 0 0 / 0.24)) brightness(var(--m2-brilho));
+}
+
+/* Nos 5 s do fim, levantado de vez, esperando para recomeçar. */
+.m2-no-fim .m2-caneta {
+  transform: translate(7px, 1.5px) rotate(6deg);
+  filter: drop-shadow(2px 7px 4px rgb(0 0 0 / 0.13)) brightness(var(--m2-brilho));
+}
+
+.m2-c-bico,
+.m2-c-feltro,
+.m2-c-corpo,
+.m2-c-tampa {
+  stroke: var(--m2-contorno);
+  stroke-width: 0.7;
+  stroke-linejoin: round;
+}
+
+.m2-c-feltro {
+  fill: var(--m2-feltro);
+}
+
+.m2-c-molhado {
+  fill: none;
+  stroke: color-mix(in oklab, var(--m2-feltro), var(--diag-ambar) 30%);
+  stroke-width: 1.3;
+  stroke-linecap: round;
+}
+
+.m2-c-bico {
+  fill: var(--m2-plastico-escuro);
+}
+
+.m2-c-corpo {
+  fill: var(--m2-plastico);
+}
+
+.m2-c-tampa {
+  fill: var(--m2-plastico-escuro);
+}
+
+.m2-c-friso {
+  fill: none;
+  stroke: color-mix(in oklab, var(--m2-contorno) 45%, transparent);
+  stroke-width: 0.8;
+}
+
+.m2-c-clipe {
+  fill: color-mix(in oklab, var(--m2-plastico-escuro), var(--etiqueta-sombra) 14%);
+  stroke: var(--m2-contorno);
+  stroke-width: 0.6;
+}
+
+.m2-c-sombra {
+  fill: none;
+  stroke: color-mix(in oklab, var(--diag-ambar) 22%, transparent);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.m2-c-brilho {
+  fill: none;
+  stroke: color-mix(in oklab, var(--etiqueta-luz) 70%, transparent);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+
+/* ---------- o texto embaixo do desenho ---------- */
+
+.m2-texto {
+  padding: 4px 8px 6px var(--m2-recuo);
+}
+
+/* O grifo: do 0 ao --p, da esquerda para a direita; num texto de duas linhas, uma linha depois da outra. */
+.m2-grifo {
+  background-image:
+    linear-gradient(var(--m2-cor), var(--m2-cor)),
+    linear-gradient(var(--m2-pairar), var(--m2-pairar));
+  background-repeat: no-repeat;
+  background-position:
+    0 88%,
+    0 88%;
+  background-size:
+    calc(var(--p, 0) * 100%) var(--m2-altura),
+    100% 74%;
+  -webkit-box-decoration-break: slice;
+  box-decoration-break: slice;
+  transition:
+    --m2-altura 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+    --m2-cor 0.42s,
+    --m2-pairar 0.2s;
+}
+
+.m2-grifo code {
+  background-color: transparent;
+}
+
+/* A frase da animação: o trecho já dito fica grifado. */
+.m2-legenda {
+  margin: 0;
+  font-family: var(--font-texto);
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink-2);
+}
+
+.m2-legenda .m2-grifo {
+  --m2-cor: var(--m2-marca);
+  transition: none;
+}
+
+/* Os passos: o da vez ganha a passada atrás do texto; os feitos, um sublinhado amarelo fino. */
+.m2-passos {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.m2-passo {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 10px;
+  width: 100%;
+  padding: 5px 6px 5px 0;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  font-family: var(--font-texto);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-2);
+  text-align: start;
+  cursor: pointer;
+  transition: color 0.25s;
+}
+
+.m2-passo code,
+.m2-estado code {
+  font-family: var(--font-codigo);
+  font-size: 0.84em;
+}
+
+.m2-passo-n {
+  padding-top: 3px;
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.6;
+  text-align: end;
+  color: var(--ink-2);
+}
+
+.m2-passo.atual,
+.m2-passo.atual .m2-passo-n {
+  color: var(--ink);
+}
+
+.m2-passo.atual .m2-grifo {
+  --m2-cor: var(--m2-marca);
+  /* Entrando, sem desbotar: só a passada correndo. */
+  transition:
+    --m2-altura 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+    --m2-pairar 0.2s;
+}
+
+/* O passo feito: a passada desce e afina até virar um sublinhado. */
+.m2-passo.feito .m2-grifo {
+  --m2-cor: var(--m2-sublinhado);
+  --m2-altura: 9%;
+}
+
+.m2-passo:hover .m2-grifo {
+  --m2-pairar: color-mix(in oklab, var(--marca-texto) 34%, transparent);
+}
+
+.m2-passo:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 2px;
+}
+
+/* A comparação: os estados empilhados no mesmo lugar (a altura não muda), um de cada vez. */
+.m2-estados {
+  display: grid;
+}
+
+.m2-estado {
+  grid-area: 1 / 1;
+  margin: 0;
+  font-family: var(--font-texto);
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(5px);
+  transition:
+    opacity 0.18s,
+    transform 0.18s,
+    visibility 0s 0.18s;
+}
+
+.m2-estado.vez {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity 0.3s 0.08s,
+    transform 0.42s cubic-bezier(0.16, 1, 0.3, 1) 0.08s;
+}
+
+.m2-estado .m2-grifo {
+  --m2-cor: var(--m2-marca);
+  transition: none;
+}
+
+.m2-n-texto {
+  position: relative;
+  display: inline-block;
+  margin-right: 2px;
+  padding: 0 5px;
+  font-size: 11.5px;
+  vertical-align: 1px;
+}
+
+.m2-n-texto::before {
+  opacity: 1;
+  transform: none;
+  background: var(--m2-chip);
+}
+
+/* Em cartão estreito, o texto ocupa a largura toda. */
+@container m2 (max-width: 520px) {
+  /* (O cartão é o contêiner: as variáveis vão nos controles, que herdam.) */
+  .m2 .proto-controles {
+    --m2-k: 0.86;
+    --m2-passada: 12px;
+  }
+
+  .m2-texto {
+    padding-left: 8px;
+  }
+
+  .m2-linha {
+    gap: 10px;
+    padding-right: 44px;
+    padding-left: 2px;
+  }
+
+  .m2-tocar {
+    width: 38px;
+    height: 38px;
+  }
+
+  .m2-recomecar {
+    width: 30px;
+    height: 30px;
+    margin-bottom: 7px;
+  }
+
+  /* Nas lousas, menos palavras por passo na linha estreita (na animação, cada tracinho é uma palavra da frase). */
+  .m2:not([data-caso="animacao"]) .m2-palavra:nth-child(n + 6) {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .m2 *,
+  .m2 *::before,
+  .m2 *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

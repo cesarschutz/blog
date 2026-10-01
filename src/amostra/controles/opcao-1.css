@@ -1,0 +1,588 @@
+/* Opção 1, "Régua e lápis" (protótipo, /amostra/controles/). */
+
+.cartao-proto.r1 {
+  --linha: 30px;
+  --grafite: color-mix(in oklab, var(--ink) 78%, transparent);
+  --madeira-regua: color-mix(in oklab, var(--post-it) 78%, var(--paper-hi));
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: var(--raio-painel);
+  background: var(--paper-hi);
+}
+
+.r1 .proto-palco {
+  border-radius: 0;
+}
+
+/* ---------- a base: o play e a régua ---------- */
+
+/* À direita, espaço para o corpo do lápis quando ele chega ao fim da régua. */
+.r1-base {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 34px 58px 2px 20px;
+}
+
+.r1-tocar,
+.r1-recomecar {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.r1-tocar {
+  width: 46px;
+  height: 46px;
+  margin-bottom: -3px;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.r1-tocar:hover {
+  color: var(--acento);
+  transform: translateY(-1px) rotate(-3deg);
+}
+
+.r1-tocar:active {
+  transform: scale(0.94);
+}
+
+.r1-contorno {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: var(--paper-hi);
+  stroke: currentColor;
+  stroke-width: 1.7;
+  filter: url(#tremor);
+}
+
+.r1-icone {
+  position: relative;
+  z-index: 1;
+  width: 20px;
+  height: 20px;
+}
+
+.r1-icone path {
+  fill: currentColor;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.2s;
+}
+
+.r1-pausa {
+  opacity: 0;
+  transform: scale(0.3) rotate(-90deg);
+}
+
+.r1-tocar.tocando .r1-play {
+  opacity: 0;
+  transform: scale(0.3) rotate(90deg);
+}
+
+.r1-tocar.tocando .r1-pausa {
+  opacity: 1;
+  transform: none;
+}
+
+/* Nos 5 s do fim, o contorno respira: vai recomeçar. */
+.r1-tocar.no-fim .r1-contorno {
+  animation: r1-respira 1.25s ease-in-out infinite;
+}
+
+@keyframes r1-respira {
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+/* Recomeçar é a borracha: ela esfrega e solta farelo. */
+.r1-recomecar {
+  width: 38px;
+  height: 38px;
+}
+
+.r1-recomecar svg {
+  width: 24px;
+  height: 24px;
+  overflow: visible;
+}
+
+.r1-borracha-corpo {
+  fill: color-mix(in oklab, var(--diag-vermelho) 32%, var(--etiqueta-luz));
+  stroke: var(--ink);
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+}
+
+.r1-borracha-ponta {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.4;
+}
+
+.r1-farelo {
+  fill: none;
+  stroke: var(--ink-2);
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  opacity: 0;
+}
+
+.r1-recomecar:hover {
+  color: var(--acento);
+}
+
+.r1-recomecar:hover .r1-borracha-corpo {
+  stroke: var(--acento);
+}
+
+.r1-recomecar.apagando svg {
+  animation: r1-esfrega 0.5s ease-in-out;
+}
+
+.r1-recomecar.apagando .r1-farelo {
+  animation: r1-farelo 0.7s ease-out;
+}
+
+@keyframes r1-esfrega {
+  20%,
+  60% {
+    transform: translateX(-3px) rotate(-6deg);
+  }
+
+  40%,
+  80% {
+    transform: translateX(3px) rotate(4deg);
+  }
+}
+
+@keyframes r1-farelo {
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+}
+
+/* ---------- a régua ---------- */
+
+.r1-regua {
+  --margem: 14px;
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  border: 1px solid color-mix(in oklab, var(--ink) 22%, transparent);
+  border-radius: 3px;
+  background: var(--madeira-regua);
+  box-shadow: inset 0 -4px 0 color-mix(in oklab, var(--ink) 7%, transparent);
+  cursor: ew-resize;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.r1-regua:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 4px;
+}
+
+.r1-regua.arrastando {
+  cursor: grabbing;
+}
+
+/* A escala: milímetros, meios centímetros e centímetros, na borda de cima. */
+.r1-escala {
+  position: absolute;
+  top: 0;
+  right: var(--margem);
+  bottom: 0;
+  left: var(--margem);
+  --tique: color-mix(in oklab, var(--ink) 50%, transparent);
+  background:
+    linear-gradient(90deg, var(--tique) 1px, transparent 1px) 0 0 / 6px 6px repeat-x,
+    linear-gradient(90deg, var(--tique) 1px, transparent 1px) 0 0 / 30px 10px repeat-x,
+    linear-gradient(90deg, var(--tique) 1px, transparent 1px) 0 0 / 60px 14px repeat-x;
+}
+
+.r1-numeros {
+  position: absolute;
+  top: 0;
+  right: var(--margem);
+  bottom: 0;
+  left: var(--margem);
+  pointer-events: none;
+}
+
+.r1-numero {
+  position: absolute;
+  top: 15px;
+  font-family: var(--font-codigo);
+  font-size: 11.5px;
+  line-height: 1;
+  color: var(--ink-2);
+  transform: translateX(-50%);
+}
+
+.r1-numero b {
+  font-weight: 600;
+}
+
+.r1-numero small {
+  font-size: 0.8em;
+  color: var(--ink-3);
+}
+
+/* A marca do passo: um tique mais alto, da borda até o número. */
+.r1-numero:not(.r1-segundo)::before {
+  content: "";
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  width: 1.5px;
+  height: 13px;
+  background: var(--ink);
+}
+
+/* Na comparação, a marca do estado é só o tique mais alto, sem número. */
+.r1-numero i {
+  display: block;
+  width: 7px;
+  height: 7px;
+  margin-top: 2px;
+  border-radius: 50%;
+  background: var(--ink-2);
+}
+
+.r1-circulo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 34px;
+  height: 26px;
+  overflow: visible;
+  transform: translate(-50%, -52%) rotate(-4deg);
+  pointer-events: none;
+}
+
+.r1-circulo path {
+  fill: none;
+  stroke: var(--grafite);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.r1-numero.circulado .r1-circulo path {
+  stroke-dashoffset: 0;
+}
+
+/* O risco do lápis, rente à borda de cima da régua, do 0 até o instante. */
+.r1-risco {
+  position: absolute;
+  top: -10px;
+  right: var(--margem);
+  left: var(--margem);
+  height: 10px;
+  pointer-events: none;
+}
+
+.r1-risco svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.r1-risco path {
+  fill: none;
+  stroke: var(--grafite);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--t, 1));
+}
+
+/* O lápis: a ponta no risco, girado como na mão direita. */
+.r1-lapis {
+  position: absolute;
+  top: -10px;
+  left: calc(var(--margem) + (100% - 2 * var(--margem)) * var(--t, 1));
+  width: 66px;
+  height: 11px;
+  margin-top: -0.5px;
+  transform: translateY(-50%) rotate(-36deg);
+  transform-origin: 0 50%;
+  pointer-events: none;
+  filter: drop-shadow(1px 2px 1px rgb(0 0 0 / 0.18));
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.r1-lapis svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.r1-grafite {
+  fill: color-mix(in oklab, var(--etiqueta-sombra) 72%, var(--etiqueta-luz));
+}
+
+.r1-madeira {
+  fill: color-mix(in oklab, var(--etiqueta-papel), var(--diag-ambar) 28%);
+}
+
+.r1-corpo {
+  fill: color-mix(in oklab, var(--etiqueta), var(--diag-ambar) 42%);
+}
+
+.r1-faceta {
+  fill: none;
+  stroke: color-mix(in oklab, var(--diag-ambar) 55%, transparent);
+  stroke-width: 0.6;
+}
+
+.r1-virola {
+  fill: color-mix(in oklab, var(--caderno-pauta), var(--etiqueta-luz) 25%);
+}
+
+.r1-virola-friso {
+  fill: none;
+  stroke: color-mix(in oklab, var(--etiqueta-sombra) 30%, transparent);
+  stroke-width: 0.6;
+}
+
+.r1-borracha {
+  fill: color-mix(in oklab, var(--diag-vermelho) 38%, var(--etiqueta-luz));
+}
+
+.r1-lapis-desenho :is(path, rect) {
+  stroke-linejoin: round;
+}
+
+/* Fora do play, o lápis vai até o ponto com uma passada curta (clique num passo, setas). */
+.r1:not(.r1-tocando) .r1-regua:not(.arrastando) .r1-lapis {
+  transition:
+    left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.r1:not(.r1-tocando) .r1-regua:not(.arrastando) .r1-risco path {
+  transition: stroke-dashoffset 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Tocando, o lápis escreve: um balanço miúdo de mão. */
+.r1-tocando .r1-lapis svg {
+  animation: r1-escreve 0.28s ease-in-out infinite alternate;
+  transform-origin: 0 50%;
+}
+
+@keyframes r1-escreve {
+  to {
+    transform: rotate(4deg) translateX(-0.6px);
+  }
+}
+
+/* Nos 5 s do fim, o lápis se levanta e espera. */
+.r1-no-fim .r1-lapis {
+  transform: translateY(-80%) rotate(-52deg);
+}
+
+/* Arrastando, o lápis encosta mais. */
+.r1-regua.arrastando .r1-lapis {
+  transform: translateY(-50%) rotate(-28deg);
+}
+
+/* ---------- a ficha pautada ---------- */
+
+.r1-ficha {
+  position: relative;
+  margin: 12px 20px 18px;
+  padding-top: 2px;
+  background-image: linear-gradient(to bottom, transparent calc(var(--linha) - 1px), var(--pauta) calc(var(--linha) - 1px), var(--pauta) var(--linha));
+  background-size: 100% var(--linha);
+}
+
+.r1-ficha::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 38px;
+  width: 1px;
+  background: var(--pauta-cabeca);
+}
+
+.r1-passos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.r1-passo {
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-texto);
+  font-size: 15.5px;
+  line-height: var(--linha);
+  color: var(--ink-2);
+  text-align: start;
+  cursor: pointer;
+  transition: color 0.25s;
+}
+
+.r1-passo code {
+  font-family: var(--font-codigo);
+  font-size: 0.84em;
+}
+
+.r1-texto {
+  padding-left: 12px;
+}
+
+.r1-num {
+  position: relative;
+  align-self: start;
+  justify-self: center;
+  height: var(--linha);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-3);
+  transition: color 0.25s;
+}
+
+.r1-visto {
+  position: absolute;
+  top: 7px;
+  left: calc(100% + 1px);
+  width: 11px;
+  height: 10px;
+  overflow: visible;
+}
+
+.r1-visto path {
+  fill: none;
+  stroke: var(--grafite);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 0.3s ease-out 0.1s;
+}
+
+.r1-passo.feito .r1-visto path {
+  stroke-dashoffset: 0;
+}
+
+.r1-passo.atual,
+.r1-passo.atual .r1-num {
+  color: var(--ink);
+}
+
+.r1-passo.atual .r1-circulo path {
+  stroke-dashoffset: 0;
+}
+
+.r1-passo:hover .r1-texto {
+  text-decoration: underline;
+  text-decoration-color: var(--grafite);
+  text-decoration-style: wavy;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+}
+
+.r1-passo:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+.r1-nota {
+  margin: 0;
+  padding-left: 50px;
+  font-family: var(--font-texto);
+  font-style: italic;
+  font-size: 15.5px;
+  line-height: var(--linha);
+  color: var(--ink-2);
+}
+
+/* Na comparação, o estado da vez: duas linhas reservadas (a altura não muda), e a troca entra devagar. */
+.r1-estado {
+  min-height: calc(var(--linha) * 2);
+}
+
+.r1-estado.trocou {
+  animation: r1-entra 0.35s ease-out;
+}
+
+.r1-rotulo {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-right: 4px;
+  border: 1.4px solid var(--grafite);
+  border-radius: 50%;
+  font-family: var(--font-ui);
+  font-style: normal;
+  font-size: 11.5px;
+  font-weight: 600;
+  vertical-align: 1px;
+}
+
+@keyframes r1-entra {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .r1 *,
+  .r1 *::before {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* No celular, a régua ganha espaço e os segundos aparecem de 4 em 4. */
+@media (max-width: 520px) {
+  .r1-base {
+    gap: 8px;
+    padding-right: 44px;
+    padding-left: 14px;
+  }
+
+  .r1-segundo:nth-child(even) {
+    display: none;
+  }
+
+  .r1-ficha {
+    margin-inline: 14px;
+  }
+}

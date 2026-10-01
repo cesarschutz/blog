@@ -1,0 +1,780 @@
+/* Opção 5, "Carimbo e numerador" (protótipo, /amostra/controles/). */
+
+.cartao-proto.r5 {
+  /* A tinta do carimbo é a cor do livro (no escuro, clareada como nos desenhos). */
+  --r5-tinta: color-mix(in oklab, var(--cor, var(--acento)), var(--etiqueta-luz) var(--branco-no-escuro));
+  /* No escuro, o carimbo leva um pouco mais de branco, para a tinta não sumir na cartolina escura. */
+  --r5-tinta-carimbo: color-mix(in oklab, var(--r5-tinta), var(--etiqueta-luz) calc(var(--branco-no-escuro) / 2));
+  /* A ficha: cartolina creme, um pouco do amarelo do post-it na folha. */
+  --r5-cartao: color-mix(in oklab, var(--post-it) 42%, var(--paper-hi));
+  /* O que vem impresso no cartão (fios e cabeçalho), na tinta do livro bem clara. */
+  --r5-impresso: color-mix(in oklab, var(--r5-tinta) 34%, transparent);
+  --r5-impresso-fraco: color-mix(in oklab, var(--r5-tinta) 18%, transparent);
+  /* O furo mostra o escuro de baixo do cartão. */
+  --r5-furo: color-mix(in oklab, var(--ink) 72%, var(--r5-cartao));
+  /* As peças que se apertam (cabo, furador, zerar) são de plástico azul-tinta, como tudo o que é clicável. */
+  --r5-plastico: var(--acento);
+  --r5-plastico-lado: color-mix(in oklab, var(--acento) 58%, var(--etiqueta-sombra));
+  /* A tinta falhada do carimbo: um ruído que deixa a tinta mais fraca em pontos soltos. */
+  --r5-falha: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60'%3E%3Cfilter id='f' x='0' y='0' width='1' height='1'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='3' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -11 7.3'/%3E%3C/filter%3E%3Crect width='120' height='60' filter='url(%23f)'/%3E%3C/svg%3E");
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: var(--raio-painel);
+  background: var(--r5-cartao);
+}
+
+.r5 .proto-palco {
+  border-radius: 0;
+}
+
+.r5 .proto-controles {
+  container-type: inline-size;
+}
+
+/* ---------- a fileira de cima: o cabo, o picote e o contador ---------- */
+
+.r5-painel {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: "cabo picote contador";
+  align-items: center;
+  gap: 10px 16px;
+  padding: 16px 18px 4px;
+}
+
+@container (max-width: 560px) {
+  .r5-painel {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "cabo contador"
+      "picote picote";
+    padding-inline: 14px;
+  }
+
+  .r5-contador {
+    justify-self: end;
+  }
+}
+
+/* ---------- o cabo do carimbo (play e pausa) ---------- */
+
+.r5-cabo {
+  grid-area: cabo;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin-bottom: 5px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--r5-plastico);
+  color: var(--sobre-acento);
+  box-shadow:
+    0 5px 0 var(--r5-plastico-lado),
+    0 8px 8px -3px rgb(0 0 0 / 0.22);
+  cursor: pointer;
+  transition:
+    transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* O tampo do cabo: um aro de leve, como o do plástico moldado. */
+.r5-cabo::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid color-mix(in oklab, var(--sobre-acento) 22%, transparent);
+  border-radius: 50%;
+}
+
+.r5-cabo svg {
+  position: relative;
+  width: 26px;
+  height: 26px;
+}
+
+.r5-icone {
+  fill: currentColor;
+}
+
+.r5-cabo:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 0 var(--r5-plastico-lado),
+    0 10px 10px -3px rgb(0 0 0 / 0.22);
+}
+
+/* Apertar: o cabo desce até a base (a sombra de 5 px some), em 60 ms. */
+.r5-cabo:active {
+  transform: translateY(5px);
+  box-shadow:
+    0 0 0 var(--r5-plastico-lado),
+    0 1px 2px rgb(0 0 0 / 0.2);
+  transition-duration: 60ms;
+  transition-timing-function: ease-out;
+}
+
+.r5-cabo:focus-visible,
+.r5-zerar:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 3px;
+}
+
+/* Nos 5 s do fim, o cabo sobe e desce devagar: vai carimbar de novo. */
+.r5-cabo.no-fim:not(:active) {
+  animation: r5-espera 1.5s ease-in-out infinite;
+}
+
+@keyframes r5-espera {
+  50% {
+    transform: translateY(-2px);
+    box-shadow:
+      0 7px 0 var(--r5-plastico-lado),
+      0 11px 10px -3px rgb(0 0 0 / 0.18);
+  }
+}
+
+/* ---------- o contador: o numerador e o zerar ---------- */
+
+.r5-contador {
+  grid-area: contador;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.r5-numerador {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+/* A janela de metal com as rodas. */
+.r5-janela {
+  --r5-h: 22px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 5px;
+  background: var(--ink);
+  box-shadow: 0 1px 0 color-mix(in oklab, var(--ink) 40%, transparent);
+}
+
+.r5-roda {
+  position: relative;
+  display: block;
+  width: 15px;
+  height: var(--r5-h);
+  overflow: hidden;
+  border-radius: 2px;
+  background: color-mix(in oklab, var(--ink) 84%, var(--paper-hi));
+  color: var(--paper-hi);
+}
+
+/* A curva da roda: o dígito escurece em cima e embaixo. */
+.r5-roda::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  box-shadow:
+    inset 0 6px 4px -4px rgb(0 0 0 / 0.45),
+    inset 0 -6px 4px -4px rgb(0 0 0 / 0.45);
+  pointer-events: none;
+}
+
+.r5-fita {
+  display: flex;
+  flex-direction: column;
+  transform: translateY(calc(var(--k, 0) * var(--r5-h) * -1));
+  transition: transform 0.52s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.r5-fita i {
+  display: block;
+  height: var(--r5-h);
+  font-family: var(--font-codigo);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: var(--r5-h);
+  text-align: center;
+  transform-origin: 50% 100%;
+}
+
+.r5-dois-pontos {
+  padding: 0 1px;
+  font-family: var(--font-codigo);
+  font-size: 13px;
+  line-height: 1;
+  color: var(--paper-hi);
+}
+
+.r5-num-total {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Zerar (recomeçar): o botãozinho do contador de mão. */
+.r5-zerar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin-bottom: 3px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--r5-plastico);
+  color: var(--sobre-acento);
+  box-shadow: 0 3px 0 var(--r5-plastico-lado);
+  cursor: pointer;
+  transition:
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* O alvo do toque é maior que o botão. */
+.r5-zerar::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+}
+
+.r5-zerar:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 var(--r5-plastico-lado);
+}
+
+.r5-zerar:active {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 var(--r5-plastico-lado);
+  transition-duration: 60ms;
+}
+
+.r5-zerar svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ---------- o picote (a faixa do tempo) ---------- */
+
+.r5-picote {
+  grid-area: picote;
+  position: relative;
+  padding: 0 10px;
+  border-radius: 4px;
+  cursor: ew-resize;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.r5-picote:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 2px;
+}
+
+.r5-picote.arrastando {
+  cursor: grabbing;
+}
+
+.r5-quadro {
+  position: relative;
+  height: 50px;
+}
+
+/* A fileira impressa do cartão, de ponta a ponta. */
+.r5-banda {
+  position: absolute;
+  top: 14px;
+  right: -10px;
+  left: -10px;
+  height: 20px;
+  border-block: 1px solid var(--r5-impresso);
+}
+
+/* A coluna da vez, levemente tingida, corre de uma coluna para a outra. */
+.r5-coluna-atual {
+  position: absolute;
+  top: 15px;
+  left: 0;
+  width: 0;
+  height: 18px;
+  background: color-mix(in oklab, var(--r5-tinta) 11%, transparent);
+  opacity: 0;
+  transition:
+    left 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    width 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.25s;
+}
+
+.r5-coluna-atual.visivel {
+  opacity: 1;
+}
+
+.r5-coluna-atual.direto {
+  transition: opacity 0.25s;
+}
+
+.r5-colunas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.r5-fio {
+  position: absolute;
+  top: 14px;
+  width: 1px;
+  height: 20px;
+  background: var(--r5-impresso);
+}
+
+/* O número da coluna, impresso embaixo, no começo de cada coluna. */
+.r5-col-num {
+  position: absolute;
+  top: 37px;
+  margin-left: 4px;
+  font-family: var(--font-codigo);
+  font-size: 10.5px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--ink-3);
+  transition: color 0.25s;
+}
+
+.r5-col-num small {
+  font-size: 0.9em;
+}
+
+.r5-col-num.atual {
+  font-weight: 700;
+  color: var(--r5-tinta);
+}
+
+.r5-furos {
+  position: absolute;
+  top: 14px;
+  right: 0;
+  left: 0;
+  height: 20px;
+}
+
+/* O lugar do furo, impresso como um aro; furado, mostra o escuro de baixo. */
+.r5-furo {
+  position: absolute;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px var(--r5-impresso);
+}
+
+.r5-furo b {
+  position: absolute;
+  inset: -0.5px;
+  border-radius: 50%;
+  background: var(--r5-furo);
+  box-shadow: inset 0 1.5px 1px rgb(0 0 0 / 0.35);
+  opacity: 0;
+}
+
+.r5-furo.furado b {
+  opacity: 1;
+}
+
+/* A bolinha de papel que cai do furo (só aparece durante a animação). */
+.r5-furo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--r5-cartao);
+  box-shadow: 0 0 0 0.5px var(--r5-impresso);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* A mira: o furo sob o mouse, tracejado (some arrastando). */
+.r5-mira {
+  position: absolute;
+  top: 24px;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border: 1.2px dashed var(--acento);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    left 90ms ease-out,
+    opacity 0.2s;
+}
+
+.r5-mira.visivel {
+  opacity: 0.8;
+}
+
+.r5-picote.arrastando .r5-mira {
+  opacity: 0;
+}
+
+/* O furador: a cabeça por cima do cartão e o aro no furo da vez. */
+.r5-furador {
+  position: absolute;
+  top: 0;
+  left: calc(var(--t, 1) * 100%);
+  width: 24px;
+  height: 36px;
+  margin-left: -12px;
+  pointer-events: none;
+}
+
+.r5:not(.r5-tocando) .r5-picote:not(.arrastando) .r5-furador {
+  transition: left 0.42s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.r5-furador-desenho {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.r5-guia {
+  fill: none;
+  stroke: var(--r5-plastico);
+  stroke-width: 1.2;
+  stroke-dasharray: 2 2;
+}
+
+.r5-cabeca {
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.r5-cabeca-corpo,
+.r5-pino {
+  fill: var(--r5-plastico);
+}
+
+.r5-anel {
+  fill: none;
+  stroke: var(--r5-plastico);
+  stroke-width: 1.6;
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.r5-picote:hover .r5-cabeca {
+  transform: translateY(-1px);
+}
+
+/* Arrastando, o furador abre (a cabeça sobe) e o aro cresce. */
+.r5-picote.arrastando .r5-cabeca {
+  transform: translateY(-3px);
+}
+
+.r5-picote.arrastando .r5-anel {
+  transform: scale(1.25);
+}
+
+/* ---------- a ficha de controle ---------- */
+
+.r5-ficha {
+  --r5-colunas: 46px minmax(0, 1fr) 88px;
+  margin: 6px 18px 18px;
+}
+
+.r5-ficha-comparacao {
+  --r5-colunas: 76px minmax(0, 1fr);
+}
+
+.r5-ficha-animacao {
+  --r5-colunas: minmax(0, 1fr) 88px;
+}
+
+.r5-cabecalho,
+.r5-linha,
+.r5-passo {
+  display: grid;
+  grid-template-columns: var(--r5-colunas);
+}
+
+/* O cabeçalho impresso do formulário. */
+.r5-cabecalho {
+  border-block: 1px solid var(--r5-impresso);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  line-height: 1;
+  color: color-mix(in oklab, var(--r5-tinta) 45%, var(--ink-2));
+}
+
+.r5-cabecalho > span {
+  padding: 5px 8px 4px;
+}
+
+.r5-cabecalho > span + span,
+.r5-passo > span + span,
+.r5-linha > * + * {
+  border-left: 1px solid var(--r5-impresso-fraco);
+}
+
+.r5-corpo {
+  position: relative;
+}
+
+.r5-passos {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.r5-passo {
+  position: relative;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--r5-impresso-fraco);
+  background: none;
+  font-family: var(--font-texto);
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  text-align: start;
+  cursor: pointer;
+  transition: color 0.25s;
+}
+
+.r5-passo code {
+  font-family: var(--font-codigo);
+  font-size: 0.84em;
+}
+
+.r5-n {
+  padding: 9px 0 0 8px;
+  font-family: var(--font-codigo);
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--ink-3);
+  transition: color 0.25s;
+}
+
+.r5-texto {
+  padding: 7px 10px 8px;
+  overflow-wrap: anywhere;
+}
+
+.r5-visto {
+  display: grid;
+  place-items: center;
+  padding: 4px;
+}
+
+.r5-passo.atual,
+.r5-passo.atual .r5-n {
+  color: var(--ink);
+}
+
+.r5-passo:hover .r5-n {
+  color: var(--acento);
+}
+
+.r5-passo:hover .r5-texto {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, var(--acento) 45%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.r5-passo:focus-visible {
+  z-index: 1;
+  outline: 2px solid var(--acento);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* A linha da vez: uma faixa só, que corre de uma linha para a outra (medida no script). */
+.r5-marcador {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 0;
+  background: color-mix(in oklab, var(--r5-tinta) 9%, transparent);
+  box-shadow: inset 3px 0 0 var(--r5-tinta);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.42s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.25s;
+}
+
+.r5-marcador.visivel {
+  opacity: 1;
+}
+
+.r5-marcador.direto {
+  transition: opacity 0.25s;
+}
+
+/* O carimbo: tinta do livro, borda dupla, um pouco girado e com a tinta falhando. */
+.r5-carimbo {
+  --giro: -6deg;
+  display: inline-block;
+  padding: 3px 7px 4px;
+  border: 4px double currentColor;
+  border-radius: 5px;
+  font-family: var(--font-ui);
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  color: var(--r5-tinta-carimbo);
+  opacity: 0;
+  transform: rotate(var(--giro));
+  -webkit-mask-image: var(--r5-falha);
+  mask-image: var(--r5-falha);
+  -webkit-mask-size: 120px 60px;
+  mask-size: 120px 60px;
+  -webkit-mask-position: var(--mx, 0) var(--my, 0);
+  mask-position: var(--mx, 0) var(--my, 0);
+  pointer-events: none;
+}
+
+.carimbado .r5-carimbo {
+  opacity: 0.92;
+}
+
+/* Comparação: o número do estado, carimbado pelo numerador. */
+.r5-ficha-comparacao .r5-n {
+  display: grid;
+  place-items: center;
+  padding: 6px 4px;
+}
+
+.r5-selo {
+  padding: 4px 6px 4px 5px;
+  font-family: var(--font-codigo);
+  font-size: 14px;
+  letter-spacing: 0;
+}
+
+.r5-selo small {
+  margin-right: 2px;
+  font-family: var(--font-ui);
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+.r5-estados {
+  display: grid;
+  padding: 7px 10px 8px;
+}
+
+.r5-estado {
+  grid-area: 1 / 1;
+  font-family: var(--font-texto);
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+  visibility: hidden;
+}
+
+.r5-estado.atual {
+  visibility: visible;
+}
+
+/* Animação: a legenda na ficha e o "fim" carimbado no fim da volta. */
+.r5-ficha-animacao .r5-texto {
+  margin: 0;
+  font-family: var(--font-texto);
+  font-size: 15.5px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.r5-ficha-animacao .r5-carimbo {
+  font-size: 13px;
+}
+
+@container (max-width: 560px) {
+  .r5-ficha {
+    margin-inline: 14px;
+  }
+
+  /* Estreito, o carimbo "feito" desce para debaixo do número, e o texto fica com a largura toda. */
+  .r5-ficha-passos {
+    --r5-colunas: 60px minmax(0, 1fr);
+  }
+
+  .r5-ficha-passos .r5-cabecalho > span:last-child {
+    display: none;
+  }
+
+  .r5-passo {
+    grid-template-areas:
+      "n texto"
+      "visto texto";
+    grid-template-rows: auto 1fr;
+  }
+
+  .r5-passo .r5-n {
+    grid-area: n;
+  }
+
+  .r5-passo .r5-texto {
+    grid-area: texto;
+  }
+
+  .r5-passo .r5-visto {
+    grid-area: visto;
+    place-items: start center;
+    padding: 2px 0 8px;
+    border-left: 0;
+  }
+
+  .r5-ficha-comparacao {
+    --r5-colunas: 70px minmax(0, 1fr);
+  }
+
+  .r5-ficha-animacao {
+    --r5-colunas: minmax(0, 1fr) 74px;
+  }
+
+  .r5-passo,
+  .r5-estado,
+  .r5-ficha-animacao .r5-texto {
+    font-size: 15px;
+  }
+
+  .r5-carimbo {
+    font-size: 11.5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .r5 *,
+  .r5 *::before,
+  .r5 *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

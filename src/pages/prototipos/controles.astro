@@ -1,0 +1,227 @@
+---
+/**
+ * Protótipo dos controles dos desenhos (/prototipos/controles/, no ar para o Cesar escolher; fora da busca,
+ * do sitemap e dos índices, com noindex): cinco opções de controles, cada
+ * uma resolvendo os três casos com a mesma linguagem, e o desenho e os controles num cartão só. Os casos
+ * usam os desenhos e o motor de verdade: a animação com play do Jackson, a lousa de passos do Jackson e a
+ * lousa de comparação do TLS. O tempo, o play e os passos vêm do relógio comum
+ * (src/amostra/controles/relogio.ts); cada opção (opcao-N.ts e opcao-N.css) só desenha os controles.
+ */
+import Base from "../../layouts/Base.astro";
+import { getResumos } from "../../lib/posts";
+import { quadroDaLousa } from "../../lib/lousas";
+import { animacao } from "../../lib/figuras";
+import { mdEmLinha } from "../../lib/formato";
+import "../../styles/figura.css";
+import "../../styles/lousa-nova.css";
+
+// O CSS de cada opção (as que existirem).
+import.meta.glob("../../amostra/controles/opcao-*.css", { eager: true });
+
+const OPCOES = [
+  { n: 1, nome: "Régua e lápis", ideia: "A faixa do tempo é uma régua; um lápis risca o progresso e marca o passo da vez. Os passos ficam numa ficha pautada presa embaixo do desenho." },
+  { n: 2, nome: "Marca-texto", ideia: "O progresso é uma passada de marca-texto amarelo; a ponta chanfrada é o cursor. O passo da vez ganha a passada na lista." },
+  { n: 3, nome: "Caderno e caneta", ideia: "Os controles são o pé de uma página de caderno: a caneta azul escreve a linha do tempo, e os passos viram uma lista de tarefas que se ticam." },
+  { n: 4, nome: "Post-its e fita", ideia: "Os passos são post-its colados em fila, e o da vez se descola; a faixa do tempo é uma fita adesiva que se desenrola." },
+  { n: 5, nome: "Carimbo e numerador", ideia: "Um numerador de carimbo conta os passos, com os dígitos girando; cada passo alcançado é carimbado. A faixa é um picote que vai sendo furado." },
+];
+
+const resumos = await getResumos();
+const cor = (slug: string) => resumos.find((r) => r.slug === slug)?.cor;
+
+const anim = animacao("jackson-filtros-mascarando-cartao/dois-caminhos");
+const passos = quadroDaLousa(
+  "jackson-filtros-mascarando-cartao/passos",
+  "Lousa: um Cartao com titular, numero e cvv passa pelo MascaraCartaoFilter, uma propriedade por vez.",
+);
+const comparacao = quadroDaLousa(
+  "criptografia-em-repouso-e-em-transito/tls",
+  "Linha do tempo comparando sslmode=require e sslmode=verify-full.",
+);
+
+const CASOS = [
+  {
+    caso: "animacao",
+    titulo: "Animação com play",
+    svg: anim.svg,
+    cor: cor("jackson-filtros-mascarando-cartao"),
+    duracao: 8,
+    animacao: "jackson-filtros-mascarando-cartao/dois-caminhos",
+    legenda: "Pelo toString(), o número e o CVV chegam inteiros ao log; pelo logJson.toJson(), o filtro mascara o número e remove o CVV.",
+    marcas: [],
+  },
+  {
+    caso: "passos",
+    titulo: "Lousa de passos",
+    svg: passos.svg,
+    cor: cor("jackson-filtros-mascarando-cartao"),
+    duracao: 7,
+    marcas: [
+      { de: 0, texto: "O `writer` representa a propriedade que está sendo escrita, e `writer.getName()` é o nome dela no JSON. A partir daí, o filtro segue um de três caminhos." },
+      { de: 0.263, texto: "Para **remover**, chama `serializeAsOmittedProperty`, que é o mesmo que os filtros prontos fazem. Em JSON, isso simplesmente não escreve nada." },
+      { de: 0.526, texto: "Para **mascarar**, lê o valor original e, em vez de delegar ao `writer`, escreve ele mesmo o par nome/valor com `g.writeStringProperty(...)`." },
+      { de: 0.789, texto: "Para **qualquer outro campo**, chama `writer.serializeAsProperty(...)`, o fluxo normal." },
+    ].map((m) => ({ ...m, texto: mdEmLinha(m.texto) })),
+  },
+  {
+    caso: "comparacao",
+    titulo: "Lousa de comparação",
+    svg: comparacao.svg,
+    cor: cor("criptografia-em-repouso-e-em-transito"),
+    duracao: 7,
+    marcas: [
+      { de: 0, texto: "O cliente abre a conexão" },
+      { de: 0.25, texto: "Alguém no meio do caminho responde com um certificado próprio" },
+      { de: 0.5, texto: "O require aceita; o verify-full confere a CA e o nome e recusa" },
+      { de: 0.75, texto: "Com require, o intermediário lê tudo; com verify-full, a conexão nem abre" },
+    ],
+  },
+];
+---
+
+<Base titulo="Protótipo dos controles">
+  <meta slot="head" name="robots" content="noindex" />
+  <script is:inline slot="head">
+    (() => {
+      const tema = new URLSearchParams(location.search).get("tema");
+      if (tema) document.documentElement.dataset.theme = tema === "escuro" ? "dark" : "light";
+    })();
+  </script>
+  <div class="wrap pagina-proto">
+    <header class="topo-proto">
+      <h1>Controles dos desenhos</h1>
+      <p>
+        Cinco opções. Cada uma resolve os três casos (a animação com play, a lousa de passos e a lousa de comparação) com a mesma
+        linguagem, e junta o desenho e os controles num cartão só. Os desenhos e o motor são os de verdade: dá para tocar, arrastar e
+        clicar nos passos. O botão do tema, no cabeçalho, troca para o escuro.
+      </p>
+      <nav class="indice-proto" aria-label="Opções">
+        {OPCOES.map((o) => <a href={`#opcao-${o.n}`}>{o.n}. {o.nome}</a>)}
+      </nav>
+    </header>
+
+    {
+      OPCOES.map((o) => (
+        <section class="opcao-proto" id={`opcao-${o.n}`}>
+          <h2>
+            <span class="numero-opcao">Opção {o.n}</span> {o.nome}
+          </h2>
+          <p class="ideia">{o.ideia}</p>
+          {CASOS.map((c) => (
+            <div class="caso-proto">
+              <h3>{c.titulo}</h3>
+              <figure
+                class:list={["cartao-proto", { "lousa-nova": c.caso !== "animacao" }]}
+                data-opcao={o.n}
+                data-caso={c.caso}
+                data-duracao={c.duracao}
+                data-animacao={c.animacao}
+                data-legenda={c.legenda}
+                data-marcas={JSON.stringify(c.marcas)}
+                style={c.cor ? `--cor:${c.cor}` : undefined}
+              >
+                <div class="proto-palco painel" set:html={c.svg} />
+                <div class="proto-controles" />
+              </figure>
+            </div>
+          ))}
+        </section>
+      ))
+    }
+  </div>
+</Base>
+
+<script>
+  import { criarRelogio, type Relogio } from "../../amostra/controles/relogio";
+
+  type MontarOpcao = (relogio: Relogio, controles: HTMLElement, figura: HTMLElement) => void;
+  const opcoes = import.meta.glob<{ default: MontarOpcao }>("../../amostra/controles/opcao-*.ts");
+
+  for (const figura of document.querySelectorAll<HTMLElement>(".cartao-proto")) {
+    const carregar = opcoes[`../../amostra/controles/opcao-${figura.dataset.opcao}.ts`];
+    const controles = figura.querySelector<HTMLElement>(".proto-controles")!;
+    if (!carregar) {
+      controles.textContent = "(ainda não montada)";
+      continue;
+    }
+    const svg = figura.querySelector<SVGSVGElement>(".proto-palco svg")!;
+    const relogio = criarRelogio(figura, svg);
+    void carregar().then((m) => m.default(relogio, controles, figura));
+  }
+</script>
+
+<style>
+  .pagina-proto {
+    max-width: 820px;
+    padding-block: 32px 120px;
+  }
+
+  .topo-proto h1 {
+    margin: 0 0 8px;
+    font-family: var(--font-titulo);
+  }
+
+  .topo-proto p {
+    color: var(--ink-2);
+  }
+
+  .indice-proto {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin-top: 12px;
+    font-family: var(--font-ui);
+    font-size: 14px;
+  }
+
+  .opcao-proto {
+    margin-top: 72px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .opcao-proto h2 {
+    margin: 0;
+    font-family: var(--font-titulo);
+  }
+
+  .numero-opcao {
+    color: var(--ink-3);
+  }
+
+  .ideia {
+    margin: 6px 0 24px;
+    color: var(--ink-2);
+  }
+
+  .caso-proto {
+    margin-top: 36px;
+  }
+
+  .caso-proto h3 {
+    margin: 0 0 10px;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink-3);
+  }
+
+  /* A base comum dos cartões: cada opção põe a cara dela em cima disto (opcao-N.css). */
+  .pagina-proto :global(.cartao-proto) {
+    margin: 0;
+  }
+
+  .pagina-proto :global(.proto-palco) {
+    padding: clamp(10px, 2.4vw, 22px);
+  }
+
+  /* O painel dos desenhos do corpo (D60), como o das figuras. */
+  .pagina-proto :global(.proto-palco.painel) {
+    --fig-bg: color-mix(in oklab, var(--cor, var(--ink-2)) var(--desenho-painel), var(--painel-desenho));
+  }
+
+  .pagina-proto :global(.proto-palco > svg) {
+    display: block;
+    width: 100%;
+  }
+</style>
