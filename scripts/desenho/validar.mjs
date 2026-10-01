@@ -33,7 +33,7 @@ const CLASSES_DA_FIGURA = new Set([
   "tom-azul", "tom-verde", "tom-ambar", "tom-vermelho", "tom-roxo", "tom-petroleo",
   "lavado", "linha-tom", "cheio-tom", "texto-tom", "selo", "selo-texto", "titulo-caixa", "texto-caixa",
   "eixo", "grade", "serie", "area", "limite", "ponto", "valor-eixo", "titulo-eixo", "marca-texto",
-  "fluxo", "pulsa", "pisca", "gira", "balanca", "anda", "formiga", "pacote", "legenda", "traco-tom", "risco",
+  "fluxo", "pulsa", "pisca", "gira", "balanca", "anda", "formiga", "pacote", "legenda", "referencia", "traco-tom", "risco",
   "etapa-1", "etapa-2", "etapa-3", "etapa-4", "etapa-5", "etapa-6", "etapa-7",
 ]);
 const PROPORCOES = { largo: 1100 / 468, medio: 3 / 2, quadrado: 1 };
@@ -126,6 +126,11 @@ function validarLousa(arquivo) {
   if (!caixa(raiz.match(/\sviewBox="([^"]*)"/)?.[1])) erros.push("raiz sem viewBox válido");
   if (/\saria-label=/.test(raiz)) erros.push("o rótulo vem do componente (rotulo=), não do arquivo");
   for (const [padrao, motivo] of PROIBIDOS) if (padrao.test(corpo)) erros.push(motivo);
+  // A lousa no estilo das figuras (D59): o grupo .tinta e as classes das figuras, mais os atributos de
+  // tempo e os logos (data-marca).
+  const comoFigura = /<g\s+class="tinta"/.test(corpo);
+  const grupo = comoFigura ? "tinta" : "traco";
+  const conhecidas = comoFigura ? CLASSES_DA_FIGURA : CLASSES_DA_LOUSA;
   const pilha = [];
   let temTraco = false;
   for (const [, fecha, nome, attrs, auto] of corpo.matchAll(/<(\/?)([a-zA-Z]+)([^>]*?)(\/?)>/g)) {
@@ -134,10 +139,11 @@ function validarLousa(arquivo) {
       continue;
     }
     const classes = (attrs.match(/\sclass="([^"]*)"/)?.[1] ?? "").split(/\s+/).filter(Boolean);
-    for (const c of classes) if (!CLASSES_DA_LOUSA.has(c)) erros.push(`classe desconhecida: ${c}`);
-    if (classes.includes("traco")) temTraco = true;
-    if (nome === "text" && pilha.some((c) => c.includes("traco"))) erros.push("texto dentro do grupo .traco (ficaria tremido)");
+    for (const c of classes) if (!conhecidas.has(c)) erros.push(`classe desconhecida: ${c}`);
+    if (classes.includes(grupo)) temTraco = true;
+    if (nome === "text" && pilha.some((c) => c.includes(grupo))) erros.push(`texto dentro do grupo .${grupo} (ficaria tremido)`);
     for (const [, atributo, valor] of attrs.matchAll(/\sdata-([a-z]+)="([^"]*)"/g)) {
+      if (atributo === "marca" && comoFigura) continue;
       if (atributo === "de") {
         if (valor !== "direita") erros.push(`data-de="${valor}" (só existe "direita")`);
         continue;
@@ -150,13 +156,13 @@ function validarLousa(arquivo) {
       const n = valor.trim().split(/\s+/).map(Number);
       if (n.length !== esperado || n.some((x) => !Number.isFinite(x))) erros.push(`data-${atributo}="${valor}" (esperava ${esperado} números)`);
       else if (n[0] > n[1]) erros.push(`data-${atributo}="${valor}" termina antes de começar`);
-      if (atributo === "traco" && classes.some((c) => c === "fantasma" || c === "tracejado")) {
+      if (atributo === "traco" && classes.some((c) => c === "fantasma" || c === "tracejado" || c === "grade" || c === "limite")) {
         erros.push("data-traco em linha tracejada (o traçado usa o tracejado); use data-revela");
       }
     }
     if (!auto && nome !== "svg") pilha.push(classes);
   }
-  if (!temTraco) erros.push('falta o grupo class="traco" com os traços');
+  if (!temTraco) erros.push('falta o grupo class="tinta" (estilo das figuras, D59) ou class="traco" (lousa antiga) com os traços');
   return erros;
 }
 

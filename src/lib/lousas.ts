@@ -1,10 +1,14 @@
 /**
  * Desenhos das lousas (briefing §7, D11): src/lousas/<slug>/<nome>.svg, usados pelos componentes
- * LousaTempo e LousaLoop dentro de posts .mdx (a lousa de passos saiu na D46). Aqui o SVG ganha rótulo acessível e o
+ * Lousa (D58) e, nos posts antigos, LousaTempo e LousaLoop. Aqui o SVG ganha rótulo acessível e o
  * quadro parado (estilos do instante escolhido), que é o que aparece sem JS, com movimento reduzido
  * e no RSS; com JS, src/scripts/lousa.ts assume a partir dele.
+ *
+ * A lousa no estilo das figuras (D59) tem o grupo <g class="tinta"> em vez de <g class="traco">: usa as
+ * classes e os tons das figuras (figura.css) e pode ter logos (data-marca), como elas.
  */
 import { ATRIBUTOS, estado, fimDa, numeros, type Marcas } from "./lousa-tempo";
+import { comMarcas } from "./figuras";
 
 const arquivos = import.meta.glob<string>("../lousas/**/*.svg", { query: "?raw", import: "default", eager: true });
 
@@ -19,10 +23,18 @@ function marcasDe(atributos: string): Marcas {
   return marcas;
 }
 
-/** O SVG da lousa no instante t (por padrão, o fim), com role="img" e o rótulo. */
-export function quadroDaLousa(nome: string, rotulo: string, t?: number): { svg: string; fim: number } {
-  const fonte = arquivos[`../lousas/${nome}.svg`];
-  if (!fonte) throw new Error(`Não existe a lousa src/lousas/${nome}.svg.`);
+/** A lousa está no estilo das figuras (D59)? */
+export const noEstiloDasFiguras = (fonte: string) => /<g\s+class="tinta"/.test(fonte);
+
+/**
+ * O SVG da lousa no instante t (por padrão, o fim), com role="img" e o rótulo. No estilo das figuras,
+ * a raiz ganha as classes da figura e os marcadores de logo viram o desenho do logo.
+ */
+export function quadroDaLousa(nome: string, rotulo: string, t?: number): { svg: string; fim: number; figura: boolean } {
+  const original = arquivos[`../lousas/${nome}.svg`];
+  if (!original) throw new Error(`Não existe a lousa src/lousas/${nome}.svg.`);
+  const figura = noEstiloDasFiguras(original);
+  const fonte = figura ? comMarcas(original.replace(/<svg\b/, '<svg class="ilustracao diagrama lousa-desenho"')) : original;
   const todas = [...fonte.matchAll(/<\w+\b([^>]*)>/g)].filter(([, a]) => COM_TEMPO.test(a)).map(([, a]) => marcasDe(a));
   const fim = fimDa(todas);
   const instante = t ?? fim;
@@ -39,5 +51,5 @@ export function quadroDaLousa(nome: string, rotulo: string, t?: number): { svg: 
       if (e.dx || e.dy) estilos.push(`transform:translate(${e.dx}px,${e.dy}px)`);
       return estilos.length ? `<${nomeDaTag}${atributos} style="${estilos.join(";")}"${fecha}>` : tag;
     });
-  return { svg, fim };
+  return { svg, fim, figura };
 }

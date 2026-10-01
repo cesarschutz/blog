@@ -7,6 +7,10 @@
  * - comparação: duas linhas (com e sem, antes e depois) avançando juntas no tempo; o texto do estado
  *   fica só no controle, para leitores de tela.
  *
+ * O desenho segue o estilo das figuras (D59): o painel do livro, o traço da casa, os tons e os logos
+ * (figura.css), e a caneta é uma canetinha na cor do que desenha. Até 700px, como as figuras, o desenho
+ * fica largo e rola de lado; aí o dedo rola o desenho, e o tempo anda pelo play, pela faixa e pelos passos.
+ *
  * Comportamento: a lousa aparece com o desenho completo e parado. O play começa do início (ou continua
  * de onde a pessoa pausou), chega ao fim, espera um pouco e recomeça, até ser pausado. Só a rolagem
  * horizontal (trackpad, ou Shift com a roda) e o arrasto sobre o desenho movem o tempo; a rolagem
@@ -20,6 +24,7 @@
 import { quadroDaLousa } from "../lib/lousas";
 import { mdEmLinha } from "../lib/formato";
 import "../styles/lousa.css";
+import "../styles/figura.css";
 import "../styles/lousa-nova.css";
 
 interface Estado {
@@ -39,7 +44,8 @@ interface Props {
 }
 
 const { desenho, rotulo, passos = [], estados = [], duracao = 7 } = Astro.props;
-const { svg } = quadroDaLousa(desenho, rotulo);
+const { svg, figura } = quadroDaLousa(desenho, rotulo);
+if (!figura) throw new Error(`A lousa src/lousas/${desenho}.svg precisa estar no estilo das figuras (D59): o grupo <g class="tinta">.`);
 const id = `lousa-${desenho.replace(/[^a-z0-9]+/gi, "-")}`;
 const marcas = (passos.length ? passos : estados).map((e) => e.de);
 const rss = Astro.locals.rss;
@@ -59,7 +65,8 @@ const rss = Astro.locals.rss;
       data-duracao={duracao}
       data-pagefind-ignore
     >
-      <div class="lousa area" set:html={svg} />
+      <div class="area lousa-palco painel" set:html={svg} />
+      <p class="dica-rolar" aria-hidden="true">Arraste o desenho para o lado para ver a lousa inteira.</p>
       <div class="controles" hidden>
         <button type="button" class="tocar" aria-pressed="false" aria-label="Reproduzir desde o início" aria-controls={id}>
           <svg class="icone-tocar" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9.5-5.5z" /></svg>
@@ -139,6 +146,48 @@ const rss = Astro.locals.rss;
       });
     };
 
+    // Até 700px o desenho rola de lado no painel: no play, o painel acompanha a canetinha (a não ser que
+    // a pessoa tenha acabado de rolar ele); no clique num passo, vai até o que o passo desenha.
+    const rola = () => area.scrollWidth > area.clientWidth + 1;
+    const suave = matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+    let rolouEm = 0;
+    let seguiuEm = 0;
+    for (const tipo of ["touchstart", "wheel"]) area.addEventListener(tipo, () => (rolouEm = performance.now()), { passive: true });
+    const levarAte = (esquerda: number, direita: number) => {
+      const largura = area.clientWidth;
+      if (esquerda >= area.scrollLeft + 24 && direita <= area.scrollLeft + largura - 24) return;
+      area.scrollTo({ left: Math.max(0, (esquerda + direita) / 2 - largura / 2), behavior: suave });
+    };
+    const noPainel = (r: DOMRect) => {
+      const a = area.getBoundingClientRect();
+      return [r.left - a.left + area.scrollLeft, r.right - a.left + area.scrollLeft] as const;
+    };
+    const seguirCaneta = () => {
+      const agora = performance.now();
+      if (!rola() || agora - rolouEm < 2500 || agora - seguiuEm < 400) return;
+      const caneta = area.querySelector(".caneta-desenho.ativa");
+      if (!caneta) return;
+      const [x] = noPainel(caneta.getBoundingClientRect());
+      if (x < area.scrollLeft + 40 || x > area.scrollLeft + area.clientWidth - 40) {
+        seguiuEm = agora;
+        levarAte(x, x);
+      }
+    };
+    const TEMPOS = ["traco", "escrita", "revela", "aparece", "some", "esmaece", "desloca"];
+    const partesDoPasso = (i: number) => {
+      const de = passos[i].de * lousa.fim;
+      const ate = i + 1 < passos.length ? passos[i + 1].de * lousa.fim : Infinity;
+      return [...svg.querySelectorAll<SVGGraphicsElement>(TEMPOS.map((n) => `[data-${n}]`).join(","))].filter((el) => {
+        const inicio = Number(TEMPOS.map((n) => el.dataset[n]).find(Boolean)?.trim().split(/\s+/)[0]);
+        return inicio >= de - 0.002 && inicio < ate - 0.002;
+      });
+    };
+    const mostrarPasso = (i: number) => {
+      if (!rola()) return;
+      const caixas = partesDoPasso(i).map((el) => noPainel(el.getBoundingClientRect()));
+      if (caixas.length) levarAte(Math.min(...caixas.map((c) => c[0])), Math.max(...caixas.map((c) => c[1])));
+    };
+
     let quadro = 0;
     let anterior = 0;
     let segurarAte = 0;
@@ -153,6 +202,7 @@ const rss = Astro.locals.rss;
         }
       } else {
         mostrar(t + dt / duracao);
+        seguirCaneta();
         if (t >= 1) {
           segurarAte = agora + PAUSA_NO_FIM;
           lousa.desenhar(lousa.fim, false);
@@ -230,6 +280,7 @@ const rss = Astro.locals.rss;
         botao.addEventListener("click", () => {
           gesto(fimDoPasso(i));
           lousa.desenhar(t * lousa.fim, false);
+          mostrarPasso(i);
         });
       });
       lista.addEventListener("pointerleave", () => marcar(null));
@@ -252,9 +303,12 @@ const rss = Astro.locals.rss;
     // Só a rolagem horizontal mexe no tempo (o trackpad de lado, ou Shift com a roda). A vertical rola a
     // página. O evento horizontal é sempre segurado sobre a lousa, também nas pontas: solto, o trackpad
     // do Mac voltaria a página do navegador.
+    // Até 700px o desenho rola de lado dentro do painel, como as figuras: aí a rolagem e o dedo são do
+    // painel (o tempo anda pelo play, pela faixa e pelos passos), e só o mouse arrasta o tempo.
     area.addEventListener(
       "wheel",
       (e) => {
+        if (rola()) return;
         const horizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.shiftKey ? e.deltaY : 0;
         if (!horizontal) return;
         e.preventDefault();
@@ -279,7 +333,7 @@ const rss = Astro.locals.rss;
     };
     area.addEventListener("pointerdown", (e) => {
       if (e.pointerType === "mouse" && e.button !== 0) return;
-      if (e.pointerType === "touch") inicio = { x: e.clientX, y: e.clientY, id: e.pointerId };
+      if (e.pointerType === "touch") inicio = rola() ? null : { x: e.clientX, y: e.clientY, id: e.pointerId };
       else comecar(e);
     });
     area.addEventListener("pointermove", (e) => {

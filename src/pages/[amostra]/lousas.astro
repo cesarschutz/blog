@@ -13,6 +13,7 @@ import { getResumos, urlPost } from "../../lib/posts";
 import { quadroDaLousa } from "../../lib/lousas";
 import { ATRIBUTOS, numeros } from "../../lib/lousa-tempo";
 import "../../styles/lousa.css";
+import "../../styles/figura.css";
 
 export function getStaticPaths() {
   return import.meta.env.DEV ? [{ params: { amostra: "amostra" } }] : [];
@@ -97,7 +98,7 @@ const lousas = Object.entries(desenhos)
     const usosDela = usos.get(nome) ?? [];
     const uso = usosDela[0];
     const rotulo = uso?.rotulo ?? nome;
-    const { fim } = quadroDaLousa(nome, rotulo);
+    const { fim, figura } = quadroDaLousa(nome, rotulo);
     const parado = uso?.parado !== undefined ? uso.parado * fim : undefined;
     const quadros = instantesDe(fonte, fim, parado).map(({ t, mostrado }) => {
       const fracao = fim ? t / fim : 1;
@@ -118,7 +119,7 @@ const lousas = Object.entries(desenhos)
     // Desenho bem mais largo que alto (a linha do tempo, o loop): dois por linha, para o texto miúdo ser lido.
     const [, , largura, altura] = numeros(fonte.match(/viewBox="([^"]+)"/)?.[1] ?? "0 0 560 430");
     const larga = largura / altura > 2;
-    return { nome, fim, usos: usosDela, cor: uso?.cor, quadros, larga, ocultos: quadros.filter((q) => !q.mostrado).length };
+    return { nome, fim, figura, usos: usosDela, cor: uso?.cor, quadros, larga, ocultos: quadros.filter((q) => !q.mostrado).length };
   })
   .sort((a, b) => a.nome.localeCompare(b.nome));
 ---
@@ -163,7 +164,7 @@ const lousas = Object.entries(desenhos)
             {l.quadros.map((q) => (
               <li class:list={["quadro", { extra: !q.mostrado }]} hidden={!q.mostrado}>
                 <figure>
-                  <div class="lousa" set:html={q.svg} />
+                  <div class:list={[l.figura ? "painel lousa-figura" : "lousa"]} set:html={q.svg} />
                   <figcaption>
                     <span class="instante">
                       t = {numero(q.t)}
@@ -267,5 +268,15 @@ const lousas = Object.entries(desenhos)
   .fracao {
     font-weight: 400;
     color: var(--ink-2);
+  }
+
+  /* A lousa no estilo das figuras (D59): no painel do livro, como no post. */
+  .lousa-figura {
+    padding: 10px;
+  }
+
+  .lousa-figura :global(svg) {
+    display: block;
+    width: 100%;
   }
 </style>

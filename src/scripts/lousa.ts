@@ -3,6 +3,9 @@
  * desenha o instante que o componente pedir (rolagem, controle ou relógio). A caneta fica na ponta
  * do traço ou do texto que está sendo feito, na cor dele. Os recortes da escrita ganham ids únicos
  * aqui, na hora; o arquivo do desenho continua sem id nem <defs>.
+ *
+ * Na lousa no estilo das figuras (D59, raiz .diagrama), a caneta é uma canetinha colorida: a ponta, o
+ * anel e a tampa na cor do que está sendo desenhado (o traço, o texto ou o tom que está sendo pintado).
  */
 import { ATRIBUTOS, estado, fimDa, numeros, type Marcas } from "../lib/lousa-tempo";
 
@@ -15,6 +18,18 @@ const CANETA = `<g class="caneta-desenho" aria-hidden="true"><g transform="rotat
   <rect class="brilho" x="21" y="-3" width="18" height="6" rx="1"/>
 </g></g>`;
 
+// A canetinha (D59): ponta de feltro, cone de plástico, corpo fino e tampa no fundo, no traço das
+// figuras (contorno de tinta). Feita para um desenho de 1100 de largura; o script ajusta a escala.
+const CANETINHA = `<g class="caneta-desenho canetinha" aria-hidden="true"><g transform="rotate(-52)">
+  <path class="ponta" d="M0 0 C 1.5 -2.6 5 -3.6 8 -3.4 L8 3.4 C 5 3.6 1.5 2.6 0 0 Z"/>
+  <path class="cone" d="M8 -3.6 L20 -7.2 L20 7.2 L8 3.6 Z"/>
+  <rect class="anel" x="20" y="-7.6" width="6" height="15.2" rx="1.2"/>
+  <rect class="corpo" x="26" y="-7.6" width="62" height="15.2" rx="2.4"/>
+  <path class="brilho" d="M31 -3.4 H70"/>
+  <rect class="tampa" x="84" y="-8.6" width="26" height="17.2" rx="4"/>
+</g></g>`;
+const LARGURA_DA_CANETINHA = 1100;
+
 interface Parte {
   el: SVGGraphicsElement;
   marcas: Marcas;
@@ -25,6 +40,18 @@ interface Parte {
   recorte?: SVGRectElement;
   daDireita: boolean;
   destaque: boolean;
+}
+
+/** A cor da canetinha para uma parte: o traço que ela faz, o texto que escreve ou o tom que pinta. */
+function corDaParte(p: Parte): string {
+  const estilo = getComputedStyle(p.el);
+  const tom = estilo.getPropertyValue("--tom").trim();
+  if (p.tipo === "traco") return estilo.stroke !== "none" ? estilo.stroke : tom || estilo.fill;
+  if (p.tipo === "escrita") return estilo.fill;
+  if (tom) return tom;
+  const primeiro = p.el.matches("g") ? p.el.querySelector<SVGGraphicsElement>("path, rect, circle, ellipse, line, polyline, polygon, text") : p.el;
+  const doPrimeiro = primeiro ? getComputedStyle(primeiro) : estilo;
+  return doPrimeiro.stroke !== "none" ? doPrimeiro.stroke : doPrimeiro.fill;
 }
 
 export interface Lousa {
@@ -71,10 +98,12 @@ export function prepararLousa(svg: SVGSVGElement): Lousa {
   });
   // Até três canetas: quando duas partes são feitas ao mesmo tempo, cada uma tem a sua (uma caneta só
   // não escreve em dois lugares, pedido do Cesar).
+  const comoFigura = svg.classList.contains("diagrama");
+  const escala = comoFigura ? (svg.viewBox.baseVal?.width || LARGURA_DA_CANETINHA) / LARGURA_DA_CANETINHA : 1;
   const canetas = [0, 1, 2].map(() => {
-    svg.insertAdjacentHTML("beforeend", CANETA);
+    svg.insertAdjacentHTML("beforeend", comoFigura ? CANETINHA : CANETA);
     const g = svg.lastElementChild as SVGGElement;
-    return { g, mao: g.firstElementChild as SVGGElement };
+    return { g, mao: g.firstElementChild as SVGGElement, parte: null as Parte | null };
   });
 
   // A caixa dos textos depende da fonte: mede de novo quando ela chega.
@@ -100,7 +129,7 @@ export function prepararLousa(svg: SVGSVGElement): Lousa {
   function desenhar(t: number, comCaneta = true) {
     ultimo = t;
     caneteando = comCaneta;
-    const ativas: { inicio: number; x: number; y: number; destaque: boolean; giro: number }[] = [];
+    const ativas: { parte: Parte; inicio: number; x: number; y: number; destaque: boolean; giro: number }[] = [];
     for (const p of partes) {
       const e = estado(p.marcas, t);
       const s = p.el.style;
@@ -138,15 +167,20 @@ export function prepararLousa(svg: SVGSVGElement): Lousa {
           }
         }
       }
-      if (ponto && e.opacidade > 0) ativas.push({ inicio: p.inicio, ...naRaiz(p.el, ...ponto), destaque: p.destaque, giro });
+      if (ponto && e.opacidade > 0) ativas.push({ parte: p, inicio: p.inicio, ...naRaiz(p.el, ...ponto), destaque: p.destaque, giro });
     }
     ativas.sort((a, b) => b.inicio - a.inicio);
     canetas.forEach((caneta, i) => {
       const ativa = comCaneta ? ativas[i] : undefined;
-      if (!ativa) return caneta.g.classList.remove("ativa");
+      if (!ativa) {
+        caneta.parte = null;
+        return caneta.g.classList.remove("ativa");
+      }
       caneta.g.setAttribute("transform", `translate(${ativa.x.toFixed(1)} ${ativa.y.toFixed(1)})`);
-      caneta.mao.setAttribute("transform", `rotate(${(-52 + ativa.giro).toFixed(1)})`);
-      caneta.g.style.setProperty("--tinta-da-caneta", ativa.destaque ? "var(--destaque)" : "var(--caneta)");
+      caneta.mao.setAttribute("transform", `rotate(${(-52 + ativa.giro).toFixed(1)})${escala !== 1 ? ` scale(${escala.toFixed(3)})` : ""}`);
+      if (!comoFigura) caneta.g.style.setProperty("--tinta-da-caneta", ativa.destaque ? "var(--destaque)" : "var(--caneta)");
+      else if (caneta.parte !== ativa.parte) caneta.g.style.setProperty("--tinta-da-caneta", corDaParte(ativa.parte));
+      caneta.parte = ativa.parte;
       caneta.g.classList.add("ativa");
     });
   }

@@ -1,6 +1,7 @@
 /*
- * A lousa nova (Lousa.astro, D58): o quadro de sempre (lousa.css) com o controle
- * limpo embaixo, o play à esquerda e a faixa do tempo, com as marcas de cada passo (numeradas) ou de
+ * A lousa nova (Lousa.astro, D58), no estilo das figuras (D59): o desenho no painel do livro, com o
+ * traço, os tons e os logos das figuras (figura.css), e uma canetinha colorida que desenha. Embaixo, o
+ * controle limpo: o play à esquerda e a faixa do tempo, com as marcas de cada passo (numeradas) ou de
  * cada estado. Nada ao lado da faixa: a lousa nunca muda de tamanho. A lista dos passos vem logo
  * abaixo, e o passo da vez acende na cor do livro.
  */
@@ -19,6 +20,90 @@
 
 .lousa-nova .area.arrastando {
   cursor: grabbing;
+}
+
+/* O palco, como o das figuras (o painel vem de base.css). */
+.lousa-nova .lousa-palco {
+  padding: clamp(10px, 2.4vw, 22px);
+}
+
+.lousa-nova .lousa-palco > svg {
+  display: block;
+  width: 100%;
+}
+
+.lousa-nova .dica-rolar {
+  display: none;
+}
+
+/* Até 700px, como as figuras: o desenho fica largo e rola de lado dentro do painel (a página não rola).
+   O dedo rola o desenho; o tempo anda pelo play, pela faixa e pelos passos. */
+@media (max-width: 700px) {
+  .lousa-nova .lousa-palco {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    touch-action: auto;
+  }
+
+  .lousa-nova .lousa-palco > svg {
+    width: 720px;
+    max-width: none;
+  }
+
+  .lousa-nova .dica-rolar {
+    display: block;
+    margin: 8px 0 0;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+}
+
+/* ---------- a canetinha que desenha (posta pelo script, D59) ---------- */
+
+.lousa-nova .caneta-desenho {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.lousa-nova .caneta-desenho.ativa {
+  opacity: 1;
+}
+
+.lousa-nova .canetinha {
+  filter: drop-shadow(1.5px 2.5px 1.5px rgb(0 0 0 / 0.28));
+}
+
+.lousa-nova .canetinha :is(path, rect) {
+  stroke: var(--ink);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+}
+
+.lousa-nova .canetinha :is(.ponta, .anel, .tampa) {
+  fill: var(--tinta-da-caneta, var(--ink));
+}
+
+.lousa-nova .canetinha .cone {
+  fill: color-mix(in oklab, var(--paper-hi) 82%, var(--ink));
+}
+
+.lousa-nova .canetinha .corpo {
+  fill: color-mix(in oklab, var(--tinta-da-caneta, var(--ink)) 26%, var(--paper-hi));
+}
+
+.lousa-nova .canetinha .brilho {
+  fill: none;
+  stroke: rgb(255 255 255 / 0.65);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lousa-nova .caneta-desenho {
+    display: none;
+  }
 }
 
 .lousa-nova .controles {
@@ -262,6 +347,7 @@
 
 @media print {
   .lousa-nova .controles,
+  .lousa-nova .dica-rolar,
   .lousa-nova .dica {
     display: none !important;
   }
