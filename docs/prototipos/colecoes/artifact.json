@@ -1,0 +1,13 @@
+{
+  "observacao": "Os textos fixos da página das cinco sugestões (gerar-artifact.mjs). O resto vem de colecoes.json.",
+  "data": "1º de outubro de 2026",
+  "lead": "Cinco propostas de coleção para os livros do blog, cada uma juntando os 8 livros de hoje com as 16 categorias do dev-note e com o que o blog publica e deve publicar. Vão de 8 a 12 livros. De cada livro: o título, a frase da capa, o que ele abrange, os posts de hoje que iriam para ele, a cor e o desenho.",
+  "comoLer": "Cada sugestão mostra a estante como ela fica na home, as capas e o que muda para chegar nela. O mesmo livro tem o mesmo desenho e a mesma cor em todas as sugestões; os livros novos foram desenhados agora, no traço dos oito de hoje. Os nomes podem passar de uma sugestão para outra: se você gostar da estante da 2 com o Observabilidade da 3, dá.",
+  "recomendacao": {
+    "titulo": "Se eu escolhesse",
+    "paragrafos": []
+  },
+  "identidades": "Os oito livros de hoje ficam com o desenho e a cor que já têm; para cada cor, a pesquisa achou o motivo (a do IA é a única sem ligação com o assunto, e está dito). Os livros novos têm a cor tirada do próprio assunto, conferida no contraste dos papéis do site e ao lado das outras na estante.",
+  "rodape": "Na branch claude/magical-einstein-tneg5o. No dev, /amostra/colecoes/ mostra as estantes e as capas com os componentes do site. Os textos estão em docs/prototipos/colecoes/sugestoes.md, as três propostas de origem e a crítica em docs/prototipos/colecoes/, e a pesquisa de cores e desenhos, com as fontes, em pesquisa-cores-e-desenhos.md.",
+  "sugestoes": {}
+}
