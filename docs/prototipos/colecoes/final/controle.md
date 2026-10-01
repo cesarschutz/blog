@@ -63,14 +63,32 @@ Os desenhos novos têm o prefixo `novo-` para não sobrescrever os que o site us
 | 2 | Direção de arte: conceito do conjunto, objeto e cor de cada livro (Fable) | feito: `direcao-de-arte.md` ("O mesmo problema, um século antes"; paleta em `paleta.png`) |
 | 3 | Textos: frase, abrange, posts de cada livro (Fable) | feito: `textos.md` |
 | 4 | Crítica dos dois e síntese | feito: `critica.md`; aplicado em `dados.json` (Frontend `#433123` e Testes `#39404d`, que sumiam no escuro; Dados `#5b457f`; IA vira o Turco de Kempelen; frase do Frontend; fronteiras dos textos; a tag Pagamentos vira Cobrança, que o Cesar autorizou). A marca fica como pergunta |
-| 5 | Os 13 desenhos e ícones | prontos: Arquitetura, Dados, Desenvolvimento, Integração, Pagamentos, Segurança, Sistemas Distribuídos, SRE e Testes; em andamento: DevOps, Frontend, Fundamentos e IA (o Turco) |
-| 6 | Dados da página (`colecoes.json` → `final`), título na capa, conferência das cores | feito para os dados de agora: `final/dados.json` → `final/montar.mjs` → `colecoes.json`; refazer depois da crítica |
-| 7 | Página final (dev e artifact) | a fazer |
+| 5 | Os 13 desenhos e ícones | feito: os 13 em `scripts/desenho/livros/novo-<slug>.mjs` (IA é o Turco de Kempelen, depois da crítica), conferidos na capa e na estante |
+| 6 | Dados da página (`colecoes.json` → `final`), título na capa, conferência das cores | feito: `final/dados.json` → `final/montar.mjs` → `colecoes.json` |
+| 7 | Página final (dev e artifact) | feito: `/amostra/colecoes/final/` no dev; publicada em <https://claude.ai/code/artifact/a08fa29f-5a3d-45ec-bcaf-7d0f13ab12a5> (para republicar no mesmo endereço: `final/montar.mjs`, `capturar.mjs final` com o dev no ar, `final/gerar.mjs` e publicar `.render/colecoes/final.html` com as `.webp` que ela usa) |
 | 8 | Regra dos posts (skill `post`, `.claude/rules/posts.md`, `CAPAS.md`, `CLAUDE.md`) | feito (falta ajustar no `CAPAS.md` o "instrumento de ofício" se o conjunto novo for de outra família) |
-| 9 | Estado, commit e push na branch | a fazer |
+| 9 | Estado, commit e push na branch | feito; falta o OK do Cesar na página final e, depois, aplicar no site |
 
 ## Como retomar
 
 Ler este arquivo; continuar da primeira etapa que não está feita. O dev:
 `npx astro dev --host 127.0.0.1 --port 4322` (no Linux da nuvem, o Chromium fica em
 `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`; `CHROME_PATH` aponta para ele nos scripts).
+
+## Depois do OK do Cesar (aplicar no site)
+
+1. `src/livros/livros.json`: os 13 em ordem alfabética (volume, título, linhas e corpo do título,
+   frase, temas, subtítulo, cor e cores de `cores.js`, instrumento, medidas da lombada); Carreira sai.
+2. Os desenhos: `novo-<slug>.svg` vira `<slug>.svg` em `src/livros/desenhos/` e `src/livros/icones/`
+   (`git mv`), e os módulos `novo-<slug>.mjs` viram `<slug>.mjs`; os antigos saem.
+3. Os posts: `category` dos quatro que mudam (`cobranca-duplicada-no-retry` e
+   `efeito-externo-sem-registro-local` → Sistemas Distribuídos; `sns-filter-policy` → Integração e
+   Eventos; `arquitetura-de-ledger` → Pagamentos).
+4. Redirecionamentos: `/categories/Carreira/` → `/categories/`; `/tags/Pagamentos/` → `/tags/Cobrança/`.
+5. A tag Pagamentos vira Cobrança nos três posts de cobrança (`cobranca.svg` com o ícone de hoje); o
+   ledger perde a tag.
+6. A marca, se o Cesar decidir que acompanha a Arquitetura (`DESIGN.md`, `tokens.ts`, `scripts/marca.mjs`).
+7. `CAPAS.md` (a tabela dos livros e o princípio dos desenhos "O mesmo problema, um século antes"),
+   `briefing.md`, `DESIGN.md` (as cores dos livros), `docs/estilo-desenho.md`.
+8. As fotos dos livros (`scripts/livros/fotos.mjs`), as imagens OG, `npm run check`, `build`,
+   `links` e `contraste`.

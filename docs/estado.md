@@ -103,14 +103,16 @@ O escuro dos desenhos do corpo (D60, 01/10/2026, publicado): painel próprio, um
 mais neutro, caixas com o tom puro a 45% e tinta um pouco menos branca. A capa não mudou.
 
 Coleções (01/10/2026, branch `claude/magical-einstein-tneg5o`): o Cesar viu as cinco sugestões
-(<https://claude.ai/code/artifact/564ccedf-bf19-48f1-be36-cb247408a804>, `docs/prototipos/colecoes/`) e
-**decidiu (D61)**: a sugestão 5 mais Frontend, 13 livros, Carreira sai, os livros de hoje mantêm o nome,
-volumes em ordem alfabética, a tag Pagamentos pode ser renomeada ou removida, e desenhos, cores, frases
-e textos novos para os 13. **Em andamento:** a direção de arte (conjunto novo de desenhos e cores) e os
-textos, com agentes; depois os 13 desenhos e a página do resultado final para ele aprovar. Controle em
-`docs/prototipos/colecoes/final/controle.md`. Já valem a regra dos posts (conferir se a coleção ainda
-serve e avisar, na skill `post`) e os volumes em ordem alfabética (`CAPAS.md`). Nada muda no site antes
-do OK na página final.
+(<https://claude.ai/code/artifact/564ccedf-bf19-48f1-be36-cb247408a804>) e **decidiu (D61)**: a sugestão
+5 mais Frontend, 13 livros, Carreira sai, os livros de hoje mantêm o nome, volumes em ordem alfabética,
+a tag Pagamentos pode ser renomeada ou removida (vai virar Cobrança), e desenhos, cores, frases e textos
+novos para os 13. **Pronto e aguardando o OK dele:** a página final
+(<https://claude.ai/code/artifact/a08fa29f-5a3d-45ec-bcaf-7d0f13ab12a5>; no dev, `/amostra/colecoes/final/`),
+com o conjunto novo de desenhos ("O mesmo problema, um século antes": a máquina que fazia o trabalho do
+livro antes do software), as 13 cores, as frases e os textos. Controle, direção de arte, textos,
+crítica e o passo a passo para aplicar no site em `docs/prototipos/colecoes/final/`. Já valem a regra
+dos posts (conferir se a coleção ainda serve e avisar, na skill `post`) e os volumes em ordem
+alfabética (`CAPAS.md`). Nada muda no site antes do OK na página final.
 
 ## Como ver
 
@@ -157,9 +159,11 @@ do OK na página final.
 
 ## Perguntas abertas para o Cesar
 
-00. **Coleções (D61):** aprovar a página final dos 13 livros (desenhos, cores, frases e textos), e
-    a tag Pagamentos (renomear ou remover). Depois disso, aplicar no site (livros.json, volumes,
-    categorias dos posts, redirecionamento de `/categories/Carreira/`).
+00. **Coleções (D61):** aprovar a página final dos 13 livros
+    (<https://claude.ai/code/artifact/a08fa29f-5a3d-45ec-bcaf-7d0f13ab12a5>) e responder o que ela
+    deixa para ele: a marca "cs" acompanha a Arquitetura no azul ou fica verde; as seis frases de hoje
+    que ficam (ou as alternativas); o Turco no IA. Depois, aplicar no site pelo passo a passo do fim de
+    `docs/prototipos/colecoes/final/controle.md`.
 0. **D54:** as perguntas do fim de `docs/ajustes-d54/controle.md` (chegada da folha longa no celular
    lento, voltar sem bfcache, trava de rolagem do menu, desfile de Categorias no celular,
    redirecionamentos em inglês, busca que volta aberta, textos dos slides e das tags, comportamentos
