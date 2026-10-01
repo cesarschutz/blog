@@ -12,13 +12,14 @@
  */
 
 // O vetor de fundo: cada unidade de profundidade anda A para a direita e B para cima.
-const A = 0.55;
-const B = 0.28;
+const A = 0.5;
+const B = 0.36;
 const P = (x, y, z = 0) => [x + A * z, y - B * z];
 const rad = (g) => (g * Math.PI) / 180;
 
 export default {
   instrumento: "caixa registradora mecânica",
+  titulo: "Pagamentos",
   cor: "#467866",
   desenho({ t, hachura, chao, ponto, linha, poli, arco, retangulo, juntar }) {
     /** Face plana por pontos 3D [x, y, z], fechada. */
@@ -38,7 +39,7 @@ export default {
     };
     const fechada = (forma) => ({ pts: forma.pts.slice(0, -1), fechada: true });
 
-    const D = 100; // a profundidade da máquina
+    const D = 90; // a profundidade da máquina
     const cm = 228; // o eixo do gabinete
 
     // ---------- a base de madeira, com a gaveta do dinheiro ----------
@@ -49,16 +50,16 @@ export default {
     hachura(face([[bx1, by0, 0], [bx1, by1, 0], [bx1, by1, D], [bx1, by0, D]]), { angulo: 60, passo: 4.2 });
     t(linha([130, 664], [326, 664]), { w: 3 }); // o friso do rodapé
 
-    const [gx0, gx1, gy0, gy1] = [138, 318, 610, 634]; // a frente da gaveta
+    const [gx0, gx1, gy0, gy1] = [138, 318, 609, 634]; // a frente da gaveta
     t(retangulo(gx0, gy0, gx1 - gx0, gy1 - gy0, 2));
-    const concha = juntar([arco([cm, 626], 10, 5.5, 0, 180), linha([cm - 10, 626], [cm + 10, 626])]);
+    const concha = juntar([arco([cm, 625.5], 10, 5.5, 0, 180), linha([cm - 10, 625.5], [cm + 10, 625.5])]);
     hachura(concha, { angulo: 60, passo: 2.8 });
     t(concha, { w: 2 });
-    ponto([cm, 617.5], 2); // a fechadura
+    ponto([cm, 617], 2); // a fechadura
 
     // ---------- o fantasma: a gaveta que salta para a frente ----------
     {
-      const p = 100; // quanto ela sai (ao longo do eixo de fundo, para a frente)
+      const p = 88; // quanto ela sai (ao longo do eixo de fundo, para a frente)
       const [tl, tr, bl, br] = [P(gx0, gy0, -p), P(gx1, gy0, -p), P(gx0, gy1, -p), P(gx1, gy1, -p)];
       const [otl, otr] = [[gx0, gy0], [gx1, gy0]];
       // Um traço só: a boca da gaveta, a frente dela e as duas arestas de cima (a da direita, ida e volta).
@@ -104,7 +105,7 @@ export default {
     for (const { z, pe } of degraus) {
       const y = pe - 17; // o piso do degrau
       t(aresta(Q(y, z), E(y, z)), { w: 2 });
-      t(aresta(Q(y, z + 11), E(y, z + 11)), { w: 2 });
+      t(aresta(Q(y, z + 11), E(y, z + 11)), { w: 2, icone: false }); // no ícone, uma linha por degrau basta
       for (let j = 0; j < 8; j++) {
         const x = cm - 66.5 + 19 * j;
         t(aresta([x, y - 3, z + 5.5], [x, y, z + 5.5]), { w: 2, icone: false }); // a haste
@@ -112,7 +113,7 @@ export default {
       }
     }
     t(aresta(Q(504, sz), E(504, sz))); // o beiral da cabeça
-    hachura(face([Q(504, 54), E(504, 54), E(518, 54), Q(518, 54)]), { angulo: 60, passo: 3.6 }); // o ombro, na sombra
+    hachura(face([Q(504, 54), E(504, 54), E(510, 54), Q(510, 54)]), { angulo: 60, passo: 3 }); // a sombra do beiral no ombro
 
     // O visor em arco, com as bandeirinhas levantadas.
     const [vr, vry, vy0, vy1] = [rx - 9, 17, 452, 496]; // meia largura, altura do arco, arranque e peitoril
@@ -132,17 +133,18 @@ export default {
     }
 
     // ---------- a manivela, no lado direito ----------
-    const [hy, hz] = [566, 68]; // o cubo
-    const [ky, kz] = [538, 88]; // a ponta do braço
-    const [ny, nz] = [1.8, 3.2]; // meia largura do braço, perpendicular a ele
+    const [hy, hz] = [568, 56]; // o cubo
+    const [ky, kz] = [536, 74]; // a ponta do braço
+    const [ny, nz] = [2, 3.6]; // meia largura do braço, perpendicular a ele
     t(face([E(hy + ny, hz + nz), E(ky + ny, kz + nz), E(ky - ny, kz - nz), E(hy - ny, hz - nz)]), { w: 2, papel: true });
-    t(fechada(elipse3(E(hy, hz), [0, 12, 0], [0, 0, 12])), { papel: true });
-    ponto(P(...E(hy, hz)), 2.4);
+    t(fechada(elipse3(E(hy, hz), [0, 13, 0], [0, 0, 13])), { papel: true });
+    t(fechada(elipse3(E(hy, hz), [0, 8, 0], [0, 0, 8])), { w: 3 }); // o anel do cubo
+    ponto(P(...E(hy, hz)), 2.6);
     const [kx, kyy] = P(...E(ky, kz));
-    t(retangulo(kx - 2, kyy - 5, 22, 10, 5), { papel: true }); // a maçaneta
+    t(retangulo(kx - 2, kyy - 5.5, 24, 11, 5.5), { papel: true }); // a maçaneta
 
     // ---------- a sombra no chão ----------
     chao(124, 332, 670);
-    hachura(poli([[331, 669.5], [386, 641], [390, 645], [335, 673.5]], true), { angulo: 38, passo: 3.6, margem: 0.2 });
+    hachura(poli([[331, 669.5], [376, 637], [380, 641], [335, 673.5]], true), { angulo: 38, passo: 3.6, margem: 0.2 });
   },
 };
