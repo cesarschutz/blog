@@ -4,12 +4,11 @@
  *
  * Vista de frente e um pouco de cima, em projeção oblíqua como a gaveta de fichas do Dados: a frente
  * é plana e o fundo (z) foge para cima e para a direita. A luz vem do alto à esquerda: os lados
- * direitos da base, do corpo e da cabeça ficam na sombra, e a faixa sob o beiral da cabeça também.
+ * direitos da base e do gabinete ficam na sombra, e o ombro sob o beiral da cabeça também.
  * De baixo para cima: a base de madeira com a gaveta do dinheiro (puxador em concha e fechadura), o
- * corpo com a rampa do teclado (quatro fileiras de teclas redondas), a cabeça abobadada com o visor
- * envidraçado onde três bandeirinhas estão levantadas (em branco); no lado direito, a manivela.
- * O fantasma é o comprovante que sai pela lateral esquerda (onde ficava a impressora) e enrola
- * como papel de bobina: a venda que ficou registrada.
+ * gabinete que afina para cima, com o teclado em quatro degraus de teclas redondas sobre hastes, e a
+ * cabeça abobadada com o visor em arco, onde três bandeirinhas estão levantadas (em branco); no lado
+ * direito, a manivela. O fantasma é a gaveta que salta para a frente quando a venda é registrada.
  */
 
 // O vetor de fundo: cada unidade de profundidade anda A para a direita e B para cima.
@@ -21,12 +20,14 @@ const rad = (g) => (g * Math.PI) / 180;
 export default {
   instrumento: "caixa registradora mecânica",
   cor: "#467866",
-  desenho({ t, hachura, chao, ponto, linha, poli, curva, arco, retangulo, juntar }) {
+  desenho({ t, hachura, chao, ponto, linha, poli, arco, retangulo, juntar }) {
     /** Face plana por pontos 3D [x, y, z], fechada. */
     const face = (pontos) => poli(pontos.map(([x, y, z]) => P(x, y, z)), true);
+    /** Linha quebrada por pontos 3D, aberta. */
+    const traco = (pontos) => poli(pontos.map(([x, y, z]) => P(x, y, z)));
     /** Aresta entre dois pontos 3D. */
     const aresta = (a, b) => linha(P(...a), P(...b));
-    /** Pontos de uma elipse num plano qualquer: centro 3D, dois vetores 3D (os semieixos), de a0 a a1 graus. */
+    /** Arco de elipse num plano qualquer: centro 3D, dois vetores 3D (os semieixos), de a0 a a1 graus. */
     const elipse3 = (c, u, v, a0 = 0, a1 = 360) => {
       const n = Math.max(12, Math.ceil(((Math.abs(a1 - a0) / 360) * 2 * Math.PI * Math.max(Math.hypot(...u), Math.hypot(...v))) / 1.5));
       const pts = Array.from({ length: n + 1 }, (_, i) => {
@@ -38,98 +39,110 @@ export default {
     const fechada = (forma) => ({ pts: forma.pts.slice(0, -1), fechada: true });
 
     const D = 100; // a profundidade da máquina
+    const cm = 228; // o eixo do gabinete
 
     // ---------- a base de madeira, com a gaveta do dinheiro ----------
-    const [bx0, bx1, by0, by1] = [116, 316, 622, 668];
+    const [bx0, bx1, by0, by1] = [126, 330, 604, 668];
     t(face([[bx0, by1, 0], [bx0, by0, 0], [bx0, by0, D], [bx1, by0, D], [bx1, by1, D], [bx1, by1, 0]]), { papel: true });
     t(aresta([bx0, by0, 0], [bx1, by0, 0]));
     t(aresta([bx1, by0, 0], [bx1, by1, 0]));
     hachura(face([[bx1, by0, 0], [bx1, by1, 0], [bx1, by1, D], [bx1, by0, D]]), { angulo: 60, passo: 4.2 });
-    t(linha([120, 664], [312, 664]), { w: 3 }); // o friso do rodapé
+    t(linha([130, 664], [326, 664]), { w: 3 }); // o friso do rodapé
 
-    t(retangulo(128, 630, 176, 32, 2)); // a frente da gaveta
-    const concha = juntar([arco([216, 648], 11, 6.5, 0, 180), linha([205, 648], [227, 648])]);
-    hachura(concha, { angulo: 60, passo: 3 });
+    const [gx0, gx1, gy0, gy1] = [138, 318, 610, 634]; // a frente da gaveta
+    t(retangulo(gx0, gy0, gx1 - gx0, gy1 - gy0, 2));
+    const concha = juntar([arco([cm, 626], 10, 5.5, 0, 180), linha([cm - 10, 626], [cm + 10, 626])]);
+    hachura(concha, { angulo: 60, passo: 2.8 });
     t(concha, { w: 2 });
-    ponto([216, 638.5], 2.2); // a fechadura
+    ponto([cm, 617.5], 2); // a fechadura
 
-    // ---------- o corpo: a rampa do teclado ----------
-    const [X0, X1] = [126, 306];
-    // O perfil do lado, da frente para trás: a saia, a rampa do teclado e o ombro sob a cabeça.
-    const perfil = [[10, 622], [10, 604], [58, 518], [58, 500]];
-
-    const lado = face([...perfil.map(([z, y]) => [X1, y, z]), [X1, 500, D], [X1, 622, D]]);
-    t(lado, { papel: true, w: 3 }); // só o preenchimento (o contorno fino some sob as arestas grossas)
-    t(aresta([X1, 500, D], [X1, 622, D]));
-    t(aresta([X1, 622, D], [X1, 622, 10]));
-    hachura(lado, { angulo: 60, passo: 4.2 });
-
-    t(face([...perfil.map(([z, y]) => [X0, y, z]), ...[...perfil].reverse().map(([z, y]) => [X1, y, z])]), { papel: true });
-    t(aresta([X0, 604, 10], [X1, 604, 10]), { w: 2 }); // o pé da rampa
-    t(aresta([X0, 518, 58], [X1, 518, 58]), { w: 2 }); // o alto da rampa
-    // As teclas: quatro fileiras de oito, redondas, levantadas da rampa pelas hastes.
-    const rampa = [0, -86, 48]; // o vetor da rampa, do pé ao alto
-    const cr = Math.hypot(rampa[1], rampa[2]);
-    const sobe = [0, rampa[1] / cr, rampa[2] / cr]; // ao longo da rampa, para cima
-    const fora = [0, sobe[2], -sobe[1]]; // a normal da rampa, para fora
-    for (const s of [0.13, 0.37, 0.61, 0.85]) {
-      for (let j = 0; j < 8; j++) {
-        const c = [146 + 20 * j, 604 + rampa[1] * s + fora[1] * 6, 10 + rampa[2] * s + fora[2] * 6];
-        t(fechada(elipse3(c, [7, 0, 0], [0, sobe[1] * 7, sobe[2] * 7])), { w: 2, papel: true });
-      }
+    // ---------- o fantasma: a gaveta que salta para a frente ----------
+    {
+      const p = 100; // quanto ela sai (ao longo do eixo de fundo, para a frente)
+      const [tl, tr, bl, br] = [P(gx0, gy0, -p), P(gx1, gy0, -p), P(gx0, gy1, -p), P(gx1, gy1, -p)];
+      const [otl, otr] = [[gx0, gy0], [gx1, gy0]];
+      // Um traço só: a boca da gaveta, a frente dela e as duas arestas de cima (a da direita, ida e volta).
+      t(poli([otl, tl, bl, br, tr, otr, tr, tl]), { fantasma: true });
     }
-    // O ombro, sob o beiral da cabeça, fica na sombra.
-    hachura(face([[X0, 500, 58], [X1, 500, 58], [X1, 518, 58], [X0, 518, 58]]), { angulo: 60, passo: 3.6 });
 
-    // ---------- o fantasma: o comprovante que sai pela lateral e enrola ----------
-    const trilha = [[120, 480], [96, 480], [76, 474], [62, 462], [58, 446], [66, 434], [80, 430], [92, 436]];
-    const borda = (z) => curva(trilha.map(([x, y]) => P(x, y, z)));
-    const [fa, fb] = [borda(55), borda(85)];
-    t(juntar([fa, linha(fa.pts.at(-1), fb.pts.at(-1)), { pts: [...fb.pts].reverse(), fechada: false }, linha(fb.pts[0], fa.pts[0])]), { fantasma: true });
-
-    // ---------- a cabeça abobadada, com o visor ----------
-    const [cx0, cx1, cy0, cy1, cz] = [120, 312, 440, 500, 46];
-    const [cm, rx, ry] = [(cx0 + cx1) / 2, (cx1 - cx0) / 2, 25];
-    const arcoFrente = (a0, a1, z) => elipse3([cm, cy0, z], [rx, 0, 0], [0, -ry, 0], a0, a1);
+    // ---------- o gabinete, afinando para cima ----------
+    const w = (y) => 92 - (16 * (604 - y)) / 160; // a meia largura, da base ao arranque do arco
+    const E = (y, z) => [cm + w(y), y, z]; // um ponto do lado direito
+    const Q = (y, z) => [cm - w(y), y, z]; // um ponto do lado esquerdo
+    // O perfil do lado, da frente para trás: a saia, os quatro degraus do teclado, o ombro e a cabeça.
+    const degraus = [0, 1, 2, 3].map((i) => ({ z: 10 + 11 * i, pe: 586 - 17 * i }));
+    const perfil = [[10, 604], [10, 586]];
+    for (const { z, pe } of degraus) perfil.push([z, pe - 17], [z + 11, pe - 17]);
+    perfil.push([54, 504], [42, 504], [42, 444]);
+    const [sy, sz] = [444, 42]; // o arranque do arco e a frente da cabeça
+    const [rx, ry] = [w(sy), 24];
+    const arcoFrente = (a0, a1, z) => elipse3([cm, sy, z], [rx, 0, 0], [0, -ry, 0], a0, a1);
     // Onde a silhueta da abóbada passa da frente para trás: a tangente paralela ao vetor de fundo.
     const at = 180 - (Math.atan2(ry * A, rx * B) * 180) / Math.PI;
-    const silhueta = juntar([
-      aresta([cx0, cy1, cz], [cx0, cy0, cz]),
-      arcoFrente(180, at, cz),
-      aresta([cm + rx * Math.cos(rad(at)), cy0 - ry * Math.sin(rad(at)), cz], [cm + rx * Math.cos(rad(at)), cy0 - ry * Math.sin(rad(at)), D]),
-      arcoFrente(at, 0, D),
-      aresta([cx1, cy0, D], [cx1, cy1, D]),
-      aresta([cx1, cy1, D], [cx1, cy1, cz]),
-      aresta([cx1, cy1, cz], [cx0, cy1, cz]),
-    ]);
-    t(silhueta, { papel: true });
-    t(arcoFrente(at, 0, cz)); // o resto do arco da frente
-    t(aresta([cx1, cy0, cz], [cx1, cy1, cz])); // a quina da frente
-    t(aresta([cx1, cy0, cz], [cx1, cy0, D])); // o alto do lado
-    hachura(face([[cx1, cy0, cz], [cx1, cy1, cz], [cx1, cy1, D], [cx1, cy0, D]]), { angulo: 60, passo: 4.2 });
-    // O flanco direito da abóbada também fica na sombra.
-    hachura(juntar([arcoFrente(0, 38, cz), arcoFrente(38, 0, D)]), { angulo: 60, passo: 5 });
-    t(elipse3([cm, cy0, cz], [rx - 6, 0, 0], [0, -(ry - 5), 0], 180, 0), { w: 3 }); // o friso da abóbada
-    const [vx, vy] = P(132, 452, cz);
-    t(retangulo(vx, vy, 168, 40, 5), { w: 2 }); // o vidro do visor
-    t(aresta([137, 486, cz], [295, 486, cz]), { w: 3 }); // o peitoril
-    for (const x of [160, 214, 262]) {
-      const [sx, sy] = P(x, 486, cz);
-      t(juntar([linha([sx - 6.5, sy], [sx - 6.5, sy - 20]), arco([sx, sy - 20], 6.5, 6.5, 180, 360), linha([sx + 6.5, sy - 20], [sx + 6.5, sy])]), { w: 2, papel: true });
+    const tang = (z) => [cm + rx * Math.cos(rad(at)), sy - ry * Math.sin(rad(at)), z];
+
+    t(
+      juntar([
+        traco(perfil.map(([z, y]) => Q(y, z))),
+        arcoFrente(180, at, sz),
+        aresta(tang(sz), tang(D)),
+        arcoFrente(at, 0, D),
+        aresta(E(sy, D), E(604, D)),
+        aresta(E(604, D), E(604, 10)),
+        aresta(E(604, 10), Q(604, 10)),
+      ]),
+      { papel: true },
+    );
+    t(arcoFrente(at, 0, sz)); // o resto do arco da frente
+    t(traco([...perfil].reverse().map(([z, y]) => E(y, z)))); // a quina direita da frente
+    t(aresta(E(sy, sz), E(sy, D))); // o alto do lado
+    const lado = face([...perfil.map(([z, y]) => E(y, z)), E(sy, D), E(604, D)]);
+    hachura(lado, { angulo: 60, passo: 4.2 });
+    hachura(juntar([arcoFrente(0, 36, sz), arcoFrente(36, 0, D)]), { angulo: 60, passo: 5 }); // o flanco da abóbada
+
+    // O teclado: os degraus e, em cada um, oito teclas redondas sobre hastes.
+    for (const { z, pe } of degraus) {
+      const y = pe - 17; // o piso do degrau
+      t(aresta(Q(y, z), E(y, z)), { w: 2 });
+      t(aresta(Q(y, z + 11), E(y, z + 11)), { w: 2 });
+      for (let j = 0; j < 8; j++) {
+        const x = cm - 66.5 + 19 * j;
+        t(aresta([x, y - 3, z + 5.5], [x, y, z + 5.5]), { w: 2, icone: false }); // a haste
+        t(fechada(elipse3([x, y - 8, z + 5.5], [5.5, 0, 0], [0, -5.5, 0])), { w: 2, papel: true }); // a tecla
+      }
+    }
+    t(aresta(Q(504, sz), E(504, sz))); // o beiral da cabeça
+    hachura(face([Q(504, 54), E(504, 54), E(518, 54), Q(518, 54)]), { angulo: 60, passo: 3.6 }); // o ombro, na sombra
+
+    // O visor em arco, com as bandeirinhas levantadas.
+    const [vr, vry, vy0, vy1] = [rx - 9, 17, 452, 496]; // meia largura, altura do arco, arranque e peitoril
+    t(
+      juntar([
+        aresta([cm - vr, vy1, sz], [cm - vr, vy0, sz]),
+        elipse3([cm, vy0, sz], [vr, 0, 0], [0, -vry, 0], 180, 360),
+        aresta([cm + vr, vy0, sz], [cm + vr, vy1, sz]),
+        aresta([cm + vr, vy1, sz], [cm - vr, vy1, sz]),
+      ]),
+      { w: 2 },
+    );
+    t(aresta([cm - vr + 4, 490, sz], [cm + vr - 4, 490, sz]), { w: 3 }); // o peitoril
+    for (const dx of [-48, 4, 44]) {
+      const [x, y] = P(cm + dx, 490, sz);
+      t(juntar([linha([x - 6, y], [x - 6, y - 18]), arco([x, y - 18], 6, 6, 180, 360), linha([x + 6, y - 18], [x + 6, y])]), { w: 2, papel: true });
     }
 
     // ---------- a manivela, no lado direito ----------
-    const [hy, hz] = [566, 76]; // o cubo
-    const [ky, kz] = [534, 94]; // a ponta do braço
-    const [ny, nz] = [1.7, 3.0]; // meia largura do braço, perpendicular a ele
-    t(face([[X1, hy + ny, hz + nz], [X1, ky + ny, kz + nz], [X1, ky - ny, kz - nz], [X1, hy - ny, hz - nz]]), { w: 2, papel: true });
-    t(fechada(elipse3([X1, hy, hz], [0, 11, 0], [0, 0, 11])), { papel: true });
-    ponto(P(X1, hy, hz), 2.2);
-    const [kx, kyy] = P(X1, ky, kz);
+    const [hy, hz] = [566, 68]; // o cubo
+    const [ky, kz] = [538, 88]; // a ponta do braço
+    const [ny, nz] = [1.8, 3.2]; // meia largura do braço, perpendicular a ele
+    t(face([E(hy + ny, hz + nz), E(ky + ny, kz + nz), E(ky - ny, kz - nz), E(hy - ny, hz - nz)]), { w: 2, papel: true });
+    t(fechada(elipse3(E(hy, hz), [0, 12, 0], [0, 0, 12])), { papel: true });
+    ponto(P(...E(hy, hz)), 2.4);
+    const [kx, kyy] = P(...E(ky, kz));
     t(retangulo(kx - 2, kyy - 5, 22, 10, 5), { papel: true }); // a maçaneta
 
     // ---------- a sombra no chão ----------
-    chao(114, 318, 670);
-    hachura(poli([[317, 669.5], [372, 641], [376, 645], [321, 673.5]], true), { angulo: 38, passo: 3.6, margem: 0.2 });
+    chao(124, 332, 670);
+    hachura(poli([[331, 669.5], [386, 641], [390, 645], [335, 673.5]], true), { angulo: 38, passo: 3.6, margem: 0.2 });
   },
 };
