@@ -30,19 +30,22 @@ const pagina = await contexto.newPage();
 // a de 12 livros fica mais larga que a de 8, como na home.
 const medidas = {};
 
-async function gravar(local, arquivo, largura) {
+async function gravar(local, arquivo, largura, transparente = false) {
   const caixa = await local.boundingBox();
   medidas[arquivo] = { largura: Math.round(caixa.width), altura: Math.round(caixa.height) };
-  const png = await local.screenshot({ animations: "disabled" });
-  await sharp(png).resize({ width: largura, withoutEnlargement: true }).webp({ quality: 88 }).toFile(join(saida, arquivo));
+  const png = await local.screenshot({ animations: "disabled", omitBackground: transparente });
+  await sharp(png).resize({ width: largura, withoutEnlargement: true }).webp({ quality: 88, alphaQuality: 90 }).toFile(join(saida, arquivo));
   console.log(arquivo);
 }
 
 for (const s of dados.sugestoes) {
   await pagina.goto(`${base}/amostra/colecoes/${s.id}/`, { waitUntil: "networkidle" });
   await pagina.evaluate(() => document.fonts.ready);
+  // A estante sai com o fundo transparente (a folha e a página somem só na foto), para servir nos
+  // dois temas do artifact; as sombras ficam translúcidas.
+  await pagina.addStyleTag({ content: "html, body, .folha, .sugestao { background: transparent !important; box-shadow: none !important; }" });
   await pagina.waitForTimeout(400);
-  await gravar(pagina.locator(".estante").first(), `estante-${s.id}.webp`, 2400);
+  await gravar(pagina.locator(".estante").first(), `estante-${s.id}.webp`, 2400, true);
   const capas = pagina.locator(".livros > li .capa-pequena");
   for (let i = 0; i < s.livros.length; i++) await gravar(capas.nth(i), `capa-${s.id}-${s.livros[i]}.webp`, 480);
 }

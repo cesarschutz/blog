@@ -159,7 +159,7 @@ const css = `
 }
 
 body { background: var(--paper); color: var(--ink); font: 400 1.0625rem/1.65 var(--texto); padding-inline: clamp(16px, 4vw, 40px); }
-.pagina { max-width: 1180px; margin: 0 auto; padding-block: 40px 72px; display: grid; gap: 28px; }
+.pagina { max-width: 1180px; margin: 0 auto; padding-block: 40px 72px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; }
 h1, h2, h3, h4 { font-family: var(--titulo); font-weight: 800; letter-spacing: -0.01em; text-wrap: balance; margin: 0; color: var(--ink); }
 p { margin: 0; }
 a { color: var(--acento); text-underline-offset: 3px; }
