@@ -5,7 +5,8 @@
  * - estante-<id>.webp: a estante de cada sugestão (as lombadas, o aparador e a revista);
  * - capa-<id>-<slug>.webp: a capa plana de cada livro de cada sugestão (com o volume dela).
  *
- *   node docs/prototipos/colecoes/capturar.mjs            (ENDERECO=http://127.0.0.1:4322 por padrão)
+ *   node docs/prototipos/colecoes/capturar.mjs [id…]      (ENDERECO=http://127.0.0.1:4322 por padrão;
+ *                                                          sem id, todas as sugestões)
  *   CHROME_PATH=… troca o navegador.
  */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -28,7 +29,9 @@ const pagina = await contexto.newPage();
 
 // O tamanho de cada peça na página (em px de CSS), para o artifact mostrar as estantes na mesma escala:
 // a de 12 livros fica mais larga que a de 8, como na home.
-const medidas = {};
+const arquivoMedidas = join(saida, "medidas.json");
+const medidas = existsSync(arquivoMedidas) ? JSON.parse(readFileSync(arquivoMedidas, "utf8")) : {};
+const ids = process.argv.slice(2);
 
 async function gravar(local, arquivo, largura, transparente = false) {
   const caixa = await local.boundingBox();
@@ -38,7 +41,7 @@ async function gravar(local, arquivo, largura, transparente = false) {
   console.log(arquivo);
 }
 
-for (const s of dados.sugestoes) {
+for (const s of dados.sugestoes.filter((x) => !ids.length || ids.includes(x.id))) {
   await pagina.goto(`${base}/amostra/colecoes/${s.id}/`, { waitUntil: "networkidle" });
   await pagina.evaluate(() => document.fonts.ready);
   // A estante sai com o fundo transparente (a folha e a página somem só na foto), para servir nos
@@ -47,8 +50,9 @@ for (const s of dados.sugestoes) {
   await pagina.waitForTimeout(400);
   await gravar(pagina.locator(".estante").first(), `estante-${s.id}.webp`, 2400, true);
   const capas = pagina.locator(".livros > li .capa-pequena");
-  for (let i = 0; i < s.livros.length; i++) await gravar(capas.nth(i), `capa-${s.id}-${s.livros[i]}.webp`, 480);
+  // A coleção final aparece com as capas maiores no artifact.
+  for (let i = 0; i < s.livros.length; i++) await gravar(capas.nth(i), `capa-${s.id}-${s.livros[i]}.webp`, s.id === "final" ? 540 : 480);
 }
-writeFileSync(join(saida, "medidas.json"), JSON.stringify(medidas, null, 1));
+writeFileSync(arquivoMedidas, JSON.stringify(medidas, null, 1));
 
 await navegador.close();
