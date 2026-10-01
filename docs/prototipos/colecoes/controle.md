@@ -32,9 +32,9 @@ Branch: `claude/magical-einstein-tneg5o`. Nada vai para a `main` sem o OK do Ces
 | 3 | Ferramenta de desenho dos livros (`scripts/desenho/livros.mjs`) | feito (testada com um desenho de teste) |
 | 4 | Cinco sugestões (propostas independentes, crítica cruzada, síntese) | feito: três propostas (`propostas/`: editor, arquiteto da informação, pesquisador), síntese em `colecoes.json` → `sugestoes.md`, crítica de fora em `critica.md`, aplicada (escada de 9 a 12; uma regra para os posts; livro novo com o próximo volume; Carreira e nomes como perguntas à parte; recomendação: a sugestão 2) |
 | 5 | Cor de cada livro (com o motivo) e contraste pelo `cores.js` | feito: `pesquisa-cores-e-desenhos.md` (paleta de 16, com fontes); os oito de hoje ficam com a cor e o desenho; Pagamentos foi para `#467866` (tinta a 4,16:1); todas as sugestões passam no `conferir-cores.mjs` |
-| 6 | Desenho e ícone de cada livro novo | Sistemas Distribuídos (relógios de Huygens), Fundamentos (ábaco), Testes (prumo) e Integração e Eventos (mesa telefônica) prontos; Pagamentos (caixa registradora) na última volta, com o retorno de direção de arte |
-| 7 | Página de comparação (`/amostra/colecoes/`) e artifact para o Cesar | página do dev pronta; `capturar.mjs` (fotos) e `gerar-artifact.mjs` (página do app) prontos; falta publicar com os desenhos finais |
-| 8 | Registro: `docs/estado.md`, este controle; commit e push na branch | a fazer |
+| 6 | Desenho e ícone de cada livro novo | feito: Sistemas Distribuídos (relógios de Huygens), Fundamentos (ábaco), Testes (prumo), Integração e Eventos (mesa telefônica) e Pagamentos (caixa registradora com a gaveta que salta); cada um conferido na capa e na lombada da estante da S5 |
+| 7 | Página de comparação (`/amostra/colecoes/`) e artifact para o Cesar | feito: `/amostra/colecoes/` no dev; publicada em <https://claude.ai/code/artifact/564ccedf-bf19-48f1-be36-cb247408a804> (para republicar no mesmo endereço: `capturar.mjs` com o dev no ar, `gerar-artifact.mjs` e publicar `.render/colecoes/index.html` com as `.webp` que ela usa) |
+| 8 | Registro: `docs/estado.md`, este controle; commit e push na branch | feito; falta só a escolha do Cesar (e o que vem depois de "apos criar essas 5") |
 
 ## Escolhas feitas para não parar
 

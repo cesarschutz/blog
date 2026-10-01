@@ -112,8 +112,10 @@ Huygens, prumo, ábaco), feitos com a ferramenta nova `scripts/desenho/livros.mj
 ficam com desenho e cor. Tudo em `docs/prototipos/colecoes/` (controle, contexto, três propostas,
 crítica, pesquisa de cores com fontes, `colecoes.json`, `sugestoes.md`); no dev, `/amostra/colecoes/`.
 Ferramentas novas que servem depois: `scripts/livros/titulo-da-capa.mjs` (corpo do título na capa) e
-`scripts/livros/conferir-cores.mjs` (contraste e pares parecidos de cores novas). Nada disso entra na
-`main` antes da escolha.
+`scripts/livros/conferir-cores.mjs` (contraste e pares parecidos de cores novas). A página para
+escolher (estantes, capas e textos das cinco) está publicada para o Cesar em
+<https://claude.ai/code/artifact/564ccedf-bf19-48f1-be36-cb247408a804> (gerada por
+`docs/prototipos/colecoes/gerar-artifact.mjs`). Nada disso entra na `main` antes da escolha.
 
 ## Como ver
 
@@ -160,8 +162,8 @@ Ferramentas novas que servem depois: `scripts/livros/titulo-da-capa.mjs` (corpo 
 
 ## Perguntas abertas para o Cesar
 
-00. **Coleções:** qual das cinco sugestões (`docs/prototipos/colecoes/sugestoes.md`; a recomendação é
-    a 2), e as duas perguntas que valem para qualquer uma: Carreira fica? Trocar nomes (reabre a D30)?
+00. **Coleções:** qual das cinco sugestões (a página publicada ou `docs/prototipos/colecoes/sugestoes.md`;
+    a recomendação é a 2), e as duas perguntas que valem para qualquer uma: Carreira fica? Trocar nomes (reabre a D30)?
     E a tag Pagamentos, que passa a ter o nome de um livro: renomear (Cobrança?) ou abrir exceção na
     regra. A mensagem do pedido terminou em "apos criar essas 5": falta o que vem depois.
 0. **D54:** as perguntas do fim de `docs/ajustes-d54/controle.md` (chegada da folha longa no celular
