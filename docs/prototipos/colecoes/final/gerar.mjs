@@ -46,6 +46,7 @@ function livro(l) {
     <p class="volume">Volume ${vol(l.volume)}${l.novo ? ' <span class="etiqueta">livro novo</span>' : ""}</p>
     <h3 id="${l.slug}-titulo">${esc(l.titulo)}</h3>
     <p class="frase">${esc(l.frase)}</p>
+    ${l.fraseDeHoje ? `<p class="nota-frase">A frase de hoje, mantida por ser a melhor. A alternativa nova: <em>${esc(l.alternativa)}</em></p>` : ""}
     <p class="temas">${l.temas.map(esc).join(" · ")}</p>
     <div class="abrange">
       <p class="rotulo">Abrange</p>
@@ -133,6 +134,7 @@ code { font-family: ui-monospace, "JetBrains Mono", Menlo, monospace; font-size:
 .livro h3 { font-size: clamp(1.6rem, 3vw, 2.1rem); line-height: 1.1; }
 .frase { font-style: italic; font-size: 1.18rem; }
 .temas { font-family: var(--ui); font-size: 0.86rem; color: var(--ink-2); }
+.nota-frase { font-size: 0.88rem; color: var(--ink-2); margin-top: -4px; }
 .abrange ul { margin: 4px 0 0; padding-left: 1.1em; columns: 2 16rem; column-gap: 28px; font-size: 0.95rem; line-height: 1.5; }
 .abrange li { break-inside: avoid; margin-bottom: 3px; }
 .abrange li::marker { color: var(--ink-3); }

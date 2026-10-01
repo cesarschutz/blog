@@ -23,7 +23,7 @@
     "decisões e trade-offs (overhead e overkill, overengineering)",
     "microsserviços ou monólito modular",
     "DDD e bounded contexts",
-    "Clean, Hexagonal e os padrões de arquitetura corporativa (Fowler)",
+    "Clean, Hexagonal e os padrões de Fowler (PoEAA)",
     "atributos de qualidade (custo, latência, disponibilidade)",
     "C4, ADRs e docs-as-code",
     "estratégia técnica (dívida técnica, Tech Radar)",
@@ -42,7 +42,11 @@
    "cor": "#2d4f77",
    "tinta": "clara",
    "motivoCor": "fato: Herschel (1842) chamava o azul do seu processo de azul da Prússia; o blueprint foi a cópia de toda planta das salas de desenho de 1870 aos anos 1940. A cor do que foi decidido no papel.",
-   "desenho": "novo-arquitetura-de-software"
+   "desenho": "novo-arquitetura-de-software",
+   "fraseDeHoje": true,
+   "alternativa": "Escolher sabendo o que cada escolha custa.",
+   "historia": "Na prancheta, desfazer uma decisão custa uma linha; construída, custa uma parede. A parede tracejada na planta é a decisão desfeita enquanto ainda era barata.",
+   "motivoCurto": "O azul da cianotipia, a cópia de toda planta das salas de desenho de 1870 aos anos 1940: a cor do que foi decidido no papel."
   },
   {
    "volume": 2,
@@ -82,10 +86,14 @@
    "data": "1890",
    "trabalho": "contar 63 milhões de pessoas em cartões, seis meses em vez de sete anos",
    "nomeCor": "roxo-de-mimeógrafo",
-   "cor": "#624a72",
+   "cor": "#5b457f",
    "tinta": "clara",
    "motivoCor": "fato (pesquisa): as cópias do mimeógrafo a álcool (1923) eram roxas, de anilina, \"o mais legível pelo maior número de cópias\". A cor do registro copiado; é motivo do assunto, não do tabulador, e está dito. Um tom mais azul que a ameixa de hoje.",
-   "desenho": "novo-dados"
+   "desenho": "novo-dados",
+   "fraseDeHoje": true,
+   "alternativa": "Guardar, achar e mover o dado.",
+   "historia": "O censo americano de 1880 levou uns sete anos para ser apurado; o de 1890, com o tabulador de Hollerith, seis meses. Cada pessoa virou um cartão: o furo é onde o dado mora; a prensa, os mostradores e o separador são por onde ele anda. O tracejado é o cartão caindo na gaveta certa. A empresa de Hollerith deu na IBM.",
+   "motivoCurto": "O roxo de anilina das cópias de mimeógrafo, a cor do registro copiado (é do assunto, não do tabulador)."
   },
   {
    "volume": 3,
@@ -109,7 +117,7 @@
     "Java e a JVM (GC, JIT, memória, JFR, thread dump)",
     "Spring Boot (autoconfiguração, AOP e proxies, Data JPA, Actuator)",
     "concorrência em Java (virtual threads, atomics, executors, o modelo de memória do Java)",
-    "performance do serviço (profiling, p99)",
+    "profiling (JFR, async-profiler)",
     "build (Gradle, Maven)",
     "serialização (Jackson)",
     "padrões de código (GoF) e refatoração",
@@ -131,7 +139,9 @@
    "cor": "#82555a",
    "tinta": "clara",
    "motivoCor": "fato (pesquisa): a garança é o vermelho dos tecidos desde a Antiguidade; a calça *garance* do exército francês (1829–1914) sustentou a indústria de Avignon. O pano que sai do tear.",
-   "desenho": "novo-desenvolvimento-de-software"
+   "desenho": "novo-desenvolvimento-de-software",
+   "historia": "O tear de Jacquard (1804) lê uma cadeia de cartões perfurados que diz que fio levantar em cada passada: troque os cartões e a mesma máquina tece outro desenho. É o programa separado da máquina que o executa. O tracejado é o próximo cartão chegando.",
+   "motivoCurto": "Garança, o vermelho dos tecidos desde a Antiguidade: o pano que sai do tear."
   },
   {
    "volume": 4,
@@ -154,12 +164,13 @@
     "containers e Kubernetes (pods, Jobs e CronJobs, probes, ciclo de vida do pod, HPA)",
     "CI/CD (GitHub Actions)",
     "GitOps (Argo CD)",
+    "service mesh (Istio, Linkerd)",
     "infraestrutura como código (Terraform)",
     "entrega progressiva (canary, feature flags)",
     "plataforma interna e Platform Engineering (IDP, Backstage)",
     "DevEx e DORA",
     "nuvem (AWS: contas e landing zones, rede, computação, Lambda; Azure e GCP quando aparecerem)",
-    "CDN, edge e proxies (HTTP/3, QUIC, Cloudflare)",
+    "CDN, edge e proxies (Cloudflare, Nginx, Envoy)",
     "Well-Architected e FinOps"
    ],
    "vemDe": "DevOps de hoje; do site de notícias, DevOps & Plataformas (menos o AI-augmented SDLC, que é de IA), Cloud (menos o Bedrock, de IA, e menos cada serviço como mecanismo, regra 5) e, de Arq. Corporativa, Platform Engineering, DevEx, DORA, FinOps e landing zones.",
@@ -174,7 +185,11 @@
    "cor": "#92a6c2",
    "tinta": "escura",
    "motivoCor": "fato: a carta-bilhete do tubo pneumático de Paris era de papel azul (1897–1902) e ficou para sempre o *petit bleu* (Proust mandava os seus por ele). O papel que viaja na cápsula.",
-   "desenho": "novo-devops"
+   "desenho": "novo-devops",
+   "fraseDeHoje": true,
+   "alternativa": "Onde o serviço roda e como chega lá.",
+   "historia": "As redes de tubo pneumático levavam cartas e telegramas numa cápsula, de uma estação a outra da cidade, sem ninguém carregar: o caminho do balcão até onde a mensagem é usada. O tracejado é a cápsula a caminho, dentro do tubo.",
+   "motivoCurto": "O azul do petit bleu, a carta de papel azul que o tubo pneumático de Paris levava."
   },
   {
    "volume": 5,
@@ -185,14 +200,14 @@
    ],
    "corpo": 94,
    "entrelinha": 94,
-   "frase": "Do servidor até a tela do usuário.",
+   "frase": "O que o navegador mostra e quanto demora.",
    "temas": [
     "Frameworks",
     "SSR",
     "Web Vitals",
     "Acessibilidade"
    ],
-   "subtitulo": "Frameworks, SSR, Web Vitals e acessibilidade: do servidor até a tela do usuário.",
+   "subtitulo": "Frameworks, SSR, Web Vitals e acessibilidade: o que o navegador mostra e quanto demora.",
    "abrange": [
     "frameworks (React, Vue, Svelte) e meta-frameworks (Next, Nuxt, Astro)",
     "SSR, RSC e streaming",
@@ -211,10 +226,13 @@
    "data": "c. 1820",
    "trabalho": "fazer a página que o leitor vê",
    "nomeCor": "negro-de-fumo",
-   "cor": "#2a2621",
+   "cor": "#433123",
    "tinta": "clara",
    "motivoCor": "fato: a tinta de Gutenberg era negro de fumo (a fuligem de lamparina) em verniz de óleo de linhaça, porque a tinta de escrever escorria do tipo de metal. A tinta de toda página impressa.",
-   "desenho": "novo-frontend"
+   "desenho": "novo-frontend",
+   "novo": true,
+   "historia": "A prensa de ferro fazia a página que o leitor vê, e o vocabulário do CSS vem dela: font, leading, kerning, em, e as duas caixas de tipos, a alta e a baixa (uppercase e lowercase). O tracejado é a folha impressa saindo da prensa.",
+   "motivoCurto": "Negro de fumo, a fuligem de lamparina em verniz de linhaça: a tinta de toda página impressa, num tom quente para não sumir no tema escuro."
   },
   {
    "volume": 6,
@@ -235,7 +253,7 @@
    "subtitulo": "Processos, redes, memória e algoritmos: o que fica quando a ferramenta muda.",
    "abrange": [
     "sistema operacional (processos, threads, sinais, PID 1, memória virtual)",
-    "redes (TCP e os estados da conexão, DNS, HTTP)",
+    "redes (TCP e os estados da conexão, DNS, HTTP, HTTP/3 e QUIC)",
     "concorrência e modelos de memória como conceito (escalonamento, locks, deadlock, visibilidade)",
     "estruturas de dados e algoritmos",
     "teoria das filas (lei de Little)",
@@ -250,7 +268,10 @@
    "cor": "#26626a",
    "tinta": "clara",
    "motivoCor": "fato: as pilhas de gravidade (Callaud, anos 1860), potes de vidro com sulfato de cobre, o \"vitríolo azul\", em camada azul no fundo, alimentaram as linhas de telégrafo dos EUA e do Reino Unido. O que fica embaixo e ninguém vê.",
-   "desenho": "novo-fundamentos"
+   "desenho": "novo-fundamentos",
+   "novo": true,
+   "historia": "O telégrafo de Morse põe à vista o que todo protocolo ainda faz por baixo: a chave abre e fecha o circuito (o bit), o código vira pontos e traços, e o registrador grava tudo numa fita de papel.",
+   "motivoCurto": "O azul do vitríolo, o sulfato de cobre das pilhas que alimentavam as linhas de telégrafo: o que fica embaixo e ninguém vê."
   },
   {
    "volume": 7,
@@ -278,18 +299,22 @@
     "evals e observabilidade de LLM (Langfuse, LangSmith)",
     "guardrails, prompt injection e segurança de IA",
     "LLM local (Ollama)",
-    "Bedrock e fine-tuning"
+    "modelos sob medida (fine-tuning, Bedrock)"
    ],
    "vemDe": "IA de hoje; do site de notícias, IA & LLMs e AIOps & Agents inteiras, mais o Bedrock (de Cloud), o MCP (de Integração & Eventos), o AI Security (de Segurança & IAM) e o AI-augmented SDLC (de DevOps & Plataformas).",
    "posts": [],
-   "instrumento": "fonógrafo de Edison",
-   "data": "1877",
-   "trabalho": "a máquina que fala com a voz que ouviu",
-   "nomeCor": "cera-marrom",
+   "instrumento": "o Turco, o autômato enxadrista de Kempelen",
+   "data": "1770",
+   "trabalho": "a máquina que parecia pensar",
+   "nomeCor": "nogueira",
    "cor": "#5d4128",
    "tinta": "clara",
    "motivoCor": "fato: os cilindros de cera marrom de Edison (1888–1902), do bege ao marrom escuro conforme a fornada. A memória da máquina que fala.",
-   "desenho": "novo-ia"
+   "desenho": "novo-ia",
+   "fraseDeHoje": true,
+   "alternativa": "Usar o modelo e construir com ele.",
+   "historia": "O autômato enxadrista de Kempelen (1770) venceu Napoleão e Benjamin Franklin, levou Babbage a pensar nos limites de uma máquina que pensa e deu nome ao Mechanical Turk da Amazon. Havia um enxadrista escondido no gabinete: a máquina que parecia pensar tinha gente dentro, e a IA de hoje também tem, nos dados e em quem a usa. O tracejado é o braço movendo a peça.",
+   "motivoCurto": "Associação, dita como tal: a madeira escura do gabinete (não há registro da cor original)."
   },
   {
    "volume": 8,
@@ -331,7 +356,10 @@
    "cor": "#71a49d",
    "tinta": "escura",
    "motivoCor": "fato (pesquisa): os isoladores de vidro das linhas de telégrafo e de telefone saíam verde-água por causa do ferro da areia. O vidro que segura o fio entre as estações.",
-   "desenho": "novo-integracao"
+   "desenho": "novo-integracao",
+   "novo": true,
+   "historia": "Na mesa telefônica manual (a primeira comercial é de 1878), a telefonista ligava quem chama a quem atende com um cordão. A lâmpada acesa é o evento: alguém chamou. O cordão tracejado é a ligação sendo feita.",
+   "motivoCurto": "O verde-água dos isoladores de vidro das linhas de telégrafo e de telefone, da cor do ferro da areia."
   },
   {
    "volume": 9,
@@ -355,12 +383,10 @@
     "saldo e conciliação",
     "cartões e bandeiras (Visa, Mastercard, Elo)",
     "adquirência (autorização, captura, estorno, chargeback)",
-    "Pix, Open Finance e Drex",
-    "cooperativas de crédito (Unicred, Sicoob, Sicredi)",
+    "o sistema financeiro brasileiro (bancos, cooperativas, Pix, Open Finance, Drex)",
     "trilhos de pagamento (payment rails)",
     "fraude e risco",
-    "regras das bandeiras e do Banco Central",
-    "BaaS e embedded finance"
+    "regras das bandeiras e do Banco Central"
    ],
    "vemDe": "Novo. O ledger de Arquitetura de Software; do site de notícias, Fintech & Pagamentos (menos o PCI DSS, que é de Segurança).",
    "posts": [
@@ -373,7 +399,10 @@
    "cor": "#4f6f57",
    "tinta": "clara",
    "motivoCor": "fato (pesquisa): o verso verde das cédulas dos EUA desde 1861, mantido em 1929 por ser \"durável e associado ao crédito forte e estável\"; o papel de razão verde é tradição de fabricante.",
-   "desenho": "novo-pagamentos"
+   "desenho": "novo-pagamentos",
+   "novo": true,
+   "historia": "A caixa registradora foi inventada em 1879 contra o desvio de dinheiro do caixa: registra cada venda, guarda o dinheiro e fecha o caixa no fim do dia, que é a conciliação. O tracejado é a gaveta que salta quando a venda é registrada.",
+   "motivoCurto": "O verde do verso das cédulas americanas desde 1861, mantido em 1929 por ser associado ao crédito forte e estável."
   },
   {
    "volume": 10,
@@ -414,7 +443,11 @@
    "cor": "#7c322b",
    "tinta": "clara",
    "motivoCor": "fato: o lacre era tingido de vermelho com cinábrio ou vermelhão desde a Idade Média, e a partir do século XVII, à base de goma-laca, mais quebradiço de propósito, \"para mostrar com clareza se alguém mexeu na carta\". A cor da prova de que ninguém abriu, como o Cesar sugeriu; a fechadura detectora é a mesma ideia.",
-   "desenho": "novo-seguranca"
+   "desenho": "novo-seguranca",
+   "fraseDeHoje": true,
+   "alternativa": "Proteger o dado e provar quem é quem.",
+   "historia": "A fechadura detectora de Chubb (1818) não só resiste: quando alguém tenta abrir com a chave errada, uma alavanca trava e fica levantada, e o dono sabe que houve a tentativa. O tracejado é essa alavanca.",
+   "motivoCurto": "Vermelho-lacre: o lacre era vermelho e quebradiço de propósito, para mostrar se alguém mexeu na carta. A mesma ideia da fechadura."
   },
   {
    "volume": 11,
@@ -442,7 +475,6 @@
     "modelos de consistência",
     "resiliência (timeout, circuit breaker, bulkhead, backpressure)",
     "cache distribuído",
-    "service mesh",
     "execução durável (Temporal)",
     "multi-região"
    ],
@@ -458,7 +490,10 @@
    "cor": "#202c4d",
    "tinta": "clara",
    "motivoCor": "fato (pesquisa): o azul escuro dos uniformes da Marinha britânica, fixado em 1748; e os dois relógios de Huygens eram relógios marítimos, feitos para a longitude. A cor do mar para relógios feitos para o mar.",
-   "desenho": "novo-sistemas-distribuidos"
+   "desenho": "novo-sistemas-distribuidos",
+   "novo": true,
+   "historia": "Em 1665, Huygens notou que dois relógios de pêndulo pendurados na mesma viga acabavam balançando em oposição: duas máquinas iguais que só se acertam pelo que as liga. O tracejado é o pêndulo do segundo relógio.",
+   "motivoCurto": "Azul-marinho: os relógios de Huygens eram relógios de marinha, feitos para achar a longitude no mar."
   },
   {
    "volume": 12,
@@ -482,7 +517,7 @@
     "tracing (OpenTelemetry, W3C Trace Context)",
     "métricas e APM (Micrometer, Prometheus)",
     "wide events e cardinalidade",
-    "SLOs, SLIs e error budgets",
+    "SLOs, SLIs (p99) e error budgets",
     "alertas e ruído",
     "incidentes, on-call e post-mortems",
     "profiling contínuo e eBPF",
@@ -501,7 +536,11 @@
    "cor": "#b59353",
    "tinta": "escura",
    "motivoCor": "fato de convenção (pesquisa): o amarelo é a cor da cautela na sinalização (ANSI Z535; o âmbar dos semáforos desde 1914). Associação de material: o latão polido dos reguladores de mostra. Mantém o lugar claro e quente do ocre de hoje, com outro motivo.",
-   "desenho": "novo-sre"
+   "desenho": "novo-sre",
+   "fraseDeHoje": true,
+   "alternativa": "Descobrir o que aconteceu em produção.",
+   "historia": "O regulador de Watt (1788) mantém a rotação da máquina a vapor quando a carga muda: se ela acelera, as esferas sobem e fecham a válvula. O SLO é a rotação de regime; o alerta é a esfera que sobe. Governor vem de gubernator, o timoneiro, a mesma palavra grega de Kubernetes. O tracejado é a máquina acelerada.",
+   "motivoCurto": "Latão, o dos reguladores de mostra, e o amarelo da cautela nas placas. É o livro que menos muda de cor: fica no lugar claro e quente da estante."
   },
   {
    "volume": 13,
@@ -536,11 +575,14 @@
    "instrumento": "fio de prumo",
    "data": "antes de tudo",
    "trabalho": "conferir contra a referência que não falha",
-   "nomeCor": "cinza-chumbo",
-   "cor": "#3e4349",
+   "nomeCor": "cinza-chumbo azulado",
+   "cor": "#39404d",
    "tinta": "clara",
    "motivoCor": "fato: \"prumo\" vem de *plumbum*, chumbo, o metal do peso desde os romanos. A cor do oráculo.",
-   "desenho": "novo-testes"
+   "desenho": "novo-testes",
+   "novo": true,
+   "historia": "O prumo é a referência que não falha: a parede se confere contra ele, e não o contrário. O tracejado é a vertical verdadeira, ao lado da parede torta.",
+   "motivoCurto": "Cinza-chumbo azulado: prumo vem de plumbum, o chumbo do peso."
   }
  ]
 }

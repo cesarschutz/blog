@@ -27,7 +27,7 @@ export default {
     const fiada = (chaoY - topo) / fiadas; // 27,6: altura de cada fiada
     const L = 58; // comprimento do tijolo
     const quina = 170; // x da quina no alto
-    const desvio = 18; // quanto a quina anda para a direita até o chão (uns 3,7° fora do prumo)
+    const desvio = 30; // quanto a quina anda para a direita até o chão (uns 6° fora do prumo: a parede tem de ler torta)
     const direita = 418; // o lado direito, esse certo
     const fundo = [13, -7.5]; // a profundidade: para onde as faces de cima e da direita recuam
     const quinaEm = (y) => quina + (desvio * (y - topo)) / (chaoY - topo);
