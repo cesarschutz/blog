@@ -6,23 +6,23 @@ Em resumo: as cinco têm 8, 9, 10, 11 e 12 livros; nenhuma tem 16. Os oito livro
 
 ## 1. O que a pesquisa mostrou
 
-**Limite desta pesquisa.** O proxy de saída do ambiente bloqueou o WebFetch em quase todos os domínios; só o `raw.githubusercontent.com` abriu. Por isso SWEBOK, ACM, Thoughtworks, InfoQ, O'Reilly, Martin Fowler, AWS, Stripe, Nubank, Alura e as demais páginas foram conferidas pelo **resumo que o WebSearch faz da própria página** (os endereços estão na lista no fim desta seção), não pelo texto aberto. Só o OSSU e o ByteByteGo foram lidos direto, no GitHub. Os nomes de áreas e os números abaixo vêm desses resumos; o que é leitura minha está dito como tal. Antes de citar qualquer fonte em público, vale abrir o endereço.
+**Limite desta pesquisa.** O proxy de saída do ambiente bloqueou o WebFetch em quase todos os domínios; só o `raw.githubusercontent.com` abriu. Por isso SWEBOK, ACM, Thoughtworks, InfoQ, O'Reilly, Martin Fowler, AWS, Stripe, Nubank, Alura e as demais páginas foram conferidas pelo **resumo que o WebSearch faz da própria página** (os endereços estão na lista no fim desta seção), não pelo texto aberto. Só o OSSU, o ByteByteGo e o README do build-your-own-radar (os quadrantes do Radar) foram lidos direto, no GitHub. Os nomes de áreas e os números abaixo vêm desses resumos; o que é leitura minha está dito como tal. Antes de citar qualquer fonte em público, vale abrir o endereço.
 
-**Quantos livros as fontes usam.** Quem escreve sozinho ou em equipe pequena fica entre 5 e 8 temas de topo: InfoQ 5 (as "personas"), O'Reilly 6 (na medição de uso da plataforma), Nubank e iFood 6, Alura 8, QuintoAndar 8 e o menu do Martin Fowler 8. Passa de 12 quando o objetivo é cobrir tudo: ACM CCS 13, Spotify 15, ByteByteGo 15, CS2023 17, SWEBOK v4 18. Os 16 do dev-note são desse segundo tipo, um agregador que acompanha o mercado; o dev-note já agrupa as 16 em seis grupos (Fundação, Arquitetura, Desenvolvimento, Plataforma, Domínio e Transversal), que é o tamanho das fontes pequenas. Para 21 posts de categoria, 8 livros dão 2,6 posts por livro e 12 dão 1,75. O próprio Fowler, com mais de 900 itens no site, diz no índice que as tags são o melhor jeito de explorar por assunto: livro largo, tag fina, que é o que o blog já faz com as 20 tags.
+**Quantos livros as fontes usam.** Quem escreve sozinho ou em equipe pequena fica entre 5 e 8 temas de topo: InfoQ 5 (as "personas"), O'Reilly 6 (na medição de uso da plataforma), Nubank 6, iFood cerca de 6, Alura 8, QuintoAndar 8 e o menu do Martin Fowler 8. Passa de 12 quando o objetivo é cobrir tudo: ACM CCS 13, Spotify 15, ByteByteGo 15, CS2023 17, SWEBOK v4 18. Os 16 do dev-note são desse segundo tipo, um agregador que acompanha o mercado; o dev-note já agrupa as 16 em seis grupos (Fundação, Arquitetura, Desenvolvimento, Plataforma, Domínio e Transversal), que é o tamanho das fontes pequenas. Para 21 posts de categoria, 8 livros dão 2,6 posts por livro e 12 dão 1,75. O próprio Fowler, com mais de 900 itens no site, diz no índice que as tags são o melhor jeito de explorar por assunto: livro largo, tag fina, que é o que o blog já faz com as 20 tags.
 
 **Os cortes que se repetem e os que não.**
 
 | Área | Repete? | Aparece como área própria em | Fica dentro de outra, ou não existe, em |
 |---|---|---|---|
 | Código (construção) | sim | SWEBOK v4 (Construction), InfoQ (Development), O'Reilly (software development), CS2023 (Software Development Fundamentals), Alura (Programação), iFood (Back-end) | em nenhuma |
-| Arquitetura | sim | SWEBOK v4 (nova em 2024, "distinta de design"), InfoQ (Architecture & Design), Fowler (Architecture e Microservices), Builders' Library (Architecture), GitHub (Architecture & optimization) | CS2023 e ACM CCS (dentro de Software Engineering) |
+| Arquitetura | sim | SWEBOK v4 (nova em 2024, "distinta de design"), InfoQ (Architecture & Design), Fowler (Architecture e Microservices), Builders' Library (Architecture), GitHub (Architecture & optimization) | CS2023 e ACM CCS (só como tópico dentro de engenharia de software) |
 | Dados | sim | InfoQ, O'Reilly, Fowler, CS2023 (Data Management), ACM CCS (Information systems), Alura, Nubank, iFood, QuintoAndar, Spotify, ByteByteGo | SWEBOK v4 (só uma seção de Computing Foundations) |
 | IA | sim | CS2023 (Artificial Intelligence), ACM CCS (Computing methodologies), Alura, Stripe (AI e Machine Learning), Nubank (AI Research), ByteByteGo | junto com dados no InfoQ e no O'Reilly; seção de Computing Foundations no SWEBOK |
 | Segurança | sim, quase todas | SWEBOK v4 (nova em 2024), ACM CCS (Security and privacy), CS2023, O'Reilly (8% do uso), GitHub, Nubank, iFood, Spotify, Stripe, ByteByteGo | InfoQ (dentro de Architecture & Design) e Alura (dentro de DevOps) |
 | Operações (DevOps, infra, entrega) | sim nas fontes de prática, não nas acadêmicas | SWEBOK v4 (nova em 2024: Operations), InfoQ (DevOps), O'Reilly (IT operations, 18%), Builders' Library (Software delivery & operations), Fowler (Delivery), Alura (DevOps), GitHub, Stripe e Spotify (Infrastructure), Nubank (Foundation & Infrastructure), QuintoAndar (SRE & Infra) | CS2023 e OSSU: nenhuma área tem operações, DevOps ou nuvem no nome |
 | Pessoas e profissão | sim | SWEBOK v4 (Professional Practice, Management, Economics), InfoQ (Culture & Methods), O'Reilly (business, 13%), ACM CCS (Social and professional topics), CS2023 (Society, Ethics, and the Profession), Alura (Inovação & Gestão), QuintoAndar (Career), Spotify (People) | em nenhuma |
-| Testes e qualidade | metade | SWEBOK v4 (Testing e Quality), Fowler (Testing), QuintoAndar (Quality), Stripe (tag Testing) | InfoQ (em Culture & Methods), CS2023, Alura |
-| Fundamentos | só nas acadêmicas | SWEBOK v4 (três capítulos), ACM CCS, CS2023, OSSU, ByteByteGo (Computer Fundamentals) | Fowler, InfoQ e os blogs de empresa não têm |
+| Testes e qualidade | metade | SWEBOK v4 (Testing e Quality), Fowler (Testing), QuintoAndar (Quality), Stripe (tag Testing) | InfoQ (em Culture & Methods); nas demais não achei área própria |
+| Fundamentos | só nas acadêmicas e no ByteByteGo | SWEBOK v4 (três capítulos), ACM CCS, CS2023, OSSU, ByteByteGo (Computer Fundamentals) | Fowler, InfoQ e os blogs de empresa não têm |
 | Observabilidade e SRE à parte | não | CNCF (camada Observability and Analysis) e a literatura de SRE do Google | InfoQ (sub-tema de DevOps), SWEBOK (dentro de Operations), Alura, QuintoAndar ("SRE & Infra") |
 | Nuvem à parte | não | CNCF (Provisioning, Runtime, Platform) e os fornecedores | InfoQ, O'Reilly, Alura e SWEBOK: dentro de DevOps ou Operações |
 | Front-end e mobile | só em catálogo de curso e blog de empresa grande | Alura, Casa do Código, iFood, Spotify, O'Reilly (web e mobile) | SWEBOK, Fowler e InfoQ não têm |
@@ -33,10 +33,11 @@ Em resumo: as cinco têm 8, 9, 10, 11 e 12 livros; nenhuma tem 16. Os oito livro
 **O que isso diz para o blog do Cesar.**
 
 - **Os oito de hoje já são o núcleo que as fontes repetem.** São as cinco personas do InfoQ (com Dados e IA separados) mais Segurança e SRE, e o SWEBOK v4 acrescentou em 2024 justamente Arquitetura, Operações e Segurança como áreas próprias. Nenhuma fonte pede para tirar um dos oito.
-- **O problema é interno.** A Arquitetura de Software carrega seis dos 21 posts e três coisas diferentes: decisão (overhead × overkill, CronJob × fila), técnica de sistemas distribuídos (idempotência, efeito externo, SNS) e domínio (ledger, cobrança). Os posts de ledger, idempotência e efeito externo formam o grupo mais coeso do blog, e cada corte dá um nome a ele: Pagamentos (blogs de empresa), Sistemas Distribuídos (Fowler, Kleppmann, Builders' Library) ou Design e Padrões (SWEBOK e o próprio dev-note). Escolher esse nome é a decisão central das cinco sugestões.
-- **Domínio só existe onde há empresa.** Nenhuma norma ou currículo separa pagamentos; Stripe, Nubank e o ByteByteGo separam. Para um blog em que a tag Pagamentos está em 4 dos 21 posts, isso pesa a favor de um livro de domínio, mas a pesquisa não o exige.
+- **O que ele vem escrevendo.** Dos sete posts de categoria publicados desde 10/09/2026, três são de pagamentos (idempotência, efeito externo, Jackson com cartão), dois de concorrência (virtual threads; bloqueio otimista e pessimista), um de arquitetura (CronJob × fila) e um de segurança (criptografia). Os dez posts de 19 e 20/05 (Spring, Kubernetes, logs, SNS, trace) chegaram juntos, o que parece o lote do blog antigo (leitura minha), e DevOps e SRE não têm post novo desde então.
+- **O problema é interno.** A Arquitetura de Software carrega seis dos 21 posts e três coisas diferentes: decisão (overhead × overkill, CronJob × fila), técnica de sistemas distribuídos (idempotência, efeito externo, SNS) e domínio (ledger, cobrança). Os posts de ledger, idempotência e efeito externo (os três com as tags Pagamentos e Banco de Dados) formam o grupo mais coeso do blog, e cada corte dá um nome a ele: Pagamentos (blogs de empresa), Sistemas Distribuídos (Fowler, Kleppmann, Builders' Library) ou Design e Padrões (SWEBOK e o próprio dev-note). Escolher esse nome é a decisão central das cinco sugestões.
+- **Domínio só existe onde há empresa.** Nenhuma norma ou currículo separa pagamentos; Stripe, Nubank e o ByteByteGo separam. Para um blog em que Pagamentos é a única tag de domínio (4 dos 21 posts) e o assunto de 3 dos 7 posts mais recentes, isso pesa a favor de um livro de domínio, mas a pesquisa não o exige.
 - **DevOps e SRE: as fontes gerais juntam, a literatura de SRE separa.** SWEBOK, InfoQ, O'Reilly e a Builders' Library têm uma área só (o capítulo de Operations do SWEBOK tem planejamento, entrega e controle, o que leio como as duas metades, DevOps e SRE); o livro de SRE do Google e o CNCF tratam observabilidade e confiabilidade como disciplina própria. A sugestão 1 junta, as outras mantêm os dois.
-- **Fonte acadêmica esquece operações.** O CS2023 não tem uma área com DevOps, nuvem ou observabilidade no nome, e o blog tem cinco dos 21 posts nessa área. Onde usei SWEBOK, ACM e CS2023 (sugestões 3 e 5), completei com fontes de prática.
+- **Currículo acadêmico esquece operações.** O CS2023 e o OSSU não têm área com DevOps, nuvem ou observabilidade no nome (o SWEBOK v4, que é de engenharia e não de currículo, tem), e o blog tem cinco dos 21 posts nessa área. Na sugestão 5, que parte de ACM CCS e CS2023, completei com as camadas do CNCF.
 - **IA é o assunto em movimento.** Os quatro temas da edição 33 do Radar da Thoughtworks (nov/2025) e três dos quatro da 34 (abr/2026) são sobre IA e agentes; o quarto da 34 é uma reação a eles. A Alura já separa IA para Programação de IA para Dados, e a frase de hoje do livro IA ("Software feito com IA e software que usa IA") já tem as duas metades. Só a sugestão 4 as separa; a regra de bolso é dividir quando o livro passar de uns seis posts.
 - **Tecnologia e fornecedor ficam como tag.** Java, Spring, AWS, Kubernetes e Gradle são tag ou subtema em quase todas as fontes de referência. O livro é o assunto (o que se estuda) e a tag é a tecnologia (onde se aplica), como o blog já faz; "SNS Filter Policy" é de mensageria, com a tag AWS.
 - **Carreira ao lado de Arquitetura tem precedente.** O livro de referência de arquitetura (Richards e Ford, Fundamentals of Software Architecture) tem uma parte inteira de técnicas e soft skills e, na 1ª edição, termina num capítulo sobre carreira.
@@ -150,7 +151,7 @@ Frontend & Web fica fora das cinco: não há post nem tag, e as fontes de uso ge
 
 **Números.** Média de 2,6 posts por livro. Sem posts hoje: IA e Carreira. Com um ou dois posts: Dados e Segurança. Livros novos, que precisam de desenho e cor: Operações e Pagamentos. Livros de hoje que somem: DevOps e SRE (viram Operações).
 
-**Custo e risco.** Perde dois livros já aprovados (o guindaste e o farol).
+**Custo e risco.** Perde dois livros já aprovados (o guindaste do DevOps e o farol do SRE), e Operações fica com a lista mais larga da sugestão (15 itens).
 
 | Vol. | Livro | Posts hoje |
 |---|---|---|
@@ -166,7 +167,7 @@ Frontend & Web fica fora das cinco: não há post nem tag, e as fontes de uso ge
 - **01 · Arquitetura de Software** (3 posts)
   - Frase: *As decisões caras de desfazer.*
   - Abrange: Trade-offs e estilos (monolito modular, microsserviços), DDD e bounded contexts, mensageria e EDA, modelos de consistência, resiliência e service mesh, saga/CQRS/event sourcing, outbox/inbox, API-First (OpenAPI, GraphQL, AsyncAPI), schema evolution, Clean/Hexagonal e padrões GoF/enterprise, C4 Model e ADRs, serverless e multi-region, governança de API, dívida técnica e Tech Radar.
-  - Vem de: hoje, Arquitetura de Software (sem os quatro posts de pagamento); dev-note, Design & Padrões, Sist. Distribuídos, Integração & Eventos e parte de Arq. Corporativa (governança de API, dívida técnica, Tech Radar).
+  - Vem de: hoje, Arquitetura de Software (sem os três posts de pagamento); dev-note, Design & Padrões, Sist. Distribuídos, Integração & Eventos e parte de Arq. Corporativa (governança de API, dívida técnica, Tech Radar).
   - Posts: Overhead vs overkill; CronJob ou endpoint + fila; SNS Filter Policy.
 - **02 · Desenvolvimento de Software** (5 posts)
   - Frase: *O ofício dentro de cada serviço.*
@@ -188,20 +189,20 @@ Frontend & Web fica fora das cinco: não há post nem tag, e as fontes de uso ge
   - Abrange: Identidade e acesso (OAuth 2.0, OIDC, JWT), criptografia (em repouso, em trânsito, KMS, TLS), segredos (Vault, AWS Secrets Manager), Zero Trust, passkeys e WebAuthn, OWASP e CVEs, cadeia de suprimentos (SBOM, SLSA, Sigstore), segurança em runtime, LGPD, privacidade e compliance, segurança de IA.
   - Vem de: hoje, Segurança; dev-note, Segurança & IAM (o PCI DSS vai para Pagamentos).
   - Posts: Criptografia em repouso e em trânsito; JWT: estrutura e campos.
-- **06 · Operações** (5 posts) (livro novo)
+- **06 · Operações** (5 posts; livro novo)
   - Frase: *Colocar no ar e manter no ar.*
   - Abrange: Containers e Kubernetes, CI/CD e GitOps, observabilidade (OpenTelemetry: traces, métricas, logs), SLI/SLO e error budgets, alertas, incidentes e post-mortems, logging estruturado e wide events, nuvem (AWS, Azure, GCP) e Well-Architected, IaC (Terraform) e progressive delivery, platform engineering e IDPs, FinOps, landing zones e Green IT, eBPF, profiling e chaos engineering, edge e proxies (HTTP/3, QUIC).
   - Vem de: hoje, DevOps e SRE juntos; dev-note, DevOps & Plataformas, Cloud, Observabilidade & SRE e parte de Arq. Corporativa (FinOps, landing zones, Green IT).
   - Posts: Kubernetes CronJob; SIGTERM e SIGKILL; Logging estruturado no Spring Boot; W3C Trace Context; Wide events e canonical log lines.
   - Cresce: Cabe tudo o que acontece depois do commit. Risco: é a lista mais larga da sugestão (15 itens) e pode virar o novo livro-gaveta.
-  - Outra opção: título Plataforma (nome do grupo no dev-note); frase “Do commit ao plantão.”.
-- **07 · Pagamentos** (4 posts) (livro novo)
+  - Outra opção: título Plataforma (nome do grupo no dev-note) ou a frase “Do commit ao plantão”.
+- **07 · Pagamentos** (4 posts; livro novo)
   - Frase: *Dinheiro que não pode sumir nem duplicar.*
   - Abrange: Cartões e redes (Visa, Mastercard, Elo), Pix, Open Finance e DREX, ledger e partidas dobradas, conciliação, idempotência de cobrança, consistência entre gateway e banco, payment rails, PCI DSS e dados de cartão (mascaramento, tokenização), fraude e risco, cooperativas (Unicred, Sicoob, Sicredi), Embedded Finance e BaaS.
-  - Vem de: hoje, quatro posts que hoje estão em Arquitetura de Software e Desenvolvimento de Software (os da tag Pagamentos); dev-note, Fintech & Pagamentos.
+  - Vem de: hoje, quatro posts de Arquitetura de Software e Desenvolvimento de Software (os da tag Pagamentos); dev-note, Fintech & Pagamentos.
   - Posts: Arquitetura de ledger; Chave de idempotência; Efeito externo sem registro local; Jackson: filtros que mascaram cartão.
-  - Cresce: Quatro eixos que rendem posts por conta própria (cartões e redes, Pix e Open Finance, ledger e conciliação, PCI DSS e fraude). É o assunto mais repetido nos posts de hoje: a tag Pagamentos está em 4 dos 21.
-  - Outra opção: frase “Cobrar uma vez e registrar sempre.”; título Fintech, se o Cesar quiser cobrir também crédito e BaaS.
+  - Cresce: Quatro eixos que rendem posts por conta própria (cartões e redes, Pix e Open Finance, ledger e conciliação, PCI DSS e fraude). É onde o Cesar mais escreveu nos últimos meses: três dos sete posts publicados desde 10/09/2026 são de pagamentos, e Pagamentos é a única tag de domínio entre as 20.
+  - Outra opção: a frase “Cobrar uma vez e registrar sempre” ou o título Fintech, se o Cesar quiser cobrir também crédito e BaaS.
 - **08 · Carreira** (sem posts hoje)
   - Frase: *O lado humano de construir software.*
   - Abrange: O papel do arquiteto de soluções, estudo e aprendizado, comunicação e escrita técnica, liderança técnica e mentoria, Team Topologies, DevEx (DORA, SPACE).
@@ -235,7 +236,7 @@ Frontend & Web fica fora das cinco: não há post nem tag, e as fontes de uso ge
 - **01 · Arquitetura de Software** (3 posts)
   - Frase: *As decisões caras de desfazer.*
   - Abrange: Trade-offs e estilos (monolito modular, microsserviços), DDD e bounded contexts, mensageria e EDA, modelos de consistência, resiliência e service mesh, saga/CQRS/event sourcing, outbox/inbox, API-First (OpenAPI, GraphQL, AsyncAPI), schema evolution, Clean/Hexagonal e padrões GoF/enterprise, C4 Model e ADRs, serverless e multi-region, governança de API, dívida técnica e Tech Radar.
-  - Vem de: hoje, Arquitetura de Software (sem os quatro posts de pagamento); dev-note, Design & Padrões, Sist. Distribuídos, Integração & Eventos e parte de Arq. Corporativa (governança de API, dívida técnica, Tech Radar).
+  - Vem de: hoje, Arquitetura de Software (sem os três posts de pagamento); dev-note, Design & Padrões, Sist. Distribuídos, Integração & Eventos e parte de Arq. Corporativa (governança de API, dívida técnica, Tech Radar).
   - Posts: Overhead vs overkill; CronJob ou endpoint + fila; SNS Filter Policy.
 - **02 · Desenvolvimento de Software** (5 posts)
   - Frase: *O ofício dentro de cada serviço.*
@@ -267,13 +268,13 @@ Frontend & Web fica fora das cinco: não há post nem tag, e as fontes de uso ge
   - Abrange: Observabilidade (OpenTelemetry: traces, métricas, logs), logging estruturado e wide events, SLI/SLO e error budgets, alertas e redução de ruído, gestão de incidentes e post-mortems, APM, eBPF e profiling, chaos engineering, custo de observabilidade.
   - Vem de: hoje, SRE; dev-note, Observabilidade & SRE.
   - Posts: Logging estruturado no Spring Boot; W3C Trace Context; Wide events e canonical log lines.
-- **08 · Pagamentos** (4 posts) (livro novo)
+- **08 · Pagamentos** (4 posts; livro novo)
   - Frase: *Dinheiro que não pode sumir nem duplicar.*
   - Abrange: Cartões e redes (Visa, Mastercard, Elo), Pix, Open Finance e DREX, ledger e partidas dobradas, conciliação, idempotência de cobrança, consistência entre gateway e banco, payment rails, PCI DSS e dados de cartão (mascaramento, tokenização), fraude e risco, cooperativas (Unicred, Sicoob, Sicredi), Embedded Finance e BaaS.
-  - Vem de: hoje, quatro posts que hoje estão em Arquitetura de Software e Desenvolvimento de Software (os da tag Pagamentos); dev-note, Fintech & Pagamentos.
+  - Vem de: hoje, quatro posts de Arquitetura de Software e Desenvolvimento de Software (os da tag Pagamentos); dev-note, Fintech & Pagamentos.
   - Posts: Arquitetura de ledger; Chave de idempotência; Efeito externo sem registro local; Jackson: filtros que mascaram cartão.
-  - Cresce: Quatro eixos que rendem posts por conta própria (cartões e redes, Pix e Open Finance, ledger e conciliação, PCI DSS e fraude). É o assunto mais repetido nos posts de hoje: a tag Pagamentos está em 4 dos 21.
-  - Outra opção: frase “Cobrar uma vez e registrar sempre.”; título Fintech, se o Cesar quiser cobrir também crédito e BaaS.
+  - Cresce: Quatro eixos que rendem posts por conta própria (cartões e redes, Pix e Open Finance, ledger e conciliação, PCI DSS e fraude). É onde o Cesar mais escreveu nos últimos meses: três dos sete posts publicados desde 10/09/2026 são de pagamentos, e Pagamentos é a única tag de domínio entre as 20.
+  - Outra opção: a frase “Cobrar uma vez e registrar sempre” ou o título Fintech, se o Cesar quiser cobrir também crédito e BaaS.
 - **09 · Carreira** (sem posts hoje)
   - Frase: *O lado humano de construir software.*
   - Abrange: O papel do arquiteto de soluções, estudo e aprendizado, comunicação e escrita técnica, liderança técnica e mentoria, Team Topologies, DevEx (DORA, SPACE).
@@ -310,7 +311,7 @@ Frontend & Web fica fora das cinco: não há post nem tag, e as fontes de uso ge
   - Abrange: Trade-offs e estilos (monolito modular, microsserviços), sistemas distribuídos (resiliência e modelos de consistência), mensageria e EDA, API-First (OpenAPI, GraphQL, AsyncAPI), schema evolution, service mesh e cloud-native, serverless e multi-region, avaliação de arquitetura, governança de API, dívida técnica e Tech Radar.
   - Vem de: hoje, Arquitetura de Software (sem os três posts de padrões); dev-note, Sist. Distribuídos, Integração & Eventos e parte de Arq. Corporativa (governança de API, dívida técnica, Tech Radar).
   - Posts: Overhead vs overkill; CronJob ou endpoint + fila; SNS Filter Policy.
-- **02 · Design e Padrões** (3 posts) (livro novo)
+- **02 · Design e Padrões** (3 posts; livro novo)
   - Frase: *As soluções que já têm nome.*
   - Abrange: DDD (estratégico e tático), padrões GoF e enterprise, Clean e Hexagonal, idempotência/outbox/inbox/saga/ledger, CQRS e event sourcing, C4 Model e ADRs, refatoração, docs-as-code.
   - Vem de: hoje, três posts de Arquitetura de Software (ledger, idempotência, efeito externo); dev-note, Design & Padrões e a parte de padrões de Sist. Distribuídos (saga, CQRS/ES, outbox/inbox, idempotência).
@@ -321,10 +322,10 @@ Frontend & Web fica fora das cinco: não há post nem tag, e as fontes de uso ge
   - Abrange: Java, Spring e JVM, concorrência e modelos de memória, performance engineering (profiling, GC, p99, teoria de filas), build tools (Gradle, Maven), web frameworks e runtimes, AOP/proxies/serialização, estruturas de dados e algoritmos, SO e redes, WebAssembly.
   - Vem de: hoje, Desenvolvimento de Software; dev-note, Backend & Runtimes, Fundamentos de Computação.
   - Posts: AOP no Spring; AopUtils.getTargetClass(); AtomicBoolean e a parada graciosa; Gradle: tipos de dependência; Jackson: filtros que mascaram cartão; Virtual threads: pinning e CLOSE_WAIT.
-- **04 · Testes e Qualidade** (sem posts hoje) (livro novo)
+- **04 · Testes e Qualidade** (sem posts hoje; livro novo)
   - Frase: *Como saber que ainda funciona.*
   - Abrange: TDD e BDD, pirâmide de testes, testes de integração (Testcontainers), contract testing (Pact), mutation testing, testes de performance e carga, test data management, testes assistidos por IA, qualidade de código e revisão.
-  - Vem de: hoje, nenhum (hoje “testes e refatoração” só aparece no subtítulo de Desenvolvimento); dev-note, Testes & Qualidade (o chaos engineering vai para SRE).
+  - Vem de: hoje, nenhum (“testes e refatoração” só aparece hoje no subtítulo de Desenvolvimento); dev-note, Testes & Qualidade (o chaos engineering vai para SRE).
   - Posts: nenhum hoje.
   - Cresce: Assunto de sobra para quem escreve Java e Spring (Testcontainers, contract testing, mutation testing); o Radar v34 recolocou testes em cena como freio para agentes de código. Hoje vazio.
 - **05 · DevOps** (2 posts)
@@ -389,22 +390,22 @@ Frontend & Web fica fora das cinco: não há post nem tag, e as fontes de uso ge
   - Abrange: Trade-offs e estilos (monolito modular, microsserviços), DDD e bounded contexts, Clean e Hexagonal, padrões GoF e enterprise, C4 Model/ADRs/docs-as-code, estudos de caso (ledger e conciliação), governança de API, dívida técnica e Tech Radar.
   - Vem de: hoje, Arquitetura de Software (sem os posts de sistemas distribuídos); dev-note, Design & Padrões e parte de Arq. Corporativa (governança de API, dívida técnica, Tech Radar).
   - Posts: Arquitetura de ledger; CronJob ou endpoint + fila; Overhead vs overkill.
-- **02 · Sistemas Distribuídos** (3 posts) (livro novo)
+- **02 · Sistemas Distribuídos** (3 posts; livro novo)
   - Frase: *O que acontece entre um serviço e outro.*
   - Abrange: Resiliência (timeout, retry, circuit breaker), idempotência, outbox/inbox, saga/CQRS/event sourcing, modelos de consistência, mensageria e EDA, API-First (OpenAPI, GraphQL, AsyncAPI), schema evolution, service mesh e cloud-native, caching, serverless e multi-region, durable execution.
   - Vem de: hoje, três posts de Arquitetura de Software (idempotência, efeito externo, SNS); dev-note, Sist. Distribuídos e Integração & Eventos (o MCP vai para IA).
   - Posts: Chave de idempotência; Efeito externo sem registro local; SNS Filter Policy.
   - Cresce: Os problemas se repetem em todo serviço (retry, idempotência, mensageria, consistência) e a literatura é farta (Kleppmann, Builders' Library, livro de SRE do Google).
-  - Outra opção: frase “Quando a chamada não volta.”.
+  - Outra opção: a frase “Quando a chamada não volta”.
 - **03 · Desenvolvimento de Software** (6 posts)
   - Frase: *O ofício dentro de cada serviço.*
   - Abrange: Java, Spring e JVM, concorrência e modelos de memória, performance engineering (profiling, GC, p99, teoria de filas), refatoração, build tools (Gradle, Maven), web frameworks e runtimes, AOP/proxies/serialização, estruturas de dados e algoritmos, SO e redes, WebAssembly.
   - Vem de: hoje, Desenvolvimento de Software; dev-note, Backend & Runtimes, Fundamentos de Computação.
   - Posts: AOP no Spring; AopUtils.getTargetClass(); AtomicBoolean e a parada graciosa; Gradle: tipos de dependência; Jackson: filtros que mascaram cartão; Virtual threads: pinning e CLOSE_WAIT.
-- **04 · Testes e Qualidade** (sem posts hoje) (livro novo)
+- **04 · Testes e Qualidade** (sem posts hoje; livro novo)
   - Frase: *Como saber que ainda funciona.*
   - Abrange: TDD e BDD, pirâmide de testes, testes de integração (Testcontainers), contract testing (Pact), mutation testing, testes de performance e carga, test data management, qualidade de código e revisão.
-  - Vem de: hoje, nenhum (hoje “testes e refatoração” só aparece no subtítulo de Desenvolvimento); dev-note, Testes & Qualidade (o chaos engineering vai para SRE; os testes assistidos por IA, para Código com IA).
+  - Vem de: hoje, nenhum (“testes e refatoração” só aparece hoje no subtítulo de Desenvolvimento); dev-note, Testes & Qualidade (o chaos engineering vai para SRE; os testes assistidos por IA, para Código com IA).
   - Posts: nenhum hoje.
   - Cresce: Assunto de sobra para quem escreve Java e Spring (Testcontainers, contract testing, mutation testing); o Radar v34 recolocou testes em cena como freio para agentes de código. Hoje vazio.
 - **05 · Dados** (2 posts)
@@ -418,13 +419,13 @@ Frontend & Web fica fora das cinco: não há post nem tag, e as fontes de uso ge
   - Abrange: LLMs e prompts, RAG e embeddings, agentes e orquestração de agentes, MCP, evals e observabilidade de LLM (Langfuse, LangSmith), guardrails, LLMOps, modelos locais (Ollama), fine-tuning, multimodal e benchmarks, AI Safety.
   - Vem de: hoje, IA (a metade “software que usa IA”); dev-note, IA & LLMs e AIOps & Agents (LLMOps, RAG, agentes, MCP, evals).
   - Posts: nenhum hoje.
-- **07 · Código com IA** (sem posts hoje) (livro novo)
+- **07 · Código com IA** (sem posts hoje; livro novo)
   - Frase: *O que o agente escreve e quem confere.*
   - Abrange: Agentes de código (Claude Code), engenharia de contexto, spec-driven development, Agent Skills e subagentes, revisão do código gerado, testes assistidos por IA e mutation testing, permissões e guardrails de agentes, AI-augmented SDLC, dívida cognitiva.
   - Vem de: hoje, IA (a metade “software feito com IA”); dev-note, AIOps & Agents (AI Coding em produção), DevOps & Plataformas (AI-augmented SDLC), Testes & Qualidade (AI-assisted testing).
   - Posts: nenhum hoje.
   - Cresce: O Cesar já trabalha assim todo dia, e a frase de hoje do livro IA já tem as duas metades. Só vale separar quando IA passar de uns seis posts. Hoje vazio.
-  - Outra opção: frase “Programar com agente sem largar o volante.”.
+  - Outra opção: a frase “Programar com agente sem largar o volante”.
 - **08 · Segurança** (2 posts)
   - Frase: *Quem pode o quê e como provar.*
   - Abrange: Identidade e acesso (OAuth 2.0, OIDC, JWT), criptografia (em repouso, em trânsito, KMS, TLS), segredos (Vault, AWS Secrets Manager), Zero Trust, passkeys e WebAuthn, OWASP e CVEs, cadeia de suprimentos (SBOM, SLSA, Sigstore), segurança em runtime, LGPD, privacidade e compliance, PCI DSS, fraude e risco, segurança de IA.
@@ -471,13 +472,13 @@ Frontend & Web fica fora das cinco: não há post nem tag, e as fontes de uso ge
 | 11 | Pagamentos | 4 |
 | 12 | Carreira | 0 |
 
-- **01 · Fundamentos** (sem posts hoje) (livro novo)
+- **01 · Fundamentos** (sem posts hoje; livro novo)
   - Frase: *O que roda debaixo de todo serviço.*
   - Abrange: Sistemas operacionais (processos, sinais, memória), redes (TCP/IP, DNS), estruturas de dados, algoritmos, modelos de memória e atomicidade, teoria de filas, performance de hardware.
-  - Vem de: hoje, nenhum (os conceitos hoje aparecem espalhados em Desenvolvimento e DevOps); dev-note, Fundamentos de Computação.
+  - Vem de: hoje, nenhum (os conceitos aparecem hoje espalhados em Desenvolvimento e DevOps); dev-note, Fundamentos de Computação.
   - Posts: nenhum hoje.
-  - Cresce: A base não envelhece. Candidatos entre os posts de hoje: SIGTERM e SIGKILL, CLOSE_WAIT e AtomicBoolean (ver “Posts de fronteira”). Hoje vazio.
-  - Outra opção: frase “A base debaixo de qualquer framework.”.
+  - Cresce: A base não envelhece, e concorrência é assunto recorrente: 4 dos 21 posts levam a tag Concorrência e dois dos sete de setembro (virtual threads e bloqueio) são dela. Candidatos entre os posts de hoje: SIGTERM e SIGKILL, CLOSE_WAIT e AtomicBoolean (ver “Posts de fronteira”). Hoje vazio.
+  - Outra opção: a frase “A base debaixo de qualquer framework”.
 - **02 · Desenvolvimento de Software** (5 posts)
   - Frase: *O ofício dentro de cada serviço.*
   - Abrange: Java, Spring e JVM, concorrência na JVM (virtual threads, atomics), performance engineering (profiling, GC, p99), testes (TDD/BDD, Testcontainers, contract testing), refatoração, build tools (Gradle, Maven), web frameworks e runtimes, AOP/proxies/serialização, WebAssembly.
@@ -488,24 +489,24 @@ Frontend & Web fica fora das cinco: não há post nem tag, e as fontes de uso ge
   - Abrange: Bancos relacionais (PostgreSQL, transações e bloqueios), NoSQL (MongoDB, DynamoDB), modelagem de dados, CDC, pipelines, streaming (Kafka, Flink), data lake/warehouse/lakehouse (Iceberg, dbt), Data Contracts e Data Mesh, DuckDB, bancos vetoriais (pgvector).
   - Vem de: hoje, Dados; dev-note, Dados & Streaming.
   - Posts: Bloqueio otimista e pessimista; Data lake vs data warehouse.
-- **04 · Sistemas Distribuídos** (1 post) (livro novo)
+- **04 · Sistemas Distribuídos** (1 post; livro novo)
   - Frase: *O que acontece entre um serviço e outro.*
   - Abrange: Resiliência (timeout, retry, circuit breaker), idempotência (a técnica geral; a de cobrança fica em Pagamentos), outbox/inbox, saga/CQRS/event sourcing, modelos de consistência, mensageria e EDA, API-First (OpenAPI, GraphQL, AsyncAPI), schema evolution, service mesh e cloud-native, caching, multi-region, durable execution.
   - Vem de: hoje, um post de Arquitetura de Software (SNS); dev-note, Sist. Distribuídos e Integração & Eventos (o MCP vai para IA).
   - Posts: SNS Filter Policy.
   - Cresce: Os problemas se repetem em todo serviço (retry, idempotência, mensageria, consistência) e a literatura é farta (Kleppmann, Builders' Library, livro de SRE do Google).
-  - Outra opção: frase “Quando a chamada não volta.”.
+  - Outra opção: a frase “Quando a chamada não volta”.
 - **05 · Arquitetura de Software** (2 posts)
   - Frase: *As decisões caras de desfazer.*
   - Abrange: Trade-offs e estilos (monolito modular, microsserviços), DDD e bounded contexts, Clean e Hexagonal, padrões GoF e enterprise, C4 Model/ADRs/docs-as-code, governança de API, dívida técnica e Tech Radar.
   - Vem de: hoje, Arquitetura de Software (o que sobra de decisão); dev-note, Design & Padrões e parte de Arq. Corporativa (governança de API, dívida técnica, Tech Radar).
   - Posts: Overhead vs overkill; CronJob ou endpoint + fila.
-- **06 · Nuvem** (sem posts hoje) (livro novo)
+- **06 · Nuvem** (sem posts hoje; livro novo)
   - Frase: *O que alugar e quanto custa.*
   - Abrange: AWS, Azure e GCP (compute, dados, mensageria, segurança), serverless (Lambda), redes na nuvem (VPC, peering), CDN e Edge (Cloudflare, Fastly), Bedrock e IA gerenciada, Well-Architected, landing zones, FinOps multi-cloud, Green IT.
-  - Vem de: hoje, a parte de nuvem do DevOps de hoje; dev-note, Cloud e parte de Arq. Corporativa (FinOps, landing zones, Green IT).
+  - Vem de: hoje, a parte de nuvem do DevOps; dev-note, Cloud e parte de Arq. Corporativa (FinOps, landing zones, Green IT).
   - Posts: nenhum hoje.
-  - Cresce: A AWS é a plataforma do autor (SNS, SQS, RDS, KMS) e post sobre um serviço específico ficaria aqui. Risco: sobrepor DevOps e Sistemas Distribuídos. Hoje vazio.
+  - Cresce: A AWS é a plataforma do autor (SNS, SQS, RDS, KMS; a tag AWS está em 3 posts) e post sobre um serviço específico ficaria aqui. Risco: sobrepor DevOps e Sistemas Distribuídos. Hoje vazio.
 - **07 · DevOps** (2 posts)
   - Frase: *O caminho do commit até a produção.*
   - Abrange: Containers e CNCF, Kubernetes (CronJob, probes, ciclo de vida do pod), CI/CD e GitOps, IaC (Terraform), progressive delivery, platform engineering e IDPs, proxies e protocolos (HTTP/3, QUIC).
@@ -526,13 +527,13 @@ Frontend & Web fica fora das cinco: não há post nem tag, e as fontes de uso ge
   - Abrange: LLMs e prompts, RAG e embeddings, agentes e orquestração de agentes, MCP, IA no código (AI coding, Claude Code), evals e observabilidade de LLM (Langfuse, LangSmith), guardrails, LLMOps, modelos locais (Ollama), fine-tuning, multimodal e benchmarks, AI Safety.
   - Vem de: hoje, IA; dev-note, AIOps & Agents, IA & LLMs e o AI-augmented SDLC de DevOps & Plataformas.
   - Posts: nenhum hoje.
-- **11 · Pagamentos** (4 posts) (livro novo)
+- **11 · Pagamentos** (4 posts; livro novo)
   - Frase: *Dinheiro que não pode sumir nem duplicar.*
   - Abrange: Cartões e redes (Visa, Mastercard, Elo), Pix, Open Finance e DREX, ledger e partidas dobradas, conciliação, idempotência de cobrança, consistência entre gateway e banco, payment rails, PCI DSS e dados de cartão (mascaramento, tokenização), fraude e risco, cooperativas (Unicred, Sicoob, Sicredi), Embedded Finance e BaaS.
-  - Vem de: hoje, quatro posts que hoje estão em Arquitetura de Software e Desenvolvimento de Software (os da tag Pagamentos); dev-note, Fintech & Pagamentos.
+  - Vem de: hoje, quatro posts de Arquitetura de Software e Desenvolvimento de Software (os da tag Pagamentos); dev-note, Fintech & Pagamentos.
   - Posts: Arquitetura de ledger; Chave de idempotência; Efeito externo sem registro local; Jackson: filtros que mascaram cartão.
-  - Cresce: Quatro eixos que rendem posts por conta própria (cartões e redes, Pix e Open Finance, ledger e conciliação, PCI DSS e fraude). É o assunto mais repetido nos posts de hoje: a tag Pagamentos está em 4 dos 21.
-  - Outra opção: frase “Cobrar uma vez e registrar sempre.”; título Fintech, se o Cesar quiser cobrir também crédito e BaaS.
+  - Cresce: Quatro eixos que rendem posts por conta própria (cartões e redes, Pix e Open Finance, ledger e conciliação, PCI DSS e fraude). É onde o Cesar mais escreveu nos últimos meses: três dos sete posts publicados desde 10/09/2026 são de pagamentos, e Pagamentos é a única tag de domínio entre as 20.
+  - Outra opção: a frase “Cobrar uma vez e registrar sempre” ou o título Fintech, se o Cesar quiser cobrir também crédito e BaaS.
 - **12 · Carreira** (sem posts hoje)
   - Frase: *O lado humano de construir software.*
   - Abrange: O papel do arquiteto de soluções, estudo e aprendizado, comunicação e escrita técnica, liderança técnica e mentoria, Team Topologies, DevEx (DORA, SPACE).
@@ -591,8 +592,8 @@ Os posts que têm mais de uma casa defensável. Os números são as sugestões.
 
 - **Resolve o problema que as fontes não resolvem sozinhas.** Os oito de hoje já são o núcleo que InfoQ, O'Reilly e SWEBOK v4 repetem; o que pesa é a Arquitetura de Software ter seis dos 21 posts e três assuntos misturados. Com Pagamentos ela cai para três (decisão e integração) e o livro novo nasce com quatro, todos já marcados com a tag Pagamentos. Cada um dos 21 posts tem casa óbvia; os poucos de fronteira estão na tabela.
 - **Custa pouco.** Os oito desenhos e cores já aprovados continuam; só Pagamentos é novo.
-- **O livro novo é o único que a pesquisa não impõe e o conteúdo pede.** Nenhuma norma ou currículo separa domínio, mas Stripe, Nubank e ByteByteGo separam, Fintech & Pagamentos é a única categoria de domínio do dev-note e a tag Pagamentos é a mais repetida entre os posts (4 dos 21). Cresce para os dois lados: a técnica (ledger, idempotência, consistência entre gateway e banco) e o mercado (Pix, cartões, Open Finance, cooperativas, PCI DSS).
-- **Mantém DevOps e SRE separados.** As fontes de uso geral juntam os dois; o livro de SRE do Google e o CNCF tratam observabilidade como disciplina própria, e o Cesar acabou de escrever três posts seguidos nela. Quem preferir menos livros tem a sugestão 1, que faz a fusão ao custo de um livro de operações com 15 itens, a lista mais larga do conjunto.
+- **O livro novo é o único que a pesquisa não impõe e o conteúdo pede.** Nenhuma norma ou currículo separa domínio, mas Stripe, Nubank e ByteByteGo separam; Fintech & Pagamentos é a única categoria de domínio do dev-note, Pagamentos é a única tag de domínio do blog e três dos sete posts publicados desde 10/09/2026 são de pagamentos. Cresce para os dois lados: a técnica (ledger, idempotência, consistência entre gateway e banco) e o mercado (Pix, cartões, Open Finance, cooperativas, PCI DSS).
+- **Mantém DevOps e SRE separados, por pouco.** As fontes de uso geral juntam os dois; o livro de SRE do Google e o CNCF tratam observabilidade como disciplina própria, e os dois livros já existem, desenhados, com dois e três posts. Mas não há post novo de DevOps ou SRE desde 20/05: se o Cesar não pretende voltar a escrever nessas áreas, a sugestão 1 é a mais enxuta, ao custo de um livro de operações com 15 itens, a lista mais larga da sugestão.
 - **Deixa a porta aberta sem encher a estante de vazios.** Sistemas Distribuídos, Testes e Qualidade, Código com IA, Fundamentos e Nuvem (sugestões 3 a 5) nasceriam sem post. A regra para dividir depois é: quando um livro passar de uns seis posts (Desenvolvimento, sem o post de Jackson, está em cinco) ou quando um assunto novo juntar três. As três divisões que a sugestão 4 faz (Sistemas Distribuídos, Testes e Qualidade, Código com IA) são as mais prováveis. Como as URLs de categoria antigas redirecionam, dividir depois custa pouco.
 - **Risco a vigiar.** A fronteira Pagamentos × Arquitetura (idempotência, outbox, saga). Para os posts de hoje a tag Pagamentos decide; para os futuros vale o mesmo critério: se o texto só faz sentido com dinheiro no meio, é Pagamentos; se serve a qualquer sistema, é Arquitetura.
 
