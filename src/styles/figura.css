@@ -25,21 +25,23 @@
  * (<g class="referencia">, como o cabeçalho de uma tabela, e os eixos). Só nas figuras que têm legenda.
  */
 
+/* As proporções e a tinta dos desenhos vêm dos tokens (DESENHO e --tinta-desenho em tokens.ts, D60): no
+   escuro, a tinta é um pouco menos branca, o lavado tem mais cor e a cópia e a sombra são discretas. */
 .ilustracao.diagrama {
   --traco: 3;
-  --lavado: 16%;
+  --lavado: var(--desenho-lavado);
+  --ink: var(--tinta-desenho);
+  --ink-2: var(--tinta-desenho-2);
   height: auto;
   overflow: visible;
 }
 
-:root[data-theme="dark"] .ilustracao.diagrama {
-  --lavado: 30%;
+.ilustracao.diagrama .tinta .cor {
+  fill: color-mix(in oklab, var(--cor-desenho) var(--desenho-cor-fora), var(--superficie));
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .ilustracao.diagrama {
-    --lavado: 30%;
-  }
+.ilustracao.diagrama .tinta .hachura {
+  opacity: var(--desenho-hachura);
 }
 
 /* ---------- a moldura: a figura no painel do livro, como os desenhos ---------- */
@@ -50,6 +52,13 @@
 
 .figura-palco {
   padding: clamp(10px, 2.4vw, 22px);
+}
+
+/* O painel dos desenhos do corpo (D60): a cor do livro sobre a base própria dos desenhos (no claro, a
+   folha, como o painel de sempre; no escuro, um pouco acima da folha e mais neutro). */
+.figura-palco.painel,
+.lousa-figura.painel {
+  --fig-bg: color-mix(in oklab, var(--cor, var(--ink-2)) var(--desenho-painel), var(--painel-desenho));
 }
 
 .figura-palco > svg {
@@ -95,27 +104,33 @@
 /* ---------- tons ---------- */
 
 .diagrama .tom-azul {
-  --tom: color-mix(in oklab, var(--diag-azul), #fff var(--branco-no-escuro));
+  --tom-puro: var(--diag-azul);
+  --tom: color-mix(in oklab, var(--tom-puro), #fff var(--branco-no-escuro));
 }
 
 .diagrama .tom-verde {
-  --tom: color-mix(in oklab, var(--diag-verde), #fff var(--branco-no-escuro));
+  --tom-puro: var(--diag-verde);
+  --tom: color-mix(in oklab, var(--tom-puro), #fff var(--branco-no-escuro));
 }
 
 .diagrama .tom-ambar {
-  --tom: color-mix(in oklab, var(--diag-ambar), #fff var(--branco-no-escuro));
+  --tom-puro: var(--diag-ambar);
+  --tom: color-mix(in oklab, var(--tom-puro), #fff var(--branco-no-escuro));
 }
 
 .diagrama .tom-vermelho {
-  --tom: color-mix(in oklab, var(--diag-vermelho), #fff var(--branco-no-escuro));
+  --tom-puro: var(--diag-vermelho);
+  --tom: color-mix(in oklab, var(--tom-puro), #fff var(--branco-no-escuro));
 }
 
 .diagrama .tom-roxo {
-  --tom: color-mix(in oklab, var(--diag-roxo), #fff var(--branco-no-escuro));
+  --tom-puro: var(--diag-roxo);
+  --tom: color-mix(in oklab, var(--tom-puro), #fff var(--branco-no-escuro));
 }
 
 .diagrama .tom-petroleo {
-  --tom: color-mix(in oklab, var(--diag-petroleo), #fff var(--branco-no-escuro));
+  --tom-puro: var(--diag-petroleo);
+  --tom: color-mix(in oklab, var(--tom-puro), #fff var(--branco-no-escuro));
 }
 
 /* Dentro de um tom, o que era da cor do livro (cor, carimbo) passa a ser do tom. */
@@ -123,9 +138,11 @@
   --cor-desenho: var(--tom);
 }
 
+/* O fundo das caixas mistura o tom puro (sem o branco do escuro): no escuro, ele dá cor à caixa sem
+   clarear a ponto de o texto claro em cima perder a leitura (D60). No claro, o tom puro é o próprio tom. */
 .diagrama .tinta .lavado,
 .diagrama .lavado {
-  fill: color-mix(in oklab, var(--tom, var(--cor-desenho)) var(--lavado), var(--superficie));
+  fill: color-mix(in oklab, var(--tom-puro, var(--tom, var(--cor-desenho))) var(--lavado), var(--superficie));
 }
 
 .diagrama .tinta .linha-tom {

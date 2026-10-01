@@ -22,9 +22,13 @@
   cursor: grabbing;
 }
 
-/* O palco, como o das figuras (o painel vem de base.css). */
+/* O palco, como o das figuras (o painel vem de base.css, com a base dos desenhos, D60). */
 .lousa-nova .lousa-palco {
   padding: clamp(10px, 2.4vw, 22px);
+}
+
+.lousa-nova .lousa-palco.painel {
+  --fig-bg: color-mix(in oklab, var(--cor, var(--ink-2)) var(--desenho-painel), var(--painel-desenho));
 }
 
 .lousa-nova .lousa-palco > svg {

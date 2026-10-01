@@ -44,6 +44,9 @@ export const TOKENS = [
   "etiqueta-papel",
   "etiqueta-sombra",
   "etiqueta-luz",
+  "painel-desenho",
+  "tinta-desenho",
+  "tinta-desenho-2",
 ] as const;
 
 export type Token = (typeof TOKENS)[number];
@@ -101,6 +104,12 @@ export const claro: Paleta = {
   "etiqueta-papel": "#F2EDE2",
   "etiqueta-sombra": "#000000",
   "etiqueta-luz": "#FFFFFF",
+  // Os desenhos do corpo do post (figuras, animações e lousas, D60): a base do painel e a tinta. No
+  // claro, a folha e a tinta de sempre; o texto secundário um pouco mais escuro que o --ink-2, para
+  // passar de 4,5:1 sobre o fundo lavado das caixas.
+  "painel-desenho": "#FFFFFE",
+  "tinta-desenho": "#1A2124",
+  "tinta-desenho-2": "#50595A",
 };
 
 export const escuro: Paleta = {
@@ -145,6 +154,12 @@ export const escuro: Paleta = {
   "etiqueta-papel": "#F2EDE2",
   "etiqueta-sombra": "#000000",
   "etiqueta-luz": "#FFFFFF",
+  // No escuro (D60), o painel dos desenhos fica um pouco acima da folha e mais neutro (antes, a cor do
+  // livro a 20% sobre a folha, quase preto e esverdeado), e a tinta um pouco menos branca, para o traço
+  // não brilhar no fundo escuro.
+  "painel-desenho": "#232B2E",
+  "tinta-desenho": "#CDD3CD",
+  "tinta-desenho-2": "#BCC3BE",
 };
 
 /**
@@ -158,6 +173,18 @@ export const BRANCO_NO_ESCURO = 42;
  * porcentagem da cor. As áreas preenchidas do desenho usam a mesma cor do painel.
  */
 export const PAINEL = { claro: 11, escuro: 20 };
+
+/**
+ * Os desenhos do corpo do post (D60): a cor do livro no painel (sobre --painel-desenho), o fundo lavado
+ * das caixas (o tom puro sobre o painel), a cópia fora do registro (`cor`) e a sombra hachurada. No
+ * escuro, o lavado mistura o tom puro (sem o branco do escuro) a 45%: as caixas ganham cor (com o tom
+ * clareado a 30%, viravam marrom, oliva e cinza) e o texto claro em cima passa de 4,5:1. A cópia e a
+ * sombra são mais discretas.
+ */
+export const DESENHO = {
+  claro: { painel: 11, lavado: 16, corFora: 78, hachura: 0.75 },
+  escuro: { painel: 10, lavado: 45, corFora: 62, hachura: 0.35 },
+};
 
 /**
  * Nome da categoria no chip, tingido (D26): no claro, a cor com 34% de tinta (30% até a D30, quando
@@ -272,7 +299,9 @@ export function cssDosTokens(): string {
   const proporcoes = (t: "claro" | "escuro") =>
     `--painel-mistura:${PAINEL[t]}%;--chip-tinta:${CHIP[t].tinta}%;--chip-branco:${CHIP[t].branco}%;` +
     `--marca-texto:${rgba(MARCA_TEXTO[t].cor, MARCA_TEXTO[t].alfa)};` +
-    `--link-tinta:${LINK_TINTA[t]}%;`;
+    `--link-tinta:${LINK_TINTA[t]}%;` +
+    `--desenho-painel:${DESENHO[t].painel}%;--desenho-lavado:${DESENHO[t].lavado}%;` +
+    `--desenho-cor-fora:${DESENHO[t].corFora}%;--desenho-hachura:${DESENHO[t].hachura};`;
   const diagrama = Object.entries(DIAGRAMA).map(([nome, cor]) => `--diag-${nome}:${cor};`).join("");
   const temaEscuro = `${variaveis(escuro)}${lousa(LOUSA.escuro)}${proporcoes("escuro")}--branco-no-escuro:${BRANCO_NO_ESCURO}%;color-scheme:dark;`;
   // Na impressão (D54): sempre o tema claro (o escuro saía cinza-claro no papel, que não leva o fundo), e
