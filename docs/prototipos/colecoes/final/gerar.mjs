@@ -55,7 +55,10 @@ function livro(l) {
     <p class="posts"><span class="rotulo">${posts.length ? `${posts.length} ${posts.length === 1 ? "post" : "posts"} de hoje` : "Começa sem posts"}</span>${posts.length ? ` ${esc(posts.join("; "))}.` : ""}</p>
     <div class="identidade">
       <p><span class="amostra" aria-hidden="true"></span><span class="rotulo">Cor</span> ${esc(l.nomeCor)} <code>${l.cor}</code>. ${esc(l.motivoCurto ?? l.motivoCor)}</p>
-      <p><span class="rotulo">Desenho</span> ${esc(l.instrumento)}${l.data ? ` (${esc(l.data)})` : ""}. ${esc(l.historia ?? l.trabalho ?? "")}</p>
+      <div class="sobre-desenho">
+        <p><span class="rotulo">O desenho</span> ${esc(l.textoDesenho)}</p>
+        <p class="curto"><span class="rotulo">Versão curta</span> ${esc(l.textoDesenhoCurto)}</p>
+      </div>
     </div>
   </div>
 </article>`;
@@ -141,6 +144,8 @@ code { font-family: ui-monospace, "JetBrains Mono", Menlo, monospace; font-size:
 .abrange li::marker { color: var(--ink-3); }
 .posts { font-size: 0.92rem; color: var(--ink-2); line-height: 1.5; }
 .identidade { display: grid; gap: 8px; border-top: 1px solid var(--rule); padding-top: 12px; font-size: 0.93rem; line-height: 1.55; }
+.sobre-desenho { display: grid; gap: 8px; }
+.sobre-desenho .curto { background: var(--well); border-radius: 8px; padding: 8px 12px; }
 .identidade .amostra { display: inline-block; width: 12px; height: 12px; border-radius: 3px; background: var(--cor); box-shadow: inset 0 0 0 1px rgba(0,0,0,.14); margin-right: 7px; vertical-align: -1px; }
 
 .muda ul, .decidir ul { margin: 12px 0 0; padding-left: 1.1em; display: grid; gap: 8px; max-width: 80ch; }

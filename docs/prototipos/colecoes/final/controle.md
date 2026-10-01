@@ -87,8 +87,10 @@ Ler este arquivo; continuar da primeira etapa que não está feita. O dev:
 4. Redirecionamentos: `/categories/Carreira/` → `/categories/`; `/tags/Pagamentos/` → `/tags/Cobrança/`.
 5. A tag Pagamentos vira Cobrança nos três posts de cobrança (`cobranca.svg` com o ícone de hoje); o
    ledger perde a tag.
-6. A marca, se o Cesar decidir que acompanha a Arquitetura (`DESIGN.md`, `tokens.ts`, `scripts/marca.mjs`).
-7. `CAPAS.md` (a tabela dos livros e o princípio dos desenhos "O mesmo problema, um século antes"),
+6. O texto do desenho (`textoDesenho` e `textoDesenhoCurto`) vai para `livros.json`, se o Cesar quiser
+   usar no hover dos livros (D61).
+7. A marca, se o Cesar decidir que acompanha a Arquitetura (`DESIGN.md`, `tokens.ts`, `scripts/marca.mjs`).
+8. `CAPAS.md` (a tabela dos livros e o princípio dos desenhos "O mesmo problema, um século antes"),
    `briefing.md`, `DESIGN.md` (as cores dos livros), `docs/estilo-desenho.md`.
-8. As fotos dos livros (`scripts/livros/fotos.mjs`), as imagens OG, `npm run check`, `build`,
+9. As fotos dos livros (`scripts/livros/fotos.mjs`), as imagens OG, `npm run check`, `build`,
    `links` e `contraste`.

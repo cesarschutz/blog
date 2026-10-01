@@ -109,7 +109,8 @@ a tag Pagamentos pode ser renomeada ou removida (vai virar Cobrança), e desenho
 novos para os 13. **Pronto e aguardando o OK dele:** a página final
 (<https://claude.ai/code/artifact/a08fa29f-5a3d-45ec-bcaf-7d0f13ab12a5>; no dev, `/amostra/colecoes/final/`),
 com o conjunto novo de desenhos ("O mesmo problema, um século antes": a máquina que fazia o trabalho do
-livro antes do software), as 13 cores, as frases e os textos. Controle, direção de arte, textos,
+livro antes do software), as 13 cores, as frases e os textos. Cada desenho tem um texto em duas versões (completa e curta) com o que ele é, a
+data e a relação com o assunto, para um possível hover no site. Controle, direção de arte, textos,
 crítica e o passo a passo para aplicar no site em `docs/prototipos/colecoes/final/`. Já valem a regra
 dos posts (conferir se a coleção ainda serve e avisar, na skill `post`) e os volumes em ordem
 alfabética (`CAPAS.md`). Nada muda no site antes do OK na página final.

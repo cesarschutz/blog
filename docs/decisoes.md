@@ -2278,6 +2278,11 @@ nada muda.
     cabe bem num livro; se não couber (um post de carreira, que não tem livro) ou se a coleção ficar
     melhor com um livro novo, dividido ou renomeado (um post de arquitetura corporativa pediria um
     livro novo ou trocar "Arquitetura de Software" por "Arquitetura"), ele avisa o Cesar e sugere.
+  - **O texto do desenho (01/10/2026, depois de ver a página final):** cada livro ganha um texto que
+    diz o que é o desenho, de quando é e qual a relação dele com o assunto do livro, em duas versões:
+    a completa e a curta (`textoDesenho` e `textoDesenhoCurto` em
+    `docs/prototipos/colecoes/final/dados.json`). O Cesar talvez use o texto num hover no site. O texto
+    da cor fica só na proposta: ele não pretende usar.
 - **Alternativas:** as sugestões 1 a 4 (9 a 11 livros, com Carreira); a 5 sem Frontend; os nomes do
   site de notícias para os livros de hoje (Backend, Observabilidade).
 - **Mudado:** a skill `post` e `.claude/rules/posts.md` (a conferência da coleção no plano de cada
