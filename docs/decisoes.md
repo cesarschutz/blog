@@ -74,6 +74,8 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D61 | O redesenho no ar: papel, tinta, latão e luz (a versão final do redesenho) | em vigor; as cores dos temas voltaram às de antes na D62 |
 | D62 | As cores dos temas de antes do redesenho, as séries fora das páginas dos livros (e o contrário) e a fileira que encolhe ao rolar consertada | em vigor |
 | D63 | Post detalhado (com TL;DR recolhível) ou resumo (com infográfico), combinado com o Cesar antes de escrever, e links ao longo do texto | em vigor; o Cesar revê no próximo post |
+| D64 | Marcas: todo logo só como a regra de marca do dono permite, conferida e registrada; ícones genéricos no lugar dos proibidos | decidido |
+| D65 | Os controles em prova nos posts: as opções marca-texto, caderno e post-it, cada uma numa lousa de passos, numa de comparação e numa animação | em prova |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -2443,3 +2445,81 @@ nada muda.
   deixaria o lugar dele a cargo de quem escreve; no frontmatter, ele sempre sai no mesmo lugar e o post
   continua `.md`. Para o infográfico, um componente novo: a `Figura` já ocupa a largura do texto e
   rola de lado no celular, e só faltavam as regras de composição.
+
+## D64 · Marcas: a regra de marca de cada logo
+- **Data:** 02/10/2026 · **Status:** decidido.
+- **Pedido do Cesar:** conferir se as regras de marca permitem os logos redesenhados à mão (a pergunta
+  aberta da D58) e pôr no projeto a regra de sempre conferir antes de usar um logo, e de usar sempre o
+  que já foi conferido e é permitido.
+- **O que a conferência achou** (as políticas oficiais lidas em 02/10/2026; fontes no registro):
+  - **Kubernetes:** o projeto permite modificar o logo em uso não comercial (licença Apache-2.0 ou
+    CC-BY-4.0). O redesenho fica.
+  - **AWS e os ícones dos serviços** (SQS, SNS, DynamoDB, API Gateway, Step Functions): as diretrizes
+    proíbem alterar e usar o logo como link; terceiros só citam em texto. Em diagrama, só o ícone
+    oficial sem alterar, e só para cliente da AWS.
+  - **Java (a xícara):** só com licença escrita da Oracle, nunca modificada. O mascote Duke tem licença
+    BSD e pode ser redesenhado.
+  - **Spring:** o logo é reservado à Broadcom.
+  - **MongoDB:** proibido editar, recolorir, desenhar em contorno ou usar em ilustração; no texto, o
+    arquivo oficial.
+  - **PostgreSQL:** não modificar sem aprovação, não mostrar junto de outros logos; no texto, o arquivo
+    oficial.
+  - **Kafka (ASF):** o logo oficial sem alterar, como link para o projeto; o resto pede aprovação.
+  - **OpenTelemetry:** só as versões oficiais, sem alterar.
+  - **Redis:** a política atual não fala de alteração e o manual visual não abriu; fica só o nome até
+    conferir.
+- **Decidido:**
+  - **Registro de marcas** em `src/marcas/regras.json`: para cada marca, `texto` e `diagrama`
+    (`redesenho`, `oficial` ou `nao`), as condições, as fontes, a data da conferência e a certeza.
+  - **O código obedece ao registro:** `marca()` (`src/lib/figuras.ts`), por onde passam o ícone no texto
+    (`Ferramenta`) e os logos nos desenhos (`data-marca`), quebra o build com logo sem registro ou com
+    "nao", e entra com o arquivo oficial sem alteração quando a regra é "oficial"
+    (`src/marcas/oficiais/`). O `validar.mjs` recusa redesenho de marca que não permite redesenhar e
+    marcador de logo proibido num desenho.
+  - **A regra de trabalho** (skill `figura`, regra `desenho`, `CLAUDE.md`): marca nova, ler a política
+    oficial e registrar antes do primeiro uso; registrada e permitida, usar sempre; na dúvida, "nao".
+  - **Ícones genéricos da casa**, sem marca de ninguém e sempre permitidos, no lugar dos logos
+    proibidos: `banco`, `fila`, `topico`, `aplicacao`, `servidor`.
+  - **Nos três posts publicados:** saíram os 13 redesenhos proibidos. No texto, ficou só o nome; nos
+    desenhos, entraram os ícones genéricos (o cabeçalho da tabela das camadas, a lousa do TLS, as
+    figuras e a lousa do CronJob) ou nada (a xícara do Java, a folha do Spring, o logo da AWS no KMS).
+- **Ficou para o Cesar decidir:** o Duke no lugar da xícara; baixar os arquivos oficiais de MongoDB,
+  PostgreSQL, Kafka e OpenTelemetry para o texto; os ícones oficiais da AWS nos diagramas; uma nota de
+  marcas no rodapé (várias políticas pedem a atribuição ao dono).
+- **Motivo:** o logo é marca registrada do dono, e a maioria das políticas proíbe alterá-lo; citar o
+  nome é sempre permitido. Conferir uma vez e registrar evita refazer a pesquisa a cada post e impede,
+  pelo build, que um logo entre sem conferência.
+
+## D65 · Os controles em prova nos posts
+- **Data:** 02/10/2026 · **Status:** em prova (o Cesar vê nos posts e escolhe).
+- **Pedido do Cesar:** das cinco opções do protótipo (`/prototipos/controles/`), ver três nos posts de
+  verdade: a 2 (marca-texto), a 3 (caderno e caneta) e a 4 (post-its e fita), cada uma numa lousa de
+  passos, numa lousa de comparação e numa animação com play, procurando do primeiro artigo para a frente;
+  e converter agora para o estilo novo o que ainda estivesse no antigo.
+- **Como:** `Lousa` e `Animacao` aceitam `controles="marca-texto" | "caderno" | "post-it"`, que troca os
+  controles de baixo pelos da opção, com o desenho e os controles num cartão só. O código é o do
+  protótipo (`src/amostra/controles/`: o relógio comum, os auxiliares de teclado e leitor de tela, a base
+  dos cartões e uma opção por arquivo), montado por `montar.ts`. O relógio fica no cartão
+  (`figura.relogio`), e o `revisar.mjs` o usa.
+- **Onde está cada uma** (do post mais novo para o mais antigo):
+  - **Opção 2, marca-texto:** criptografia em repouso e em trânsito, a lousa de passos (o envelope) e a de
+    comparação (o TLS); filtros do Jackson, a animação com play (os dois caminhos).
+  - **Opção 3, caderno e caneta:** filtros do Jackson, a lousa de passos; CronJob ou endpoint + fila, a
+    lousa de comparação (o deploy no meio do lote); cobrança duplicada no retry, a animação com play (a
+    resposta perdida).
+  - **Opção 4, post-its e fita:** cobrança duplicada no retry, a lousa de passos e a de comparação (com e
+    sem a chave); bloqueio otimista e pessimista, a animação com play (detectar ou evitar o conflito).
+- **Convertido para o estilo novo:** na cobrança duplicada no retry, a `LousaLoop` virou animação com play
+  (`src/animacoes/cobranca-duplicada-no-retry/resposta-perdida`) e as duas `LousaTempo` viraram `Lousa`
+  no estilo das figuras (os passos e a comparação, redesenhados do zero), com uma frase apresentando a
+  animação. O bloqueio otimista e pessimista virou `.mdx` e ganhou uma animação com play
+  (`detectar-ou-evitar`), apresentada no texto. Tons da cobrança: app azul, serviço verde, adquirente
+  âmbar, tabela roxo, chave petróleo, erro vermelho; do bloqueio: A azul, B âmbar, a linha roxo, conflito
+  vermelho, o que deu certo verde.
+- **Achado no caminho:** na animação do Jackson, os riscos apareciam de uma vez em vez de se desenhar (o
+  GSAP arredondava o `strokeDashoffset` com `pathLength="1"`); corrigido com `autoRound: false` e
+  registrado na tabela de bugs da skill `figura`.
+- **Regra até a escolha:** cada post fica com a opção que recebeu; post novo fica sem `controles` (os
+  controles de sempre). Escolhida a opção, ela vira o padrão dos dois componentes, o `controles=` sai dos
+  posts e a página do protótipo sai do ar.
+

@@ -1,7 +1,7 @@
 # Estado do projeto
 
 Painel, não diário: fase atual, próximos passos, perguntas abertas e riscos. O detalhe de cada rodada
-fica em `docs/decisoes.md` (D1 a D63) e no histórico do git; controles de rodadas fechadas, em
+fica em `docs/decisoes.md` (D1 a D65) e no histórico do git; controles de rodadas fechadas, em
 `docs/historico/`.
 
 ## Fase atual
@@ -131,6 +131,18 @@ cartão só, com os desenhos e o motor de verdade. Código em `src/amostra/contr
 auxiliares e uma opção por arquivo). Esperando o Cesar escolher; a escolhida vira os componentes `Lousa`
 e `Animacao`, e a página sai.
 
+Controles em prova nos posts (D65, 02/10/2026): as opções 2 (marca-texto), 3 (caderno) e 4 (post-it)
+estão cada uma numa lousa de passos, numa de comparação e numa animação com play, pelo `controles=` da
+`Lousa` e da `Animacao`. Opção 2: criptografia (passos e comparação) e Jackson (animação). Opção 3:
+Jackson (passos), CronJob (comparação) e cobrança duplicada no retry (animação). Opção 4: cobrança
+duplicada no retry (passos e comparação) e bloqueio otimista e pessimista (animação). A cobrança saiu do
+estilo antigo (as três peças refeitas) e o bloqueio ganhou a animação.
+
+Marcas (D64, 02/10/2026): a regra de marca de cada logo foi conferida na política oficial do dono e
+registrada em `src/marcas/regras.json`; o build quebra com logo sem registro ou proibido. Dos 14 logos
+redesenhados, só o do Kubernetes pode ficar; os outros saíram dos três posts (no texto, só o nome; nos
+desenhos, ícones genéricos da casa: banco, fila, tópico, aplicação, servidor).
+
 ## Como ver
 
 - Dev: `fnm exec --using=24 npm run dev -- --host 127.0.0.1` (<http://127.0.0.1:4322>); parar com
@@ -165,6 +177,8 @@ e `Animacao`, e a página sai.
 | D55, D61 | o redesenho: 10 modelos, mais três rodadas e a versão final no ar (papel, tinta, latão e luz) |
 | D62 | as cores dos temas de antes do redesenho, livros e séries separados nas páginas de um livro, a fileira que encolhe consertada |
 | D63 | post detalhado (com TL;DR recolhível) ou resumo (com infográfico), combinado antes de escrever, e links ao longo do texto |
+| D64 | as marcas: regra de marca de cada logo conferida e registrada; só o Kubernetes redesenhado; ícones genéricos no lugar dos outros |
+| D65 | os controles em prova nos posts: marca-texto, caderno e post-it, cada um numa lousa de passos, numa de comparação e numa animação |
 
 ## Próximos passos
 
@@ -215,20 +229,15 @@ Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
    atalhos sem o sublinhado azul animado do título.
 9. **Carimbo "fontes conferidas em …"** no fim do artigo: pede um campo novo no frontmatter e a
    conferência post a post.
-10. **Lousa `tempo` da idempotência:** a linha que marca o instante passa por cima dos rótulos
-    "pede", "cobra" e "tenta de novo" (achado pela `/amostra/lousas/`). Corrige?
-11. **`LousaTempo` fora da tela e no toque (achados de 29/09/2026):** pausar o loop quando a lousa sai
-    da tela, como a `LousaLoop` já faz (economiza bateria), e, no celular, só tomar o gesto do desenho
-    depois de um movimento horizontal (hoje o toque que só queria rolar leva a lousa para outro
-    instante). Faço? A `Lousa` da D58 já faz os dois; a pergunta vale para os posts antigos até serem
-    revistos.
-12. **Blocos de código com `content-visibility: auto`** (`prosa.css`): a altura estimada erra de −38 a
+10. **Blocos de código com `content-visibility: auto`** (`prosa.css`): a altura estimada erra de −38 a
     +23px em 390px; depois de pular pelo sumário ou pelo "voltar ao topo" e rolar para cima, o Safari
     pode dar um salto único. Não é o sobe e desce que o Cesar viu. Troco por `contain-intrinsic-size`
     mais justo ou tiro o `content-visibility`?
-13. **Logos das ferramentas (D58):** os de AWS, Kubernetes, Java e outros são redesenhados à mão, e a
-    C04 (D52) deixou GitHub e LinkedIn com as marcas oficiais porque as regras das duas proíbem
-    redesenhar. Conferir as regras de marca dessas ferramentas antes de publicar, ou manter assim?
+11. **Marcas (D64), o que ficou para decidir:** o mascote Duke (licença BSD) redesenhado no lugar da
+    xícara do Java? O arquivo oficial do MongoDB, do PostgreSQL e do Kafka no texto (precisa baixar os
+    arquivos, com o seu OK)? Os ícones oficiais da AWS nos diagramas (só para cliente da AWS e sem
+    alterar tamanho, cor ou forma)? Uma nota de marcas no rodapé ("os nomes de produtos citados são marcas
+    dos respectivos donos; este blog não tem vínculo com eles"), que várias políticas pedem?
 
 ## Riscos a acompanhar
 

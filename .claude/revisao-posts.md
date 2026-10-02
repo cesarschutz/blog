@@ -13,8 +13,8 @@ posts em 26/09/2026. Post da série Java também segue a skill `serie-java`.
 | `aoputils-gettargetclass` | Desenvolvimento de Software | 2026-05-19 | pendente | pendente | |
 | `arquitetura-de-ledger` | Arquitetura de Software | 2026-05-28 | pendente | pendente | |
 | `atomicboolean-parada-graciosa` | Desenvolvimento de Software | 2026-05-19 | pendente | pendente | |
-| `bloqueio-otimista-e-pessimista` | Dados | 2026-09-13 | pendente | pendente | |
-| `cobranca-duplicada-no-retry` | Arquitetura de Software | 2026-09-10 | pendente | 12, aplicadas em 26/09/2026 (piloto da D48) | |
+| `bloqueio-otimista-e-pessimista` | Dados | 2026-09-13 | pendente | pendente | 02/10/2026 (D65): virou `.mdx` e ganhou a animação com play (detectar ou evitar o conflito); o resto do post ainda pela revisão |
+| `cobranca-duplicada-no-retry` | Arquitetura de Software | 2026-09-10 | pendente | 12, aplicadas em 26/09/2026 (piloto da D48) | 02/10/2026 (D65): as três peças antigas no estilo novo (a animação com play e as duas lousas); o resto do post ainda pela revisão |
 | `cronjob-vs-endpoint-sqs` | Arquitetura de Software | 2026-09-23 | concluído (30/09/2026) | 59, aplicadas em 30/09/2026 | recursos da D58: `.mdx`, cinco figuras com legenda (no lugar dos diagramas de `public/`), `Lousa` de comparação, ícones das ferramentas |
 | `data-lake-vs-data-warehouse` | Dados | 2026-03-31 | pendente | pendente | |
 | `efeito-externo-sem-registro-local` | Arquitetura de Software | 2026-09-11 | pendente | pendente | |

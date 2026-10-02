@@ -204,6 +204,10 @@ export default function montar(gsap: GSAP, svg: SVGSVGElement) {
   retângulo `papel` (`data-parte="tampa-…"`) e encolha a tampa da esquerda para a direita
   (`scaleX` de 1 a 0, `transformOrigin: "100% 50%"`). Se mudou, um `risco` (`pathLength="1"`, de
   `strokeDashoffset` 1 a 0) corta o texto velho, e o novo é escrito embaixo. Mais desenho que texto.
+- **Em prova (D65):** `controles="marca-texto" | "caderno" | "post-it"` troca os botões e a frase de
+  baixo por uma das três opções do protótipo (`/prototipos/controles/`), num cartão só com o desenho.
+  Até o Cesar escolher, cada post fica com a opção que recebeu na prova (lista na D65); post novo fica
+  sem `controles`.
 - O componente cuida do resto: abre tocando quando aparece na tela (nunca com movimento reduzido),
   pausa fora dela, o anel em volta do botão mostra a volta e pulsa nos 5 s do fim, o botão de recomeçar
   e o clique na imagem dão play ou pausa. O GSAP vem sob demanda (`src/scripts/gsap.ts`). No RSS, a
@@ -211,24 +215,44 @@ export default function montar(gsap: GSAP, svg: SVGSVGElement) {
 
 ## Logos das ferramentas (`src/marcas/`, `Ferramenta`, `data-marca`)
 
-Antes de desenhar um logo, veja se ele já existe em `src/marcas/` (hoje: api-gateway, aws, dynamodb,
-java, kafka, kubernetes, opentelemetry, postgresql, redis, sns, sqs, step-functions). Só de ferramenta
-ou produto de que o post fala.
+**Todo logo passa pela regra de marca do dono (D64).** O registro é `src/marcas/regras.json`: para cada
+marca, o que a política oficial dela permite no texto e no diagrama, com as fontes, a data da
+conferência e as condições. O código obedece ao registro (`src/lib/figuras.ts`): logo sem registro, ou
+com "nao", **quebra o build** com o motivo; e o `validar.mjs marcas` recusa redesenho de marca que não
+permite redesenhar.
+
+| No registro | O que fazer |
+|---|---|
+| `redesenho` | pode desenhar à mão no traço da casa (`src/marcas/<nome>.svg`) |
+| `oficial` | só o arquivo oficial, **sem nenhuma alteração** (`src/marcas/oficiais/<nome>.svg`, baixado da fonte com o OK do Cesar); entra como imagem, sem o traço nem as cores da casa |
+| `nao` | não usar o logo: só o nome em texto (e, no desenho, um ícone genérico) |
+
+**Antes de usar um logo:**
+1. Procure a marca em `src/marcas/regras.json`. Se está lá e permite o uso (no texto ou no diagrama,
+   conforme o caso), use direto: a conferência vale para sempre, até alguém refazer.
+2. Se não está, **confira antes de desenhar**: leia a política oficial do dono (trademark guidelines,
+   brand guidelines, a licença dos arquivos do logo) e registre a marca com `texto`, `diagrama`,
+   `condicoes`, `fontes`, `conferido` (a data) e `certeza`. Na dúvida, "nao" até ter certeza ou
+   permissão escrita. Uso nominativo (o nome em texto) é sempre permitido.
+3. Não permite? **Ícone genérico da casa**, que não é marca de ninguém e está sempre liberado: `banco`
+   (cilindro), `fila` (envelopes num tubo), `topico` (um envelope para vários), `aplicacao` (janela com
+   código), `servidor` (gavetas de rack). Ícone genérico novo entra no registro como "ícone genérico do
+   blog", e nunca imita o logo ou o ícone de produto de alguém.
+
+Situação em 02/10/2026: só o **Kubernetes** pode ser redesenhado (uso não comercial). AWS e os ícones dos
+serviços dela, Java (a xícara), Spring e Redis: só o nome. MongoDB, PostgreSQL e Kafka: só o arquivo
+oficial no texto, nada no diagrama. OpenTelemetry: só o arquivo oficial. O mascote Duke, do Java (licença
+BSD), pode ser redesenhado, mas ainda não entrou.
 
 - `src/marcas/<nome>.svg`, `viewBox="0 0 100 100"`, **sem `aria-label`** (o nome vem escrito ao lado),
-  o desenho dentro de `<g class="tinta …">` (o tremor é desligado nos logos), o texto fora dele.
-- Desenhado à mão no traço da casa, **reconhecível, sem copiar o arquivo oficial**: a forma que todo
-  mundo conhece, simplificada, com os tons (AWS: "aws" com `marca-texto` e o sorriso em âmbar;
-  Kubernetes: o heptágono azul com o leme; Java: a xícara). Traços finos: no tamanho da letra, traço
-  grosso vira mancha preta.
-- **Numa figura ou animação:** um marcador, trocado pelo logo no build, no lugar que identifica a peça
-  (a xícara na caixa do app, o logo da AWS na caixa da nuvem):
-  `<g data-marca="aws" transform="translate(x y) scale(s)"/>`.
-- **No texto:** `<Ferramenta nome="java" href="https://openjdk.org/projects/jdk/21/">Java</Ferramenta>`,
+  o desenho dentro de `<g class="tinta …">` (o tremor é desligado nos logos), o texto fora dele. Traços
+  finos: no tamanho da letra, traço grosso vira mancha preta.
+- **Numa figura ou animação:** um marcador, trocado pelo logo (ou pelo ícone genérico) no build, no lugar
+  que identifica a peça: `<g data-marca="kubernetes" transform="translate(x y) scale(s)"/>`.
+- **No texto:** `<Ferramenta nome="kubernetes" href="https://kubernetes.io/…">Kubernetes</Ferramenta>`,
   do tamanho da letra, antes do nome. Na primeira menção e de novo mais adiante no post (não só no
   começo), nunca em toda menção. O `href` é um easter egg: abre em outra aba a página **mais
-  específica** (a do DynamoDB, não a da AWS; a do Java 21, não a do Java), sem mudar o cursor, fora do
-  Tab e do leitor de tela.
+  específica**, sem mudar o cursor, fora do Tab e do leitor de tela.
 - Não confundir com os ícones das tags (`src/livros/tags/`, D52), que são objetos de ofício e nunca
   logotipo.
 
@@ -301,3 +325,4 @@ o painel de cada livro.
 | "Banco", notas e "mesmo banco" (CronJob) e a "Resposta da API" (Jackson) ficavam acesos com qualquer cor; a moldura do "JSON do log" acesa e o texto apagado | o que não tinha cor nunca apagava | o que não tem cor apaga junto (D59); a caixa e o texto de um ator no mesmo tom |
 | Uma caneta escrevendo em dois lugares (lousa) | duas partes do mesmo lugar no mesmo instante | uma caneta por lugar, até três; o `revisar.mjs` acusa |
 | O detalhe da capa pulava de volta ao tirar o mouse | animação de evento cortada no `:hover` | evento vai até o fim (`.mexendo`); estado volta animado |
+| Na animação com play, um risco ou um anel aparecia de uma vez no meio do tempo, em vez de se desenhar (o Jackson) | com `pathLength="1"`, o GSAP arredonda o `strokeDashoffset` para 1 ou 0 (`autoRound`) | todo `strokeDashoffset` animado leva `autoRound: false` |

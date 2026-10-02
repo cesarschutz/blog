@@ -599,11 +599,14 @@ com a rolagem. Use no máximo de vez em quando; o Cesar pode removê-la.
   botão para recomeçar, e o clique na imagem pausa. De 6 a 12 s por volta, 5 s parada no fim. Pouco
   texto trocando: o que foi escrito não some; se mudou, é riscado e o novo vem embaixo. Pouca animação
   também vale (só o ponto principal se mexendo).
-- **Ícones das ferramentas**: os logos das ferramentas de que o post fala (AWS, Kubernetes, Java…),
-  desenhados à mão no traço da casa, reconhecíveis. No texto, antes do nome, na primeira menção e
-  espalhados pelo post (não só no começo), sem poluir; o ícone é um link discreto para a página mais
-  específica da ferramenta. Dentro das figuras e das animações também (a xícara do Java na caixa do
-  app). Não confundir com os ícones das tags, que nunca são logotipo (D52).
+- **Ícones das ferramentas**: os logos das ferramentas de que o post fala, **só como a regra de marca
+  do dono permite** (D64, registro em `src/marcas/regras.json`, conferido na política oficial): o
+  redesenho à mão no traço da casa só onde a política deixa (hoje, o Kubernetes); onde ela pede o
+  arquivo oficial, ele sem alteração; onde não permite, só o nome em texto e, no desenho, um ícone
+  genérico da casa (banco, fila, tópico, aplicação, servidor). No texto, antes do nome, na primeira
+  menção e espalhados pelo post (não só no começo), sem poluir; o ícone é um link discreto para a
+  página mais específica da ferramenta. Não confundir com os ícones das tags, que nunca são logotipo
+  (D52).
 - **Print como evidência**: só quando prova algo que o texto diz e dá para garantir que está certo
   (a documentação oficial dizendo o número citado, um erro, um painel). Tela que pede login (console
   da AWS, painéis internos): o Cesar tira o print. Com borda, uma linha embaixo dizendo o que é e de

@@ -64,6 +64,7 @@ import FraseDestaque from "../../components/FraseDestaque.astro";
 | `passos` | a sequência (`{ de, texto }`, `de` de 0 a 1, em ordem): vira a lista numerada embaixo; o texto aceita `código` e `**negrito**` |
 | `estados` | a comparação (`{ de, texto }`): só vão para o leitor de tela (o `aria-valuetext` do controle) |
 | `duracao` | uma volta do play, em segundos (padrão 7) |
+| `controles` | **em prova (D65):** `"marca-texto"`, `"caderno"` ou `"post-it"` troca os controles de baixo por uma das três opções do protótipo (`/prototipos/controles/`), com o desenho e os controles num cartão só. Até o Cesar escolher, cada post fica com a opção que recebeu na prova (lista na D65) e post novo fica sem `controles` |
 
 Use `passos` **ou** `estados`, nunca os dois. `de` é o instante em que o passo (ou o estado) começa;
 o fim de um passo é o `de` do seguinte. No controle, cada `de` vira uma marca (numerada, nos passos).

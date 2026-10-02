@@ -39,6 +39,9 @@ outras portas) sai.
   com o OK do Cesar e testar em 320, 390, 768, 1280 e 1600px nos dois temas. Ajuste que o Cesar pedir
   nas marcações vai na hora para "Ajustes do Cesar" no guia, com a data.
 - Posts para adaptar ficam em **`entrada/`** (fora do git).
+- **Controles em prova (D65):** a `Lousa` e a `Animacao` aceitam `controles="marca-texto" | "caderno" |
+  "post-it"` (as opções do protótipo `/prototipos/controles/`). Cada post da prova fica com a opção que
+  recebeu (lista na D65); post novo fica sem `controles` até o Cesar escolher.
 - **Nunca** instalar skill, MCP ou pacote de terceiros sem ler o código antes e reportar ao Cesar o que
   for suspeito (rede, variáveis de ambiente, credenciais, comandos destrutivos).
 
@@ -67,6 +70,9 @@ em `docs/redesenho/rodada-4/`.
   O `.claude/settings.json` bloqueia a edição de arquivos lá, mas não cobre comandos no terminal.
   Um `git status` comum já regrava o `.git/index` de lá. Ao delegar para subagentes, repasse essa regra.
 - Antes de instalar qualquer biblioteca, proponha e espere o OK. Registre a decisão em `docs/decisoes.md`.
+- Logo de marca alheia (ferramenta, produto, empresa) só como a regra de marca do dono permite (D64): a
+  marca precisa estar conferida na política oficial e registrada em `src/marcas/regras.json` antes do
+  primeiro uso; registrada e permitida, usa sempre. Sem registro, o build quebra.
 - Cores só por tokens CSS (`var(--ink)`, `var(--cat)`…). Nada de hex solto em componente ou SVG.
 - Toda animação respeita `prefers-reduced-motion`: com ele ligado, tudo aparece no estado final,
   sem prender a tela.
@@ -150,7 +156,7 @@ npm run conferir -- <slug> [--base URL] [--capturas]   # o post em 320–1600px 
 npm run setup        # confere o ambiente (Node, dependências, skills, Chrome, motor do Impeccable)
 npm run apresentacao -- <slug> --pptx <arquivo> --titulo "…"   # slides do NotebookLM
 node scripts/desenho/validar.mjs [slug]   # regras da capa, das lousas, das figuras e das animações
-node scripts/desenho/validar.mjs marcas   # os logos das ferramentas (src/marcas/)
+node scripts/desenho/validar.mjs marcas   # os logos das ferramentas (src/marcas/) e a regra de marca (D64)
 node scripts/desenho/revisar.mjs <slug> --base <dev>   # revisão dos desenhos do post (D59): bugs + fotos
 node scripts/foto.mjs <url> <saida.png> [--seletor css] [--tema escuro] [--largura 390] …
                                           # foto de uma página ou de uma peça (Chrome próprio; opções no script)
@@ -258,7 +264,8 @@ src/ilustracoes/         uma ilustração SVG por post (<slug>.svg), com os reco
 src/lousas/<slug>/       desenhos das lousas de cada post .mdx
 src/figuras/<slug>/      diagramas e gráficos coloridos do post (D58)
 src/animacoes/<slug>/    animações com play: o quadro final (<nome>.svg) e o movimento (<nome>.ts, GSAP)
-src/marcas/              logos das ferramentas (viewBox 100×100), reaproveitados em todo post
+src/marcas/              logos das ferramentas (viewBox 100×100) e ícones genéricos, reaproveitados em todo
+                         post; regras.json, a regra de marca de cada um (D64)
 src/evidencias/<slug>/   prints que provam algo do texto (PNG)
 .github/workflows/       deploy no GitHub Pages (a cada push na main, D34)
 .claude/skills/          procedimentos (carregados sob demanda); as de terceiros são cópias lidas
