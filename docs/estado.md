@@ -1,7 +1,7 @@
 # Estado do projeto
 
 Painel, não diário: fase atual, próximos passos, perguntas abertas e riscos. O detalhe de cada rodada
-fica em `docs/decisoes.md` (D1 a D66) e no histórico do git; controles de rodadas fechadas, em
+fica em `docs/decisoes.md` (D1 a D71) e no histórico do git; controles de rodadas fechadas, em
 `docs/historico/`.
 
 ## Fase atual
@@ -157,6 +157,18 @@ aprovação prévia, a pedido dele: **o Cesar revê o post no ar** (o texto, a c
 longo do texto, que é o lembrete da D63). Feito numa worktree
 (`.claude/worktrees/post-do-claude-md-ao-mod`), porque havia outras sessões na pasta do projeto.
 
+Escrita dos posts e post em partes (D71, 02/10/2026, **sem commit**, branch `escrita-e-post-em-partes`
+na mesma worktree): o Cesar leu o post dos mods no ar e não gostou do título (não dizia do que o post
+trata), da abertura (já saía falando do cockpit, que é o exemplo) e da primeira pessoa. Entraram na
+skill `post` as regras de escrita (o título que faz sentido sozinho, a descrição com o essencial em 160
+caracteres, o TL;DR de conclusões, a abertura pelo assunto e a voz sem primeira pessoa) e a do post em
+partes, com a pesquisa em `docs/escrita/pesquisa.md` e o `npm run escrita -- <slug>` para conferir. O
+post dos mods virou dois: a parte 1, na URL de sempre ("Mods do Claude Code — o que são e as peças que
+vieram antes"), e a parte 2, nova ("Um mod do Claude Code na prática — instalação, testes e limites",
+`claude-code-csr-cockpit`), cada uma com cerca de 1.950 palavras, sem primeira pessoa; a
+parte 1 ganhou uma capa nova. **Falta o Cesar ler as duas e mandar commitar e publicar.** Dev da
+worktree: <http://127.0.0.1:4370>.
+
 Figura em passos (D67, 02/10/2026, **em prova** em `/animacoes-test-2/`): o Cesar achou as animações
 ruins de entender ("muita coisa, ou animação com coisa sumindo"). Uma auditoria às cegas das 10 peças
 animadas (1 clara, 5 médias, 4 ruins) e uma pesquisa (Mayer, informação que some, small multiples)
@@ -205,14 +217,16 @@ estava) foram refeitas nele. Também ficou a regra da D68: todo pedido dele num 
 | D66 | o post dos mods ("Quanto custou cada agente?"), o primeiro do livro IA: prints parados do cockpit, tags Claude Code e Plugins, e o print largo que rola de lado no celular |
 | D67 | figura em passos (em prova): um formato só no lugar da lousa de passos, da de comparação e da animação com play |
 | D68 | pedido do Cesar num post termina na pergunta "vira regra para os próximos posts?" |
+| D71 | as regras de escrita do post (título, descrição, TL;DR, abertura, sem primeira pessoa), o post em partes e o post dos mods dividido em parte 1 e parte 2 (sem commit) |
 
 ## Próximos passos
 
-0. **O post dos mods (D66) é o "próximo post" da D63:** o pedido para o Cesar ver como ficaram o
-   formato combinado, o TL;DR recolhível e os links ao longo do texto foi feito no relatório da sessão
-   de 02/10/2026. Falta a resposta dele: ajustar o que ele disser e, depois disso, tirar o lembrete da
-   skill `post` e este item. No mesmo post, ele revê as 35 marcações da caneta (aplicadas sem a
-   aprovação prévia, a pedido dele).
+0. **O post dos mods em duas partes (D71), esperando o Cesar:** ler as duas partes no dev
+   (<http://127.0.0.1:4370>), aprovar os títulos, a capa nova da parte 1 e as marcações da caneta que
+   ficaram (19 e 15), e mandar commitar e publicar (branch `escrita-e-post-em-partes`). Ele já disse o que
+   achou do post (o título, a abertura e a primeira pessoa, que viraram a D71); do lembrete da D63 falta
+   só ele dizer se o TL;DR recolhível e os links ao longo do texto ficam como estão: com a resposta,
+   tirar o lembrete da skill `post`.
 1. **Documentos do visual novo (D61):** reescrever o `DESIGN.md` inteiro para "papel e luz" (hoje a
    seção da D61 vence as antigas, e no resto só os valores mudaram) e o `docs/briefing.md` §4 a §7 no
    mesmo passo; conferir também `docs/movimento.md` (a abertura, a cortina e as chegadas mudaram).
@@ -266,10 +280,11 @@ Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
     arquivos, com o seu OK)? Os ícones oficiais da AWS nos diagramas (só para cliente da AWS e sem
     alterar tamanho, cor ou forma)? Uma nota de marcas no rodapé ("os nomes de produtos citados são marcas
     dos respectivos donos; este blog não tem vínculo com eles"), que várias políticas pedem?
-12. **Post dos mods (D66), o que ficou para decidir:**
-    - o tamanho: cerca de 3.300 palavras, acima do teto de ~3.000 do formato detalhado. Fica assim, ou
-      as seções do marketplace, dos comandos e de como se testa um mod viram um segundo post ("como
-      publicar e manter um plugin")?
+12. **Post dos mods (D66 e D71), o que ficou para decidir:**
+    - os títulos das duas partes e a capa nova da parte 1 (a escada das peças): ficam?
+    - os posts antigos fora das regras novas de escrita (as descrições acima de 160 caracteres, o título
+      do Java 25 e o de criptografia acima do teto, a abertura de criptografia e a de data lake): ficam
+      para a revisão em lote ou não se mexe?
     - as tabelas largas no celular: hoje as colunas encolhem até uma palavra por linha antes de a
       tabela rolar de lado (a linha do tempo foi resolvida no conteúdo, em duas colunas). Vale uma
       largura mínima no CSS das tabelas, para todos os posts?

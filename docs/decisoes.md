@@ -79,6 +79,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D66 | O post dos mods ("Quanto custou cada agente?"): publicado direto, com as telas do cockpit em print parado, as tags Claude Code e Plugins e o print largo que rola de lado no celular | decidido e publicado; o Cesar revê no ar |
 | D67 | Figura em passos: um formato só no lugar da lousa de passos, da lousa de comparação e da animação com play (abre inteira, cada passo soma, nada some, o leitor manda) | em prova em `/animacoes-test-2/` |
 | D68 | Pedido do Cesar num post termina na pergunta "vira regra para os próximos posts?" | decidido |
+| D71 | Regras de escrita do post (título que faz sentido sozinho, descrição, TL;DR, abertura pelo assunto, sem primeira pessoa), o post em partes e o post dos mods dividido em parte 1 e parte 2 | decidido; sem commit, esperando o Cesar ler |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -2664,3 +2665,90 @@ nada muda.
   vezes, vira regra" continua.
 - **Onde:** CLAUDE.md ("Regras que valem sempre") e a skill `post` ("Regra de aprendizado" e o relatório
   final).
+
+## D71 · Escrita do post: título que faz sentido sozinho, abertura pelo assunto, sem primeira pessoa, e o post em partes
+- **Data:** 02/10/2026 · **Status:** decidido (as regras); o post dos mods em duas partes está na branch
+  `escrita-e-post-em-partes`, sem commit, esperando o Cesar ler. (Os números D69 e D70 estão em uso em
+  outras duas worktrees, ainda sem commit: a busca do cabeçalho e as tabelas no celular.)
+- **O que o Cesar disse**, lendo o post dos mods no ar (D66):
+  - o título "Quanto custou cada agente?" não diz do que o post trata: "o título sempre tem que ser algo
+    que lendo faça sentido, que lendo eu sei do que se trata", ainda mais porque o título aparece
+    sozinho na busca e em outros lugares;
+  - o post "já sai falando do cockpit": a ideia era falar do **mod**, lançado na véspera, com o caminho
+    até ele, e só depois do cockpit, que é o exemplo;
+  - nunca em primeira pessoa ("criei tal coisa", "testei tal coisa", "fiz"): sempre "para testar…",
+    "para fazer tal coisa…";
+  - pesquisar boas práticas de título, resumo e TL;DR, ler os outros posts como leitor e pôr nas regras o
+    que evita esses erros nos próximos (sem corrigir os antigos);
+  - dividir o post em **parte 1** (o mod e como o Claude Code chegou até ele) e **parte 2** (o cockpit),
+    pela primeira vez no blog, e criar a regra para os próximos posts grandes.
+- **Regras novas** (na skill `post`, seções "Escrita" e "Post em partes"; o resumo na regra por caminho,
+  no briefing §8.2 e no CLAUDE.md):
+  - **Título:** "Assunto — complemento", com o assunto fechando sozinho (ele aparece sozinho em listas do
+    site) e o termo que o leitor procura nas primeiras palavras; nunca pergunta, trocadilho, gancho ou
+    nome que só o Cesar conhece; o título é do assunto do post, não do exemplo; alvo de ~65 caracteres,
+    teto de 85; o plano traz o título com duas alternativas e o Cesar aprova antes do texto.
+  - **Descrição:** uma ou duas frases com verbo, o essencial nos primeiros 160 caracteres (era "até
+    ~200"), sem repetir o título nem enfileirar palavras-chave.
+  - **TL;DR:** cada ponto é uma conclusão que se entende sozinha, do mais importante para o menos; o
+    primeiro diz o que a coisa é.
+  - **Abertura:** o primeiro parágrafo diz o assunto e por que importa; o segundo, o que o post cobre e
+    para quem; o exemplo, a história, a pergunta e a imagem vêm depois (era "introdução com o problema
+    concreto em 2 ou 3 frases").
+  - **Voz:** nunca a primeira pessoa do singular, nem "nós"; o sujeito é a coisa, ou o infinitivo, ou
+    "você"; o que foi rodado ou medido vira fato com data. No modo Adaptar, a primeira pessoa do texto
+    do Cesar também sai.
+  - **O assunto em uma frase**, combinado na conversa do passo 2, antes da estrutura: separa o assunto do
+    exemplo, que foi a confusão do post dos mods.
+  - **Post em partes:** quando o texto passa do teto e tem dois temas que se sustentam sozinhos; cada
+    parte é um post inteiro, com o assunto próprio no título e "(parte N de M)" no fim, o aviso
+    `> [!NOTA] Parte N de M` depois da abertura, a recapitulação na parte 2 e a parte 1 apontando a 2;
+    publicadas juntas, a parte 2 com hora posterior no `published` quando saem no mesmo dia. Não é
+    série: três partes ou mais, conversar.
+  - **`npm run escrita -- <slug>`** (`scripts/escrita.mjs`): confere o que dá para conferir sozinho
+    (pergunta e tamanho do título, tamanho da descrição, pontos do TL;DR, imagem ou pergunta na abertura,
+    primeira pessoa, avisos das partes). Sem slug, faz o levantamento de todos os posts, sem falhar.
+- **A pesquisa** (dois agentes Sonnet, páginas abertas e conferidas) e a leitura dos 29 posts estão em
+  `docs/escrita/pesquisa.md`. O essencial: o título tem de fazer sentido fora de contexto e levar o termo
+  principal na frente (NN/g, GOV.UK, Google); 40 a 65 caracteres; a descrição com o ponto principal em
+  160 (GOV.UK; o Google não dá número); o mais importante primeiro (pirâmide invertida); os guias de
+  documentação pedem a segunda pessoa e a voz ativa (Google, Microsoft); em partes, cada página se
+  sustenta sozinha, com título e descrição próprios e links comuns entre elas (Google). "De 3 a 5 pontos",
+  "sem primeira pessoa" e "publicar as partes juntas" são escolhas do blog, sem fonte que as imponha.
+- **O que a leitura dos posts mostrou:** os títulos antigos já seguem "Assunto — complemento" (o dos mods
+  era a exceção); as 29 descrições passam de 160 caracteres e cinco passam de 200; três posts abrem fora
+  do padrão (o dos mods, o de criptografia, com uma cena, e o de data lake, com uma pergunta); a primeira
+  pessoa é rara fora do post dos mods. Os posts antigos não são corrigidos.
+- **O post dos mods, em duas partes** (o Cesar propôs; a pesquisa sustenta o corte entre conceito e
+  prática):
+  - **Parte 1**, no slug de sempre (`claude-code-do-claude-md-ao-mod`, a URL publicada não muda): "Mods
+    do Claude Code — o que são e as peças que vieram antes (parte 1 de 2)". Abre pelo lançamento dos
+    mods, traz a linha do tempo, cada peça, o que é um mod (com a figura) e as confusões mais comuns.
+    Cerca de 1.980 palavras.
+  - **Parte 2**, post novo (`claude-code-csr-cockpit`): "Um mod do Claude Code na prática — instalação,
+    testes e limites (parte 2 de 2)". O que o cockpit mostra, a instalação pelo marketplace (com a
+    lousa), os comandos, os testes, os limites e o repositório. Cerca de 1.930 palavras.
+  - Uma revisão às cegas (agente Opus, só as regras e os dois posts) apontou 20 pontos, quase todos
+    aplicados: a parte 2 abria pelo exemplo e não se lia sozinha (faltavam plugin, contexto, token e
+    hook), "ferramenta" tinha dois sentidos, as descrições repetiam os títulos e o título da parte 2
+    levava o nome do projeto.
+  - Sem primeira pessoa nas duas. As marcações da caneta que estavam em frases que continuam foram
+    mantidas (19 na parte 1 e 15 na parte 2); o Cesar revê.
+  - A capa antiga (a janela com as etiquetas de preço) foi para a parte 2, com os prints e a lousa; a
+    parte 1 ganhou uma capa nova (a escada das peças até a janela do Claude Code).
+  - Entrou o que foi visto em 02/10/2026 no aplicativo de desktop: a versão 2.16120.0 para macOS traz o
+    Claude Code 2.1.284, e nela o `/cockpit` não existe; o `claude --version` do terminal não mostra
+    essa versão.
+  - **Âncoras:** na URL da parte 1 deixam de existir as das seções que foram para a parte 2
+    (`#marketplace-o-catálogo-num-repositório`, `#os-comandos`, `#o-cockpit`, `#como-se-testa-um-mod`,
+    `#o-que-ainda-não-dá`, `#o-repositório`) e a de "Skill, agente ou plugin: o que eu demorei a
+    entender", que perdeu a primeira pessoa e foi para depois de "O que é um mod". O post estava no ar
+    havia poucas horas.
+- **Conferido:** `escrita` (as duas partes sem problema), `check` (0 erros), `build`, `links` (nenhum
+  quebrado), `contraste`, `conferir` das duas (320 a 1600px, dois temas), `validar.mjs`, os links externos
+  das duas e a ordem (parte 1 com a ficha 1 e o nº 029; parte 2 com a ficha 2 e o nº 030).
+- **Mudado:** a skill `post`, `.claude/rules/posts.md`, o `CLAUDE.md`, o briefing §8.2,
+  `docs/escrita/pesquisa.md`, `scripts/escrita.mjs` e o `package.json`; os dois posts, a capa nova, os
+  prints e a lousa no slug da parte 2, as fotos dos livros (o IA com dois artigos), a lista de revisão e
+  o painel.
+
