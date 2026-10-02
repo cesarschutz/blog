@@ -38,6 +38,22 @@ outras portas) sai.
 - **Nunca** instalar skill, MCP ou pacote de terceiros sem ler o código antes e reportar ao Cesar o que
   for suspeito (rede, variáveis de ambiente, credenciais, comandos destrutivos).
 
+## Redesenho (D55, publicado na D61)
+
+O visual do site é a versão final do redesenho: **papel, tinta, latão e luz** (D61, 02/10/2026). O
+resumo está na seção "Papel e luz (D61)" do `DESIGN.md`, que vence as seções antigas dele (ainda das
+"Folhas claras", D26) até a reescrita. O detalhe de cada peça, com os pedidos do Cesar numerados, está
+em `docs/redesenho/rodada-4/`.
+
+- **Os protótipos ficam só nesta máquina**, fora do git (`redesenho/`, no `.gitignore`):
+  - os 10 modelos em <http://127.0.0.1:4400>;
+  - as cópias das rodadas 2 a 4 em `redesenho/novos/` (portas 4411 a 4430);
+  - a versão final com as amostras em <http://127.0.0.1:4421> (`/amostras/`).
+- **Onde está cada coisa:** a história das quatro rodadas está em `docs/redesenho/`. O processo está na
+  skill `redesenho`, e os agentes, em `.claude/agents/redesenho-*`.
+- **Mudança de visual** agora é no blog, pelas regras de sempre. Uma rodada nova de protótipos segue a
+  skill `redesenho`.
+
 ## Regras que valem sempre
 
 - Tudo em pt-BR, com acentuação correta. Identificadores de código podem ficar em inglês.
@@ -98,8 +114,9 @@ Aprovada em 23/09/2026. Detalhes em `docs/decisoes.md`.
 - Posts em Markdown (`.md`). `.mdx` só quando o post usa componente (lousa, figura, animação, ícone
   de ferramenta, print)
 - Expressive Code para código (título, linhas destacadas, diff, Copiar). KaTeX só em post com fórmula
-- CSS próprio com tokens, sem Tailwind e sem framework de UI. Visual "Folhas claras" (D26): folhas
-  (`.folha`), painéis dos desenhos (`.painel`) e azul-tinta (`--acento`) no que é clicável
+- CSS próprio com tokens, sem Tailwind e sem framework de UI. Visual "papel e luz" (D61): tudo é
+  papel (`.folha`, fichas de catálogo e papéis colados com fita), latão e luz sobre os livros, painéis
+  dos desenhos (`.painel`) e azul-tinta (`--acento`) no que é clicável
 - Fontes: Besley (títulos), Literata com `opsz` (texto), IBM Plex Sans (interface), JetBrains Mono
   (código); nos livros, Bitter e Newsreader itálico (D30); nas notas da caneta, Caveat (D48)
 - Busca com Pagefind e interface própria (D2, por medição): índice gerado no `postbuild`
@@ -180,6 +197,11 @@ docs/historico/          rodadas fechadas: o prompt da Fase 0, os controles da D
                          (controle, regras dos agentes, diagnósticos, pesquisa e sugestões da D52) e
                          os protótipos superados
 docs/virada.md           plano para o domínio passar ao blog novo (só com OK do Cesar)
+docs/redesenho/          redesenho (D55, D61): pedido, regras e status (README), a direção de cada modelo
+                         (modelos/), as rodadas 2 a 4 (rodada-N/: o texto do Cesar, a direção e o
+                         controle) e a API da base comum
+redesenho/               os protótipos do redesenho (fora do git, D61): projeto Astro próprio, porta
+                         4400, e as cópias do blog em novos/ (portas 4411 a 4430)
 docs/referencias/        protótipos aprovados da Fase 0 (estilo dos desenhos, lousas, "Folhas claras")
 docs/prototipos/         protótipos que ainda são referência (caneta, animações da D51)
 src/content/posts/       posts; nome do arquivo = slug da URL
@@ -187,15 +209,23 @@ src/data/                taxonomia e series (leem src/livros), java, decks (apre
                          (autor, perfis e textos), mao (os títulos à mão da papelaria, C05)
 src/amostra/             o conteúdo das páginas /amostra/ (recursos.md, recursos.mdx, caneta.md)
 src/styles/tokens.ts     cores dos dois temas: fonte única, gera as variáveis CSS (D4)
-src/styles/              base (folha, painel, transição de página), fontes, avisos, prosa, artigo (grade,
-                         notas), paginas, estante e livro (lombada, livro 3D e capa), desenho
-                         (ilustrações), capa-viva, figura (figuras, animações e logos, D58), lousa e
-                         lousa-nova, caneta (marcações, D48), traco (traços à caneta, C04), visor,
-                         contador e copiado (D49)
+src/styles/              base (folha, painel, papel colado, barra de rolagem, transição de página),
+                         fontes, avisos, prosa, artigo (grade, notas), paginas, estante e livro (lombada,
+                         livro 3D e capa), desenho (ilustrações), capa-viva, figura (figuras, animações
+                         e logos, D58), lousa e lousa-nova, caneta (marcações, D48), traco (traços à
+                         caneta, C04), visor, contador e copiado (D49); da D61: luz e livro-vivo (a luz
+                         dos livros e do mouse), vidro e nicho (o chão das fileiras e os abajures),
+                         catalogo (as fichas), gaveta, ficha-do-livro e suave (a entrada ao rolar)
 src/assets/              caveat-titulos.woff: a Caveat 600 só com as letras dos títulos à mão (C05)
 src/layouts/Base.astro   head, anti-piscada, cabeçalho, rodapé e busca
 src/components/          peças das páginas (estante, gaveta, sumário, avisos, busca…) e dos posts (Lousa,
-                         Figura, Animacao, Ferramenta, Evidencia; LousaTempo e LousaLoop só nos antigos)
+                         Figura, Animacao, Ferramenta, Evidencia; LousaTempo e LousaLoop só nos antigos);
+                         da D61: Colecao (a fileira da home), FileiraTopo (o alto da página do livro),
+                         PontoDeLuz e Luz (abajures e luz), Fichario, NuvemTags e FichasTags (Tags),
+                         Vizinhos e LivroDoArtigo (o fim do post), AbaTopo (voltar ao topo) e TracoTitulo
+src/computador/          o computador (D61): o ícone no canto, o macOS de mentira (sistema, janelas,
+                         dock, menus) e os apps (Finder, editor, Terminal, Pré-Visualização, Sobre); os
+                         dados vêm das rotas src/pages/mac/
 src/pages/               rotas; a home é [...page].astro (paginada, D27); livros/[slug].svg (desenho
                          da capa, que a gaveta busca ao abrir o livro, D30);
                          posts/[slug]/apresentacao.pdf.ts (PDF) e og/[slug] (imagem, D10)
@@ -210,7 +240,10 @@ src/lib/                 posts, formatos, busca (Pagefind), código (Expressive 
                          sol, contornos dos botões e a assinatura, D52, C04), figuras (lê figuras,
                          animações e logos, e troca `data-marca` pelo logo, D58)
 src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, apresentação)
-src/scripts/tema.ts      tema: o botão do cabeçalho alterna claro e escuro (D39)
+src/scripts/tema.ts      tema: a lâmpada do cabeçalho alterna claro e escuro, acendendo e apagando
+                         (D39, D61; a lâmpada em lampada.ts)
+src/scripts/             também: troca.js (a cortina e as chegadas), luz, estante-moderna, fichas-caem,
+                         fichario, revelar e embaralha (D61)
 scripts/                 contraste, links, apresentacao, og, copiar-katex, desenho/, bench-busca/,
                          marca, caveat-titulos (subconjunto da Caveat, C05), verificar-ambiente
                          (npm run setup e hook do início da sessão), livros/ (as fotos dos livros, D57),
@@ -242,6 +275,8 @@ src/evidencias/<slug>/   prints que provam algo do texto (PNG)
 - `caneta`: a passada de caneta num post (a última etapa da skill `post`, ou sozinha: "passa a caneta
   no post X"), pelo guia `docs/marcacoes.md`
 - `apresentacao`: PowerPoint do NotebookLM → slides WebP e PDF
+- `redesenho`: os modelos de visual novo (D55): direção, construção por agente, conferência e entrega
+  da URL ao Cesar; a versão final virou o site na D61
 - `serie-java`: série "Atualizações do Java" (só LTS)
 - De terceiros, lidas antes de instalar (D35): `impeccable` (revisão de design; o motor fica em
   `~/.impeccable`), `gsap-core`, `gsap-timeline`, `gsap-plugins`, `gsap-performance` e `gsap-utils` (animações; as de

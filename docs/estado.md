@@ -1,13 +1,23 @@
 # Estado do projeto
 
 Painel, não diário: fase atual, próximos passos, perguntas abertas e riscos. O detalhe de cada rodada
-fica em `docs/decisoes.md` (D1 a D60) e no histórico do git; controles de rodadas fechadas, em
+fica em `docs/decisoes.md` (D1 a D61) e no histórico do git; controles de rodadas fechadas, em
 `docs/historico/`.
 
 ## Fase atual
 
 **No ar desde 25/09/2026 em <https://blog.cesarschutz.com.br>** (repositório `cesarschutz/blog`,
 D34): todo push na `main` publica. O blog antigo continua em `cesarschutz.com.br` (`docs/virada.md`).
+
+**O redesenho está no ar (D61, 02/10/2026):** a versão final do redesenho (D55, rodada 4, a `21-final`)
+virou o site, com o visual "papel, tinta, latão e luz". O papel é quente no claro e marrom no escuro, e
+tudo é papel (folhas, fichas de catálogo e papéis colados com fita). Há abajures de latão sobre os
+livros, a cortina entre as páginas, o fichário de Tags, o rodapé de feltro com a cordinha, a aba "topo"
+e o computador. Ela veio por cima da D59 e da D60, com os tokens dos desenhos recalibrados para o papel
+quente. O resumo do visual está na seção "Papel e luz (D61)" do `DESIGN.md`, e o detalhe, em
+`docs/redesenho/rodada-4/`. As quatro rodadas (10 modelos; 11 a 15; 16 a 20; a versão final com as
+amostras) estão em `docs/redesenho/`. Os protótipos e as amostras ficaram só nesta máquina, fora do
+git (`redesenho/`, no `.gitignore`).
 
 Tudo até a D52 está commitado, inclusive o C04 (a caneta preta como identidade) e o C05 (a papelaria
 de estudo: post-it "Neste artigo", ficha do livro, cola dos atalhos, commitado pelo Cesar em
@@ -121,6 +131,9 @@ e `Animacao`, e a página sai.
   `/posts/cobranca-duplicada-no-retry/`.
 - Exemplos da D58 (só local): `git switch exemplos-arquivo` em `../blog-exemplos`, dev com
   `--port 4330` e <http://127.0.0.1:4330/exemplos/>.
+- Redesenho (D55, fora do git desde a D61): os modelos em <http://127.0.0.1:4400>, as cópias das
+  rodadas 2 a 4 nas portas 4411 a 4430 e a versão final com as amostras em <http://127.0.0.1:4421>
+  (`/amostras/`). Os comandos estão em `docs/redesenho/base.md`.
 
 ## O que existe (resumo)
 
@@ -137,9 +150,13 @@ e `Animacao`, e a página sai.
 | D58 | capa viva, figuras coloridas, `Lousa` nova, animação com play, ícones das ferramentas, print; os três primeiros posts revistos |
 | D59 | a lousa no estilo das figuras (canetinha colorida), o destaque da legenda revisto e a revisão de todo desenho (`revisar.mjs`) |
 | D60 | o escuro dos desenhos do corpo: painel um pouco acima da folha, caixas com cor, tinta menos branca |
+| D55, D61 | o redesenho: 10 modelos, mais três rodadas e a versão final no ar (papel, tinta, latão e luz) |
 
 ## Próximos passos
 
+0. **Documentos do visual novo (D61):** reescrever o `DESIGN.md` inteiro para "papel e luz" (hoje a
+   seção da D61 vence as antigas, e no resto só os valores mudaram) e o `docs/briefing.md` §4 a §7 no
+   mesmo passo; conferir também `docs/movimento.md` (a abertura, a cortina e as chegadas mudaram).
 1. **Revisão em lote dos posts** (`.claude/revisao-posts.md`): 26 pendentes pela skill `post`, modo
    Adaptar, cada um terminando na caneta (skill `caneta`, com a proposta aprovada antes). Com a D58
    aprovada, a revisão troca `LousaTempo` e `LousaLoop` pela `Lousa` ou pela animação com play.
@@ -197,6 +214,9 @@ Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
     redesenhar. Conferir as regras de marca dessas ferramentas antes de publicar, ou manter assim?
 
 ## Riscos a acompanhar
+
+- A `main` local da worktree `../blog-exemplos` ficou atrás da remota: a D61 foi publicada de outra
+  branch (`redesenho-final`), com push direto para a `origin/main`. Antes de mexer lá, `git pull`.
 
 - Tremor (`feTurbulence`) nas lousas animadas: 60 quadros por segundo no Chrome desta máquina com CPU
   4× e DPR 3; falta um iPhone de verdade. Plano B: gravar o tremor na geometria, no build.

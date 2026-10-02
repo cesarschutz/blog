@@ -20,6 +20,21 @@ Os protótipos mostram aparência e comportamento aprovados. São referência, n
 copiar: reescreva com a arquitetura certa, acessível e performática. Onde este briefing e um
 protótipo divergirem, vale o briefing.
 
+**O redesenho está no ar (D61, 02/10/2026).** Depois de quatro rodadas de protótipos (D55), o Cesar
+mandou publicar a versão final: **papel, tinta, latão e luz**. Ela troca a camada visual das seções 4 e
+5 (as "Folhas claras", o cabeçalho, o rodapé, a abertura, as trocas de página, a fileira da home, Tags
+e a página do livro). Não mudam:
+
+- a estrutura (posts em livros com tags, o filtro por livro na tag, Categorias com os livros grandes);
+- as rotas;
+- os livros;
+- a caneta;
+- os desenhos dos posts.
+
+O que vale para o visual está na seção "Papel e luz (D61)" do `DESIGN.md`, e o detalhe, em
+`docs/redesenho/rodada-4/`. Onde as seções 4 e 5 abaixo divergirem deles, vale a D61. A reescrita
+destas seções está nos próximos passos de `docs/estado.md`.
+
 ---
 
 ## 1. O que é o blog
@@ -81,7 +96,10 @@ protótipo divergirem, vale o briefing.
 
 ## 4. Sistema visual (decidido)
 
-Desde 24/09/2026 vale a variação **"A. Folhas claras"** de `docs/referencias/prototipo-mais-vida.html`
+> **D61 (02/10/2026):** o visual agora é "papel, tinta, latão e luz" (seção "Papel e luz (D61)" do
+> `DESIGN.md`). Esta seção descreve as "Folhas claras" e vale onde não divergir dela.
+
+De 24/09/2026 à D61 valeu a variação **"A. Folhas claras"** de `docs/referencias/prototipo-mais-vida.html`
 (D26): o conteúdo em folhas claras sobre um fundo quente, azul-tinta em tudo que é clicável, uma
 fonte sem serifa na interface e os desenhos em painéis tingidos pela categoria. É uma mudança só da
 camada visual: estrutura, conteúdo, rotas e comportamento seguem as seções 5 a 7.

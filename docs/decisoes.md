@@ -36,7 +36,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D23 | Cor de destaque da série Java: a fita | em vigor |
 | D24 | Tema: escolha guardada com a chave do blog atual | em vigor |
 | D25 | Favicon novo | em vigor |
-| D26 | Variação "A. Folhas claras": folhas, azul-tinta, IBM Plex Sans e desenhos com palco | em vigor |
+| D26 | Variação "A. Folhas claras": folhas, azul-tinta, IBM Plex Sans e desenhos com palco | substituída pela D61 (o visual); o azul-tinta, as fontes e o palco dos desenhos continuam |
 | D27 | Lista e cards no formato do blog atual, e a home paginada | em vigor; a 1ª página com 11 artigos desde a D52 (C02) |
 | D28 | Painel lateral da home com séries e categorias em pilhas de livros | o painel saiu da home na D44; a pilha lateral ficou nas páginas de livro (D46) |
 | D29 | Página de categoria com o livro em pé e a transição do livro | em vigor |
@@ -65,11 +65,13 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D52 | Ajustes de 27/09/2026: acabamento das animações, a leitura, as listas, as tags e o destaque | em vigor |
 | D53 | Faxina: docs só com documentos, dados dos livros em src/livros | em vigor |
 | D54 | Caça aos bugs de 29/09/2026: 40 correções de interação, teclado, impressão, listas e RSS | em vigor |
+| D55 | Redesenho: 10 modelos de visual novo, em protótipo, para o Cesar escolher | concluída: a versão final (rodada 4) foi publicada na D61; os protótipos ficam só nesta máquina |
 | D56 | Caneta com 34 tipos e mais marcações por post | em vigor |
 | D57 | Livros realistas: capa dura em todos os livros, estante e pilha com volume, livro deitado no "Do livro", livro aberto nos vazios e a série como livro | em vigor |
 | D58 | Recursos visuais novos: capa viva, figuras coloridas, a lousa nova, a animação com play, os ícones das ferramentas, o print e a caneta da leitura na cor do livro | decidido |
 | D59 | A lousa no estilo das figuras, com uma canetinha colorida; o destaque da legenda que apaga tudo menos a cor e a referência; a revisão de todo desenho antes de entregar (`revisar.mjs`) | decidido |
-| D60 | O escuro dos desenhos do corpo: painel um pouco acima da folha, caixas com cor, tinta menos branca | decidido |
+| D60 | O escuro dos desenhos do corpo: painel um pouco acima da folha, caixas com cor, tinta menos branca | em vigor; os valores foram recalibrados na D61 |
+| D61 | O redesenho no ar: papel, tinta, latão e luz (a versão final do redesenho) | em vigor |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -1990,6 +1992,59 @@ nada muda.
   todas as páginas); fechar a busca e o livro ampliado ao voltar pelo histórico (a busca que reabre
   com os resultados parece intencional; só o foco foi corrigido).
 
+## D55 · Redesenho: 10 modelos de visual novo, em protótipo
+- **Data:** 29/09/2026 · **Status:** aprovada, em andamento. Pedido do Cesar: "Quero que você
+  redesenhe esse blog. Pode mudar tudo, só mantenha o que eu solicitar". O plano foi aprovado no mesmo
+  dia, com os dois temas, fontes novas e anime.js, e a lista e a ordem dos modelos.
+- **Decisão:** explorar 10 modelos de visual, um bem diferente do outro, em protótipos navegáveis com
+  o conteúdo real. Eles ficam na branch `redesenho` e na pasta `redesenho/` (projeto Astro próprio,
+  servidor na porta 4400). Um modelo por vez; cada um pronto ganha a sua URL para o Cesar.
+  - **Ficam em todo modelo:**
+    - a estrutura (post em livro ou revista, com tags);
+    - o filtro por livro na página da tag;
+    - as três animações de chegada: a abertura da home, a das outras páginas e a troca de página;
+    - Categorias com animação nos cards e os livros grandes, também na página de cada livro;
+    - os desenhos dos livros e as ilustrações dos posts como estão (o Cesar os redesenha depois).
+  - **Pode mudar:** todo o resto.
+  - A lista dos modelos, as regras e o status estão em `docs/redesenho/README.md`.
+- **Bibliotecas aprovadas (só em `redesenho/`):**
+  - fontes do Fontsource e do Fontshare (`.woff2` servidos pelo projeto);
+  - o anime.js v4, só no modelo Cinético;
+  - o resto com o GSAP, que já está no projeto.
+
+  O código de cada pacote é lido antes de instalar.
+- **Processo:**
+  - agentes com modelo e esforço escolhidos por tarefa (`.claude/agents/redesenho-*`): Sonnet 5.5
+    para a pesquisa, a base e a conferência, e Opus 5.5 para construir cada modelo;
+  - a skill `redesenho` descreve o passo a passo;
+  - o registro fica em `docs/redesenho/` (direção de cada modelo, referências, base).
+- **Enquanto isso:** o site no ar não muda. `DESIGN.md` e `briefing.md` continuam valendo para ele. O
+  modelo escolhido vira uma decisão nova, que substitui a D26 e o que mais for preciso.
+- **Mudado fora de `redesenho/`:**
+  - `tsconfig.json`: ignora a pasta, para o `npm run check` do blog não olhar os protótipos;
+  - `.impeccable/config.json`: o detector não cobra o `DESIGN.md` atual nos protótipos;
+  - os registros: este, `docs/estado.md`, `docs/briefing.md` e `CLAUDE.md`;
+  - em `.claude/`: a skill, a regra e os agentes.
+- **Alternativas descartadas:**
+  - protótipos dentro de `src/`, porque misturariam com o site publicado;
+  - um projeto por modelo, porque seriam 10 instalações;
+  - HTML solto, sem os posts reais, porque não mostraria a leitura.
+- **Rodadas seguintes (01/10/2026):**
+  - **Rodada 2:** pelo retorno do Cesar sobre os 10, cinco protótipos (11 a 15) em cópias do blog atual
+    (`redesenho/novos/`, portas 4411 a 4415), cada um com um "computador" para ver os livros como
+    arquivos. O retorno e o controle estão em `docs/redesenho/rodada-2/`.
+  - **Rodada 3, a final:** pelo retorno sobre os 11 a 15, uma base comum (`r3-base`, a partir do 14,
+    porta 4430) com tudo o que ele marcou como obrigatório e o computador estilo macOS, e cinco linhas
+    em papelaria e biblioteca saídas dela: 16 Parede, 17 Grade suave, 18 Estante moderna, 19 Biblioteca
+    e 20 Noturno (portas 4416 a 4420). A direção de arte e a revisão final foram do Fable 5.1, a
+    construção do Opus 5.5 (xhigh), a pesquisa e a conferência do Sonnet 5.5. O texto do Cesar, a
+    direção, a revisão e o controle estão em `docs/redesenho/rodada-3/`. Próximo passo: ele escolhe.
+  - **Rodada 4, a versão final (01 e 02/10/2026):** pelo retorno sobre os 16 a 20, a `21-final` (porta
+    4421), que parte do 18 e junta o que ele escolheu de cada linha. Os lugares com mais de uma forma
+    viraram amostras dentro dela (`/amostras/`), e ele escolheu nelas. Depois vieram mais duas listas de
+    ajustes. O texto dele (três partes), a direção, a direção do papel e o controle estão em
+    `docs/redesenho/rodada-4/`. Em 02/10/2026 ele mandou publicar: é a D61.
+
 ## D56 · Caneta com 34 tipos e mais marcações por post
 - **Data:** 29/09/2026 · **Status:** aprovada pelo Cesar ("é isso mesmo que você falou"). O número D55
   ficou para o redesenho, em outra sessão.
@@ -2253,3 +2308,59 @@ nada muda.
   (o painel da lousa), `scripts/contraste.mjs` (a tinta e a tinta secundária sobre o painel e o lavado
   dos desenhos), `DESIGN.md` e `docs/estilo-desenho.md`.
 
+## D61 · O redesenho no ar: papel, tinta, latão e luz
+- **Data:** 02/10/2026 · **Status:** decidido e publicado.
+- **Pedido do Cesar:** depois de revisar a versão final do redesenho (D55, rodada 4, a `21-final`):
+  "pode passar para main e publicar no git".
+  - **O que vai:** só o site novo. As amostras e os protótipos ficam fora do git, só nesta máquina; os
+    documentos e a configuração do Claude do redesenho vão junto.
+  - **Como publicar:** direto, sem ele conferir antes, se o check, o build, os links e a fumaça
+    passassem.
+- **Decidido:** o visual do site passa a ser o da `21-final`.
+  - **Onde está descrito:** o resumo na seção "Papel e luz (D61)" do `DESIGN.md`, e o detalhe em
+    `docs/redesenho/rodada-4/`: os pedidos dele numerados no `controle.md`, e a direção no
+    `direcao.md` e no `direcao-papel.md`.
+  - **O que substitui:** a D26 (as "Folhas claras") e, onde a versão final mudou, o desenho das peças de
+    antes: cabeçalho, rodapé, abertura, trocas de página, fileira da home, voltar ao topo e troca de
+    tema.
+  - **O que continua valendo:**
+    - as URLs (D7);
+    - os livros e as capas (D30, D32, D57);
+    - a caneta (D48, D56);
+    - os desenhos dos posts (D58 a D60);
+    - a stack.
+- **Como entrou:**
+  - a `21-final` era uma cópia do blog no commit `07731b1`; os 44 arquivos dela que mudaram e os 61
+    novos vieram para `src/`, por cima da main com a D59 e a D60;
+  - o `tokens.ts` foi juntado em três vias (os tokens da D60 e os da versão final);
+  - os seis tokens dos desenhos da D60 (`painel-desenho`, `tinta-desenho` e `tinta-desenho-2`, nos dois
+    temas) foram recalibrados para o papel quente, com as mesmas relações: no claro, a folha e a tinta;
+    no escuro, um pouco acima da folha marrom, sem puxar para o frio. Com os valores frios, os desenhos
+    ficariam num painel azulado sobre a folha marrom;
+  - ficaram de fora:
+    - as amostras (`src/amostras/`, `/amostras/`);
+    - o Finder antigo da rodada 2 (o computador usa as rotas `/mac/`);
+    - as paletas escuras da amostra D2;
+  - saiu o `VoltarTopo.astro`: a cordinha e a aba "topo" fazem o papel dele;
+  - `astro.config.mjs`: o GSAP e os plugins pré-carregados no dev (`optimizeDeps.include`, contra o 504
+    "Outdated Optimize Dep") e a `/busca/livros/` fora do sitemap;
+  - o botão do computador ganhou `id="computador"`: o item "Computador" do menu do celular é um link
+    para essa âncora, e o `npm run links` acusava 66 âncoras quebradas;
+  - `redesenho/` saiu do git (`.gitignore`): os protótipos (272 MB) continuam nesta máquina, com os
+    servidores das portas 4400 a 4430.
+- **Conferido antes de publicar:**
+  - `astro check`: 0 erros e 0 avisos;
+  - build: 96 páginas, com as imagens de compartilhamento e o índice da busca com os 28 posts;
+  - `npm run links`: nada quebrado;
+  - `npm run contraste`: nenhuma falha obrigatória;
+  - fumaça em 18 páginas (home, paginação, arquivo com e sem filtro, livros, séries, tags, cinco posts,
+    o protótipo dos controles e a 404), nos dois temas, a 390 e 1440px: nenhum erro no console nem na
+    rede, e nenhuma rolagem lateral;
+  - a busca e o computador abertos no build;
+  - as figuras e as lousas da D60 fotografadas nos dois temas.
+- **Fica para depois:** reescrever o `DESIGN.md` inteiro para o visual novo e o `briefing.md` §4 a §7
+  no mesmo passo. Hoje a seção da D61 vence as antigas, e no resto do `DESIGN.md` só os valores
+  mudaram.
+- **Alternativas descartadas:**
+  - levar também as amostras e os protótipos, porque não são o site (e são 272 MB);
+  - manter a `21-final` como cópia separada, porque seriam dois blogs para manter.
