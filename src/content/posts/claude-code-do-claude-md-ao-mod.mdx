@@ -1,49 +1,31 @@
 ---
-title: "Quanto custou cada agente? — Do CLAUDE.md ao mod no Claude Code"
+title: "Mods do Claude Code — o que são e as peças que vieram antes (parte 1 de 2)"
 published: 2026-10-02
-description: "As peças de extensão do Claude Code em ordem, do `CLAUDE.md` ao **mod**, o que cada uma alcança e o csr-cockpit, o painel que reparte o custo da sessão por agente e por turno."
+description: "Mod é um plugin com código que roda dentro do Claude Code e desenha na interface, desde 01/10/2026. Do `CLAUDE.md` aos plugins, o que cada peça anterior faz."
 tags: [Claude Code, Plugins]
 category: IA
 formato: detalhado
 tldr:
-  - "O Claude Code ganhou as peças de extensão uma depois da outra: `CLAUDE.md`, MCP, comandos, hooks, subagentes, linha de status, estilos de saída, plugins, skills e temas. Nenhuma desenha um painel: quase todas entregam texto ou ferramentas ao modelo, ou rodam um script por fora."
-  - "O **mod**, oficial desde a versão 2.1.287 (01/10/2026), é código que roda dentro do Claude Code, guarda estado e desenha na tela."
-  - "Um **plugin** é a pasta que se instala, e um **marketplace** é um repositório com um `marketplace.json`. Um repositório público no GitHub basta."
-  - "O **csr-cockpit** é um mod que só observa: mostra agentes, diffs, contexto, arquivos e turnos, com o custo de cada agente e de cada turno."
-  - "O custo por agente é uma repartição feita pelo mod. O Claude Code informa o custo da sessão inteira, não o de cada agente."
+  - "**Mod** é um plugin do Claude Code com código que roda dentro do programa: reage aos eventos da sessão, guarda estado, registra comandos e desenha na interface. É oficial desde a versão 2.1.287, de 01/10/2026."
+  - "As peças anteriores entregam texto ou ferramentas ao modelo (`CLAUDE.md`, MCP, comandos, subagentes, estilos de saída, skills), rodam um script por fora (hooks, linha de status), embalam (plugins) ou trocam cores (temas). Nenhuma põe um painel na interface."
+  - "Skill, agente e plugin não são alternativas: a skill é uma instrução, o agente (o subagente) executa uma tarefa numa conversa à parte e o plugin é a pasta que entrega os dois. Mod é um tipo de plugin."
+  - "Um mod roda com as permissões de quem o instala, sem isolamento. Antes de instalar, `claude plugin validate` lista o que ele escuta e o que ele chama, sem executar nada."
+  - "A [parte 2](/posts/claude-code-csr-cockpit/) mostra um mod pronto, o csr-cockpit: como instalar, o que ele mostra, como testar e os limites."
 draft: false
 ---
 
-import Evidencia from "../../components/Evidencia.astro";
 import Figura from "../../components/Figura.astro";
-import Lousa from "../../components/Lousa.astro";
-import cockpit from "../../evidencias/claude-code-do-claude-md-ao-mod/cockpit.png";
-import linhaDeResumo from "../../evidencias/claude-code-do-claude-md-ao-mod/linha-de-resumo.png";
-import abaAgentes from "../../evidencias/claude-code-do-claude-md-ao-mod/aba-agentes.png";
-import abaTurnos from "../../evidencias/claude-code-do-claude-md-ao-mod/aba-turnos.png";
 
-Quanto custou cada agente que o Claude Code rodou no seu último pedido? E cada turno da conversa?
+Em 01/10/2026, o Claude Code ganhou os **mods**: plugins com código que roda dentro do programa, reage ao que acontece na sessão, guarda estado e desenha na interface. [O anúncio](https://claude.com/blog/claude-code-mods) veio com a versão 2.1.287. Até ali, tudo o que se instalava no Claude Code entregava texto ou ferramentas ao modelo, ou rodava um script por fora.
 
-<Evidencia
-  imagem={cockpit}
-  larga
-  foco={0.535}
-  alt="A tela do Claude Code com o painel do csr-cockpit aberto ao lado da conversa. A aba Agentes mostra dois subagentes rodando, cada um com o modelo, o tempo, o tamanho do contexto e o custo atribuído até ali, de 2 e de 1 centavo de dólar. Acima do prompt, a linha de resumo mostra o contexto usado e o custo da sessão."
-  fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit"
-  legenda="O painel de que este post trata, o csr-cockpit, ao lado da conversa: um desenho com os textos e os números de uma sessão real (Claude Code 2.1.287, modelo Haiku 4.5)"
-/>
+Este post explica o que é um mod e como o Claude Code chegou até ele: as peças de extensão que vieram antes, com a data de cada uma, o que cada uma faz e o que só o mod faz. O texto parte do zero. Não pressupõe conhecer skill, agente, hook, plugin nem marketplace, e aponta a documentação oficial para quem quiser se aprofundar. Não é um tutorial de código.
 
-Agente, aqui, é o subagente: o ajudante que o Claude Code chama para cuidar de uma parte da tarefa. Turno é cada pedido seu, com tudo o que ele desencadeia. Até os mods virarem oficiais, em 01/10/2026, a ferramenta não me mostrava essa conta: o [`/usage`](https://code.claude.com/docs/en/costs#track-your-costs) mostra quanto a sessão inteira custou e, nos planos pagos, que fatia do uso foi para subagentes, em percentual. Quanto custou cada agente, ou cada turno, :ondulado[ele não diz].
-
-Desde aquele dia dá para fazer a conta, por causa de uma peça nova: o **mod**, código que roda dentro do Claude Code e desenha na interface. No mesmo dia publiquei um: o **csr-cockpit**, o painel da imagem. Ele está no [claude-code-kit](https://github.com/cesarschutz/claude-code-kit), um repositório meu.
-
-O número de cada agente é uma conta do painel, não do Claude Code, que continua informando só o custo da sessão inteira. Como o painel reparte esse custo, e onde a conta pode errar, está em [O que ainda não dá](#o-que-ainda-não-dá).
-
-Este post conta como o Claude Code chegou até o mod, peça por peça. Quando comecei, eu não conhecia skill, agente, hook, plugin, marketplace nem mod: aprendi tudo naquele dia. Por isso o texto explica o básico de cada peça e aponta a documentação oficial para quem quiser se aprofundar. Não é um tutorial de código.
+> [!NOTA] Parte 1 de 2
+> Esta parte explica as peças e o mod. A [parte 2](/posts/claude-code-csr-cockpit/) parte de um mod pronto, o csr-cockpit, e mostra o painel, a instalação, os testes e os limites.
 
 ## A linha do tempo
 
-O Claude Code foi lançado em 24/02/2025, como [prévia de pesquisa](https://www.anthropic.com/news/claude-3-7-sonnet), e [o mod chegou](https://claude.com/blog/claude-code-mods) em 01/10/2026. São pouco mais de :circulo[19 meses], e nesse intervalo a ferramenta ganhou, uma depois da outra, as peças desta tabela:
+O Claude Code foi lançado em 24/02/2025, como [prévia de pesquisa](https://www.anthropic.com/news/claude-3-7-sonnet), e os mods chegaram em 01/10/2026. São pouco mais de :circulo[19 meses], e nesse intervalo o Claude Code ganhou, uma depois da outra, as peças desta tabela:
 
 | Quando | Peça |
 |---|---|
@@ -60,129 +42,39 @@ O Claude Code foi lançado em 24/02/2025, como [prévia de pesquisa](https://www
 
 Entre parênteses está a versão em que a peça entrou. Cada data é a da publicação dessa versão no [npm](https://www.npmjs.com/package/@anthropic-ai/claude-code?activeTab=versions), e a linha de cada peça está no [changelog do repositório](https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md).
 
-O `CLAUDE.md` e o MCP são a exceção: não têm linha de estreia, porque já estavam na [documentação do dia do lançamento](https://web.archive.org/web/20250224200833/https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/tutorials).
+O `CLAUDE.md` e o MCP são a exceção: não têm linha no changelog, porque já estavam na [documentação do dia do lançamento](https://web.archive.org/web/20250224200833/https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/tutorials).
 
-Eu leio essa tabela como uma escada, e em cada degrau faço a mesma pergunta: com isso eu conseguiria aquele painel? Para responder, uma distinção ajuda. O **modelo** é a IA, o Claude: lê texto e responde. O **Claude Code** é o programa que você abre no terminal: manda o texto ao modelo, executa as ferramentas que ele pede (ler um arquivo, rodar um comando) e desenha a tela. :grifo[Um painel só pode vir do programa.]
+A tabela pode ser lida como uma escada, com a mesma pergunta em cada degrau: essa peça consegue pôr algo novo na interface? O exemplo mais claro é um painel ao lado da conversa, que mostre o que a sessão está fazendo. Para responder, uma distinção ajuda. O **modelo** é a IA, o Claude: lê texto e responde. O **Claude Code** é o programa que você abre no terminal: manda o texto ao modelo, executa as ferramentas que ele pede (ler um arquivo, rodar um comando) e desenha a tela. :grifo[Um painel só pode vir do programa.]
 
-Mais um termo, que volta até o fim do post. Tudo o que o modelo tem na frente para responder (as instruções, a conversa, os arquivos lidos) é o [contexto](https://code.claude.com/docs/en/context-window). Ele tem tamanho máximo e é medido em tokens, os pedaços de palavra em que o modelo conta o texto e pelos quais se cobra.
+Mais um termo, que volta nas duas partes. Tudo o que o modelo tem na frente para responder (as instruções, a conversa, os arquivos lidos) é o [contexto](https://code.claude.com/docs/en/context-window). Ele tem tamanho máximo e é medido em tokens, os pedaços de palavra em que o modelo conta o texto e pelos quais se cobra.
 
 ## Cada peça e o que ela não alcança
 
-**`CLAUDE.md`.** Um arquivo de texto, em geral na raiz do projeto, que o Claude Code entrega ao modelo no começo de toda sessão. É onde ficam as [instruções permanentes](https://code.claude.com/docs/en/memory#claude-md-files): como rodar os testes, as convenções do time, o que nunca fazer. Use para o que :ondulado[vale sempre]. Para o painel ele não serve: é texto para o modelo ler.
+A ordem aqui é a de quem aprende, não a das datas: a skill vem antes do plugin, que é a embalagem das outras. Os exemplos vêm do [claude-code-kit](https://github.com/cesarschutz/claude-code-kit), o repositório público que acompanha as duas partes, com exemplos pequenos de seis delas (hook, subagente, estilo de saída, skill, plugin e tema) e um mod.
 
-**MCP.** O [Model Context Protocol](https://code.claude.com/docs/en/mcp) liga o modelo a sistemas de fora: um servidor MCP entrega ferramentas novas, como consultar um banco de dados ou controlar um navegador. Use quando o modelo precisa alcançar algo que ele não enxerga. O painel continua fora de alcance: o MCP dá ferramentas ao modelo, e a tela segue a mesma.
+**`CLAUDE.md`.** Um arquivo de texto, em geral na raiz do projeto, que o Claude Code entrega ao modelo no começo de toda sessão. É onde ficam as [instruções permanentes](https://code.claude.com/docs/en/memory#claude-md-files): como rodar os testes, as convenções do time, o que nunca fazer. Use para o que :ondulado[vale sempre]. Na interface ele não mexe: é texto para o modelo ler.
+
+**MCP.** O [Model Context Protocol](https://code.claude.com/docs/en/mcp) liga o modelo a sistemas de fora: um servidor MCP entrega ferramentas novas, como consultar um banco de dados ou controlar um navegador. Use quando o modelo precisa alcançar algo que ele não enxerga. A interface continua a mesma: o MCP dá ferramentas ao modelo.
 
 **Comando.** Um prompt salvo num arquivo Markdown, que você chama digitando `/nome`. Serve para o pedido que se repete toda semana. Poupa a digitação, e só: :grifo[o que chega ao modelo é o mesmo texto].
 
 **Hook.** Na forma mais comum, um comando do sistema que o Claude Code roda sozinho num evento: no início da sessão, antes de uma ferramenta, depois de uma edição. É a peça para o que [tem de acontecer sempre](https://code.claude.com/docs/en/hooks-guide), sem depender de o modelo lembrar. O exemplo do kit é o [`responder-em-portugues`](https://github.com/cesarschutz/claude-code-kit/tree/main/hooks/responder-em-portugues), um `echo` no início da sessão. Das peças antigas, é a que vê os eventos passarem. Só que roda :nota[fora do Claude Code]{texto="o mod vai rodar dentro"}, como um processo à parte, e não desenha nada.
 
-**Subagente.** É o agente da pergunta do começo: um ajudante com papel próprio, ferramentas limitadas e :explica[um contexto só dele]{nota="não ocupa o da conversa"}, que faz a tarefa e devolve um resumo. Use para [isolar o trabalho](https://code.claude.com/docs/en/sub-agents) que encheria a conversa principal, como uma busca em dezenas de arquivos. No kit há dois, o [`pesquisador`](https://github.com/cesarschutz/claude-code-kit/blob/main/agents/pesquisador.md) e o `critico`, cada um definido por um arquivo de instruções.
+**Subagente.** Um ajudante com papel próprio, ferramentas limitadas e :explica[um contexto só dele]{nota="não ocupa o da conversa"}, que faz a tarefa e devolve um resumo. É o que a documentação chama de agente. Use para [isolar o trabalho](https://code.claude.com/docs/en/sub-agents) que encheria a conversa principal, como uma busca em dezenas de arquivos. No kit há dois, o [`pesquisador`](https://github.com/cesarschutz/claude-code-kit/blob/main/agents/pesquisador.md) e o `critico`, cada um definido por um arquivo de instruções. Na tela nada muda: o que volta é texto.
 
-**Linha de status.** Uma linha no rodapé, impressa por um script seu, que recebe do Claude Code os [dados da sessão](https://code.claude.com/docs/en/statusline#available-data), entre eles o custo. É a peça que mais se parece com o painel. Mas é :ondulado[uma linha só], sem clique, e o custo que chega a ela é o da sessão inteira.
+**Linha de status.** Uma linha no rodapé, impressa por um script seu, que recebe do Claude Code os [dados da sessão](https://code.claude.com/docs/en/statusline#available-data), como o modelo em uso e o custo. É a peça que mais se parece com um painel. Mas é :ondulado[uma linha só], sem clique.
 
-**Estilo de saída.** Um [jeito de responder](https://code.claude.com/docs/en/output-styles): o papel, o tom e o formato das respostas de uma sessão. O [`professor`](https://github.com/cesarschutz/claude-code-kit/blob/main/output-styles/professor.md) do kit explica o porquê de cada passo. Muda o texto da resposta, não a tela.
+**Estilo de saída.** Um [jeito de responder](https://code.claude.com/docs/en/output-styles): o papel, o tom e o formato das respostas de uma sessão. O [`professor`](https://github.com/cesarschutz/claude-code-kit/blob/main/output-styles/professor.md) do kit explica o porquê de cada passo, e o estilo se escolhe com `/output-style`. Muda o texto da resposta, não a tela.
 
-**Skill.** Uma pasta com um arquivo `SKILL.md`: [instruções](https://code.claude.com/docs/en/skills) que o modelo carrega quando o pedido combina com a descrição, ou quando você chama pelo nome. É a peça para o procedimento que você vive colando na conversa. :aparte[Os comandos próprios, lá de cima, foram incorporados às skills, e os arquivos antigos continuam funcionando.] No kit, a [`mensagem-de-commit`](https://github.com/cesarschutz/claude-code-kit/blob/main/skills/mensagem-de-commit/SKILL.md) escreve a mensagem de commit das mudanças já preparadas com `git add`.
+**Skill.** Uma pasta com um arquivo `SKILL.md`: [instruções](https://code.claude.com/docs/en/skills) que o modelo carrega quando o pedido combina com a descrição, ou quando você chama pelo nome. É a peça para o procedimento que você vive colando na conversa. :aparte[Os comandos próprios, lá de cima, foram incorporados às skills, e os arquivos antigos continuam funcionando.] No kit, a [`mensagem-de-commit`](https://github.com/cesarschutz/claude-code-kit/blob/main/skills/mensagem-de-commit/SKILL.md) escreve a mensagem de commit das mudanças já preparadas com `git add`. Como o `CLAUDE.md`, a skill é texto para o modelo: a tela fica igual.
 
 **Plugin.** É a embalagem: uma [pasta](https://code.claude.com/docs/en/plugins/overview#understand-what-a-plugin-is) com skills, agentes, hooks, estilos e servidores MCP, que se instala de uma vez. Dentro dela, o arquivo `.claude-plugin/plugin.json` é o manifesto, que descreve o plugin. Use quando um segundo projeto, ou uma segunda pessoa, precisa da mesma configuração. O [`exemplos`](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/exemplos) do kit leva uma skill, um agente, um hook e um estilo de saída. Sozinho, o plugin não acrescenta poder nenhum: :duplo[empacota o que já existia].
 
-**Tema.** As [cores da interface](https://code.claude.com/docs/en/terminal-config#create-a-custom-theme), num arquivo JSON que parte de um tema pronto e troca algumas cores. O [`tinta-azul`](https://github.com/cesarschutz/claude-code-kit/blob/main/themes/tinta-azul/themes/tinta-azul.json) troca três. Muda a cor do que já está na tela.
+**Tema.** As [cores da interface](https://code.claude.com/docs/en/terminal-config#create-a-custom-theme), num arquivo JSON que parte de um tema pronto e troca algumas cores. O [`tinta-azul`](https://github.com/cesarschutz/claude-code-kit/blob/main/themes/tinta-azul/themes/tinta-azul.json) troca três, e o tema se escolhe com `/theme`. Muda a cor do que já está na tela.
 
 :::colchete
-Nenhuma dessas peças chega ao painel. O `CLAUDE.md`, o comando, o subagente, o estilo e a skill são texto para o modelo. O MCP dá ferramentas a ele. O hook e a linha de status rodam um script do lado de fora. O plugin embala, e o tema troca cores. Faltava a peça que roda por dentro.
+Nenhuma dessas peças põe um painel na interface. O `CLAUDE.md`, o comando, o subagente, o estilo e a skill são texto para o modelo. O MCP dá ferramentas a ele. O hook e a linha de status rodam um script do lado de fora. O plugin embala, e o tema troca cores. Faltava a peça que roda por dentro.
 :::
-
-Antes de chegar a ela, três seções sobre como as peças se instalam, porque foi ali que eu mais me perdi.
-
-## Skill, agente ou plugin: o que eu demorei a entender
-
-Esta é a lista do que me confundiu, antes do detalhe. Marketplace é o catálogo de onde os plugins se instalam, e é o assunto da seção seguinte.
-
-- **Skill, agente e plugin não são alternativas.** A skill é uma instrução. O agente é quem executa uma tarefa numa conversa à parte. O plugin é a pasta que entrega os dois.
-- **Mod é plugin, não skill.** A skill é um texto que o modelo lê. O mod é código que :ondulado[o Claude Code executa]. Os dois se instalam do mesmo jeito.
-- **Não há build.** Nada de `npm install` nem de empacotador: o Claude Code [lê o código direto](https://code.claude.com/docs/en/plugins/mods/create#write-a-mod-yourself) da pasta.
-- **O que se instala é a pasta inteira.** Cada item do catálogo aponta para uma pasta, e tudo o que está nela vem junto.
-- **Uma peça avulsa não precisa de `plugin.json`.** Para instalar uma skill sozinha, basta a entrada dela no catálogo, que [faz o papel de manifesto](https://code.claude.com/docs/en/plugins/marketplace-reference#entry-and-plugin-json).
-- **O nome do repositório e o nome do marketplace são coisas diferentes.** O meu repositório se chama `claude-code-kit`, e o marketplace, :caixa[`cesarschutz`]. O primeiro aparece na hora de cadastrar; o segundo, na hora de instalar.
-- **Não precisa de conta empresarial.** Um marketplace é um repositório git. :grifo[Um repositório público no GitHub basta.]
-- **A sessão aberta continua na versão antiga.** Depois de atualizar um plugin, a sessão que já estava aberta segue com a versão que carregou, até um `/reload-plugins` ou até ser reaberta.
-
-## Marketplace: o catálogo num repositório
-
-Um [marketplace](https://code.claude.com/docs/en/plugins/create-marketplace#create-a-marketplace) é um repositório com um arquivo `.claude-plugin/marketplace.json`, de três campos obrigatórios: `name`, `owner` e `plugins`. Cada entrada de `plugins` é um item instalável, com um `name` e um :caixa[`source`], que é a pasta dele dentro do repositório. Este é um pedaço do meu, só com os campos de que este post fala e com as descrições encurtadas:
-
-```json title=".claude-plugin/marketplace.json" linhas="14|é este campo que dispensa o plugin.json"
-{
-  "name": "cesarschutz",
-  "owner": { "name": "Cesar Schutz" },
-  "plugins": [
-    {
-      "name": "csr-cockpit",
-      "source": "./plugins/csr-cockpit",
-      "description": "Mod: painel ao lado da conversa..."
-    },
-    {
-      "name": "explicar-erro",
-      "source": "./skills/explicar-erro",
-      "description": "Exemplo de skill: explica um erro ou stack trace...",
-      "skills": ["./"]
-    }
-  ]
-}
-```
-
-A primeira entrada é um plugin completo: a pasta `plugins/csr-cockpit` tem o seu `.claude-plugin/plugin.json`. A segunda é uma peça avulsa: não há `plugin.json`, e :duplo[a própria entrada diz] o que a pasta traz, no campo `skills`.
-
-Instalar e atualizar seguem o caminho da lousa, em cinco passos, do repositório no GitHub à sessão aberta na sua máquina. O play desenha tudo desde o início, e um clique num passo da lista leva a lousa até ele.
-
-<Lousa
-  desenho="claude-code-do-claude-md-ao-mod/instalacao"
-  rotulo="Lousa: o repositório claude-code-kit, no GitHub, com o marketplace.json e uma pasta por item; o marketplace add clona o catálogo para a sua máquina; o install copia a pasta inteira do csr-cockpit, na versão 0.5.0; commits novos não chegam a quem instalou enquanto o version não sobe; quando ele sobe, o update traz a pasta nova, e a sessão que já estava aberta segue na versão antiga até o /reload-plugins."
-  duracao={16}
-  passos={[
-    { de: 0, texto: "No GitHub, o repositório `claude-code-kit` guarda o catálogo, `.claude-plugin/marketplace.json`, e uma pasta por item: `plugins/csr-cockpit`, com o `version` 0.5.0 no `plugin.json`, e `skills/explicar-erro`, uma peça avulsa." },
-    { de: 0.2, texto: "`claude plugin marketplace add cesarschutz/claude-code-kit` clona o repositório para a sua máquina. Dali em diante o catálogo é conhecido pelo `name` dele: `cesarschutz`." },
-    { de: 0.4, texto: "`claude plugin install csr-cockpit@cesarschutz` copia a pasta inteira do item. A versão instalada é a do `plugin.json`: 0.5.0." },
-    { de: 0.6, texto: "Commits novos no repositório não chegam a quem instalou: enquanto o `version` não sobe, o Claude Code não vê atualização." },
-    { de: 0.8, texto: "Quando o `version` sobe (0.6.0, por exemplo), o `claude plugin update` traz a pasta nova. A sessão que já estava aberta continua na 0.5.0 até um `/reload-plugins`." },
-  ]}
-/>
-
-:::exclamacao
-A regra dos dois últimos passos está na [referência de carregamento dos plugins](https://code.claude.com/docs/en/plugins/loading#versions-and-updates): o Claude Code calcula uma versão para cada plugin instalado e só vê atualização quando ela muda. Com o campo `version` no `plugin.json`, vale esse número, não importa quantos commits eu publique. Sem ele, que é o caso das peças avulsas, a versão é o commit.
-:::
-
-:::validade{data="out/2026"}
-Num marketplace de terceiros, como o meu, a [atualização automática](https://code.claude.com/docs/en/plugins/install#keep-plugins-updated) vem desligada: quem instalou roda o `claude plugin update` quando quiser a versão nova.
-:::
-
-## Os comandos
-
-Estes são os comandos que eu usei. O resto está na [referência dos comandos de plugin](https://code.claude.com/docs/en/plugins/cli-reference).
-
-No terminal:
-
-| Comando | O que faz |
-|---|---|
-| `claude plugin marketplace add <dono>/<repo>` | cadastra um marketplace a partir de um repositório do GitHub |
-| `claude plugin install <item>@<marketplace>` | instala um item do catálogo |
-| `claude plugin list` | lista o que está instalado, com a versão e o estado |
-| `claude plugin details <item>` | mostra as peças de um plugin e o custo delas em tokens |
-| `claude plugin marketplace update <marketplace>` | renova o catálogo, sem mexer no que está instalado |
-| `claude plugin update <item>@<marketplace>` | atualiza um plugin para a versão mais nova do catálogo |
-| `claude plugin uninstall <item>@<marketplace>` | remove o plugin |
-| `claude plugin validate <pasta>` | confere o manifesto e as peças de uma pasta; com `--strict`, os avisos viram erro |
-| `claude plugin test <pasta>` | roda os testes de um mod |
-| `claude --plugin-dir <pasta>` | abre uma sessão com o plugin de uma pasta local, sem instalar; a cópia local ganha da instalada |
-
-Dentro da sessão:
-
-| Comando | O que faz |
-|---|---|
-| `/plugin` | abre a tela de plugins e marketplaces |
-| `/reload-plugins` | aplica na sessão aberta o que mudou nos plugins |
-| `/theme` e `/output-style` | escolhem o tema e o estilo de saída |
-| `/cockpit` | abre e fecha o painel do csr-cockpit |
 
 ## O que é um mod
 
@@ -192,7 +84,9 @@ O mod é um plugin com uma diferença. Num plugin comum, o arquivo `hooks/hooks.
 { "modules": ["./register.tsx"] }
 ```
 
-Esse módulo exporta uma função `register(on)`. Dentro dela, cada `on(...)` liga uma função a um evento do Claude Code: uma chamada de ferramenta, o início de um turno, um pedaço da interface sendo desenhado. A função recebe três coisas: `$`, a API dos mods; `e`, o evento; e `next`, que passa o evento adiante, como num :nota[middleware]{texto="sem chamar next, o hook responde"}. Este é o hook do cockpit que registra um subagente novo, com o miolo resumido num comentário:
+Esse módulo exporta uma função `register(on)`. Dentro dela, cada `on(...)` liga uma função a um evento do Claude Code: uma chamada de ferramenta, o início de um turno (cada pedido feito na sessão), um pedaço da interface sendo desenhado. A função recebe três coisas: `$`, a API dos mods; `e`, o evento; e `next`, que passa o evento adiante, como num :nota[middleware]{texto="quem não chama next responde no lugar"}. A documentação também chama de hook cada função dessas.
+
+Este é um hook do csr-cockpit, o mod da parte 2: quando o Claude Code cria um subagente (o evento `agent.spawn`), o hook deixa o evento seguir e anota o agente e o pedido dele. O miolo está resumido num comentário:
 
 ```tsx title="plugins/csr-cockpit/hooks/register.tsx" linhas="3|o evento segue adiante como chegou"
 export const register: Register = on => {
@@ -204,14 +98,14 @@ export const register: Register = on => {
 }
 ```
 
-A documentação também chama de hook cada função dessas. A ideia é a do hook de antes, reagir a um evento, só que agora é código rodando dentro do Claude Code, que pode [observar o evento, reescrevê-lo ou responder no lugar](https://code.claude.com/docs/en/plugins/mods/overview#what-a-hook-can-do-with-an-event) do programa. Com isso, um mod:
+A ideia é a do hook de antes, reagir a um evento, só que agora é código rodando dentro do Claude Code, que pode [observar o evento, reescrevê-lo ou responder no lugar](https://code.claude.com/docs/en/plugins/mods/overview#what-a-hook-can-do-with-an-event) do programa. Com isso, um mod:
 
 - roda dentro do Claude Code, no processo dele, e não como um script à parte;
 - guarda estado (lembra o que viu) entre um evento e outro, pelo tempo da sessão;
 - registra um comando `/nome` que executa código na hora, sem passar pelo modelo;
 - desenha: um painel ao lado da conversa e uma faixa acima do prompt, a caixa onde se digita o pedido.
 
-Das peças da tabela, é :marca[a primeira que roda ali dentro e a primeira que desenha].
+Das peças da tabela, é :marca[a primeira que roda ali dentro e a primeira que desenha um painel].
 
 A figura junta as peças no lugar em que cada uma age. Do lado de fora ficam o texto que vai para o contexto do modelo (azul), as ferramentas do MCP (âmbar) e o script do hook (verde), quase tudo dentro da pasta do plugin (roxo). Do lado de dentro, só o mod (petróleo): o código dele vem na mesma pasta, recebe os eventos, guarda estado e desenha o painel e a faixa. Com o mouse numa cor da legenda, só aquele papel fica aceso.
 
@@ -224,112 +118,27 @@ A figura junta as peças no lugar em que cada uma age. Do lado de fora ficam o t
 Os mods passaram por um [período de acesso antecipado](https://github.com/anthropics/claude-code/commit/d9c456d7dba722727cc06146ca45580eaa18b914) em setembro de 2026, só para quem ligava uma variável de ambiente, e são [oficiais a partir da 2.1.287](https://code.claude.com/docs/en/plugins/mods/overview#turn-mods-on-or-off), ligados por padrão.
 :::
 
+Eles [funcionam no terminal e na aba Code do aplicativo de desktop](https://code.claude.com/docs/en/plugins/mods/overview#where-mods-run). O aplicativo traz a própria cópia do Claude Code, que pode estar numa versão anterior à do terminal: `claude --version` mostra a versão do terminal, não a do aplicativo.
+
 > [!ATENCAO]
-> Um mod é código que roda com as suas permissões, sem isolamento: pode ler e gravar arquivos, iniciar processos e usar a rede. A documentação tem uma seção sobre [como decidir se confia num mod](https://code.claude.com/docs/en/plugins/mods/overview#decide-whether-to-trust-a-mod). Instale só mods de autores em quem você confia, e leia o código antes.
+> Um mod é código que roda com as suas permissões, sem isolamento: pode ler e gravar arquivos, iniciar processos e usar a rede. A documentação tem uma seção sobre [como decidir se confia num mod](https://code.claude.com/docs/en/plugins/mods/overview#decide-whether-to-trust-a-mod). Instale só mods de autores em quem você confia e, antes de instalar, leia o código ou rode `claude plugin validate <pasta>`, que lista os eventos que o mod escuta e as chamadas que ele faz, sem executar nada.
 
-## O cockpit
+## Skill, agente ou plugin: as confusões mais comuns
 
-O csr-cockpit é um painel ao lado da conversa, aberto e fechado com `/cockpit`, com cinco abas. Cada uma responde a uma pergunta:
+Os nomes se parecem, e é fácil tomar uma peça pela outra. Estas são as confusões que mais aparecem para quem está começando:
 
-| Aba | A pergunta | O que mostra |
-|---|---|---|
-| Agentes | Quem está trabalhando agora, e em quê? | cada subagente com o modelo, o tempo, o contexto dele, o custo atribuído, as chamadas e a tarefa |
-| Diffs | O que mudou neste turno? | cada edição, com as linhas que saíram e as que entraram |
-| Contexto | Quanto do contexto sobra, e quanto já custou? | o percentual usado, o custo da sessão e do último turno e o limite de uso do plano |
-| Arquivos | O que foi lido e rodado, e por quem? | os arquivos lidos e os comandos Bash, com quem leu ou rodou, o status e a duração |
-| Turnos | O que aconteceu, na ordem? | um registro por pedido, com a duração, o custo, as ferramentas e as falhas |
+- **Skill, agente e plugin não são alternativas.** A skill é uma instrução. O agente é quem executa uma tarefa numa conversa à parte. O plugin é a pasta que entrega os dois.
+- **Mod é plugin, não skill.** A skill é um texto que o modelo lê. O mod é código que :ondulado[o Claude Code executa]. Os dois chegam dentro de um plugin, instalado do mesmo jeito.
+- **O mod não tem build.** Nada de `npm install` nem de empacotador: o Claude Code [lê o código direto](https://code.claude.com/docs/en/plugins/mods/create#write-a-mod-yourself) da pasta.
+- **Não se instala uma skill solta de dentro de um plugin.** A unidade de instalação é o plugin, e tudo o que está na pasta dele vem junto.
+- **Marketplace não é uma loja.** É o catálogo de onde os plugins se instalam: um repositório git com um arquivo que lista os itens. :grifo[Um repositório público no GitHub basta], sem conta empresarial. A parte 2 mostra um por dentro.
 
-A aba Agentes responde à primeira pergunta do post. O custo de cada agente é a parte do custo da sessão que o cockpit atribuiu a ele. Na sessão das imagens, foram US\$ 0,04 para um agente e US\$ 0,02 para o outro:
+## Na parte 2, um mod pronto
 
-<Evidencia
-  imagem={abaAgentes}
-  larga
-  alt="A aba Agentes do csr-cockpit com dois subagentes concluídos. O primeiro levou 28 segundos, ficou com 16,4 mil tokens de contexto, teve custo atribuído de 4 centavos de dólar e fez 9 chamadas. O segundo levou 7,5 segundos, ficou com 13,3 mil tokens, teve custo atribuído de 2 centavos e fez 1 chamada."
-  fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit#1-agentes"
-  legenda="A aba Agentes, com dois subagentes concluídos e o custo que o cockpit atribuiu a cada um (desenho do README do csr-cockpit)"
-/>
-
-A aba Turnos responde à segunda. Cada pedido meu é um turno, com o que ele custou e o que desencadeou. O custo do turno também é :nota[conta do cockpit]{texto="o fim menos o começo"}: quanto o custo da sessão subiu do começo ao fim do pedido.
-
-<Evidencia
-  imagem={abaTurnos}
-  larga
-  alt="A aba Turnos do csr-cockpit com três turnos de uma sessão que custou 15 centavos de dólar. O turno 3 levou 7,5 segundos e custou 2 centavos. O turno 2 levou 9,3 segundos e custou 2 centavos. O turno 1, que rodou dois agentes em segundo plano, levou 27 segundos, teve 2 falhas, custou 11 centavos e usou 13 ferramentas."
-  fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit#5-turnos"
-  legenda="A aba Turnos, com a duração, o custo e as ferramentas de cada pedido (desenho do README do csr-cockpit)"
-/>
-
-Clicar no nome de um agente, de um comando Bash ou de um turno abre o detalhe: o pedido, as chamadas e a resposta. E acima do prompt fica uma linha de resumo, com o painel aberto ou fechado:
-
-<Evidencia
-  imagem={linhaDeResumo}
-  larga
-  alt="A linha de resumo do csr-cockpit acima do prompt: contexto em 22%, 44,8 mil tokens com mais 1,1 mil do último turno, custo de 15 centavos de dólar com mais 2 centavos do último turno, limite de uso de 5 horas em 17% e de 7 dias em 64%, e 2 agentes concluídos."
-  fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit#a-linha-de-resumo"
-  legenda="A linha de resumo: entre parênteses, o que o último turno somou (desenho do README do csr-cockpit)"
-/>
-
-:::moldura
-A regra do cockpit é **só observar**. Nenhum hook dele bloqueia ou altera uma chamada de ferramenta ou uma resposta do modelo: o evento passa adiante como chegou, e o resultado volta como veio.
-:::
-
-Ele não faz chamada de rede e não grava arquivo. Do disco, lê uma coisa só: o conteúdo antigo de um arquivo antes de uma escrita, para o diff mostrar o que mudou de verdade. O que ele registra fica no estado da sessão e some com ela.
-
-Nada nele gasta token, porque o mod não chama o modelo. A única coisa que dispara requisições a mais é o botão ":circulo[Contagem exata]", da aba Contexto, que troca a estimativa local pela contagem de verdade. Quem faz essas requisições é o Claude Code, e só quando eu aperto o botão.
-
-## Como se testa um mod
-
-Testei o cockpit em três camadas, da mais barata para a mais cara.
-
-**`claude plugin validate`.** Num mod, além de conferir o manifesto, ele lista os eventos que o mod escuta e as chamadas que faz à API, sem executar nada. Serve também para :grifo[auditar o mod de outra pessoa antes de instalar]. No cockpit, a lista não tem chamada de rede, de gravação de arquivo nem de processo; do disco, só aquela leitura.
-
-:::carimbo{texto="rodado em 02/10/2026: 15 de 15"}
-**`claude plugin test`.** [Roda os testes](https://code.claude.com/docs/en/plugins/mods/test#write-a-test) do mod contra um Claude Code de mentira, sem login e sem rede: o teste dispara os eventos, monta o painel, aperta os botões e confere o que foi desenhado. O cockpit tem [15 testes](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit/tests), e um deles confere a regra de só observar.
-:::
-
-**Uma sessão de verdade.** Abri o Claude Code num projeto de exemplo, com o mod carregado por `claude --plugin-dir`. Carregada assim, a pasta fica vigiada: o Claude Code [recarrega o mod](https://code.claude.com/docs/en/plugins/mods/create#how-the-example-mod-works) a cada arquivo salvo. É a única das três camadas que mostra o painel desenhado no terminal.
-
-## O que ainda não dá
-
-São os limites da versão 0.5.0, em 02/10/2026.
-
-O mais importante: :marca[o custo por agente não é um número oficial]. O Claude Code informa o custo da sessão inteira, não o de cada agente. O cockpit reparte esse custo: ao fim de cada resposta do modelo, o que o custo da sessão subiu vai para quem deu a resposta. Cada aumento vai para um dono só, então nada é contado duas vezes, e o que não vai para agente nenhum é o gasto da conversa principal: na sessão das imagens, os dois agentes ficaram com US\$ 0,06 dos US\$ 0,15. É uma atribuição feita pelo mod e, se duas respostas terminam no mesmo instante, uma fração pode cair no agente vizinho.
-
-O próprio valor em dólar é uma estimativa: o Claude Code [calcula a preço de tabela](https://code.claude.com/docs/en/costs#track-your-costs), a partir dos tokens. Para quem paga assinatura :duplo[ele não é cobrança], e serve para comparar um agente com outro.
-
-Os outros limites:
-
-- **Não há custo por comando Bash.** O cockpit mostra custo por agente e por turno. Um comando Bash aparece com o status e a duração.
-- **O raciocínio interno de um agente não aparece.** O Claude Code não o expõe. O detalhe mostra só o texto que o agente escreveu.
-- **O código de saída do Bash não vem como campo.** Em caso de falha, o cockpit tira o código do texto de erro. Em caso de sucesso, a linha mostra só a marca de concluído e a duração.
-- **A API de mods ainda pode mudar** [de uma versão para outra](https://code.claude.com/docs/en/plugins/mods/create#get-the-types-for-your-build).
-- **No aplicativo de desktop eu não conferi.** Ele traz a própria cópia do Claude Code, que pode estar numa versão mais antiga que a do terminal, e o desenho do painel eu só conferi no terminal.
-
-## O repositório
-
-O [claude-code-kit](https://github.com/cesarschutz/claude-code-kit) é público, com licença MIT. Em 02/10/2026 ele tem:
-
-:::chave{nota="cada linha instala sozinha"}
-- o `csr-cockpit`, na versão 0.5.0;
-- o `exemplos`, um plugin com uma skill, um agente, um hook e um estilo de saída;
-- sete peças avulsas: duas skills, dois agentes, um estilo de saída, um tema e um hook.
-:::
-
-Para instalar o cockpit são dois comandos, e ele pede o Claude Code 2.1.287 ou mais novo:
-
-```bash
-claude plugin marketplace add cesarschutz/claude-code-kit
-claude plugin install csr-cockpit@cesarschutz
-```
-
-:::postit
-Se o `/cockpit` não aparecer depois de instalar, confira a versão com `claude --version`.
-:::
-
-O `README.md` explica o catálogo, e o `CONTRIBUTING.md`, como acrescentar um item. Vou continuar colocando coisas lá.
+A [parte 2](/posts/claude-code-csr-cockpit/) pega um mod pronto, o csr-cockpit, e mostra o que esta parte só descreveu: o painel ao lado da conversa, a instalação a partir de um marketplace, os comandos, os testes e os limites.
 
 :::visto
-Para ir além do básico, eu começaria pela página [Extend Claude Code](https://code.claude.com/docs/en/features-overview), que compara as peças e diz quando usar cada uma, e pelos [mods de exemplo da Anthropic](https://github.com/anthropics/claude-code-playground/tree/main/claude-code/mods).
+Para ir além do básico, a página [Extend Claude Code](https://code.claude.com/docs/en/features-overview) compara as peças e diz quando usar cada uma, e a Anthropic publica [mods de exemplo](https://github.com/anthropics/claude-code-playground/tree/main/claude-code/mods).
 :::
 
 ## Fontes
@@ -343,8 +152,6 @@ Para ir além do básico, eu começaria pela página [Extend Claude Code](https:
 - Claude Code — [How Claude remembers your project](https://code.claude.com/docs/en/memory), [Extend Claude with skills](https://code.claude.com/docs/en/skills) (com os comandos próprios) e [Connect Claude Code to tools via MCP](https://code.claude.com/docs/en/mcp)
 - Claude Code — [Automate actions with hooks](https://code.claude.com/docs/en/hooks-guide), [Create custom subagents](https://code.claude.com/docs/en/sub-agents) e [Output styles](https://code.claude.com/docs/en/output-styles)
 - Claude Code — [Customize your status line](https://code.claude.com/docs/en/statusline) e [Configure your terminal](https://code.claude.com/docs/en/terminal-config#create-a-custom-theme) (os temas próprios)
-- Claude Code — [Plugins overview](https://code.claude.com/docs/en/plugins/overview), [Create a marketplace](https://code.claude.com/docs/en/plugins/create-marketplace) e [Marketplace reference](https://code.claude.com/docs/en/plugins/marketplace-reference) (a entrada que faz o papel de manifesto)
-- Claude Code — [Install and manage plugins](https://code.claude.com/docs/en/plugins/install) (o cadastro do marketplace e as atualizações), [Plugin loading reference](https://code.claude.com/docs/en/plugins/loading#versions-and-updates) (como a versão é calculada e o que acontece com a sessão aberta) e [Plugin commands reference](https://code.claude.com/docs/en/plugins/cli-reference)
-- Claude Code — [Mods overview](https://code.claude.com/docs/en/plugins/mods/overview) (o que é um mod, a versão mínima, o acesso antecipado e o que um mod alcança), [Create a mod](https://code.claude.com/docs/en/plugins/mods/create) e [Test a mod](https://code.claude.com/docs/en/plugins/mods/test)
-- Claude Code — [Manage costs effectively](https://code.claude.com/docs/en/costs) (o que o `/usage` mostra e como o valor em dólar é calculado)
-- Cesar Schutz — [claude-code-kit](https://github.com/cesarschutz/claude-code-kit) e o [README do csr-cockpit](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit) (as abas, as teclas, os limites e a privacidade)
+- Claude Code — [Plugins overview](https://code.claude.com/docs/en/plugins/overview) (o que é um plugin)
+- Claude Code — [Mods overview](https://code.claude.com/docs/en/plugins/mods/overview) (o que é um mod, a versão mínima, onde ele roda e o que ele alcança) e [Create a mod](https://code.claude.com/docs/en/plugins/mods/create) (o módulo, sem build)
+- Cesar Schutz — [claude-code-kit](https://github.com/cesarschutz/claude-code-kit) (os exemplos das peças e o mod)
