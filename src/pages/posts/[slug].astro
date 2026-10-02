@@ -13,6 +13,7 @@ import BarraLeitura from "../../components/BarraLeitura.astro";
 import TopoArtigo from "../../components/TopoArtigo.astro";
 import Atalhos from "../../components/Atalhos.astro";
 import Sumario from "../../components/Sumario.astro";
+import Tldr from "../../components/Tldr.astro";
 import RodapeArtigo from "../../components/RodapeArtigo.astro";
 import Comentarios from "../../components/Comentarios.astro";
 import { AUTOR, COMENTARIOS_LIGADOS } from "../../data/site";
@@ -122,6 +123,8 @@ const jsonLd = {
       <div class="folha artigo-folha">
         <div class="artigo-corpo">
           <div class="prose" data-corpo>
+            {/* O TL;DR do post detalhado (D63), fechado, antes de tudo. */}
+            {post.data.tldr && <Tldr pontos={post.data.tldr} />}
             {temSumario && <Sumario secoes={secoes} variante="recolhivel" />}
             <Content />
           </div>

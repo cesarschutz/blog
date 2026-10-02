@@ -1,12 +1,13 @@
 ---
 /**
- * Amostra dos recursos de Markdown (src/amostra/recursos.md) na grade do artigo: avisos, notas
- * laterais, código, tabela, fórmula, detalhes e imagem. Existe só no `npm run dev`
+ * Amostra dos recursos de Markdown (src/amostra/recursos.md) na grade do artigo: o TL;DR (D63, do
+ * frontmatter), avisos, notas laterais, código, tabela, fórmula, detalhes e imagem. Existe só no `npm run dev`
  * (/amostra/markdown/), como a /amostra/.
  */
 import Base from "../../layouts/Base.astro";
 import Sumario from "../../components/Sumario.astro";
-import { Content, getHeadings } from "../../amostra/recursos.md";
+import Tldr from "../../components/Tldr.astro";
+import { Content, frontmatter, getHeadings } from "../../amostra/recursos.md";
 import { url } from "../../lib/url";
 import { secoesDoSumario } from "../../lib/posts";
 import { fonteDaMao } from "../../lib/mao";
@@ -31,6 +32,7 @@ const secoes = secoesDoSumario(getHeadings());
       <div class="folha artigo-folha">
         <div class="artigo-corpo">
           <div class="prose" data-corpo>
+            {frontmatter.tldr && <Tldr pontos={frontmatter.tldr} />}
             <Sumario secoes={secoes} variante="recolhivel" />
             <Content />
           </div>

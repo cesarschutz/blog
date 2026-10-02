@@ -37,6 +37,21 @@ const posts = defineCollection({
        * como sinal nas listas, nos cards, na gaveta, no anterior / próximo e na busca.
        */
       codigo: z.url({ protocol: /^https$/, message: "codigo: o endereço do código, com https://" }).optional(),
+      /**
+       * O formato combinado com o Cesar antes de escrever (D63): "detalhado" (o post completo, com o TL;DR)
+       * ou "resumo" (mais curto, com o infográfico). Os posts de antes da D63 não têm o campo.
+       */
+      formato: z.enum(["detalhado", "resumo"]).optional(),
+      /**
+       * O TL;DR (D63): de 2 a 6 pontos curtos, cada um uma frase (aceitam `código`, **negrito** e links).
+       * Aparece fechado no alto do texto; o leitor clica para abrir (Tldr.astro). Cada ponto vai entre
+       * aspas: com ": " no meio, o YAML lê o ponto como um objeto.
+       */
+      tldr: z
+        .array(z.string({ message: 'tldr: escreva cada ponto entre aspas (com ": " no meio, o YAML lê o ponto como objeto)' }).min(1))
+        .min(2)
+        .max(6)
+        .optional(),
       draft: z.boolean().default(false),
     })
     .refine((d) => Boolean(d.category) !== Boolean(d.series), {
