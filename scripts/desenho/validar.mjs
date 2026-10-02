@@ -18,6 +18,19 @@ const pastas = [join(raiz, "ilustracoes")];
 const pastasDasLousas = [join(raiz, "lousas")];
 const pastasDasFiguras = [join(raiz, "figuras"), join(raiz, "animacoes")];
 const pastaDasMarcas = join(raiz, "marcas");
+// A regra de marca de cada logo (D64): sem registro, ou com "nao", o logo não entra.
+const regrasDeMarca = JSON.parse(readFileSync(join(pastaDasMarcas, "regras.json"), "utf8"));
+const regraDe = (nome) => (typeof regrasDeMarca[nome] === "object" ? regrasDeMarca[nome] : undefined);
+/** Os marcadores de logo (data-marca) de um desenho, conferidos com a regra de marca para diagrama. */
+function conferirMarcadores(corpo) {
+  const erros = [];
+  for (const [, nome] of corpo.matchAll(/\sdata-marca="([^"]+)"/g)) {
+    const regra = regraDe(nome);
+    if (!regra) erros.push(`logo "${nome}" sem regra de marca conferida (registre em src/marcas/regras.json, D64)`);
+    else if (regra.diagrama === "nao") erros.push(`a marca ${regra.marca} não permite o logo em diagrama: use só o nome (src/marcas/regras.json)`);
+  }
+  return erros;
+}
 const CLASSES_DA_LOUSA = new Set(["traco", "fino", "guia", "destaque", "fantasma", "tracejado", "hachura", "cheio", "secundario", "codigo"]);
 const TEMPO = { traco: 2, escrita: 2, revela: 2, aparece: 2, some: 2, esmaece: 3, desloca: 4 };
 const CLASSES = new Set([
@@ -163,6 +176,7 @@ function validarLousa(arquivo) {
     if (!auto && nome !== "svg") pilha.push(classes);
   }
   if (!temTraco) erros.push('falta o grupo class="tinta" (estilo das figuras, D59) ou class="traco" (lousa antiga) com os traços');
+  erros.push(...conferirMarcadores(corpo));
   return erros;
 }
 
@@ -191,6 +205,14 @@ function validarFigura(arquivo, { marca = false } = {}) {
     }
     if (!auto && nome !== "svg") pilha.push(classes);
   }
+  if (marca) {
+    // O redesenho à mão só existe se a regra de marca deixa redesenhar no texto ou no diagrama.
+    const nome = arquivo.split("/").pop().replace(/\.svg$/, "");
+    const regra = regraDe(nome);
+    if (!regra) erros.push(`sem regra de marca em src/marcas/regras.json (confira a política oficial do dono antes de desenhar, D64)`);
+    else if (regra.texto !== "redesenho" && regra.diagrama !== "redesenho")
+      erros.push(`a regra de marca não permite redesenhar (texto: ${regra.texto}, diagrama: ${regra.diagrama}): apague este arquivo`);
+  } else erros.push(...conferirMarcadores(corpo));
   return erros;
 }
 

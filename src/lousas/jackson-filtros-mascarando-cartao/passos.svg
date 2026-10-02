@@ -37,7 +37,6 @@
     <rect x="120" y="566" width="700" height="176" rx="8" class="linha"/>
   </g>
 
-  <g data-marca="java" transform="translate(148 8) scale(0.44)"/>
 
   <g class="tom-azul">
     <text x="40" y="44" class="titulo-caixa texto-tom">Cartao</text>

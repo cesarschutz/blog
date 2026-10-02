@@ -59,7 +59,7 @@
   </g>
 
   <g data-marca="kubernetes" transform="translate(36 194) scale(0.48)"/>
-  <g data-marca="sqs" transform="translate(36 410) scale(0.48)"/>
+  <g data-marca="fila" transform="translate(36 410) scale(0.48)"/>
 
   <text x="245" y="36" text-anchor="middle" class="titulo-caixa" data-escrita="0.19 0.22">deploy da API</text>
   <g class="tom-ambar">

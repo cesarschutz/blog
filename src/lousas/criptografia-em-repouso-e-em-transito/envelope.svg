@@ -57,7 +57,6 @@
     </g>
   </g>
 
-  <g data-marca="aws" transform="translate(950 34) scale(0.86)"/>
 
   <text x="40" y="56" class="titulo-caixa">Banco</text>
   <text x="74" y="196" class="codigo">CPF 123.456…</text>

@@ -52,7 +52,6 @@
 
   <g class="tom-azul" data-marca="kubernetes" transform="translate(34 50) scale(0.48)"/>
   <g class="tom-azul" data-marca="kubernetes" transform="translate(432 50) scale(0.48)"/>
-  <g class="tom-verde" data-marca="spring" transform="translate(735 52) scale(0.42)"/>
 
   <g class="tom-azul">
     <text x="90" y="72" class="titulo-caixa">CronJob</text>

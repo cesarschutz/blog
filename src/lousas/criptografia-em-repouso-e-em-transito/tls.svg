@@ -73,8 +73,8 @@
   </g>
 
   <text x="40" y="40" class="codigo">sslmode=require</text>
-  <g data-marca="java" transform="translate(52 87) scale(.6)"/>
-  <g data-marca="postgresql" transform="translate(860 87) scale(.6)"/>
+  <g data-marca="aplicacao" transform="translate(52 87) scale(.6)"/>
+  <g data-marca="banco" transform="translate(860 87) scale(.6)"/>
   <text x="122" y="111" class="titulo-caixa">Cliente</text>
   <text x="122" y="142" class="texto-caixa">a aplicação</text>
   <text x="930" y="111" class="titulo-caixa">Banco</text>
@@ -99,8 +99,8 @@
   </g>
 
   <text x="40" y="390" class="codigo">sslmode=verify-full</text>
-  <g data-marca="java" transform="translate(52 437) scale(.6)"/>
-  <g data-marca="postgresql" transform="translate(860 437) scale(.6)"/>
+  <g data-marca="aplicacao" transform="translate(52 437) scale(.6)"/>
+  <g data-marca="banco" transform="translate(860 437) scale(.6)"/>
   <text x="122" y="461" class="titulo-caixa">Cliente</text>
   <text x="122" y="492" class="texto-caixa">a aplicação</text>
   <text x="930" y="461" class="titulo-caixa">Banco</text>

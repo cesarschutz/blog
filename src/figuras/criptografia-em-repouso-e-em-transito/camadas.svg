@@ -37,9 +37,8 @@
   <path d="M300 622 H1140" pathLength="1" class="pacote etapa-4"/>
 
   <g class="referencia">
-    <g data-marca="java" transform="translate(360 40) scale(.62)"/>
-    <g data-marca="postgresql" transform="translate(768 40) scale(.62)"/>
-    <g data-marca="mongodb" transform="translate(830 40) scale(.62)"/>
+    <g data-marca="aplicacao" transform="translate(359 40) scale(.62)"/>
+    <g data-marca="servidor" transform="translate(799 40) scale(.62)"/>
 
     <text x="390" y="146" text-anchor="middle" class="titulo-caixa">Aplicação</text>
     <text x="390" y="176" text-anchor="middle" class="texto-caixa">o driver</text>

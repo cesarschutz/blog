@@ -1,0 +1,236 @@
+{
+  "_leia": "Regra de marca de cada logo de ferramenta (D64). Antes de usar um logo, a marca precisa estar aqui, conferida na política oficial do dono. texto/diagrama: 'redesenho' (pode desenhar à mão no traço da casa: src/marcas/<nome>.svg), 'oficial' (só o arquivo oficial, sem alterar: src/marcas/oficiais/<nome>.svg), 'nao' (não usar o logo; só o nome em texto). Sem registro, ou com 'nao', o build quebra (src/lib/figuras.ts). Desenho genérico da casa, sem marca (um cilindro para banco, envelopes para fila), é sempre permitido.",
+  "kubernetes": {
+    "marca": "Kubernetes (o timão)",
+    "dono": "The Linux Foundation",
+    "texto": "redesenho",
+    "diagrama": "redesenho",
+    "condicoes": "Só em uso não comercial (o projeto permite modificar o logo nesse caso); azul oficial quando possível; nada que sugira patrocínio ou endosso; nunca as marcas 'Certified Kubernetes'.",
+    "fontes": [
+      "https://github.com/kubernetes/kubernetes/blob/master/logo/usage_guidelines.md",
+      "https://github.com/kubernetes/kubernetes/blob/master/logo/LICENSE",
+      "https://www.linuxfoundation.org/legal/trademark-usage"
+    ],
+    "conferido": "2026-10-02",
+    "certeza": "média, tendendo a alta"
+  },
+  "aws": {
+    "marca": "AWS (o logo com o sorriso)",
+    "dono": "Amazon Web Services",
+    "texto": "nao",
+    "diagrama": "nao",
+    "condicoes": "As diretrizes só licenciam o logo a parceiros e ao selo 'Powered by AWS'; proíbem alterar o logo e usá-lo como parte de um link. O uso por terceiros aceito é só em texto. Em diagrama, só o grupo oficial 'AWS Cloud' do pacote de ícones, sem alterar e só para clientes da AWS (ainda não adotado).",
+    "fontes": [
+      "https://aws.amazon.com/trademark-guidelines/",
+      "https://aws.amazon.com/terms/",
+      "https://aws.amazon.com/architecture/icons/"
+    ],
+    "conferido": "2026-10-02",
+    "certeza": "alta"
+  },
+  "sqs": {
+    "marca": "Amazon SQS (ícone do serviço)",
+    "dono": "Amazon Web Services",
+    "texto": "nao",
+    "diagrama": "nao",
+    "condicoes": "Ícone só em diagrama de arquitetura, o oficial do pacote AWS Architecture Icons, sem alterar tamanho, cor ou forma, e só para clientes da AWS (ainda não adotado). No texto, só o nome.",
+    "fontes": [
+      "https://aws.amazon.com/architecture/icons/",
+      "https://aws.amazon.com/trademark-guidelines/"
+    ],
+    "conferido": "2026-10-02",
+    "certeza": "alta (redesenho e texto); média (diagrama)"
+  },
+  "sns": {
+    "marca": "Amazon SNS (ícone do serviço)",
+    "dono": "Amazon Web Services",
+    "texto": "nao",
+    "diagrama": "nao",
+    "condicoes": "Como o SQS.",
+    "fontes": [
+      "https://aws.amazon.com/architecture/icons/",
+      "https://aws.amazon.com/trademark-guidelines/"
+    ],
+    "conferido": "2026-10-02",
+    "certeza": "alta (redesenho e texto); média (diagrama)"
+  },
+  "dynamodb": {
+    "marca": "Amazon DynamoDB (ícone do serviço)",
+    "dono": "Amazon Web Services",
+    "texto": "nao",
+    "diagrama": "nao",
+    "condicoes": "Como o SQS.",
+    "fontes": [
+      "https://aws.amazon.com/architecture/icons/",
+      "https://aws.amazon.com/trademark-guidelines/"
+    ],
+    "conferido": "2026-10-02",
+    "certeza": "alta (redesenho e texto); média (diagrama)"
+  },
+  "api-gateway": {
+    "marca": "Amazon API Gateway (ícone do serviço)",
+    "dono": "Amazon Web Services",
+    "texto": "nao",
+    "diagrama": "nao",
+    "condicoes": "Como o SQS.",
+    "fontes": [
+      "https://aws.amazon.com/architecture/icons/",
+      "https://aws.amazon.com/trademark-guidelines/"
+    ],
+    "conferido": "2026-10-02",
+    "certeza": "alta (redesenho e texto); média (diagrama)"
+  },
+  "step-functions": {
+    "marca": "AWS Step Functions (ícone do serviço)",
+    "dono": "Amazon Web Services",
+    "texto": "nao",
+    "diagrama": "nao",
+    "condicoes": "Como o SQS.",
+    "fontes": [
+      "https://aws.amazon.com/architecture/icons/",
+      "https://aws.amazon.com/trademark-guidelines/"
+    ],
+    "conferido": "2026-10-02",
+    "certeza": "alta (redesenho e texto); média (diagrama)"
+  },
+  "java": {
+    "marca": "Java (a xícara)",
+    "dono": "Oracle",
+    "texto": "nao",
+    "diagrama": "nao",
+    "condicoes": "A xícara só com licença comercial escrita e nunca modificada. O selo 'Java Affinity' exige tamanho intacto e link para dev.java (não serve de ícone). O mascote Duke tem licença BSD e pode ser redesenhado (ainda não adotado).",
+    "fontes": [
+      "https://www.oracle.com/a/ocom/docs/java-licensing-logo-guidelines-1908204.pdf",
+      "https://www.oracle.com/legal/logos.html",
+      "https://dev.java/duke/"
+    ],
+    "conferido": "2026-10-02",
+    "certeza": "alta"
+  },
+  "spring": {
+    "marca": "Spring (a folha)",
+    "dono": "Broadcom",
+    "texto": "nao",
+    "diagrama": "nao",
+    "condicoes": "O logo é reservado à Broadcom; o uso nominativo do nome não autoriza o logo. Não há arquivo oficial para terceiros.",
+    "fontes": [
+      "https://spring.io/trademarks/"
+    ],
+    "conferido": "2026-10-02",
+    "certeza": "alta"
+  },
+  "mongodb": {
+    "marca": "MongoDB (a folha)",
+    "dono": "MongoDB, Inc.",
+    "texto": "oficial",
+    "diagrama": "nao",
+    "condicoes": "Proibido editar, recolorir, desenhar em contorno ou usar como parte de ilustração. No texto, só o arquivo oficial (folha sólida, numa das quatro cores), para identificar o produto.",
+    "fontes": [
+      "https://www.mongodb.com/legal/trademark-usage-guidelines",
+      "https://www.mongodb.com/company/newsroom/brand-resources"
+    ],
+    "conferido": "2026-10-02",
+    "certeza": "alta (diagrama e redesenho); média (texto)"
+  },
+  "postgresql": {
+    "marca": "PostgreSQL (o elefante Slonik)",
+    "dono": "PostgreSQL Community Association of Canada",
+    "texto": "oficial",
+    "diagrama": "nao",
+    "condicoes": "Não modificar sem aprovação prévia; não apresentar junto de outras marcas ou logos; numa das formas aprovadas (colorida ou preto e branco).",
+    "fontes": [
+      "https://www.postgresql.org/about/policies/trademarks/",
+      "https://wiki.postgresql.org/wiki/Logo"
+    ],
+    "conferido": "2026-10-02",
+    "certeza": "alta (redesenho); média (o resto)"
+  },
+  "kafka": {
+    "marca": "Apache Kafka",
+    "dono": "The Apache Software Foundation",
+    "texto": "oficial",
+    "diagrama": "nao",
+    "condicoes": "O logo oficial, sem alterar, como link para o site do projeto, é permitido sem pedir; outros usos e o redesenho precisam de aprovação escrita (trademarks@apache.org).",
+    "fontes": [
+      "https://www.apache.org/foundation/marks/",
+      "https://www.apache.org/foundation/marks/faq/"
+    ],
+    "conferido": "2026-10-02",
+    "certeza": "alta (texto com link); média (diagrama)"
+  },
+  "opentelemetry": {
+    "marca": "OpenTelemetry (o telescópio)",
+    "dono": "The Linux Foundation",
+    "texto": "oficial",
+    "diagrama": "oficial",
+    "condicoes": "Só as versões oficiais, na proporção original, sem nada sobreposto; sem sugerir endosso. Não há exceção para modificar, como a do Kubernetes.",
+    "fontes": [
+      "https://www.linuxfoundation.org/legal/trademark-usage",
+      "https://github.com/cncf/artwork/tree/main/projects/opentelemetry"
+    ],
+    "conferido": "2026-10-02",
+    "certeza": "alta (redesenho); média (diagrama)"
+  },
+  "redis": {
+    "marca": "Redis",
+    "dono": "Redis Ltd.",
+    "texto": "nao",
+    "diagrama": "nao",
+    "condicoes": "A política permite falar do Redis com 'Redis®' e a frase de atribuição em cada página; o manual visual (brand.redis.io) não pôde ser lido e a versão anterior proibia alterar o logo. Até conferir o manual ou ter permissão (legal@redis.com), só o nome.",
+    "fontes": [
+      "https://redis.io/legal/trademark-policy/"
+    ],
+    "conferido": "2026-10-02",
+    "certeza": "baixa"
+  },
+  "banco": {
+    "marca": "Banco de dados (cilindro), ícone genérico do blog",
+    "dono": "o próprio blog (desenho genérico, sem marca de ninguém)",
+    "texto": "redesenho",
+    "diagrama": "redesenho",
+    "condicoes": "Desenho genérico da casa: não imita logo nem ícone de produto. Use no lugar do logo de uma ferramenta que não permite o logo.",
+    "fontes": [],
+    "conferido": "2026-10-02",
+    "certeza": "alta"
+  },
+  "fila": {
+    "marca": "Fila (envelopes num tubo), ícone genérico do blog",
+    "dono": "o próprio blog (desenho genérico, sem marca de ninguém)",
+    "texto": "redesenho",
+    "diagrama": "redesenho",
+    "condicoes": "Desenho genérico da casa: não imita logo nem ícone de produto. Use no lugar do logo de uma ferramenta que não permite o logo.",
+    "fontes": [],
+    "conferido": "2026-10-02",
+    "certeza": "alta"
+  },
+  "topico": {
+    "marca": "Tópico (um envelope que vai para vários), ícone genérico do blog",
+    "dono": "o próprio blog (desenho genérico, sem marca de ninguém)",
+    "texto": "redesenho",
+    "diagrama": "redesenho",
+    "condicoes": "Desenho genérico da casa: não imita logo nem ícone de produto. Use no lugar do logo de uma ferramenta que não permite o logo.",
+    "fontes": [],
+    "conferido": "2026-10-02",
+    "certeza": "alta"
+  },
+  "aplicacao": {
+    "marca": "Aplicação (janela com código), ícone genérico do blog",
+    "dono": "o próprio blog (desenho genérico, sem marca de ninguém)",
+    "texto": "redesenho",
+    "diagrama": "redesenho",
+    "condicoes": "Desenho genérico da casa: não imita logo nem ícone de produto. Use no lugar do logo de uma ferramenta que não permite o logo.",
+    "fontes": [],
+    "conferido": "2026-10-02",
+    "certeza": "alta"
+  },
+  "servidor": {
+    "marca": "Servidor (duas gavetas de rack), ícone genérico do blog",
+    "dono": "o próprio blog (desenho genérico, sem marca de ninguém)",
+    "texto": "redesenho",
+    "diagrama": "redesenho",
+    "condicoes": "Desenho genérico da casa: não imita logo nem ícone de produto. Use no lugar do logo de uma ferramenta que não permite o logo.",
+    "fontes": [],
+    "conferido": "2026-10-02",
+    "certeza": "alta"
+  }
+}

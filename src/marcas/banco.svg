@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <g class="tinta">
+    <path d="M18 24 A32 10 0 0 1 82 24 V76 A32 10 0 0 1 18 76 Z" class="papel"/>
+    <path d="M18 24 A32 10 0 0 1 82 24 V76 A32 10 0 0 1 18 76 Z M18 24 A32 10 0 0 0 82 24 M18 42 A32 10 0 0 0 82 42 M18 59 A32 10 0 0 0 82 59" class="linha"/>
+  </g>
+</svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <g class="tinta">
+    <rect x="12" y="14" width="76" height="32" rx="5" class="papel"/>
+    <rect x="12" y="54" width="76" height="32" rx="5" class="papel"/>
+    <path d="M17 14 H83 Q88 14 88 19 V41 Q88 46 83 46 H17 Q12 46 12 41 V19 Q12 14 17 14 Z M17 54 H83 Q88 54 88 59 V81 Q88 86 83 86 H17 Q12 86 12 81 V59 Q12 54 17 54 Z" class="linha"/>
+    <path d="M22 30 H50 M22 70 H50 M70 30 H71 M78 30 H79 M70 70 H71 M78 70 H79" class="linha"/>
+  </g>
+</svg>

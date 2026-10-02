@@ -6,7 +6,10 @@
  * ferramenta (a do DynamoDB, a do Java 21), sem mudar o cursor. Fica fora do Tab e dos leitores de tela:
  * o nome já vem escrito ao lado.
  *
- *   <Ferramenta nome="dynamodb" href="https://aws.amazon.com/dynamodb/">Amazon DynamoDB</Ferramenta>
+ * O logo segue a regra de marca do dono (D64, src/marcas/regras.json): o redesenho da casa, o arquivo
+ * oficial sem alterar, ou nenhum (o build quebra e pede só o nome).
+ *
+ *   <Ferramenta nome="kubernetes" href="https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/">Kubernetes</Ferramenta>
  */
 import { marca } from "../lib/figuras";
 import "../styles/figura.css";
@@ -17,7 +20,11 @@ interface Props {
 }
 
 const { nome, href } = Astro.props;
-const desenho = `<svg class="ilustracao diagrama marca-inline" viewBox="0 0 100 100" aria-hidden="true" focusable="false">${marca(nome)}</svg>`;
+const logo = marca(nome, "texto");
+const desenho =
+  logo.tipo === "oficial"
+    ? `<img class="marca-inline marca-oficial" src="${logo.url}" alt="" aria-hidden="true" />`
+    : `<svg class="ilustracao diagrama marca-inline" viewBox="0 0 100 100" aria-hidden="true" focusable="false">${logo.miolo}</svg>`;
 ---
 
 <span class="marca-no-texto">{href ? <a class="marca-link" href={href} target="_blank" rel="noopener" tabindex="-1" aria-hidden="true" set:html={desenho} /> : <Fragment set:html={desenho} />}<slot /></span>
