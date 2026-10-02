@@ -8,12 +8,20 @@ description: Processo único de todo post do blog, com o mesmo checklist nos doi
 Todo post passa por aqui, do zero ou adaptado. **Tudo o que um post novo recebe, um post adaptado
 também recebe**: plano, desenho, animação onde há fluxo, conferência no navegador e qualidade.
 
+> **Lembrete (D63):** no primeiro post feito com os formatos novos (o TL;DR do detalhado, o infográfico
+> do resumo e os links ao longo do texto), ao entregar, peça ao Cesar para olhar como ficou e dizer o
+> que ajustar. Depois que ele olhar, registre os ajustes e apague este lembrete e o item do
+> `docs/estado.md`.
+
 ## Modos
 
 - **Novo:** o Cesar dá um tema ou uma ideia. Você escreve o texto.
 - **Adaptar:** o ponto de partida é um arquivo em `entrada/` (md, txt, docx, pdf ou html, com ou sem
   imagens), um texto colado na conversa ou um post que já está em `src/content/posts/`. O texto e a
   voz são do Cesar e ficam como estão (passo 3).
+
+Nos dois modos, o post começa pela conversa do passo 2: o formato (detalhado ou resumo), a estrutura
+e as fontes, combinados com o Cesar antes do plano.
 
 Como ler o que chega em `entrada/` (fora do git; nada ali é publicado):
 - `.md`, `.txt` e `.html`: leia direto. No HTML, aproveite só o conteúdo, sem o CSS ou o layout.
@@ -32,10 +40,30 @@ quebrar). **O `DESIGN.md` vence qualquer ferramenta:** o "go all out", o redesig
 `DESIGN.md` que a skill `impeccable` sugere não valem aqui. Leia também um post existente em
 `src/content/posts/` para carregar `.claude/rules/posts.md`, e o `docs/estilo-desenho.md`.
 
-### 2. Plano, antes de mexer em qualquer arquivo
+### 2. Formato, estrutura e plano, antes de mexer em qualquer arquivo
 
-Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
+**Primeiro, a conversa (D63).** Todo post, novo ou ajustado, começa com o Cesar. Pergunte e combine,
+antes de qualquer plano:
 
+- **O formato:** **detalhado** ou **resumo** (um resumo de verdade, não um tweet). Cada post se decide
+  na conversa; não há formato padrão.
+  - **Detalhado:** o post completo, de 1.500 a 2.500 palavras (8 a 12 min, teto de ~3.000), com o
+    **TL;DR** no alto (o campo `tldr`, passo 4).
+  - **Resumo:** de 700 a 1.200 palavras (4 a 6 min), com um **infográfico** que mostra o assunto inteiro
+    de uma vez, no estilo da casa (skill `figura`, "Infográfico do post resumo"), e o texto passando
+    por ele.
+- **A estrutura:** ajude o Cesar a pensar o que entra. Proponha as seções (`##`), o que cada uma diz e o
+  que fica de fora, e ajuste com ele até fechar.
+- **As fontes:** pergunte se ele já estudou o assunto. Se ele trouxer links, o post se baseia neles:
+  abra e leia cada um antes de escrever, e diga o que eles não cobrem. Se não trouxer, você busca fontes
+  confiáveis (documentação oficial, especificação, RFC, JEP, release notes, o livro ou o artigo de quem
+  criou a coisa; blog de terceiro só como apoio) e as mostra junto com a estrutura.
+- **Ajustar um post que já existe:** a mesma conversa. O campo `formato` diz o que foi combinado da
+  outra vez (os posts de antes da D63 não têm o campo e são detalhados).
+
+**Depois, o plano.** Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
+
+- **Formato e estrutura:** o que foi combinado na conversa, com as fontes de cada seção.
 - **Livro:** um dos livros de `src/livros/livros.json` (Arquitetura de Software, Desenvolvimento de
   Software, Dados, IA, Segurança, DevOps, SRE, Carreira) **ou** uma série (`src/data/series.ts`). O
   subtítulo de cada livro diz o que cabe nele. Livro novo só se nenhum servir, pela seção "Livros
@@ -66,8 +94,8 @@ Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
 
 ### 3. Texto
 
-- **Novo:** de 1.500 a 2.500 palavras (8 a 12 min), com teto de ~3.000; assunto maior vira série ou
-  partes. Introdução com o problema concreto em 2 ou 3 frases, seções `##` claras, tom profissional e
+- **Novo:** no tamanho do formato combinado (passo 2): detalhado, de 1.500 a 2.500 palavras (8 a 12
+  min, teto de ~3.000; assunto maior vira série ou partes); resumo, de 700 a 1.200 (4 a 6 min). Introdução com o problema concreto em 2 ou 3 frases, seções `##` claras, tom profissional e
   direto em pt-BR, sem enchimento.
 - **Adaptar:** **preserve o texto e a voz do Cesar.** Mude só o necessário para o formato
   (Markdown, avisos, código, links). Correções e melhorias de conteúdo (erro técnico, fonte que falta,
@@ -79,6 +107,10 @@ Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
   o que o texto afirma. `## Fontes` é sempre a última seção. **Código e SQL testados antes de
   publicar** (rodados, não só "que compila"), porque o aviso de IA do post promete "com o código
   testado". O que não der para rodar aqui vai ao Cesar como pendência, dizendo o quê e por quê.
+- **Links ao longo do texto (D63):** cada fonte entra **onde o texto fala do que ela diz**, com o link nas
+  palavras do assunto (nunca "aqui" ou "neste link"), apontando para a página mais específica (a seção,
+  a âncora), e também em `## Fontes`, no fim. No máximo dois links por parágrafo, para o texto continuar
+  lendo bem. A ferramenta que já tem o ícone (`Ferramenta`) não precisa de outro link no mesmo lugar.
 - **URL antiga:** se o post já existiu em outra URL do blog, mantenha a URL ou crie o
   redirecionamento em `redirecionamentos` do `astro.config.mjs`. Nunca mude um título de seção de
   post já publicado, porque as âncoras dependem dele (D7). Depois, `npm run links`.
@@ -100,6 +132,12 @@ Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
     GitHub" e o artigo ganha o sinal de código-fonte nas listas, nos cards, na gaveta, no anterior /
     próximo, no livro ampliado e na busca. Não repita o link no texto (a não ser que ele explique uma
     parte específica do código). Sem código publicado, o campo fica de fora;
+  - `formato` (D63): `detalhado` ou `resumo`, o que foi combinado no passo 2;
+  - `tldr` (D63), no detalhado: de 3 a 5 pontos (o esquema aceita de 2 a 6), cada um uma frase que se
+    entende sozinha, com o que o leitor leva do post; aceitam `código`, **negrito** e links. **Cada
+    ponto entre aspas**: com ": " no meio, o YAML lê o ponto como objeto e o build recusa. Aparece
+    fechado no alto do texto, e o leitor clica para abrir (`Tldr.astro`). No resumo, não entra: o
+    infográfico faz esse papel;
   - `draft: true` até o Cesar aprovar.
 - **Aviso de conteúdo feito com ajuda de IA:** sai sozinho no rodapé de todo artigo
   (`RodapeArtigo.astro`). Confira que ele aparece; não escreva outro no texto.
@@ -127,6 +165,9 @@ do `DESIGN.md` e do `docs/estilo-desenho.md`.
   mais específica (a do Java 21, não a do Java).
 - **Print** só quando prova algo do texto e dá para garantir que está certo. Tela que pede login
   (console da AWS, painéis internos): peça ao Cesar, ele tira o print. Sempre com o `Evidencia`.
+- **Post resumo (D63):** o infográfico é o desenho principal, logo depois da introdução: uma figura
+  grande que mostra o assunto inteiro de uma vez (a ideia dos guias do ByteByteGo, no nosso estilo),
+  pela seção "Infográfico do post resumo" da skill `figura`. O texto passa por ele, quadro a quadro.
 
 Técnica:
 - **SVG desenhado à mão**, em coordenadas, com classes e variáveis CSS: sem cor fixa, sem `id` nem
@@ -257,6 +298,8 @@ trechos fica só no texto. Nem todo post tem todos os recursos, e todo desenho �
 | O trecho é… | Recurso | Onde está |
 |---|---|---|
 | o assunto do post inteiro | a capa (sempre, uma por post), com o detalhe da capa viva | skill `desenho` |
+| o post detalhado em 30 segundos | o TL;DR (campo `tldr`), fechado no alto do texto | passo 4 |
+| o assunto inteiro numa imagem (post resumo) | o infográfico (`Figura`), logo depois da introdução | skill `figura` |
 | quem fala com quem, a arquitetura, os papéis | figura colorida (`Figura`), um tom por ator, selos se há ordem, detalhes que se mexem se ajudarem | skill `figura` |
 | um número, uma curva, o que o leitor veria no painel | gráfico (`Figura`), com eixos, unidade, o limite e a anotação | skill `figura` |
 | uma sequência em que a ordem importa | lousa de passos (`Lousa` com `passos`), com a lista numerada embaixo | skill `lousa` |
@@ -286,6 +329,7 @@ Todos aparecem juntos em `src/amostra/recursos.md`, que o dev mostra em `/amostr
 - **Notas laterais:** nota de rodapé comum (`texto[^chave]`). Só parágrafos.
 - `<details>` com `<summary>`, tabelas e KaTeX (`$…$`, `$$…$$`; `$` de texto escapado).
 - **Imagens:** `alt` descritivo; abrem no visor ao clicar.
+- **TL;DR** (D63): vem do frontmatter (`tldr`), não do texto; o dev mostra um em `/amostra/markdown/`.
 - **Sumário:** automático com 3 ou mais seções `##`.
 - **Caneta** (D48, D56, guia em `docs/marcacoes.md`, skill `caneta`): os 34 tipos de marcação em
   diretivas (`:marca[…]`, `:ondulado[…]`, `:::colchete`…) e nos atributos da cerca de código

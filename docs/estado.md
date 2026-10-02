@@ -1,7 +1,7 @@
 # Estado do projeto
 
 Painel, não diário: fase atual, próximos passos, perguntas abertas e riscos. O detalhe de cada rodada
-fica em `docs/decisoes.md` (D1 a D62) e no histórico do git; controles de rodadas fechadas, em
+fica em `docs/decisoes.md` (D1 a D63) e no histórico do git; controles de rodadas fechadas, em
 `docs/historico/`.
 
 ## Fase atual
@@ -24,6 +24,12 @@ redesenho (o claro mais branco e o escuro preto esverdeado); a página de um liv
 na fileira e nos vizinhos, e a da série só as séries (com uma série só, fica sem fileira); e a fileira
 que encolhe ao rolar, quebrada no ar pelo minificador do CSS, voltou a funcionar (a sombra do cabeçalho
 ao rolar também).
+
+**Formato dos posts (D63, 02/10/2026):** todo post, novo ou ajustado, começa por uma conversa com o
+Cesar: detalhado (com o TL;DR recolhível no alto, do campo `tldr`) ou resumo (com um infográfico no
+estilo dos guias do ByteByteGo, desenhado no nosso traço), a estrutura e as fontes (os links que ele
+estudou ou fontes confiáveis); os links ficam ao longo do texto e em Fontes. Configurado nas skills
+`post` e `figura`, na regra de posts e no briefing; o TL;DR de exemplo está em `/amostra/markdown/`.
 
 Tudo até a D52 está commitado, inclusive o C04 (a caneta preta como identidade) e o C05 (a papelaria
 de estudo: post-it "Neste artigo", ficha do livro, cola dos atalhos, commitado pelo Cesar em
@@ -158,21 +164,25 @@ e `Animacao`, e a página sai.
 | D60 | o escuro dos desenhos do corpo: painel um pouco acima da folha, caixas com cor, tinta menos branca |
 | D55, D61 | o redesenho: 10 modelos, mais três rodadas e a versão final no ar (papel, tinta, latão e luz) |
 | D62 | as cores dos temas de antes do redesenho, livros e séries separados nas páginas de um livro, a fileira que encolhe consertada |
+| D63 | post detalhado (com TL;DR recolhível) ou resumo (com infográfico), combinado antes de escrever, e links ao longo do texto |
 
 ## Próximos passos
 
-0. **Documentos do visual novo (D61):** reescrever o `DESIGN.md` inteiro para "papel e luz" (hoje a
+0. **No próximo post (D63):** pedir ao Cesar que veja como ficaram o formato combinado, o TL;DR
+   recolhível (ou o infográfico, se for resumo) e os links ao longo do texto, e ajustar o que ele
+   disser. Depois disso, tirar o lembrete da skill `post` e este item.
+1. **Documentos do visual novo (D61):** reescrever o `DESIGN.md` inteiro para "papel e luz" (hoje a
    seção da D61 vence as antigas, e no resto só os valores mudaram) e o `docs/briefing.md` §4 a §7 no
    mesmo passo; conferir também `docs/movimento.md` (a abertura, a cortina e as chegadas mudaram).
-1. **Revisão em lote dos posts** (`.claude/revisao-posts.md`): 26 pendentes pela skill `post`, modo
+2. **Revisão em lote dos posts** (`.claude/revisao-posts.md`): 26 pendentes pela skill `post`, modo
    Adaptar, cada um terminando na caneta (skill `caneta`, com a proposta aprovada antes). Com a D58
    aprovada, a revisão troca `LousaTempo` e `LousaLoop` pela `Lousa` ou pela animação com play.
-2. **Blog antigo (D34):** os dois têm os mesmos artigos. Decidir entre `noindex` no novo até a
+3. **Blog antigo (D34):** os dois têm os mesmos artigos. Decidir entre `noindex` no novo até a
    virada, o antigo redirecionando para o novo ou a virada do domínio (`docs/virada.md`).
-3. **Medir no site publicado:** busca (regra 4 da D2) e Lighthouse (não medido desde a D26).
-4. **Peso das páginas (B14):** 160 a 440 KB abertos, pelos SVGs embutidos; merece um item próprio.
-5. **Página Sobre:** o Cesar escreve (D33). Até lá, `/about/` leva à home.
-6. **`scripts/desenho/render.mjs` fotografa a abertura do site (D51)** em vez da folha de conferência:
+4. **Medir no site publicado:** busca (regra 4 da D2) e Lighthouse (não medido desde a D26).
+5. **Peso das páginas (B14):** 160 a 440 KB abertos, pelos SVGs embutidos; merece um item próprio.
+6. **Página Sobre:** o Cesar escreve (D33). Até lá, `/about/` leva à home.
+7. **`scripts/desenho/render.mjs` fotografa a abertura do site (D51)** em vez da folha de conferência:
    falta `reducedMotion: "reduce"` na página que ele abre (achado em 29/09/2026; contornado com uma
    cópia local).
 

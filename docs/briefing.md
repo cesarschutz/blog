@@ -628,15 +628,26 @@ Regras técnicas, classes e tempos: skill `figura`, `docs/estilo-desenho.md` e `
   render antes de seguir.
 
 ### 8.2 Regras de todo post novo (vão para a skill de post e para uma regra por caminho)
-- **Tamanho**: posts mais curtos que os de hoje. Meta de **1.500 a 2.500 palavras**
-  (8 a 12 min de leitura), teto de ~3.000. Assunto maior vira **série** ou é dividido em
-  partes. Sem enchimento. Os posts existentes não precisam ser encurtados.
+- **Formato** (D63): todo post, novo ou ajustado, começa por uma conversa com o Cesar, que decide
+  com Claude o formato, a estrutura e as fontes:
+  - **detalhado**: de **1.500 a 2.500 palavras** (8 a 12 min de leitura), teto de ~3.000, com o
+    **TL;DR** fechado no alto do texto (o leitor clica para abrir);
+  - **resumo** (um resumo de verdade, não tão curto): de **700 a 1.200 palavras** (4 a 6 min), com um
+    **infográfico** que mostra o assunto inteiro (a ideia dos guias do ByteByteGo, desenhada no estilo
+    da casa, com detalhes e ícones);
+  - a **estrutura** (as seções e o que entra em cada uma) é combinada antes de escrever;
+  - as **fontes**: se o Cesar já estudou o assunto, ele dá os links e o post se baseia neles; se não,
+    Claude busca fontes confiáveis.
+
+  Assunto maior vira **série** ou é dividido em partes. Sem enchimento. Os posts existentes não
+  precisam ser encurtados.
 - **Veracidade**: nenhuma afirmação técnica sem fonte confiável e conferida (documentação
   oficial, especificações, JEPs, RFCs, release notes). Nada inventado: versões, números,
   benchmarks, citações e APIs só se verificados. Se não der para confirmar, diga isso no
   texto ou tire. Código e SQL testados (rodados) antes de publicar, e que façam sentido
   (25/09/2026, D35); exemplo grande linka o código completo.
-  Links conferidos. **`## Fontes`** no fim, sempre.
+  Links conferidos. **`## Fontes`** no fim, sempre, e os links também **ao longo do texto**, onde o
+  assunto da fonte aparece (D63).
 - **Estrutura**: introdução com o problema concreto em 2 ou 3 frases; seções `##` claras;
   avisos só quando ajudam; diff quando mostrar antes e depois.
 - **Desenhos** (D58, §7): uma lousa, uma figura ou uma animação quando houver fluxo, sequência,
@@ -650,7 +661,8 @@ Regras técnicas, classes e tempos: skill `figura`, `docs/estilo-desenho.md` e `
   `published`, `updated` opcional, `category` **ou** `series`, `tags` (2 a 4, reaproveitando o
   vocabulário existente, sem repetir nome de categoria), `draft`, `codigo` (D52, C03: URL `https://`
   do repositório de exemplos, opcional; só quando o post tem código publicado numa pasta própria em
-  `cesarschutz/blog-exemplos`).
+  `cesarschutz/blog-exemplos`), `formato` (`detalhado` ou `resumo`, D63) e `tldr` (os pontos do TL;DR,
+  no detalhado).
 - **Categoria**: encaixe numa existente; se nenhuma servir de verdade, pode criar uma nova
   dentro do escopo do blog, com cor distinta, e avise o Cesar.
 - **Fluxo** (vale para post do zero e para texto que o Cesar traz pronto): classificar →

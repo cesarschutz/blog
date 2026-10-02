@@ -676,6 +676,13 @@ têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm can
   branco no escuro). Leva à página da categoria.
 - **Botão principal (`.botao-primario`):** etiqueta azul-tinta de 2px com seta, texto em `on-primary`
   (D61).
+- **TL;DR (D63, `Tldr.astro`):** a ficha de catálogo dobrada no alto do texto do post detalhado. Fechada,
+  só a tira em mono ("TL;DR · o artigo em 4 pontos", com "abrir" e a seta no azul-tinta) sobre o fio de
+  2px na cor do livro, com canto de 6px e a sombra curta do papel; aberta, os pontos no corpo do texto.
+  Começa fechada; é um `<details>`, sem JS.
+- **Infográfico (D63):** a figura grande do post resumo, logo depois da introdução: de 3 a 6 quadros (o
+  que é, quem participa, como funciona, as variações, o que levar), com ícones, selos e os tons dos
+  atores, no estilo dos desenhos do corpo (skill `figura`).
 - **Caneta preta da interface** (D52, C04): a caneta preta desenha, a azul marca. Os ícones de
   calendário, relógio, código-fonte, lupa, lua e sol saem de `src/lib/traco.ts`, na tinta a 78%, traço
   1,7, **parados** (aparecem dezenas de vezes por tela: identidade no desenho, sem movimento); GitHub

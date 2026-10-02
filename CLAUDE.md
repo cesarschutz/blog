@@ -30,6 +30,10 @@ outras portas) sai.
 - O **`DESIGN.md`** (raiz) é a fonte de verdade do visual. Ele vence qualquer ferramenta, inclusive o
   Impeccable (sem "go all out", redesign ou troca do `DESIGN.md`).
 - Todo trabalho em post (criar, escrever, adaptar, importar, migrar, revisar) segue a skill **`post`**.
+- **Formato do post (D63):** todo post, novo ou ajustado, começa por uma conversa com o Cesar:
+  detalhado (com o TL;DR recolhível) ou resumo (com o infográfico), a estrutura do que entra e as
+  fontes (os links que ele estudou ou, sem eles, fontes confiáveis). Os links ficam ao longo do texto
+  e também em `## Fontes`.
 - **Caneta do caderno (D48):** a última etapa de todo post é a passada de caneta (skill **`caneta`**):
   ler o guia vivo `docs/marcacoes.md` inteiro, propor as marcações (trecho, tipo, motivo), aplicar só
   com o OK do Cesar e testar em 320, 390, 768, 1280 e 1600px nos dois temas. Ajuste que o Cesar pedir

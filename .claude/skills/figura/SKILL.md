@@ -125,6 +125,38 @@ O `pacote` vai numa cópia da seta, por cima dela e fora do `.tinta`, dentro do 
 também pode ter detalhe: um ponto pulsando no pico, um cursor correndo na série. Se todas as linhas
 acontecem ao mesmo tempo de verdade (mensagens e heartbeats), podem andar juntas.
 
+## Infográfico do post resumo (D63)
+
+O post resumo tem um desenho principal: o **infográfico**, uma `Figura` grande que mostra o assunto
+inteiro de uma vez, logo depois da introdução. A ideia vem dos guias visuais do ByteByteGo
+(<https://bytebytego.com/guides/>): um "pôster" em que o leitor entende o assunto olhando, e o texto
+explica o que ele está vendo.
+
+- **Referência, nunca cópia:** antes de desenhar, abra os guias do ByteByteGo sobre o mesmo assunto (ou
+  um vizinho) e veja como eles dividem o pôster: os quadros, a ordem, o que vira ícone, o que vira
+  número. Use isso como ideia de composição. O desenho, o texto, as cores e o traço são sempre os da
+  casa (`docs/estilo-desenho.md` e esta skill): nada de copiar desenho, texto ou layout de lá.
+- **Composição:** de 3 a 6 quadros, cada um com um título curto (2 a 4 palavras) e uma ideia só. Entra o
+  que o assunto pede, entre:
+  - o que é (uma frase e o desenho do conceito);
+  - quem participa (os atores numerados, cada um com o ícone ou o logo e o tom dele);
+  - como funciona (o fluxo principal, com setas e selos numerados);
+  - as variações ou a comparação (os tipos, quando usar cada um);
+  - o que levar (o cuidado principal ou a regra de bolso).
+- **Detalhes e ícones sempre:** cada ator com o seu ícone (o logo da ferramenta por `data-marca`, ou um
+  objeto desenhado à mão) e as caixas com o detalhe que diz o que elas são (a fila com as mensagens, o
+  banco com as linhas, o cadeado fechado ou aberto). Nada de caixa só com o nome.
+- **Medidas:** `viewBox` com 1200 de largura e a altura que precisar (em geral de 1200 a 1800), no
+  máximo duas colunas de quadros e texto com 18 unidades ou mais: no computador a figura fica com uns
+  950px; no celular, com 720px, rolando de lado (o `revisar.mjs` acusa o texto abaixo de 10px na
+  tela). Cada quadro num `<g data-parte>`, separado do outro por um fio fino ou pelo espaço, sem
+  moldura pesada.
+- **Tons:** um por ator, os mesmos em todas as figuras do post, com a legenda de cores dentro da figura
+  (quase sempre são 4 tons ou mais). Detalhes que se mexem só se ajudarem (o pacote que anda no fluxo),
+  no máximo um ou dois.
+- **O texto conversa com ele:** a introdução apresenta o infográfico, e cada seção passa por um quadro,
+  na ordem dos números ("o quadro 2 mostra…"). O `aria-label` conta o pôster inteiro, quadro a quadro.
+
 ## Referências aprovadas pelo Cesar (30/09/2026)
 
 Use como régua de qualidade antes de entregar uma figura ou animação:

@@ -73,6 +73,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D60 | O escuro dos desenhos do corpo: painel um pouco acima da folha, caixas com cor, tinta menos branca | em vigor (os valores voltaram aos dela na D62) |
 | D61 | O redesenho no ar: papel, tinta, latão e luz (a versão final do redesenho) | em vigor; as cores dos temas voltaram às de antes na D62 |
 | D62 | As cores dos temas de antes do redesenho, as séries fora das páginas dos livros (e o contrário) e a fileira que encolhe ao rolar consertada | em vigor |
+| D63 | Post detalhado (com TL;DR recolhível) ou resumo (com infográfico), combinado com o Cesar antes de escrever, e links ao longo do texto | em vigor; o Cesar revê no próximo post |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -2399,3 +2400,46 @@ nada muda.
   das cores) com 96 páginas; `npm run links` e `npm run contraste` sem falha; a fileira medida no build
   (100% no alto, 80% aos 180px de rolagem, 60% dos 400px em diante, grudada sob o cabeçalho), a sombra do
   cabeçalho, as fileiras sem a série, os vizinhos de Carreira e a página da série, nos dois temas.
+
+## D63 · Post detalhado ou resumo, TL;DR, infográfico e links no texto
+- **Data:** 02/10/2026 · **Status:** decidido; o Cesar vê como ficou no próximo post e ajusta.
+- **Pedido do Cesar:**
+  - pode haver posts mais detalhados e posts mais simples. Ao fazer ou ajustar um post, Claude pergunta
+    se é detalhado ou resumo ("não tão resumido"), e os dois conversam e definem o que entra, ajudando a
+    pensar a estrutura;
+  - se ele já estudou o assunto, dá os links e o post se baseia neles; se não, entram fontes sempre
+    confiáveis;
+  - no resumo, um infográfico com a ideia dos guias do ByteByteGo (<https://bytebytego.com/guides/>),
+    que pode servir de referência sempre que um for criado, mas com os desenhos no estilo da casa
+    ("sempre com detalhes e ícones de coisas");
+  - no detalhado, o TL;DR, "talvez escondido, que tu clica e abre ele se quiser";
+  - os links ao longo do texto, onde o assunto da fonte aparece, e também em Fontes, embaixo;
+  - "pense uma forma, configure, e no próximo post eu vejo como ficou e arrumo se necessário"; no
+    próximo post, lembrá-lo de ver isso.
+- **Decidido:**
+  - **A conversa vem antes do plano** (skill `post`, passo 2): o formato, a estrutura (as seções e o
+    que entra em cada uma) e as fontes. Vale para post novo e para post ajustado.
+  - **Detalhado:** de 1.500 a 2.500 palavras (teto de ~3.000), com o **TL;DR**: de 3 a 5 pontos no campo
+    `tldr` do frontmatter, cada um entre aspas, que aparecem no alto do texto numa ficha de catálogo
+    dobrada (`Tldr.astro`, um `<details>` nativo, sem JS). Fechada, só a tira "TL;DR · o artigo em N
+    pontos", com "abrir"; aberta, os pontos. O dev mostra um em `/amostra/markdown/`.
+  - **Resumo:** de 700 a 1.200 palavras, com o **infográfico** logo depois da introdução: uma `Figura`
+    grande, de 3 a 6 quadros (o que é, quem participa, como funciona, as variações, o que levar), com
+    ícones e detalhes, no estilo da casa. O ByteByteGo é referência de composição, nunca de cópia (skill
+    `figura`, "Infográfico do post resumo").
+  - **O campo `formato`** (`detalhado` ou `resumo`) guarda o que foi combinado, para o próximo ajuste.
+    Os posts de antes não têm o campo.
+  - **Links ao longo do texto:** nas palavras do assunto, para a página mais específica, no máximo dois
+    por parágrafo, e também em `## Fontes`.
+  - **Lembrete:** a skill `post` e o painel avisam para, no primeiro post com os formatos novos, pedir
+    ao Cesar que veja como ficou. Depois que ele vir, o lembrete sai.
+- **Achado ao testar:** um ponto do TL;DR com ": " no meio vira objeto no YAML, e o build recusa o post.
+  A regra manda escrever cada ponto entre aspas, e o esquema diz isso na mensagem de erro.
+- **Mudado:** `src/content.config.ts` (`formato` e `tldr`), `src/components/Tldr.astro` (novo),
+  `src/lib/formato.ts` (os links em linha do TL;DR), `src/pages/posts/[slug].astro`, a amostra do
+  dev (`src/amostra/recursos.md`, `src/pages/[amostra]/markdown.astro`), as skills `post` e `figura`,
+  a regra de posts, o briefing (§8.2), o `DESIGN.md`, o `CLAUDE.md` e o painel.
+- **Alternativas:** o TL;DR como diretiva no texto (`:::tldr`), que aceitaria Markdown inteiro, mas
+  deixaria o lugar dele a cargo de quem escreve; no frontmatter, ele sempre sai no mesmo lugar e o post
+  continua `.md`. Para o infográfico, um componente novo: a `Figura` já ocupa a largura do texto e
+  rola de lado no celular, e só faltavam as regras de composição.
