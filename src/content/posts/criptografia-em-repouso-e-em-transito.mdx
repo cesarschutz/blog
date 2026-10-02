@@ -11,7 +11,6 @@ draft: false
 import Lousa from "../../components/Lousa.astro";
 import Figura from "../../components/Figura.astro";
 import Evidencia from "../../components/Evidencia.astro";
-import Ferramenta from "../../components/Ferramenta.astro";
 import FraseDestaque from "../../components/FraseDestaque.astro";
 import sslmode from "../../evidencias/criptografia-em-repouso-e-em-transito/sslmode.png";
 
@@ -21,7 +20,7 @@ Outro dia, revisando a documentação de infraestrutura de um banco, encontrei e
 
 É o tipo de frase que aparece em todo documento de arquitetura, checklist de auditoria e questionário de segurança. Todo mundo marca "sim" e segue em frente. Mas vale entender o que ela garante, :duplo[o que ela **não** garante] e qual é a irmã dela, a criptografia em trânsito.
 
-Neste post vou passar pelos dois conceitos e mostrar como ativar cada um no <Ferramenta nome="postgresql" href="https://www.postgresql.org/docs/current/encryption-options.html">PostgreSQL</Ferramenta> (no RDS e fora dele) e no <Ferramenta nome="mongodb" href="https://www.mongodb.com/docs/manual/core/security-encryption-at-rest/">MongoDB</Ferramenta> (no Atlas e fora dele). No final, falo rapidamente de um terceiro tipo, bem menos comum: a criptografia em uso.
+Neste post vou passar pelos dois conceitos e mostrar como ativar cada um no PostgreSQL (no RDS e fora dele) e no MongoDB (no Atlas e fora dele). No final, falo rapidamente de um terceiro tipo, bem menos comum: a criptografia em uso.
 
 ## De onde vem o termo
 
@@ -51,6 +50,7 @@ Na lousa, o banco fica à esquerda, a chave de dados no meio e o KMS, com a chav
 
 <Lousa
   desenho="criptografia-em-repouso-e-em-transito/envelope"
+  controles="marca-texto"
   rotulo="Diagrama do envelope encryption: os dados no disco, cifrados com a chave de dados; a chave de dados guardada cifrada pela chave mestra, que fica no KMS; o banco pedindo ao KMS para abrir a chave de dados; e, com a chave mestra desativada, o KMS recusando o pedido e os dados e os backups ficando ilegíveis."
   duracao={10}
   passos={[
@@ -100,6 +100,7 @@ Na lousa, as duas linhas mostram a mesma conexão, com alguém no meio do caminh
 
 <Lousa
   desenho="criptografia-em-repouso-e-em-transito/tls"
+  controles="marca-texto"
   rotulo="Linha do tempo comparando sslmode=require e sslmode=verify-full: um intermediário se passa pelo banco com um certificado próprio; com require, o cliente aceita e o intermediário lê o tráfego; com verify-full, o cliente confere a CA e o nome do servidor e recusa a conexão."
   estados={[
     { de: 0, texto: "O cliente abre a conexão" },
@@ -122,7 +123,7 @@ A própria documentação do PostgreSQL resume isso numa tabela: com `require`, 
 
 ### Em repouso
 
-No <Ferramenta nome="aws" href="https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html">RDS</Ferramenta>, a criptografia em repouso :duplo[é ligada na criação da instância] e usa uma chave do AWS KMS. Ela cobre o storage, os backups automáticos, os snapshots, os logs e as réplicas de leitura. No console é a opção *Enable encryption*. Na API, na CLI e no CloudFormation é o `StorageEncrypted`.
+No RDS, a criptografia em repouso :duplo[é ligada na criação da instância] e usa uma chave do AWS KMS. Ela cobre o storage, os backups automáticos, os snapshots, os logs e as réplicas de leitura. No console é a opção *Enable encryption*. Na API, na CLI e no CloudFormation é o `StorageEncrypted`.
 
 Pela CLI:
 
@@ -219,7 +220,7 @@ psql "host=pedidos-db.xxxx.sa-east-1.rds.amazonaws.com port=5432 dbname=pedidos 
       user=app sslmode=verify-full sslrootcert=global-bundle.pem"
 ```
 
-Em <Ferramenta nome="java" href="https://jdbc.postgresql.org/documentation/ssl/">Java</Ferramenta>, pela URL do JDBC:
+Em Java, pela URL do JDBC:
 
 ```text
 jdbc:postgresql://pedidos-db.xxxx.sa-east-1.rds.amazonaws.com:5432/pedidos?sslmode=verify-full&sslrootcert=/etc/certs/global-bundle.pem
@@ -309,7 +310,7 @@ CREATE TABLE cartao (
 
 ### Em repouso
 
-No <Ferramenta nome="mongodb" href="https://www.mongodb.com/docs/atlas/security-kms-encryption/">Atlas</Ferramenta>, a criptografia em repouso :grifo[já vem ligada em todos os clusters], sem configuração. O Atlas usa a criptografia de volume do provedor de nuvem (na AWS, EBS criptografado).
+No Atlas, a criptografia em repouso :grifo[já vem ligada em todos os clusters], sem configuração. O Atlas usa a criptografia de volume do provedor de nuvem (na AWS, EBS criptografado).
 
 Se você precisa controlar a chave para rotacionar, revogar e auditar o uso, existe a opção **Encryption at Rest using Customer Key Management**, também chamada de BYOK (*bring your own key*). Com ela, o Atlas cifra os dados uma segunda vez, no Encrypted Storage Engine do MongoDB, usando uma chave sua no AWS KMS, no Azure Key Vault ou no Google Cloud KMS. Ela só está disponível em clusters dedicados, do :circulo[M10] para cima.
 
@@ -439,7 +440,7 @@ db.portadores.findOne()
 
 O subtipo :circulo[`6`] é o formato de dado cifrado do MongoDB. O banco não consegue ler o CPF e, mesmo assim, consegue responder à consulta de igualdade. A cifragem automática do exemplo exige MongoDB Enterprise ou Atlas (7.0 ou mais novo) num replica set. Na Community, só com cifragem explícita no código.
 
-Outro exemplo é a computação confidencial, que protege o dado de quem controla a máquina (o host, o hypervisor, o operador da nuvem). Nas VMs com :explica[AMD SEV-SNP ou Intel TDX]{nota="memória cifrada"}, o processador cifra a memória da VM com uma chave que nem o hypervisor acessa. Nos <Ferramenta nome="aws" href="https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html">AWS</Ferramenta> Nitro Enclaves, a proteção vem do isolamento: uma VM à parte, sem rede externa, sem disco e sem acesso interativo. Nenhuma das duas impede quem tem credencial do banco de consultar o dado.
+Outro exemplo é a computação confidencial, que protege o dado de quem controla a máquina (o host, o hypervisor, o operador da nuvem). Nas VMs com :explica[AMD SEV-SNP ou Intel TDX]{nota="memória cifrada"}, o processador cifra a memória da VM com uma chave que nem o hypervisor acessa. Nos AWS Nitro Enclaves, a proteção vem do isolamento: uma VM à parte, sem rede externa, sem disco e sem acesso interativo. Nenhuma das duas impede quem tem credencial do banco de consultar o dado.
 
 No Postgres, o `pgcrypto` pode parecer a mesma coisa, :ondulado[mas não é]. A chave e o valor aberto passam pelo servidor na própria query e podem acabar em logs. Para ter o efeito de "em uso", a criptografia precisa acontecer na aplicação.
 

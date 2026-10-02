@@ -1,0 +1,45 @@
+/*
+ * Os controles em prova nos posts (D65): a base comum dos cartões (o desenho e os controles num cartão só),
+ * por baixo da cara de cada opção (opcao-2.css "marca-texto", opcao-3.css "caderno", opcao-4.css
+ * "post-it"). Usada pela Lousa e pela Animacao com `controles=`, e pela página /prototipos/controles/.
+ */
+
+.cartao-proto {
+  margin: 1.8em 0;
+}
+
+.cartao-proto .proto-palco {
+  padding: clamp(10px, 2.4vw, 22px);
+}
+
+/* O painel dos desenhos do corpo (D60), como o das figuras. */
+.cartao-proto .proto-palco.painel {
+  --fig-bg: color-mix(in oklab, var(--cor, var(--ink-2)) var(--desenho-painel), var(--painel-desenho));
+}
+
+.cartao-proto .proto-palco > svg {
+  display: block;
+  width: 100%;
+}
+
+/* Sem JS: o desenho inteiro e a lista dos passos (o script tira esta lista ao montar os controles). */
+.cartao-proto .proto-sem-js {
+  margin: 14px 20px 18px;
+  padding-left: 1.4em;
+  font-family: var(--font-texto);
+  font-size: 15.5px;
+  color: var(--ink-2);
+}
+
+/* Até 700px, como as figuras: o desenho fica largo e rola de lado dentro do painel. */
+@media (max-width: 700px) {
+  .cartao-proto .proto-palco {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+
+  .cartao-proto .proto-palco > svg {
+    width: 720px;
+    max-width: none;
+  }
+}

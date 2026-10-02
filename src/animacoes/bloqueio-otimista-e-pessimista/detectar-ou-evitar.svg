@@ -1,0 +1,192 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 690"
+  aria-label="Animação: as transações A e B debitam a mesma conta. No otimista, as duas leem a version 1, A grava, e o UPDATE de B atinge 0 linhas, então B relê a version 2 e grava. No pessimista, A trava a linha com FOR UPDATE, e B espera o COMMIT de A para ler o saldo 90.">
+  <g class="tinta">
+    <g class="tom-azul">
+      <rect x="47" y="77" width="230" height="250" rx="12" class="hachura"/>
+      <rect x="40" y="70" width="230" height="250" rx="12" class="lavado"/>
+      <rect x="40" y="70" width="230" height="250" rx="12" class="linha"/>
+      <path d="M284 104 C 330 98 384 110 438 104 M424 95 L439 104 L424 113" class="linha-tom"/>
+    </g>
+    <g class="tom-roxo">
+      <rect x="457" y="77" width="300" height="250" rx="12" class="hachura"/>
+      <rect x="450" y="70" width="300" height="250" rx="12" class="lavado"/>
+      <rect x="450" y="70" width="300" height="250" rx="12" class="linha"/>
+      <path d="M468 164 H732 M606 134 V302" class="linha"/>
+    </g>
+    <g class="tom-ambar">
+      <rect x="937" y="77" width="230" height="250" rx="12" class="hachura"/>
+      <rect x="930" y="70" width="230" height="250" rx="12" class="lavado"/>
+      <rect x="930" y="70" width="230" height="250" rx="12" class="linha"/>
+      <path d="M922 104 C 876 98 822 110 766 104 M780 95 L765 104 L780 113" class="linha-tom"/>
+    </g>
+
+    <g class="tom-azul">
+      <rect x="47" y="423" width="230" height="250" rx="12" class="hachura"/>
+      <rect x="40" y="416" width="230" height="250" rx="12" class="lavado"/>
+      <rect x="40" y="416" width="230" height="250" rx="12" class="linha"/>
+      <path d="M284 450 C 330 444 392 456 448 450 M434 441 L449 450 L434 459" class="linha-tom"/>
+    </g>
+    <g class="tom-roxo">
+      <rect x="477" y="423" width="260" height="250" rx="12" class="hachura"/>
+      <rect x="470" y="416" width="260" height="250" rx="12" class="lavado"/>
+      <rect x="470" y="416" width="260" height="250" rx="12" class="linha"/>
+      <path d="M488 510 H712" class="linha"/>
+    </g>
+    <g class="tom-ambar">
+      <rect x="937" y="423" width="230" height="250" rx="12" class="hachura"/>
+      <rect x="930" y="416" width="230" height="250" rx="12" class="lavado"/>
+      <rect x="930" y="416" width="230" height="250" rx="12" class="linha"/>
+      <path d="M922 450 C 876 444 810 456 752 450 M766 441 L751 450 L766 459" class="linha-tom"/>
+    </g>
+  </g>
+
+  <text x="40" y="46" class="titulo-caixa">Otimista</text>
+  <text x="178" y="46" class="texto-caixa">detecta o conflito ao gravar</text>
+  <text x="40" y="392" class="titulo-caixa">Pessimista</text>
+  <text x="206" y="392" class="texto-caixa">evita o conflito antes</text>
+
+  <text x="60" y="112" class="titulo-caixa">Transação A</text>
+  <g class="tom-verde">
+    <text x="60" y="206" class="codigo texto-tom">UPDATE 1</text>
+  </g>
+
+  <g data-marca="banco" class="tom-roxo" transform="translate(466 82) scale(0.38)"/>
+  <text x="512" y="112" class="titulo-caixa">conta id 1</text>
+  <text x="486" y="150" class="nota-pequena">saldo</text>
+  <text x="626" y="150" class="nota-pequena">version</text>
+  <text x="486" y="196" class="codigo">100</text>
+  <text x="486" y="238" class="codigo">90</text>
+  <text x="486" y="280" class="codigo">80</text>
+  <text x="626" y="196" class="codigo">1</text>
+  <text x="626" y="238" class="codigo">2</text>
+  <text x="626" y="280" class="codigo">3</text>
+
+  <text x="950" y="112" class="titulo-caixa">Transação B</text>
+  <g class="tom-vermelho">
+    <text x="950" y="206" class="codigo texto-tom">UPDATE 0</text>
+  </g>
+  <g class="tom-verde">
+    <text x="950" y="296" class="codigo texto-tom">UPDATE 1</text>
+  </g>
+
+  <text x="60" y="458" class="titulo-caixa">Transação A</text>
+  <text x="60" y="504" class="codigo">FOR UPDATE</text>
+  <g class="tom-verde">
+    <text x="60" y="552" class="codigo texto-tom">COMMIT</text>
+  </g>
+
+  <g data-marca="banco" class="tom-roxo" transform="translate(490 428) scale(0.38)"/>
+  <text x="536" y="458" class="titulo-caixa">conta id 1</text>
+  <text x="577" y="496" class="nota-pequena">saldo</text>
+  <text x="578" y="542" class="codigo">100</text>
+  <text x="578" y="584" class="codigo">90</text>
+  <text x="578" y="626" class="codigo">80</text>
+
+  <text x="950" y="458" class="titulo-caixa">Transação B</text>
+  <text x="950" y="504" class="codigo">FOR UPDATE</text>
+  <g class="tom-vermelho">
+    <text x="950" y="552" class="nota texto-tom">espera a trava</text>
+  </g>
+  <g class="tom-verde">
+    <text x="950" y="594" class="nota texto-tom">lê saldo 90</text>
+  </g>
+
+  <path d="M480 188 C 500 186 520 189 538 187" pathLength="1" class="risco" data-parte="risca-o1"/>
+  <path d="M620 188 C 628 186 636 189 644 187" pathLength="1" class="risco" data-parte="risca-o1"/>
+  <path d="M480 230 C 492 228 506 231 518 229" pathLength="1" class="risco" data-parte="risca-o2"/>
+  <path d="M620 230 C 628 228 636 231 644 229" pathLength="1" class="risco" data-parte="risca-o2"/>
+  <path d="M572 534 C 592 532 612 535 630 533" pathLength="1" class="risco" data-parte="risca-p1"/>
+  <path d="M572 576 C 584 574 598 577 612 575" pathLength="1" class="risco" data-parte="risca-p2"/>
+
+  <g class="tom-verde">
+    <path d="M192 195 L200 204 L216 184" pathLength="1" class="traco-tom" data-parte="certo-a"/>
+    <path d="M1082 285 L1090 294 L1106 274" pathLength="1" class="traco-tom" data-parte="certo-b"/>
+    <path d="M162 541 L170 550 L186 530" pathLength="1" class="traco-tom" data-parte="certo-pa"/>
+    <path d="M1078 583 L1086 592 L1102 572" pathLength="1" class="traco-tom" data-parte="certo-pb"/>
+  </g>
+  <g class="tom-vermelho">
+    <path d="M1084 187 L1102 205 M1102 187 L1084 205" pathLength="1" class="traco-tom" data-parte="errado-b"/>
+    <path d="M788 91 L814 117 M814 91 L788 117" class="traco-tom" data-parte="recusa"/>
+  </g>
+
+  <g class="tom-vermelho" data-parte="relogio">
+    <circle cx="842" cy="404" r="17" class="lavado"/>
+    <circle cx="842" cy="404" r="17" class="traco-tom"/>
+    <path d="M842 404 H850" class="traco-tom"/>
+    <path d="M842 404 V393" class="traco-tom" data-parte="ponteiro"/>
+  </g>
+
+  <g class="tom-azul" data-parte="trava-a">
+    <path d="M462 437 V429 A8 8 0 0 1 478 429 V446" class="traco-tom" data-parte="argola-a"/>
+    <rect x="456" y="446" width="28" height="24" rx="4" class="lavado"/>
+    <rect x="456" y="446" width="28" height="24" rx="4" class="traco-tom"/>
+    <path d="M470 454 V462" class="traco-tom"/>
+  </g>
+  <g class="tom-ambar" data-parte="trava-b">
+    <path d="M722 446 V438 A8 8 0 0 1 738 438 V455" class="traco-tom" data-parte="argola-b"/>
+    <rect x="716" y="446" width="28" height="24" rx="4" class="lavado"/>
+    <rect x="716" y="446" width="28" height="24" rx="4" class="traco-tom"/>
+    <path d="M730 454 V462" class="traco-tom"/>
+  </g>
+
+  <g class="tom-roxo">
+    <rect x="482" y="215" width="42" height="31" class="lavado" opacity="0" data-parte="tampa-o90"/>
+    <rect x="622" y="215" width="26" height="31" class="lavado" opacity="0" data-parte="tampa-o90"/>
+    <rect x="482" y="257" width="42" height="31" class="lavado" opacity="0" data-parte="tampa-o80"/>
+    <rect x="622" y="257" width="26" height="31" class="lavado" opacity="0" data-parte="tampa-o80"/>
+    <rect x="574" y="561" width="42" height="31" class="lavado" opacity="0" data-parte="tampa-p90"/>
+    <rect x="574" y="603" width="42" height="31" class="lavado" opacity="0" data-parte="tampa-p80"/>
+  </g>
+  <g class="tom-azul">
+    <rect x="56" y="183" width="130" height="31" class="lavado" opacity="0" data-parte="tampa-a-ok"/>
+    <rect x="56" y="481" width="160" height="31" class="lavado" opacity="0" data-parte="tampa-pa-trava"/>
+    <rect x="56" y="529" width="100" height="31" class="lavado" opacity="0" data-parte="tampa-pa-commit"/>
+  </g>
+  <g class="tom-ambar">
+    <rect x="946" y="183" width="130" height="31" class="lavado" opacity="0" data-parte="tampa-b-zero"/>
+    <rect x="946" y="273" width="130" height="31" class="lavado" opacity="0" data-parte="tampa-b-ok"/>
+    <rect x="946" y="481" width="160" height="31" class="lavado" opacity="0" data-parte="tampa-pb-trava"/>
+    <rect x="946" y="524" width="170" height="36" class="lavado" opacity="0" data-parte="tampa-pb-espera"/>
+    <rect x="946" y="566" width="126" height="36" class="lavado" opacity="0" data-parte="tampa-pb-le"/>
+  </g>
+
+  <g class="tom-roxo" data-parte="le-a">
+    <rect x="60" y="130" width="158" height="38" rx="6" class="lavado"/>
+    <rect x="60" y="130" width="158" height="38" rx="6" class="traco-tom"/>
+    <text x="72" y="157" class="codigo">version 1</text>
+  </g>
+  <g class="tom-roxo" data-parte="le-b1">
+    <rect x="950" y="130" width="158" height="38" rx="6" class="lavado"/>
+    <rect x="950" y="130" width="158" height="38" rx="6" class="traco-tom"/>
+    <text x="962" y="157" class="codigo">version 1</text>
+  </g>
+  <g class="tom-vermelho">
+    <path d="M956 148 C 1000 145 1060 151 1112 147" pathLength="1" class="risco" data-parte="risca-b1"/>
+  </g>
+  <g class="tom-roxo" data-parte="le-b2">
+    <rect x="950" y="220" width="158" height="38" rx="6" class="lavado"/>
+    <rect x="950" y="220" width="158" height="38" rx="6" class="traco-tom"/>
+    <text x="962" y="247" class="codigo">version 2</text>
+  </g>
+
+  <g class="tom-azul" opacity="0" data-parte="envio-a">
+    <rect x="284" y="91" width="40" height="26" rx="4" class="lavado"/>
+    <rect x="284" y="91" width="40" height="26" rx="4" class="traco-tom"/>
+    <path d="M291 100 H317 M291 108 H309" class="traco-tom"/>
+  </g>
+  <g class="tom-ambar" opacity="0" data-parte="envio-b">
+    <rect x="876" y="91" width="40" height="26" rx="4" class="lavado"/>
+    <rect x="876" y="91" width="40" height="26" rx="4" class="traco-tom"/>
+    <path d="M883 100 H909 M883 108 H901" class="traco-tom"/>
+  </g>
+  <g class="tom-azul" opacity="0" data-parte="envio-pa">
+    <rect x="284" y="437" width="40" height="26" rx="4" class="lavado"/>
+    <rect x="284" y="437" width="40" height="26" rx="4" class="traco-tom"/>
+    <path d="M291 446 H317 M291 454 H309" class="traco-tom"/>
+  </g>
+  <g class="tom-ambar" opacity="0" data-parte="envio-pb">
+    <rect x="876" y="437" width="40" height="26" rx="4" class="lavado"/>
+    <rect x="876" y="437" width="40" height="26" rx="4" class="traco-tom"/>
+    <path d="M883 446 H909 M883 454 H901" class="traco-tom"/>
+  </g>
+</svg>

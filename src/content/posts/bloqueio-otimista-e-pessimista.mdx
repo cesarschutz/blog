@@ -8,6 +8,8 @@ category: Dados
 draft: false
 ---
 
+import Animacao from "../../components/Animacao.astro";
+
 Quando duas requisições leem a mesma linha, calculam um valor novo e gravam, uma delas pode apagar o trabalho da outra sem erro nenhum. Este post mostra as duas formas clássicas de impedir isso, o **bloqueio otimista** (detectar o conflito) e o **bloqueio pessimista** (evitar o conflito), com SQL testado no PostgreSQL e o equivalente em Spring Data JPA. Depois, o terceiro caminho que muitas vezes dispensa ambos (o UPDATE condicional), o papel dos níveis de isolamento, um critério de escolha e as perguntas que eu faço antes de decidir.
 
 > O tema aparece de raspão no artigo sobre [chave de idempotência](/posts/cobranca-duplicada-no-retry/), como alternativa à restrição única. Aqui ele ganha o espaço que merece.
@@ -21,6 +23,10 @@ Dois clientes leem a mesma linha, cada um calcula um valor novo a partir do que 
 É a mesma família do problema da [cobrança duplicada no retry](/posts/cobranca-duplicada-no-retry/): ler, decidir e gravar como operações separadas, com uma janela no meio. Lá, a solução foi uma restrição única, que funciona quando a decisão cabe numa chave. Aqui o caso é outro: a decisão depende do **valor lido**, e não existe chave que expresse isso.
 
 A diferença entre os dois bloqueios cabe numa frase, e é assim que o catálogo de padrões do Martin Fowler os descreve: **bloqueio otimista é detecção de conflito; bloqueio pessimista é prevenção de conflito.**
+
+A animação mostra as duas com as transações A (azul) e B (âmbar) debitando 10 da mesma conta (em roxo): em cima, o otimista; embaixo, o pessimista. Repare onde B paga em cada uma: no otimista, o UPDATE dela atinge zero linhas e ela refaz o trabalho; no pessimista, ela fica parada no relógio vermelho até o COMMIT de A.
+
+<Animacao animacao="bloqueio-otimista-e-pessimista/detectar-ou-evitar" controles="post-it" legenda="A em azul, B em âmbar e a linha da conta em roxo; vermelho é conflito ou espera, verde é o que deu certo. Em cima, B refaz o trabalho; embaixo, B espera." />
 
 **Uma boa analogia é o controle de versão**, que você usa todo dia. Duas pessoas precisam mexer no mesmo arquivo.
 

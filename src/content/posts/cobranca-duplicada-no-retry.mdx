@@ -8,8 +8,8 @@ category: Arquitetura de Software
 draft: false
 ---
 
-import LousaLoop from "../../components/LousaLoop.astro";
-import LousaTempo from "../../components/LousaTempo.astro";
+import Animacao from "../../components/Animacao.astro";
+import Lousa from "../../components/Lousa.astro";
 import FraseDestaque from "../../components/FraseDestaque.astro";
 
 
@@ -19,14 +19,9 @@ import FraseDestaque from "../../components/FraseDestaque.astro";
 
 O app do cliente envia uma requisição de cobrança de R\$ 250 para o serviço de autorização. A resposta não chega a tempo e a requisição estoura o timeout. Do lado do cliente, não dá para saber o que aconteceu: o servidor pode ter cobrado, pode ainda estar processando ou pode nem ter recebido o pedido. Então o app reenvia.
 
-<LousaLoop
-  desenho="cobranca-duplicada-no-retry/loop"
-  rotulo="Animação: a resposta do serviço se perde no caminho e o app, sem saber, envia o pedido de novo."
-  duracao={5.2}
-  marcas={[{ em: 0.47, rotulo: "a resposta se perde" }, { em: 0.74, rotulo: "o app reenvia" }]}
-  legenda="A resposta se perde no caminho e o app, sem saber, envia de novo."
-  parado={0.9}
-/>
+A animação mostra a cena: a cobrança passa, a resposta se perde no caminho de volta, o relógio do app estoura e ele envia de novo. No fim, a fatura do cliente tem duas linhas de R\$ 250.
+
+<Animacao animacao="cobranca-duplicada-no-retry/resposta-perdida" controles="caderno" legenda="O serviço cobra no adquirente, a resposta se perde no caminho de volta e o app, sem saber, envia de novo: o cliente é cobrado duas vezes." />
 
 O serviço roda em várias instâncias atrás de um load balancer. O reenvio pode cair numa instância diferente da primeira, e pode chegar enquanto a primeira ainda está trabalhando.
 
@@ -66,15 +61,17 @@ A ordem se inverte:
 
 A janela some porque :marca[verificar e gravar passam a ser a mesma operação]. Aperte o play ou arraste sobre a lousa para ver os cinco passos, contados logo abaixo dela.
 
-<LousaTempo
+<Lousa
   desenho="cobranca-duplicada-no-retry/passos"
-  rotulo="Diagrama: o app, o serviço, o adquirente e a tabela cobranca. A segunda tentativa, com a mesma chave, bate na restrição única e recebe a resposta guardada, sem nova cobrança."
-  estados={[
-    { de: 0, texto: "1 de 5 · O app pede, com a chave" },
-    { de: 0.2, texto: "2 de 5 · O serviço grava a chave antes de cobrar" },
-    { de: 0.4, texto: "3 de 5 · Cobra e guarda a resposta" },
-    { de: 0.6, texto: "4 de 5 · A resposta se perde, e o app tenta de novo" },
-    { de: 0.8, texto: "5 de 5 · A restrição recusa e a resposta guardada volta" },
+  controles="post-it"
+  rotulo="Lousa: o app pede a cobrança com a chave 5b0e7a52…; o serviço grava a chave na tabela cobranca, que tem UNIQUE sobre ela, cobra no adquirente e guarda CAPTURADA, 201. A resposta se perde, o app tenta de novo com a mesma chave, o INSERT bate na restrição e o serviço devolve a resposta guardada, sem chamar o adquirente de novo."
+  duracao={15}
+  passos={[
+    { de: 0, texto: "O app pede, com a chave" },
+    { de: 0.15, texto: "O serviço grava a chave antes de cobrar" },
+    { de: 0.3, texto: "Cobra e guarda a resposta" },
+    { de: 0.57, texto: "A resposta se perde, e o app tenta de novo" },
+    { de: 0.78, texto: "A restrição recusa e a resposta guardada volta" },
   ]}
 />
 
@@ -159,16 +156,18 @@ A chave resolve o caso em que a decisão cabe numa chave: "esta intenção já f
 
 A mesma falha de rede, com e sem a chave de idempotência. Avance no tempo e compare as duas linhas.
 
-<LousaTempo
+<Lousa
   desenho="cobranca-duplicada-no-retry/tempo"
-  rotulo="Linha do tempo comparando o reenvio com e sem chave de idempotência: sem a chave, o cliente é cobrado duas vezes; com a chave, a restrição única devolve a resposta guardada."
+  controles="post-it"
+  rotulo="Lousa comparando a mesma falha de rede sem e com a chave de idempotência, com o app, o serviço e o adquirente em cada linha: o app pede R$ 250, o serviço cobra no adquirente, a resposta se perde e o app tenta de novo depois do timeout. Sem a chave, o serviço cobra de novo e o cliente paga duas vezes; com a chave, o serviço grava a chave antes de cobrar, a restrição UNIQUE recusa a repetição e o app recebe a resposta guardada, com uma cobrança só."
+  duracao={12}
   estados={[
     { de: 0, texto: "Antes do pedido" },
-    { de: 0.041, texto: "O app pede" },
-    { de: 0.245, texto: "A cobrança é feita" },
-    { de: 0.449, texto: "A resposta se perde" },
-    { de: 0.653, texto: "O app tenta de novo" },
-    { de: 0.857, texto: "Resultado" },
+    { de: 0.1, texto: "O app pede" },
+    { de: 0.2, texto: "A cobrança é feita" },
+    { de: 0.44, texto: "A resposta se perde" },
+    { de: 0.61, texto: "O app tenta de novo" },
+    { de: 0.76, texto: "Resultado" },
   ]}
 />
 

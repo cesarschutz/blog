@@ -52,9 +52,11 @@ export default function montar(gsap: GSAP, svg: SVGSVGElement) {
     .add(escrever(tampaL1b, 0.4), 3.2);
 
   // Um tempo para ler, e as duas linhas são riscadas: é o que não pode chegar ao log.
-  tl.to(riscos[0], { strokeDashoffset: 0, duration: 0.6, ease: "power1.inOut" }, 4.7).to(
+  // autoRound desligado: com pathLength="1", o GSAP arredondaria o dashoffset para 1 ou 0 e o risco
+  // apareceria de uma vez, em vez de se desenhar.
+  tl.to(riscos[0], { strokeDashoffset: 0, duration: 0.6, ease: "power1.inOut", autoRound: false }, 4.7).to(
     riscos[1],
-    { strokeDashoffset: 0, duration: 0.4, ease: "power1.inOut" },
+    { strokeDashoffset: 0, duration: 0.4, ease: "power1.inOut", autoRound: false },
     5.3,
   );
 

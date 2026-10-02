@@ -11,7 +11,6 @@ draft: false
 import Lousa from "../../components/Lousa.astro";
 import Figura from "../../components/Figura.astro";
 import Animacao from "../../components/Animacao.astro";
-import Ferramenta from "../../components/Ferramenta.astro";
 import Evidencia from "../../components/Evidencia.astro";
 import documentacaoSpring from "../../evidencias/jackson-filtros-mascarando-cartao/spring-jsonmapper.png";
 
@@ -20,7 +19,7 @@ Logar o payload de uma requisição ou de um evento é uma das formas mais prát
 O Jackson resolve isso com **filtros de serialização**, um mecanismo que deixa você decidir, campo a campo, o que é escrito no JSON, :marca[sem alterar as classes e sem mexer no mapper usado pela API].
 
 > [!NOTA]
-> Os exemplos usam **Jackson 3** (pacote `tools.jackson`, o que vem no <Ferramenta nome="spring" href="https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Release-Notes">Spring Boot</Ferramenta> 4). No fim há uma tabela com o que muda no Jackson 2. Todo o código foi compilado e executado com Jackson 3.2.3 (e a versão adaptada com Jackson 2.21.0); as saídas mostradas são as reais.
+> Os exemplos usam **Jackson 3** (pacote `tools.jackson`, o que vem no Spring Boot 4). No fim há uma tabela com o que muda no Jackson 2. Todo o código foi compilado e executado com Jackson 3.2.3 (e a versão adaptada com Jackson 2.21.0); as saídas mostradas são as reais.
 
 ## 1. As três peças
 
@@ -151,6 +150,7 @@ Cada propriedade do `Cartao` passa pelo filtro, uma de cada vez. Na lousa, a can
 
 <Lousa
   desenho="jackson-filtros-mascarando-cartao/passos"
+  controles="caderno"
   rotulo="Lousa: um Cartao com titular, numero e cvv passa pelo MascaraCartaoFilter, uma propriedade por vez. O cvv é omitido, o numero sai mascarado como 550209******7890 e o titular segue o fluxo normal para o JSON do log."
   passos={[
     { de: 0, texto: "O `writer` representa a propriedade que está sendo escrita, e `writer.getName()` é o nome dela no JSON. A partir daí, o filtro segue um de três caminhos." },
@@ -407,7 +407,7 @@ A troca é que agora os DTOs precisam da anotação. A diferença para o `@JsonF
 ## 7. Cuidados
 
 :::exclamacao
-**O filtro só age quando o objeto passa pelo mapper.** Um `log.info("{}", pedido)` usa o `toString()`, e o `toString()` de um <Ferramenta nome="java" href="https://openjdk.org/jeps/395">record</Ferramenta> (ou de uma classe com `@Data`/`@ToString` do Lombok) imprime tudo:
+**O filtro só age quando o objeto passa pelo mapper.** Um `log.info("{}", pedido)` usa o `toString()`, e o `toString()` de um record (ou de uma classe com `@Data`/`@ToString` do Lombok) imprime tudo:
 :::
 
 ```txt riscar="1|isso não pode ir pro log"
@@ -420,7 +420,7 @@ Por isso a regra é logar sempre via `logJson.toJson(...)`.
 
 A animação mostra os dois caminhos até o log e começa sozinha quando chega à tela. Primeiro, o `log.info("{}", pedido)` leva o cartão direto ao log, sem passar pelo filtro: o número e o CVV chegam inteiros, e as duas linhas são riscadas, porque é isso que não pode ficar no log. Depois, o `logJson.toJson(pedido)` leva o mesmo cartão pelo `MascaraCartaoFilter`: o meio do número ganha uma fita, o CVV fica para trás, e o log recebe `550209******7890`, escrito embaixo. Um clique na imagem pausa.
 
-<Animacao animacao="jackson-filtros-mascarando-cartao/dois-caminhos" legenda="Pelo toString(), o número e o CVV chegam inteiros ao log; pelo logJson.toJson(), o filtro mascara o número e remove o CVV." />
+<Animacao animacao="jackson-filtros-mascarando-cartao/dois-caminhos" controles="marca-texto" legenda="Pelo toString(), o número e o CVV chegam inteiros ao log; pelo logJson.toJson(), o filtro mascara o número e remove o CVV." />
 
 **O que passa pelo filtro e o que não passa.** Com o mixin em `Object`, passam objetos, records, objetos aninhados, itens de listas e entradas de `Map` (a chave vira o nome da propriedade). Uma `String` solta não passa, inclusive uma `String` que já contém JSON: `logJson.toJson("5502091234567890")` sai inteiro. Se o sistema loga :nota[o corpo cru da requisição]{texto="comum em filtro de log HTTP"} como texto, o filtro não protege.
 

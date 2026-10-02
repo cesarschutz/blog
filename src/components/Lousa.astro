@@ -20,12 +20,20 @@
  *
  *   <Lousa desenho="<slug>/<nome>" rotulo="…" passos={[{ de: 0, texto: "…" }, { de: 0.25, texto: "…" }]} />
  *   <Lousa desenho="<slug>/<nome>" rotulo="…" estados={[{ de: 0, texto: "…" }, …]} />
+ *
+ * Em prova (D65): `controles="marca-texto" | "caderno" | "post-it"` troca os controles de baixo por uma
+ * das três opções do protótipo (/prototipos/controles/), com o desenho e os controles num cartão só.
  */
 import { quadroDaLousa } from "../lib/lousas";
 import { mdEmLinha } from "../lib/formato";
 import "../styles/lousa.css";
 import "../styles/figura.css";
 import "../styles/lousa-nova.css";
+import "../amostra/controles/base.css";
+import "../amostra/controles/opcao-2.css";
+import "../amostra/controles/opcao-3.css";
+import "../amostra/controles/opcao-4.css";
+import { OPCAO_DOS_CONTROLES, type Controles } from "../amostra/controles/opcoes";
 
 interface Estado {
   de: number;
@@ -41,14 +49,18 @@ interface Props {
   estados?: Estado[];
   /** Uma volta inteira, em segundos (padrão: 7). */
   duracao?: number;
+  /** Em prova (D65): os controles de uma das opções do protótipo. */
+  controles?: Controles;
 }
 
-const { desenho, rotulo, passos = [], estados = [], duracao = 7 } = Astro.props;
+const { desenho, rotulo, passos = [], estados = [], duracao = 7, controles } = Astro.props;
 const { svg, figura } = quadroDaLousa(desenho, rotulo);
 if (!figura) throw new Error(`A lousa src/lousas/${desenho}.svg precisa estar no estilo das figuras (D59): o grupo <g class="tinta">.`);
 const id = `lousa-${desenho.replace(/[^a-z0-9]+/gi, "-")}`;
 const marcas = (passos.length ? passos : estados).map((e) => e.de);
 const rss = Astro.locals.rss;
+// Os controles em prova: os textos dos passos já em HTML, como o relógio do protótipo espera.
+const marcasDoCartao = (passos.length ? passos.map((p) => ({ ...p, texto: mdEmLinha(p.texto) })) : estados).map((m) => ({ ...m }));
 ---
 
 {
@@ -56,6 +68,27 @@ const rss = Astro.locals.rss;
     <p>
       <em>{rotulo}</em> <a href={rss.endereco}>A lousa interativa está no site.</a>
     </p>
+  ) : controles ? (
+    <figure
+      class:list={["cartao-proto lousa-nova", passos.length ? "com-passos" : "comparacao"]}
+      data-opcao={OPCAO_DOS_CONTROLES[controles]}
+      data-caso={passos.length ? "passos" : "comparacao"}
+      data-marcas={JSON.stringify(marcasDoCartao)}
+      data-duracao={duracao}
+      data-pagefind-ignore
+    >
+      <div class="proto-palco lousa-palco painel" set:html={svg} />
+      <div class="proto-controles" />
+      {
+        passos.length > 0 && (
+          <ol class="proto-sem-js">
+            {marcasDoCartao.map((p) => (
+              <li set:html={p.texto} />
+            ))}
+          </ol>
+        )
+      }
+    </figure>
   ) : (
     <figure
       class:list={["lousa-nova", passos.length ? "com-passos" : "comparacao"]}
@@ -98,6 +131,12 @@ const rss = Astro.locals.rss;
     </figure>
   )
 }
+
+<script>
+  import { montarCartoes } from "../amostra/controles/montar";
+
+  montarCartoes();
+</script>
 
 <script>
   import { prepararLousa, quandoVisivel } from "../scripts/lousa";
