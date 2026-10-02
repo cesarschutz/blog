@@ -32,7 +32,7 @@ e a página do livro). Não mudam:
 - os desenhos dos posts.
 
 O que vale para o visual está na seção "Papel e luz (D61)" do `DESIGN.md`, e o detalhe, em
-`docs/redesenho/rodada-4/`. Onde as seções 4 e 5 abaixo divergirem deles, vale a D61. A reescrita
+`docs/redesenho/rodada-4/`. Onde as seções 4 e 5 abaixo divergirem deles, vale a D61. As cores dos dois temas são as de antes (D62). A reescrita
 destas seções está nos próximos passos de `docs/estado.md`.
 
 ---

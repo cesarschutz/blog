@@ -70,8 +70,9 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D57 | Livros realistas: capa dura em todos os livros, estante e pilha com volume, livro deitado no "Do livro", livro aberto nos vazios e a série como livro | em vigor |
 | D58 | Recursos visuais novos: capa viva, figuras coloridas, a lousa nova, a animação com play, os ícones das ferramentas, o print e a caneta da leitura na cor do livro | decidido |
 | D59 | A lousa no estilo das figuras, com uma canetinha colorida; o destaque da legenda que apaga tudo menos a cor e a referência; a revisão de todo desenho antes de entregar (`revisar.mjs`) | decidido |
-| D60 | O escuro dos desenhos do corpo: painel um pouco acima da folha, caixas com cor, tinta menos branca | em vigor; os valores foram recalibrados na D61 |
-| D61 | O redesenho no ar: papel, tinta, latão e luz (a versão final do redesenho) | em vigor |
+| D60 | O escuro dos desenhos do corpo: painel um pouco acima da folha, caixas com cor, tinta menos branca | em vigor (os valores voltaram aos dela na D62) |
+| D61 | O redesenho no ar: papel, tinta, latão e luz (a versão final do redesenho) | em vigor; as cores dos temas voltaram às de antes na D62 |
+| D62 | As cores dos temas de antes do redesenho, as séries fora das páginas dos livros (e o contrário) e a fileira que encolhe ao rolar consertada | em vigor |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -2364,3 +2365,37 @@ nada muda.
 - **Alternativas descartadas:**
   - levar também as amostras e os protótipos, porque não são o site (e são 272 MB);
   - manter a `21-final` como cópia separada, porque seriam dois blogs para manter.
+
+## D62 · As cores de antes, livros e séries separados, e a fileira que encolhe
+- **Data:** 02/10/2026 · **Status:** decidido.
+- **Pedido do Cesar**, olhando o site no ar depois da D61:
+  - viu a home de agora ao lado da mesma home com as cores do blog de antes (o claro mais branco e o
+    escuro preto esverdeado) e escolheu: "mude as cores como no antigo, no modo claro e escuro, vai
+    ficar melhor";
+  - "na tela de livro selecionado, ao rolar para baixo não está com a animação dos livros lá de cima de
+    diminuir", e "na tela de séries também acontece isso";
+  - "na tela de livros deve aparecer apenas livros sem séries e na tela de séries não aparecer os livros".
+- **Decidido:**
+  - **As cores dos temas voltam às de antes do redesenho** (as da D26 e da D60): o fundo, a folha, o poço,
+    as três tintas, o fio e a tábua nos dois temas; no escuro, também o post-it, a pauta e o cabeçalho da
+    pauta; os tokens dos desenhos da D60 voltam aos valores dela; e a cortina, que usa "o papel", acompanha.
+    O resto da D61 fica: o papel (folhas, fichas, etiquetas), o latão, a luz e a fita.
+  - **Livros e séries separados nas páginas de um livro:** a fileira de cima e os vizinhos (anterior e
+    próximo) da página de um livro só têm os livros da coleção (Carreira não aponta mais para a série); na
+    página da série, só as séries. Com uma série só, a página dela fica sem fileira (teria só o lugar vazio
+    da própria série) e sem vizinhos; a fileira volta sozinha quando houver outra série. `/categories/` e
+    `/series/` já eram separadas.
+- **O bug da fileira** (achado ao corrigir): a animação ligada à rolagem estava escrita com o atalho
+  `animation` e o `animation-timeline` logo depois. No build, o minificador do CSS (Lightning CSS) junta os
+  dois num atalho só, com a timeline dentro, e o Chrome descarta a declaração inteira: no site publicado, a
+  fileira não encolhia (no dev, sem minificar, funcionava, e por isso os protótipos não mostraram o bug). O
+  mesmo acontecia com a sombra que o cabeçalho ganha ao rolar, quebrada no ar desde 24/09/2026. Os dois
+  passaram para as propriedades separadas (`animation-name`, `-timing-function`, `-fill-mode`,
+  `-timeline`, `-range`), que o minificador não junta; a regra foi para `.claude/rules/interface.md`.
+- **Mudado:** `src/styles/tokens.ts`, `src/components/FileiraTopo.astro`, `src/components/Cabecalho.astro`,
+  `src/pages/categories/[categoria].astro`, `src/pages/series/java.astro`, o `DESIGN.md` (o YAML e as
+  seções de cores), este registro, o painel, o briefing e a regra de interface.
+- **Conferido:** `astro check` com 0 erros e 0 avisos; build limpo (`--force`, porque o tema do código sai
+  das cores) com 96 páginas; `npm run links` e `npm run contraste` sem falha; a fileira medida no build
+  (100% no alto, 80% aos 180px de rolagem, 60% dos 400px em diante, grudada sob o cabeçalho), a sombra do
+  cabeçalho, as fileiras sem a série, os vizinhos de Carreira e a página da série, nos dois temas.

@@ -309,6 +309,11 @@ src/evidencias/<slug>/   prints que provam algo do texto (PNG)
 - O espaço entre dois `<tspan>` some ao embutir o SVG: use `&#160;`.
 - Antes de commitar (quando pedido): `git status --untracked-files=all`, e nada com " 2" no nome.
 - Deploy preso na fila: cancelar e reexecutar o workflow (o `gh` está instalado nesta máquina).
+- Mudou um token de cor? O tema dos blocos de código sai dos tokens (`src/lib/codigo.ts`), e o deploy
+  reaproveita o cache de conteúdo da execução anterior (`withastro/action`): os posts `.md` que não
+  mudaram saem apontando para um `ec.*.css` que não existe mais (na D61, a série Java). Depois do
+  push, apague os caches `astro-cache-*` do Actions (`gh cache delete`) e rode o deploy de novo (`gh
+  run rerun`), ou confira o site no ar com a fumaça.
 - Push sempre pelo remoto SSH (`origin` = `git@github.com:cesarschutz/blog.git`): pelo HTTPS com o
   token do `gh`, o GitHub recusa qualquer push que mexa em `.github/workflows/` (falta o escopo
   `workflow`). E lembre: push na `main` publica o site (D34).

@@ -109,6 +109,11 @@ Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
 - O Chrome não pinta um elemento com `view-transition-name` dentro de um pai com opacidade 0: ele só
   aparece de repente quando o pai volta a 1. Para animar o elemento chegando, tire o nome dele (ou do
   pai) enquanto a opacidade estiver em zero, e devolva depois (D52).
+- **Animação ligada à rolagem** (`animation-timeline: scroll()` ou `view()`): escreva nas propriedades
+  separadas (`animation-name`, `animation-timing-function`, `animation-fill-mode`, `animation-timeline`,
+  `animation-range`), nunca o atalho `animation` com a timeline depois. O minificador do build (Lightning
+  CSS) junta os dois num atalho só, com a timeline dentro, e o Chrome descarta a declaração: funciona no
+  dev e some no site publicado (D62).
 - O `clearProps: "all"` do GSAP apaga o `style` inline **inteiro** do elemento, inclusive o que não
   foi o próprio GSAP quem pôs ali (cores e medidas em variáveis CSS escritas no HTML): passe a lista
   das propriedades que a animação mexeu, nunca `"all"` num elemento com estilo próprio (D52, revisão

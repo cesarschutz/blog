@@ -3,28 +3,28 @@ version: alpha
 name: Blog de Cesar Schutz, Papel e luz
 description: >-
   Blog técnico em pt-BR. Papel, tinta, latão e luz (D61): o conteúdo em papel (fichas, folhas lisas e
-  etiquetas) sobre o papel quente, abajures de latão sobre os livros, azul-tinta no que é clicável e
+  etiquetas) sobre o fundo claro (no escuro, o preto esverdeado), abajures de latão sobre os livros, azul-tinta no que é clicável e
   categorias como livros de uma coleção. Os valores de cor espelham src/styles/tokens.ts
   (interface) e docs/capas (livros); quem muda um valor muda os dois.
 colors:
   # Interface, tema claro (tokens.ts, claro)
   primary: "#2549B8"
   on-primary: "#FFFFFF"
-  neutral: "#EFEAE2"
-  surface: "#FFFDF9"
-  on-surface: "#1B1A18"
-  on-surface-variant: "#5C5750"
-  ink-3: "#8A847A"
-  rule: "#E4DDD2"
-  well: "#F5F2EC"
+  neutral: "#F1F0EB"
+  surface: "#FFFFFE"
+  on-surface: "#1A2124"
+  on-surface-variant: "#57605E"
+  ink-3: "#868D8A"
+  rule: "#E2E0D8"
+  well: "#F5F5F4"
   aviso-nota: "#3F5878"
   aviso-dica: "#2F6B4F"
   aviso-importante: "#654262"
   aviso-atencao: "#9A6B12"
   aviso-cuidado: "#A3432A"
   quadro: "#FFFFFF"
-  tabua: "#B2AEA7"
-  tabua-borda: "#9B9892"
+  tabua: "#B5BAB4"
+  tabua-borda: "#9BA19B"
   aparador: "#7A8280"
   aparador-luz: "#9AA19F"
   aparador-fundo: "#6F7775"
@@ -41,13 +41,13 @@ colors:
   caneta: "#1F4FB5"
   marca-texto: "#FFE27A"
   # Desenhos do corpo do post (tokens.ts, D60): a base do painel e a tinta
-  painel-desenho: "#FFFDF9"
-  tinta-desenho: "#1B1A18"
-  tinta-desenho-2: "#55504A"
+  painel-desenho: "#FFFFFE"
+  tinta-desenho: "#1A2124"
+  tinta-desenho-2: "#50595A"
   # Papel e luz (tokens.ts, D61): a cortina da troca de página, a luz quente dos livros e do mouse, a
   # lâmpada, o latão dos abajures e da cordinha, e a fita que cola os papéis
   cortina: "#1B2A5E"
-  cortina-tinta: "#EFEAE2"
+  cortina-tinta: "#F1F0EB"
   luz-quente: "#FFECC8"
   sombra-quente: "#3C2608"
   halo-quente: "#FFAA46"
@@ -70,23 +70,23 @@ colors:
   # Interface, tema escuro (tokens.ts, escuro)
   primary-escuro: "#93AEFF"
   on-primary-escuro: "#0D1530"
-  neutral-escuro: "#1C1814"
-  surface-escuro: "#25201B"
-  on-surface-escuro: "#EEE6D8"
-  on-surface-variant-escuro: "#B8AD9C"
-  ink-3-escuro: "#8F8574"
-  rule-escuro: "#3A3129"
-  well-escuro: "#2F2924"
+  neutral-escuro: "#111618"
+  surface-escuro: "#1A2124"
+  on-surface-escuro: "#E7E9E4"
+  on-surface-variant-escuro: "#A9B0AC"
+  ink-3-escuro: "#7F8884"
+  rule-escuro: "#2A3336"
+  well-escuro: "#21282A"
   lousa-escuro: "#CFD5D1"
   lousa-borda-escuro: "#8F989D"
   lousa-caneta-escuro: "#16212B"
   lousa-mistura-escuro: "#0B6F58"
   caneta-escuro: "#8FA8FF"
   marca-texto-escuro: "#FFD65A" # a 30% sobre a folha (rgba(255, 214, 90, .30))
-  painel-desenho-escuro: "#2D2A26" # com 10% da cor do livro (D60; valores da D61)
-  tinta-desenho-escuro: "#D5CEC2"
-  tinta-desenho-2-escuro: "#C4BCB0"
-  cortina-escuro: "#EFEAE2"
+  painel-desenho-escuro: "#232B2E" # com 10% da cor do livro (D60)
+  tinta-desenho-escuro: "#CDD3CD"
+  tinta-desenho-2-escuro: "#BCC3BE"
+  cortina-escuro: "#F1F0EB"
   cortina-tinta-escuro: "#1B2A5E"
   luz-quente-escuro: "#FFE3B4"
   sombra-quente-escuro: "#000000"
@@ -281,7 +281,7 @@ components:
     backgroundColor: "{colors.primary-escuro}"
     textColor: "{colors.on-primary-escuro}"
   painel-desenho:
-    backgroundColor: "color-mix(in oklab, #2d4b46 11%, #FFFDF9)"
+    backgroundColor: "color-mix(in oklab, #2d4b46 11%, #FFFFFE)"
     rounded: "{rounded.painel}"
   aviso-nota:
     backgroundColor: "{colors.surface}"
@@ -417,10 +417,11 @@ detalhe de cada peça está em `docs/redesenho/rodada-4/` (`direcao.md`, `direca
 `controle.md`, com os pedidos do Cesar numerados) e em `docs/redesenho/rodada-3/` (a luz, as trocas
 de página e os ganchos das peças).
 
-- **A cara:** o papel quente no claro (fundo #EFEAE2, folha #FFFDF9, tinta #1B1A18) e o marrom na
-  meia-luz no escuro (fundo #1C1814, folha #25201B, tinta #EEE6D8). O azul-tinta continua sendo a cor
-  de interação; a cor do livro, a caneta azul e os tons das figuras não mudam. Nada de madeira, cortiça
-  ou alfinete: o que fica de marcenaria é o latão dos abajures e da cordinha.
+- **A cara:** as cores de antes do redesenho (D62): no claro, fundo #F1F0EB, folha #FFFFFE e tinta
+  #1A2124; no escuro, o preto esverdeado (fundo #111618, folha #1A2124, tinta #E7E9E4). A rodada 4 tinha
+  trocado pelo papel quente do 20 e pelo marrom do 19, e o Cesar preferiu as de antes. O azul-tinta
+  continua sendo a cor de interação; a cor do livro, a caneta azul e os tons das figuras não mudam. Nada
+  de madeira, cortiça ou alfinete: o que fica de marcenaria é o latão dos abajures e da cordinha.
 - **Tudo é papel, e só três papéis** (`direcao-papel.md`):
   - a **folha**: lisa, canto de 2px, sem borda, a sombra curta da espessura do papel e o grão;
   - a **ficha de catálogo**: canto de 6px, com a tira em mono (`Vol. 03 · ficha 2 · nº 024`) sobre o
@@ -455,7 +456,9 @@ de página e os ganchos das peças).
 - **Páginas:**
   - **Tags:** a nuvem numa folha e o fichário de aço com as gavetas das letras (na vertical, ao lado, em
     tela grande; embaixo e na horizontal, no celular).
-  - **Página do livro:** a fileira no alto, que encolhe ao rolar, e as tags em volta do livro.
+  - **Página do livro:** a fileira no alto, que encolhe ao rolar, e as tags em volta do livro. A
+    fileira e os vizinhos só têm os livros da coleção; na página da série, só as séries (sem fileira
+    enquanto houver uma só, D62).
   - **Post:** a cartolina da cor do livro atrás da ilustração do topo, o "Neste artigo" em post-it, a
     ficha "Do livro" e o anterior e o próximo como fichas com fita.
   - **Listas:** a partir de 1100px, o livro 3D à direita de cada artigo, virado para o texto. Na página
@@ -473,7 +476,7 @@ de página e os ganchos das peças).
 ## Overview
 
 Visual **"Papel e luz"** (D61; antes, as "Folhas claras" da D26): um blog técnico que parece caderno
-de estudo, não produto. Papel quente, onde o conteúdo fica em **papel** (folhas, fichas e etiquetas)
+de estudo, não produto. Fundo claro (no escuro, o preto esverdeado, D62), onde o conteúdo fica em **papel** (folhas, fichas e etiquetas)
 com a sombra curta da espessura dele, e a luz de latão sobre os livros. **Azul-tinta
 em tudo que é clicável** e só nele. Títulos com serifa (Besley), texto longo em Literata e **a
 interface numa fonte sem serifa** (IBM Plex Sans). As categorias são **livros** de uma coleção, e
@@ -493,13 +496,13 @@ mexer na página. O site não tem som.
 
 **Interface (tokens de `src/styles/tokens.ts`).**
 
-- **Papel da página (`neutral`, #EFEAE2; no escuro, #1C1814):** o fundo quente sobre o qual as folhas
-  ficam.
-- **Folha (`surface`, #FFFDF9; no escuro, #25201B):** a superfície de todo conteúdo principal.
-- **Tinta (`on-surface`, #1B1A18):** texto e traço dos desenhos. **Tinta 2 (#5C5750)** para
-  metadados e legendas; **tinta 3 (#8A847A)** só para texto grande ou decorativo, e só sobre a folha.
-- **Fio (`rule`, #E4DDD2):** divisórias (as folhas não têm mais borda desenhada, D61).
-- **Poço (`well`, #F5F2EC):** código e cabeçalho de tabela, a folha com 4% de tinta, quente.
+- **Papel da página (`neutral`, #F1F0EB; no escuro, #111618):** o fundo claro e quente sobre o qual as
+  folhas ficam.
+- **Folha (`surface`, #FFFFFE; no escuro, #1A2124):** a superfície de todo conteúdo principal.
+- **Tinta (`on-surface`, #1A2124):** texto e traço dos desenhos. **Tinta 2 (#57605E)** para
+  metadados e legendas; **tinta 3 (#868D8A)** só para texto grande ou decorativo, e só sobre a folha.
+- **Fio (`rule`, #E2E0D8):** divisórias (as folhas não têm mais borda desenhada, D61).
+- **Poço (`well`, #F5F5F4):** código e cabeçalho de tabela, a folha com 4% de tinta.
 - **Azul-tinta (`primary`, #2549B8; #93AEFF no escuro):** a única cor de interação. Links de texto,
   item ativo do menu, o botão principal (`.botao-primario`), seletor Lista/Cards, item atual da paginação e
   foco. A navegação do cabeçalho e do rodapé, as pílulas e os botões secundários ficam na tinta e só
@@ -525,11 +528,10 @@ mexer na página. O site não tem som.
   4,5:1 sobre a folha e o painel de todos os livros, e a tinta sobre o lavado também (`npm run
   contraste`). A capa continua com a cor do livro como única cor.
 - **O escuro dos desenhos do corpo** (D60): figuras, animações e lousas ficam num painel próprio, um
-  pouco acima da folha e mais neutro (`painel-desenho`, #2D2A26 com 10% da cor do livro), com a tinta
-  um pouco menos branca (`tinta-desenho`, #D5CEC2; a secundária, #C4BCB0), caixas com mais cor e a
-  sombra hachurada mais discreta. No claro, nada muda, menos a tinta secundária dos desenhos (#55504A),
-  um pouco mais escura para passar de 4,5:1 sobre o lavado. (Valores da D61: as mesmas relações da D60
-  no papel quente.)
+  pouco acima da folha e mais neutro (`painel-desenho`, #232B2E com 10% da cor do livro), com a tinta
+  um pouco menos branca (`tinta-desenho`, #CDD3CD; a secundária, #BCC3BE), caixas com mais cor e a
+  sombra hachurada mais discreta. No claro, nada muda, menos a tinta secundária dos desenhos (#50595A),
+  um pouco mais escura para passar de 4,5:1 sobre o lavado.
 - **Marca e véu** (D33): o livro "cs" e o fundo do visor de imagens.
 - **Pauta do caderno** (D52, `caderno-pauta`, #BEBAB0, igual nos dois temas): as linhas do miolo do
   caderno "cs", onde a capa abre (a marca do cabeçalho, a marca grande da home e o caderno da

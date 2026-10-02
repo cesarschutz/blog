@@ -1,7 +1,7 @@
 # Estado do projeto
 
 Painel, não diário: fase atual, próximos passos, perguntas abertas e riscos. O detalhe de cada rodada
-fica em `docs/decisoes.md` (D1 a D61) e no histórico do git; controles de rodadas fechadas, em
+fica em `docs/decisoes.md` (D1 a D62) e no histórico do git; controles de rodadas fechadas, em
 `docs/historico/`.
 
 ## Fase atual
@@ -18,6 +18,12 @@ quente. O resumo do visual está na seção "Papel e luz (D61)" do `DESIGN.md`, 
 `docs/redesenho/rodada-4/`. As quatro rodadas (10 modelos; 11 a 15; 16 a 20; a versão final com as
 amostras) estão em `docs/redesenho/`. Os protótipos e as amostras ficaram só nesta máquina, fora do
 git (`redesenho/`, no `.gitignore`).
+
+**Ajustes do Cesar no site novo (D62, 02/10/2026):** as cores dos temas voltaram às de antes do
+redesenho (o claro mais branco e o escuro preto esverdeado); a página de um livro mostra só os livros
+na fileira e nos vizinhos, e a da série só as séries (com uma série só, fica sem fileira); e a fileira
+que encolhe ao rolar, quebrada no ar pelo minificador do CSS, voltou a funcionar (a sombra do cabeçalho
+ao rolar também).
 
 Tudo até a D52 está commitado, inclusive o C04 (a caneta preta como identidade) e o C05 (a papelaria
 de estudo: post-it "Neste artigo", ficha do livro, cola dos atalhos, commitado pelo Cesar em
@@ -151,6 +157,7 @@ e `Animacao`, e a página sai.
 | D59 | a lousa no estilo das figuras (canetinha colorida), o destaque da legenda revisto e a revisão de todo desenho (`revisar.mjs`) |
 | D60 | o escuro dos desenhos do corpo: painel um pouco acima da folha, caixas com cor, tinta menos branca |
 | D55, D61 | o redesenho: 10 modelos, mais três rodadas e a versão final no ar (papel, tinta, latão e luz) |
+| D62 | as cores dos temas de antes do redesenho, livros e séries separados nas páginas de um livro, a fileira que encolhe consertada |
 
 ## Próximos passos
 
