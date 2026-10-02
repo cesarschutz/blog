@@ -76,6 +76,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D63 | Post detalhado (com TL;DR recolhível) ou resumo (com infográfico), combinado com o Cesar antes de escrever, e links ao longo do texto | em vigor; o Cesar revê no próximo post |
 | D64 | Marcas: todo logo só como a regra de marca do dono permite, conferida e registrada; ícones genéricos no lugar dos proibidos | decidido |
 | D65 | Os controles em prova nos posts: as opções marca-texto, caderno e post-it, cada uma numa lousa de passos, numa de comparação e numa animação | em prova |
+| D66 | O post dos mods ("Quanto custou cada agente?"): publicado direto, com as telas do cockpit em print parado, as tags Claude Code e Plugins e o print largo que rola de lado no celular | decidido e publicado; o Cesar revê no ar |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -2527,3 +2528,86 @@ nada muda.
   cada uma com uma lousa de passos e uma animação com play, as mesmas dos posts, dizendo de que post vem
   cada peça, com o link para a lousa de comparação no post. Sai do ar junto com a do protótipo.
 
+
+## D66 · O post dos mods: prints do cockpit, tags Claude Code e Plugins, e o print largo
+- **Data:** 02/10/2026 · **Status:** decidido e publicado; o Cesar revê no ar.
+- **Pedido do Cesar:** um post novo, "Quanto custou cada agente? — Do CLAUDE.md ao mod no Claude Code"
+  (`claude-code-do-claude-md-ao-mod`), feito por orquestração (pesquisa em paralelo, texto de um autor
+  só, visuais projetados por um agente e desenhados por outros, revisão às cegas), numa branch saída da
+  `main`, e publicado no fim. Antes de começar, ele decidiu quatro coisas:
+  - **publicar direto no fim**, com a caneta aplicada pelo guia, sem a aprovação prévia da proposta (o
+    prompt do post dizia para não publicar e esperar o OK; a mensagem dele pediu a publicação, e ele
+    confirmou);
+  - **as telas do cockpit como print parado:** os desenhos do `claude-code-kit` são SVG com cor fixa,
+    bloco de estilo e animação que roda sozinha, o que as regras das figuras não aceitam. Entra o quadro
+    final de cada um, em PNG, pelo `Evidencia`, com a legenda dizendo que é desenho de uma sessão real e o
+    clique abrindo o README. A animação fica no GitHub;
+  - **livro IA** (é o primeiro post dele) e as **tags novas** `Claude Code` e `Plugins`, com os ícones
+    propostos: um terminal de vídeo antigo com o prompt e o cursor, e um plugue de tomada de dois pinos
+    com o fio;
+  - **o slug** `claude-code-do-claude-md-ao-mod`.
+- **Formato (D63):** detalhado, com o TL;DR. Ficou com cerca de 3.300 palavras (2.900 fora das tabelas),
+  acima do teto de ~3.000 do formato, porque o pedido listava onze seções e "um post só". Se ele quiser
+  encurtar, o que sai para um segundo post são as seções do marketplace, dos comandos e de como se testa
+  um mod (cerca de 600 palavras, mais a lousa), que juntas contam "como publicar e manter um plugin".
+- **Escolhas feitas para não parar** (voltam atrás com pouco trabalho):
+  - **`Evidencia` com `larga` e `foco`.** O print de um terminal é largo e de letra miúda: encolhido no
+    celular, a letra some (5px). Com `larga`, até 700px ele fica com 720px e rola de lado dentro da
+    moldura, com o aviso "Arraste para o lado", como as figuras. Com `foco` (a fração da largura, contada
+    da direita, que tem de caber na tela), o print começa pela parte que importa: no da abertura, o
+    painel, e a conversa fica rolando para a esquerda. O print largo também ganhou fontes maiores (até
+    2240px) e o `sizes` da coluna do texto, para a tela de alta densidade; as imagens foram fotografadas
+    com o triplo da resolução.
+  - **A linha do tempo em duas colunas** (a data com a versão entre parênteses; a peça em negrito com a
+    frase). Com quatro colunas, em 390px a coluna da frase ficava com 134px, uma palavra por linha, e a
+    tabela ainda rolava de lado; com duas, cabe na tela de 320 a 1600px.
+  - **Sem o campo `codigo`:** ele é do `blog-exemplos`; o repositório do kit está no texto.
+  - **A linha de status na tabela e na lista das peças:** não estava no pedido, mas é a peça que mostra
+    custo antes dos mods, e deixá-la de fora enfraquecia a afirmação da abertura.
+  - **Na lista das peças, o MCP logo depois do `CLAUDE.md` e a skill antes do plugin** (a tabela segue as
+    datas): a definição de plugin cita a skill, e o MCP já estava na ferramenta no lançamento.
+  - **A seção do marketplace com a lousa no lugar de dois parágrafos:** os passos da lousa contam o
+    caminho da instalação e a regra da versão; o texto só dá a fonte e o caso da peça avulsa.
+- **Caneta:** 35 marcações, aplicadas pelo guia sem a proposta aprovada antes (pedido dele); a lista, com
+  o motivo de cada uma, foi no relatório da sessão. Ajuste que ele pedir vai para "Ajustes do Cesar" no
+  `docs/marcacoes.md`.
+- **Visuais:** a capa (a janela do Claude Code com o painel, uma etiqueta de preço em cada agente, a
+  caneta que desenha por dentro e a pilha de textos de fora), a figura "por dentro e por fora" (onde cada
+  peça age, com cinco tons) e a lousa de passos da instalação. Ficaram de fora a escada em lousa (nove
+  passos não cabem em 1100 com as letras mínimas) e a anatomia das pastas (o bloco do `hooks.json` já
+  mostra a única diferença do mod). Tons do post: azul, o texto para o modelo; âmbar, as ferramentas do
+  MCP; verde, o hook; roxo, a pasta, o repositório e o catálogo; petróleo, o mod; vermelho, só a
+  atualização que não chega.
+- **Como foi conduzido** (o Cesar pediu para pesquisar quando usar cada modelo): pela tabela de modelos
+  da referência da API (25/09/2026), o Fable 5.1 custa US$ 10 / 50 por milhão de tokens, o Opus 5.5
+  custa 4 / 20 e o Sonnet 5.5 custa 2 / 10. Sonnet: a pesquisa com escopo fechado (datas, links, leitura
+  do kit, comandos), os ícones das tags e a execução dos três desenhos. Opus: o texto, de um autor só, e
+  a revisão às cegas (só o post e a lista de fatos). Fable: o projeto dos visuais, uma chamada. Entre o
+  projeto e a execução, o orquestrador conferiu o projeto contra os fatos e as regras e corrigiu três
+  pontos (o `CLAUDE.md` fora da pasta do plugin, a figura sem selos de ordem, o detalhe vivo da capa).
+- **O que a pesquisa corrigiu nos fatos do pedido:** os comandos próprios não vieram no lançamento
+  (0.2.31, em 05/03/2025); os temas próprios são de 22/04/2026 (2.1.118); a quarta aba do cockpit se
+  chama "Arquivos"; o `/usage` já mostrava a fatia dos subagentes em percentual, e a abertura diz isso.
+- **O que não deu para confirmar, e como ficou no texto:** "acesso antecipado na 2.1.283" não aparece
+  em fonte nenhuma (o repositório oficial já trazia o aviso em 09/09/2026): o texto diz "em setembro de
+  2026" e aponta o commit. A versão exata do dia do lançamento não está no changelog: a tabela diz
+  "lançamento". Se a "Contagem exata" do cockpit gasta token cobrado, a documentação não diz: o texto
+  diz que ela dispara requisições a mais, feitas pelo Claude Code.
+- **Conferido:** `check` (0 erros), `build`, `links` (nenhum quebrado), `contraste` (0 falhas), `conferir`
+  no dev e no build (320 a 1600px, dois temas e movimento reduzido), `validar.mjs` (3 de 3),
+  `revisar.mjs` (sem problema automático), o detector do Impeccable nos arquivos do post (zero achados),
+  Lighthouse no build (100 em acessibilidade, boas práticas e SEO, no celular e no desktop), o trace no
+  celular com CPU 4× (LCP de 0,75 s, CLS zero) e os testes do cockpit (`claude plugin test`: 15 de 15,
+  numa cópia da pasta). Achado fora do post: no desktop, o botão da busca do cabeçalho tem um
+  `aria-label` ("Buscar") que não contém o texto visível ("Buscar ⌘K").
+- **Para o Cesar decidir, anotado no painel:** as tabelas largas no celular (as colunas encolhem até uma
+  palavra por linha antes de a tabela rolar de lado; aqui foi resolvido no conteúdo, mas vale uma regra
+  no CSS para todos os posts).
+- **Trabalho numa worktree:** havia outras três sessões abertas na pasta do projeto, uma delas trocando
+  de branch ali. O post foi feito em `.claude/worktrees/post-do-claude-md-ao-mod`, com o dev na porta 4370.
+- **Mudado:** `src/content/posts/claude-code-do-claude-md-ao-mod.mdx`, a capa, a figura, a lousa e os
+  prints (`src/ilustracoes/`, `src/figuras/`, `src/lousas/` e `src/evidencias/` do slug),
+  `src/components/Evidencia.astro`, `scripts/desenho/tags.mjs` (os dois ícones e o ajudante `fita`),
+  `src/livros/tags/claude-code.svg` e `plugins.svg`, as fotos dos livros (o IA passou a ter um artigo:
+  `ia-deitado.webp` nova, `ia-aberto.webp` fora), a skill `figura`, o `CAPAS.md`, o `DESIGN.md`, a lista
+  de revisão e o painel.

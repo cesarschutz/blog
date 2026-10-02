@@ -807,8 +807,9 @@ Cada post tem uma ilustração, e os diagramas seguem o mesmo traço:
 - **Os desenhos do corpo** (D58; regras na skill `figura` e na `lousa`): a figura (`Figura`), a lousa
   (`Lousa`, de passos ou de comparação), a animação com play (`Animacao`), os logos das ferramentas
   (`src/marcas/`, no texto com `Ferramenta`, só como a regra de marca do dono permite, D64) e o print
-  como evidência (`Evidencia`: borda, a linha com o que é e de onde, e o clique abre a origem). Nem todo
-  post tem todos.
+  como evidência (`Evidencia`: borda, a linha com o que é e de onde, e o clique abre a origem; o print
+  largo, de letra miúda, rola de lado no celular em vez de encolher, com `larga`, e pode começar pela
+  parte que importa, com `foco`, D66). Nem todo post tem todos.
 
 **Técnica (D11, D35):** SVG **desenhado à mão**, em coordenadas, com classes e variáveis CSS (sem
 `id`, sem `defs` próprios e sem cor fixa). O tremor é o filtro SVG global `feTurbulence`

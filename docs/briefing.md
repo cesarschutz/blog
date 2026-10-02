@@ -610,7 +610,10 @@ com a rolagem. Use no máximo de vez em quando; o Cesar pode removê-la.
 - **Print como evidência**: só quando prova algo que o texto diz e dá para garantir que está certo
   (a documentação oficial dizendo o número citado, um erro, um painel). Tela que pede login (console
   da AWS, painéis internos): o Cesar tira o print. Com borda, uma linha embaixo dizendo o que é e de
-  onde veio, e o clique abre a página de origem em outra aba.
+  onde veio, e o clique abre a página de origem em outra aba. O print largo, de letra miúda (a tela de
+  um terminal), rola de lado no celular em vez de encolher, e pode começar pela parte que importa
+  (D66). Uma tela que o próprio Cesar desenhou, com os textos e os números de uma sessão real, entra
+  como print parado (o quadro final do desenho), com a legenda dizendo que é desenho (D66).
 
 Regras técnicas, classes e tempos: skill `figura`, `docs/estilo-desenho.md` e `docs/movimento.md`.
 

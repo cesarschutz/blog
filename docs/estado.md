@@ -1,7 +1,7 @@
 # Estado do projeto
 
 Painel, não diário: fase atual, próximos passos, perguntas abertas e riscos. O detalhe de cada rodada
-fica em `docs/decisoes.md` (D1 a D65) e no histórico do git; controles de rodadas fechadas, em
+fica em `docs/decisoes.md` (D1 a D66) e no histórico do git; controles de rodadas fechadas, em
 `docs/historico/`.
 
 ## Fase atual
@@ -145,6 +145,18 @@ registrada em `src/marcas/regras.json`; o build quebra com logo sem registro ou 
 redesenhados, só o do Kubernetes pode ficar; os outros saíram dos três posts (no texto, só o nome; nos
 desenhos, ícones genéricos da casa: banco, fila, tópico, aplicação, servidor).
 
+Post novo de 02/10/2026 (D66, **publicado**): `claude-code-do-claude-md-ao-mod`, "Quanto custou cada
+agente? — Do CLAUDE.md ao mod no Claude Code", o primeiro do livro IA, com as tags novas Claude Code e
+Plugins (ícones novos). Formato detalhado, com o TL;DR: a linha do tempo das peças de extensão do Claude
+Code (de 24/02/2025 a 01/10/2026, cada data conferida no changelog e no npm), cada peça num parágrafo,
+o marketplace, os comandos, o mod e o csr-cockpit, do `claude-code-kit` do Cesar. Visuais: capa viva,
+uma figura (onde cada peça age), uma lousa de passos (da instalação à atualização) e quatro prints
+parados do cockpit (os desenhos do kit fotografados). O `Evidencia` ganhou `larga` e `foco`, para o
+print de terminal rolar de lado no celular. A caneta entrou com 35 marcações, aplicadas sem a
+aprovação prévia, a pedido dele: **o Cesar revê o post no ar** (o texto, a caneta, o TL;DR e os links ao
+longo do texto, que é o lembrete da D63). Feito numa worktree
+(`.claude/worktrees/post-do-claude-md-ao-mod`), porque havia outras sessões na pasta do projeto.
+
 ## Como ver
 
 - Dev: `fnm exec --using=24 npm run dev -- --host 127.0.0.1` (<http://127.0.0.1:4322>); parar com
@@ -181,12 +193,15 @@ desenhos, ícones genéricos da casa: banco, fila, tópico, aplicação, servido
 | D63 | post detalhado (com TL;DR recolhível) ou resumo (com infográfico), combinado antes de escrever, e links ao longo do texto |
 | D64 | as marcas: regra de marca de cada logo conferida e registrada; só o Kubernetes redesenhado; ícones genéricos no lugar dos outros |
 | D65 | os controles em prova nos posts: marca-texto, caderno e post-it, cada um numa lousa de passos, numa de comparação e numa animação |
+| D66 | o post dos mods ("Quanto custou cada agente?"), o primeiro do livro IA: prints parados do cockpit, tags Claude Code e Plugins, e o print largo que rola de lado no celular |
 
 ## Próximos passos
 
-0. **No próximo post (D63):** pedir ao Cesar que veja como ficaram o formato combinado, o TL;DR
-   recolhível (ou o infográfico, se for resumo) e os links ao longo do texto, e ajustar o que ele
-   disser. Depois disso, tirar o lembrete da skill `post` e este item.
+0. **O post dos mods (D66) é o "próximo post" da D63:** o pedido para o Cesar ver como ficaram o
+   formato combinado, o TL;DR recolhível e os links ao longo do texto foi feito no relatório da sessão
+   de 02/10/2026. Falta a resposta dele: ajustar o que ele disser e, depois disso, tirar o lembrete da
+   skill `post` e este item. No mesmo post, ele revê as 35 marcações da caneta (aplicadas sem a
+   aprovação prévia, a pedido dele).
 1. **Documentos do visual novo (D61):** reescrever o `DESIGN.md` inteiro para "papel e luz" (hoje a
    seção da D61 vence as antigas, e no resto só os valores mudaram) e o `docs/briefing.md` §4 a §7 no
    mesmo passo; conferir também `docs/movimento.md` (a abertura, a cortina e as chegadas mudaram).
@@ -240,6 +255,18 @@ Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
     arquivos, com o seu OK)? Os ícones oficiais da AWS nos diagramas (só para cliente da AWS e sem
     alterar tamanho, cor ou forma)? Uma nota de marcas no rodapé ("os nomes de produtos citados são marcas
     dos respectivos donos; este blog não tem vínculo com eles"), que várias políticas pedem?
+12. **Post dos mods (D66), o que ficou para decidir:**
+    - o tamanho: cerca de 3.300 palavras, acima do teto de ~3.000 do formato detalhado. Fica assim, ou
+      as seções do marketplace, dos comandos e de como se testa um mod viram um segundo post ("como
+      publicar e manter um plugin")?
+    - as tabelas largas no celular: hoje as colunas encolhem até uma palavra por linha antes de a
+      tabela rolar de lado (a linha do tempo foi resolvida no conteúdo, em duas colunas). Vale uma
+      largura mínima no CSS das tabelas, para todos os posts?
+    - o campo `codigo` do post apontando para o `claude-code-kit` (hoje ele é só do `blog-exemplos`)?
+    - o botão da busca do cabeçalho: o `aria-label` "Buscar" não contém o texto visível ("Buscar ⌘K"),
+      o que o Lighthouse aponta no desktop. Troco pelo texto visível?
+    - a branch local `post-claude-code-mod` (vazia, criada na pasta do projeto antes da worktree) e a
+      worktree `.claude/worktrees/post-do-claude-md-ao-mod` podem ser apagadas depois da publicação.
 
 ## Riscos a acompanhar
 

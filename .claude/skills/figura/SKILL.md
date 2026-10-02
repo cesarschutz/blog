@@ -271,6 +271,18 @@ painel.
   fotografada (o clique abre ela em outra aba). `legenda`: o que é, curto ("Documentação do
   DynamoDB, boas práticas para a chave de partição"); o site sai sozinho depois dela.
 - O componente põe a borda (o print branco não se confunde com a folha) e não abre no visor.
+- **Print largo, de letra miúda** (a tela de um terminal, D66): a prop `larga`. Até 700px a imagem
+  fica com 720px e rola de lado dentro da moldura, com o aviso "Arraste para o lado", como as figuras.
+  Sem ela, o print encolhe com a tela e a letra some no celular. Fotografe com o triplo da resolução
+  (`--escala 3`): o print largo ocupa a coluna inteira do texto e precisa das fontes maiores.
+- **O que importa está à direita** (o painel ao lado da conversa): junto com `larga`, a prop `foco`,
+  a fração da largura, contada da direita, que tem de caber na tela do celular (`foco={0.535}`). O
+  print começa por essa parte, do tamanho em que ela cabe, e o resto fica rolando para a esquerda.
+- **Tela desenhada pelo próprio Cesar** (D66): os desenhos em SVG que ele fez de uma tela, com os
+  textos e os números de uma sessão real (os do `claude-code-kit`), entram como **print parado**: o
+  quadro final do SVG fotografado em PNG (`scripts/foto.mjs` numa página de apoio com o fundo do
+  cartão, esperando a animação terminar), a `legenda` dizendo que é desenho de uma sessão real e a
+  `fonte` apontando para a página onde o desenho mora. O SVG animado, de cor fixa, não entra no post.
 
 ## Validar, revisar e conferir (obrigatório antes de mostrar ao Cesar)
 
