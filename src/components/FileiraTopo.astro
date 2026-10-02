@@ -1,7 +1,7 @@
 ---
 /**
- * A fileira de cima da página do livro e da série (rodada 3, área 4: o topo do 14 com todos os livros).
- * Todos os livros 3D lado a lado, centrados, com a série no fim (24px de vão antes dela); o lugar do livro
+ * A fileira de cima da página do livro e da série (rodada 3, área 4: o topo do 14). Na página do livro, os
+ * livros da coleção; na da série, só as séries (D62). Os livros 3D lado a lado, centrados; o lugar do livro
  * aberto embaixo fica vazio, com o contorno tracejado. Clicar em outro troca de livro: o grande volta
  * para o vão e o escolhido desce para o painel (troca.js, tipo "livro"; Colecao.astro marca o clique).
  *
@@ -24,7 +24,7 @@ import Colecao from "./Colecao.astro";
 import type { Livro } from "../lib/estante";
 
 interface Props {
-  /** Todos os livros da fileira, na ordem da coleção: os volumes e, no fim, as séries. */
+  /** Os livros da fileira, na ordem da coleção: os volumes (página do livro) ou as séries (página da série). */
   livros: Livro[];
   /** O livro aberto embaixo: o lugar dele fica vazio. */
   atual: string;
@@ -90,6 +90,11 @@ const { livros, atual, chao = "vidro" } = Astro.props;
     overflow-clip-margin: 28px;
   }
 
+  /*
+   * Sempre nas propriedades separadas, nunca o atalho `animation` com `animation-timeline` depois: o
+   * minificador do build (Lightning CSS) junta os dois num atalho só, com a timeline dentro, que o Chrome
+   * descarta inteiro (a fileira não encolhia no site publicado; no dev, sem minificar, funcionava).
+   */
   @media (min-width: 861px) and (prefers-reduced-motion: no-preference) {
     @supports (animation-timeline: scroll()) {
       /* A caixa grudada continua do tamanho de antes; só a chapa (encolhida) pega o mouse. */
@@ -102,13 +107,17 @@ const { livros, atual, chao = "vidro" } = Astro.props;
       .chapa {
         pointer-events: auto;
         transform-origin: 50% 0;
-        animation: fileira-encolhe linear both;
+        animation-name: fileira-encolhe;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
         animation-timeline: scroll(root);
         animation-range: 0 360px;
       }
 
       .chapa::before {
-        animation: fileira-folha linear both;
+        animation-name: fileira-folha;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
         animation-timeline: scroll(root);
         animation-range: 160px 340px;
       }

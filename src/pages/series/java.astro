@@ -12,7 +12,7 @@
  */
 import Base from "../../layouts/Base.astro";
 import { paginaDeColecao } from "../../lib/seo";
-// Rodada 3, área 4: a fileira de cima com todos os livros, como na página do livro (no lugar do painel lateral).
+// Rodada 3, área 4: a fileira de cima, como na página do livro (no lugar do painel lateral); só com as séries (D62).
 import FileiraTopo from "../../components/FileiraTopo.astro";
 import TopoLivro from "../../components/TopoLivro.astro";
 import { montarLivros } from "../../lib/estante";
@@ -32,7 +32,9 @@ const versoes = await Promise.all(
 );
 const guia = resumos.find((r) => r.slug === GUIA_JAVA);
 const proxima = JAVA_LTS.find((v) => v.upcoming);
-const livros = await montarLivros();
+// A fileira de cima e os vizinhos: só as séries, sem os livros da coleção (D62). Com uma série só, não há para
+// onde trocar, e a fileira não aparece (ela teria só o lugar vazio desta).
+const livros = (await montarLivros()).filter((l) => l.serie);
 const i = livros.findIndex((l) => l.id === "serie-java");
 const livro = livros[i];
 const DESCRICAO =
@@ -46,7 +48,7 @@ const DESCRICAO =
   jsonLd={paginaDeColecao("Atualizações do Java", DESCRICAO, Astro.url.pathname, Astro.site)}
 >
   <div class="wrap pagina-do-livro">
-  <FileiraTopo livros={livros} atual={livro.id} />
+  {livros.length > 1 && <FileiraTopo livros={livros} atual={livro.id} />}
   <div class="java" style={`--cor:${java.destaque};--cor-texto:${java.destaqueTexto ?? java.destaque}`}>
     <TopoLivro
       livro={livro}

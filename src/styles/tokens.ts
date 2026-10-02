@@ -75,15 +75,14 @@ export type Token = (typeof TOKENS)[number];
 export type Paleta = Record<Token, string>;
 
 export const claro: Paleta = {
-  // Rodada 4 (a versão final, G4): o claro do 20, o papel quente (20-home-claro.png); a folha um nada creme,
-  // a tinta quente e o azul de sempre.
-  paper: "#EFEAE2", // fundo da página
-  "paper-hi": "#FFFDF9", // superfície das folhas
-  well: "#F5F2EC", // código e cabeçalho de tabela: a folha com 4% de tinta, quente
-  ink: "#1B1A18",
-  "ink-2": "#5C5750", // 5,98:1 no papel, 7,04:1 na folha
-  "ink-3": "#8A847A", // só texto grande ou decorativo, e só sobre a folha (D22, D26)
-  rule: "#E4DDD2",
+  // D62: as cores de antes do redesenho (a rodada 4 tinha trocado pelo papel quente do 20).
+  paper: "#F1F0EB", // fundo da página
+  "paper-hi": "#FFFFFE", // superfície das folhas
+  well: "#F5F5F4", // código e cabeçalho de tabela: a superfície com 4% de tinta
+  ink: "#1A2124",
+  "ink-2": "#57605E",
+  "ink-3": "#868D8A", // só texto grande ou decorativo, e só sobre a folha (D22, D26)
+  rule: "#E2E0D8",
   acento: "#2549B8", // azul-tinta: tudo que é clicável
   "sobre-acento": "#FFFFFF",
   "aviso-nota": "#3F5878",
@@ -92,10 +91,8 @@ export const claro: Paleta = {
   "aviso-atencao": "#9A6B12",
   "aviso-cuidado": "#A3432A", // também a linha removida no diff
   quadro: "#FFFFFF", // moldura dos diagramas antigos, que têm fundo branco embutido (briefing §8.1)
-  // Rodada 4: sem madeira (direção §0). A tábua que sobrou (a pilha do painel, a estante de lombadas antiga)
-  // é uma pedra cinza-quente: o papel com 26% de tinta, e a borda com 36%.
-  tabua: "#B2AEA7",
-  "tabua-borda": "#9B9892",
+  tabua: "#B5BAB4", // prateleira da estante e da pilha (docs/capas/CAPAS.md)
+  "tabua-borda": "#9BA19B",
   aparador: "#7A8280", // o aparador que separa categorias e séries: gradiente de três tons (CAPAS.md)
   "aparador-luz": "#9AA19F",
   "aparador-fundo": "#6F7775",
@@ -132,12 +129,12 @@ export const claro: Paleta = {
   "etiqueta-luz": "#FFFFFF",
   // Os desenhos do corpo do post (figuras, animações e lousas, D60): a base do painel e a tinta. No
   // claro, a folha e a tinta de sempre; o texto secundário um pouco mais escuro que o --ink-2, para
-  // passar de 4,5:1 sobre o fundo lavado das caixas. (D61: os mesmos papéis no papel quente.)
-  "painel-desenho": "#FFFDF9",
-  "tinta-desenho": "#1B1A18",
-  "tinta-desenho-2": "#55504A",
+  // passar de 4,5:1 sobre o fundo lavado das caixas.
+  "painel-desenho": "#FFFFFE",
+  "tinta-desenho": "#1A2124",
+  "tinta-desenho-2": "#50595A",
   cortina: "#1B2A5E", // o azul-tinta escuro (protótipo 14)
-  "cortina-tinta": "#EFEAE2", // o papel
+  "cortina-tinta": "#F1F0EB", // o papel
   // Rodada 3 (área A): a luz do brilho é quente nos dois temas (255 236 200); a sombra dos livros é
   // marrom-âmbar, nunca cinza (60 38 8); o halo quente embaixo deles (255 170 70); a luz do mouse, âmbar
   // claro em multiply (255 214 150); a lâmpada: brasa, âmbar e branco quente; o ponto de luz, latão.
@@ -159,16 +156,14 @@ export const claro: Paleta = {
 };
 
 export const escuro: Paleta = {
-  // Rodada 4 (G5): o escuro marrom do 19 (19-home-escuro.png), a sala na meia-luz, sem os tokens de
-  // madeira. A folha é a mais clara que deixa os tons dos desenhos com 4,5:1 no painel de SRE (npm run
-  // contraste). O preto e o azul-tinta de noite ficaram na amostra D2, nos protótipos do redesenho (D61).
-  paper: "#1C1814",
-  "paper-hi": "#25201B",
-  well: "#2F2924",
-  ink: "#EEE6D8",
-  "ink-2": "#B8AD9C",
-  "ink-3": "#8F8574",
-  rule: "#3A3129",
+  // D62: o preto esverdeado de antes do redesenho (a rodada 4 tinha trocado pelo marrom do 19).
+  paper: "#111618",
+  "paper-hi": "#1A2124",
+  well: "#21282A",
+  ink: "#E7E9E4",
+  "ink-2": "#A9B0AC",
+  "ink-3": "#7F8884",
+  rule: "#2A3336",
   acento: "#93AEFF",
   "sobre-acento": "#0D1530",
   "aviso-nota": "#9DB3D4",
@@ -177,9 +172,8 @@ export const escuro: Paleta = {
   "aviso-atencao": "#E0B560",
   "aviso-cuidado": "#E7957C",
   quadro: "#FFFFFF",
-  // A pedra cinza-quente na meia-luz: a folha com 14% de tinta; a borda, o papel com 30% de preto.
-  tabua: "#3D3831",
-  "tabua-borda": "#0D0A08",
+  tabua: "#3B4547",
+  "tabua-borda": "#2A3234",
   aparador: "#4E5759",
   "aparador-luz": "#687173",
   "aparador-fundo": "#434B4D",
@@ -197,21 +191,20 @@ export const escuro: Paleta = {
   // No escuro, o post-it é um papel âmbar apagado, que não brilha na página escura: o marca-texto escuro
   // (#FFD65A) a uns 14% sobre a folha, puxado para o quente (a mistura pura, #35372E, dava um oliva frio,
   // por causa do verde da folha escura); a pauta, a caneta a 18%; o cabeçalho, o Cuidado a 50%.
-  // (Na folha marrom do 19, os valores dele: o post-it âmbar apagado, a pauta e o cabeçalho.)
-  "post-it": "#3E372B",
-  pauta: "#3A3E48",
-  "pauta-cabeca": "#7E5A4C",
+  "post-it": "#39372D",
+  pauta: "#2C3746",
+  "pauta-cabeca": "#7A594F",
   etiqueta: "#FFF1BE",
   "etiqueta-papel": "#F2EDE2",
   "etiqueta-sombra": "#000000",
   "etiqueta-luz": "#FFFFFF",
   // No escuro (D60), o painel dos desenhos fica um pouco acima da folha e mais neutro (antes, a cor do
   // livro a 20% sobre a folha, quase preto e esverdeado), e a tinta um pouco menos branca, para o traço
-  // não brilhar no fundo escuro. (D61: a mesma distância sobre a folha marrom, sem puxar para o frio.)
-  "painel-desenho": "#2D2A26",
-  "tinta-desenho": "#D5CEC2",
-  "tinta-desenho-2": "#C4BCB0",
-  cortina: "#EFEAE2", // o papel do claro, com o texto azul (protótipo 14)
+  // não brilhar no fundo escuro.
+  "painel-desenho": "#232B2E",
+  "tinta-desenho": "#CDD3CD",
+  "tinta-desenho-2": "#BCC3BE",
+  cortina: "#F1F0EB", // o papel do claro, com o texto azul (protótipo 14)
   "cortina-tinta": "#1B2A5E",
   // Rodada 3 (área A): no escuro, a luz do brilho um nada mais âmbar; o núcleo da sombra, preto (o que se
   // vê é o halo quente embaixo); a luz do mouse, âmbar em screen (255 190 110); o ponto de luz, aceso.

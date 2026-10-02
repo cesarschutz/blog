@@ -3,8 +3,8 @@
  * Uma categoria (/categories/<Nome>/, com o nome cru na URL, como no blog atual: D7). Cada categoria
  * é um livro da coleção (D30), e todo livro tem página, mesmo sem artigos.
  *
- * Rodada 3, área 4 (a página do livro): no alto, a fileira do 14 com todos os livros, a série incluída
- * (FileiraTopo), que gruda sob o cabeçalho e encolhe ao rolar; embaixo dela, o painel do 15 (TopoLivro:
+ * Rodada 3, área 4 (a página do livro): no alto, a fileira do 14 com os livros da coleção, sem as séries
+ * (D62; FileiraTopo), que gruda sob o cabeçalho e encolhe ao rolar; embaixo dela, o painel do 15 (TopoLivro:
  * o texto à esquerda, o livro grande com as tags em volta à direita, os vizinhos como links de texto); e
  * os artigos com a alternância Lista / Cards. Com poucos artigos (F11-3), nada de vazio: de 1 a 3 cards,
  * a linha fica centrada, na largura normal de um card; com 1 ou 2, entra "Deste livro também:" com as
@@ -34,9 +34,10 @@ interface Props {
 
 const { grupo } = Astro.props;
 const { categoria, posts } = grupo;
-// A fileira de cima (rodada 3): todos os livros, os volumes e, no fim, as séries.
-const livros = await montarLivros();
-const i = livros.findIndex((l) => !l.serie && l.nome === categoria.nome);
+// A fileira de cima e os vizinhos (anterior e próximo): só os livros da coleção. As séries ficam na página
+// delas (D62).
+const livros = (await montarLivros()).filter((l) => !l.serie);
+const i = livros.findIndex((l) => l.nome === categoria.nome);
 const livro = livros[i];
 const anterior = livros[i - 1];
 const proximo = livros[i + 1];

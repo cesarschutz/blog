@@ -202,9 +202,13 @@ const ITENS = [
     box-shadow: inset 0 -1px 0 var(--rule);
   }
 
+  /* Nas propriedades separadas: com o atalho `animation`, o minificador do build põe a timeline dentro dele, e o
+     Chrome descarta a declaração (FileiraTopo.astro). */
   @supports (animation-timeline: scroll()) {
     .topo-fixo {
-      animation: fio-do-topo linear both;
+      animation-name: fio-do-topo;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
       animation-timeline: scroll(root);
       animation-range: 0 24px;
     }
