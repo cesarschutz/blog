@@ -79,6 +79,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D66 | O post dos mods ("Quanto custou cada agente?"): publicado direto, com as telas do cockpit em print parado, as tags Claude Code e Plugins e o print largo que rola de lado no celular | decidido e publicado; o Cesar revê no ar |
 | D67 | Figura em passos: um formato só no lugar da lousa de passos, da lousa de comparação e da animação com play (abre inteira, cada passo soma, nada some, o leitor manda) | em prova em `/animacoes-test-2/` |
 | D68 | Pedido do Cesar num post termina na pergunta "vira regra para os próximos posts?" | decidido |
+| D69 | O botão da busca do cabeçalho: o nome vem do texto "Buscar", sem `aria-label`, e a tecla desenhada fica fora do nome | decidido e publicado |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -2675,3 +2676,76 @@ nada muda.
   vezes, vira regra" continua.
 - **Onde:** CLAUDE.md ("Regras que valem sempre") e a skill `post` ("Regra de aprendizado" e o relatório
   final).
+
+## D69 · O botão da busca do cabeçalho: o nome vem do texto
+- **Data:** 02/10/2026 · **Status:** decidido e publicado (commit e push a pedido do Cesar).
+- **O achado** (Lighthouse 13.4.1 com axe-core 4.12.1, no desktop, auditoria
+  `label-content-name-mismatch`; visto no post dos mods, D66, e presente em toda página, por ser do
+  cabeçalho): o botão tinha `aria-label="Buscar"` e, na tela, "Buscar ⌘K". O nome não continha o texto
+  visível. O peso da auditoria é 0, e por isso a nota de acessibilidade seguia em 100.
+- **O que o botão mostra:** acima de 1100px, "Buscar ⌘K" no macOS e no iOS e "Buscar Ctrl K" fora deles
+  (o `data-ctrl-k` do script do `<head>`); em tela de toque larga (`hover: none`), só "Buscar"; até
+  1100px, só a lupa.
+- **Como a auditoria confere** (lido no axe-core que o Lighthouse embute): ela junta os textos pintados
+  dentro do botão, sem separador ("Buscar" + "⌘K"), tira símbolos como o ⌘ e exige que o resultado
+  ("buscark") esteja contido no nome ("buscar"). Texto com `aria-hidden` conta, porque está na tela. E a
+  regra só vale para quem tem `aria-label` ou `aria-labelledby`.
+- **Decidido** (o Cesar escolheu entre três opções): o nome vem do texto.
+  - sai o `aria-label`, e o nome do botão passa a ser o texto do `<span>Buscar</span>`;
+  - o `<kbd>` do atalho ganha `aria-hidden="true"`: é a tecla desenhada, e o atalho de verdade já vai no
+    `aria-keyshortcuts`;
+  - até 1100px, o "Buscar" sai só da vista (as seis declarações da `.sr` do `base.css`), no lugar do
+    `display: none`, que deixaria a lupa sem nome.
+- **Motivo:** o nome fica "Buscar" em toda largura e plataforma, o mesmo de antes para o leitor de tela,
+  sem JavaScript novo. Acima de 1100px nenhum CSS muda, e nenhum CSS do projeto seleciona por
+  `aria-label` ou `aria-hidden`.
+- **Alternativas, testadas no DOM antes de mexer no código:**
+  - manter o `aria-label` e só pôr `aria-hidden` no atalho: continua falhando;
+  - tirar o `aria-label` sem mexer no CSS: passa no desktop, mas até 1100px o botão fica sem nome
+    (`button-name`, peso 10, e a nota cai para 95);
+  - `aria-label="Buscar ⌘K"`: falha com o HTML de hoje, passa com um espaço entre o texto e o atalho e
+    volta a falhar com "Ctrl K". Pediria um script trocando o rótulo por plataforma, o leitor de tela
+    ouviria o atalho duas vezes e, no celular, o nome citaria um atalho que não está na tela;
+  - deixar como estava: a auditoria tem peso 0.
+- **Conferido** (pelo MCP `chrome-devtools`, numa aba de contexto isolado, no dev e no build):
+  - `check`: 0 erros e 0 avisos (5 dicas, de outros arquivos);
+  - Lighthouse em modo `navigation` no post, no dev e no build: 62 de 62 no desktop e 61 de 61 no
+    celular. A auditoria passa no desktop e não se aplica no celular (lá não há texto na tela); a
+    `button-name` passa nos dois. No build, o botão não aparece em nenhuma falha dos dez tipos de página
+    auditados (home, arquivo, Livros, um livro, Tags, uma tag, Séries, a série Java, a 404 e o post);
+  - prova de mutação: com o `display: none` de volta, a auditoria de celular cai para 95 e a de desktop
+    segue em 100. O modo `navigation` desenha mesmo a tela estreita;
+  - nome na árvore de acessibilidade do Chrome, em 1350 e em 412px: `button "Buscar"`, com o atalho em
+    `keyshortcuts`;
+  - aparência: 28 fotos da peça `.topo-fixo` (`scripts/foto.mjs`; 320, 390, 412, 768, 860, 861, 1100,
+    1101, 1280, 1350 e 1600px, nos dois temas, mais o mouse em cima em 860, 1100 e 1350px), antes ×
+    depois no dev e antes × build: 0 pixel diferente em todas. Pelo MCP, 18 fotos (1350, 1101, 1100,
+    860, 412 e 320px, nos dois temas, mais o "Ctrl K" e o foco do teclado): 0 pixel diferente na faixa
+    do cabeçalho;
+  - comportamento no build: em 1350px, o clique abre a busca, o Esc devolve o foco ao botão e os atalhos
+    ⌘K e Ctrl K abrem e fecham; em 412px, o toque na lupa abre e o Esc devolve o foco;
+  - `conferir` no build: ok nas 10 combinações e no movimento reduzido.
+- **A `main` andou no meio do trabalho:** outra sessão publicou a D67 e a D68 (commit `04f2ded`), sem
+  tocar no cabeçalho. A worktree foi trazida para a `main` nova e a decisão virou D69. Refeitos nela, com
+  os mesmos resultados: o `check`, o build, o Lighthouse do post (dev e build, desktop e celular), o nome
+  na árvore de acessibilidade, o clique, o toque e os atalhos, o `conferir` e as 28 fotos (antes × depois
+  no dev e antes × build). As 18 fotos pelo MCP, a prova de mutação e o levantamento dos dez tipos de
+  página são de antes de a `main` andar.
+- **Armadilha do Lighthouse no MCP:** em modo `snapshot` ele audita a tela como está, sem emular o
+  aparelho pedido. Para testar uma ideia no DOM sem recarregar, ponha a largura antes, com `emulate`. Em
+  modo `navigation` ele emula.
+- **Achados fora do pedido** (vêm de código que já está no ar, e na home publicada foram conferidos;
+  viraram a pergunta 14 do painel):
+  - a mesma auditoria falha por outros elementos, com o mesmo peso 0: os 9 livros da fileira da home
+    (`a.tomba`), os 2 vizinhos da página de um livro (`a.vizinho-livro`), as 22 tags da página Tags e o
+    livro da página Séries (`a.palco`). Em todos, o `aria-label` não contém o texto que está na tela;
+  - `color-contrast` (peso 7) acusa 1,18 no "Lista" do seletor de modo, e é falso positivo: a tinta azul
+    (`.tinta`) ocupa o seletor inteiro e é recortada por `clip-path`, que o axe não considera; o texto
+    está sobre o papel, com 6,48:1. Custa 4 pontos (nota 96) na home, no arquivo, na página de um livro e
+    na de uma tag;
+  - contrastes baixos que somem com a página assentada, medidos no meio das animações de entrada (o
+    valor muda de uma medição para outra): os nomes dos livros na home (4,39 numa vez, 3,44 em outra), os
+    cartões do arquivo (4,44) e as fichas de Tags (1,21 e 1,31).
+- **Mudado:** `src/components/Cabecalho.astro` (a marcação do botão, a regra da faixa até 1100px e o
+  comentário do campo). Feito na worktree `.claude/worktrees/kind-shaw-14748f`, com o dev na porta 4390 e
+  o preview na 4391.

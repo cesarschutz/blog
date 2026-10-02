@@ -1,7 +1,7 @@
 # Estado do projeto
 
 Painel, não diário: fase atual, próximos passos, perguntas abertas e riscos. O detalhe de cada rodada
-fica em `docs/decisoes.md` (D1 a D66) e no histórico do git; controles de rodadas fechadas, em
+fica em `docs/decisoes.md` (D1 a D69) e no histórico do git; controles de rodadas fechadas, em
 `docs/historico/`.
 
 ## Fase atual
@@ -166,6 +166,13 @@ skill `figura`, componente `FiguraPassos`). As 9 peças da `/animacoes-test/` (q
 estava) foram refeitas nele. Também ficou a regra da D68: todo pedido dele num post termina na pergunta
 "vira regra para os próximos posts?".
 
+Botão da busca do cabeçalho (D69, 02/10/2026, **publicado**): o Lighthouse apontava, no desktop, que o
+`aria-label` "Buscar" não continha o texto da tela ("Buscar ⌘K"). O nome passou a vir do texto: saiu o
+`aria-label`, a tecla desenhada ganhou `aria-hidden` e, até 1100px, o "Buscar" sai só da vista em vez de
+`display: none` (sem isso, a lupa ficaria sem nome). A auditoria passa no desktop e no celular, no dev e
+no build, e o cabeçalho ficou idêntico pixel a pixel nos dois temas, de 320 a 1600px. Feito na worktree
+`.claude/worktrees/kind-shaw-14748f` (branch `claude/kind-shaw-14748f`) e publicado a pedido do Cesar.
+
 ## Como ver
 
 - Dev: `fnm exec --using=24 npm run dev -- --host 127.0.0.1` (<http://127.0.0.1:4322>); parar com
@@ -205,6 +212,7 @@ estava) foram refeitas nele. Também ficou a regra da D68: todo pedido dele num 
 | D66 | o post dos mods ("Quanto custou cada agente?"), o primeiro do livro IA: prints parados do cockpit, tags Claude Code e Plugins, e o print largo que rola de lado no celular |
 | D67 | figura em passos (em prova): um formato só no lugar da lousa de passos, da de comparação e da animação com play |
 | D68 | pedido do Cesar num post termina na pergunta "vira regra para os próximos posts?" |
+| D69 | o botão da busca do cabeçalho com o nome vindo do texto "Buscar" (sem `aria-label`), para a auditoria de nome do Lighthouse passar sem mudar a aparência |
 
 ## Próximos passos
 
@@ -221,7 +229,9 @@ estava) foram refeitas nele. Também ficou a regra da D68: todo pedido dele num 
    aprovada, a revisão troca `LousaTempo` e `LousaLoop` pela `Lousa` ou pela animação com play.
 3. **Blog antigo (D34):** os dois têm os mesmos artigos. Decidir entre `noindex` no novo até a
    virada, o antigo redirecionando para o novo ou a virada do domínio (`docs/virada.md`).
-4. **Medir no site publicado:** busca (regra 4 da D2) e Lighthouse (não medido desde a D26).
+4. **Medir no site publicado:** busca (regra 4 da D2) e Lighthouse (o desempenho não é medido desde a
+   D26; acessibilidade, boas práticas e SEO foram medidos no build na D69, em dez tipos de página, e os
+   achados estão na pergunta 14).
 5. **Peso das páginas (B14):** 160 a 440 KB abertos, pelos SVGs embutidos; merece um item próprio.
 6. **Página Sobre:** o Cesar escreve (D33). Até lá, `/about/` leva à home.
 7. **`scripts/desenho/render.mjs` fotografa a abertura do site (D51)** em vez da folha de conferência:
@@ -274,8 +284,6 @@ Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
       tabela rolar de lado (a linha do tempo foi resolvida no conteúdo, em duas colunas). Vale uma
       largura mínima no CSS das tabelas, para todos os posts?
     - o campo `codigo` do post apontando para o `claude-code-kit` (hoje ele é só do `blog-exemplos`)?
-    - o botão da busca do cabeçalho: o `aria-label` "Buscar" não contém o texto visível ("Buscar ⌘K"),
-      o que o Lighthouse aponta no desktop. Troco pelo texto visível?
     - a branch local `post-claude-code-mod` (vazia, criada na pasta do projeto antes da worktree) e a
       worktree `.claude/worktrees/post-do-claude-md-ao-mod` podem ser apagadas depois da publicação.
 13. **Figura em passos (D67):** aprova o formato (`/animacoes-test-2/`)? Se sim, ele vira a `Figura` com
@@ -284,6 +292,17 @@ Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
     julgou ruim (três histórias numa peça), não está entre as 9: refaço também? E qual aviso de "o
     passo terminou" fica, das cinco ideias no fim da página (a sugestão é a 1, o Próximo que se enche,
     ou ela com a 5, os traços embaixo da figura)?
+14. **Lighthouse fora do cabeçalho (achados da D69, que já estão no ar):**
+    - a mesma auditoria de nome (`label-content-name-mismatch`, peso 0) falha por outros elementos: os 9
+      livros da fileira da home, os 2 vizinhos da página de um livro, as 22 tags de Tags e o livro de
+      Séries. Corrijo do mesmo jeito (o nome vindo do texto, com o enfeite fora do nome)?
+    - o "Lista" do seletor de modo dá contraste 1,18 no Lighthouse. É falso positivo (a tinta azul é
+      recortada por `clip-path`, e o texto está sobre o papel, com 6,48:1), mas custa 4 pontos: nota 96
+      na home, no arquivo, na página de um livro e na de uma tag. Vale mexer na tinta para a nota voltar
+      a 100 (o jeito ainda precisa ser estudado, sem perder o movimento dela), ou fica como está?
+    - o Lighthouse mede o contraste no meio das animações de entrada (home, arquivo e Tags) e acusa
+      valores que somem com a página assentada. Fica como está?
+    - a worktree `.claude/worktrees/kind-shaw-14748f` (a da D69) pode ser apagada: a D69 já está na `main`.
 
 ## Riscos a acompanhar
 
