@@ -1,0 +1,213 @@
+---
+/**
+ * Página de teste dos controles em prova (D65), para o Cesar ver no celular, longe do computador:
+ * /animacoes-test/. As três opções que ele separou (marca-texto, caderno e post-it), cada uma com uma
+ * lousa de passos e uma animação com play, as mesmas dos posts, com os componentes de verdade. Fica fora
+ * da busca, do sitemap e dos menus (noindex). Sai quando ele escolher a opção.
+ */
+import Base from "../layouts/Base.astro";
+import Lousa from "../components/Lousa.astro";
+import Animacao from "../components/Animacao.astro";
+import { getResumos } from "../lib/posts";
+import { url } from "../lib/url";
+import "../styles/prosa.css";
+
+const resumos = await getResumos();
+const post = (slug: string) => {
+  const r = resumos.find((x) => x.slug === slug);
+  return { titulo: r?.titulo ?? slug, cor: r?.cor, endereco: url(`/posts/${slug}/`) };
+};
+const cripto = post("criptografia-em-repouso-e-em-transito");
+const jackson = post("jackson-filtros-mascarando-cartao");
+const cobranca = post("cobranca-duplicada-no-retry");
+const bloqueio = post("bloqueio-otimista-e-pessimista");
+const cronjob = post("cronjob-vs-endpoint-sqs");
+---
+
+<Base titulo="Teste das animações" descricao="Os controles das lousas e das animações em prova: três opções, cada uma com uma lousa de passos e uma animação com play.">
+  <meta slot="head" name="robots" content="noindex" />
+  <div class="wrap teste">
+    <header class="topo-teste">
+      <h1>Teste das animações</h1>
+      <p>
+        As três opções de controles em prova, cada uma com <strong>uma lousa de passos</strong> e <strong>uma animação com play</strong>, as mesmas
+        dos posts. Dá para tocar, pausar, arrastar a faixa do tempo e clicar nos passos. As lousas de comparação estão nos posts (links em cada
+        opção).
+      </p>
+      <nav class="indice-teste" aria-label="Opções">
+        <a href="#marca-texto">Opção 2 · Marca-texto</a>
+        <a href="#caderno">Opção 3 · Caderno e caneta</a>
+        <a href="#post-it">Opção 4 · Post-its e fita</a>
+      </nav>
+    </header>
+
+    <section class="opcao-teste" id="marca-texto">
+      <h2><span>Opção 2</span> Marca-texto</h2>
+      <p class="ideia">O progresso é uma passada de marca-texto amarelo, com o marca-texto como cursor; o texto embaixo vai sendo grifado junto.</p>
+
+      <h3>Lousa de passos</h3>
+      <p class="origem">Do post <a href={cripto.endereco}>{cripto.titulo}</a>: o envelope encryption, com o KMS.</p>
+      <div style={cripto.cor ? `--cor:${cripto.cor}` : undefined}>
+        <Lousa
+          desenho="criptografia-em-repouso-e-em-transito/envelope"
+          controles="marca-texto"
+          rotulo="Diagrama do envelope encryption: os dados no disco, cifrados com a chave de dados; a chave de dados guardada cifrada pela chave mestra, que fica no KMS; o banco pedindo ao KMS para abrir a chave de dados; e, com a chave mestra desativada, o KMS recusando o pedido e os dados e os backups ficando ilegíveis."
+          duracao={10}
+          passos={[
+            { de: 0, texto: "Os dados são cifrados com uma chave de dados (data key), que fica perto do banco." },
+            { de: 0.25, texto: "A chave de dados, por sua vez, é cifrada com uma chave mestra que nunca sai do KMS." },
+            { de: 0.5, texto: "Para usar a chave de dados, o banco pede ao KMS que a decifre, e o KMS só atende quem tem permissão." },
+            { de: 0.75, texto: "Com a chave desativada, os dados e os backups ficam ilegíveis." },
+          ]}
+        />
+      </div>
+
+      <h3>Animação com play</h3>
+      <p class="origem">Do post <a href={jackson.endereco}>{jackson.titulo}</a>: os dois caminhos do pedido até o log.</p>
+      <div style={jackson.cor ? `--cor:${jackson.cor}` : undefined}>
+        <Animacao
+          animacao="jackson-filtros-mascarando-cartao/dois-caminhos"
+          controles="marca-texto"
+          legenda="Pelo toString(), o número e o CVV chegam inteiros ao log; pelo logJson.toJson(), o filtro mascara o número e remove o CVV."
+        />
+      </div>
+      <p class="tambem">A lousa de comparação desta opção está no post <a href={`${cripto.endereco}#criptografia-em-trânsito`}>{cripto.titulo}</a> (require × verify-full).</p>
+    </section>
+
+    <section class="opcao-teste" id="caderno">
+      <h2><span>Opção 3</span> Caderno e caneta</h2>
+      <p class="ideia">Os controles são o pé de uma página de caderno: a caneta azul escreve a linha do tempo, e os passos viram uma lista de tarefas que se ticam.</p>
+
+      <h3>Lousa de passos</h3>
+      <p class="origem">Do post <a href={jackson.endereco}>{jackson.titulo}</a>: o filtro, uma propriedade por vez.</p>
+      <div style={jackson.cor ? `--cor:${jackson.cor}` : undefined}>
+        <Lousa
+          desenho="jackson-filtros-mascarando-cartao/passos"
+          controles="caderno"
+          rotulo="Lousa: um Cartao com titular, numero e cvv passa pelo MascaraCartaoFilter, uma propriedade por vez. O cvv é omitido, o numero sai mascarado como 550209******7890 e o titular segue o fluxo normal para o JSON do log."
+          passos={[
+            { de: 0, texto: "O `writer` representa a propriedade que está sendo escrita, e `writer.getName()` é o nome dela no JSON. A partir daí, o filtro segue um de três caminhos." },
+            { de: 0.263, texto: "Para **remover**, chama `serializeAsOmittedProperty`, que é o mesmo que os filtros prontos fazem. Em JSON, isso simplesmente não escreve nada." },
+            { de: 0.526, texto: "Para **mascarar**, lê o valor original e, em vez de delegar ao `writer`, escreve ele mesmo o par nome/valor com `g.writeStringProperty(...)`." },
+            { de: 0.789, texto: "Para **qualquer outro campo**, chama `writer.serializeAsProperty(...)`, o fluxo normal." },
+          ]}
+        />
+      </div>
+
+      <h3>Animação com play</h3>
+      <p class="origem">Do post <a href={cobranca.endereco}>{cobranca.titulo}</a>: a resposta que se perde e o app que envia de novo.</p>
+      <div style={cobranca.cor ? `--cor:${cobranca.cor}` : undefined}>
+        <Animacao
+          animacao="cobranca-duplicada-no-retry/resposta-perdida"
+          controles="caderno"
+          legenda="O serviço cobra no adquirente, a resposta se perde no caminho de volta e o app, sem saber, envia de novo: o cliente é cobrado duas vezes."
+        />
+      </div>
+      <p class="tambem">A lousa de comparação desta opção está no post <a href={`${cronjob.endereco}#2-deploy-da-api-no-meio-do-processamento`}>{cronjob.titulo}</a> (o deploy no meio do lote).</p>
+    </section>
+
+    <section class="opcao-teste" id="post-it">
+      <h2><span>Opção 4</span> Post-its e fita</h2>
+      <p class="ideia">A faixa do tempo é uma fita adesiva que se desenrola; os passos são post-its em fila, e o da vez se descola.</p>
+
+      <h3>Lousa de passos</h3>
+      <p class="origem">Do post <a href={cobranca.endereco}>{cobranca.titulo}</a>: os cinco passos com a chave de idempotência.</p>
+      <div style={cobranca.cor ? `--cor:${cobranca.cor}` : undefined}>
+        <Lousa
+          desenho="cobranca-duplicada-no-retry/passos"
+          controles="post-it"
+          rotulo="Lousa: o app pede a cobrança com a chave 5b0e7a52…; o serviço grava a chave na tabela cobranca, que tem UNIQUE sobre ela, cobra no adquirente e guarda CAPTURADA, 201. A resposta se perde, o app tenta de novo com a mesma chave, o INSERT bate na restrição e o serviço devolve a resposta guardada, sem chamar o adquirente de novo."
+          duracao={15}
+          passos={[
+            { de: 0, texto: "O app pede, com a chave" },
+            { de: 0.15, texto: "O serviço grava a chave antes de cobrar" },
+            { de: 0.3, texto: "Cobra e guarda a resposta" },
+            { de: 0.57, texto: "A resposta se perde, e o app tenta de novo" },
+            { de: 0.78, texto: "A restrição recusa e a resposta guardada volta" },
+          ]}
+        />
+      </div>
+
+      <h3>Animação com play</h3>
+      <p class="origem">Do post <a href={bloqueio.endereco}>{bloqueio.titulo}</a>: detectar o conflito (otimista) ou evitá-lo (pessimista).</p>
+      <div style={bloqueio.cor ? `--cor:${bloqueio.cor}` : undefined}>
+        <Animacao
+          animacao="bloqueio-otimista-e-pessimista/detectar-ou-evitar"
+          controles="post-it"
+          legenda="A em azul, B em âmbar e a linha da conta em roxo; vermelho é conflito ou espera, verde é o que deu certo. Em cima, B refaz o trabalho; embaixo, B espera."
+        />
+      </div>
+      <p class="tambem">A lousa de comparação desta opção está no post <a href={`${cobranca.endereco}#5-regra-prática`}>{cobranca.titulo}</a> (sem e com a chave).</p>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .teste {
+    max-width: 820px;
+    padding-block: 32px 120px;
+  }
+
+  .topo-teste h1 {
+    margin: 0 0 10px;
+    font-family: var(--font-titulo);
+  }
+
+  .topo-teste p,
+  .ideia,
+  .origem,
+  .tambem {
+    font-family: var(--font-texto);
+    color: var(--ink-2);
+  }
+
+  .indice-teste {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    margin-top: 14px;
+    font-family: var(--font-ui);
+    font-size: 15px;
+  }
+
+  .opcao-teste {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .opcao-teste h2 {
+    margin: 0;
+    font-family: var(--font-titulo);
+  }
+
+  .opcao-teste h2 span {
+    color: var(--ink-3);
+  }
+
+  .ideia {
+    margin: 6px 0 8px;
+  }
+
+  .opcao-teste h3 {
+    margin: 36px 0 4px;
+    font-family: var(--font-ui);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .origem {
+    margin: 0 0 12px;
+    font-size: 15px;
+  }
+
+  .tambem {
+    margin-top: 18px;
+    font-size: 15px;
+  }
+
+  .teste a {
+    color: var(--acento);
+  }
+</style>

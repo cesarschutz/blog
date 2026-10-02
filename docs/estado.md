@@ -136,7 +136,9 @@ estão cada uma numa lousa de passos, numa de comparação e numa animação com
 `Lousa` e da `Animacao`. Opção 2: criptografia (passos e comparação) e Jackson (animação). Opção 3:
 Jackson (passos), CronJob (comparação) e cobrança duplicada no retry (animação). Opção 4: cobrança
 duplicada no retry (passos e comparação) e bloqueio otimista e pessimista (animação). A cobrança saiu do
-estilo antigo (as três peças refeitas) e o bloqueio ganhou a animação.
+estilo antigo (as três peças refeitas) e o bloqueio ganhou a animação. As seis peças (uma lousa de passos e uma
+animação de cada opção) estão juntas em `/animacoes-test/` (noindex), para o Cesar ver no celular; a
+página sai junto com a do protótipo quando ele escolher.
 
 Marcas (D64, 02/10/2026): a regra de marca de cada logo foi conferida na política oficial do dono e
 registrada em `src/marcas/regras.json`; o build quebra com logo sem registro ou proibido. Dos 14 logos
