@@ -645,8 +645,23 @@ Regras técnicas, classes e tempos: skill `figura`, `docs/estilo-desenho.md` e `
   - as **fontes**: se o Cesar já estudou o assunto, ele dá os links e o post se baseia neles; se não,
     Claude busca fontes confiáveis.
 
-  Assunto maior vira **série** ou é dividido em partes. Sem enchimento. Os posts existentes não
+  Assunto maior vira **post em partes** (D71): dois posts ligados, parte 1 e parte 2, quando o texto
+  passa do teto e tem dois temas que se sustentam sozinhos (em geral o conceito e a prática). Cada
+  parte é um post inteiro, com título próprio e "(parte N de M)" no fim, o aviso da parte logo depois
+  da abertura, com o link da outra, e a parte 2 com uma recapitulação para quem chega direto. Saem
+  juntas. Três partes ou mais: conversar, pode ser série. Sem enchimento. Os posts existentes não
   precisam ser encurtados.
+- **Escrita** (D71, pedido do Cesar depois do post dos mods; o detalhe está na skill `post`):
+  - **Título:** "Assunto — complemento". O assunto, sozinho, tem de dizer do que o post trata, porque o
+    título aparece sozinho na busca, em listas e em links: o nome da tecnologia e o tema na frente,
+    sem pergunta, trocadilho, gancho nem nome que só o Cesar conhece. O título é do assunto do post,
+    não do exemplo.
+  - **Descrição:** uma ou duas frases com verbo, com o essencial nos primeiros 160 caracteres.
+  - **TL;DR:** cada ponto é uma conclusão que se entende sozinha, do mais importante para o menos.
+  - **Abertura:** o primeiro parágrafo diz o assunto e por que importa; o segundo, o que o post cobre e
+    para quem. O exemplo, a história e a imagem vêm depois.
+  - **Voz:** nunca a primeira pessoa ("eu criei", "testei", "fiz"). O sujeito é a coisa, ou o
+    infinitivo ("para testar…"), ou "você". O que foi rodado ou medido vira fato com data.
 - **Veracidade**: nenhuma afirmação técnica sem fonte confiável e conferida (documentação
   oficial, especificações, JEPs, RFCs, release notes). Nada inventado: versões, números,
   benchmarks, citações e APIs só se verificados. Se não der para confirmar, diga isso no
@@ -654,16 +669,16 @@ Regras técnicas, classes e tempos: skill `figura`, `docs/estilo-desenho.md` e `
   (25/09/2026, D35); exemplo grande linka o código completo.
   Links conferidos. **`## Fontes`** no fim, sempre, e os links também **ao longo do texto**, onde o
   assunto da fonte aparece (D63).
-- **Estrutura**: introdução com o problema concreto em 2 ou 3 frases; seções `##` claras;
-  avisos só quando ajudam; diff quando mostrar antes e depois.
+- **Estrutura**: a abertura pelas regras da escrita (D71); seções `##` claras, com título
+  descritivo; avisos só quando ajudam; diff quando mostrar antes e depois.
 - **Desenhos** (D58, §7): uma lousa, uma figura ou uma animação quando houver fluxo, sequência,
   antes e depois ou um sistema funcionando (post simples fica só com a capa). **Nem todo post tem
   todos os tipos**: entra o que o assunto pede e o que fica bom (um post pode ter só a capa e um
   gráfico; outro, uma lousa e uma animação). **Todo desenho é explicado no texto**, que diz o que
   olhar nele. Ícones das ferramentas sempre que couberem, no texto e nos desenhos, sem poluir.
   **Print** só o que prova algo do texto e dá para garantir; tela com login é o Cesar quem tira.
-- **Frontmatter**: `title` (aparece inteiro; o " — " só divide a imagem de compartilhamento),
-  `description` até ~200 caracteres,
+- **Frontmatter**: `title` (o " — " divide o assunto e o complemento, que vira subtítulo; D71),
+  `description` com o essencial nos primeiros 160 caracteres (teto de 200),
   `published`, `updated` opcional, `category` **ou** `series`, `tags` (2 a 4, reaproveitando o
   vocabulário existente, sem repetir nome de categoria), `draft`, `codigo` (D52, C03: URL `https://`
   do repositório de exemplos, opcional; só quando o post tem código publicado numa pasta própria em
