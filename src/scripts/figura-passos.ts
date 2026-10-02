@@ -94,6 +94,7 @@ function montar(figura: HTMLElement) {
     // inteira, como a figura parada.
     for (const [n, els] of pecas) for (const el of els) el.classList.toggle("antes", n < alvo && alvo < total);
     if (mexer && (alvo > antes || antes === 0)) entrar(alvo);
+    marcarEntrada(alvo, mexer && (alvo > antes || antes === 0));
     destacarSelo(alvo);
     marcarLista(alvo);
 
@@ -117,11 +118,53 @@ function montar(figura: HTMLElement) {
     for (const els of pecas.values()) for (const el of els) el.classList.remove("antes");
     destacarSelo(0);
     marcarLista(0);
+    marcarEntrada(0, false);
     figura.dataset.modo = "tudo";
     figura.classList.remove("no-fim");
   }
 
+  /**
+   * Quando o passo termina de entrar (em prova, D67): enquanto ele entra, a figura fica com
+   * `data-entrando` e a duração na variável `--duracao-passo`; quando acaba, ganha `.passo-terminou` por
+   * um instante. As ideias de aviso (`data-fim`, em figura-passos.css) se penduram nisso.
+   */
+  let fimDoPasso = 0;
+  let limparFim = 0;
+  function marcarEntrada(n: number, mexer: boolean) {
+    clearTimeout(fimDoPasso);
+    clearTimeout(limparFim);
+    figura.classList.remove("passo-terminou");
+    delete figura.dataset.entrando;
+    if (!mexer) return;
+    const ms = duracaoDoPasso(n);
+    figura.style.setProperty("--duracao-passo", `${ms}ms`);
+    void figura.offsetWidth; // recomeça as animações do CSS
+    figura.dataset.entrando = "";
+    fimDoPasso = window.setTimeout(() => {
+      delete figura.dataset.entrando;
+      figura.classList.add("passo-terminou");
+      limparFim = window.setTimeout(() => figura.classList.remove("passo-terminou"), 1200);
+    }, ms);
+  }
+
+  /** Quanto o passo leva para entrar: o último tempo dele, mais o aparecer (0,4 s) ou o ponto (1,15 s). */
+  function duracaoDoPasso(n: number) {
+    let ms = 400;
+    for (const el of pecas.get(n) ?? []) {
+      for (const f of [el, ...el.querySelectorAll("*")]) {
+        ms = Math.max(ms, (tempoDe(f) - 1) * TEMPO + (f.classList.contains("trajeto") ? 1150 : 400));
+      }
+    }
+    return ms;
+  }
+
+  const segmentos = [...figura.querySelectorAll<HTMLElement>(".passos-segmentos > span")];
+
   function marcarLista(alvo: number) {
+    segmentos.forEach((s, i) => {
+      s.classList.toggle("feito", alvo > 0 && i + 1 < alvo);
+      s.classList.toggle("atual", i + 1 === alvo);
+    });
     itens.forEach((li, i) => {
       const n = i + 1;
       li.classList.toggle("atual", n === alvo);

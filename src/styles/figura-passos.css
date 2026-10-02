@@ -258,3 +258,211 @@
     transition: background-color 0.2s;
   }
 }
+
+/* ---------- quando o passo termina de entrar (em prova, D67): as cinco ideias de aviso ----------
+   O motor põe `data-entrando` e `--duracao-passo` enquanto o passo entra, e `.passo-terminou` por um
+   instante quando ele acaba. Cada ideia é um `data-fim` (FiguraPassos `fim=`). Com movimento reduzido,
+   nada entra devagar, e cada aviso já fica no estado de "pronto". */
+
+.passos-anel {
+  display: none;
+}
+
+/* 1. O Próximo se enche: o botão fica claro enquanto o passo entra e se enche da esquerda para a direita;
+   cheio, o passo acabou, e um anel sai do botão uma vez. */
+.figura-passos[data-fim="botao"] .passos-proximo {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.figura-passos[data-fim="botao"] .passos-proximo::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--acento);
+  transform-origin: left;
+}
+
+.figura-passos[data-fim="botao"] .passos-proximo.recomecar::before {
+  background: color-mix(in oklab, var(--acento) 16%, var(--paper-hi));
+}
+
+.figura-passos[data-fim="botao"]:not([data-entrando]) .passos-proximo.recomecar::before {
+  display: none;
+}
+
+.figura-passos[data-fim="botao"][data-entrando] .passos-proximo:not(.recomecar) {
+  background: color-mix(in oklab, var(--acento) 55%, var(--paper-hi));
+}
+
+/* ---------- 2. O número se fecha: um anel ao lado de "Passo 2 de 6" se completa e vira um ✓ ---------- */
+.figura-passos[data-fim="anel"] .passos-anel {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  vertical-align: -5px;
+}
+
+.passos-anel circle {
+  fill: none;
+  stroke-width: 2.4;
+}
+
+.passos-anel .trilho {
+  stroke: var(--rule);
+}
+
+.passos-anel .progresso {
+  stroke: var(--acento);
+  stroke-dasharray: 1;
+  transform: rotate(-90deg);
+  transform-origin: center;
+}
+
+.passos-anel .visto {
+  fill: none;
+  stroke: var(--acento);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+}
+
+.figura-passos[data-fim="anel"][data-entrando] .passos-anel .visto {
+  stroke-dashoffset: 1;
+}
+
+/* ---------- 4. O passo da lista se grifa: o marca-texto passa da esquerda para a direita ---------- */
+.figura-passos[data-fim="grifo"] .passos-lista > li.atual .passos-botao {
+  background: linear-gradient(var(--post-it), var(--post-it)) left / 100% 100% no-repeat;
+}
+
+/* ---------- 5. Os segmentos: um traço por passo embaixo da figura; o da vez se enche ---------- */
+.passos-segmentos {
+  display: flex;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.figura-passos[data-modo="tudo"] .passos-segmentos {
+  visibility: hidden;
+}
+
+.passos-segmentos > span {
+  position: relative;
+  flex: 1;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--rule);
+}
+
+.passos-segmentos > span::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--ink-2);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.passos-segmentos > span.feito::after {
+  transform: scaleX(1);
+}
+
+.passos-segmentos > span.atual::after {
+  background: var(--acento);
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .figura-passos[data-fim="botao"][data-entrando] .passos-proximo::before,
+  .figura-passos[data-entrando] .passos-segmentos > span.atual::after {
+    animation: passos-encher var(--duracao-passo, 1s) linear both;
+  }
+
+  .figura-passos[data-fim="botao"].passo-terminou .passos-proximo:not(.recomecar) {
+    animation: passos-pronto 0.7s ease-out;
+  }
+
+  .figura-passos[data-fim="anel"][data-entrando] .passos-anel .progresso {
+    animation: passos-anel var(--duracao-passo, 1s) linear both;
+  }
+
+  .figura-passos[data-fim="anel"].passo-terminou .passos-anel .visto {
+    animation: passos-anel 0.3s ease-out both;
+  }
+
+  /* 3. O selo carimba: o halo do selo da vez só aparece quando o passo termina, com um pulo. */
+  .figura-passos[data-fim="selo"][data-entrando] .selo.selo-atual {
+    stroke-width: 0;
+  }
+
+  .figura-passos[data-fim="selo"].passo-terminou .selo.selo-atual {
+    animation: passos-carimbo 0.6s ease-out both;
+  }
+
+  .figura-passos[data-fim="grifo"][data-entrando] .passos-lista > li.atual .passos-botao {
+    animation: passos-grifo var(--duracao-passo, 1s) linear both;
+  }
+}
+
+@keyframes passos-encher {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes passos-pronto {
+  from {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--acento) 45%, transparent);
+  }
+
+  to {
+    box-shadow: 0 0 0 9px color-mix(in oklab, var(--acento) 0%, transparent);
+  }
+}
+
+@keyframes passos-anel {
+  from {
+    stroke-dashoffset: 1;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes passos-carimbo {
+  0% {
+    stroke-width: 0;
+    stroke-opacity: 0.55;
+  }
+
+  55% {
+    stroke-width: 26;
+    stroke-opacity: 0.32;
+  }
+
+  100% {
+    stroke-width: 14;
+    stroke-opacity: 0.26;
+  }
+}
+
+@keyframes passos-grifo {
+  from {
+    background-size: 0% 100%;
+  }
+
+  to {
+    background-size: 100% 100%;
+  }
+}

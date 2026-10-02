@@ -180,6 +180,42 @@ const pecas: Peca[] = [
       "saíram os envelopes que voavam, os cartões que deslizavam, o relógio, os cadeados e os 7 riscos. São dois diagramas de sequência lado a lado, contados um de cada vez; o saldo é um histórico de notas novas (100, 90, 80), as gravações estão escritas nos dois lados e o `UPDATE 0` vem explicado no desenho.",
   },
 ];
+
+// O aviso de que o passo terminou: cinco ideias, na mesma figura, para comparar.
+const passosDaChave = pecas.find((p) => p.figura === "cobranca-duplicada-no-retry/chave-em-passos")!.passos;
+const ideias = [
+  {
+    fim: "botao",
+    titulo: "O Próximo se enche",
+    texto:
+      "Enquanto o passo entra, o botão Próximo fica mais claro e vai se enchendo de azul, da esquerda para a direita. Cheio, o passo acabou, e um anel sai do botão uma vez. O aviso fica onde o dedo e o olho já estão, e funciona igual no celular.",
+  },
+  {
+    fim: "anel",
+    titulo: "O número se fecha",
+    texto:
+      "Ao lado de \"Passo 3 de 6\", um anel se completa enquanto o passo entra e vira um ✓ quando ele acaba. É o mais discreto, e o ✓ fica: dá para ver depois que aquele passo está completo.",
+  },
+  {
+    fim: "selo",
+    titulo: "O selo carimba",
+    texto:
+      "No desenho, o número do passo (o selo) só ganha o halo quando o passo termina, com um pulo, como um carimbo. O aviso fica dentro da figura, junto do que entrou; no celular, o selo pode estar fora do quadro.",
+  },
+  {
+    fim: "grifo",
+    titulo: "O passo da lista se grifa",
+    texto:
+      "Na lista, o marca-texto amarelo passa pela frase do passo enquanto ele entra. Grifada até o fim, o passo acabou. Liga o desenho ao texto, mas fica longe da figura quando a lista é longa.",
+  },
+  {
+    fim: "segmentos",
+    titulo: "Os traços embaixo da figura",
+    texto:
+      "Um traço por passo, logo embaixo do desenho, como os stories: os já vistos ficam cheios, e o da vez se enche enquanto o passo entra. Além de dizer quando acabou, mostra quanto falta.",
+  },
+] as const;
+const cobranca = post("cobranca-duplicada-no-retry");
 ---
 
 <Base titulo="Teste das animações 2" descricao="As 9 peças da página de teste refeitas num formato só, a figura em passos: abre inteira, cada passo soma e nada some.">
@@ -199,6 +235,7 @@ const pecas: Peca[] = [
         <a href="#regras">As regras novas</a>
         <a href="#antes">O que estava difícil</a>
         <a href="#pecas">As 9 peças</a>
+        <a href="#fim-do-passo">Quando o passo termina</a>
       </nav>
     </header>
 
@@ -265,6 +302,31 @@ const pecas: Peca[] = [
           );
         })
       }
+    </section>
+
+    <section class="bloco-teste" id="fim-do-passo">
+      <h2>Como saber que o passo terminou: 5 ideias</h2>
+      <p>
+        Ao clicar em <strong>Próximo</strong>, ou num passo da lista, as coisas entram em até três tempos, um por segundo, e nada diz quando
+        acabou. Abaixo, a mesma figura (os passos da chave) com cinco jeitos discretos de mostrar isso. Em cada uma, clique em <strong>Passo a passo</strong> e vá com <strong>Próximo</strong>: o passo 3 é o mais longo (três tempos), bom para comparar.
+      </p>
+      {
+        ideias.map((ideia, i) => (
+          <article class="peca-teste" id={`ideia-${i + 1}`}>
+            <h3>
+              Ideia {i + 1}: {ideia.titulo}
+            </h3>
+            <p class="origem">{ideia.texto}</p>
+            <div style={cobranca.cor ? `--cor:${cobranca.cor}` : undefined}>
+              <FiguraPassos figura="cobranca-duplicada-no-retry/chave-em-passos" passos={[...passosDaChave]} fim={ideia.fim} />
+            </div>
+          </article>
+        ))
+      }
+      <p class="nota-teste sugestao">
+        <strong>Se eu tivesse de escolher uma:</strong> a 1, o Próximo que se enche, porque o aviso fica no botão que você vai apertar. A 5 pode ir
+        junto, se quiser ver também quanto falta. Dá para combinar duas.
+      </p>
     </section>
   </div>
 </Base>
@@ -386,5 +448,10 @@ const pecas: Peca[] = [
 
   .teste a {
     color: var(--acento);
+  }
+
+  .sugestao {
+    margin-top: 40px;
+    font-size: 16px;
   }
 </style>

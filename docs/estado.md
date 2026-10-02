@@ -281,7 +281,9 @@ Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
 13. **Figura em passos (D67):** aprova o formato (`/animacoes-test-2/`)? Se sim, ele vira a `Figura` com
     `passos`, as lousas e animações dos posts são refeitas nele pela revisão dos posts e as páginas de
     teste e a dos controles (D65) saem do ar. A lousa da instalação do post dos mods, que a auditoria
-    julgou ruim (três histórias numa peça), não está entre as 9: refaço também?
+    julgou ruim (três histórias numa peça), não está entre as 9: refaço também? E qual aviso de "o
+    passo terminou" fica, das cinco ideias no fim da página (a sugestão é a 1, o Próximo que se enche,
+    ou ela com a 5, os traços embaixo da figura)?
 
 ## Riscos a acompanhar
 

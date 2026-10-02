@@ -2645,6 +2645,17 @@ nada muda.
   símbolos para o blog todo e uma faixa de desfecho. O componente é `FiguraPassos` (motor
   `src/scripts/figura-passos.ts`, estilo `figura-passos.css`), e o `validar.mjs` aceita `data-passo` e
   `trajeto`.
+- **O aviso de que o passo terminou** (pedido do Cesar, 02/10/2026: ao clicar em Próximo, as coisas
+  entram e não dá para saber quando acabou). O motor marca a entrada do passo (`data-entrando`, com a
+  duração em `--duracao-passo`) e o fim (`.passo-terminou`), e há cinco ideias em prova, no fim da
+  `/animacoes-test-2/`, pela prop `fim=` do `FiguraPassos`:
+  1. o Próximo se enche (a sugestão);
+  2. um anel ao lado de "Passo 3 de 6" que vira ✓;
+  3. o selo do desenho que carimba;
+  4. o passo da lista que se grifa;
+  5. um traço por passo embaixo da figura, como os stories.
+
+  O Cesar escolhe uma, ou uma combinação de duas.
 - **Se aprovar:** a figura em passos vira a `Figura` com `passos`. A `Lousa` e a `Animacao` saem dos
   posts, peça por peça, pela revisão dos posts, e as duas páginas de teste e a dos controles saem do ar.
   A D65 (a escolha dos controles) deixa de ter objeto: o formato novo tem um controle só.
