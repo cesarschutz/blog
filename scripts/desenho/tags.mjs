@@ -235,6 +235,31 @@ function folha({ bezier, t }, base, ponta, largura, lado = 1) {
   t(bezier(p(0.08, 0), p(0.4, largura * 0.12 * lado), p(0.7, largura * 0.14 * lado), p(0.9, 0)), { w: 2 });
 }
 
+/**
+ * Fita: uma faixa de largura 2 × `meia` ao longo de `eixo` (os pontos densos de uma `curva`), com uma
+ * tampa redonda na última ponta. A primeira ponta fica reta, para ir por baixo do que a tapa (o fio
+ * que sai por baixo da traseira de um plugue). Devolve uma forma fechada, para pintar com `papel`.
+ */
+function fita(eixo, meia) {
+  const direcao = (i) => {
+    const [a, b] = [eixo[Math.max(0, i - 1)], eixo[Math.min(eixo.length - 1, i + 1)]];
+    const l = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+    return [(b[0] - a[0]) / l, (b[1] - a[1]) / l];
+  };
+  const borda = (lado) =>
+    eixo.map((p, i) => {
+      const [fx, fy] = direcao(i);
+      return [p[0] - fy * meia * lado, p[1] + fx * meia * lado];
+    });
+  const [fx, fy] = direcao(eixo.length - 1);
+  const ponta = eixo.at(-1);
+  const tampa = Array.from({ length: 11 }, (_, i) => {
+    const a = (Math.PI * (i + 1)) / 12;
+    return [ponta[0] + meia * (-Math.cos(a) * fy + Math.sin(a) * fx), ponta[1] + meia * (Math.cos(a) * fx + Math.sin(a) * fy)];
+  });
+  return { pts: [...borda(1), ...tampa, ...borda(-1).reverse()], fechada: true };
+}
+
 export const DESENHOS = {
   /** Spring: um broto com duas folhas saindo da terra (a primavera do nome, sem o logotipo). */
   Spring: {
@@ -624,6 +649,53 @@ export const DESENHOS = {
       for (const [y, fim] of [[50, 62], [58, 70], [66, 56], [74, 66]]) t(mover(linha([26, y], [fim, y]), g), { w: 2 });
       t(mover(circulo([92, 60], 7.5), g), { w: 2 });
       t(mover(circulo([92, 60], 4.5), g), { w: 3 });
+    },
+  },
+
+  /** Claude Code: o terminal de vídeo antigo, de tubo, com o prompt e o cursor na tela (o lugar onde ele roda; nenhum logotipo). */
+  "Claude Code": {
+    o: "terminal de vídeo antigo, com o prompt e o cursor",
+    d({ t, retangulo, poli, linha, circulo }) {
+      // a base larga e baixa, com o degrau
+      t(poli([[36, 85.5], [84, 85.5], [88, 91.5], [90, 99.5], [30, 99.5], [32, 91.5]], true), { papel: true });
+      t(linha([34, 93.5], [86, 93.5]), { w: 3 });
+      // o bojo do tubo, que aparece atrás da frente do gabinete
+      t(poli([[27, 32.5], [31, 24.5], [36, 20.5], [84, 20.5], [89, 24.5], [93, 32.5]], true), { papel: true });
+      // a frente do gabinete e a tela de cantos arredondados
+      t(retangulo(19, 30.5, 82, 56, 8), { papel: true });
+      t(retangulo(26, 36.5, 68, 40, 9), { w: 2 });
+      // o prompt (>) e o cursor (_)
+      t(poli([[36, 43.5], [54, 56], [36, 68.5]]));
+      t(linha([60, 69.5], [75, 69.5]));
+      // o reflexo no vidro e o botão
+      t(linha([79, 47.5], [86, 41.5]), { w: 3 });
+      t(linha([83, 49.5], [88.5, 44.5]), { w: 3 });
+      t(circulo([88.5, 82], 2.3), { w: 2 });
+    },
+  },
+
+  /** Plugins: o plugue de tomada de dois pinos, inclinado, com o fio (o que se encaixa), sem a tomada para não pesar. */
+  Plugins: {
+    o: "plugue de tomada de dois pinos, com o fio",
+    d({ t, retangulo, poli, linha, curva, mover }) {
+      const g = { giro: -38, centro: [60, 60], dx: -8, dy: -2.5 };
+      const R = (forma) => mover(forma, g);
+      const P = (x, y) => R({ pts: [[x, y]] }).pts[0];
+      // o fio, em fita: sai por baixo da traseira (começa dentro dela) e cai num S
+      const [a, s] = [P(41, 60), P(34, 60)];
+      const eixo = curva([a, s, [s[0] - 6, s[1] + 5], [s[0] - 8.5, s[1] + 12.5], [s[0] - 4, s[1] + 19.5], [s[0] + 0.5, s[1] + 25], [s[0] + 2, s[1] + 30.5]]).pts;
+      t(fita(eixo, 2.1), { papel: true });
+      // a traseira afunilada, que protege a saída do fio
+      t(R(poli([[51, 48.5], [44, 53], [39, 56.6], [34, 57.9], [34, 62.1], [39, 63.4], [44, 67], [51, 71.5]], true)), { papel: true });
+      // os dois pinos, com o colar de cada um
+      for (const y of [49.5, 70.5]) {
+        t(R(retangulo(73, y - 3.1, 40, 6.2, 3.1)), { papel: true });
+        t(R(linha([89, y - 3.1], [89, y + 3.1])), { w: 3 });
+      }
+      // a cabeça, com a placa da frente e as estrias de pegar
+      t(R(retangulo(44, 38.5, 38.5, 43, 8)), { papel: true });
+      t(R(linha([75.5, 44], [75.5, 76])), { w: 2 });
+      for (const x of [52, 57.5, 63]) t(R(linha([x, 47.5], [x, 72.5])), { w: 3 });
     },
   },
 };

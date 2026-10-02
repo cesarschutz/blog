@@ -189,15 +189,17 @@ os artigos" e as mais usadas no topo da página do livro).
   (Pagamentos), caixa de correio com a bandeira levantada (Mensageria), rolo de papel com as linhas do
   registro (Logs), leme de navio (Kubernetes), barril (Banco de Dados), mala de viagem (Migração),
   cadeado de segredo (Criptografia), favos de mel com uma célula por fazer (Microsserviços), chave
-  antiga com etiqueta (Idempotência), bigorna e martelo (Gradle), nuvem (AWS), espeto de notas (AOP) e
-  ingresso com canhoto (JWT).
+  antiga com etiqueta (Idempotência), bigorna e martelo (Gradle), nuvem (AWS), espeto de notas (AOP),
+  ingresso com canhoto (JWT) e, desde a D66, terminal de vídeo antigo com o prompt e o cursor (Claude
+  Code) e plugue de tomada de dois pinos com o fio (Plugins).
 
 ### Tags novas
 
 1. Escolha o objeto (a metáfora, no espírito dos de cima) e escreva o desenho em `DESENHOS` de
    `scripts/desenho/tags.mjs`, à mão, em coordenadas (linhas, arcos, curvas e retângulos, na ordem de
    pintura). O script passa a caneta, com o tremor dos ícones e uma semente tirada do nome (sai igual
-   a cada vez).
+   a cada vez). Para um fio, um cabo ou uma fita com volume, o ajudante `fita` faz a faixa ao longo de
+   uma curva (o fio do plugue).
 2. Grave: `node scripts/desenho/tags.mjs <slug>` (com o Node 24: `fnm exec --using=24`).
 3. Confira em `/amostra/tags/` (só no dev): lado a lado com os outros e em cinco tamanhos, da pílula
    à marca d'água, nos dois temas (`?tema=escuro`). O novo tem de ter o mesmo peso dos vizinhos.
