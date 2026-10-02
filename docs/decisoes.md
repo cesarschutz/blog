@@ -2525,8 +2525,8 @@ nada muda.
   posts e a página do protótipo sai do ar.
 - **Página de teste (02/10/2026, pedido do Cesar, para ver no celular):** `/animacoes-test/`
   (`src/pages/animacoes-test.astro`), com noindex e fora do sitemap e da busca. Mostra as três opções,
-  cada uma com uma lousa de passos e uma animação com play, as mesmas dos posts, dizendo de que post vem
-  cada peça, com o link para a lousa de comparação no post. Sai do ar junto com a do protótipo.
+  cada uma com as três peças (lousa de passos, lousa de comparação e animação com play), as mesmas dos
+  posts, dizendo de que post vem cada peça. Sai do ar junto com a do protótipo.
 
 
 ## D66 · O post dos mods: prints do cockpit, tags Claude Code e Plugins, e o print largo

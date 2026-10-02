@@ -1,8 +1,9 @@
 ---
 /**
  * Página de teste dos controles em prova (D65), para o Cesar ver no celular, longe do computador:
- * /animacoes-test/. As três opções que ele separou (marca-texto, caderno e post-it), cada uma com uma
- * lousa de passos e uma animação com play, as mesmas dos posts, com os componentes de verdade. Fica fora
+ * /animacoes-test/. As três opções que ele separou (marca-texto, caderno e post-it), cada uma com as três
+ * peças (lousa de passos, lousa de comparação e animação com play), as mesmas dos posts, com os componentes
+ * de verdade. Fica fora
  * da busca, do sitemap e dos menus (noindex). Sai quando ele escolher a opção.
  */
 import Base from "../layouts/Base.astro";
@@ -24,15 +25,14 @@ const bloqueio = post("bloqueio-otimista-e-pessimista");
 const cronjob = post("cronjob-vs-endpoint-sqs");
 ---
 
-<Base titulo="Teste das animações" descricao="Os controles das lousas e das animações em prova: três opções, cada uma com uma lousa de passos e uma animação com play.">
+<Base titulo="Teste das animações" descricao="Os controles das lousas e das animações em prova: três opções, cada uma com uma lousa de passos, uma lousa de comparação e uma animação com play.">
   <meta slot="head" name="robots" content="noindex" />
   <div class="wrap teste">
     <header class="topo-teste">
       <h1>Teste das animações</h1>
       <p>
-        As três opções de controles em prova, cada uma com <strong>uma lousa de passos</strong> e <strong>uma animação com play</strong>, as mesmas
-        dos posts. Dá para tocar, pausar, arrastar a faixa do tempo e clicar nos passos. As lousas de comparação estão nos posts (links em cada
-        opção).
+        As três opções de controles em prova, cada uma com as três peças: <strong>lousa de passos</strong>, <strong>lousa de comparação</strong>
+        e <strong>animação com play</strong>, as mesmas dos posts. Dá para tocar, pausar, arrastar a faixa do tempo e clicar nos passos.
       </p>
       <nav class="indice-teste" aria-label="Opções">
         <a href="#marca-texto">Opção 2 · Marca-texto</a>
@@ -62,6 +62,22 @@ const cronjob = post("cronjob-vs-endpoint-sqs");
         />
       </div>
 
+      <h3>Lousa de comparação</h3>
+      <p class="origem">Do post <a href={`${cripto.endereco}#criptografia-em-trânsito`}>{cripto.titulo}</a>: a mesma conexão com <code>require</code> e com <code>verify-full</code>.</p>
+      <div style={cripto.cor ? `--cor:${cripto.cor}` : undefined}>
+        <Lousa
+          desenho="criptografia-em-repouso-e-em-transito/tls"
+          controles="marca-texto"
+          rotulo="Linha do tempo comparando sslmode=require e sslmode=verify-full: um intermediário se passa pelo banco com um certificado próprio; com require, o cliente aceita e o intermediário lê o tráfego; com verify-full, o cliente confere a CA e o nome do servidor e recusa a conexão."
+          estados={[
+            { de: 0, texto: "O cliente abre a conexão" },
+            { de: 0.25, texto: "Alguém no meio do caminho responde com um certificado próprio" },
+            { de: 0.5, texto: "O require aceita; o verify-full confere a CA e o nome e recusa" },
+            { de: 0.75, texto: "Resultado: com require, o intermediário lê tudo; com verify-full, a conexão nem abre" },
+          ]}
+        />
+      </div>
+
       <h3>Animação com play</h3>
       <p class="origem">Do post <a href={jackson.endereco}>{jackson.titulo}</a>: os dois caminhos do pedido até o log.</p>
       <div style={jackson.cor ? `--cor:${jackson.cor}` : undefined}>
@@ -71,7 +87,6 @@ const cronjob = post("cronjob-vs-endpoint-sqs");
           legenda="Pelo toString(), o número e o CVV chegam inteiros ao log; pelo logJson.toJson(), o filtro mascara o número e remove o CVV."
         />
       </div>
-      <p class="tambem">A lousa de comparação desta opção está no post <a href={`${cripto.endereco}#criptografia-em-trânsito`}>{cripto.titulo}</a> (require × verify-full).</p>
     </section>
 
     <section class="opcao-teste" id="caderno">
@@ -94,6 +109,24 @@ const cronjob = post("cronjob-vs-endpoint-sqs");
         />
       </div>
 
+      <h3>Lousa de comparação</h3>
+      <p class="origem">Do post <a href={`${cronjob.endereco}#2-deploy-da-api-no-meio-do-processamento`}>{cronjob.titulo}</a>: o deploy no meio do lote, nas duas abordagens.</p>
+      <div style={cronjob.cor ? `--cor:${cronjob.cor}` : undefined}>
+        <Lousa
+          desenho="cronjob-vs-endpoint-sqs/deploy-no-meio-do-lote"
+          controles="caderno"
+          rotulo="Lousa comparando um deploy da API às 03:30 nas duas abordagens: na A, a API passa da v1 para a v2, e o pod do job segue e termina às 04:10 na v1; na B, o pod v1 é cancelado no meio do lote, a mensagem fica invisível até as 05:00, e só então o pod v2 a recebe e retoma de onde a v1 parou, com o lote parado 1h30 e terminado em duas versões."
+          duracao={12}
+          estados={[
+            { de: 0, texto: "03:00: nas duas abordagens, o lote começa na v1" },
+            { de: 0.19, texto: "03:30: o deploy troca a API da v1 para a v2; na A, o pod do job segue; na B, o lote é cancelado no meio, e a mensagem não é apagada" },
+            { de: 0.45, texto: "04:10: na A, o job termina na versão com que começou; na B, a v2 está no ar, mas a mensagem continua invisível" },
+            { de: 0.65, texto: "05:00: na B, a mensagem reaparece, e a v2 retoma de onde a v1 parou, pelo status no banco, depois de 1h30 parado" },
+            { de: 0.94, texto: "05:40: na B, o lote termina na v2, com parte processada por cada versão" },
+          ]}
+        />
+      </div>
+
       <h3>Animação com play</h3>
       <p class="origem">Do post <a href={cobranca.endereco}>{cobranca.titulo}</a>: a resposta que se perde e o app que envia de novo.</p>
       <div style={cobranca.cor ? `--cor:${cobranca.cor}` : undefined}>
@@ -103,7 +136,6 @@ const cronjob = post("cronjob-vs-endpoint-sqs");
           legenda="O serviço cobra no adquirente, a resposta se perde no caminho de volta e o app, sem saber, envia de novo: o cliente é cobrado duas vezes."
         />
       </div>
-      <p class="tambem">A lousa de comparação desta opção está no post <a href={`${cronjob.endereco}#2-deploy-da-api-no-meio-do-processamento`}>{cronjob.titulo}</a> (o deploy no meio do lote).</p>
     </section>
 
     <section class="opcao-teste" id="post-it">
@@ -128,6 +160,25 @@ const cronjob = post("cronjob-vs-endpoint-sqs");
         />
       </div>
 
+      <h3>Lousa de comparação</h3>
+      <p class="origem">Do post <a href={`${cobranca.endereco}#5-regra-prática`}>{cobranca.titulo}</a>: a mesma falha de rede, sem e com a chave de idempotência.</p>
+      <div style={cobranca.cor ? `--cor:${cobranca.cor}` : undefined}>
+        <Lousa
+          desenho="cobranca-duplicada-no-retry/tempo"
+          controles="post-it"
+          rotulo="Lousa comparando a mesma falha de rede sem e com a chave de idempotência, com o app, o serviço e o adquirente em cada linha: o app pede R$ 250, o serviço cobra no adquirente, a resposta se perde e o app tenta de novo depois do timeout. Sem a chave, o serviço cobra de novo e o cliente paga duas vezes; com a chave, o serviço grava a chave antes de cobrar, a restrição UNIQUE recusa a repetição e o app recebe a resposta guardada, com uma cobrança só."
+          duracao={12}
+          estados={[
+            { de: 0, texto: "Antes do pedido" },
+            { de: 0.1, texto: "O app pede" },
+            { de: 0.2, texto: "A cobrança é feita" },
+            { de: 0.44, texto: "A resposta se perde" },
+            { de: 0.61, texto: "O app tenta de novo" },
+            { de: 0.76, texto: "Resultado" },
+          ]}
+        />
+      </div>
+
       <h3>Animação com play</h3>
       <p class="origem">Do post <a href={bloqueio.endereco}>{bloqueio.titulo}</a>: detectar o conflito (otimista) ou evitá-lo (pessimista).</p>
       <div style={bloqueio.cor ? `--cor:${bloqueio.cor}` : undefined}>
@@ -137,7 +188,6 @@ const cronjob = post("cronjob-vs-endpoint-sqs");
           legenda="A em azul, B em âmbar e a linha da conta em roxo; vermelho é conflito ou espera, verde é o que deu certo. Em cima, B refaz o trabalho; embaixo, B espera."
         />
       </div>
-      <p class="tambem">A lousa de comparação desta opção está no post <a href={`${cobranca.endereco}#5-regra-prática`}>{cobranca.titulo}</a> (sem e com a chave).</p>
     </section>
   </div>
 </Base>
@@ -155,8 +205,7 @@ const cronjob = post("cronjob-vs-endpoint-sqs");
 
   .topo-teste p,
   .ideia,
-  .origem,
-  .tambem {
+  .origem {
     font-family: var(--font-texto);
     color: var(--ink-2);
   }
@@ -199,11 +248,6 @@ const cronjob = post("cronjob-vs-endpoint-sqs");
 
   .origem {
     margin: 0 0 12px;
-    font-size: 15px;
-  }
-
-  .tambem {
-    margin-top: 18px;
     font-size: 15px;
   }
 
