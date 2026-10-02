@@ -80,6 +80,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D67 | Figura em passos: um formato só no lugar da lousa de passos, da lousa de comparação e da animação com play (abre inteira, cada passo soma, nada some, o leitor manda) | em prova em `/animacoes-test-2/` |
 | D68 | Pedido do Cesar num post termina na pergunta "vira regra para os próximos posts?" | decidido |
 | D69 | O botão da busca do cabeçalho: o nome vem do texto "Buscar", sem `aria-label`, e a tecla desenhada fica fora do nome | decidido e publicado |
+| D74 | A apresentação de um post (PPT) no estilo do blog, com os desenhos, os prints e a caneta do próprio post e as notas do apresentador (skill `apresentacao`, `scripts/slides/`) | decidido e publicado |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -2756,3 +2757,45 @@ nada muda.
 - **Mudado:** `src/components/Cabecalho.astro` (a marcação do botão, a regra da faixa até 1100px e o
   comentário do campo). Feito na worktree `.claude/worktrees/kind-shaw-14748f`, com o dev na porta 4390 e
   o preview na 4391.
+
+## D74 · A apresentação de um post no estilo do blog
+- **Data:** 02/10/2026 · **Status:** decidido e publicado (commit e push a pedido do Cesar).
+- **Pedido do Cesar**, depois de ver a apresentação do post dos mods: "ficou muito elegante e gostei
+  muito usando o estilo do blog, desenhos do post [...] quando eu pedir para fazer o ppt já saber e fazer
+  no estilo que você fez agora".
+- **Decisão:** a apresentação de um post (PPT, slides, deck) sai em `.pptx` no estilo do blog, com os
+  desenhos, os prints e as marcações da caneta do próprio post e as notas do apresentador em todos os
+  slides. O modelo é a do post dos mods (19 slides), aprovada. Não precisa combinar antes: fazer e
+  entregar o `.pptx` e o PDF.
+- **O estilo:** o quadro 16:9 com fundo de papel e as peças em folhas com a sombra curta e quente; a
+  ficha de catálogo (a tira em mono sobre o fio na cor do livro), a fita, o post-it, a ficha pautada, o
+  bloco de código e a tabela do site; as fontes do site (Besley, Literata, IBM Plex Sans, JetBrains Mono e
+  a Caveat das notas à mão); as cores só dos tokens; a capa do post colada com fita na abertura e a ficha
+  "Do livro" no fecho; as marcações do post nos mesmos trechos; um ou dois slides escuros para as
+  frases-chave; o título de cada slide no espaço reservado e as seções do PowerPoint por bloco.
+- **As ferramentas** (`scripts/slides/`): `estilo.py`, a biblioteca (lê as cores de `tokens.ts` e de
+  `livros.json`, mede e quebra o texto com as fontes para cada marcação cair no trecho, e tem as peças e
+  as marcas da caneta); `capturar.mjs`, as fotos do post e a tira da ficha; `conferir.py`, o PDF, uma
+  imagem por slide, a folha de contato e as checagens (título, notas, forma fora do quadro, fonte que não
+  é do site, ordem do XML); `fontes.py`, as fontes do site em TTF; e `posts/<slug>.py`, o roteiro de cada
+  post, a começar pelo dos mods. O que sai vai para `saida/` (fora do git).
+- **Medido:** com o espaçamento exato, o LibreOffice põe a linha de base a 0,205 em do pé da linha, em
+  todas as fontes do site (na Caveat, 0,114). As marcações usam essa conta; no PowerPoint e no Keynote
+  podem andar um pouco.
+- **As fontes:** o site usa as do `@fontsource` (WOFF2 variável), que o PowerPoint não usa. As TTF
+  estáticas foram instaladas em `~/Library/Fonts` com o OK do Cesar (Google Fonts, 2,7 MB); em outra
+  máquina, `python3 scripts/slides/fontes.py --instalar`, também com o OK dele.
+- **Motivo:** a apresentação reaproveita os desenhos e as marcações que o post já tem, então sai com a
+  identidade do blog sem desenho novo; a biblioteca deixa todas iguais e a próxima rápida; e, com as
+  cores lidas dos tokens, ela acompanha o site se o visual mudar.
+- **Alternativas:** a skill `pptx` genérica (pptxgenjs, com paleta e fontes próprias), que não tem a
+  identidade do site e pediria instalar o pptxgenjs; e o NotebookLM, o caminho de hoje para a seção
+  "Apresentação" do post, que dá slides em imagem, sem os desenhos nem a caneta do post, e já errou texto.
+  Ele continua valendo para a seção do post (o modo NotebookLM da skill).
+- **Conferido:** a apresentação refeita pela biblioteca ficou igual à aprovada, slide a slide (diferença
+  média de um nível de cinza, ruído de compressão), passou no validador da skill `pptx` e no
+  `conferir.py` (19 slides com título e notas, só as fontes do site, nada fora do quadro).
+- **Número:** a D70 à D73 estão em outras worktrees, sem commit; esta ficou D74 para não colidir.
+- **Onde:** a skill `apresentacao` (o modo Criar; o do NotebookLM continua igual), o `CLAUDE.md` (Posts,
+  Comandos, Mapa das pastas, Skills e Em outro computador), o `.gitignore` (`saida/` e `__pycache__/`) e
+  `scripts/slides/`.
