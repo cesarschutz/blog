@@ -157,6 +157,15 @@ aprovação prévia, a pedido dele: **o Cesar revê o post no ar** (o texto, a c
 longo do texto, que é o lembrete da D63). Feito numa worktree
 (`.claude/worktrees/post-do-claude-md-ao-mod`), porque havia outras sessões na pasta do projeto.
 
+Figura em passos (D67, 02/10/2026, **em prova** em `/animacoes-test-2/`): o Cesar achou as animações
+ruins de entender ("muita coisa, ou animação com coisa sumindo"). Uma auditoria às cegas das 10 peças
+animadas (1 clara, 5 médias, 4 ruins) e uma pesquisa (Mayer, informação que some, small multiples)
+estão em `docs/figura-em-passos/`. A proposta é um formato só no lugar dos três: uma figura parada que
+o leitor pode montar passo a passo, em que cada passo soma, nada some e nada anda sozinho (regras na
+skill `figura`, componente `FiguraPassos`). As 9 peças da `/animacoes-test/` (que segue no ar como
+estava) foram refeitas nele. Também ficou a regra da D68: todo pedido dele num post termina na pergunta
+"vira regra para os próximos posts?".
+
 ## Como ver
 
 - Dev: `fnm exec --using=24 npm run dev -- --host 127.0.0.1` (<http://127.0.0.1:4322>); parar com
@@ -194,6 +203,8 @@ longo do texto, que é o lembrete da D63). Feito numa worktree
 | D64 | as marcas: regra de marca de cada logo conferida e registrada; só o Kubernetes redesenhado; ícones genéricos no lugar dos outros |
 | D65 | os controles em prova nos posts: marca-texto, caderno e post-it, cada um numa lousa de passos, numa de comparação e numa animação |
 | D66 | o post dos mods ("Quanto custou cada agente?"), o primeiro do livro IA: prints parados do cockpit, tags Claude Code e Plugins, e o print largo que rola de lado no celular |
+| D67 | figura em passos (em prova): um formato só no lugar da lousa de passos, da de comparação e da animação com play |
+| D68 | pedido do Cesar num post termina na pergunta "vira regra para os próximos posts?" |
 
 ## Próximos passos
 
@@ -267,6 +278,10 @@ Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
       o que o Lighthouse aponta no desktop. Troco pelo texto visível?
     - a branch local `post-claude-code-mod` (vazia, criada na pasta do projeto antes da worktree) e a
       worktree `.claude/worktrees/post-do-claude-md-ao-mod` podem ser apagadas depois da publicação.
+13. **Figura em passos (D67):** aprova o formato (`/animacoes-test-2/`)? Se sim, ele vira a `Figura` com
+    `passos`, as lousas e animações dos posts são refeitas nele pela revisão dos posts e as páginas de
+    teste e a dos controles (D65) saem do ar. A lousa da instalação do post dos mods, que a auditoria
+    julgou ruim (três histórias numa peça), não está entre as 9: refaço também?
 
 ## Riscos a acompanhar
 

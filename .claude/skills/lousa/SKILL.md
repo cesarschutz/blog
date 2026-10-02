@@ -5,6 +5,9 @@ description: Monta os diagramas na lousa com o componente Lousa (D58), nos dois 
 
 # Lousa
 
+**Em prova (D67):** a figura em passos (skill `figura`, "Figura em passos") pode substituir a lousa de
+passos, a de comparação e a animação com play. Até o Cesar decidir, a lousa segue as regras abaixo.
+
 Componente `src/components/Lousa.astro` (D58), com o desenho **no estilo das figuras** (D59: o painel
 do livro, o traço da casa, os tons, os selos e os logos de `figura.css`) e uma **canetinha colorida**
 que desenha na cor do que faz. Estilo em `lousa-nova.css` (mais `figura.css` e `desenho.css`); motor em

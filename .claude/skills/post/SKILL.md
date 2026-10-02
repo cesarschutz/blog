@@ -197,6 +197,8 @@ Quem manda no movimento (D58): a **capa** só mexe um detalhe no hover (`mexe-*`
 **lousa**, o leitor comanda o tempo (skill `lousa`); a **animação com play** muda a imagem e o leitor
 só dá play e pausa (skill `figura`). Nenhum desenho é comandado pela rolagem da página (D46).
 
+- **Em prova (D67):** a figura em passos (skill `figura`) pode substituir a lousa e a animação com play,
+  na página `/animacoes-test-2/`. Até o Cesar decidir, siga as regras abaixo.
 - **Só onde há fluxo** (sequência, passo a passo, antes e depois, o sistema funcionando). Post sem
   fluxo fica com a capa viva e, se ajudar, figuras paradas.
 - **Sequência em que a ordem importa, ou comparação no tempo:** a `Lousa` (passos ou comparação). A
@@ -266,6 +268,8 @@ relatório. Nada de marcação antes disso.
 - O que foi verificado (e com que resultado): navegador, trace, Impeccable, web quality, comandos.
 - As marcações da caneta (o relatório da skill `caneta`).
 - O que ficou pendente e as sugestões de conteúdo ainda não aprovadas.
+- A pergunta da regra de aprendizado (D68) para cada pedido ou reclamação do Cesar nesta rodada: vira
+  regra para os próximos posts?
 
 Nunca commite nem publique sem pedido explícito do Cesar. Push na `main` publica o site.
 
@@ -276,11 +280,18 @@ status de cada um. Pegue o próximo "pendente", siga o checklist inteiro no modo
 já está no blog) e, ao concluir cada post, **atualize o status** na mesma hora, com a data e uma linha
 do que mudou.
 
-## Regra de aprendizado
+## Regra de aprendizado (D68)
 
-Quando o Cesar corrigir algo que vale para todos os posts, **proponha** atualizar o `DESIGN.md` (se
-for visual) ou esta skill (se for processo), para os próximos já saírem certos. Se ele corrigir a
-mesma coisa duas vezes, a mudança vira regra (CLAUDE.md).
+Todo pedido ou reclamação do Cesar sobre um post (texto, estrutura, desenho, animação, caneta,
+qualquer coisa), depois de feito, **termina com uma pergunta**: se aquilo vira regra para os próximos
+posts. Uma linha por pedido, dizendo o que viraria regra e onde ela ficaria (esta skill, `figura`,
+`lousa`, `desenho`, `caneta`, `DESIGN.md`, `docs/estilo-desenho.md`, `docs/marcacoes.md` ou
+`.claude/rules/`).
+
+- Pergunte sempre, mesmo quando o pedido parecer só daquele post: quem decide é ele.
+- **Sim:** registre na hora, no lugar certo, com a data (e no `docs/decisoes.md`, se for decisão).
+- **Não:** vale só para aquele post, e a mesma pergunta não volta.
+- Se ele corrigir a mesma coisa duas vezes, vira regra de qualquer jeito (CLAUDE.md).
 
 ## Migração dos posts do blog atual (D15)
 

@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520"
+  aria-label="Figura em quatro passos: o mesmo pedido, com o número do cartão e o CVV, vai ao log por dois caminhos. Pelo log.info com o toString, sem passar pelo filtro, o log recebe o número e o CVV inteiros, o que não pode. Pelo logJson.toJson, o pedido passa antes pelo MascaraCartaoFilter, e o log recebe 550209******7890, sem o CVV. Só o que passa pelo filtro sai mascarado.">
+  <g class="tinta">
+    <g class="tom-azul">
+      <rect x="37" y="157" width="270" height="150" rx="12" class="hachura"/>
+      <rect x="30" y="150" width="270" height="150" rx="12" class="lavado"/>
+      <rect x="30" y="150" width="270" height="150" rx="12" class="linha"/>
+    </g>
+    <g class="tom-verde">
+      <rect x="30" y="380" width="350" height="90" rx="10" transform="translate(7 6)" class="cor"/>
+      <rect x="30" y="380" width="350" height="90" rx="10" class="lavado"/>
+      <rect x="30" y="380" width="350" height="90" rx="10" class="linha"/>
+    </g>
+    <rect x="648" y="138" width="520" height="276" rx="8" class="hachura"/>
+    <rect x="640" y="130" width="520" height="276" rx="8" class="papel"/>
+    <rect x="640" y="130" width="520" height="276" rx="8" class="linha"/>
+
+    <g data-passo="1" class="tom-vermelho">
+      <path d="M165 150 V100 C165 85 173 76 188 76 H500 C580 76 550 232 624 232 M610 223 L624 232 L610 241" class="linha-tom"/>
+    </g>
+
+    <g data-passo="2" class="tom-vermelho">
+      <rect x="654" y="186" width="492" height="92" rx="8" class="lavado"/>
+      <rect x="654" y="186" width="492" height="92" rx="8" class="linha"/>
+      <path d="M1104 248 l18 18 m0 -18 l-18 18" class="linha-tom"/>
+    </g>
+
+    <g data-passo="3" class="tom-verde">
+      <path d="M165 300 V366 M156 352 L165 366 L174 352" class="linha-tom"/>
+      <g class="etapa-2">
+        <path d="M380 425 H500 C570 425 554 340 624 340 M610 331 L624 340 L610 349" class="linha-tom"/>
+      </g>
+    </g>
+
+    <g data-passo="4" class="tom-verde">
+      <rect x="654" y="294" width="492" height="92" rx="8" class="lavado"/>
+      <rect x="654" y="294" width="492" height="92" rx="8" class="linha"/>
+      <path d="M1102 355 l8 8 l18 -20" class="linha-tom"/>
+      <g class="etapa-2">
+        <rect x="640" y="426" width="520" height="70" rx="12" class="lavado"/>
+        <rect x="640" y="426" width="520" height="70" rx="12" class="linha"/>
+      </g>
+    </g>
+  </g>
+
+  <g class="tom-azul">
+    <text x="46" y="192" class="titulo-caixa">Pedido</text>
+    <text x="46" y="238" class="codigo">5502091234567890</text>
+    <text x="46" y="278" class="codigo">cvv 123</text>
+  </g>
+  <g class="tom-verde">
+    <text x="48" y="418" class="titulo-caixa">MascaraCartaoFilter</text>
+    <text x="48" y="452" class="texto-caixa">mascara e remove</text>
+  </g>
+  <text x="662" y="170" class="titulo-caixa">log</text>
+
+  <g data-passo="1" class="tom-vermelho">
+    <circle cx="124" cy="110" r="19" class="selo"/>
+    <text x="124" y="111" class="selo-texto">1</text>
+    <text x="200" y="58" class="codigo texto-tom">toString()</text>
+    <text x="362" y="58" class="texto-caixa texto-tom">sem passar pelo filtro</text>
+    <text x="186" y="126" class="codigo">log.info("{}", pedido)</text>
+    <path d="M165 146 V100 C165 85 173 76 188 76 H500 C580 76 550 232 618 232" pathLength="1" class="trajeto"/>
+  </g>
+
+  <g data-passo="2" class="tom-vermelho">
+    <circle cx="682" cy="232" r="19" class="selo"/>
+    <text x="682" y="233" class="selo-texto">2</text>
+    <text x="714" y="224" class="codigo texto-tom">numero=5502091234567890</text>
+    <text x="714" y="264" class="codigo texto-tom">cvv=123</text>
+  </g>
+
+  <g data-passo="3" class="tom-verde">
+    <circle cx="124" cy="340" r="19" class="selo"/>
+    <text x="124" y="341" class="selo-texto">3</text>
+    <text x="186" y="348" class="codigo">logJson.toJson(pedido)</text>
+    <path d="M165 304 V360" pathLength="1" class="trajeto"/>
+    <g class="etapa-2">
+      <path d="M384 425 H500 C570 425 554 340 618 340" pathLength="1" class="trajeto"/>
+    </g>
+  </g>
+
+  <g data-passo="4" class="tom-verde">
+    <circle cx="682" cy="340" r="19" class="selo"/>
+    <text x="682" y="341" class="selo-texto">4</text>
+    <text x="714" y="332" class="codigo texto-tom">"numero":"550209******7890"</text>
+    <text x="714" y="370" class="texto-caixa texto-tom">sem o cvv</text>
+    <g class="etapa-2">
+      <text x="900" y="468" text-anchor="middle" class="texto-caixa texto-tom">Só o que passa pelo filtro sai mascarado.</text>
+    </g>
+  </g>
+</svg>

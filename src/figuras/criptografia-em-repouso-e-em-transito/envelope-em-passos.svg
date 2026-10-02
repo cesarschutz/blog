@@ -1,0 +1,196 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1100"
+  aria-label="Diagrama de sequência do envelope encryption, em cinco passos, entre o KMS, o banco e o disco: o banco cifra Maria Souza com a chave de dados e grava no disco só o texto cifrado; o KMS cifra a chave de dados com a chave mestra, que nunca sai dele, e devolve a chave cifrada; o banco guarda a chave cifrada no disco, junto dos dados; para ler, o banco pede ao KMS para abrir a chave, o KMS confere a permissão e devolve a chave aberta, e Maria Souza aparece só na memória do banco; depois, com a chave mestra desativada, o KMS recusa o pedido, e os dados e os backups ficam ilegíveis.">
+  <path d="M270 124 V982 M580 124 V982 M980 124 V982" class="grade"/>
+
+  <g class="tinta">
+    <g class="tom-azul">
+      <rect x="162" y="37" width="230" height="88" rx="12" class="hachura"/>
+      <rect x="155" y="30" width="230" height="88" rx="12" class="lavado"/>
+      <rect x="155" y="30" width="230" height="88" rx="12" class="linha"/>
+    </g>
+    <circle cx="186" cy="74" r="13" class="papel"/>
+    <circle cx="186" cy="74" r="13" class="linha"/>
+    <circle cx="186" cy="74" r="4" class="linha"/>
+    <path d="M199 74 H229 M219 74 V85 M227 74 V83" class="linha"/>
+    <g class="tom-roxo">
+      <rect x="472" y="37" width="230" height="88" rx="12" class="hachura"/>
+      <rect x="465" y="30" width="230" height="88" rx="12" class="lavado"/>
+      <rect x="465" y="30" width="230" height="88" rx="12" class="linha"/>
+    </g>
+    <g class="tom-ambar">
+      <rect x="858" y="30" width="244" height="88" rx="12" transform="translate(7 6)" class="cor"/>
+      <rect x="858" y="30" width="244" height="88" rx="12" class="lavado"/>
+      <rect x="858" y="30" width="244" height="88" rx="12" class="linha"/>
+    </g>
+    <rect x="872" y="56" width="46" height="36" rx="5" class="papel"/>
+    <rect x="872" y="56" width="46" height="36" rx="5" class="linha"/>
+    <circle cx="891" cy="74" r="10" class="linha"/>
+    <path d="M909 63 L896 75 M908 85 H911" class="linha"/>
+
+    <g data-passo="1">
+      <g class="tom-roxo">
+        <path d="M580 184 H866 M852 175 L866 184 L852 193" class="linha-tom"/>
+      </g>
+      <g class="tom-ambar">
+        <rect x="880" y="150" width="200" height="68" rx="8" class="lavado"/>
+        <rect x="880" y="150" width="200" height="68" rx="8" class="linha"/>
+      </g>
+    </g>
+
+    <g data-passo="2">
+      <g class="tom-roxo">
+        <path d="M580 262 H285" class="linha-tom"/>
+        <path d="M298 253 L284 262 L298 271" class="linha-tom"/>
+      </g>
+      <g class="tom-azul">
+        <rect x="175" y="284" width="190" height="68" rx="8" class="lavado"/>
+        <rect x="175" y="284" width="190" height="68" rx="8" class="linha"/>
+      </g>
+      <g class="tom-azul etapa-2">
+        <path d="M270 384 H566 M552 375 L566 384 L552 393" class="linha-tom"/>
+      </g>
+    </g>
+
+    <g data-passo="3">
+      <g class="tom-roxo">
+        <path d="M580 432 H966 M952 423 L966 432 L952 441" class="linha-tom"/>
+      </g>
+      <g class="tom-ambar">
+        <rect x="885" y="454" width="190" height="68" rx="8" class="lavado"/>
+        <rect x="885" y="454" width="190" height="68" rx="8" class="linha"/>
+      </g>
+    </g>
+
+    <g data-passo="4">
+      <g class="tom-roxo">
+        <path d="M580 572 H285" class="linha-tom"/>
+        <path d="M298 563 L284 572 L298 581" class="linha-tom"/>
+      </g>
+      <g class="tom-azul">
+        <rect x="175" y="594" width="190" height="56" rx="8" class="lavado"/>
+        <rect x="175" y="594" width="190" height="56" rx="8" class="linha"/>
+      </g>
+      <g class="tom-azul etapa-2">
+        <path d="M270 690 H566 M552 681 L566 690 L552 699" class="linha-tom"/>
+      </g>
+      <g class="tom-verde">
+        <path d="M190 621 l8 8 l16 -18" class="linha-tom"/>
+      </g>
+      <g class="tom-roxo etapa-2">
+        <rect x="485" y="712" width="190" height="68" rx="8" class="lavado"/>
+        <rect x="485" y="712" width="190" height="68" rx="8" class="linha"/>
+      </g>
+    </g>
+
+    <g data-passo="5">
+      <g class="tom-vermelho">
+        <rect x="175" y="812" width="190" height="68" rx="8" transform="translate(6 5)" class="cor"/>
+        <rect x="175" y="812" width="190" height="68" rx="8" class="lavado"/>
+        <rect x="175" y="812" width="190" height="68" rx="8" class="linha"/>
+      </g>
+      <g class="tom-roxo etapa-2">
+        <path d="M580 920 H310" class="linha-tom"/>
+      </g>
+      <g class="tom-vermelho etapa-2">
+        <path d="M278 908 l24 24 m0 -24 l-24 24" class="linha-tom"/>
+      </g>
+      <g class="tom-vermelho etapa-3">
+        <rect x="155" y="1004" width="947" height="70" rx="12" class="lavado"/>
+        <rect x="155" y="1004" width="947" height="70" rx="12" class="linha"/>
+        <path d="M183 1027 l24 24 m0 -24 l-24 24" class="linha-tom"/>
+      </g>
+    </g>
+  </g>
+
+  <g class="tom-roxo" data-marca="banco" transform="translate(480 50) scale(0.48)"/>
+
+  <g class="tom-azul">
+    <text x="245" y="72" class="titulo-caixa">KMS</text>
+    <text x="245" y="102" class="texto-caixa">chave mestra</text>
+  </g>
+  <g class="tom-roxo">
+    <text x="540" y="72" class="titulo-caixa">Banco</text>
+    <text x="540" y="102" class="texto-caixa">o servidor</text>
+  </g>
+  <g class="tom-ambar">
+    <text x="930" y="72" class="titulo-caixa">Disco</text>
+    <text x="930" y="102" class="texto-caixa">dados e backups</text>
+  </g>
+
+  <g data-passo="1">
+    <g class="tom-roxo">
+      <circle cx="42" cy="184" r="19" class="selo"/>
+      <text x="42" y="185" class="selo-texto">1</text>
+      <text x="723" y="170" text-anchor="middle" class="codigo">Maria Souza</text>
+      <text x="723" y="212" text-anchor="middle" class="texto-caixa texto-tom">com a chave de dados</text>
+      <path d="M582 184 H860" pathLength="1" class="trajeto"/>
+    </g>
+    <text x="980" y="178" text-anchor="middle" class="codigo">9fQk2xPzA…</text>
+    <text x="980" y="206" text-anchor="middle" class="texto-caixa">cifrado</text>
+  </g>
+
+  <g data-passo="2">
+    <g class="tom-azul">
+      <circle cx="42" cy="262" r="19" class="selo"/>
+      <text x="42" y="263" class="selo-texto">2</text>
+    </g>
+    <g class="tom-roxo">
+      <text x="425" y="248" text-anchor="middle" class="texto-caixa texto-tom">chave de dados</text>
+      <path d="M578 262 H290" pathLength="1" class="trajeto"/>
+    </g>
+    <text x="270" y="312" text-anchor="middle" class="texto-caixa">cifra com a</text>
+    <text x="270" y="340" text-anchor="middle" class="texto-caixa">chave mestra</text>
+    <g class="tom-azul etapa-2">
+      <text x="425" y="370" text-anchor="middle" class="texto-caixa texto-tom">chave cifrada</text>
+      <path d="M272 384 H560" pathLength="1" class="trajeto"/>
+    </g>
+  </g>
+
+  <g data-passo="3">
+    <g class="tom-roxo">
+      <circle cx="42" cy="432" r="19" class="selo"/>
+      <text x="42" y="433" class="selo-texto">3</text>
+      <text x="773" y="418" text-anchor="middle" class="texto-caixa texto-tom">guarda a chave cifrada</text>
+      <path d="M582 432 H960" pathLength="1" class="trajeto"/>
+    </g>
+    <text x="980" y="482" text-anchor="middle" class="texto-caixa">chave de dados</text>
+    <text x="980" y="510" text-anchor="middle" class="texto-caixa">cifrada</text>
+  </g>
+
+  <g data-passo="4">
+    <g class="tom-roxo">
+      <circle cx="42" cy="572" r="19" class="selo"/>
+      <text x="42" y="573" class="selo-texto">4</text>
+      <text x="425" y="558" text-anchor="middle" class="texto-caixa texto-tom">abrir a chave cifrada</text>
+      <path d="M578 572 H290" pathLength="1" class="trajeto"/>
+    </g>
+    <text x="284" y="629" text-anchor="middle" class="texto-caixa">permissão ok</text>
+    <g class="tom-azul etapa-2">
+      <text x="425" y="676" text-anchor="middle" class="texto-caixa texto-tom">chave aberta</text>
+      <path d="M272 690 H560" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="etapa-2">
+      <text x="580" y="740" text-anchor="middle" class="codigo">Maria Souza</text>
+      <text x="580" y="768" text-anchor="middle" class="texto-caixa">só na memória</text>
+    </g>
+  </g>
+
+  <g data-passo="5">
+    <g class="tom-vermelho">
+      <circle cx="42" cy="846" r="19" class="selo"/>
+      <text x="42" y="847" class="selo-texto">5</text>
+      <text x="270" y="840" text-anchor="middle" class="texto-caixa texto-tom">chave mestra</text>
+      <text x="270" y="868" text-anchor="middle" class="texto-caixa texto-tom">desativada</text>
+    </g>
+    <g class="tom-roxo etapa-2">
+      <text x="445" y="906" text-anchor="middle" class="texto-caixa texto-tom">abrir a chave cifrada</text>
+      <path d="M578 920 H316" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-vermelho etapa-2">
+      <text x="316" y="962" class="texto-caixa texto-tom">recusa</text>
+    </g>
+    <g class="tom-vermelho etapa-3">
+      <text x="642" y="1046" text-anchor="middle" class="texto-caixa texto-tom">Sem a chave mestra, dados e backups ficam ilegíveis.</text>
+    </g>
+  </g>
+</svg>

@@ -77,6 +77,8 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D64 | Marcas: todo logo só como a regra de marca do dono permite, conferida e registrada; ícones genéricos no lugar dos proibidos | decidido |
 | D65 | Os controles em prova nos posts: as opções marca-texto, caderno e post-it, cada uma numa lousa de passos, numa de comparação e numa animação | em prova |
 | D66 | O post dos mods ("Quanto custou cada agente?"): publicado direto, com as telas do cockpit em print parado, as tags Claude Code e Plugins e o print largo que rola de lado no celular | decidido e publicado; o Cesar revê no ar |
+| D67 | Figura em passos: um formato só no lugar da lousa de passos, da lousa de comparação e da animação com play (abre inteira, cada passo soma, nada some, o leitor manda) | em prova em `/animacoes-test-2/` |
+| D68 | Pedido do Cesar num post termina na pergunta "vira regra para os próximos posts?" | decidido |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -2611,3 +2613,54 @@ nada muda.
   `src/livros/tags/claude-code.svg` e `plugins.svg`, as fotos dos livros (o IA passou a ter um artigo:
   `ia-deitado.webp` nova, `ia-aberto.webp` fora), a skill `figura`, o `CAPAS.md`, o `DESIGN.md`, a lista
   de revisão e o painel.
+
+## D67 · Figura em passos: um formato só para o que acontece em ordem
+- **Data:** 02/10/2026 · **Status:** em prova (o Cesar vê `/animacoes-test-2/` e decide).
+- **Pedido do Cesar:** as animações do blog estão "meio ruins de entender": "muita coisa, ou animação
+  com coisa sumindo". Ele pediu para verificar quais estão ruins, melhorar a regra dos posts, pesquisar
+  técnicas de bons infográficos e apresentações e pensar em trocar os três tipos (lousa de passos, lousa
+  de comparação e animação com play) por um só, bem feito, com regras bem definidas, tão entendível
+  quanto as figuras paradas. A `/animacoes-test/` (as 9 peças com os controles da D65) fica no ar como
+  está, e as mesmas 9 peças, refeitas, vão para uma página nova.
+- **O que se achou** (`docs/figura-em-passos/`):
+  - **auditoria às cegas das 10 peças animadas:** 1 clara, 5 médias e 4 ruins. O problema não é a
+    quantidade (as figuras paradas têm tanto texto quanto elas, ou mais), mas a soma de quatro coisas:
+    estados sobrepostos no mesmo lugar, duas coisas mudando em lugares diferentes, coisas que somem e
+    passos curtos demais. Boa parte do "coisa sumindo" vinha do componente: a lousa abria completa, o
+    play apagava tudo, e no fim apagava de novo, em loop. Também: símbolos com sentidos diferentes de
+    uma peça para outra, selos fora da ordem de leitura e, no celular, a ação fora da tela;
+  - **pesquisa:** a animação ganha pouco do estático, menos quando o movimento é o próprio assunto; o
+    que some sobrecarrega a memória (transient information effect); o que funciona é segmentar no ritmo
+    do leitor, acumular sem apagar, uma coisa por vez, legenda junto e comparação lado a lado (small
+    multiples).
+- **Decisão (em prova):** a **figura em passos**, uma figura parada comum que o leitor pode montar
+  passo a passo:
+  - abre inteira, como uma figura parada, com os selos e a lista;
+  - "Passo a passo" volta à base, e o leitor avança com Próximo;
+  - cada passo só soma, os anteriores esmaecem um pouco e um ponto percorre a seta da mensagem uma vez;
+  - nada anda sozinho, nada repete, nada some.
+
+  As regras estão na skill `figura`, seção "Figura em passos": uma ideia por peça, um lugar por passo,
+  até 4 partes e 15 palavras por passo, de 3 a 6 passos, selos na ordem de leitura, um dicionário de
+  símbolos para o blog todo e uma faixa de desfecho. O componente é `FiguraPassos` (motor
+  `src/scripts/figura-passos.ts`, estilo `figura-passos.css`), e o `validar.mjs` aceita `data-passo` e
+  `trajeto`.
+- **Se aprovar:** a figura em passos vira a `Figura` com `passos`. A `Lousa` e a `Animacao` saem dos
+  posts, peça por peça, pela revisão dos posts, e as duas páginas de teste e a dos controles saem do ar.
+  A D65 (a escolha dos controles) deixa de ter objeto: o formato novo tem um controle só.
+- **Alternativas:**
+  - manter os três tipos com regras melhores: não resolve o loop nem as duas coisas ao mesmo tempo;
+  - a tirinha de quadros parados (`/amostra/lousas/`): clara, mas ocupa muito espaço e repete o desenho;
+  - só figura parada: perde o guia para quem quer ir passo a passo.
+
+## D68 · Pedido num post termina em pergunta: vira regra?
+- **Data:** 02/10/2026 · **Status:** decidido.
+- **Pedido do Cesar:** "o que eu for pedindo para melhorar nos posts futuros, sempre que eu pedir algo,
+  configura para depois perguntar se quero deixar configurado o que mudei ou reclamei para os próximos
+  posts ou não".
+- **Decisão:** todo pedido ou reclamação dele sobre um post, depois de feito, termina com a pergunta "vira
+  regra para os próximos posts?", dizendo onde a regra ficaria. Com o sim, a regra é registrada na hora,
+  no lugar certo; com o não, vale só para aquele post, e a pergunta não volta. A regra de "corrigiu duas
+  vezes, vira regra" continua.
+- **Onde:** CLAUDE.md ("Regras que valem sempre") e a skill `post` ("Regra de aprendizado" e o relatório
+  final).

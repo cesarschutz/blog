@@ -170,6 +170,70 @@ Use como régua de qualidade antes de entregar uma figura ou animação:
   `sem-resposta-para-perder`** ("muito legal"): diagramas de sequência com os pacotes andando pelas
   setas na ordem em que as coisas acontecem.
 
+## Figura em passos (`FiguraPassos`, em prova, D67)
+
+**Em prova:** só na página `/animacoes-test-2/`, até o Cesar decidir. Se ele aprovar, substitui a lousa
+de passos, a lousa de comparação e a animação com play, e vira a `Figura` com `passos`. Até lá, post
+novo segue as seções de hoje. O porquê está em `docs/figura-em-passos/`: a pesquisa (aprendizagem
+multimídia, informação que some, small multiples) e a auditoria das 10 peças animadas de 02/10/2026,
+com o que cada uma tinha de difícil.
+
+É uma figura parada comum, que o leitor pode montar passo a passo:
+- **abre inteira,** com os selos numerados e a lista dos passos embaixo;
+- **"Passo a passo"** volta à base, e o leitor avança com Próximo e Anterior (ou clica num passo);
+- **cada passo só soma:** o que entrou fica, os anteriores esmaecem um pouco e um ponto percorre a
+  seta da mensagem uma vez;
+- **no último passo,** a figura volta inteira. Nada anda sozinho, nada repete, nada some.
+
+```mdx
+import FiguraPassos from "../../components/FiguraPassos.astro";
+
+<FiguraPassos figura="<slug>/<nome>" passos={["O app pede a cobrança, com a chave.", "…"]} legenda="…" />
+```
+
+Arquivo em `src/figuras/<slug>/<nome>.svg`, com as regras das figuras (acima) e mais estas:
+
+1. **A peça inteira se explica sozinha**, como uma figura parada: ela é a primeira coisa que o leitor vê.
+2. **Uma ideia por peça,** que caiba numa frase. A consequência pode ser o último passo; duas histórias
+   independentes viram duas peças.
+3. **Base é o que o leitor já sabe** (sem `data-passo`, à vista desde o começo): os atores, no máximo 4,
+   com nome, cor e logo genérico; as raias e o eixo; numa comparação, o trecho igual nos dois lados.
+4. **Cada passo só soma** (`data-passo="n"`, dentro e fora do `.tinta`). Nada some, nada é riscado,
+   nada muda de lugar, nenhum texto é trocado. Mudança de estado é uma nota nova ao lado (ou um
+   histórico, "100 → 90 → 80", cada valor escrito uma vez).
+5. **Um lugar muda por vez.** Numa comparação, um passo mexe num lado só: primeiro a diferença de A,
+   depois a de B.
+6. **Pouco por passo:** até 4 partes novas (uma seta com o rótulo dela é uma parte; uma nota com o
+   texto, outra) e até 3 tempos (`etapa-1` a `etapa-3`, um segundo cada), quando uma coisa leva à outra.
+7. **De 3 a 6 passos**, e o texto de cada um com até 15 palavras, dizendo só o que se vê. Método,
+   comando ou jargão só se estiver no desenho; termo novo ganha uma explicação curta no próprio desenho.
+8. **Selos na ordem de leitura** (de cima para baixo, da esquerda para a direita), com o mesmo número
+   da lista. No diagrama de sequência, na margem esquerda (`cx="42"`), na altura do passo.
+9. **Dicionário de símbolos, o mesmo em todo o blog:** ✓ verde é deu certo; ✕ vermelho é falhou, foi
+   recusado ou se perdeu; tracejado (`fantasma`) é o que não aconteceu, e só isso (resposta é seta
+   firme, no tom de quem responde); nada riscado. Vermelho nunca é um ator. O cabeçalho dos atores é a
+   legenda das cores.
+10. **Termina numa faixa de desfecho:** o resultado numa frase (numa comparação, uma por lado).
+11. **Rótulos curtos no desenho** (até 4 palavras); a frase completa fica na lista.
+12. **Movimento só o do motor:** a entrada do passo (0,4 s), os tempos e o ponto no `.trajeto` (cópia
+    da seta, sem a ponta, `pathLength="1"`, fora do `.tinta`, no grupo do tom e do tempo dela). Nada de
+    relógio girando, envelope voando ou objeto que anda e some.
+13. **No celular,** a figura fica com 720 px e rola de lado, e o motor rola o quadro até o que entrou:
+    o conteúdo novo de um passo cabe em cerca de 600 unidades de largura.
+
+**Layouts:**
+- **Fluxo entre atores:** diagrama de sequência. Atores no alto (caixas de 230 × 88), linhas de vida
+  (`grade`), o tempo descendo, setas no tom de quem envia, nota de estado sobre a linha de vida do dono.
+  Modelo: `src/figuras/cobranca-duplicada-no-retry/chave-em-passos.svg`.
+- **Comparação:** duas metades lado a lado, alinhadas (small multiples), cada uma com título e faixa de
+  desfecho; numa linha do tempo, duas raias com o mesmo eixo.
+- **Um objeto que passa por etapas** (um JSON montado campo a campo): o objeto na base, e cada passo
+  soma a seta, o resultado e o selo.
+
+Conferir: `node scripts/desenho/validar.mjs <slug>` (aceita `data-passo` e `trajeto` e confere o
+trajeto) e as fotos de cada passo, a figura inteira primeiro, em 1280 e 390, no claro e no escuro. O
+componente quebra o build se o número de passos do desenho não bater com o da lista.
+
 ## Animação com play (`Animacao`)
 
 Para o que as lousas não cobrem: o sistema funcionando, uma fila enchendo e esvaziando, um algoritmo

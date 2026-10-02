@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"
+  aria-label="Comparação em quatro passos, em duas linhas iguais: o cliente pede TLS, e um intermediário que finge ser o banco responde com um certificado próprio. Em cima, com sslmode=require, o cliente aceita o certificado sem conferir quem é, e o intermediário repassa ao banco e lê tudo em claro, sem o cliente perceber. Embaixo, com sslmode=verify-full, o cliente confere a CA e o nome, recusa o certificado, e a conexão nem abre: ninguém lê nada.">
+  <g class="tinta">
+    <g class="tom-petroleo">
+      <rect x="97" y="71" width="230" height="88" rx="12" class="hachura"/>
+      <rect x="90" y="64" width="230" height="88" rx="12" class="lavado"/>
+      <rect x="90" y="64" width="230" height="88" rx="12" class="linha"/>
+      <path d="M326 92 H458 M444 83 L458 92 L444 101" class="linha-tom"/>
+    </g>
+    <g class="tom-ambar">
+      <rect x="477" y="71" width="300" height="88" rx="12" class="hachura"/>
+      <rect x="470" y="64" width="300" height="88" rx="12" class="lavado"/>
+      <rect x="470" y="64" width="300" height="88" rx="12" class="linha"/>
+      <path d="M464 132 H334" class="linha-tom"/>
+      <path d="M347 123 L333 132 L347 141" class="linha-tom"/>
+      <rect x="372" y="114" width="46" height="36" rx="4" class="lavado"/>
+      <rect x="372" y="114" width="46" height="36" rx="4" class="linha"/>
+      <path d="M380 124 H408 M380 133 H398" class="linha"/>
+      <circle cx="406" cy="142" r="4" class="linha-tom"/>
+    </g>
+    <g class="tom-roxo">
+      <rect x="937" y="71" width="230" height="88" rx="12" class="hachura"/>
+      <rect x="930" y="64" width="230" height="88" rx="12" class="lavado"/>
+      <rect x="930" y="64" width="230" height="88" rx="12" class="linha"/>
+    </g>
+
+    <g class="tom-petroleo">
+      <rect x="97" y="471" width="230" height="88" rx="12" class="hachura"/>
+      <rect x="90" y="464" width="230" height="88" rx="12" class="lavado"/>
+      <rect x="90" y="464" width="230" height="88" rx="12" class="linha"/>
+      <path d="M326 492 H458 M444 483 L458 492 L444 501" class="linha-tom"/>
+    </g>
+    <g class="tom-ambar">
+      <rect x="477" y="471" width="300" height="88" rx="12" class="hachura"/>
+      <rect x="470" y="464" width="300" height="88" rx="12" class="lavado"/>
+      <rect x="470" y="464" width="300" height="88" rx="12" class="linha"/>
+      <path d="M464 532 H334" class="linha-tom"/>
+      <path d="M347 523 L333 532 L347 541" class="linha-tom"/>
+      <rect x="372" y="514" width="46" height="36" rx="4" class="lavado"/>
+      <rect x="372" y="514" width="46" height="36" rx="4" class="linha"/>
+      <path d="M380 524 H408 M380 533 H398" class="linha"/>
+      <circle cx="406" cy="542" r="4" class="linha-tom"/>
+    </g>
+    <g class="tom-roxo">
+      <rect x="937" y="471" width="230" height="88" rx="12" class="hachura"/>
+      <rect x="930" y="464" width="230" height="88" rx="12" class="lavado"/>
+      <rect x="930" y="464" width="230" height="88" rx="12" class="linha"/>
+    </g>
+
+    <g data-passo="1">
+      <g class="tom-vermelho">
+        <rect x="90" y="208" width="270" height="68" rx="8" transform="translate(6 5)" class="cor"/>
+        <rect x="90" y="208" width="270" height="68" rx="8" class="lavado"/>
+        <rect x="90" y="208" width="270" height="68" rx="8" class="linha"/>
+      </g>
+    </g>
+
+    <g data-passo="2">
+      <g class="tom-ambar">
+        <path d="M776 92 H916 M902 83 L916 92 L902 101" class="linha-tom"/>
+      </g>
+      <g class="tom-vermelho etapa-2">
+        <rect x="500" y="208" width="240" height="56" rx="8" class="lavado"/>
+        <rect x="500" y="208" width="240" height="56" rx="8" class="linha"/>
+        <path d="M518 234 H544 V256 H518 Z" class="linha-tom"/>
+        <path d="M523 234 V223 A8 8 0 0 1 539 223 V227" class="linha-tom"/>
+      </g>
+      <g class="tom-vermelho etapa-3">
+        <rect x="90" y="304" width="1070" height="62" rx="12" class="lavado"/>
+        <rect x="90" y="304" width="1070" height="62" rx="12" class="linha"/>
+        <path d="M114 323 l24 24 m0 -24 l-24 24" class="linha-tom"/>
+      </g>
+    </g>
+
+    <g data-passo="3">
+      <g class="tom-petroleo">
+        <rect x="90" y="608" width="270" height="68" rx="8" class="lavado"/>
+        <rect x="90" y="608" width="270" height="68" rx="8" class="linha"/>
+      </g>
+      <g class="tom-vermelho etapa-2">
+        <path d="M374 630 l24 24 m0 -24 l-24 24" class="linha-tom"/>
+      </g>
+    </g>
+
+    <g data-passo="4">
+      <g class="tom-verde">
+        <rect x="90" y="704" width="1070" height="62" rx="12" class="lavado"/>
+        <rect x="90" y="704" width="1070" height="62" rx="12" class="linha"/>
+        <path d="M113 736 l11 11 l22 -24" class="linha-tom"/>
+      </g>
+    </g>
+  </g>
+
+  <g class="tom-petroleo" data-marca="aplicacao" transform="translate(105 84) scale(0.48)"/>
+  <g class="tom-ambar" data-marca="servidor" transform="translate(485 84) scale(0.48)"/>
+  <g class="tom-roxo" data-marca="banco" transform="translate(945 84) scale(0.48)"/>
+  <g class="tom-petroleo" data-marca="aplicacao" transform="translate(105 484) scale(0.48)"/>
+  <g class="tom-ambar" data-marca="servidor" transform="translate(485 484) scale(0.48)"/>
+  <g class="tom-roxo" data-marca="banco" transform="translate(945 484) scale(0.48)"/>
+
+  <text x="90" y="44" class="codigo">sslmode=require</text>
+  <g class="tom-petroleo">
+    <text x="165" y="106" class="titulo-caixa">Cliente</text>
+    <text x="165" y="136" class="texto-caixa">a aplicação</text>
+    <text x="392" y="80" text-anchor="middle" class="texto-caixa texto-tom">pede TLS</text>
+  </g>
+  <g class="tom-ambar">
+    <text x="545" y="106" class="titulo-caixa">Intermediário</text>
+    <text x="545" y="136" class="texto-caixa">finge ser o banco</text>
+    <text x="395" y="186" text-anchor="middle" class="texto-caixa texto-tom">certificado próprio</text>
+  </g>
+  <g class="tom-roxo">
+    <text x="1005" y="106" class="titulo-caixa">Banco</text>
+    <text x="1005" y="136" class="texto-caixa">PostgreSQL</text>
+  </g>
+
+  <text x="90" y="444" class="codigo">sslmode=verify-full</text>
+  <g class="tom-petroleo">
+    <text x="165" y="506" class="titulo-caixa">Cliente</text>
+    <text x="165" y="536" class="texto-caixa">a aplicação</text>
+    <text x="392" y="480" text-anchor="middle" class="texto-caixa texto-tom">pede TLS</text>
+  </g>
+  <g class="tom-ambar">
+    <text x="545" y="506" class="titulo-caixa">Intermediário</text>
+    <text x="545" y="536" class="texto-caixa">finge ser o banco</text>
+    <text x="395" y="586" text-anchor="middle" class="texto-caixa texto-tom">certificado próprio</text>
+  </g>
+  <g class="tom-roxo">
+    <text x="1005" y="506" class="titulo-caixa">Banco</text>
+    <text x="1005" y="536" class="texto-caixa">PostgreSQL</text>
+  </g>
+
+  <g data-passo="1">
+    <g class="tom-vermelho">
+      <circle cx="60" cy="242" r="19" class="selo"/>
+      <text x="60" y="243" class="selo-texto">1</text>
+      <text x="225" y="236" text-anchor="middle" class="texto-caixa texto-tom">aceita o certificado</text>
+      <text x="225" y="264" text-anchor="middle" class="texto-caixa texto-tom">sem conferir quem é</text>
+    </g>
+  </g>
+
+  <g data-passo="2">
+    <g class="tom-vermelho">
+      <circle cx="470" cy="236" r="19" class="selo"/>
+      <text x="470" y="237" class="selo-texto">2</text>
+    </g>
+    <g class="tom-ambar">
+      <text x="846" y="80" text-anchor="middle" class="texto-caixa texto-tom">repassa</text>
+      <path d="M778 92 H910" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-vermelho etapa-2">
+      <text x="560" y="244" class="texto-caixa texto-tom">lê tudo em claro</text>
+    </g>
+    <g class="tom-vermelho etapa-3">
+      <text x="640" y="342" text-anchor="middle" class="texto-caixa texto-tom">O intermediário lê tudo, e o cliente nem percebe.</text>
+    </g>
+  </g>
+
+  <g data-passo="3">
+    <g class="tom-petroleo">
+      <circle cx="60" cy="642" r="19" class="selo"/>
+      <text x="60" y="643" class="selo-texto">3</text>
+      <text x="225" y="636" text-anchor="middle" class="texto-caixa texto-tom">confere a CA</text>
+      <text x="225" y="664" text-anchor="middle" class="texto-caixa texto-tom">e o nome</text>
+    </g>
+    <g class="tom-vermelho etapa-2">
+      <text x="408" y="650" class="texto-caixa texto-tom">recusado</text>
+    </g>
+  </g>
+
+  <g data-passo="4">
+    <g class="tom-verde">
+      <circle cx="60" cy="735" r="19" class="selo"/>
+      <text x="60" y="736" class="selo-texto">4</text>
+      <text x="640" y="742" text-anchor="middle" class="texto-caixa texto-tom">A conexão nem abre: ninguém lê nada.</text>
+    </g>
+  </g>
+</svg>

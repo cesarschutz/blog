@@ -42,6 +42,9 @@ outras portas) sai.
 - **Controles em prova (D65):** a `Lousa` e a `Animacao` aceitam `controles="marca-texto" | "caderno" |
   "post-it"` (as opções do protótipo `/prototipos/controles/`). Cada post da prova fica com a opção que
   recebeu (lista na D65); post novo fica sem `controles` até o Cesar escolher.
+- **Figura em passos (D67, em prova):** um formato só no lugar da lousa de passos, da de comparação e da
+  animação com play (`FiguraPassos`, regras na skill `figura`), na página `/animacoes-test-2/`. Até o
+  Cesar decidir, post novo segue as regras de hoje.
 - **Nunca** instalar skill, MCP ou pacote de terceiros sem ler o código antes e reportar ao Cesar o que
   for suspeito (rede, variáveis de ambiente, credenciais, comandos destrutivos).
 
@@ -89,6 +92,9 @@ em `docs/redesenho/rodada-4/`.
 - O caminho do projeto tem espaço (`novo site`): use aspas em todo comando e script.
 - Frase de autor (saiu na D39) só volta com a fonte primária aberta e conferida.
 - Se o Cesar corrigir a mesma coisa duas vezes, isso vira regra no lugar certo (skill, `.claude/rules/` ou aqui).
+- **Pedido num post termina em pergunta (D68):** depois de fazer o que o Cesar pediu ou reclamou num
+  post, pergunte se aquilo vira regra para os próximos posts, dizendo onde ela ficaria. Com o sim,
+  registre na hora; com o não, vale só para aquele post (skill `post`, "Regra de aprendizado").
 
 ## Livros, séries e tags
 
@@ -207,6 +213,8 @@ docs/historico/          rodadas fechadas: o prompt da Fase 0, os controles da D
                          (controle, regras dos agentes, diagnósticos, pesquisa e sugestões da D52) e
                          os protótipos superados
 docs/virada.md           plano para o domínio passar ao blog novo (só com OK do Cesar)
+docs/figura-em-passos/   a figura em passos (D67, em prova): o pedido (README), a pesquisa e a auditoria
+                         das peças animadas de 02/10/2026
 docs/redesenho/          redesenho (D55, D61): pedido, regras e status (README), a direção de cada modelo
                          (modelos/), as rodadas 2 a 4 (rodada-N/: o texto do Cesar, a direção e o
                          controle) e a API da base comum
