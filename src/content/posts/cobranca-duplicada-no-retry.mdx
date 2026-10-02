@@ -8,8 +8,7 @@ category: Arquitetura de Software
 draft: false
 ---
 
-import Animacao from "../../components/Animacao.astro";
-import Lousa from "../../components/Lousa.astro";
+import FiguraPassos from "../../components/FiguraPassos.astro";
 import FraseDestaque from "../../components/FraseDestaque.astro";
 
 
@@ -19,9 +18,20 @@ import FraseDestaque from "../../components/FraseDestaque.astro";
 
 O app do cliente envia uma requisição de cobrança de R\$ 250 para o serviço de autorização. A resposta não chega a tempo e a requisição estoura o timeout. Do lado do cliente, não dá para saber o que aconteceu: o servidor pode ter cobrado, pode ainda estar processando ou pode nem ter recebido o pedido. Então o app reenvia.
 
-A animação mostra a cena: a cobrança passa, a resposta se perde no caminho de volta, o relógio do app estoura e ele envia de novo. No fim, a fatura do cliente tem duas linhas de R\$ 250.
+A figura mostra a cena: a cobrança passa, a resposta se perde no caminho de volta, o tempo de espera do app estoura e ele envia de novo. No fim, a fatura do cliente tem duas linhas de R\$ 250.
 
-<Animacao animacao="cobranca-duplicada-no-retry/resposta-perdida" controles="caderno" legenda="O serviço cobra no adquirente, a resposta se perde no caminho de volta e o app, sem saber, envia de novo: o cliente é cobrado duas vezes." />
+<FiguraPassos
+  figura="cobranca-duplicada-no-retry/resposta-perdida-em-passos"
+  passos={[
+    "O app pede ao serviço a cobrança de R$ 250.",
+    "O serviço cobra no adquirente, que lança R$ 250 na fatura e aprova.",
+    "A resposta se perde no caminho. O app dá `timeout` e não sabe se cobrou.",
+    "Sem saber, o app tenta de novo, e o serviço cobra outra vez.",
+    "A fatura ganha uma segunda linha de R$ 250: o cliente foi cobrado duas vezes.",
+  ]}
+  legenda="Azul é o app, verde o serviço e âmbar o adquirente; a fatura é o papel, e vermelho é o que deu errado."
+  fim="segmentos"
+/>
 
 O serviço roda em várias instâncias atrás de um load balancer. O reenvio pode cair numa instância diferente da primeira, e pode chegar enquanto a primeira ainda está trabalhando.
 
@@ -59,27 +69,28 @@ A ordem se inverte:
 
 <FraseDestaque texto="Em vez de verificar e depois gravar, você grava e deixa o banco recusar." />
 
-A janela some porque :marca[verificar e gravar passam a ser a mesma operação]. Aperte o play ou arraste sobre a lousa para ver os cinco passos, contados logo abaixo dela.
+A janela some porque :marca[verificar e gravar passam a ser a mesma operação]. A figura mostra os seis passos, e cada um é contado em detalhe logo abaixo dela.
 
-<Lousa
-  desenho="cobranca-duplicada-no-retry/passos"
-  controles="post-it"
-  rotulo="Lousa: o app pede a cobrança com a chave 5b0e7a52…; o serviço grava a chave na tabela cobranca, que tem UNIQUE sobre ela, cobra no adquirente e guarda CAPTURADA, 201. A resposta se perde, o app tenta de novo com a mesma chave, o INSERT bate na restrição e o serviço devolve a resposta guardada, sem chamar o adquirente de novo."
-  duracao={15}
+<FiguraPassos
+  figura="cobranca-duplicada-no-retry/chave-em-passos"
   passos={[
-    { de: 0, texto: "O app pede, com a chave" },
-    { de: 0.15, texto: "O serviço grava a chave antes de cobrar" },
-    { de: 0.3, texto: "Cobra e guarda a resposta" },
-    { de: 0.57, texto: "A resposta se perde, e o app tenta de novo" },
-    { de: 0.78, texto: "A restrição recusa e a resposta guardada volta" },
+    "O app pede a cobrança e manda junto a chave de idempotência.",
+    "O serviço grava a chave **antes** de cobrar, com status `PROCESSANDO`.",
+    "Cobra no adquirente e, aprovada, guarda o status e a resposta `201`.",
+    "A resposta se perde no caminho, e o app tenta de novo com a **mesma** chave.",
+    "O `INSERT` bate na restrição `UNIQUE`: a chave já existe.",
+    "O serviço devolve a resposta guardada, sem chamar o adquirente de novo.",
   ]}
+  legenda="Azul é o app, verde o serviço, roxo a tabela cobranca e âmbar o adquirente; a chave é petróleo, e vermelho é o que deu errado."
+  fim="segmentos"
 />
 
 1. O app pede a cobrança de R\$ 250 e manda junto a chave de idempotência que ele gerou, `5b0e7a52…`. A chave é a mesma em todas as tentativas desse pedido.
 2. Antes de cobrar, o serviço grava a chave na tabela `cobranca`, que tem restrição `UNIQUE` sobre ela. Quem grava primeiro fica com a chave, e o status começa como `PROCESSANDO`.
 3. O serviço confirma o registro, cobra no adquirente e guarda a resposta junto da chave: `CAPTURADA`, com o `201` que devolveu ao app.
 4. A resposta se perde no caminho de volta. Para o app, é como se nada tivesse acontecido, então ele tenta de novo, com a mesma chave.
-5. O `INSERT` da segunda tentativa bate na restrição `UNIQUE`. Em vez de cobrar de novo, o serviço devolve a resposta que já estava guardada.
+5. O `INSERT` da segunda tentativa bate na restrição `UNIQUE`: a chave já existe.
+6. Em vez de cobrar de novo, o serviço devolve a resposta que já estava guardada, sem chamar o adquirente.
 
 ### Na prática, com SQL
 
@@ -154,21 +165,18 @@ A chave resolve o caso em que a decisão cabe numa chave: "esta intenção já f
 
 ## 5. Regra prática
 
-A mesma falha de rede, com e sem a chave de idempotência. Avance no tempo e compare as duas linhas.
+A mesma falha de rede, com e sem a chave de idempotência. Até a resposta se perder, os dois lados são iguais; em **Passo a passo**, a figura mostra a repetição sem a chave e depois com ela.
 
-<Lousa
-  desenho="cobranca-duplicada-no-retry/tempo"
-  controles="post-it"
-  rotulo="Lousa comparando a mesma falha de rede sem e com a chave de idempotência, com o app, o serviço e o adquirente em cada linha: o app pede R$ 250, o serviço cobra no adquirente, a resposta se perde e o app tenta de novo depois do timeout. Sem a chave, o serviço cobra de novo e o cliente paga duas vezes; com a chave, o serviço grava a chave antes de cobrar, a restrição UNIQUE recusa a repetição e o app recebe a resposta guardada, com uma cobrança só."
-  duracao={12}
-  estados={[
-    { de: 0, texto: "Antes do pedido" },
-    { de: 0.1, texto: "O app pede" },
-    { de: 0.2, texto: "A cobrança é feita" },
-    { de: 0.44, texto: "A resposta se perde" },
-    { de: 0.61, texto: "O app tenta de novo" },
-    { de: 0.76, texto: "Resultado" },
+<FiguraPassos
+  figura="cobranca-duplicada-no-retry/sem-e-com-chave-em-passos"
+  passos={[
+    "Sem a chave: a resposta se perdeu, e o app tenta de novo.",
+    "O serviço cobra outra vez, e o cliente paga duas vezes.",
+    "Com a chave: o app tenta de novo, com a **mesma** chave.",
+    "A `UNIQUE` recusa a chave repetida, e o app recebe o `201` guardado.",
   ]}
+  legenda="Azul é o app, verde o serviço, roxo a tabela cobranca e âmbar o adquirente; vermelho é o que deu errado."
+  fim="segmentos"
 />
 
 - A chave é gerada pelo **cliente**, uma por intenção, e repetida em todas as tentativas dessa intenção. Id de pedido só serve se o pedido só puder ser cobrado uma vez.

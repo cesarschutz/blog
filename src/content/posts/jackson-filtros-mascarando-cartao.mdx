@@ -8,9 +8,8 @@ codigo: https://github.com/cesarschutz/blog-exemplos/tree/main/jackson-filtros-m
 draft: false
 ---
 
-import Lousa from "../../components/Lousa.astro";
+import FiguraPassos from "../../components/FiguraPassos.astro";
 import Figura from "../../components/Figura.astro";
-import Animacao from "../../components/Animacao.astro";
 import Evidencia from "../../components/Evidencia.astro";
 import documentacaoSpring from "../../evidencias/jackson-filtros-mascarando-cartao/spring-jsonmapper.png";
 
@@ -146,18 +145,17 @@ public class MascaraCartaoFilter extends SimpleBeanPropertyFilter {
 }
 ```
 
-Cada propriedade do `Cartao` passa pelo filtro, uma de cada vez. Na lousa, a caneta sublinha a propriedade da vez e desenha o caminho que ela toma até o JSON do log. Aperte o play, arraste sobre a lousa ou clique num passo da lista:
+Cada propriedade do `Cartao` passa pelo filtro, uma de cada vez, e cada uma toma um caminho até o JSON do log. Em **Passo a passo**, a figura mostra uma propriedade por vez:
 
-<Lousa
-  desenho="jackson-filtros-mascarando-cartao/passos"
-  controles="caderno"
-  rotulo="Lousa: um Cartao com titular, numero e cvv passa pelo MascaraCartaoFilter, uma propriedade por vez. O cvv é omitido, o numero sai mascarado como 550209******7890 e o titular segue o fluxo normal para o JSON do log."
+<FiguraPassos
+  figura="jackson-filtros-mascarando-cartao/filtro-em-passos"
   passos={[
-    { de: 0, texto: "O `writer` representa a propriedade que está sendo escrita, e `writer.getName()` é o nome dela no JSON. A partir daí, o filtro segue um de três caminhos." },
-    { de: 0.263, texto: "Para **remover**, chama `serializeAsOmittedProperty`, que é o mesmo que os filtros prontos fazem. Em JSON, isso simplesmente não escreve nada." },
-    { de: 0.526, texto: "Para **mascarar**, lê o valor original e, em vez de delegar ao `writer`, escreve ele mesmo o par nome/valor com `g.writeStringProperty(...)`." },
-    { de: 0.789, texto: "Para **qualquer outro campo**, chama `writer.serializeAsProperty(...)`, o fluxo normal." },
+    "`titular`: segue igual, e `\"titular\":\"Cesar\"` entra no JSON.",
+    "`numero`: o filtro mascara, e `\"numero\":\"550209******7890\"` entra no JSON.",
+    "`cvv`: o filtro omite, e nada é escrito no JSON.",
   ]}
+  legenda="O cartão (azul) passa pelo filtro (verde); em verde, o que o filtro mudou."
+  fim="segmentos"
 />
 
 O método `valorDe` trata dois tipos de `writer`: `BeanPropertyWriter` para campos de objetos e records, e `MapProperty` para entradas de um `Map` (:grifo[o filtro também é aplicado a mapas], como aparece na seção 4). A função `mascarar` remove espaços e hífens, mantém os 6 primeiros e os 4 últimos dígitos e, se o valor for curto demais para ser um número de cartão, mascara tudo.
@@ -418,9 +416,19 @@ Cartao[titular=Cesar, numero=5502091234567890, cvv=123]
 Por isso a regra é logar sempre via `logJson.toJson(...)`.
 :::
 
-A animação mostra os dois caminhos até o log e começa sozinha quando chega à tela. Primeiro, o `log.info("{}", pedido)` leva o cartão direto ao log, sem passar pelo filtro: o número e o CVV chegam inteiros, e as duas linhas são riscadas, porque é isso que não pode ficar no log. Depois, o `logJson.toJson(pedido)` leva o mesmo cartão pelo `MascaraCartaoFilter`: o meio do número ganha uma fita, o CVV fica para trás, e o log recebe `550209******7890`, escrito embaixo. Um clique na imagem pausa.
+A figura mostra os dois caminhos até o log. O `log.info("{}", pedido)` leva o cartão direto ao log pelo `toString()`, sem passar pelo filtro: o número e o CVV chegam inteiros, e é isso que não pode ficar no log. O `logJson.toJson(pedido)` leva o mesmo cartão pelo `MascaraCartaoFilter`, e o log recebe `550209******7890`, sem o CVV. Em **Passo a passo**, os dois caminhos aparecem um de cada vez.
 
-<Animacao animacao="jackson-filtros-mascarando-cartao/dois-caminhos" controles="marca-texto" legenda="Pelo toString(), o número e o CVV chegam inteiros ao log; pelo logJson.toJson(), o filtro mascara o número e remove o CVV." />
+<FiguraPassos
+  figura="jackson-filtros-mascarando-cartao/dois-caminhos-em-passos"
+  passos={[
+    "Com `log.info(\"{}\", pedido)`, o pedido vai direto ao log pelo `toString()`, sem filtro.",
+    "No log, o número e o CVV chegam inteiros, e isso não pode.",
+    "Com `logJson.toJson(pedido)`, o pedido passa antes pelo `MascaraCartaoFilter`.",
+    "No log, chega o número mascarado, `550209******7890`, e nada do CVV.",
+  ]}
+  legenda="Em vermelho, o caminho que vaza o cartão; em verde, o que passa pelo filtro."
+  fim="segmentos"
+/>
 
 **O que passa pelo filtro e o que não passa.** Com o mixin em `Object`, passam objetos, records, objetos aninhados, itens de listas e entradas de `Map` (a chave vira o nome da propriedade). Uma `String` solta não passa, inclusive uma `String` que já contém JSON: `logJson.toJson("5502091234567890")` sai inteiro. Se o sistema loga :nota[o corpo cru da requisição]{texto="comum em filtro de log HTTP"} como texto, o filtro não protege.
 

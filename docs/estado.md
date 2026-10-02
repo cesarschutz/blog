@@ -163,7 +163,8 @@ animadas (1 clara, 5 médias, 4 ruins) e uma pesquisa (Mayer, informação que s
 estão em `docs/figura-em-passos/`. A proposta é um formato só no lugar dos três: uma figura parada que
 o leitor pode montar passo a passo, em que cada passo soma, nada some e nada anda sozinho (regras na
 skill `figura`, componente `FiguraPassos`). As 9 peças da `/animacoes-test/` (que segue no ar como
-estava) foram refeitas nele. Também ficou a regra da D68: todo pedido dele num post termina na pergunta
+estava) foram refeitas nele e, a pedido dele, já estão nos cinco posts, com o aviso dos traços embaixo
+da figura (`fim="segmentos"`). Também ficou a regra da D68: todo pedido dele num post termina na pergunta
 "vira regra para os próximos posts?".
 
 Botão da busca do cabeçalho (D69, 02/10/2026, **publicado**): o Lighthouse apontava, no desktop, que o

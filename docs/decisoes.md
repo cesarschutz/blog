@@ -2657,6 +2657,13 @@ nada muda.
   5. um traço por passo embaixo da figura, como os stories.
 
   O Cesar escolhe uma, ou uma combinação de duas.
+- **Nos posts (02/10/2026, pedido do Cesar):** as 9 peças da `/animacoes-test-2/` substituíram as
+  antigas nos cinco posts (criptografia: envelope e TLS; Jackson: o filtro e os dois caminhos; CronJob:
+  o deploy no meio do lote; cobrança: a resposta perdida, os passos da chave e o sem e com a chave;
+  bloqueio: detectar ou evitar), todas com o aviso 5, os traços embaixo da figura (`fim="segmentos"`).
+  Os parágrafos que apresentavam as peças (play, arrastar, caneta) foram reescritos, e a lista da
+  cobrança ganhou o sexto passo, como a figura. As lousas e animações antigas continuam só na
+  `/animacoes-test/`. O desenho dos controles (fita, lápis, marca-texto) o Cesar decide depois.
 - **Se aprovar:** a figura em passos vira a `Figura` com `passos`. A `Lousa` e a `Animacao` saem dos
   posts, peça por peça, pela revisão dos posts, e as duas páginas de teste e a dos controles saem do ar.
   A D65 (a escolha dos controles) deixa de ter objeto: o formato novo tem um controle só.
