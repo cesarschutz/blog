@@ -47,3 +47,7 @@ entrada/
 .impeccable/live/*
 !.impeccable/live/config.json
 .impeccable-live/
+
+# Redesenho (D55, D61): os protótipos ficam só nesta máquina (decisão do Cesar, 02/10/2026). Dentro
+# deles há fontes do Fontshare, cuja licença (ITF FFL) proíbe redistribuir por repositório.
+/redesenho/

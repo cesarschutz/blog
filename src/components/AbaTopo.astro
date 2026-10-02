@@ -1,0 +1,309 @@
+---
+/**
+ * A aba de voltar ao topo (rodada 4, pedido do Cesar: "nas páginas compridas, alguma coisa como a bolinha
+ * com a setinha, mesmo tendo a cordinha lá embaixo; quando a corda aparecer, pode sumir o outro").
+ *
+ * Uma aba de fichário de papel saindo da borda direita da tela, embaixo: o papel da ficha com os dois
+ * cantos de fora cortados em bisel, a seta desenhada à caneta azul e "topo" em mono pequeno. Escondida, ela
+ * fica toda para fora da tela, à direita; quando aparece, desliza para dentro (0,42s) e mostra 44px; com o
+ * mouse ou o foco do teclado, sai mais 6px e a seta sobe um nada; no clique (ou Enter e Espaço), a seta dá
+ * um pulinho para cima e a página sobe, com o foco no título (como a cordinha).
+ *
+ * Quando aparece: só em página longa (mais de três telas, como um post ou Todos os artigos), depois de
+ * rolar uma tela e meia; some perto do topo e some quando a cordinha do rodapé entra na tela (os dois nunca
+ * aparecem juntos), e volta quando ela sai. No celular (até 760px), onde a aba encostaria no texto, ela só
+ * aparece quando o leitor rola para cima (quem sobe quer voltar), e volta a se esconder quando ele desce de
+ * novo ou depois de 4s parado; menor, com 30px à vista.
+ *
+ * Fica fora do Tab enquanto escondida. Sem JS, não aparece (a tecla Home continua subindo). A tecla T dos
+ * atalhos aperta a cordinha (`[data-voltar-topo]`, que vem antes no HTML), que sobe do mesmo jeito. Com
+ * movimento reduzido, ela aparece e some sem deslizar e a subida é instantânea. Só transform e opacity
+ * animam; o recorte é fixo.
+ */
+---
+
+<button type="button" class="aba-topo" aria-label="Voltar ao topo" title="Voltar ao topo" data-aba-topo hidden>
+  <span class="aba-papel" aria-hidden="true">
+    <svg class="aba-seta" viewBox="0 0 20 24" focusable="false">
+      <path d="M10.3 21.6c-.4-5.4-.2-11 .1-16.9" />
+      <path d="M5.1 9.6c1.9-1.8 3.6-3.7 5.2-5.9 1.4 2 3 3.8 4.9 5.6" />
+    </svg>
+    <span class="aba-texto">topo</span>
+  </span>
+</button>
+
+<script>
+  const aba = document.querySelector<HTMLButtonElement>("[data-aba-topo]");
+  if (aba) {
+    const reduzido = matchMedia("(prefers-reduced-motion: reduce)");
+    const estreito = matchMedia("(max-width: 760px)");
+    let cordaNaTela = false;
+    let subindo = false;
+    let ultimoY = scrollY;
+    let acumulado = 0;
+    let relogio = 0;
+    let agendado = false;
+
+    const longa = () => document.documentElement.scrollHeight > innerHeight * 3;
+
+    const atualizar = () => {
+      agendado = false;
+      const y = scrollY;
+      const dy = y - ultimoY;
+      ultimoY = y;
+      // No celular, só subindo: 40px para cima acendem; 24px para baixo (ou 4s parado) apagam.
+      if (estreito.matches && dy !== 0) {
+        acumulado = Math.sign(dy) === Math.sign(acumulado) ? acumulado + dy : dy;
+        if (acumulado < -40 && !subindo) {
+          subindo = true;
+        } else if (acumulado > 24) {
+          subindo = false;
+        }
+        clearTimeout(relogio);
+        if (subindo) relogio = window.setTimeout(() => {
+          if (aba.matches(":hover, :focus-visible")) return;
+          subindo = false;
+          mostrar();
+        }, 4000);
+      }
+      mostrar();
+    };
+
+    const mostrar = () => {
+      const fundo = scrollY > innerHeight * 1.5;
+      const pode = longa() && fundo && !cordaNaTela && (!estreito.matches || subindo);
+      aba.classList.toggle("visivel", pode);
+      aba.tabIndex = pode ? 0 : -1;
+      aba.setAttribute("aria-hidden", pode ? "false" : "true");
+    };
+
+    addEventListener(
+      "scroll",
+      () => {
+        if (agendado) return;
+        agendado = true;
+        requestAnimationFrame(atualizar);
+      },
+      { passive: true },
+    );
+    addEventListener("resize", () => mostrar(), { passive: true });
+
+    // A cordinha do rodapé na tela: a aba sai (os dois nunca aparecem juntos).
+    const corda = document.querySelector("body > .rodape [data-cordinha]");
+    if (corda && "IntersectionObserver" in window) {
+      new IntersectionObserver(([e]) => {
+        cordaNaTela = e.isIntersecting;
+        mostrar();
+      }).observe(corda);
+    }
+
+    aba.hidden = false;
+    mostrar();
+
+    aba.addEventListener("click", () => {
+      if (!reduzido.matches) {
+        aba.classList.remove("puxada");
+        void aba.offsetWidth;
+        aba.classList.add("puxada");
+      }
+      subindo = false;
+      scrollTo({ top: 0, behavior: reduzido.matches ? "auto" : "smooth" });
+      const alvo = document.querySelector<HTMLElement>("main h1") ?? document.querySelector<HTMLElement>("main");
+      if (alvo) {
+        if (!alvo.hasAttribute("tabindex")) alvo.setAttribute("tabindex", "-1");
+        alvo.focus({ preventScroll: true });
+      }
+    });
+    aba.addEventListener("animationend", () => aba.classList.remove("puxada"));
+  }
+</script>
+
+<style>
+  /*
+   * O botão é a aba inteira: 56px de papel, dos quais 12px ficam sempre para fora da tela (para o hover
+   * puxar a aba sem mostrar a ponta); à vista, 44px. Encosta na borda direita da janela (que, com a barra
+   * de rolagem do sistema, fica antes dela) e fica embaixo, longe do ícone do computador, que é à esquerda.
+   */
+  .aba-topo {
+    --largura: 56px;
+    --alto: 84px;
+    --fora: 12px;
+    --chanfro: 11px;
+    position: fixed;
+    right: 0;
+    bottom: calc(120px + env(safe-area-inset-bottom, 0px));
+    z-index: 27;
+    display: block;
+    width: var(--largura);
+    height: var(--alto);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--ink-2);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    /* A sombra do papel: o recorte da aba corta box-shadow, então ela vem de um filtro no botão. */
+    filter: drop-shadow(0 1px 1px color-mix(in oklab, var(--sombra-quente) 18%, transparent))
+      drop-shadow(-1px 2px 3px color-mix(in oklab, var(--sombra-quente) 16%, transparent));
+    transform: translateX(calc(100% + 6px));
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      transform 0.28s cubic-bezier(0.55, 0.085, 0.68, 0.53),
+      opacity 0.2s linear 0.08s,
+      visibility 0s linear 0.28s;
+  }
+
+  .aba-topo[hidden] {
+    display: none;
+  }
+
+  :global(:root[data-theme="dark"]) .aba-topo {
+    filter: drop-shadow(0 0 0.6px color-mix(in oklab, var(--ink) 30%, transparent))
+      drop-shadow(0 1px 1px color-mix(in oklab, var(--sombra-quente) 55%, transparent))
+      drop-shadow(-1px 2px 4px color-mix(in oklab, var(--sombra-quente) 60%, transparent));
+  }
+
+  .aba-topo:global(.visivel) {
+    transform: translateX(var(--fora));
+    opacity: 1;
+    visibility: visible;
+    transition:
+      transform 0.42s cubic-bezier(0.2, 0.75, 0.2, 1),
+      opacity 0.18s linear,
+      visibility 0s;
+  }
+
+  /* O papel da aba: os dois cantos de fora em bisel, como a aba de um fichário. */
+  .aba-papel {
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 3px;
+    width: 100%;
+    height: 100%;
+    padding-right: var(--fora);
+    background: var(--paper-hi);
+    clip-path: polygon(var(--chanfro) 0, 100% 0, 100% 100%, var(--chanfro) 100%, 0 calc(100% - var(--chanfro)), 0 var(--chanfro));
+  }
+
+  .aba-seta {
+    width: 18px;
+    height: 22px;
+    fill: none;
+    stroke: var(--caneta);
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: translate 0.3s cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  .aba-texto {
+    font-family: var(--font-codigo);
+    font-size: 11px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    transition: color 0.15s;
+  }
+
+  /* O hover e o foco: a aba sai mais 6px e a seta sobe 2px. */
+  .aba-topo:global(.visivel):focus-visible {
+    transform: translateX(calc(var(--fora) - 6px));
+    outline: 2px solid var(--acento);
+    outline-offset: 2px;
+  }
+
+  .aba-topo:focus-visible .aba-seta {
+    translate: 0 -2px;
+  }
+
+  .aba-topo:focus-visible .aba-texto {
+    color: var(--acento);
+  }
+
+  @media (hover: hover) {
+    .aba-topo:global(.visivel):hover {
+      transform: translateX(calc(var(--fora) - 6px));
+    }
+
+    .aba-topo:hover .aba-seta {
+      translate: 0 -2px;
+    }
+
+    .aba-topo:hover .aba-texto {
+      color: var(--acento);
+    }
+  }
+
+  /* O clique: a seta dá um pulinho para cima e volta, enquanto a página sobe. */
+  .aba-topo:global(.puxada) .aba-seta {
+    animation: aba-pulo 0.42s cubic-bezier(0.3, 0.1, 0.3, 1);
+  }
+
+  @keyframes aba-pulo {
+    0% {
+      transform: none;
+    }
+
+    40% {
+      transform: translateY(-6px);
+    }
+
+    100% {
+      transform: none;
+    }
+  }
+
+  /* Com o menu ou a folha do sumário abertos (celular), a aba sai: o véu já cobre a página. */
+  :global(:root:is([data-menu-aberto], [data-sumario-aberto])) .aba-topo {
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  /* No celular, menor: 30px à vista, para encostar o mínimo no texto (e só aparece quando o leitor sobe). */
+  @media (max-width: 760px) {
+    .aba-topo {
+      --largura: 40px;
+      --alto: 64px;
+      --fora: 10px;
+      --chanfro: 8px;
+      bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .aba-papel {
+      gap: 2px;
+    }
+
+    .aba-seta {
+      width: 15px;
+      height: 18px;
+    }
+
+    .aba-texto {
+      font-size: 10px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .aba-topo,
+    .aba-topo:global(.visivel),
+    .aba-seta,
+    .aba-texto {
+      transition: none;
+    }
+
+    .aba-topo:global(.visivel):is(:hover, :focus-visible) {
+      transform: translateX(var(--fora));
+    }
+
+    .aba-topo:is(:hover, :focus-visible) .aba-seta {
+      translate: none;
+    }
+  }
+
+  @media print {
+    .aba-topo {
+      display: none;
+    }
+  }
+</style>

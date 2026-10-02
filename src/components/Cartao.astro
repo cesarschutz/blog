@@ -1,19 +1,36 @@
 ---
 /**
- * Um artigo em modo "cards", no formato do blog atual (D27): a ilustração em 3:2 no topo, num painel
- * tingido, quando o post tem; embaixo, categoria, data e tempo de leitura, o título inteiro, a
- * descrição completa e as tags, que descem até o pé do card. O card inteiro é clicável; é uma folha
- * que sobe 4px ao passar o mouse, com o título em azul-tinta (D26).
+ * Um artigo em modo "cards" (D27), como ficha de catálogo (rodada 3, área 10, F12-1: "a ficha com os
+ * números de cada um, muito legal"). De cima para baixo:
  *
- * O destaque (D52, C02): o primeiro card da primeira página da home é o mais recente. Com duas colunas
- * ou mais na grade, ele ocupa o lugar de dois cards, com o desenho no recorte largo e as anotações
- * (como no topo do artigo); com uma coluna só, fica no lugar de sempre, com o título maior. Nos dois,
- * o rótulo "Mais recente" e o desenho que se desenha (D41, desenho-vivo.ts). A largura da grade vem da
- * consulta ao contêiner `cartoes` (Recentes.astro), a mesma conta das colunas de base.css.
+ * - a tira da ficha, em mono pequeno: a chamada ("Vol. 05 · ficha 2", ou "Coleção Java · ed. 7" na
+ *   série) à esquerda e o tombo ("nº 028") à direita, sobre um fio na cor do livro (src/lib/ficha.ts).
+ *   Sem o clipe do 12 ("o clipe ali que está mal");
+ * - a ilustração colada na ficha, num painel tingido com uma margem de papel em volta;
+ * - o chip do livro, a data e o tempo (com os ícones de caneta), o título inteiro, o subtítulo, o
+ *   resumo e as tags com o ícone de cada uma (D52, B11), que inclina no hover da tag.
+ *
+ * O card inteiro é clicável. O hover é o de hoje (a ficha sobe 4px e a sombra cresce, D26) mais a capa
+ * viva (D58: o detalhe do desenho se mexe; capa-viva.css pega o `.cartao`). A subida usa a propriedade
+ * `translate`, e não `transform`: o `transform` e a `opacity` ficam livres para a entrada ao rolar
+ * (`data-revelar`, revelar.ts, do construtor E), que anima cada card uma vez, quando ele entra na tela.
+ *
+ * O destaque (D52, C02; rodada 3, F13-2): o primeiro card da primeira página da home é o mais recente.
+ * Com duas colunas ou mais na grade, ele ocupa o lugar de dois, deitado, com a ilustração de um lado e o
+ * texto do outro (como no 13), e a tira de ficha no alto, na largura toda; com uma coluna só, fica no
+ * lugar de sempre, com o título maior. Nos dois, o rótulo "Mais recente" e o desenho que se desenha ao
+ * entrar (D41, desenho-vivo.ts). A largura da grade vem da consulta ao contêiner `cartoes`
+ * (Recentes.astro e ListaFiltrada.astro), a mesma conta das colunas de base.css (quatro por linha a
+ * 1440, G13).
+ *
+ * Funciona sobre qualquer fundo (as linhas 16 a 20 podem pôr as fichas numa cortiça, num balcão ou num
+ * palco): a ficha tem papel, borda e sombra próprios.
  */
+import IconeTag from "./IconeTag.astro";
 import Ilustracao from "./Ilustracao.astro";
 import MaisRecente from "./MaisRecente.astro";
 import MetaItem from "./MetaItem.astro";
+import { chamadaDe } from "../lib/ficha";
 import { mdEmLinha, tituloEmPartes } from "../lib/formato";
 import { temIlustracao } from "../lib/ilustracoes";
 import { urlTag, type Resumo } from "../lib/posts";
@@ -24,18 +41,23 @@ interface Props {
   nivel?: "h2" | "h3";
   /** O mais recente, na primeira página da home (D52). */
   destaque?: boolean;
+  /** Rodada 4 (E9): o carimbo "Novo" ao lado de "Mais recente" (só no destaque da home; MaisRecente). */
+  carimbo?: boolean;
 }
 
-const { post, nivel = "h3", destaque = false } = Astro.props;
+const { post, nivel = "h3", destaque = false, carimbo = false } = Astro.props;
 const Titulo = nivel;
+const { chamada, tombo } = await chamadaDe(post);
+const tags = post.tags.slice(0, destaque ? 4 : 3);
 ---
 
-<li class:list={["cartao", "folha", { destaque }]} data-livro={post.livro}>
+<li class:list={["cartao", "folha", "ficha", { destaque }]} data-livro={post.livro} data-revelar style={`--cor:${post.cor}`}>
+  <p class="tira-ficha" aria-hidden="true"><span>{chamada}</span><span>{tombo}</span></p>
   {
     temIlustracao(post.slug) &&
       (destaque ? (
         <div class="ilustracao-cartao painel" aria-hidden="true" data-desenhar style={`--cor:${post.cor}`}>
-          <Ilustracao slug={post.slug} recorte="largo" cor={post.cor} tamanho="cartao" anotacoes decorativa class="recorte-largo" />
+          <Ilustracao slug={post.slug} recorte="quadrado" cor={post.cor} tamanho="cartao" decorativa inteira class="recorte-quadrado" />
           <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} tamanho="cartao" decorativa class="recorte-medio" />
         </div>
       ) : (
@@ -45,15 +67,18 @@ const Titulo = nivel;
       ))
   }
   <div class="corpo-cartao">
-    {destaque && <MaisRecente />}
+    {destaque && <MaisRecente carimbo={carimbo ? post.publicado : undefined} />}
     <MetaItem post={post} />
     <Titulo class="titulo-cartao"><a href={post.url} set:html={tituloEmPartes(post.tituloCompleto)} /></Titulo>
     <p class="descricao" set:html={mdEmLinha(post.descricao)} />
     {
-      post.tags.length > 0 && (
+      tags.length > 0 && (
         <p class="tags">
-          {post.tags.slice(0, 4).map((t) => (
-            <a href={urlTag(t)}>#{t}</a>
+          {tags.map((t) => (
+            <a href={urlTag(t)}>
+              <IconeTag nome={t} class="icone-tag-ficha" />
+              {t}
+            </a>
           ))}
         </p>
       )
@@ -63,31 +88,75 @@ const Titulo = nivel;
 
 <style>
   .cartao {
+    --raio-ficha: 6px;
+    /* O fio da tira: a cor do livro; no escuro, um nada mais clara, para não sumir no papel escuro. */
+    --fio-ficha: var(--cor, var(--ink-2));
     position: relative;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    border-radius: var(--raio-ficha);
     transition:
-      transform 0.2s,
+      translate 0.2s cubic-bezier(0.2, 0.7, 0.2, 1),
       box-shadow 0.2s;
   }
 
-  .cartao:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--sombra-folha-alta);
+  :global(:root[data-theme="dark"]) .cartao {
+    --fio-ficha: color-mix(in oklab, var(--cor, var(--ink-2)) 72%, var(--ink));
   }
 
-  /* O painel encosta nas bordas do card; o canto arredondado vem do card. */
+  @media (hover: hover) {
+    .cartao:hover {
+      translate: 0 -4px;
+      box-shadow: var(--sombra-folha-alta);
+    }
+  }
+
+  /* ---------- a tira da ficha ---------- */
+
+  .tira-ficha {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0;
+    padding: 9px 14px 8px;
+    font-family: var(--font-codigo);
+    font-size: 11.5px;
+    line-height: 1.3;
+    color: var(--ink-2);
+    font-variant-numeric: lining-nums tabular-nums;
+    white-space: nowrap;
+  }
+
+  .tira-ficha > span:first-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tira-ficha::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: var(--fio-ficha);
+  }
+
+  /* A ilustração colada na ficha, com uma margem de papel em volta. */
   .ilustracao-cartao {
     aspect-ratio: 3 / 2;
-    border-radius: 0;
+    margin: 10px 10px 0;
+    border-radius: 4px;
   }
 
   .corpo-cartao {
     display: flex;
     flex: 1;
     flex-direction: column;
-    padding: 18px 20px 20px;
+    padding: 16px 18px 18px;
   }
 
   .titulo-cartao {
@@ -133,14 +202,15 @@ const Titulo = nivel;
     font-size: 0.88em;
   }
 
+  /* As tags com o ícone de cada uma (D52, B11), descendo até o pé da ficha. */
   .tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 4px 10px;
+    gap: 2px 12px;
     margin: auto 0 0;
     padding-top: 14px;
-    font-family: var(--font-codigo);
-    font-size: 12.5px;
+    font-family: var(--font-ui);
+    font-size: 13px;
     color: var(--ink-2);
   }
 
@@ -161,16 +231,35 @@ const Titulo = nivel;
     text-underline-offset: 0.18em;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .cartao:hover {
-      transform: none;
+  .tags :global(.icone-tag-ficha) {
+    --traco-tag: 1px;
+    flex: none;
+    width: 19px;
+    height: 19px;
+    margin: -3px 4px -3px -2px;
+    transition: rotate 0.35s cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .tags a:hover :global(.icone-tag-ficha) {
+      rotate: -10deg;
     }
   }
 
-  /* ---------- o destaque (D52, C02) ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    .cartao {
+      transition: box-shadow 0.2s;
+    }
 
-  /* Uma coluna: o card de sempre, com o recorte médio, o rótulo e o título maior. */
-  .destaque :global(.recorte-largo) {
+    .cartao:hover {
+      translate: none;
+    }
+  }
+
+  /* ---------- o destaque (D52, C02; rodada 3, F13-2) ---------- */
+
+  /* Uma coluna: a ficha de sempre, com o recorte médio, o rótulo e o título maior. */
+  .destaque :global(.recorte-quadrado) {
     display: none;
   }
 
@@ -185,19 +274,31 @@ const Titulo = nivel;
 
   /*
    * Duas colunas ou mais (a grade de base.css abre a segunda coluna a partir de 2 × 290 + 26 = 606px):
-   * o lugar de dois cards, com o desenho largo e anotado em cima e o texto mais largo embaixo.
+   * o lugar de dois cards, deitado. A tira no alto, na largura toda; embaixo, a ilustração à esquerda,
+   * na altura toda (o recorte quadrado, inteiro, no meio do painel), e o texto à direita.
    */
   @container cartoes (min-width: 606px) {
     .destaque {
       grid-column: span 2;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+      grid-template-rows: auto 1fr;
+    }
+
+    .destaque .tira-ficha {
+      grid-column: 1 / -1;
     }
 
     .destaque .ilustracao-cartao {
-      aspect-ratio: 1100 / 468;
+      aspect-ratio: auto;
+      min-height: 260px;
+      margin: 12px 0 12px 12px;
     }
 
-    .destaque :global(.recorte-largo) {
+    .destaque :global(.recorte-quadrado) {
       display: block;
+      width: 100%;
+      height: 100%;
     }
 
     .destaque :global(.recorte-medio) {
@@ -205,19 +306,18 @@ const Titulo = nivel;
     }
 
     .destaque .corpo-cartao {
-      padding: 22px 28px 24px;
+      padding: 22px 26px 22px;
     }
 
     .destaque .titulo-cartao {
-      margin-top: 10px;
-      font-size: clamp(26px, 2.5vw, 32px);
+      margin-top: 12px;
+      font-size: clamp(24px, 2.2vw, 31px);
       line-height: 1.12;
     }
 
     .destaque .descricao {
-      max-width: 64ch;
-      margin-top: 10px;
-      font-size: 16px;
+      max-width: 60ch;
+      margin-top: 12px;
     }
   }
 </style>

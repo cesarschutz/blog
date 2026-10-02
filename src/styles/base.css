@@ -24,33 +24,57 @@
   --folga-ancora: calc(env(safe-area-inset-top, 0px) + var(--altura-topo) + 16px);
   /* ~72 caracteres por linha no corpo do artigo (D39; era 760px, ~76). */
   --coluna: 720px;
-  /* Folhas (D26): o conteúdo fica em superfícies com borda fina e sombra leve; painéis dentro delas. */
-  --raio-folha: 14px;
-  --raio-painel: 10px;
-  --sombra-folha: 0 1px 2px rgb(40 38 30 / 0.04), 0 10px 28px -18px rgb(40 38 30 / 0.28);
-  --sombra-folha-alta: 0 2px 4px rgb(40 38 30 / 0.05), 0 18px 36px -18px rgb(40 38 30 / 0.35);
+  /* Folhas (D26): o conteúdo fica em superfícies com borda fina e sombra leve; painéis dentro delas.
+     Rodada 4: as sombras saem do token da sombra quente (a do papel quente do 20), não de cor escrita.
+     Rodada 4, H5 (S15 da direção do papel: "não faz sentido ser painel se tudo é papel"): a folha é papel,
+     não card. Canto de 2px, sem borda e a sombra curta do papel encostado (a do `.papel-colado`: a espessura
+     do papel, não um card que flutua); o painel tingido, canto de 4px. Qualquer `.folha` esquecida já nasce
+     papel. A sombra alta fica para o que levanta de verdade (a busca aberta, o hover das fichas). */
+  --raio-folha: 2px;
+  --raio-painel: 4px;
+  --sombra-folha:
+    0 1px 1px color-mix(in oklab, var(--sombra-quente) 16%, transparent),
+    0 2px 4px -1px color-mix(in oklab, var(--sombra-quente) 22%, transparent);
+  --sombra-folha-alta:
+    0 2px 4px color-mix(in oklab, var(--sombra-quente) 5%, transparent),
+    0 18px 36px -18px color-mix(in oklab, var(--sombra-quente) 35%, transparent);
   /* Sombra de objeto erguido do papel (livros, botão de voltar ao topo); mais funda no escuro. */
-  --ergue: 0 1px 0 rgb(28 36 39 / 0.05), 0 18px 34px -18px rgb(28 36 39 / 0.45);
+  --ergue:
+    0 1px 0 color-mix(in oklab, var(--sombra-quente) 5%, transparent),
+    0 18px 34px -18px color-mix(in oklab, var(--sombra-quente) 45%, transparent);
   /* O post-it (C05, D52): colado em cima, com a borda de baixo levantada; a sombra fica só embaixo. */
-  --sombra-post-it: 0 1px 1px rgb(40 38 30 / 0.08), 0 16px 12px -12px rgb(40 38 30 / 0.36);
+  --sombra-post-it:
+    0 1px 1px color-mix(in oklab, var(--sombra-quente) 8%, transparent),
+    0 16px 12px -12px color-mix(in oklab, var(--sombra-quente) 36%, transparent);
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --sombra-folha: 0 12px 30px -18px rgb(0 0 0 / 0.8);
-    --sombra-folha-alta: 0 18px 36px -16px rgb(0 0 0 / 0.9);
-    --ergue: 0 18px 34px -16px rgb(0 0 0 / 0.75);
-    --sombra-post-it: 0 1px 1px rgb(0 0 0 / 0.4), 0 16px 12px -12px rgb(0 0 0 / 0.8);
+    /* No escuro, o anel de 1px com a tinta a 7%: sem ele, o papel escuro some no fundo marrom. */
+    --sombra-folha:
+      0 0 0 1px color-mix(in oklab, var(--ink) 7%, transparent),
+      0 1px 1px color-mix(in oklab, var(--sombra-quente) 50%, transparent),
+      0 2px 5px -1px color-mix(in oklab, var(--sombra-quente) 60%, transparent);
+    --sombra-folha-alta: 0 18px 36px -16px color-mix(in oklab, var(--sombra-quente) 90%, transparent);
+    --ergue: 0 18px 34px -16px color-mix(in oklab, var(--sombra-quente) 75%, transparent);
+    --sombra-post-it:
+      0 1px 1px color-mix(in oklab, var(--sombra-quente) 40%, transparent),
+      0 16px 12px -12px color-mix(in oklab, var(--sombra-quente) 80%, transparent);
   }
 }
 
 :root[data-theme="dark"] {
-  --sombra-folha: 0 12px 30px -18px rgb(0 0 0 / 0.8);
-  --sombra-folha-alta: 0 18px 36px -16px rgb(0 0 0 / 0.9);
-  --ergue: 0 18px 34px -16px rgb(0 0 0 / 0.75);
-  --sombra-post-it: 0 1px 1px rgb(0 0 0 / 0.4), 0 16px 12px -12px rgb(0 0 0 / 0.8);
+  --sombra-folha:
+    0 0 0 1px color-mix(in oklab, var(--ink) 7%, transparent),
+    0 1px 1px color-mix(in oklab, var(--sombra-quente) 50%, transparent),
+    0 2px 5px -1px color-mix(in oklab, var(--sombra-quente) 60%, transparent);
+  --sombra-folha-alta: 0 18px 36px -16px color-mix(in oklab, var(--sombra-quente) 90%, transparent);
+  --ergue: 0 18px 34px -16px color-mix(in oklab, var(--sombra-quente) 75%, transparent);
+  --sombra-post-it:
+    0 1px 1px color-mix(in oklab, var(--sombra-quente) 40%, transparent),
+    0 16px 12px -12px color-mix(in oklab, var(--sombra-quente) 80%, transparent);
 }
 
 *,
@@ -98,6 +122,9 @@ body {
   font-size: 17px;
   line-height: 1.6;
   font-variant-numeric: oldstyle-nums proportional-nums;
+  /* O recorte lateral também no corpo (correção da linha 17): na chegada de Livros, a luz de um card que
+     entra pela direita deixava a página 2 a 5px rolável de lado a 390px. */
+  overflow-x: clip;
 }
 
 main {
@@ -136,31 +163,120 @@ textarea {
 }
 
 /*
- * Barras de rolagem internas (D39): finas e discretas, na tinta do tema, em toda área que rola por
- * dentro (sumário, código, tabelas, gaveta, busca, painel). A da página fica a do sistema.
+ * As barras de rolagem (rodada 4, H6: "um scroll elegante para a lateral do site, no claro e no escuro, e o
+ * mesmo em todos os scrolls"; e, depois: "do header pra baixo"). Uma barra só, na página e em tudo que rola
+ * por dentro: o trilho sem desenho e o polegar, uma pílula fina no verde do caderno "cs" (a marca), nos dois
+ * temas (no escuro, um nada mais claro). O azul da primeira versão o Cesar achou feio. A da página começa embaixo do
+ * cabeçalho (a margem de cima do trilho), como se o cabeçalho ficasse fora da folha que rola.
+ *
+ * Chrome, Edge e Safari desenham pelos pseudo-elementos `::-webkit-scrollbar` (sem `@supports`: a primeira
+ * versão os escondia atrás de `@supports selector(...)`, que nem todo navegador aceita, e no Safari a barra
+ * voltava a ser a do sistema). O Firefox, que não tem os pseudo-elementos, usa as propriedades padrão, só
+ * nele (`@supports (-moz-appearance: none)`): no Chrome, elas desligariam o desenho de baixo.
  */
-:where(body *) {
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in oklab, var(--ink) 24%, transparent) transparent;
+:root {
+  /* O verde do caderno "cs" (a marca), como a capa do livro: parado um nada transparente, cheio no hover. */
+  --barra-polegar: color-mix(in oklab, var(--marca) 62%, transparent);
+  --barra-polegar-ativo: color-mix(in oklab, var(--marca) 88%, transparent);
+  --barra-polegar-arrasta: var(--marca);
 }
 
+/* No escuro, o verde clareia um pouco para se ver sobre o marrom. */
+:root[data-theme="dark"] {
+  --barra-polegar: color-mix(in oklab, color-mix(in oklab, var(--marca), white 34%) 62%, transparent);
+  --barra-polegar-ativo: color-mix(in oklab, color-mix(in oklab, var(--marca), white 34%) 90%, transparent);
+  --barra-polegar-arrasta: color-mix(in oklab, var(--marca), white 34%);
+}
+
+/*
+ * A barra da janela: o trilho sem desenho, e no alto da faixa o pedaço do cabeçalho (o papel e o fio de
+ * baixo dele), para o fio do cabeçalho ir até a borda da janela, por cima da barra.
+ */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  background: linear-gradient(
+    to bottom,
+    var(--paper) 0 calc(var(--altura-cabecalho, 60px) - 1px),
+    var(--rule) calc(var(--altura-cabecalho, 60px) - 1px) var(--altura-cabecalho, 60px),
+    transparent var(--altura-cabecalho, 60px)
+  );
+}
+
+/* Dentro das peças, um nada mais fina que a da página e sem o pedaço do cabeçalho. */
 :where(body *)::-webkit-scrollbar {
   width: 10px;
   height: 10px;
-}
-
-:where(body *)::-webkit-scrollbar-track {
   background: transparent;
 }
 
-:where(body *)::-webkit-scrollbar-thumb {
-  border: 3px solid transparent;
-  border-radius: 999px;
-  background: color-mix(in oklab, var(--ink) 24%, transparent) padding-box;
+::-webkit-scrollbar-corner,
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-:where(body *)::-webkit-scrollbar-thumb:hover {
-  background-color: color-mix(in oklab, var(--ink) 40%, transparent);
+/*
+ * A da página começa embaixo do cabeçalho e termina um nada antes do pé. Só o seletor sem dono pega a barra
+ * da janela (com `:root::` ou `html::` o Chrome não aplica); as das peças voltam a zero logo abaixo.
+ */
+::-webkit-scrollbar-track {
+  margin-top: calc(var(--altura-cabecalho, 60px) + 6px);
+  margin-bottom: 6px;
+}
+
+:where(body *)::-webkit-scrollbar-track {
+  margin: 0;
+}
+
+::-webkit-scrollbar-thumb {
+  min-height: 48px;
+  border: 3.5px solid transparent;
+  border-radius: 999px;
+  background: var(--barra-polegar) padding-box;
+}
+
+:where(body *)::-webkit-scrollbar-thumb {
+  min-height: 32px;
+  border-width: 2.5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--barra-polegar-ativo);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background-color: var(--barra-polegar-arrasta);
+}
+
+/* O polegar do código (Expressive Code) com a mesma espessura dos outros. */
+:root .expressive-code pre::-webkit-scrollbar-thumb {
+  border-width: 2.5px;
+}
+
+/* No post-it amarelo, o verde mais leve (Sumario.astro). */
+.post-it nav {
+  --barra-polegar: color-mix(in oklab, var(--marca) 38%, transparent);
+  --barra-polegar-ativo: color-mix(in oklab, var(--marca) 62%, transparent);
+}
+
+/* Fora do Firefox: as peças que pediam a barra fina padrão (o que desligaria o desenho acima) voltam a ele. */
+@supports not (-moz-appearance: none) {
+  :is(.post-it nav, .folha-sumario nav, .folha-celular, .busca .resultados, .indices .linha-indice > ul) {
+    scrollbar-width: auto !important;
+    scrollbar-color: auto !important;
+  }
+}
+
+/* Firefox. */
+@supports (-moz-appearance: none) {
+  :root {
+    scrollbar-width: thin;
+    scrollbar-color: var(--barra-polegar) transparent;
+  }
+
+  :where(body *) {
+    scrollbar-width: thin;
+  }
 }
 
 code,
@@ -193,12 +309,20 @@ kbd {
   padding-inline: var(--pad);
 }
 
-/* Folha (D26): superfície clara com borda fina e sombra leve sobre o fundo. */
+/* Folha (D26; rodada 4, S15): o papel deitado na mesa, sem borda desenhada (a borda é a sombra curta). */
 .folha {
-  border: 1px solid var(--rule);
   border-radius: var(--raio-folha);
   background: var(--paper-hi);
   box-shadow: var(--sombra-folha);
+}
+
+/*
+ * Os quadros de dentro do artigo (a figura, o aviso, a tabela, o <details>, a nota lateral) seguem o
+ * DESIGN.md do blog, iguais ao site no ar (direção do papel, "o que não entra"): lá dentro, o painel
+ * continua com o canto de 10px.
+ */
+:where(.artigo-folha) {
+  --raio-painel: 10px;
 }
 
 /*
@@ -228,16 +352,21 @@ kbd {
   letter-spacing: -0.005em;
 }
 
-/* Pílula (tags, compartilhar): superfície com borda fina; ao passar o mouse, azul-tinta. */
+/*
+ * Pílula (tags, compartilhar): rodada 4 (S7 da direção do papel), uma etiqueta de papel: canto de 2px, sem
+ * a borda desenhada (transparente, para o tamanho não mudar), a sombra de 1px do papel encostado; no escuro,
+ * o anel de 1px a 7%. Ao passar o mouse, azul-tinta, como antes.
+ */
 .pilula {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   min-height: 34px;
   padding: 4px 13px;
-  border: 1px solid var(--rule);
-  border-radius: 999px;
+  border: 1px solid transparent;
+  border-radius: 2px;
   background: var(--paper-hi);
+  box-shadow: 0 1px 1px color-mix(in oklab, var(--sombra-quente) 16%, transparent);
   color: var(--ink-2);
   font-family: var(--font-ui);
   font-size: 14px;
@@ -247,6 +376,12 @@ kbd {
   transition:
     border-color 0.15s,
     color 0.15s;
+}
+
+:root[data-theme="dark"] .pilula {
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--ink) 7%, transparent),
+    0 1px 1px color-mix(in oklab, var(--sombra-quente) 50%, transparent);
 }
 
 .pilula:hover {
@@ -278,7 +413,7 @@ kbd {
   min-height: 40px;
   padding: 7px 16px;
   border: 1px solid var(--rule);
-  border-radius: 999px;
+  border-radius: 2px; /* papel (rodada 4, H5) */
   background: var(--paper-hi);
   color: var(--ink);
   font-family: var(--font-ui);
@@ -308,7 +443,7 @@ kbd {
   gap: 8px;
   min-height: 42px;
   padding: 10px 18px;
-  border-radius: 999px;
+  border-radius: 2px; /* papel (rodada 4, H5) */
   background: var(--acento);
   color: var(--sobre-acento);
   font-family: var(--font-ui);
@@ -388,7 +523,7 @@ a:hover > .titulo-sub,
   padding: 8px 14px;
   background: var(--paper-hi);
   border: 1px solid var(--rule);
-  border-radius: 999px;
+  border-radius: 2px; /* papel (rodada 4, H5) */
   font-family: var(--font-ui);
   font-size: 15px;
   transform: translateY(-200%);
@@ -517,7 +652,7 @@ a:hover > .titulo-sub,
   }
 }
 
-/* Só na troca de página: a troca de tema (tema.ts, .trocando-tema) tem o círculo dela. */
+/* Só na troca de página: a troca de tema (tema.ts, .trocando-tema) tem a luz dela (luz.css). */
 :root:not(.trocando-tema)::view-transition-old(root) {
   animation: folha-sai 0.2s cubic-bezier(0.4, 0, 1, 1) both;
 }
@@ -825,9 +960,8 @@ a:hover > .titulo-sub,
 }
 
 /*
- * Tema em círculo (D42, D44, trocarTema em tema.ts): indo para o escuro, a página nova cresce num
- * círculo a partir do botão; voltando ao claro, a antiga (escura) fica por cima e encolhe de fora
- * para dentro até o botão. Enquanto isso, nenhum outro elemento tem nome de transição: a página vira
+ * A troca de tema (trocarTema em tema.ts; rodada 3, área A: o círculo da D42 saiu, o tema é a luz do
+ * lustre, em luz.css). Enquanto ela dura, nenhum outro elemento tem nome de transição: a página vira
  * inteira, de uma vez.
  */
 .trocando-tema,
@@ -840,8 +974,8 @@ a:hover > .titulo-sub,
 }
 
 /*
- * O botão de tema (D49, SeletorTema.astro) fica fora da página que vira: por cima do círculo, com a
- * imagem nova (viva), onde a lua vira sol (ou o contrário) enquanto o tema troca.
+ * O botão de tema (D49, SeletorTema.astro) fica fora da página que vira: por cima da sala, com a
+ * imagem nova (viva), onde a lâmpada acende ou apaga enquanto o tema troca.
  */
 .trocando-tema .botao-tema {
   view-transition-name: botao-tema !important;
@@ -858,37 +992,6 @@ a:hover > .titulo-sub,
 
 ::view-transition-new(botao-tema) {
   animation: none;
-}
-
-:root:active-view-transition-type(tema)::view-transition-new(root) {
-  animation: espalhar-tema 0.55s cubic-bezier(0.65, 0, 0.35, 1) both;
-}
-
-/*
- * A página clara fica parada embaixo do círculo. Sem isto, ela esmaecia (o padrão do navegador) e
- * deixava ver o fundo já escuro da troca antes de o círculo crescer.
- */
-:root:active-view-transition-type(tema)::view-transition-old(root) {
-  animation: none;
-}
-
-:root:active-view-transition-type(tema-fecha)::view-transition-old(root) {
-  z-index: 1;
-  animation: espalhar-tema 0.55s cubic-bezier(0.65, 0, 0.35, 1) reverse both;
-}
-
-:root:active-view-transition-type(tema-fecha)::view-transition-new(root) {
-  animation: none;
-}
-
-@keyframes espalhar-tema {
-  from {
-    clip-path: circle(var(--tema-r0, 0px) at var(--tema-x) var(--tema-y));
-  }
-
-  to {
-    clip-path: circle(var(--tema-raio) at var(--tema-x) var(--tema-y));
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -916,4 +1019,62 @@ a:hover > .titulo-sub,
 
 :root[data-post-view="cards"] .cartoes-modo {
   display: grid;
+}
+
+/*
+ * Rodada 4 (P16-1, P16-2, vindo da linha 16): o papel colado com fita adesiva, direto no papel da página
+ * (sem cortiça e sem alfinete). Usado na etiqueta de "Artigos recentes" (Recentes), na tira de Lista /
+ * Cards (SeletorModo) e no papel da paginação (Paginacao); fica aqui para quem mais quiser colar papel.
+ *
+ * - `.papel-colado`: a folha, com a sombra curta de papel encostado (2px) na sombra quente; no escuro, um
+ *   fio de luz na borda, porque a folha marrom fica perto do papel da página.
+ * - `.fita-adesiva`: o pedaço de fita translúcido, com as pontas rasgadas à mão (os dentes do recorte). A
+ *   posição e o giro vêm de quem usa (`.canto-esq`, `.canto-dir` e as variáveis `--fita-x`, `--fita-y`,
+ *   `--fita-giro`, `--fita-largura`).
+ */
+.papel-colado {
+  position: relative;
+  border-radius: 2px;
+  background: var(--paper-hi);
+  /* A sombra curta da folha (S15): a mesma, nos dois temas (no escuro, com o anel de 1px). */
+  box-shadow: var(--sombra-folha);
+}
+
+.fita-adesiva {
+  --fita-largura: 64px;
+  position: absolute;
+  z-index: 2;
+  top: var(--fita-y, -9px);
+  width: var(--fita-largura);
+  height: 20px;
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--etiqueta-luz) 30%, transparent), transparent 55%),
+    color-mix(in oklab, var(--fita) 74%, transparent);
+  /* As bordas compridas um nada mais escuras (onde a fita dobra sobre o papel), para ela se ler sobre o
+     papel claro da página. */
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--sombra-quente) 7%, transparent),
+    inset 0 -1px 0 color-mix(in oklab, var(--sombra-quente) 9%, transparent);
+  rotate: var(--fita-giro, -38deg);
+  /* As pontas rasgadas: dentes pequenos e irregulares nos dois lados curtos. */
+  clip-path: polygon(
+    0 6%, 4% 0, 8% 9%, 12% 1%, 88% 0, 92% 8%, 96% 1%, 100% 7%,
+    100% 93%, 96% 100%, 92% 91%, 88% 100%, 12% 99%, 8% 91%, 4% 100%, 0 94%
+  );
+  pointer-events: none;
+}
+
+:root[data-theme="dark"] .fita-adesiva {
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--etiqueta-luz) 10%, transparent), transparent 62%),
+    color-mix(in oklab, var(--fita) 38%, transparent);
+}
+
+.fita-adesiva.canto-esq {
+  left: var(--fita-x, -16px);
+}
+
+.fita-adesiva.canto-dir {
+  --fita-giro: 38deg;
+  right: var(--fita-x, -16px);
 }

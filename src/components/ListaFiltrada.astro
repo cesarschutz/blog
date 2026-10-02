@@ -20,10 +20,14 @@
 import Cartao from "./Cartao.astro";
 import Estante from "./Estante.astro";
 import ItemLista from "./ItemLista.astro";
+import { LIVRO_NA_LISTA } from "../lib/lista";
 import SeletorModo from "./SeletorModo.astro";
 import { ICONES } from "../lib/icones";
 import { montarLivros } from "../lib/estante";
 import type { Resumo } from "../lib/posts";
+// Rodada 4, H5 (S5 e S6 da direção do papel): o topo é a folha lisa (canto de 2px, sem borda, a sombra
+// curta e o grão do site), a de catalogo.css; os livros continuam em pé em cima dela.
+import "../styles/catalogo.css";
 
 interface Props {
   posts: Resumo[];
@@ -31,9 +35,11 @@ interface Props {
   descricao: string;
   trilha?: { nome: string; href: string };
   porAno?: boolean;
+  /** Protótipo 14 (G8): na lista, em tela grande, a imagem à esquerda e o livro do artigo à direita. */
+  comLivro?: boolean;
 }
 
-const { posts, titulo, descricao, trilha, porAno = false } = Astro.props;
+const { posts, titulo, descricao, trilha, porAno = false, comLivro = false } = Astro.props;
 // Os livros com artigos nesta página, com o número deles aqui (é o que a lombada mostra).
 const livros = (await montarLivros())
   .map((l) => ({ ...l, posts: posts.filter((p) => p.livro === l.id) }))
@@ -51,7 +57,7 @@ const indiceDosAnos = porAno && grupos.length > 1 ? grupos : [];
 const temIndices = Astro.slots.has("default") || indiceDosAnos.length > 0;
 ---
 
-<div class:list={["folha topo-filtrado", { "com-estante": livros.length > 0 }]}>
+<div class:list={["folha folha-lisa topo-filtrado", { "com-estante": livros.length > 0 }]}>
   <slot name="fundo" />
   <header class="texto-topo">
     <div class="cabeca-topo">
@@ -130,13 +136,13 @@ const temIndices = Astro.slots.has("default") || indiceDosAnos.length > 0;
             </small>
           </h2>
         )}
-        <ol class="lista-modo lista-artigos folha">
+        <ol class="lista-modo lista-artigos">
           {g.posts.map((p) => (
-            <ItemLista post={p} nivel={nivelDoItem} />
+            <ItemLista post={p} nivel={nivelDoItem} comLivro={comLivro} livroAoLado={LIVRO_NA_LISTA} />
           ))}
         </ol>
         <template data-cartoes>
-          <ul class="cartoes-modo">
+          <ul class="cartoes-modo" data-poucos={g.posts.length <= 3 ? g.posts.length : undefined}>
             {g.posts.map((p) => (
               <Cartao post={p} nivel={nivelDoItem} />
             ))}
@@ -240,6 +246,12 @@ const temIndices = Astro.slots.has("default") || indiceDosAnos.length > 0;
       atual = id;
       for (const item of itens()) item.hidden = Boolean(id) && item.dataset.livro !== id;
       for (const grupo of grupos) grupo.hidden = !grupo.querySelector(".lista-modo > [data-livro]:not([hidden])");
+      // F11-3: de 1 a 3 cards à vista, a linha fica centrada, com a largura de sempre (o CSS, abaixo).
+      for (const cartoes of lista!.querySelectorAll<HTMLElement>(".cartoes-modo")) {
+        const n = cartoes.querySelectorAll(":scope > li:not([hidden])").length;
+        if (n >= 1 && n <= 3) cartoes.dataset.poucos = String(n);
+        else delete cartoes.dataset.poucos;
+      }
       for (const livro of livros) livro.setAttribute("aria-pressed", String(livro.dataset.filtro === id));
       estante!.classList.toggle("filtrando", Boolean(id));
       contar(id);
@@ -394,11 +406,13 @@ const temIndices = Astro.slots.has("default") || indiceDosAnos.length > 0;
     color: var(--acento);
   }
 
+  /* Protótipo 14 (G1): o título na tipografia grande do 01. */
   h1 {
     margin: 6px 0 0;
-    font-size: clamp(34px, 4.6vw, 52px);
-    line-height: 1.05;
-    letter-spacing: -0.012em;
+    font-size: clamp(40px, 6.6vw, 96px);
+    font-weight: 800;
+    line-height: 0.98;
+    letter-spacing: -0.03em;
     overflow-wrap: anywhere;
     /* "#Microsserviços" em 320px: quebra com hífen, como em /tags/ (D54). */
     hyphens: auto;
@@ -534,7 +548,7 @@ const temIndices = Astro.slots.has("default") || indiceDosAnos.length > 0;
     margin: 0;
     padding: 0 6px 0 4px;
     border: 1px solid var(--rule);
-    border-radius: 999px;
+    border-radius: 2px; /* papel (rodada 4, H5) */
     background: var(--paper-hi);
     color: var(--ink-2);
     font: inherit;
@@ -558,7 +572,48 @@ const temIndices = Astro.slots.has("default") || indiceDosAnos.length > 0;
   /* ---------- barra e grupos ---------- */
 
   .lista-filtrada {
+    container: lista-filtrada / inline-size;
     margin-top: 30px;
+  }
+
+  /*
+   * Poucos cards (rodada 3, F11-3: o card sozinho à esquerda e o resto da linha vazio): de 1 a 3 à vista,
+   * com o filtro ou sem ele, a linha fica centrada e cada card mantém a largura que teria na grade cheia
+   * (as colunas de base.css: 290px no mínimo e 26px de vão). Três em duas colunas: o terceiro fica no meio
+   * da linha de baixo. O script marca `data-poucos` a cada filtro; sem JS, vale o número do servidor.
+   */
+  :global(:root[data-post-view="cards"]) .cartoes-modo[data-poucos] {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  /* As colunas da grade cheia (o --k sai das consultas abaixo, na mesma especificidade). */
+  .cartoes-modo[data-poucos] {
+    --k: 1;
+  }
+
+  .cartoes-modo[data-poucos] > :global(li) {
+    flex: 0 0 calc((100cqi - (var(--k) - 1) * 26px) / var(--k));
+    min-width: 0;
+  }
+
+  @container lista-filtrada (min-width: 606px) {
+    .cartoes-modo[data-poucos] {
+      --k: 2;
+    }
+  }
+
+  @container lista-filtrada (min-width: 922px) {
+    .cartoes-modo[data-poucos] {
+      --k: 3;
+    }
+  }
+
+  @container lista-filtrada (min-width: 1238px) {
+    .cartoes-modo[data-poucos] {
+      --k: 4;
+    }
   }
 
   .barra-lista {

@@ -1,240 +1,397 @@
 ---
 /**
- * Botão de tema do cabeçalho (D39): alterna direto entre claro e escuro, sem menu. Mostra a lua no
- * claro e o sol no escuro (o tema para onde vai). O padrão é sempre claro (D52, C01): a escolha do
- * leitor fica em `localStorage["cs-theme"]` por 3 dias (tema.ts), e o script do <head> (Base.astro)
- * a aplica antes da primeira pintura. A troca se espalha em círculo a partir do botão (D42). Sem JS,
- * o botão some e o tema fica no padrão claro. O ícone parado sai de um script inline logo depois do botão.
+ * O lustre do cabeçalho (rodada 3 do redesenho, área A, T7 e O9; o abajur com a cordinha do 02 Noturno):
+ * troca o tema entre claro e escuro, como o botão da D39. Pendurado do alto do cabeçalho por um fio, com
+ * a cúpula, a lâmpada embaixo dela e a cordinha com a conta na ponta, que passa um pouco da linha do
+ * cabeçalho.
  *
- * O sol e a lua (D49, protótipo E1, propostas A e B; a B reabre a D44, em que o ícone só trocava):
- * - A: no hover, o sol gira 22° e a lua balança 14° (0,5s, só CSS);
- * - B: a troca anima o ícone. Para o escuro, a lua se enche até virar o miolo do sol (MorphSVG, 0,4s)
- *   e os raios se escrevem de dentro para fora, um depois do outro (DrawSVG, 0,03s entre eles); para o
- *   claro, os raios recolhem primeiro e o círculo é "mordido" de volta. O botão fica por cima do
- *   círculo da troca (base.css, `botao-tema`). O MorphSVG só é baixado ao passar o mouse, tocar ou
- *   focar o botão; sem ele ainda, ou com movimento reduzido, o ícone troca seco.
+ * - **O tema é a luz.** De dia (o claro) a lâmpada está acesa; à noite (o escuro), apagada. Puxar a
+ *   cordinha apaga a lâmpada como uma incandescente de verdade (o branco morre logo e a brasa sobra por
+ *   meio segundo) e a sala escurece com ela; puxar de novo acende (a brasa, o âmbar, o branco quente, com
+ *   o tremor do contato), e acender é o que clareia a sala. As curvas estão em lampada.ts; a troca, em
+ *   tema.ts (`trocarTema`); o halo grande, que nasce no bulbo e passa do cabeçalho, em Luz.astro.
+ * - **O hover balança a cordinha** (um pêndulo que decai: 14°, −7°, 3°, −1°, em 1,2s) e acende um halo
+ *   fraco em volta do bulbo (0,25s).
+ * - **O clique puxa a cordinha** 6px para baixo (0,12s) e solta com mola; a troca começa na soltura.
+ *   Enter e Espaço fazem o mesmo puxão. Dá também para puxar arrastando para baixo (até 14px).
  *
- * À caneta (C04, D52): o contorno é um círculo feito à mão, a lápis (a tinta do botão, fraca), e o
- * sol e a lua são desenhos da caneta preta (src/lib/traco.ts), com as pontas vivas e a volta que passa
- * do começo. No hover (ou com o foco), a caneta passa por cima do contorno, como no GitHub e no
- * LinkedIn ao lado (o círculo de traco.css). A animação da troca é a mesma: o MorphSVG leva a lua
- * desenhada ao miolo desenhado, e os raios desenhados se escrevem de dentro para fora.
+ * O contrato é o do botão de antes: `data-botao-tema`, `aria-label` com a ação ("Apagar a luz (tema
+ * escuro)"), a escolha em `localStorage["cs-theme"]` e `["cs-prefs-quando"]` (tema.ts) e, sem JS, o
+ * botão some. O botão ocupa os mesmos 38px do cabeçalho; o desenho passa dele para cima (até o alto do
+ * cabeçalho) e para baixo (a conta). Só `transform` e `opacity` animam; com movimento reduzido, nada
+ * balança e a troca é um fade de 150ms.
  */
-import { circuloDeCaneta, contornoDeCaneta, luaDeCaneta, solDeCaneta } from "../lib/traco";
-import "../styles/traco.css";
-
-// O miolo do sol (uma volta, para virar a lua) e os raios, cada um de dentro para fora.
-const { miolo: SOL, raios: RAIOS } = solDeCaneta();
-const LUA = luaDeCaneta();
 ---
 
-<button type="button" class="botao-tema" aria-label="Usar o tema escuro" title="Tema escuro" data-botao-tema data-sol={SOL} data-lua={LUA}>
-  <svg class="contorno" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path d={contornoDeCaneta("tema")} /></svg>
-  <svg class="circulo" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path pathLength="1" d={circuloDeCaneta("Tema")} /></svg>
-  <svg class="icone-tema" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-    <g class="raios">{RAIOS.map((d) => <path d={d} />)}</g>
-    <path class="corpo" d={LUA} />
+<button type="button" class="botao-tema lustre" aria-label="Apagar a luz (tema escuro)" title="Apagar a luz" data-botao-tema>
+  <span class="lustre-halo" aria-hidden="true"></span>
+  <svg class="lustre-desenho" viewBox="0 0 40 76" aria-hidden="true" focusable="false">
+    <g class="lustre-corpo">
+      <path class="fio" d="M20 0v17.6" />
+      <path class="bocal" d="M17.6 17.6h4.8v3.4h-4.8z" />
+      <circle class="bulbo" cx="20" cy="34.6" r="3.3" />
+      <circle class="nucleo-brasa" cx="20" cy="34.6" r="2.5" data-nucleo-brasa />
+      <circle class="nucleo" cx="20" cy="34.6" r="2.7" data-lampada />
+      <path class="cupula" d="M20 21c-6.8 0-12 5.3-12.9 12.4h25.8C32 26.3 26.8 21 20 21Z" />
+      <path class="cupula-acesa" d="M20 21c-6.8 0-12 5.3-12.9 12.4h25.8C32 26.3 26.8 21 20 21Z" data-cupula-acesa />
+      <path class="cupula-aba" d="M7.1 33.4h25.8" />
+      <path class="cupula-reflexo" d="M12.4 29.6c1-3.2 3.3-5.5 6.2-6.3" />
+      <g class="corda">
+        <path class="corda-fio" d="M27.4 33.4v28.6" />
+        <path class="corda-alvo" d="M27.4 33.4v34" />
+        <circle class="conta" cx="27.4" cy="64.4" r="2.4" />
+      </g>
+    </g>
   </svg>
 </button>
-<script is:inline>
-  // O ícone certo já na primeira pintura (sem esperar o script do componente): na troca de página, o
-  // botão escondido até o script rodar empurrava o menu 40px e o cabeçalho tremia.
-  (function () {
-    var b = document.currentScript.previousElementSibling;
-    var t = document.documentElement.dataset.theme;
-    var escuro = t === "dark" || (t !== "light" && matchMedia("(prefers-color-scheme: dark)").matches);
-    b.dataset.tela = escuro ? "escuro" : "claro";
-    if (escuro) b.querySelector(".corpo").setAttribute("d", b.dataset.sol);
-  })();
-</script>
 
 <script>
-  import { carregarMorfo, movimentoReduzido, type GSAP } from "../scripts/gsap";
   import { aoMudarTema, temaNaTela, trocarTema } from "../scripts/tema";
 
   const botao = document.querySelector<HTMLButtonElement>("[data-botao-tema]");
-  if (botao) {
-    const corpo = botao.querySelector<SVGPathElement>(".corpo")!;
-    const grupoRaios = botao.querySelector<SVGGElement>(".raios")!;
-    const raios = [...grupoRaios.querySelectorAll<SVGPathElement>("path")];
-    const SOL = botao.dataset.sol!;
-    const LUA = botao.dataset.lua!;
-    let gsap: GSAP | null = null;
-    let animando: gsap.core.Timeline | null = null;
+  const lampada = botao?.querySelector<SVGCircleElement>("[data-lampada]");
+  const corda = botao?.querySelector<SVGGElement>(".corda");
+  const reduzido = matchMedia("(prefers-reduced-motion: reduce)");
+  // A mola da volta da cordinha (a "viva" do 04: passa ~16% e assenta).
+  const MOLA = "linear(0, 0.09, 0.299, 0.548, 0.78, 0.964, 1.086, 1.148, 1.163, 1.145, 1.109, 1.069, 1.031, 1.003, 0.984, 0.975, 0.974, 0.977, 0.983, 0.99, 0.996, 1, 1.003, 1.004, 1.003, 1.001, 1)";
 
-    /** O ícone parado: a lua no claro, o sol (com os raios) no escuro. */
-    function desenharIcone() {
-      const escuro = temaNaTela() === "dark";
-      botao!.dataset.tela = escuro ? "escuro" : "claro";
-      corpo.setAttribute("d", escuro ? SOL : LUA);
+  if (botao && lampada && corda) {
+    // As cores do desenho do lustre: ficam as do tema de antes até a sala passar da metade.
+    const SEGURAR = ["--lustre-traco", "--lustre-cupula", "--lustre-bulbo"];
+    let inicio: number | null = null;
+    let puxa = 0;
+    let puxao: Animation | null = null;
+
+    /** A cordinha volta com mola de onde estiver. */
+    function soltarCorda(de: number) {
+      puxao?.cancel();
+      puxao = null;
+      botao!.classList.remove("puxando");
+      corda!.style.removeProperty("transform");
+      if (reduzido.matches || de <= 0) return;
+      corda!.animate([{ transform: `translateY(${de.toFixed(1)}px)` }, { transform: "none" }], { duration: 620, easing: MOLA });
+      // A cúpula dá um pulinho no fio: o puxão passa para ela.
+      botao!.querySelector(".lustre-corpo")?.animate(
+        [{ transform: "none" }, { transform: "translateY(1.6px)", offset: 0.25 }, { transform: "translateY(-0.6px)", offset: 0.6 }, { transform: "none" }],
+        { duration: 600, easing: "cubic-bezier(0.3, 0.1, 0.3, 1)" },
+      );
     }
 
-    /** A troca animada (B): o ícone vai para o do tema novo enquanto o círculo se espalha. */
-    function animarIcone(para: "light" | "dark") {
-      if (!gsap || movimentoReduzido.matches) return;
-      const g = gsap;
-      animando?.kill();
-      const tl = g.timeline({
-        onComplete: () => {
-          animando = null;
-          g.set([grupoRaios, ...raios], { clearProps: "all" });
-          desenharIcone();
-        },
-      });
-      animando = tl;
-      // Os raios à vista durante a troca (parados, só no escuro).
-      g.set(grupoRaios, { visibility: "visible" });
-      if (para === "dark") {
-        tl.to(corpo, { morphSVG: SOL, duration: 0.4, ease: "power2.inOut" })
-          .fromTo(grupoRaios, { rotation: -30, svgOrigin: "12 12" }, { rotation: 0, duration: 0.5, ease: "power3.out" }, 0.12)
-          .fromTo(raios, { drawSVG: "0% 0%" }, { drawSVG: "0% 100%", duration: 0.22, stagger: 0.03, ease: "power2.out" }, 0.18);
-      } else {
-        tl.fromTo(raios, { drawSVG: "0% 100%" }, { drawSVG: "0% 0%", duration: 0.15, stagger: 0.02, ease: "power2.in" }).to(
-          corpo,
-          { morphSVG: LUA, duration: 0.4, ease: "power2.inOut" },
-          0.1,
-        );
-      }
-    }
-
-    botao.addEventListener("click", () => {
+    /** A troca, na soltura da cordinha. */
+    function trocar() {
       const para = temaNaTela() === "dark" ? "light" : "dark";
-      animarIcone(para);
-      trocarTema(para, botao);
-      // A caneta que circula o botão fica desenhada até o mouse sair (C04): durante a troca, a página
-      // em transição toma o mouse (o botão perde o hover), e o círculo se apagaria e se escreveria de
-      // novo no fim. O mouse que sai durante a troca só conta no primeiro movimento depois dela.
-      if (botao.matches(":hover")) botao.classList.add("circulado");
+      // Sem balançar de novo quando a página em transição devolve o hover no fim da troca.
+      botao!.classList.add("puxou");
+      void trocarTema(para, lampada!, {
+        nucleo: lampada,
+        nucleoBrasa: botao!.querySelector("[data-nucleo-brasa]"),
+        cupula: botao!.querySelector("[data-cupula-acesa]"),
+        cores: { el: botao!, props: SEGURAR },
+      });
+    }
+
+    /** O puxão completo (clique curto ou teclado): desce 6px em 0,12s, solta e troca. */
+    function puxarESoltar(de = 0) {
+      if (reduzido.matches) return trocar();
+      const falta = Math.max(0, 6 - de);
+      if (falta < 0.5) {
+        soltarCorda(Math.max(de, 6));
+        return trocar();
+      }
+      puxao?.cancel();
+      puxao = corda!.animate([{ transform: `translateY(${de}px)` }, { transform: "translateY(6px)" }], {
+        duration: 120 * (falta / 6),
+        easing: "cubic-bezier(0.3, 0, 0.6, 1)",
+        fill: "forwards",
+      });
+      puxao.finished.then(
+        () => {
+          soltarCorda(6);
+          trocar();
+        },
+        () => {},
+      );
+    }
+
+    botao.addEventListener("pointerdown", (e) => {
+      if (e.button !== 0) return;
+      inicio = e.clientY;
+      puxa = 0;
+      try {
+        botao.setPointerCapture(e.pointerId);
+      } catch {
+        // Sem captura (ponteiro já solto): o puxão fica só no clique.
+      }
+      botao.classList.add("puxando");
     });
-    const trocando = () => document.documentElement.classList.contains("trocando-tema");
-    const soltar = (e: PointerEvent) => {
-      if (trocando()) return;
-      if (!botao.contains(e.target as Node)) botao.classList.remove("circulado");
-      removeEventListener("pointermove", soltar);
-    };
-    botao.addEventListener("pointerleave", () => {
-      if (!trocando()) botao.classList.remove("circulado");
-      else addEventListener("pointermove", soltar, { passive: true });
+    botao.addEventListener("pointermove", (e) => {
+      if (inicio === null || reduzido.matches) return;
+      puxa = Math.min(Math.max(e.clientY - inicio, 0), 14);
+      corda.style.transform = `translateY(${puxa.toFixed(1)}px)`;
     });
+    botao.addEventListener("pointerup", () => {
+      if (inicio === null) return;
+      inicio = null;
+      botao.classList.remove("puxando");
+      puxarESoltar(puxa);
+    });
+    botao.addEventListener("pointercancel", () => {
+      if (inicio === null) return;
+      inicio = null;
+      soltarCorda(puxa);
+    });
+    // Enter ou Espaço (o clique do ponteiro já foi tratado no pointerup).
+    botao.addEventListener("click", (e) => {
+      if (e.detail === 0) puxarESoltar(0);
+    });
+    botao.addEventListener("pointerleave", () => botao.classList.remove("puxou"));
+
     aoMudarTema(() => {
       const escuro = temaNaTela() === "dark";
-      botao.setAttribute("aria-label", escuro ? "Usar o tema claro" : "Usar o tema escuro");
-      botao.title = escuro ? "Tema claro" : "Tema escuro";
-      // No meio da troca animada, quem desenha é ela; ao terminar, volta ao ícone parado.
-      if (!animando) desenharIcone();
-      else botao.dataset.tela = escuro ? "escuro" : "claro";
+      botao.setAttribute("aria-label", escuro ? "Acender a luz (tema claro)" : "Apagar a luz (tema escuro)");
+      botao.title = escuro ? "Acender a luz" : "Apagar a luz";
     });
-    // O MorphSVG vem só quando o botão vai ser usado: ao passar o mouse, tocar ou focar.
-    const trazer = () => void carregarMorfo().then((g) => (gsap = g));
-    if (!movimentoReduzido.matches) {
-      for (const evento of ["pointerenter", "pointerdown", "focusin"]) botao.addEventListener(evento, trazer, { once: true, passive: true });
-    }
   }
 </script>
 
 <style>
+  /*
+   * As cores do lustre, por tema (tokens): o traço na tinta do cabeçalho, a cúpula na folha. A lâmpada
+   * acesa (o claro) tem o filamento no branco quente, a brasa por baixo e a cúpula iluminada por dentro;
+   * apagada (o escuro), nada disso.
+   */
   .botao-tema {
+    --lustre-traco: var(--ink-2);
+    --lustre-cupula: var(--paper-hi);
+    --lustre-bulbo: var(--paper);
+    --lustre-acesa: 1;
     position: relative;
-    display: grid;
+    display: block;
     flex: none;
-    place-items: center;
     width: 38px;
     height: 38px;
     padding: 0;
     border: 0;
     border-radius: 50%;
-    background: var(--paper-hi);
-    color: var(--ink-2);
+    background: none;
+    color: var(--lustre-traco);
     cursor: pointer;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  /*
-   * O contorno a lápis (C04): a tinta do botão, fraca, num círculo feito à mão. Na cor do texto
-   * (currentColor), para acompanhar as cores que a troca de tema congela no botão (tema.ts).
-   */
-  .contorno {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-    pointer-events: none;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.15;
-    stroke-linecap: round;
-    stroke-opacity: 0.42;
-    transition: stroke-opacity 0.2s;
+  :global(:root[data-theme="dark"]) .botao-tema {
+    --lustre-acesa: 0;
   }
 
-  .botao-tema:hover .contorno {
-    stroke-opacity: 0.2;
+  .botao-tema:hover,
+  .botao-tema:focus-visible {
+    --lustre-traco: var(--ink);
   }
 
-  /* A caneta que passa por cima no hover (traco.css), na tinta do botão. */
-  .botao-tema .circulo :global(path) {
-    stroke: currentColor;
-  }
-
-  .botao-tema.circulado > .circulo :global(path) {
-    stroke-dashoffset: 0;
-    transition: none;
-    animation: none;
-  }
-
-  /* Sem JS, o botão some e o tema segue o sistema (o script do <head> põe o data-js). */
+  /* Sem JS, o botão some e o tema fica no padrão claro (o script do <head> põe o data-js). */
   :global(:root:not([data-js])) .botao-tema {
     display: none;
   }
 
-  .botao-tema:hover {
-    color: var(--ink);
-  }
-
-  .icone-tema {
-    width: 17px;
-    height: 17px;
+  /*
+   * O desenho passa do botão: o alto do SVG fica no alto do cabeçalho (o fio vem do teto) e a conta da
+   * cordinha, uns 6px abaixo da linha dele. Os 40 de largura centram nos 38 (ou 36) do botão.
+   */
+  .lustre-desenho {
+    position: absolute;
+    top: calc(50% - var(--altura-topo, 60px) / 2);
+    left: calc(50% - 20px);
+    width: 40px;
+    height: 76px;
     overflow: visible;
     fill: none;
-    stroke: currentColor;
-    stroke-width: 1.7;
+    stroke: var(--lustre-traco);
+    stroke-width: 1.3;
     stroke-linecap: round;
     stroke-linejoin: round;
-    transition: rotate 0.5s cubic-bezier(0.2, 0.75, 0.2, 1);
+    pointer-events: none;
   }
 
-  /* A lua no claro (sem os raios); o sol, com eles, no escuro. */
-  [data-tela="claro"] .raios {
-    visibility: hidden;
+  .fio {
+    stroke-width: 1;
+    stroke-opacity: 0.7;
   }
 
-  /* A (D49): no hover (ou com o foco), o sol gira 22° e a lua balança 14°. */
+  .bocal,
+  .cupula {
+    fill: var(--lustre-cupula);
+  }
+
+  .cupula-aba {
+    stroke-width: 1.8;
+  }
+
+  .cupula-reflexo {
+    stroke-width: 1;
+    stroke-opacity: 0.45;
+  }
+
+  .bulbo {
+    fill: var(--lustre-bulbo);
+  }
+
+  /*
+   * As peças da lâmpada acesa, em cores fixas que se cruzam por opacidade (tema.ts as anima na troca): a
+   * brasa por baixo, o filamento no branco quente por cima e a cúpula iluminada por dentro. Em repouso,
+   * acesas no claro e apagadas no escuro.
+   */
+  .nucleo-brasa {
+    fill: var(--lampada-brasa);
+    stroke: none;
+    opacity: var(--lustre-acesa);
+  }
+
+  .nucleo {
+    fill: var(--lampada-branca);
+    stroke: color-mix(in oklab, var(--lampada-ambar), var(--lampada-brasa) 30%);
+    stroke-width: 0.6;
+    opacity: var(--lustre-acesa);
+  }
+
+  .cupula-acesa {
+    fill: color-mix(in oklab, var(--lampada-branca) 70%, var(--lustre-cupula));
+    stroke: none;
+    opacity: var(--lustre-acesa);
+  }
+
+  .conta {
+    fill: var(--lustre-traco);
+    stroke: none;
+  }
+
+  /* A área de toque da cordinha: um traço largo e invisível, para o dedo e o mouse pegarem a conta. */
+  .corda-alvo {
+    stroke: transparent;
+    stroke-width: 12;
+    pointer-events: stroke;
+  }
+
+  .cupula,
+  .conta {
+    pointer-events: auto;
+  }
+
+  /*
+   * O halo pequeno em volta do bulbo: a lâmpada acesa (o claro) tem o calor dela; no hover ele cresce um
+   * pouco (0,25s); apagada (o escuro), o hover acende só um fio de luz.
+   */
+  .lustre-halo {
+    position: absolute;
+    top: calc(50% - var(--altura-topo, 60px) / 2 + 34.6px - 34px);
+    left: calc(50% - 34px);
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle closest-side,
+      color-mix(in oklab, var(--lampada-ambar) 38%, transparent),
+      color-mix(in oklab, var(--lampada-ambar) 12%, transparent) 45%,
+      transparent
+    );
+    opacity: calc(var(--lustre-acesa) * 0.75);
+    pointer-events: none;
+    transition: opacity 0.25s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
   @media (hover: hover) {
-    [data-tela="escuro"]:hover .icone-tema {
-      rotate: 22deg;
-    }
-
-    [data-tela="claro"]:hover .icone-tema {
-      rotate: -14deg;
+    .botao-tema:hover .lustre-halo {
+      opacity: calc(0.22 + var(--lustre-acesa) * 0.78);
     }
   }
 
-  [data-tela="escuro"]:focus-visible .icone-tema {
-    rotate: 22deg;
+  .botao-tema:focus-visible .lustre-halo {
+    opacity: calc(0.22 + var(--lustre-acesa) * 0.78);
   }
 
-  [data-tela="claro"]:focus-visible .icone-tema {
-    rotate: -14deg;
+  .botao-tema:focus-visible {
+    outline-offset: 2px;
+  }
+
+  /* ---------- o movimento: o balanço no hover (o puxão e a volta são do script) ---------- */
+
+  .lustre-corpo {
+    transform-box: view-box;
+    transform-origin: 20px 0;
+  }
+
+  .corda {
+    transform-box: view-box;
+    transform-origin: 27.4px 33.4px;
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .botao-tema:hover:not(.puxando, .puxou) .corda {
+      animation: corda-pendulo 1.2s cubic-bezier(0.3, 0.1, 0.3, 1);
+    }
+
+    .botao-tema:hover:not(.puxando, .puxou) .lustre-corpo {
+      animation: lustre-oscila 1.2s cubic-bezier(0.3, 0.1, 0.3, 1);
+    }
+  }
+
+  /* O pêndulo que decai: 14°, −7°, 3°, −1°. */
+  @keyframes corda-pendulo {
+    0% {
+      transform: rotate(0);
+    }
+
+    15% {
+      transform: rotate(14deg);
+    }
+
+    38% {
+      transform: rotate(-7deg);
+    }
+
+    60% {
+      transform: rotate(3deg);
+    }
+
+    80% {
+      transform: rotate(-1deg);
+    }
+
+    100% {
+      transform: rotate(0);
+    }
+  }
+
+  @keyframes lustre-oscila {
+    0% {
+      transform: rotate(0);
+    }
+
+    22% {
+      transform: rotate(-2deg);
+    }
+
+    50% {
+      transform: rotate(1.2deg);
+    }
+
+    76% {
+      transform: rotate(-0.5deg);
+    }
+
+    100% {
+      transform: rotate(0);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .icone-tema,
-    .contorno {
+    .lustre-halo {
       transition: none;
     }
 
-    [data-tela]:is(:hover, :focus-visible) .icone-tema {
-      rotate: none;
+    .botao-tema :is(.corda, .lustre-corpo) {
+      animation: none !important;
+      transform: none !important;
     }
   }
 </style>

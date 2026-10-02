@@ -1,0 +1,628 @@
+/*
+ * A luz do site (rodada 3 do redesenho, área A; o 02 Noturno): a mancha que segue o mouse (T5), o halo
+ * do lustre e a troca de tema pela luz (T7), o brilho das lombadas da estante e da pilha (T4) e os pontos
+ * de luz em cima dos livros (T8). Luz.astro, luz.ts, PontoDeLuz.astro; o livro 3D tem o dele
+ * (livro-vivo.css).
+ *
+ * Cores só por token (tokens.ts): --luz-mouse, --luz-quente, --lampada-brasa, --lampada-ambar,
+ * --lampada-branca e --ponto-luz. Só `transform`, `opacity` e `clip-path` animam. Com movimento
+ * reduzido ou sem mouse, a mancha não aparece; o livro 3D nunca leva `filter`.
+ */
+
+/* ---------- o fundo que acompanha o mouse (T5) ---------- */
+
+/*
+ * A força da mancha na versão final (rodada 4, H1: "tem que ser um pouco mais fraco do que está agora"):
+ * 30% no claro (multiply) e 10,5% no escuro (screen). Antes eram 46% e 15% (a linha 18, sobre a base de
+ * 42% e 13%). O calor continua visível em volta do ponteiro, mas discreto.
+ */
+:root {
+  --luz-mouse-forca: 21%; /* rodada 4: "pode ser um pouco mais fraca ainda" (era 30%) */
+}
+
+:root[data-theme="dark"] {
+  --luz-mouse-forca: 7.5%; /* era 10,5% */
+}
+
+/*
+ * Atrás das folhas (z-index -1 na página, que não forma camada): ilumina o papel da mesa entre elas,
+ * nunca o texto. Cada disco é um elemento fixo, movido por transform (luz.ts), e a mistura é dele mesmo
+ * com o papel: no claro, o âmbar claro em multiply aquece o papel em volta do mouse e o branco em
+ * soft-light dá o ponto de luz no meio; no escuro, o âmbar em screen acende o papel escuro. Os
+ * gradientes caem em curva (várias paradas): com duas, o papel claro mostrava os anéis da passagem.
+ *
+ * A força é `--luz-mouse-forca` (a parada do meio, em %), por tema, definida acima: 30% no claro
+ * (multiply) e 10,5% no escuro (screen), uns 25 níveis de diferença no papel em volta do ponteiro nos dois
+ * temas. Na rodada 3 a mancha chegou a 42% e 46% (de 30 a 40 níveis, porque com 16% o claro mudava só 13
+ * níveis e não se via); na versão final o Cesar a quis um pouco mais fraca.
+ */
+.luz-mesa-disco,
+.luz-mesa-ponto {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.6s cubic-bezier(0.2, 0.7, 0.2, 1),
+    visibility 0s linear 0.6s;
+}
+
+.luz-mesa-disco {
+  --lm: var(--luz-mouse-forca, 21%);
+  width: 720px;
+  height: 720px;
+  margin: -360px 0 0 -360px;
+  background: radial-gradient(
+    circle closest-side,
+    color-mix(in oklab, var(--luz-mouse) var(--lm), transparent) 0%,
+    color-mix(in oklab, var(--luz-mouse) calc(var(--lm) * 0.88), transparent) 15%,
+    color-mix(in oklab, var(--luz-mouse) calc(var(--lm) * 0.71), transparent) 30%,
+    color-mix(in oklab, var(--luz-mouse) calc(var(--lm) * 0.5), transparent) 45%,
+    color-mix(in oklab, var(--luz-mouse) calc(var(--lm) * 0.31), transparent) 60%,
+    color-mix(in oklab, var(--luz-mouse) calc(var(--lm) * 0.155), transparent) 75%,
+    color-mix(in oklab, var(--luz-mouse) calc(var(--lm) * 0.055), transparent) 88%,
+    transparent
+  );
+  mix-blend-mode: multiply;
+}
+
+.luz-mesa-ponto {
+  width: 300px;
+  height: 300px;
+  margin: -150px 0 0 -150px;
+  background: radial-gradient(
+    circle closest-side,
+    color-mix(in oklab, var(--paper-hi) 25%, transparent) 0%,
+    color-mix(in oklab, var(--paper-hi) 20.19%, transparent) 20%,
+    color-mix(in oklab, var(--paper-hi) 12.5%, transparent) 40%,
+    color-mix(in oklab, var(--paper-hi) 5.77%, transparent) 60%,
+    color-mix(in oklab, var(--paper-hi) 1.73%, transparent) 80%,
+    transparent
+  );
+  mix-blend-mode: soft-light;
+}
+
+:root[data-theme="dark"] .luz-mesa-disco {
+  --lm: var(--luz-mouse-forca, 7.5%);
+  mix-blend-mode: screen;
+}
+
+:root[data-theme="dark"] .luz-mesa-ponto {
+  display: none;
+}
+
+.luz-mesa.ligada :is(.luz-mesa-disco, .luz-mesa-ponto) {
+  opacity: 1;
+  visibility: visible;
+  will-change: transform;
+  transition:
+    opacity 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+    visibility 0s;
+}
+
+@media (prefers-reduced-motion: reduce), not ((hover: hover) and (pointer: fine)) {
+  .luz-mesa {
+    display: none;
+  }
+}
+
+:root:not([data-js]) .luz-mesa {
+  display: none;
+}
+
+/* ---------- o halo do lustre e a troca de tema pela luz (T7, tema.ts) ---------- */
+
+/*
+ * As camadas grandes da lâmpada, centradas no bulbo (o script põe o lugar), por cima do cabeçalho e da
+ * página: três halos concêntricos em cores fixas (a brasa, o âmbar, o branco quente) e o cone de 60° que
+ * desce. Só existem durante a troca. Os halos caem em curva (várias paradas), sem o anel que o gradiente
+ * de duas paradas deixava.
+ */
+.lustre-luz {
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+  overflow: hidden;
+  pointer-events: none;
+  visibility: hidden;
+  contain: strict;
+}
+
+.lustre-luz.ativa {
+  visibility: visible;
+}
+
+.lustre-luz > span {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  opacity: 0;
+}
+
+.ll-brasa {
+  width: 520px;
+  height: 520px;
+  background: radial-gradient(
+    circle closest-side,
+    color-mix(in oklab, var(--lampada-brasa) 55%, transparent) 0%,
+    color-mix(in oklab, var(--lampada-brasa) 40%, transparent) 18%,
+    color-mix(in oklab, var(--lampada-brasa) 24%, transparent) 36%,
+    color-mix(in oklab, var(--lampada-brasa) 12%, transparent) 54%,
+    color-mix(in oklab, var(--lampada-brasa) 5%, transparent) 72%,
+    color-mix(in oklab, var(--lampada-brasa) 1.5%, transparent) 88%,
+    transparent
+  );
+}
+
+.ll-ambar {
+  width: 760px;
+  height: 760px;
+  background: radial-gradient(
+    circle closest-side,
+    color-mix(in oklab, var(--lampada-ambar) 62%, transparent) 0%,
+    color-mix(in oklab, var(--lampada-ambar) 46%, transparent) 18%,
+    color-mix(in oklab, var(--lampada-ambar) 28%, transparent) 36%,
+    color-mix(in oklab, var(--lampada-ambar) 14%, transparent) 54%,
+    color-mix(in oklab, var(--lampada-ambar) 5.5%, transparent) 72%,
+    color-mix(in oklab, var(--lampada-ambar) 1.5%, transparent) 88%,
+    transparent
+  );
+}
+
+.ll-branco {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(
+    circle closest-side,
+    color-mix(in oklab, var(--lampada-branca) 90%, transparent) 0%,
+    color-mix(in oklab, var(--lampada-branca) 60%, transparent) 14%,
+    color-mix(in oklab, var(--lampada-branca) 34%, transparent) 28%,
+    color-mix(in oklab, var(--lampada-branca) 15%, transparent) 46%,
+    color-mix(in oklab, var(--lampada-branca) 5%, transparent) 64%,
+    color-mix(in oklab, var(--lampada-branca) 1.2%, transparent) 82%,
+    transparent
+  );
+}
+
+.ll-cone {
+  width: 640px;
+  height: 640px;
+  border-radius: 0;
+  background: conic-gradient(
+    from 150deg at 50% 0%,
+    transparent,
+    color-mix(in oklab, var(--lampada-ambar) 34%, transparent) 30deg,
+    transparent 60deg
+  );
+  -webkit-mask: linear-gradient(#000, transparent 85%);
+  mask: linear-gradient(#000, transparent 85%);
+}
+
+/*
+ * A sala é a View Transition do documento (tema.ts): acendendo, a página clara nova aparece sobre a
+ * escura com a luz da lâmpada; apagando, a clara antiga sai de cima da escura nova. As duas imagens sem
+ * a mistura "plus-lighter" da troca padrão (cada uma é opaca). O lustre e o halo ficam por cima, vivos.
+ */
+:root.trocando-tema .lustre-luz {
+  view-transition-name: lustre-luz !important;
+}
+
+::view-transition-group(lustre-luz) {
+  z-index: 101;
+  animation: none;
+}
+
+::view-transition-old(lustre-luz) {
+  display: none;
+}
+
+::view-transition-new(lustre-luz) {
+  animation: none;
+}
+
+:root:is(.luz-acende, .luz-apaga)::view-transition-old(root),
+:root:is(.luz-acende, .luz-apaga)::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+:root.luz-acende::view-transition-new(root) {
+  opacity: 0;
+}
+
+:root.luz-apaga::view-transition-old(root) {
+  z-index: 1;
+}
+
+/* Com movimento reduzido: um fade de 150ms, sem a lâmpada. */
+:root.luz-fade::view-transition-group(root) {
+  animation-duration: 0.15s;
+}
+
+/* ---------- o brilho nas lombadas da estante, da pilha e dos cartões de tags (T4) ---------- */
+
+/*
+ * O reflexo corre de cima para baixo, como a luz numa lombada redonda. O movimento sai do recorte
+ * (clip-path) na mesma medida, para a faixa não passar da lombada, que tem a cabeça e os lados em 3D e
+ * não pode cortar o que transborda. A camada `.luz-brilho` nasce na primeira passada do mouse (luz.ts).
+ * Rodada 4 (H4): branco e fraco, neutro; o reflexo quente amarelava a lombada como a luz da capa.
+ */
+.lombada-visual > .luz-brilho::before,
+.tag:hover .mini-lombada::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    172deg,
+    transparent 26%,
+    color-mix(in oklab, var(--etiqueta-luz) 12%, transparent) 42%,
+    color-mix(in oklab, var(--etiqueta-luz) 26%, transparent) 50%,
+    color-mix(in oklab, var(--etiqueta-luz) 12%, transparent) 58%,
+    transparent 74%
+  );
+  opacity: 0;
+  transform: translateY(-100%);
+  clip-path: inset(100% 0 0 0);
+}
+
+.luz-brilho {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Na estante, em pé, um nada à frente da arte da lombada (o espaço da prateleira é 3D). */
+.lombada > .luz-brilho {
+  transform: translateZ(0.2px);
+}
+
+/* A onda de luz da fileira (livro-vivo.ts) também passa nas lombadas. */
+.luz-brilho > .lv-onda {
+  position: absolute;
+  display: block;
+}
+
+/* A estante em miniatura dos cartões de /tags/: a camada é a própria lombadinha. */
+.mini-lombada {
+  position: relative;
+  overflow: hidden;
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  :is(.lombada, .deitado):hover .lombada-visual > .luz-brilho::before,
+  .lombada:hover > .luz-brilho::before {
+    animation: luz-varre-lombada 0.85s cubic-bezier(0.3, 0.5, 0.2, 1) both;
+  }
+
+  /* Na miniatura, o reflexo passa por toda a estantinha, um livro depois do outro. */
+  .tag:hover .mini-lombada::after {
+    animation: luz-varre-lombada 0.7s cubic-bezier(0.3, 0.5, 0.2, 1) both;
+    animation-delay: calc(var(--i-luz, 0) * 45ms);
+  }
+
+  .mini-lombada:nth-child(2) {
+    --i-luz: 1;
+  }
+
+  .mini-lombada:nth-child(3) {
+    --i-luz: 2;
+  }
+
+  .mini-lombada:nth-child(4) {
+    --i-luz: 3;
+  }
+
+  .mini-lombada:nth-child(5) {
+    --i-luz: 4;
+  }
+
+  .mini-lombada:nth-child(6) {
+    --i-luz: 5;
+  }
+
+  .mini-lombada:nth-child(7) {
+    --i-luz: 6;
+  }
+
+  .mini-lombada:nth-child(n + 8) {
+    --i-luz: 7;
+  }
+}
+
+/* O teclado também acende o reflexo (a lombada com o foco). */
+@media (prefers-reduced-motion: no-preference) {
+  .lombada:focus-visible > .luz-brilho::before {
+    animation: luz-varre-lombada 0.85s cubic-bezier(0.3, 0.5, 0.2, 1) both;
+  }
+}
+
+/* A faixa desce a lombada inteira; o recorte acompanha, para ela nunca sair da lombada. */
+@keyframes luz-varre-lombada {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%);
+    clip-path: inset(100% 0 0 0);
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  50% {
+    transform: translateY(0);
+    clip-path: inset(0 0 0 0);
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(100%);
+    clip-path: inset(0 0 100% 0);
+  }
+}
+
+/* ---------- as luzes em cima dos livros (T8, o 02; linha 18: a luz de quadro; PontoDeLuz.astro) ---------- */
+
+/*
+ * A luz de quadro de galeria (linha 18): a plaquinha de latão na parede, o braço em pescoço de cisne, a
+ * cúpula pequena e a boca acesa; o cone desce da boca sobre o livro. Em repouso, o cone fica a 0,12 no
+ * claro e a 0,35 no escuro; com o mouse ou o foco no `[data-luz]` em volta, sobe a 0,5 e a 0,9 em 0,4s, e
+ * a boca acende 60ms antes. `[data-luz-acesa]` deixa aceso.
+ *
+ * Medidas: a caixa `.ponto-luz` é o cone (a boca no alto, no meio); a peça de latão fica acima dela, fora
+ * da caixa, em unidades de `--lq` (1px na home). A largura do cone vem da altura (aspect-ratio).
+ */
+.ponto-luz {
+  --ponto-luz-repouso: 0.12;
+  --ponto-luz-aceso: 0.5;
+  --lq: var(--lq-luz, 1px);
+  position: absolute;
+  top: var(--ponto-luz-topo, 0px);
+  bottom: var(--ponto-luz-pe, 0px);
+  left: 50%;
+  z-index: 0;
+  aspect-ratio: 1.04;
+  translate: -50% 0;
+  pointer-events: none;
+}
+
+:root[data-theme="dark"] .ponto-luz {
+  --ponto-luz-repouso: 0.35;
+  --ponto-luz-aceso: 0.9;
+}
+
+.ponto-luz-feixe,
+.ponto-luz-cone {
+  position: absolute;
+  inset: 0;
+}
+
+/*
+ * O feixe: forte junto da boca e caindo para baixo, com as bordas macias (a máscara cônica com 9° de
+ * esmaecido de cada lado). Por cima da parede: é a lavada de luz que um quadro tem, mais clara no alto.
+ */
+.ponto-luz-cone {
+  background:
+    radial-gradient(ellipse 34% 26% at 50% 0%, color-mix(in oklab, var(--lampada-branca) 70%, transparent), transparent 100%),
+    radial-gradient(
+      ellipse 64% 100% at 50% 0%,
+      color-mix(in oklab, var(--luz-quente) 74%, transparent),
+      color-mix(in oklab, var(--lampada-ambar) 22%, transparent) 60%,
+      transparent 97%
+    );
+  -webkit-mask: conic-gradient(from 145deg at 50% 0%, transparent, #000 10deg, #000 60deg, transparent 70deg);
+  mask: conic-gradient(from 145deg at 50% 0%, transparent, #000 10deg, #000 60deg, transparent 70deg);
+  opacity: var(--ponto-luz-repouso);
+  transition: opacity 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* A peça de latão: um ponto sem tamanho na boca, de onde as partes se medem. */
+.ponto-luz-peca {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 0;
+  height: 0;
+}
+
+/* A sombra curta da peça na parede, embaixo e à direita da plaquinha (a luz do ambiente vem do alto). */
+.ponto-luz-peca::before {
+  content: "";
+  position: absolute;
+  left: calc(-15 * var(--lq));
+  top: calc(-20 * var(--lq));
+  width: calc(14 * var(--lq));
+  height: calc(16 * var(--lq));
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--sombra-quente) 26%, transparent), transparent);
+  translate: calc(2.5 * var(--lq)) calc(3.5 * var(--lq));
+}
+
+:root[data-theme="dark"] .ponto-luz-peca::before {
+  background: radial-gradient(closest-side, rgb(0 0 0 / 0.5), transparent);
+}
+
+.ponto-luz-braco {
+  position: absolute;
+  left: calc(-21 * var(--lq));
+  top: calc(-34 * var(--lq));
+  width: calc(42 * var(--lq));
+  height: calc(36 * var(--lq));
+  overflow: visible;
+}
+
+.ponto-luz-braco .lq-braco {
+  fill: none;
+  stroke: var(--latao);
+  stroke-width: 2.3;
+  stroke-linecap: round;
+}
+
+.ponto-luz-braco .lq-braco-luz {
+  fill: none;
+  stroke: var(--latao-luz);
+  stroke-width: 0.7;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+
+.ponto-luz-braco .lq-placa {
+  fill: var(--latao);
+  stroke: var(--latao-escuro);
+  stroke-width: 0.7;
+}
+
+.ponto-luz-braco .lq-placa-luz {
+  fill: var(--latao-luz);
+  opacity: 0.75;
+}
+
+.ponto-luz-braco .lq-junta {
+  fill: var(--latao);
+  stroke: var(--latao-escuro);
+  stroke-width: 0.6;
+}
+
+/*
+ * A cúpula: um sino de latão escovado, iluminado do alto à esquerda (o brilho), com a borda de baixo mais
+ * escura; um fio de luz curto no ombro dela.
+ */
+.ponto-luz-cupula {
+  position: absolute;
+  left: calc(-11.5 * var(--lq));
+  top: calc(-13 * var(--lq));
+  width: calc(23 * var(--lq));
+  height: calc(11.5 * var(--lq));
+  border-radius: 50% 50% calc(1.4 * var(--lq)) calc(1.4 * var(--lq)) / 100% 100% calc(1.4 * var(--lq)) calc(1.4 * var(--lq));
+  background: radial-gradient(ellipse 80% 118% at 32% 14%, var(--latao-luz) 0%, var(--latao) 42%, var(--latao-escuro) 97%);
+}
+
+/* A aba da cúpula: um fio mais largo que ela, com a quina de cima clara e a de baixo escura. */
+.ponto-luz-cupula::after {
+  content: "";
+  position: absolute;
+  left: calc(-1.2 * var(--lq));
+  right: calc(-1.2 * var(--lq));
+  bottom: calc(-0.6 * var(--lq));
+  height: calc(2.2 * var(--lq));
+  border-radius: calc(1.2 * var(--lq));
+  background: linear-gradient(to bottom, var(--latao-luz), var(--latao) 45%, color-mix(in oklab, var(--latao-escuro), black 18%));
+}
+
+.ponto-luz-cupula::before {
+  content: "";
+  position: absolute;
+  left: 22%;
+  top: 14%;
+  width: 26%;
+  height: 18%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in oklab, white 80%, var(--latao-luz)), transparent);
+  opacity: 0.8;
+}
+
+/*
+ * A boca acesa por baixo da cúpula: o branco quente no meio e o âmbar em volta; a brasa (laranja) só
+ * aparece de verdade ao acender e ao apagar (a curva da lâmpada, estante-moderna.ts), e em repouso dá a
+ * franja quente da boca. O halo pequeno (::after) é o que acende mais no hover.
+ */
+.ponto-luz-lampada,
+.ponto-luz-brasa {
+  position: absolute;
+  left: calc(-9.5 * var(--lq));
+  top: calc(-2.4 * var(--lq));
+  width: calc(19 * var(--lq));
+  height: calc(3.8 * var(--lq));
+  border-radius: 50%;
+}
+
+.ponto-luz-brasa {
+  left: calc(-10.5 * var(--lq));
+  top: calc(-2.8 * var(--lq));
+  width: calc(21 * var(--lq));
+  height: calc(5 * var(--lq));
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--lampada-brasa) 85%, transparent), transparent);
+  opacity: 0.55;
+}
+
+.ponto-luz-lampada {
+  background: radial-gradient(
+    closest-side,
+    var(--lampada-branca) 0%,
+    color-mix(in oklab, var(--lampada-branca) 92%, transparent) 46%,
+    color-mix(in oklab, var(--lampada-ambar) 70%, transparent) 78%,
+    transparent
+  );
+}
+
+.ponto-luz-lampada::after {
+  content: "";
+  position: absolute;
+  inset: calc(-12 * var(--lq)) calc(-14 * var(--lq));
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in oklab, var(--lampada-ambar) 55%, transparent), transparent);
+  opacity: 0.25;
+  transition: opacity 0.25s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+:root[data-theme="dark"] .ponto-luz-lampada::after {
+  opacity: 0.55;
+}
+
+:is([data-luz]:is(:focus-visible, :has(:focus-visible), [data-lv-toque]), [data-luz-acesa]) .ponto-luz-cone {
+  opacity: var(--ponto-luz-aceso);
+  transition-delay: 60ms;
+}
+
+:is([data-luz]:is(:focus-visible, :has(:focus-visible), [data-lv-toque]), [data-luz-acesa]) .ponto-luz-lampada::after {
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  [data-luz]:hover .ponto-luz-cone {
+    opacity: var(--ponto-luz-aceso);
+    transition-delay: 60ms;
+  }
+
+  [data-luz]:hover .ponto-luz-lampada::after {
+    opacity: 1;
+  }
+}
+
+/*
+ * Apagadas até acender (linha 18): a fileira que acende as luzes ao chegar (`data-luzes-ao-chegar`,
+ * estante-moderna.ts) nasce com a boca, a brasa e o feixe apagados; o script acende uma a uma e marca
+ * `data-luzes-acesas`. Se o script não vier, elas acendem paradas em 5s (a reserva). Com movimento
+ * reduzido, já nascem acesas.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  :root[data-js] [data-luzes-ao-chegar]:not([data-luzes-acesas]) :is(.ponto-luz-feixe, .ponto-luz-lampada, .ponto-luz-brasa) {
+    opacity: 0;
+    animation: luz-reserva 0.3s 5s forwards;
+  }
+}
+
+@keyframes luz-reserva {
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ponto-luz-cone,
+  .ponto-luz-lampada::after {
+    transition: none;
+  }
+}

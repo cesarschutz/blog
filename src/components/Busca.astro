@@ -1,28 +1,63 @@
 ---
 /**
- * Busca (briefing §3): abre com ⌘K ou Ctrl+K (e o botão do cabeçalho), nunca com uma tecla só: o "/"
- * saiu na B06 (D52), porque em muitos teclados ele é a tecla do "?", que abre os atalhos do artigo
- * (Atalhos.astro). Aceita #tag (as tags do site levam às páginas
- * delas desde a D33, e não mais à busca);
- * link compartilhável /?q=termo. O motor (Pagefind, D2) e o índice só são baixados quando a busca
- * abre. O índice sai no build (`pagefind --site dist`, no postbuild), então no `npm run dev` a busca
- * avisa que não há índice. Marca o tempo até o primeiro resultado (performance "busca:aberta" e
- * "busca:resultado") para a medição de scripts/bench-busca.
+ * Busca (briefing §3): abre com ⌘K ou Ctrl+K (e o campo do cabeçalho), nunca com uma tecla só (o "/"
+ * saiu na B06, D52). Aceita #tag; link compartilhável /?q=termo. O motor (Pagefind, D2) e o índice só
+ * são baixados quando a busca abre. Marca o tempo até o primeiro resultado (performance "busca:aberta"
+ * e "busca:resultado") para a medição de scripts/bench-busca.
  *
- * D49 (protótipo E4): nos resultados, um marcador só (o fundo e o fio azul) desliza até o item da vez,
- * seguindo as setas, o foco e o mouse (0,28s; seguindo depressa, ele só muda de destino); o primeiro
- * já vem marcado, e o Enter no campo abre o marcado. Sem resultado, o termo ganha a ondinha de revisor
- * (na cor de Cuidado: é aviso, não erro do leitor), e embaixo vem uma saída: termo mais curto ou as tags.
- * Em cima, pequeno, o livro aberto com as páginas em branco (D57, LivroEmBranco), e tudo centrado.
+ * Rodada 3 do redesenho (área 8: F12-9, A16, G11, G24), a ficha de consulta:
+ *
+ * - **Nasce do campo e desce do cabeçalho** (G11): um pedaço de papel do tamanho do campo, em cima dele,
+ *   que cresce e desce até a largura do conteúdo (até 1320px) e até 70% da altura da janela (no mínimo
+ *   420px), logo abaixo do cabeçalho, em 0,5s (power3.out). Só `clip-path` e `transform`, sem esticar o
+ *   papel nem a letra. O véu escurece a página a 55%; o cabeçalho fica à vista. Fecha (Esc, clique fora,
+ *   "Fechar") encolhendo de volta ao campo em 0,35s, e o foco volta ao campo.
+ * - **Uma ficha de consulta** (F12-9): papel de fichário, cantos quase retos, a linha vermelha da cabeça
+ *   sob o campo (o campo é a primeira linha: a lupa de caneta na margem, a letra grande em Besley, o
+ *   cursor azul, sem borda) e a pauta azul a cada 36px embaixo.
+ * - **Os resultados são linhas da ficha**: o título em Besley numa linha da pauta, o livro e a data na
+ *   seguinte (no celular, também o trecho); o termo com o marca-texto que se estica (0,45s). No hover,
+ *   no foco ou nas setas, **a pintura e a caneta de hoje** (A16): o fundo azul desliza até o resultado
+ *   (0,28s; da primeira vez, a tinta escorre do começo ao fim da linha) e a caneta preta escreve o
+ *   colchete na margem (0,34s). O primeiro já vem marcado; Enter abre o marcado.
+ * - **A ficha do resultado** (≥ 1000px, G24): à direita, a ilustração do post da vez (a velha esmaece em
+ *   0,12s, a nova chega subindo 6px), o livro 3D pequeno (o LivroEmPe de todo o site, de
+ *   /busca/livros/), que gira com a mola quando o livro muda, o volume, o título, o tempo, a data, as
+ *   tags e o trecho com o termo marcado. Antes de buscar, e sem resultado, ela mostra os assuntos mais
+ *   usados ("Consultar por assunto"), que preenchem a busca com a #tag.
+ * - **Sem resultado**: o termo com a ondinha de revisor, a frase da direção e o livro aberto em branco
+ *   (D57). Setas, Enter e Esc funcionam; ↑ no primeiro resultado volta ao campo.
+ * - **Tela pequena** (até 760px): a folha ocupa a tela toda abaixo do cabeçalho; até 1000px, a ficha da
+ *   direita some.
+ *
+ * Com movimento reduzido, abre e fecha direto, sem deslizar nem escrever. Sem JS, o botão do cabeçalho
+ * some (Cabecalho.astro). Classes e atributos estáveis para as linhas: `.busca`, `.ficha-consulta`,
+ * `.campo`, `.resultados`, `.resultado`, `.marcador`, `.ficha-resultado` e os `data-busca-*`.
  */
 import LivroEmBranco from "./LivroEmBranco.astro";
+import { ICONES } from "../lib/icones";
+import { getResumos, getTags, urlTag } from "../lib/posts";
+import { dataPorExtenso, semMd } from "../lib/formato";
+import { palavraDaTag } from "../lib/busca/tipos";
 import { url } from "../lib/url";
+// O livro 3D da ficha do resultado vem pronto de /busca/livros/; o CSS dele vem com a busca (área A).
+import "../styles/livro.css";
+import "../styles/livro-vivo.css";
+
+const tags = await getTags();
+const assuntos = tags.slice(0, 9);
+// A palavra escondida de cada tag no índice ("tagkubernetes", posts/[slug].astro) aparecia no fim de
+// alguns trechos: a busca a tira antes de mostrar.
+const palavrasDasTags = JSON.stringify(tags.map((t) => palavraDaTag(t.nome)));
+// Antes de digitar, as linhas da ficha já trazem os artigos mais recentes (a ficha nunca abre vazia).
+const recentes = (await getResumos()).slice(0, 6);
 ---
 
-<dialog class="busca" data-busca aria-labelledby="busca-titulo">
-  <form method="dialog" class="caixa" role="search">
+<dialog class="busca" data-busca aria-labelledby="busca-titulo" data-palavras-tags={palavrasDasTags}>
+  <form method="dialog" class="caixa ficha-consulta" role="search">
     <h2 id="busca-titulo" class="sr">Buscar nos artigos</h2>
     <div class="campo">
+      <svg class="lupa-campo" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.busca} />
       <label for="busca-campo" class="sr">Termo da busca</label>
       <input
         id="busca-campo"
@@ -32,58 +67,283 @@ import { url } from "../lib/url";
         autocomplete="off"
         spellcheck="false"
         enterkeyhint="go"
+        aria-controls="busca-resultados"
       />
-      <button type="submit" class="fechar" data-busca-fechar>Fechar</button>
+      <button type="button" class="fechar" data-busca-fechar>Fechar<kbd>esc</kbd></button>
     </div>
-    <div class="vazio-busca" data-busca-vazio hidden><LivroEmBranco livro="busca" largura={150} /></div>
-    <p class="estado" data-busca-estado aria-live="polite">A busca ignora acentos. Use # para procurar por tag.</p>
-    <ul class="resultados" data-busca-resultados></ul>
-    <p class="dica-vazia" data-busca-dica hidden>Tente um termo mais curto ou veja <a href={url("/tags/")}>todas as tags</a>.</p>
+    <div class="corpo-consulta">
+      <div class="coluna-resultados">
+        <div class="linha-estado">
+          <p class="estado" data-busca-estado aria-live="polite">A busca ignora acentos. Use # para procurar por tag.</p>
+          <p class="teclas" aria-hidden="true"><kbd>↑</kbd><kbd>↓</kbd> escolhe <kbd>↵</kbd> abre</p>
+        </div>
+        <ul class="resultados" id="busca-resultados" data-busca-resultados></ul>
+        <template data-busca-recentes>
+          <li class="rotulo-lista">Os mais recentes</li>
+          {
+            recentes.map((p) => {
+              const data = dataPorExtenso(p.publicado);
+              return (
+                <li>
+                  <a class="resultado" href={p.url} data-titulo={p.tituloCompleto} data-rotulo={p.rotulo} data-data={data}>
+                    <span class="r-titulo">{p.tituloCompleto}</span>
+                    <span class="r-meta">
+                      {p.rotulo} · {data}
+                    </span>
+                    <span class="r-trecho">{semMd(p.descricao)}</span>
+                  </a>
+                </li>
+              );
+            })
+          }
+        </template>
+        <div class="sem-nada" data-busca-sem-nada hidden>
+          <p class="dica-vazia" data-busca-dica>Tente o nome do livro ou uma <a href={url("/tags/")}>#tag</a>.</p>
+          <div class="vazio-busca" data-busca-vazio><LivroEmBranco livro="busca" largura={128} /></div>
+        </div>
+      </div>
+      <aside class="ficha-resultado" data-busca-ficha aria-label="Ficha do resultado">
+        <div class="assuntos" data-busca-assuntos>
+          <p class="rotulo-ficha">Consultar por assunto</p>
+          <ul>
+            {
+              assuntos.map((t) => (
+                <li>
+                  <a href={urlTag(t.nome)} data-busca-tag={t.nome}>
+                    #{t.nome}
+                    <sup>{t.posts.length}</sup>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div class="ficha-do-post" data-busca-post hidden>
+          <a class="ilustracao-ficha" data-busca-ilustracao tabindex="-1" aria-hidden="true"></a>
+          <div class="livro-e-dados">
+            <div class="lugar-do-livro" data-busca-livro aria-hidden="true"></div>
+            <div class="dados-ficha">
+              <p class="volume-ficha" data-busca-volume></p>
+              <p class="titulo-ficha" data-busca-titulo></p>
+              <p class="meta-ficha" data-busca-meta></p>
+            </div>
+          </div>
+          <p class="tags-ficha" data-busca-tags></p>
+          <p class="trecho-ficha" data-busca-trecho></p>
+        </div>
+      </aside>
+    </div>
   </form>
 </dialog>
 
 <script>
   import type { MotorDeBusca, ResultadoBusca } from "../lib/busca/tipos";
   import { escaparHtml } from "../lib/busca/tipos";
+  import { dadosDoPost, livrosDaBusca, type DadosDoPost } from "../lib/busca/ficha";
   import { ICONES } from "../lib/icones";
-  import { ondaDeCaneta } from "../lib/traco";
-  import { adiantar, carregarFlip, movimentoReduzido } from "../scripts/gsap";
+  import { colcheteDeCaneta, ondaDeCaneta } from "../lib/traco";
+  import { movimentoReduzido } from "../scripts/gsap";
 
-  const dialogo = document.querySelector<HTMLDialogElement>("[data-busca]")!;
+  const dialogo = document.querySelector<HTMLDialogElement>("dialog.busca[data-busca]")!;
+  const caixa = dialogo.querySelector<HTMLFormElement>(".ficha-consulta")!;
   const campo = dialogo.querySelector<HTMLInputElement>("[data-busca-campo]")!;
   const estado = dialogo.querySelector<HTMLElement>("[data-busca-estado]")!;
   const lista = dialogo.querySelector<HTMLUListElement>("[data-busca-resultados]")!;
-  const dicaVazia = dialogo.querySelector<HTMLElement>("[data-busca-dica]")!;
-  const livroVazio = dialogo.querySelector<HTMLElement>("[data-busca-vazio]")!;
-  /** Sem resultado (D57): o livro em branco em cima e o estado e a dica centrados. */
+  const semNada = dialogo.querySelector<HTMLElement>("[data-busca-sem-nada]")!;
+  const assuntos = dialogo.querySelector<HTMLElement>("[data-busca-assuntos]")!;
+  const fichaPost = dialogo.querySelector<HTMLElement>("[data-busca-post]")!;
+  const ilustracao = dialogo.querySelector<HTMLAnchorElement>("[data-busca-ilustracao]")!;
+  const lugarDoLivro = dialogo.querySelector<HTMLElement>("[data-busca-livro]")!;
+  const volumeEl = dialogo.querySelector<HTMLElement>("[data-busca-volume]")!;
+  const dadosEl = dialogo.querySelector<HTMLElement>(".dados-ficha")!;
+  const tituloEl = dialogo.querySelector<HTMLElement>("[data-busca-titulo]")!;
+  const metaEl = dialogo.querySelector<HTMLElement>("[data-busca-meta]")!;
+  const tagsEl = dialogo.querySelector<HTMLElement>("[data-busca-tags]")!;
+  const trechoEl = dialogo.querySelector<HTMLElement>("[data-busca-trecho]")!;
+  const DICA = estado.textContent ?? "";
+  const modeloRecentes = dialogo.querySelector<HTMLTemplateElement>("template[data-busca-recentes]")!;
+  const reduzido = () => movimentoReduzido.matches;
+
+  /* ---------- o estado da ficha ---------- */
+
+  const resultadosNaTela = () => [...lista.querySelectorAll<HTMLAnchorElement>(".resultado")];
+
+  /** Sem resultado: a frase, a saída e o livro em branco; a ficha da direita volta aos assuntos. */
   function semResultado(sim: boolean) {
-    dicaVazia.hidden = !sim;
-    livroVazio.hidden = !sim;
+    semNada.hidden = !sim;
     dialogo.classList.toggle("sem-resultado", sim);
   }
-  const DICA = estado.textContent ?? "";
 
-  // O marcador (D49): um fundo só, que desliza até o resultado da vez (a transição é do CSS).
+  /** A ficha da direita: os assuntos (antes de buscar, sem resultado) ou o post da vez. */
+  function mostrarAssuntos() {
+    fichaVez++;
+    assuntos.hidden = false;
+    fichaPost.hidden = true;
+  }
+
+  /* ---------- a pintura e a caneta (A16) ---------- */
+
+  // A pintura: um fundo só, que desliza até o resultado da vez (a transição é do CSS).
   const marcador = document.createElement("li");
   marcador.className = "marcador";
   marcador.setAttribute("aria-hidden", "true");
-  const resultadosNaTela = () => [...lista.querySelectorAll<HTMLAnchorElement>(".resultado")];
+  // A caneta: o colchete preto, escrito na margem do resultado da vez.
+  const colchete = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  colchete.setAttribute("class", "colchete-busca");
+  colchete.setAttribute("aria-hidden", "true");
+  colchete.setAttribute("focusable", "false");
+  colchete.setAttribute("preserveAspectRatio", "none");
+  const tracoDoColchete = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  colchete.append(tracoDoColchete);
+  const colcheteLi = document.createElement("li");
+  colcheteLi.className = "lugar-do-colchete";
+  colcheteLi.setAttribute("aria-hidden", "true");
+  colcheteLi.append(colchete);
+
+  let ativo: HTMLAnchorElement | undefined;
+
   function marcar(alvo: HTMLAnchorElement | undefined, direto = false) {
     const itens = resultadosNaTela();
     if (!alvo || !itens.includes(alvo)) return;
+    const mudou = alvo !== ativo;
+    ativo = alvo;
     itens.forEach((a) => a.classList.toggle("ativo", a === alvo));
-    if (!marcador.isConnected) lista.prepend(marcador);
+    const novo = !marcador.isConnected;
+    if (novo) lista.prepend(marcador, colcheteLi);
     const li = alvo.parentElement!;
-    marcador.classList.toggle("direto", direto);
+    // A primeira vez, a tinta escorre do começo ao fim da linha; depois, ela desliza de uma à outra.
+    marcador.classList.toggle("direto", direto || novo);
     marcador.style.transform = `translateY(${li.offsetTop}px)`;
     marcador.style.height = `${li.offsetHeight}px`;
-    if (direto) {
+    if (direto || novo) {
       void marcador.offsetWidth;
       marcador.classList.remove("direto");
+      if (!reduzido()) marcador.animate([{ clipPath: "inset(0 100% 0 0 round 6px)" }, { clipPath: "inset(0 0 0 0 round 6px)" }], { duration: 280, easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)" });
+    }
+    if (mudou || novo) {
+      escreverColchete(li, alvo);
+      mostrarFicha(alvo);
     }
   }
 
-  // Sem resultado (D49): o termo com a ondinha de revisor, escrita da esquerda para a direita.
+  function escreverColchete(li: HTMLElement, alvo: HTMLAnchorElement) {
+    const altura = Math.max(24, li.offsetHeight - 14);
+    colcheteLi.style.transform = `translateY(${li.offsetTop + 7}px)`;
+    colchete.setAttribute("viewBox", `0 0 14 ${altura}`);
+    colchete.style.height = `${altura}px`;
+    tracoDoColchete.setAttribute("d", colcheteDeCaneta(alvo.textContent ?? "", altura));
+    colchete.getAnimations().forEach((a) => a.cancel());
+    if (!reduzido()) {
+      colchete.animate([{ clipPath: "inset(-4px -4px calc(100% + 4px) -4px)" }, { clipPath: "inset(-4px)" }], { duration: 340, easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)" });
+    }
+  }
+
+  /* ---------- a ficha do resultado (G24) ---------- */
+
+  let fichaVez = 0;
+  const porEndereco = new Map<string, ResultadoBusca>();
+  const MOLA = [
+    { transform: "rotateY(44deg)", easing: "cubic-bezier(0.2, 0.7, 0.3, 1)" },
+    { transform: "rotateY(-9deg)", offset: 0.5, easing: "cubic-bezier(0.45, 0, 0.55, 1)" },
+    { transform: "rotateY(3deg)", offset: 0.78, easing: "cubic-bezier(0.45, 0, 0.55, 1)" },
+    { transform: "rotateY(0deg)" },
+  ];
+
+  /** O trecho mostra só as linhas que cabem inteiras na ficha (até 4): nunca uma linha cortada no meio. */
+  const fichaDaDireita = dialogo.querySelector<HTMLElement>("[data-busca-ficha]")!;
+  function ajustarTrecho() {
+    requestAnimationFrame(() => {
+      if (fichaPost.hidden || !fichaDaDireita.offsetWidth) return;
+      // Medido à vista: escondido, o trecho não tem lugar na ficha.
+      trechoEl.hidden = false;
+      const fim = fichaDaDireita.getBoundingClientRect().bottom - parseFloat(getComputedStyle(fichaDaDireita).paddingBottom);
+      const linha = parseFloat(getComputedStyle(trechoEl).lineHeight) || 22;
+      const cabem = Math.floor((fim - trechoEl.getBoundingClientRect().top) / linha);
+      trechoEl.hidden = cabem < 1;
+      trechoEl.style.setProperty("-webkit-line-clamp", String(Math.max(1, Math.min(4, cabem))));
+    });
+  }
+
+  async function mostrarFicha(alvo: HTMLAnchorElement) {
+    const r = porEndereco.get(alvo.getAttribute("href") ?? "");
+    if (!r) return;
+    const minha = ++fichaVez;
+    assuntos.hidden = true;
+    fichaPost.hidden = false;
+    ilustracao.href = r.url;
+    // O que já se sabe pelo resultado entra na hora; o resto (livro, volume, tempo, ilustração) logo depois.
+    tituloEl.innerHTML = marcarTitulo(r.titulo, consultaAtual);
+    trechoEl.innerHTML = r.trecho;
+    ajustarTrecho();
+    if (!reduzido()) trechoEl.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: "ease-out" });
+    const pedido = dadosDoPost(r.url);
+    let d: DadosDoPost;
+    try {
+      if (!pedido) throw new Error("sem post");
+      d = await pedido;
+    } catch {
+      if (minha === fichaVez) {
+        volumeEl.textContent = r.rotulo;
+        metaEl.innerHTML = meta(undefined, r.data);
+        tagsEl.textContent = "";
+      }
+      return;
+    }
+    if (minha !== fichaVez) return;
+    if (!reduzido() && volumeEl.textContent) dadosEl.animate([{ opacity: 0.35 }, { opacity: 1 }], { duration: 220, easing: "ease-out" });
+    volumeEl.textContent = [d.volume, d.livroNome].filter(Boolean).join(" · ");
+    metaEl.innerHTML = meta(d.minutos, d.data);
+    tagsEl.innerHTML = d.tags.map((t) => `<span>#${escaparHtml(t)}</span>`).join(" ");
+    trocarIlustracao(d);
+    ajustarTrecho();
+    trocarLivro(d.livro, minha);
+  }
+
+  const icone = (nome: "relogio" | "calendario") => `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONES[nome]}</svg>`;
+  const meta = (minutos: number | undefined, data: string) =>
+    [minutos ? `<span>${icone("relogio")}${minutos} min</span>` : "", data ? `<span>${icone("calendario")}${escaparHtml(data)}</span>` : ""].join("");
+
+  function trocarIlustracao(d: DadosDoPost) {
+    if (ilustracao.dataset.slug === d.slug) return;
+    ilustracao.dataset.slug = d.slug;
+    const camada = document.createElement("span");
+    camada.className = "camada-ilustracao painel";
+    camada.style.setProperty("--cor", d.cor);
+    if (d.imagem) {
+      camada.innerHTML = `<svg class="ilustracao cartao" viewBox="${d.imagem.recorte}" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false" style="--cor:${d.cor}">${d.imagem.corpo}</svg>`;
+    }
+    const velhas = [...ilustracao.children] as HTMLElement[];
+    // Só duas camadas por vez: as do meio (setas rápidas) saem logo.
+    velhas.slice(0, -1).forEach((v) => v.remove());
+    const velha = velhas.at(-1);
+    ilustracao.append(camada);
+    if (reduzido()) {
+      velha?.remove();
+      return;
+    }
+    if (velha) velha.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 120, easing: "linear", fill: "forwards" }).finished.then(() => velha.remove(), () => {});
+    camada.animate([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 300, delay: velha ? 70 : 0, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)", fill: "backwards" });
+  }
+
+  async function trocarLivro(id: string, minha: number) {
+    let mapa: Map<string, HTMLElement>;
+    try {
+      mapa = await livrosDaBusca();
+    } catch {
+      return;
+    }
+    if (minha !== fichaVez || lugarDoLivro.dataset.livro === id) return;
+    const livro = mapa.get(id);
+    lugarDoLivro.dataset.livro = id;
+    lugarDoLivro.replaceChildren(...(livro ? [livro] : []));
+    // O livro gira com a mola (passa do lugar e volta), somado ao giro de repouso dele: o comportamento
+    // do hover continua o de todo livro (livro-vivo, área A).
+    const l3d = livro?.querySelector<HTMLElement>(".livro-3d");
+    if (l3d && !reduzido()) l3d.animate(MOLA, { duration: 780, composite: "add" });
+  }
+
+  /* ---------- a busca ---------- */
+
   function ondinha(consulta: string) {
     const termo = estado.querySelector<HTMLElement>(".termo");
     const onda = termo?.querySelector("svg");
@@ -108,7 +368,7 @@ import { url } from "../lib/url";
         throw erro;
       }));
 
-  const consultaValida = (q: string) => q.trim().startsWith("#") ? q.trim().length > 1 : q.trim().length >= 2;
+  const consultaValida = (q: string) => (q.trim().startsWith("#") ? q.trim().length > 1 : q.trim().length >= 2);
 
   function atualizarEndereco(q: string | null) {
     const endereco = new URL(location.href);
@@ -118,7 +378,7 @@ import { url } from "../lib/url";
   }
 
   // O termo buscado também ganha o marca-texto no título (sem acento e sem caixa, como a busca).
-  const semAcento = (t: string) => t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const semAcento = (t: string) => t.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
   function marcarTitulo(titulo: string, consulta: string) {
     const termos = semAcento(consulta.replace(/^#/, "")).split(/\s+/).filter((t) => t.length >= 2);
     const base = semAcento(titulo);
@@ -137,36 +397,77 @@ import { url } from "../lib/url";
     return html;
   }
 
-  function desenhar(resultados: ResultadoBusca[], consulta: string) {
-    lista.innerHTML = resultados
+  let consultaAtual = "";
+
+  const palavrasDasTags: string[] = JSON.parse(dialogo.dataset.palavrasTags || "[]");
+  const semPalavrasDasTags = palavrasDasTags.length ? new RegExp(`\\s*(?:<mark>)?\\b(?:${palavrasDasTags.join("|")})\\b(?:</mark>)?`, "g") : null;
+  const limparTrecho = (html: string) => (semPalavrasDasTags ? html.replace(semPalavrasDasTags, "") : html);
+
+  function desenhar(brutos: ResultadoBusca[], consulta: string) {
+    const achados = brutos.map((r) => ({ ...r, trecho: limparTrecho(r.trecho) }));
+    consultaAtual = consulta;
+    porEndereco.clear();
+    for (const r of achados) porEndereco.set(r.url, r);
+    ativo = undefined;
+    lista.scrollTop = 0;
+    lista.innerHTML = achados
       .map(
         (r) => `<li><a class="resultado" href="${r.url}">
           <span class="r-titulo">${marcarTitulo(r.titulo, consulta)}</span>
-          <span class="r-meta">${escaparHtml([r.rotulo, r.data].filter(Boolean).join(", "))}${
+          <span class="r-meta">${escaparHtml([r.rotulo, r.data].filter(Boolean).join(" · "))}${
             r.codigo ? `<span class="r-codigo"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">${ICONES.codigo}</svg>código-fonte</span>` : ""
           }</span>
           <span class="r-trecho">${r.trecho}</span>
         </a></li>`,
       )
       .join("");
-    const n = resultados.length;
+    const n = achados.length;
     semResultado(n === 0);
     if (!n) {
-      estado.innerHTML = `Nada encontrado para “<span class="termo">${escaparHtml(consulta)}<svg class="ondinha" aria-hidden="true" focusable="false"><path pathLength="1" /></svg></span>”.`;
+      estado.innerHTML = `Nada com “<span class="termo">${escaparHtml(consulta)}<svg class="ondinha" aria-hidden="true" focusable="false"><path pathLength="1" /></svg></span>” nas fichas.`;
       ondinha(consulta);
+      mostrarAssuntos();
       return;
     }
-    marcar(resultadosNaTela()[0], true);
-    estado.textContent = resultados[0].aproximado
+    estado.textContent = achados[0].aproximado
       ? `Nada exato para “${consulta}”. ${n === 1 ? "Parecido" : "Parecidos"}:`
       : n === 1
         ? "1 artigo"
         : `${n} artigos`;
-    // Os resultados entram em sequência e o marca-texto passa pelo termo (D44).
-    if (flip && !movimentoReduzido.matches) {
-      const { gsap } = flip;
-      gsap.from([...lista.children].filter((li) => li !== marcador).slice(0, 8), { opacity: 0, y: 6, duration: 0.3, stagger: 0.035, ease: "power2.out", clearProps: "opacity,transform" });
-      gsap.fromTo(lista.querySelectorAll("mark"), { backgroundSize: "0% 100%" }, { backgroundSize: "100% 100%", duration: 0.45, delay: 0.15, ease: "power2.out" });
+    // Os primeiros dados de post já vêm, para a ficha da direita não esperar no primeiro hover.
+    achados.slice(0, 6).forEach((r) => dadosDoPost(r.url)?.catch(() => {}));
+    marcar(resultadosNaTela()[0], true);
+    // Os resultados entram em sequência, subindo um nada (o marca-texto se estica pelo CSS).
+    if (!reduzido()) {
+      [...lista.children]
+        .filter((li) => li !== marcador && li !== colcheteLi)
+        .slice(0, 9)
+        .forEach((li, i) =>
+          (li as HTMLElement).animate([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], {
+            duration: 300,
+            delay: i * 35,
+            easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+            fill: "backwards",
+          }),
+        );
+    }
+  }
+
+  /** Sem termo: as linhas trazem os mais recentes, sem marcar nenhum (a ficha da direita fica nos assuntos). */
+  function mostrarRecentes() {
+    lista.replaceChildren(modeloRecentes.content.cloneNode(true));
+    lista.scrollTop = 0;
+    ativo = undefined;
+    consultaAtual = "";
+    porEndereco.clear();
+    for (const a of resultadosNaTela()) {
+      porEndereco.set(a.getAttribute("href")!, {
+        url: a.getAttribute("href")!,
+        titulo: a.dataset.titulo ?? "",
+        rotulo: a.dataset.rotulo ?? "",
+        data: a.dataset.data ?? "",
+        trecho: escaparHtml(a.querySelector(".r-trecho")?.textContent ?? ""),
+      });
     }
   }
 
@@ -177,48 +478,74 @@ import { url } from "../lib/url";
     const minha = ++vez;
     atualizarEndereco(consultaValida(consulta) ? consulta.trim() : null);
     if (!consultaValida(consulta)) {
-      lista.innerHTML = "";
+      mostrarRecentes();
       semResultado(false);
+      mostrarAssuntos();
       estado.textContent = consulta.trim() ? "Digite ao menos 2 letras." : DICA;
       return;
     }
     const inicio = performance.now();
-    let resultados: ResultadoBusca[];
+    let achados: ResultadoBusca[];
     try {
-      resultados = await (await obterMotor()).buscar(consulta);
+      achados = await (await obterMotor()).buscar(consulta);
     } catch {
       if (minha === vez) {
         semResultado(false);
+        mostrarAssuntos();
         estado.textContent = FALHOU;
       }
       return;
     }
     if (minha !== vez) return;
-    desenhar(resultados, consulta.trim());
+    desenhar(achados, consulta.trim());
     if (!primeiroResultadoMarcado) {
       primeiroResultadoMarcado = true;
       performance.mark("busca:resultado");
     }
-    dispatchEvent(new CustomEvent("busca:resultado", { detail: { consulta, n: resultados.length, ms: performance.now() - inicio } }));
+    dispatchEvent(new CustomEvent("busca:resultado", { detail: { consulta, n: achados.length, ms: performance.now() - inicio } }));
   }
 
-  // A janela nasce do campo do cabeçalho e volta para ele (D44, Flip). O campo é o botão à vista
-  // (no celular, só o ícone). Sem o GSAP ainda, ou com movimento reduzido, abre e fecha direto.
-  let flip: Awaited<ReturnType<typeof carregarFlip>> | null = null;
+  /* ---------- nascer do campo e voltar para ele (G11) ---------- */
+
   const botoes = [...document.querySelectorAll<HTMLElement>("[data-busca-abrir]")];
-  if (!movimentoReduzido.matches) botoes.forEach((b) => adiantar(b, () => carregarFlip().then((f) => (flip = f))));
   const botaoAVista = () => botoes.find((b) => b.getBoundingClientRect().width > 0);
-  const conteudo = () => [...dialogo.querySelectorAll<HTMLElement>(".campo, .estado, .resultados")];
+  // O que a busca baixa (o motor e os livros) já vem quando o mouse ou o foco chega no campo.
+  const adiantar = () => {
+    obterMotor().catch(() => {});
+    livrosDaBusca().catch(() => {});
+  };
+  botoes.forEach((b) => ["pointerenter", "focusin"].forEach((ev) => b.addEventListener(ev, adiantar, { once: true, passive: true })));
+
+  /** Onde o campo está, no papel da ficha: o deslocamento e o recorte do tamanho dele. */
+  function oCampo() {
+    const botao = botaoAVista();
+    if (!botao) return null;
+    const b = botao.getBoundingClientRect();
+    const d = dialogo.getBoundingClientRect();
+    const raio = Math.min(b.height, b.width) / 2;
+    return {
+      dy: b.top - d.top,
+      recorte: `inset(0px ${(d.right - b.right).toFixed(1)}px ${(d.height - b.height).toFixed(1)}px ${(b.left - d.left).toFixed(1)}px round ${raio}px)`,
+    };
+  }
+  // Aberta, o recorte passa das bordas: a sombra da folha fica inteira.
+  const ABERTA = "inset(-30px -48px -64px -48px round 40px)";
 
   function nascer() {
-    const botao = botaoAVista();
-    if (!flip || !botao || movimentoReduzido.matches) return;
-    const { gsap, Flip } = flip;
-    botao.dataset.flipId = dialogo.dataset.flipId = "busca";
-    gsap.killTweensOf([dialogo, ...conteudo()]);
-    gsap.set(dialogo, { clearProps: "transform,opacity" });
-    Flip.from(Flip.getState(botao), { targets: dialogo, duration: 0.5, ease: "power3.out", scale: true, clearProps: "transform" });
-    gsap.from(conteudo(), { opacity: 0, duration: 0.3, delay: 0.2, clearProps: "opacity" });
+    dialogo.getAnimations().forEach((a) => a.cancel());
+    caixa.getAnimations().forEach((a) => a.cancel());
+    if (reduzido()) return;
+    const c = oCampo();
+    if (c) {
+      dialogo.animate(
+        [
+          { clipPath: c.recorte, transform: `translateY(${c.dy}px)` },
+          { clipPath: ABERTA, transform: "none" },
+        ],
+        { duration: 500, easing: "cubic-bezier(0.215, 0.61, 0.355, 1)" },
+      );
+    }
+    caixa.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, delay: c ? 170 : 0, easing: "cubic-bezier(0.25, 0.46, 0.45, 0.94)", fill: "backwards" });
   }
 
   let fechando = false;
@@ -228,26 +555,34 @@ import { url } from "../lib/url";
     const fim = () => {
       fechando = false;
       dialogo.classList.remove("fechando");
+      dialogo.getAnimations().forEach((a) => a.cancel());
+      caixa.getAnimations().forEach((a) => a.cancel());
       dialogo.close();
-      flip?.gsap.set([dialogo, ...conteudo()], { clearProps: "transform,opacity,width,height" });
       botao?.focus();
     };
-    if (!flip || !botao || movimentoReduzido.matches) return fim();
-    const { gsap, Flip } = flip;
+    if (reduzido()) return fim();
     fechando = true;
     dialogo.classList.add("fechando");
-    // Fechando logo depois de abrir: o nascer (a janela crescendo e o conteúdo chegando) para aqui, senão o
-    // conteúdo voltava enquanto a janela encolhia (D54).
-    gsap.killTweensOf([dialogo, ...conteudo()]);
-    gsap.to(conteudo(), { opacity: 0, duration: 0.15 });
-    Flip.fit(dialogo, botao, { duration: 0.35, ease: "power2.in", scale: true, onComplete: fim });
+    const c = oCampo();
+    caixa.getAnimations().forEach((a) => a.cancel());
+    caixa.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 110, easing: "linear", fill: "forwards" });
+    if (!c) return void setTimeout(fim, 120);
+    dialogo.getAnimations().forEach((a) => a.cancel());
+    const sai = dialogo.animate(
+      [
+        { clipPath: ABERTA, transform: "none" },
+        { clipPath: c.recorte, transform: `translateY(${c.dy}px)` },
+      ],
+      { duration: 350, delay: 50, easing: "cubic-bezier(0.55, 0.085, 0.68, 0.53)", fill: "forwards" },
+    );
+    sai.finished.then(fim, fim);
   }
 
   // A tecla desenhada responde à de verdade (D49): afunda por 120ms, e o campo dá um toque no instante
-  // em que a janela nasce dele (Cabecalho.astro, .apertada e .tocado). Pelo atalho ou pelo clique.
+  // em que a ficha nasce dele (Cabecalho.astro, .apertada e .tocado). Pelo atalho ou pelo clique.
   function apertarTecla() {
     const botao = botaoAVista();
-    if (!botao || movimentoReduzido.matches) return;
+    if (!botao || reduzido()) return;
     const tecla = botao.querySelector<HTMLElement>("[data-atalho]");
     tecla?.classList.add("apertada");
     setTimeout(() => tecla?.classList.remove("apertada"), 120);
@@ -264,6 +599,7 @@ import { url } from "../lib/url";
       apertarTecla();
       dialogo.showModal();
       nascer();
+      adiantar();
       obterMotor()
         .then((m) => m.preparar())
         .catch(() => (estado.textContent = FALHOU));
@@ -276,19 +612,20 @@ import { url } from "../lib/url";
     campo.select();
   }
 
+  /* ---------- eventos ---------- */
+
   dialogo.addEventListener("close", () => atualizarEndereco(null));
   dialogo.addEventListener("click", (e) => {
     if (e.target === dialogo) fechar();
   });
-  // Esc e "Fechar" também encolhem de volta para o campo.
+  // Esc também encolhe de volta para o campo.
   dialogo.addEventListener("cancel", (e) => {
     e.preventDefault();
     fechar();
   });
-  dialogo.addEventListener("submit", (e) => {
-    e.preventDefault();
-    fechar();
-  });
+  // Enter no campo nunca fecha a ficha: abre o resultado marcado (abaixo) ou não faz nada.
+  dialogo.addEventListener("submit", (e) => e.preventDefault());
+  dialogo.querySelector("[data-busca-fechar]")!.addEventListener("click", fechar);
   // Espera uma pausa curta na digitação: buscar cada prefixo ("id", "ide"…) só baixaria índice à toa.
   let pausa: ReturnType<typeof setTimeout> | undefined;
   campo.addEventListener("input", () => {
@@ -296,9 +633,18 @@ import { url } from "../lib/url";
     pausa = setTimeout(buscar, 160);
   });
 
+  // Os assuntos da ficha da direita preenchem a busca com a #tag (tag com espaço vai com hífen).
+  assuntos.addEventListener("click", (e) => {
+    const a = (e.target as HTMLElement).closest<HTMLAnchorElement>("[data-busca-tag]");
+    if (!a || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    e.preventDefault();
+    campo.value = `#${a.dataset.buscaTag!.replace(/\s+/g, "-")}`;
+    campo.focus();
+    buscar();
+  });
+
   document.addEventListener("click", (e) => {
-    const alvo = e.target as HTMLElement;
-    const botao = alvo.closest<HTMLElement>("[data-busca-abrir]");
+    const botao = (e.target as HTMLElement).closest<HTMLElement>("[data-busca-abrir]");
     if (botao) {
       e.preventDefault();
       abrir();
@@ -307,6 +653,8 @@ import { url } from "../lib/url";
 
   document.addEventListener("keydown", (e) => {
     if ((e.metaKey || e.ctrlKey) && !e.altKey && e.key.toLowerCase() === "k") {
+      // Com outra janela por cima (o computador, o livro ampliado, os atalhos), o atalho é dela.
+      if (!dialogo.open && document.querySelector("dialog[open]")) return;
       e.preventDefault();
       dialogo.open ? fechar() : abrir();
     }
@@ -320,27 +668,57 @@ import { url } from "../lib/url";
     fechar();
   });
 
-  // O marcador segue o foco (as setas e o Tab) e o mouse (ou o dedo).
+  // A pintura e a caneta seguem o foco (as setas e o Tab) e o mouse (ou o dedo).
   lista.addEventListener("focusin", (e) => marcar((e.target as HTMLElement).closest<HTMLAnchorElement>(".resultado") ?? undefined));
-  lista.addEventListener("pointerover", (e) => marcar((e.target as HTMLElement).closest<HTMLAnchorElement>(".resultado") ?? undefined));
+  // O mouse que só passa por cima (indo da lista para a ficha da direita) não troca o resultado: ele
+  // precisa parar 70ms num item. O dedo e o teclado marcam na hora.
+  let intencao: ReturnType<typeof setTimeout> | undefined;
+  lista.addEventListener("pointerover", (e) => {
+    const a = (e.target as HTMLElement).closest<HTMLAnchorElement>(".resultado") ?? undefined;
+    clearTimeout(intencao);
+    if (!a || a === ativo) return;
+    if (e.pointerType !== "mouse") return marcar(a);
+    intencao = setTimeout(() => marcar(a), 70);
+  });
+  lista.addEventListener("pointerleave", () => clearTimeout(intencao));
+  // Mudou a largura (a ficha da direita aparece ou some, o título quebra em outra linha): a pintura acompanha.
+  new ResizeObserver(ajustarTrecho).observe(fichaDaDireita);
+  new ResizeObserver(() => {
+    if (!ativo || !ativo.isConnected) return;
+    const li = ativo.parentElement!;
+    marcador.classList.add("direto");
+    marcador.style.transform = `translateY(${li.offsetTop}px)`;
+    marcador.style.height = `${li.offsetHeight}px`;
+    colcheteLi.style.transform = `translateY(${li.offsetTop + 7}px)`;
+    void marcador.offsetWidth;
+    marcador.classList.remove("direto");
+  }).observe(lista);
 
   // Setas percorrem os resultados; Enter no campo abre o marcado (o primeiro, até o leitor escolher outro).
   dialogo.addEventListener("keydown", (e) => {
-    const itens = [...lista.querySelectorAll<HTMLAnchorElement>(".resultado")];
+    const itens = resultadosNaTela();
     if (!itens.length) return;
     const atual = itens.indexOf(document.activeElement as HTMLAnchorElement);
+    // No campo, as setas andam a partir do resultado marcado (o primeiro, ou o do mouse).
+    const base = atual >= 0 ? atual : ativo ? itens.indexOf(ativo) : -1;
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      itens[Math.min(atual + 1, itens.length - 1)].focus();
+      itens[Math.min(base + 1, itens.length - 1)].focus();
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      atual <= 0 ? campo.focus() : itens[atual - 1].focus();
+      if (base <= 0) {
+        campo.focus();
+        marcar(itens[0]);
+      } else itens[base - 1].focus();
     } else if (e.key === "Enter" && document.activeElement === campo) {
       e.preventDefault();
-      (lista.querySelector<HTMLAnchorElement>(".resultado.ativo") ?? itens[0]).click();
+      // Sem termo, o Enter só abre um dos recentes se ele estiver marcado (pelo mouse ou pelas setas).
+      const marcado = lista.querySelector<HTMLAnchorElement>(".resultado.ativo") ?? (consultaValida(campo.value) ? itens[0] : null);
+      marcado?.click();
     }
   });
 
+  mostrarRecentes();
   const inicial = new URLSearchParams(location.search).get("q");
   if (inicial) abrir(inicial);
   // Voltando de um resultado pelo histórico (bfcache), a busca volta aberta, com o foco no campo (D54).
@@ -350,27 +728,39 @@ import { url } from "../lib/url";
 </script>
 
 <style>
-  /* Uma folha sobre a página (D26), com a interface em IBM Plex Sans e os títulos em Besley. */
+  /*
+   * A ficha de consulta (F12-9): papel de fichário sobre a página, com a interface em IBM Plex Sans e os
+   * títulos em Besley. Fixa no tamanho (a pauta não pula quando os resultados chegam).
+   */
   .busca {
-    --altura-busca: min(620px, calc(100vh - 64px));
-    width: min(640px, calc(100vw - 32px));
-    max-height: var(--altura-busca);
-    margin: 64px auto auto;
+    --linha: 36px;
+    --desvio-pauta: -8px;
+    --margem: clamp(52px, 5vw, 70px);
+    --lado: clamp(16px, 2vw, 26px);
+    --altura-busca: min(max(420px, 70vh), calc(100dvh - var(--altura-cabecalho) - 20px));
+    width: min(var(--largura), calc(100vw - 2 * var(--pad)));
+    max-width: none;
+    height: var(--altura-busca);
+    max-height: none;
+    margin: calc(var(--altura-cabecalho) + 8px) auto auto;
     padding: 0;
+    overflow: hidden;
     border: 1px solid var(--rule);
-    border-radius: var(--raio-folha);
+    border-radius: 6px;
     background: var(--paper-hi);
     box-shadow: var(--sombra-folha-alta);
     color: var(--ink);
     font-family: var(--font-ui);
   }
 
+  /* O véu começa sob o cabeçalho, que fica à vista e sem véu. */
   .busca::backdrop {
-    background: rgb(20 26 28 / 0.45);
+    top: var(--altura-cabecalho, 60px);
+    background: color-mix(in oklab, var(--veu) 55%, transparent);
     transition: opacity 0.3s;
   }
 
-  /* O véu acompanha a janela: aparece ao abrir e some enquanto ela volta para o campo (D44). */
+  /* O véu acompanha a ficha: aparece ao abrir e some enquanto ela volta para o campo (D44). */
   @starting-style {
     .busca[open]::backdrop {
       opacity: 0;
@@ -379,43 +769,54 @@ import { url } from "../lib/url";
 
   .busca.fechando::backdrop {
     opacity: 0;
-    transition-duration: 0.25s;
+    transition-duration: 0.3s;
   }
 
-  /* Fechando, o conteúdo sai e não volta, mesmo que a janela ainda estivesse nascendo (o conteúdo chegava
-     com atraso e aparecia enquanto ela encolhia, D54). */
-  .busca.fechando :is(.campo, .estado, .resultados) {
-    opacity: 0 !important;
-    transition: opacity 0.15s;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .busca::backdrop {
-      transition: none;
-    }
-  }
-
-  /* Desconta a borda do diálogo: sem isso ele rola 2px e aparece uma segunda barra ao lado da lista. */
-  .caixa {
+  .ficha-consulta {
     display: flex;
     flex-direction: column;
-    max-height: calc(var(--altura-busca) - 2px);
+    height: 100%;
   }
 
+  /* ---------- o campo: a primeira linha, sobre a linha vermelha ---------- */
+
   .campo {
+    position: relative;
+    flex: none;
     display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px 12px 18px;
-    border-bottom: 1px solid var(--rule);
+    align-items: flex-end;
+    gap: 16px;
+    min-height: 78px;
+    padding: 0 var(--lado) 9px var(--margem);
+    border-bottom: 1.5px solid var(--pauta-cabeca);
+  }
+
+  .lupa-campo {
+    position: absolute;
+    bottom: 15px;
+    left: calc(var(--margem) - 40px);
+    width: 26px;
+    height: 26px;
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   input {
     flex: 1;
     min-width: 0;
+    padding: 0;
     border: 0;
     background: transparent;
-    font-size: 18px;
+    color: var(--ink);
+    caret-color: var(--acento);
+    font-family: var(--font-titulo);
+    font-size: clamp(25px, 3vw, 36px);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
     outline: none;
   }
 
@@ -423,99 +824,234 @@ import { url } from "../lib/url";
   input::placeholder {
     color: var(--ink-2);
     opacity: 1;
+    font-weight: 600;
   }
 
   input::-webkit-search-cancel-button {
     display: none;
   }
 
+  /* Rodada 4 (S7 do papel): o "Fechar" é uma etiqueta de papel, como as pílulas de tag. */
   .fechar {
-    padding: 5px 12px;
-    border: 1px solid var(--rule);
-    border-radius: 999px;
-    background: transparent;
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    padding: 5px 8px 5px 13px;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    background: var(--paper-hi);
+    box-shadow: 0 1px 1px color-mix(in oklab, var(--sombra-quente) 16%, transparent);
     color: var(--ink-2);
+    font: inherit;
     font-size: 14px;
     cursor: pointer;
   }
 
-  .fechar:hover {
+  .fechar kbd {
+    padding: 1px 5px;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    font-family: var(--font-codigo);
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  :global(:root[data-theme="dark"]) .fechar {
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--ink) 7%, transparent),
+      0 1px 1px color-mix(in oklab, var(--sombra-quente) 50%, transparent);
+  }
+
+  .fechar:is(:hover, :focus-visible) {
     border-color: var(--acento);
     color: var(--acento);
   }
 
+  /* ---------- o corpo: as linhas da pauta à esquerda, a ficha do resultado à direita ---------- */
+
+  .corpo-consulta {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .coluna-resultados {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  /* A pauta: a linha azul a cada 36px, com a letra 2 a 3px acima dela (as pernas do p cruzam, como à mão). */
+  .linha-estado,
+  .resultados {
+    background-image: repeating-linear-gradient(to bottom, transparent 0 calc(var(--linha) - 1px), var(--pauta) calc(var(--linha) - 1px) var(--linha));
+    background-position: 0 var(--desvio-pauta);
+  }
+
+  .linha-estado {
+    flex: none;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: var(--linha);
+    padding: 0 var(--lado) 0 var(--margem);
+  }
+
   .estado {
     margin: 0;
-    padding: 12px 18px 6px;
     font-size: 14px;
+    line-height: var(--linha);
     color: var(--ink-2);
+  }
+
+  .teclas {
+    flex: none;
+    display: none;
+    gap: 5px;
+    align-items: baseline;
+    margin: 0;
+    font-size: 12.5px;
+    line-height: var(--linha);
+    color: var(--ink-2);
+  }
+
+  .teclas kbd {
+    display: inline-block;
+    min-width: 18px;
+    padding: 0 4px;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    font-family: var(--font-codigo);
+    font-size: 11px;
+    line-height: 16px;
+    text-align: center;
+  }
+
+  .teclas kbd + kbd {
+    margin-left: -2px;
+  }
+
+  .teclas kbd:nth-of-type(3) {
+    margin-left: 6px;
+  }
+
+  @media (hover: hover) and (pointer: fine) and (min-width: 761px) {
+    .busca:not(.sem-resultado) .teclas {
+      display: inline-flex;
+    }
   }
 
   .resultados {
     position: relative;
+    flex: 1;
+    min-height: 0;
     margin: 0;
-    padding: 0 8px 10px;
+    padding: 0 0 var(--linha);
     overflow-y: auto;
-    list-style: none;
     overscroll-behavior: contain;
+    list-style: none;
+    background-attachment: local;
+    scrollbar-width: thin;
+    scrollbar-color: var(--rule) transparent;
   }
 
-  /* O marcador (D49): o fundo e o fio azul, deslizando até o resultado da vez (0,28s, power3.out). */
+  .busca.sem-resultado .resultados {
+    flex: none;
+    padding: 0;
+  }
+
+  /* O rótulo da lista dos recentes, numa linha da pauta, como a tira das fichas. */
+  .resultados :global(.rotulo-lista) {
+    padding: 0 var(--lado) 0 var(--margem);
+    font-family: var(--font-codigo);
+    font-size: 12px;
+    line-height: var(--linha);
+    color: var(--ink-2);
+  }
+
+  /* A pintura (A16): o fundo azul, deslizando até o resultado da vez (0,28s, power3.out). */
   .resultados :global(.marcador) {
     position: absolute;
     top: 0;
-    right: 8px;
-    left: 8px;
-    border-radius: var(--raio-painel);
-    background: color-mix(in oklab, var(--acento) 6%, transparent);
+    right: calc(var(--lado) - 8px);
+    left: calc(var(--margem) - 14px);
+    border-radius: 6px;
+    background: color-mix(in oklab, var(--acento) 8%, transparent);
     pointer-events: none;
     transition:
       transform 0.28s cubic-bezier(0.215, 0.61, 0.355, 1),
       height 0.28s cubic-bezier(0.215, 0.61, 0.355, 1);
   }
 
-  .resultados :global(.marcador::before) {
-    content: "";
-    position: absolute;
-    top: 9px;
-    bottom: 9px;
-    left: 4px;
-    width: 2px;
-    border-radius: 2px;
-    background: var(--acento);
-  }
-
   .resultados :global(.marcador.direto) {
     transition: none;
+  }
+
+  /* A caneta (A16): o colchete preto na margem, que se escreve de cima para baixo (0,34s). */
+  .resultados :global(.lugar-do-colchete) {
+    position: absolute;
+    top: 0;
+    left: calc(var(--margem) - 32px);
+    z-index: 2;
+    width: 14px;
+    pointer-events: none;
+  }
+
+  .resultados :global(.colchete-busca) {
+    display: block;
+    width: 14px;
+    overflow: visible;
+  }
+
+  .resultados :global(.colchete-busca path) {
+    fill: none;
+    stroke: var(--ink);
+    stroke-opacity: 0.75;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
   }
 
   .resultados :global(.resultado) {
     position: relative;
     z-index: 1;
-    display: grid;
-    gap: 2px;
-    padding: 10px 10px;
-    border-radius: var(--raio-painel);
+    display: block;
+    padding: 0 var(--lado) 0 var(--margem);
     color: var(--ink);
     text-decoration: none;
   }
 
+  /* O foco é a pintura, a caneta e o título em azul (o resultado da vez segue o foco): sem o anel. */
   .resultados :global(.resultado:focus-visible) {
-    outline-offset: 0;
+    outline: none;
+  }
+
+  .resultados :global(.r-titulo) {
+    display: block;
+    font-family: var(--font-titulo);
+    font-size: clamp(17px, 1.45vw, 20px);
+    font-weight: 700;
+    line-height: var(--linha);
+    letter-spacing: -0.006em;
+    transition: color 0.15s;
   }
 
   .resultados :global(.resultado.ativo .r-titulo) {
     color: var(--acento);
   }
 
-  .resultados :global(.r-titulo) {
-    font-family: var(--font-titulo);
-    font-weight: 700;
-    font-size: 17px;
-  }
-
   .resultados :global(.r-meta) {
+    display: block;
+    position: relative;
+    top: 1px;
     font-size: 13.5px;
+    line-height: var(--linha);
     color: var(--ink-2);
   }
 
@@ -528,7 +1064,8 @@ import { url } from "../lib/url";
     white-space: nowrap;
   }
 
-  .resultados :global(.r-codigo svg) {
+  .resultados :global(.r-codigo svg),
+  .meta-ficha :global(svg) {
     width: 14px;
     height: 14px;
     fill: none;
@@ -538,13 +1075,47 @@ import { url } from "../lib/url";
     stroke-linejoin: round;
   }
 
+  /* O trecho fica na ficha da direita; sem ela, numa linha da pauta, embaixo do livro e da data. */
   .resultados :global(.r-trecho) {
-    font-size: 14px;
-    line-height: 1.5;
+    display: block;
+    overflow: hidden;
+    font-size: 13.5px;
+    line-height: var(--linha);
     color: var(--ink-2);
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 
-  /* Sem resultado (D49): a ondinha de revisor sob o termo (0,45s) e a saída chegando depois. */
+  /*
+   * O marca-texto (área 8): uma camada atrás do termo, que se estica da esquerda para a direita (0,45s,
+   * só transform), na cor de Atenção a 30%.
+   */
+  .busca :global(mark) {
+    position: relative;
+    z-index: 0;
+    background: none;
+    color: inherit;
+  }
+
+  .busca :global(mark)::before {
+    content: "";
+    position: absolute;
+    inset: 0.2em -0.07em 0.04em;
+    z-index: -1;
+    border-radius: 2px;
+    background: color-mix(in oklab, var(--aviso-atencao) 30%, transparent);
+    transform-origin: 0 50%;
+    animation: marca-estica 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.15s backwards;
+  }
+
+  @keyframes marca-estica {
+    from {
+      transform: scaleX(0);
+    }
+  }
+
+  /* ---------- sem resultado (D49, D57) ---------- */
+
   .estado :global(.termo) {
     position: relative;
     display: inline-block;
@@ -553,7 +1124,7 @@ import { url } from "../lib/url";
 
   .estado :global(.ondinha) {
     position: absolute;
-    top: 100%;
+    top: calc(100% - 9px);
     left: 0;
     height: 6px;
     overflow: visible;
@@ -576,55 +1147,292 @@ import { url } from "../lib/url";
     }
   }
 
+  .sem-nada {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    padding: 0 var(--lado) 0 var(--margem);
+    background-image: repeating-linear-gradient(to bottom, transparent 0 calc(var(--linha) - 1px), var(--pauta) calc(var(--linha) - 1px) var(--linha));
+    background-position: 0 var(--desvio-pauta);
+  }
+
   .dica-vazia {
     margin: 0;
-    padding: 4px 18px 16px;
     font-size: 14px;
+    line-height: var(--linha);
     color: var(--ink-2);
-    animation: dica-chega 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.45s backwards;
+    animation: chega 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s backwards;
   }
 
-  /* Sem resultado (D57): o livro aberto em branco, pequeno, em cima; o estado e a dica centrados. */
   .vazio-busca {
-    display: grid;
-    justify-items: center;
-    padding: 18px 18px 0;
-    animation: dica-chega 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) backwards;
+    padding-top: 14px;
+    animation: chega 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.4s backwards;
   }
 
-  .busca.sem-resultado .estado {
-    padding-top: 6px;
-    text-align: center;
-  }
-
-  .busca.sem-resultado .dica-vazia {
-    padding-bottom: 22px;
-    text-align: center;
-  }
-
-  /* Só a opacidade: deslocada, a dica passaria do fim da janela e a barra de rolagem piscaria. */
-  @keyframes dica-chega {
+  /* Só a opacidade: deslocada, a dica passaria do fim da ficha e a barra de rolagem piscaria. */
+  @keyframes chega {
     from {
       opacity: 0;
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .resultados :global(.marcador),
-    .estado :global(.ondinha path),
-    .vazio-busca,
-    .dica-vazia {
-      transition: none;
-      animation: none;
+  /* ---------- a ficha do resultado (≥ 1000px) ---------- */
+
+  .ficha-resultado {
+    display: none;
+  }
+
+  .rotulo-ficha {
+    margin: 0;
+    font-family: var(--font-codigo);
+    font-size: 12px;
+    line-height: var(--linha);
+    color: var(--ink-2);
+  }
+
+  .assuntos ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .assuntos a {
+    display: inline-block;
+    font-family: var(--font-titulo);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: var(--linha);
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .assuntos a:is(:hover, :focus-visible) {
+    color: var(--acento);
+  }
+
+  .assuntos sup {
+    margin-left: 3px;
+    font-family: var(--font-ui);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--ink-2);
+  }
+
+  .ficha-do-post {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 0;
+  }
+
+  .ficha-do-post[hidden] {
+    display: none;
+  }
+
+  /* A ilustração no painel do livro, com as camadas da troca uma sobre a outra. */
+  .ilustracao-ficha {
+    position: relative;
+    display: block;
+    flex: none;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    /* Numa janela baixa, a ilustração cede (o recorte corta mais) para o trecho caber inteiro. */
+    max-height: max(130px, calc(var(--altura-busca) - 390px));
+    overflow: hidden;
+    border-radius: 6px;
+  }
+
+  .ilustracao-ficha :global(.camada-ilustracao) {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+
+  .ilustracao-ficha :global(.camada-ilustracao svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* O livro e os dados não encolhem; quem cede, numa janela baixa, é o trecho (cortado no fim). */
+  .livro-e-dados {
+    flex: none;
+    display: flex;
+    align-items: flex-end;
+    gap: 18px;
+  }
+
+  /* O lugar do livro: a altura dele (132, busca/livros.astro) e o chão para a sombra. */
+  .lugar-do-livro {
+    flex: none;
+    display: grid;
+    place-items: end center;
+    width: 112px;
+    height: 140px;
+    padding-bottom: 6px;
+  }
+
+  .lugar-do-livro :global(.livro-em-pe) {
+    position: relative;
+    width: var(--cw);
+    height: var(--bh);
+  }
+
+  .dados-ficha {
+    flex: 1;
+    min-width: 0;
+    padding-bottom: 8px;
+  }
+
+  .dados-ficha p {
+    margin: 0;
+  }
+
+  .volume-ficha {
+    font-family: var(--font-codigo);
+    font-size: 12px;
+    color: var(--ink-2);
+  }
+
+  .titulo-ficha {
+    display: -webkit-box;
+    margin-top: 6px !important;
+    overflow: hidden;
+    font-family: var(--font-titulo);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.22;
+    text-wrap: pretty;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  .meta-ficha {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    margin-top: 8px !important;
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+
+  .meta-ficha :global(span) {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .tags-ficha {
+    flex: none;
+    margin: 0;
+    font-family: var(--font-codigo);
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--ink-2);
+  }
+
+  .tags-ficha :global(span) {
+    white-space: nowrap;
+  }
+
+  .trecho-ficha {
+    display: -webkit-box;
+    flex: 0 1 auto;
+    min-height: 0;
+    margin: 0;
+    overflow: hidden;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-2);
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+  }
+
+  .trecho-ficha[hidden] {
+    display: none;
+  }
+
+  @media (min-width: 1000px) {
+    .corpo-consulta {
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 31%);
+    }
+
+    .ficha-resultado {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      padding: 18px var(--lado) 18px;
+      border-left: 1px solid var(--rule);
+    }
+
+    .assuntos[hidden] {
+      display: none;
+    }
+
+    .resultados :global(.r-trecho) {
+      display: none;
     }
   }
 
-  /* O marca-texto é uma camada de fundo própria, que o GSAP estica da esquerda para a direita. */
-  .resultados :global(mark) {
-    background: linear-gradient(color-mix(in oklab, var(--aviso-atencao) 28%, transparent), color-mix(in oklab, var(--aviso-atencao) 28%, transparent)) no-repeat 0 0 / 100% 100%;
-    color: var(--ink);
-    border-radius: 2px;
-    -webkit-box-decoration-break: clone;
-    box-decoration-break: clone;
+  /* ---------- tela pequena: a ficha ocupa a tela toda abaixo do cabeçalho ---------- */
+
+  @media (max-width: 760px) {
+    .busca {
+      --linha: 30px;
+      --desvio-pauta: -6px;
+      --margem: 46px;
+      --lado: 16px;
+      width: 100vw;
+      height: calc(100dvh - var(--altura-cabecalho));
+      margin: var(--altura-cabecalho) 0 0;
+      border-width: 1px 0 0;
+      border-radius: 0;
+    }
+
+    .campo {
+      min-height: 66px;
+      gap: 10px;
+    }
+
+    .lupa-campo {
+      left: 12px;
+      bottom: 13px;
+      width: 24px;
+      height: 24px;
+    }
+
+    .fechar kbd {
+      display: none;
+    }
+
+    input {
+      font-size: 23px;
+    }
+
+    /* Só o ícone do código-fonte: com a palavra, a linha do livro e da data quebrava. */
+    .resultados :global(.r-codigo) {
+      margin-left: 8px;
+      font-size: 0;
+    }
+
+    .fechar {
+      padding-right: 13px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .busca::backdrop,
+    .resultados :global(.marcador),
+    .resultados :global(.r-titulo) {
+      transition: none;
+    }
+
+    .busca :global(mark)::before,
+    .estado :global(.ondinha path),
+    .dica-vazia,
+    .vazio-busca {
+      animation: none;
+    }
   }
 </style>

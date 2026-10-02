@@ -72,7 +72,12 @@ export default defineConfig({
   build: { inlineStylesheets: "always" },
   devToolbar: { enabled: false },
   // Os builds da medição da busca (bench/) têm milhares de arquivos: o dev não precisa vigiá-los.
-  vite: { server: { watch: { ignored: ["**/bench/**"] } } },
+  vite: {
+    server: { watch: { ignored: ["**/bench/**"] } },
+    // O GSAP e os plugins entram por import dinâmico; sem esta lista, o Vite os descobre no meio da sessão,
+    // refaz o cache e a página já aberta leva 504 "Outdated Optimize Dep" (a abertura não toca, D61).
+    optimizeDeps: { include: ["gsap", "gsap/CustomEase", "gsap/Draggable", "gsap/DrawSVGPlugin", "gsap/Flip", "gsap/InertiaPlugin", "gsap/MorphSVGPlugin"] },
+  },
   redirects: redirecionamentos,
   integrations: [
     // O Expressive Code precisa vir antes do MDX.
@@ -109,8 +114,9 @@ export default defineConfig({
     }),
     mdx(),
     sitemap({
-      // Fora do sitemap: as imagens de compartilhamento e os protótipos para escolha (noindex).
-      filter: (pagina) => !/\/(og|prototipos)\//.test(pagina),
+      // Fora do sitemap: as imagens de compartilhamento, os protótipos para escolha (noindex) e a
+      // /busca/livros/, que é um pedaço da busca e não uma página (D61).
+      filter: (pagina) => !/\/(og|prototipos|busca)\//.test(pagina),
       serialize(item) {
         const slug = item.url.match(/\/posts\/([^/]+)\/?$/)?.[1];
         const data = slug && modificadoEm[slug];

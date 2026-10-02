@@ -1,0 +1,691 @@
+---
+/**
+ * A coleção lado a lado (rodada 2 do redesenho, protótipo 14, G2; do 01, com a ideia do Cesar): os livros
+ * 3D de pé, todos à vista em qualquer largura, sem rolagem lateral. Na tela larga, eles ficam quase de frente
+ * (a capa à vista); conforme a tela estreita, cada um gira até mostrar só a lombada, como a estante da home
+ * atual; e, se nem as lombadas couberem (320px), os livros encolhem. O giro é ligado à largura útil da
+ * página, só com CSS (`--util`, de `vw`; `cos()`, `sin()` e `pow()`; sem container query, que custava um
+ * segundo passe de layout no primeiro quadro): arrastar a borda da janela anima os livros girando, e sem
+ * JavaScript a coleção já nasce certa.
+ *
+ * A conta (aqui, no servidor): com N livros de capa `cw` e lombadas `sw` (soma S), a largura ocupada no
+ * giro θ é N·cw·cos θ + S·sin θ (mais os vãos e o vão da série). As pontas são as lombadas (θ = 90°) e o giro
+ * de vitrine (θ = GIRO_MIN); entre elas, θ = 90° − Δ·t^p, com t a fração da largura entre as duas pontas e
+ * p o menor expoente que nunca passa da largura (a curva das larguras é côncava: com t linear, os livros do
+ * meio do caminho transbordariam).
+ *
+ * Rodada 3 (área 10, F14-1): sem o aparador cinza entre Carreira e a série; a série fica na mesma fileira,
+ * depois de um vão de 24px. O hover de todo livro 3D é o do livro vivo (Livro3D: mola, seguir o mouse,
+ * brilho e a onda de luz da fileira); aqui não há hover próprio.
+ *
+ * Rodada 4 (a versão final): o chão é trocável. A prop `chao` vira `data-chao` na raiz, e cada forma é só CSS:
+ * - **"vidro", o padrão (E3, a decisão do Cesar):** a lâmina de vidro fumê da V2 (a forma limpa do 17), com a
+ *   luz embaixo do livro da V4: no hover, no foco, no toque e no lugar vazio, além do cone do abajur, acendem a
+ *   poça no tampo, a aresta da frente e o clarão que atravessa o vidro (vidro.css). O reflexo dos livros no
+ *   vidro e a sombra difusa da lâmina na página.
+ * - **"nicho" (a V1, que a amostra e o rodapé usam):** o rebaixo da página (nicho.css), com a parede do fundo,
+ *   a sombra do teto, o chão e o friso. Desenhado só sob `[data-chao^="nicho"]`.
+ * - **"nenhum":** sem chão; as outras formas da amostra D1 pintam sobre as mesmas peças e variáveis.
+ * Em todas, os abajures de latão do 18 (PontoDeLuz) ficam acima dos livros, a 70px na home, com o cone de 44°
+ * e a poça onde ele pousa; o cone sobe no hover do livro. Abaixo de 1100px (as lombadas) o teto cai para 40px
+ * e o cone fecha (com uma passagem contínua entre 1000 e 1100px); abaixo de 700px, um abajur a cada dois
+ * livros. O lugar do livro que foi para a gaveta (home) ou que está aberto embaixo (topo) fica tracejado, com
+ * o abajur e a luz embaixo acesos (P18-3).
+ *
+ * Dois usos:
+ * - "home": a coleção da home. É a estante da abertura (`data-estante`, Abertura.astro: o fio da aresta da
+ *   lâmina se risca, a lâmina aparece e os livros entram um a um). Clicar no livro (ou Enter), ou no nome
+ *   embaixo dele, abre a página do livro (rodada 4, H3: a gaveta saiu da home): o livro sai da fileira e voa,
+ *   sem corte, até o lugar do livro grande no painel de lá, crescendo e girando até a pose de lá, e o resto da
+ *   página chega com a montagem (a troca por folhas, troca.js, marcada por `data-abre-livro` no <html>; sem a
+ *   cortina). Sem JS, é só o link. Parada a página, nada se mexe (H11: o cochilo, O6, saiu).
+ * - "topo": a fileira do alto da página do livro (FileiraTopo), menor (teto de 46px, a lâmina mais fina),
+ *   presa sob o cabeçalho e encolhendo com a rolagem. O livro da página não está nela (o vão
+ *   dele fica tracejado e aceso: ele está grande embaixo); clicar em outro troca de livro (troca.js).
+ *
+ * As luzes moram numa camada própria (`.luzes-fileira`), com os lugares medidos pela mesma conta dos livros:
+ * ficam paradas enquanto os livros entram na abertura. Sem os rótulos "Vol. NN" em cima dos livros (H10). Ao chegar, elas
+ * acendem uma a uma, e depois vêm a onda de molas e a onda de luz, nunca juntas (estante-moderna.ts).
+ */
+import LivroEmPe from "./LivroEmPe.astro";
+import PontoDeLuz from "./PontoDeLuz.astro";
+import "../styles/nicho.css";
+import "../styles/vidro.css";
+import type { Livro } from "../lib/estante";
+
+interface Props {
+  livros: Livro[];
+  modo: "home" | "topo";
+  /** O livro da página (só no "topo"): o lugar dele fica vazio. */
+  atual?: string;
+  /**
+   * O chão da fileira (rodada 4): "vidro" (a lâmina da V2 com a luz embaixo da V4, o padrão, E3), "nicho" (a
+   * V1), "nenhum" (sem chão) ou outro nome, que a amostra dos livros pinta por CSS sobre `data-chao` (os
+   * abajures e a poça continuam).
+   */
+  chao?: string;
+}
+
+const { livros, modo, atual, chao = "vidro" } = Astro.props;
+const ALTURA = modo === "home" ? 214 : 132;
+const GIRO_MIN = modo === "home" ? 30 : 34;
+const VAO_MIN = modo === "home" ? 5 : 4;
+const VAO_MAX = modo === "home" ? 18 : 12;
+// O vão antes da série (rodada 3, F14-1: no lugar do aparador cinza).
+const VAO_SERIE = 24;
+// A perspectiva de cada livro alarga um pouco o lado que vem para a frente.
+const FOLGA = 1.06;
+
+const u = ALTURA / 720;
+const cw = Math.round(480 * u);
+const sws = livros.map((l) => Math.round(l.emPe.largura * u));
+const N = livros.length;
+const S = sws.reduce((a, b) => a + b, 0);
+const temSerie = livros.some((l) => l.serie) && livros.some((l) => !l.serie);
+const rad = (g: number) => (g * Math.PI) / 180;
+const F = (g: number) => N * cw * Math.cos(rad(g)) + S * Math.sin(rad(g));
+const extra = temSerie ? VAO_SERIE : 0;
+const WMIN = Math.ceil(S * FOLGA + (N - 1) * VAO_MIN + extra);
+const WMAX = Math.ceil(F(GIRO_MIN) * FOLGA + (N - 1) * VAO_MAX + extra);
+const DELTA = 90 - GIRO_MIN;
+// O menor p (de 0,05 em 0,05) em que a coleção nunca passa da largura entre as duas pontas.
+let P = 1;
+for (let p = 1; p <= 6; p += 0.05) {
+  let cabe = true;
+  for (let i = 0; i <= 200 && cabe; i++) {
+    const t = i / 200;
+    const g = 90 - DELTA * Math.pow(t, p);
+    if (F(g) > S + t * (F(GIRO_MIN) - S) + 0.5) cabe = false;
+  }
+  if (cabe) {
+    P = Math.round(p * 100) / 100;
+    break;
+  }
+}
+// Os nomes embaixo (rodada 3): só quando o lugar de cada volume, com o vão, comporta "Desenvolvimento" (uns
+// 100px em 13px); antes disso eles se encostavam (a 1024px, no 14). A série, na ponta, não conta.
+const LUGAR_DO_NOME = 100;
+const swsDosVolumes = sws.filter((_, i) => !livros[i].serie);
+let NOMES = WMAX;
+for (let i = 0; i <= 400; i++) {
+  const t = i / 400;
+  const g = 90 - DELTA * Math.pow(t, P);
+  const lugar = Math.min(...(swsDosVolumes.length ? swsDosVolumes : sws).map((sw) => (cw * Math.cos(rad(g)) + sw * Math.sin(rad(g))) * FOLGA));
+  if (lugar + VAO_MIN + (VAO_MAX - VAO_MIN) * t >= LUGAR_DO_NOME) {
+    NOMES = Math.round(WMIN + t * (WMAX - WMIN));
+    break;
+  }
+}
+const id = `colecao-${modo}`;
+// Os pares de luz abaixo de 700px (uma luz a cada dois livros, sem juntar volume com série).
+const pares = livros.map(() => "so" as "so" | "inicio" | "fim");
+for (let i = 0; i < livros.length; i++) {
+  if (pares[i] !== "so") continue;
+  const prox = livros[i + 1];
+  if (prox && !!prox.serie === !!livros[i].serie) {
+    pares[i] = "inicio";
+    pares[i + 1] = "fim";
+  }
+}
+// O hover (o mouse, o foco, o toque) de um livro acende a luz dele; no par, a luz do par. O lugar vazio também
+// (P18-3): o do livro que foi para a gaveta (`.retirado`, home) e o do livro aberto embaixo (`.vao`, topo).
+// (`:has()` não aceita outro `:has()` dentro: o foco no link de dentro do lugar entra por `:focus-within`.) A
+// força sai de `--luz-acesa` (nicho.css): o cone, a boca e a poça.
+const acesoEm = (n: number) => `.${id} .prateleira-livros:has(> :nth-child(${n}):is(:focus-visible,:focus-within,[data-lv-toque],.retirado,.vao))`;
+const acesoHover = (n: number) => `.${id} .prateleira-livros:has(> :nth-child(${n}):hover)`;
+const luzDo = (n: number) => `~ .luzes-fileira > :nth-child(${n})`;
+const regra = (sel: string[], n: number) => `${sel.map((x) => `${x} ${luzDo(n)}`).join(",")}{--luz-acesa:1}`;
+let luzesCss = "";
+let luzesHover = "";
+let luzesPar = "";
+let luzesParHover = "";
+livros.forEach((_, i) => {
+  const n = i + 1;
+  luzesCss += regra([acesoEm(n)], n);
+  luzesHover += regra([acesoHover(n)], n);
+  if (pares[i] === "inicio") {
+    luzesPar += regra([acesoEm(n), acesoEm(n + 1)], n);
+    luzesParHover += regra([acesoHover(n), acesoHover(n + 1)], n);
+  }
+});
+// A largura útil: a do conteúdo da página (suave.css, --util), menos o respiro da chapa no topo e, na home, 12px de
+// cada lado para as paredes do nicho (rodada 4: no celular, as lombadas não encostam nelas).
+const RESPIRO = modo === "topo" ? 36 : 24;
+const W = `(var(--util) - ${RESPIRO}px)`;
+// A media query aproximada da largura útil (a página tem margem de ~2,4vw de cada lado e a barra de rolagem).
+const telaDe = (util: number) => Math.round((util + 16 + RESPIRO) / 0.952);
+const css =
+  `.${id}{--kc:clamp(0.42,tan(atan2(${W},${WMIN}px)),1);--tc:clamp(0,tan(atan2(${W} - ${WMIN}px,${WMAX - WMIN}px)),1);` +
+  `--gc:calc(90deg - ${DELTA}deg * pow(var(--tc),${P}));--vao:calc((${VAO_MIN}px + ${VAO_MAX - VAO_MIN}px * var(--tc)) * var(--kc));--folga:${FOLGA}}` +
+  `@media (max-width:${telaDe(NOMES)}px){.${id} .nome-livro{display:none}.${id}.colecao-home{padding-bottom:calc(14px + 18px * var(--kc))}}` +
+  luzesCss +
+  `@media (hover:hover){${luzesHover}}` +
+  `@media (max-width:699px){${luzesPar}@media (hover:hover){${luzesParHover}}}`;
+const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Vol. ${String(l.volume).padStart(2, "0")}`);
+---
+
+<div
+  class:list={["colecao", id, `colecao-${modo}`]}
+  data-colecao={modo}
+  data-chao={chao}
+  data-estante={modo === "home" ? "" : undefined}
+  data-luzes-ao-chegar
+  data-onda-propria
+>
+  <style is:inline set:html={css}></style>
+  <div class="fileira">
+    {/* O nicho (rodada 4, V1): as peças, de trás para a frente; nicho.css as desenha sob [data-chao^="nicho"]. */}
+    <span class="nicho" aria-hidden="true">
+      <span class="nicho-parede"></span>
+      <span class="nicho-teto"></span>
+      <span class="nicho-chao"></span>
+      <span class="nicho-friso"></span>
+    </span>
+    <div class="prateleira-livros">
+      {
+        livros.map((l, i) => {
+          // O primeiro livro de série abre o vão de 24px (no lugar do aparador cinza).
+          const abreSerie = temSerie && l.serie && !livros[i - 1]?.serie;
+          const estilo = `--cw0:${cw}px;--sw0:${sws[i]}px;--i:${i}`;
+          const vazio = modo === "topo" && l.id === atual;
+          return vazio ? (
+            <span class:list={["livro-colecao", "vao", { "abre-serie": abreSerie }]} style={estilo} aria-hidden="true">
+              <span class="vao-marca" />
+            </span>
+          ) : modo === "home" ? (
+            <div class:list={["livro-colecao", { "de-serie": l.serie, "abre-serie": abreSerie }]} style={estilo} data-livro-colecao={l.id}>
+              <span class="vao-marca" aria-hidden="true" />
+              <a class="tomba" href={l.href} aria-label={`${rotuloDoVolume(l)}: ${l.nome}, ${l.contagem.toLowerCase()}`}>
+                <LivroEmPe livro={l} altura={ALTURA} transicao="ao-clicar" fluido folhas={0} />
+              </a>
+              <a class="nome-livro" href={l.href}>
+                <span class="sr">{rotuloDoVolume(l)}: </span>
+                {l.nome}
+                <span class="sr">, página do livro</span>
+              </a>
+            </div>
+          ) : (
+            <a class:list={["livro-colecao", { "abre-serie": abreSerie }]} style={estilo} href={l.href} data-troca-livro title={l.nome}>
+              <span class="sr">{l.nome}</span>
+              <span class="tomba">
+                <LivroEmPe livro={l} altura={ALTURA} transicao="ao-clicar" fluido folhas={0} />
+              </span>
+            </a>
+          );
+        })
+      }
+    </div>
+    {/* O chão da fileira: guarda a altura do chão e do friso embaixo dos livros (o desenho é do nicho). */}
+    <div class="tabua chao-fileira" aria-hidden="true"></div>
+    {/* Os abajures em cima dos livros, um por livro (no par, abaixo de 700px, um a cada dois). Os lugares têm
+        a mesma conta dos livros. */}
+    <div class="luzes-fileira" aria-hidden="true">
+      {
+        livros.map((l, i) => {
+          const abreSerie = temSerie && l.serie && !livros[i - 1]?.serie;
+          const prox = pares[i] === "inicio" ? i + 1 : i;
+          const estilo = `--cw0:${cw}px;--sw0:${sws[i]}px;--sw1:${sws[prox]}px`;
+          return (
+            <span class:list={["lugar-luz", { "abre-serie": abreSerie }]} data-par={pares[i]} style={estilo}>
+              <PontoDeLuz />
+            </span>
+          );
+        })
+      }
+    </div>
+  </div>
+</div>
+
+
+<script>
+  // As luzes acendem, a onda de molas e a onda de luz, na chegada (uma depois da outra).
+  import "../scripts/estante-moderna";
+
+  const raiz = document.documentElement;
+  // Os livros 3D da coleção da home entram no segundo quadro: o primeiro (o nome, os números e o resto da
+  // página) não carrega também as nove capas duras, e nenhum quadro passa da régua com a CPU lenta.
+  if (document.querySelector("[data-colecao='home']")) requestAnimationFrame(() => requestAnimationFrame(() => raiz.classList.add("colecao-pronta")));
+  for (const colecao of document.querySelectorAll<HTMLElement>("[data-colecao]")) {
+    // Na estante do topo da página do livro, o clique troca de livro pela estante (troca.js, tipo "livro").
+    if (colecao.dataset.colecao === "topo") {
+      colecao.addEventListener("click", (e) => {
+        const a = (e.target as HTMLElement).closest<HTMLAnchorElement>("a[data-troca-livro]");
+        if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        raiz.setAttribute("data-troca-livro", "");
+      });
+      continue;
+    }
+    // H3 (rodada 4): o livro (ou o nome dele) leva à página do livro, e a troca de página é a do livro que voa
+    // (troca.js, `data-abre-livro` com o destino), sem a cortina. O livro solta o hover na hora: a viagem
+    // começa da pose de repouso dele.
+    colecao.addEventListener("click", (e) => {
+      const a = (e.target as HTMLElement).closest<HTMLAnchorElement>("a.tomba, a.nome-livro");
+      if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      raiz.dataset.abreLivro = new URL(a.href).pathname;
+      const caixa = a.closest(".livro-colecao")?.querySelector<HTMLElement>(".livro-3d-caixa");
+      if (caixa) (window as unknown as { csLivroVivo?: { soltar: (c: HTMLElement) => void } }).csLivroVivo?.soltar(caixa);
+    });
+    // Voltando pelo histórico, a página volta sem o nome de transição que o livro ganhou na saída ou na
+    // volta (Base.astro dá o nome ao livro que leva à página de onde se veio) e sem a marca da troca: do
+    // bfcache, na hora; carregada de novo, quando a chegada acaba. Sem isso, o nome ficava no livro e ele
+    // voava junto na próxima troca.
+    const semNomes = () => {
+      for (const el of colecao.querySelectorAll<HTMLElement>("[data-vt]")) el.style.removeProperty("view-transition-name");
+    };
+    addEventListener("pageshow", (e) => {
+      if (!e.persisted) return;
+      delete raiz.dataset.abreLivro;
+      semNomes();
+    });
+    addEventListener("cs:chegou", semNomes);
+    // H11 (rodada 4): sem o cochilo (O6). Nada se mexe sozinho com a página parada: só na entrada (a abertura
+    // ou a troca de página) e quando o leitor faz alguma coisa (hover, foco, toque, clique).
+  }
+</script>
+
+<style is:global>
+  /* As contas da coleção registradas com tipo: cada livro herda o número pronto, e não a conta inteira. */
+  @property --kc {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 1;
+  }
+
+  @property --tc {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 0;
+  }
+
+  @property --gc {
+    syntax: "<angle>";
+    inherits: true;
+    initial-value: 90deg;
+  }
+</style>
+
+<style>
+  /*
+   * A fileira fica no centro, com os livros em pé no chão do nicho; cada lugar tem a largura que o livro
+   * ocupa no giro da vez, e o livro (mais largo que o lugar quando gira) fica centrado nele, passando para os
+   * lados.
+   */
+  .colecao {
+    position: relative;
+    min-width: 0;
+    /* A caixa de cada livro é a da capa, mesmo de lombada: o que sobra dela (invisível) não pode alargar a
+       página. O que se vê (o livro que tomba, a lupa, os rótulos) cabe na margem. */
+    overflow: clip;
+    overflow-clip-margin: 12px;
+  }
+
+  /*
+   * As medidas do chão e dos abajures (rodada 4), em px de desenho; tudo encolhe com a coleção (--kc). Estas
+   * são as variáveis que a amostra dos livros troca para pintar as outras formas:
+   *
+   *   --teto            do alto do nicho (ou da fileira) ao alto dos livros (84px na home)
+   *   --abajur-altura   de onde o abajur sai da parede (a plaquinha) ao alto dos livros (70px)
+   *   --abajur-escala   o tamanho da peça de latão (1 = a do 18)
+   *   --cone-angulo     a abertura do cone (44°)
+   *   --chao-recuo      da base da caixa do livro ao fundo do tampo
+   *   --chao-alto       o tampo à vista (14px no nicho, 16px no vidro)
+   *   --friso-alto      a frente: o friso do nicho (10px) ou a aresta do vidro (6px)
+   *   --abaixo          o espaço embaixo do chão (o reflexo do vidro, 18px)
+   *   --poca-largura    a poça, em larguras do lugar do livro (1,3)
+   *   --poca-alto       a altura da poça (10px)
+   *   --nicho-largura   a largura do nicho (100% é a da fileira)
+   *   --cone-repouso, --cone-aceso, --poca-repouso, --poca-acesa (nicho.css, por tema)
+   *
+   * E as contas prontas, em px: --k-teto, --k-chao (chão e friso juntos, a altura da `.tabua`), --k-chao-alto,
+   * --k-friso, --k-abaixo, --k-sombra-teto, --k-poca-alto, --boca (do alto da fileira à boca da cúpula) e
+   * --lq-luz.
+   */
+  .colecao {
+    --cabeca: 10px;
+    --chao-recuo: 8px;
+    --chao-alto: 14px;
+    --friso-alto: 10px;
+    --abajur-escala: 0.85;
+    --cone-angulo: 44deg;
+    --poca-largura: 1.3;
+    --poca-alto: 10px;
+    --k-teto: calc(var(--teto) * var(--kc));
+    --k-cabeca: calc(var(--cabeca) * var(--kc));
+    --k-chao-alto: calc(var(--chao-alto) * var(--kc));
+    --k-friso: calc(var(--friso-alto) * var(--kc));
+    --k-chao: calc((var(--chao-recuo) + var(--chao-alto) + var(--friso-alto)) * var(--kc));
+    --k-abaixo: calc(var(--abaixo, 0px) * var(--kc));
+    --k-sombra-teto: calc(var(--k-teto) * 0.57);
+    --k-poca-alto: calc(var(--poca-alto) * var(--kc));
+    --lq-luz: calc(var(--abajur-escala) * var(--kc) * 1px);
+    --boca: calc(var(--k-teto) - var(--abajur-altura) * var(--kc) + 18 * var(--lq-luz));
+  }
+
+  /*
+   * Na home: `--s` vai de 0 (as lombadas, até 1000px) a 1 (a vitrine, de 1100px em diante), e o nicho passa de
+   * um a outro sem salto: o teto de 40 a 84px, o abajur de 28 a 70px, o cone de 30° a 44° e a largura, da
+   * fileira com 24px de cada lado à do conteúdo.
+   */
+  .colecao-home {
+    --s: clamp(0, tan(atan2(var(--util) - 936px, 95px)), 1);
+    --teto: calc(40px + 44px * var(--s));
+    --abajur-altura: calc(28px + 42px * var(--s));
+    --abajur-escala: calc(0.7 + 0.15 * var(--s));
+    --cone-angulo: calc(30deg + 14deg * var(--s));
+    --nicho-largura: min(var(--util), calc(100% + 48px * var(--kc) + (var(--util) - 100% - 48px * var(--kc)) * var(--s)));
+  }
+
+  /* No topo da página do livro, o nicho raso do 20: teto de 46px, chão e friso de 12px, os abajures menores. */
+  .colecao-topo {
+    --cabeca: 6px;
+    --teto: 46px;
+    --chao-recuo: 5px;
+    --chao-alto: 12px;
+    --friso-alto: 12px;
+    --abajur-altura: 34px;
+    --abajur-escala: 0.6;
+    --cone-angulo: 40deg;
+    --poca-alto: 7px;
+  }
+
+  /* A fileira tem a largura dos livros; o nicho, a dele (centrado nela). Ela contém a margem de baixo do chão
+     (o espaço do reflexo, `--k-abaixo`), para a camada dos abajures medir a partir do pé dela. */
+  .fileira {
+    display: flow-root;
+    position: relative;
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
+  }
+
+  .colecao[data-chao^="nicho"] .nicho {
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: var(--nicho-largura);
+    translate: -50% 0;
+  }
+
+  /* No topo, o nicho é a chapa inteira (FileiraTopo): a fileira e 18px de cada lado. */
+  .colecao-topo[data-chao^="nicho"] .nicho {
+    left: -18px;
+    width: calc(100% + 36px);
+    translate: none;
+    border-radius: 6px;
+  }
+
+  .prateleira-livros {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: var(--vao);
+    padding-top: calc(var(--k-teto) + var(--k-cabeca));
+  }
+
+  /*
+   * Os abajures: uma camada no nicho, entre a parede (embaixo) e os livros (em cima), com os mesmos lugares da
+   * fileira (a mesma largura, o mesmo vão, o mesmo vão antes da série). O cone desce da boca da cúpula até o
+   * meio do chão, onde fica a poça.
+   */
+  .luzes-fileira {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    display: flex;
+    justify-content: center;
+    gap: var(--vao);
+    pointer-events: none;
+  }
+
+  /* No nicho, a luz não passa das paredes: os cones das pontas são cortados nas laterais dele. */
+  .colecao[data-chao^="nicho"] .luzes-fileira {
+    clip-path: inset(0 calc(50% - var(--nicho-largura) / 2) round 3px);
+  }
+
+  .colecao-topo[data-chao^="nicho"] .luzes-fileira {
+    clip-path: inset(0 -18px round 6px);
+  }
+
+  .lugar-luz {
+    --w-luz: calc((var(--cw0) * cos(var(--gc)) + var(--sw0) * sin(var(--gc))) * var(--folga) * var(--kc));
+    position: relative;
+    flex: none;
+    width: var(--w-luz);
+  }
+
+  .lugar-luz :global(.ponto-luz) {
+    --ponto-luz-topo: var(--boca);
+    --ponto-luz-pe: calc(var(--k-abaixo) + var(--k-friso) + var(--k-chao-alto) / 2);
+  }
+
+  /* Abaixo de 700px, uma luz a cada dois livros: a do primeiro do par fica no meio dos dois. */
+  @media (max-width: 699px) {
+    .lugar-luz[data-par="fim"] {
+      display: none;
+    }
+
+    .lugar-luz[data-par="inicio"] {
+      --w-luz: calc((var(--cw0) * 2 * cos(var(--gc)) + (var(--sw0) + var(--sw1)) * sin(var(--gc))) * var(--folga) * var(--kc) + var(--vao));
+    }
+  }
+
+  .livro-colecao {
+    position: relative;
+    flex: none;
+    display: grid;
+    /* A coluna tem a largura do lugar (não a da caixa do livro), e o livro fica no meio dela, passando
+       para os dois lados por igual. */
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: unsafe center;
+    align-items: end;
+    width: calc((var(--cw0) * cos(var(--gc)) + var(--sw0) * sin(var(--gc))) * var(--folga) * var(--kc));
+    color: var(--ink);
+    text-decoration: none;
+    perspective: calc(900px * var(--kc));
+  }
+
+  /*
+   * A sombra quente de cada livro (livro-vivo.css, o chão plano da caixa) cai no chão do nicho: da largura que
+   * o livro ocupa no giro da vez (de lombada, estreita), baixa, entre os pés dele.
+   */
+  .livro-colecao :global(.livro-3d-caixa::after) {
+    width: calc(var(--cw) * (0.42 + 0.85 * cos(var(--gc))));
+    height: calc(var(--bh) * 0.085);
+    translate: -46% -22%;
+  }
+
+  :global(:root[data-theme="dark"]) .livro-colecao :global(.livro-3d-caixa::after) {
+    width: calc(var(--cw) * (0.5 + 0.95 * cos(var(--gc))));
+    height: calc(var(--bh) * 0.11);
+    translate: -50% -26%;
+  }
+
+  /* O giro da vez (o mesmo de todos), por cima do --giro do livro 3D (livro.css). */
+  .livro-colecao :global(.livro-3d) {
+    --giro: var(--gc);
+    transition: transform 0.5s cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  /* O lugar do livro: ele fica de pé no pé do lugar, sobre a sombra quente dele (o chão, Livro3D). */
+  .tomba {
+    display: grid;
+    /* A coluna tem a largura do lugar: o livro, mais largo que ele de lombada, passa para os dois lados. */
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: unsafe center;
+    transform-origin: 50% 100%;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /*
+   * O clique e o mouse valem no lugar de cada livro, não na caixa dele: girado de lombada (tela estreita),
+   * o livro é bem mais estreito que a caixa, que passa por cima dos vizinhos e roubava o clique deles. A
+   * caixa não recebe o ponteiro, e o lugar (o link) é quem recebe; o livro vivo acha o livro pela
+   * `.livro-colecao`, como antes.
+   */
+  .livro-colecao :global(.livro-em-pe) {
+    pointer-events: none;
+  }
+
+  /* O livro da home é o link que o tira para a gaveta, na largura do lugar; o foco é um anel em volta dele. */
+  a.tomba {
+    justify-self: stretch;
+    border-radius: 4px;
+    outline-offset: 6px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  a.tomba:focus-visible {
+    outline: 2px solid var(--acento);
+  }
+
+  /* O nome embaixo do livro, fora do nicho (abaixo do friso): o link para a página do livro. */
+  .nome-livro {
+    position: absolute;
+    top: calc(100% + var(--k-chao) + var(--k-abaixo) + 14px);
+    left: 50%;
+    width: max-content;
+    max-width: calc(var(--cw0) * var(--kc) * 0.9);
+    translate: -50% 0;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    line-height: 1.3;
+    text-align: center;
+    color: var(--ink-2);
+    text-decoration: none;
+    text-wrap: balance;
+    transition:
+      color 0.2s,
+      opacity 0.3s;
+  }
+
+  .nome-livro:hover,
+  .livro-colecao:hover .nome-livro,
+  .livro-colecao.retirado .nome-livro {
+    color: var(--acento);
+  }
+
+  /*
+   * O chão da fileira (`.tabua.chao-fileira`): só guarda a altura do chão e do friso embaixo dos livros (o
+   * desenho é do nicho, nicho.css). Continua aqui para as formas que pintam outro chão (a amostra dos livros)
+   * e para a abertura, que risca o fio no alto do friso.
+   */
+  .tabua {
+    position: relative;
+    height: var(--k-chao);
+    margin: 0 0 var(--k-abaixo);
+    pointer-events: none;
+  }
+
+  /* O vão antes da série (24px no total, no lugar do aparador). */
+  .abre-serie {
+    margin-left: max(0px, calc(24px * var(--kc) - var(--vao)));
+  }
+
+  /* O vão do livro que está aberto (na gaveta, ou embaixo, no topo): o contorno tracejado no lugar dele. */
+  .vao {
+    height: calc(var(--bh0, 132px) * var(--kc));
+  }
+
+  .vao-marca {
+    width: 100%;
+    height: 100%;
+    border: 1px dashed color-mix(in oklab, var(--ink) 34%, transparent);
+    border-bottom: 0;
+    border-radius: 3px 3px 0 0;
+  }
+
+  :global(:root[data-theme="dark"]) .vao-marca {
+    border-color: color-mix(in oklab, var(--ink) 30%, transparent);
+  }
+
+  /* ---------- home ---------- */
+
+  /* Até o segundo quadro (o script), cada livro guarda o lugar sem ser desenhado; sem JS, aparece direto. */
+  :global(:root[data-js]:not(.colecao-pronta)) .colecao-home .tomba {
+    content-visibility: hidden;
+    contain-intrinsic-size: calc(var(--cw0) * var(--kc)) calc(214px * var(--kc));
+  }
+
+  /* Embaixo do friso, os nomes (duas linhas de 13px). */
+  .colecao-home {
+    padding-bottom: 54px;
+  }
+
+  .colecao-home .nome-livro {
+    opacity: 1;
+  }
+
+  /* Na abertura (o nicho se monta), o rótulo dela ("Volume 03") passa onde ficam os nomes: eles entram
+     depois, quando ela acaba (a transição de opacidade do nome). */
+  :global(:root[data-abertura]) .colecao-home .nome-livro {
+    opacity: 0;
+  }
+
+  /*
+   * O livro que foi para a gaveta (P7): o lugar fica vazio, com o contorno tracejado na parede do fundo, na
+   * altura do livro (a mesma conta do lugar), e o abajur dele aceso (P18-3, as regras geradas acima). O link
+   * continua ali (clicar no lugar vazio guarda o livro): só o desenho some, sem opacidade no livro 3D
+   * (achataria).
+   */
+  .colecao-home .vao-marca {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: calc(100% - 2px);
+    height: calc(214px * var(--kc));
+    translate: -50% 0;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity 0.3s,
+      visibility 0s linear 0.3s;
+  }
+
+  .colecao-home .retirado .vao-marca {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s;
+  }
+
+  .colecao-home .retirado :global(.livro-em-pe) {
+    visibility: hidden;
+  }
+
+  @media (max-width: 820px) {
+    .colecao-home .nome-livro {
+      display: none;
+    }
+
+    .colecao-home {
+      padding-bottom: calc(14px + 18px * var(--kc));
+    }
+  }
+
+  /* ---------- topo da página do livro ---------- */
+
+  .colecao-topo {
+    --bh0: 132px;
+  }
+
+  .colecao-topo .livro-colecao {
+    cursor: pointer;
+  }
+
+  .colecao-topo .livro-colecao:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .livro-colecao :global(.livro-3d),
+    .nome-livro,
+    .colecao-home .vao-marca {
+      transition: none;
+    }
+  }
+</style>

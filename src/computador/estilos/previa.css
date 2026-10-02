@@ -1,0 +1,508 @@
+/* A Pré-Visualização (apps/previa.ts): a barra lateral com as miniaturas, a barra de ferramentas, a mesa
+   cinza e as páginas (as do protótipo 14, medidas pela largura da página). */
+
+.pv {
+  --pv-lateral: 196px;
+  position: absolute;
+  inset: 0;
+  background: var(--mac-janela);
+}
+
+.pv-lateral {
+  width: calc(var(--pv-lateral) - 14px);
+}
+
+.pv-miniaturas {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  min-height: 0;
+  padding: 50px 0 22px;
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+}
+
+.pv-principal {
+  position: absolute;
+  inset: 0 0 0 var(--pv-lateral);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pv.sem-miniaturas .pv-lateral {
+  display: none;
+}
+
+.pv.sem-miniaturas .pv-principal {
+  left: 0;
+}
+
+.pv.sem-miniaturas .pv-ferramentas {
+  padding-left: 90px;
+}
+
+.pv-ferramentas {
+  flex: none;
+  gap: 8px;
+}
+
+.pv-titulo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin-left: 4px;
+  line-height: 1.25;
+}
+
+.pv-titulo strong {
+  overflow: hidden;
+  color: var(--mac-janela-titulo);
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pv-titulo span {
+  color: var(--mac-texto-2);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.pv:not(.ativa) .pv-titulo strong {
+  color: var(--mac-janela-titulo-inativa);
+}
+
+.pv-espaco {
+  flex: 1;
+}
+
+/* A miniatura de cada página: a cópia da página, pequena, com o número embaixo; a atual com o contorno
+   azul de 3px e o número numa pílula azul, como no Mac. */
+.pv-mini {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 128px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--mac-texto-2);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  cursor: default;
+  content-visibility: auto;
+  contain-intrinsic-size: 128px 170px;
+}
+
+.pv-mini-papel {
+  width: 104px;
+  border-radius: 1px;
+  pointer-events: none;
+}
+
+.pv-mini-papel .pdf-pagina {
+  width: 100%;
+  box-shadow:
+    0 0 0 0.5px var(--mac-separador),
+    0 1px 3px var(--mac-separador);
+}
+
+.pv-mini.atual .pv-mini-papel {
+  outline: 3px solid var(--mac-acento);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.pv-mini > span {
+  min-width: 22px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  text-align: center;
+}
+
+.pv-mini.atual > span {
+  background: var(--mac-acento);
+  color: var(--mac-sobre-acento);
+}
+
+.mac .pv-mini:focus-visible {
+  outline: none;
+}
+
+.pv-mini:focus-visible .pv-mini-papel {
+  outline: 3px solid var(--mac-foco);
+  outline-offset: 3px;
+}
+
+/* A mesa cinza, com as páginas no meio. */
+.pv-mesa {
+  container-type: inline-size;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: var(--mac-documento-mesa);
+  border-top: 1px solid var(--mac-separador);
+  outline: none;
+  user-select: text;
+}
+
+.mac .pv-mesa:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 3px var(--mac-foco);
+}
+
+.pv-folhas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  width: max-content;
+  min-width: 100%;
+  padding: 26px 20px 48px;
+}
+
+.pv-folhas > .pdf-pagina {
+  width: calc(min(720px, 100cqi - 56px) * var(--zoom, 1));
+}
+
+/* Redimensionando, a largura das páginas fica parada (previa.ts) e elas se ajustam uma vez no fim. */
+.pv-folhas.congelado > .pdf-pagina {
+  width: var(--pv-largura);
+}
+
+/* Depois de paginar, as páginas fora da vista não são desenhadas (redimensionar a janela fica leve). */
+.pv-folhas.paginado > .pdf-pagina {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px auto 1018px;
+}
+
+.pv-carregando {
+  margin: 64px auto;
+  color: var(--mac-texto-2);
+  font-family: var(--mac-fonte);
+  text-align: center;
+}
+
+/*
+ * A página: A4 (210 × 297), com tudo medido pela largura dela (cqi), para a paginação valer em
+ * qualquer tamanho, na mesa e nas miniaturas. O papel é sempre o do tema claro (as variáveis do
+ * tema claro vêm de /mac/dados.json, no style das folhas): impresso, o PDF não muda com o tema.
+ */
+.pdf-pagina {
+  container-type: inline-size;
+  box-sizing: border-box;
+  aspect-ratio: 210 / 297;
+  overflow: hidden;
+  background: var(--paper-hi);
+  color: var(--ink);
+  box-shadow: var(--mac-documento-sombra);
+}
+
+/* O miolo da página: tudo em cqi da página (o contêiner é ela). */
+.pdf-miolo {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  height: 100%;
+  padding: 8cqi 10cqi 5.5cqi;
+  font-family: var(--font-texto);
+  font-size: 2.1cqi;
+  font-variation-settings: "opsz" 12;
+  line-height: 1.58;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}
+
+.pdf-cabeca {
+  display: flex;
+  justify-content: space-between;
+  gap: 4cqi;
+  margin-bottom: 4cqi;
+  padding-bottom: 1.3cqi;
+  border-bottom: 0.15cqi solid var(--rule);
+  font-family: var(--font-ui);
+  font-size: 1.5cqi;
+  line-height: 1.3;
+  color: var(--ink-3);
+}
+
+.pdf-cabeca span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-style: italic;
+  font-family: var(--font-texto);
+}
+
+.pdf-corpo {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  contain: layout paint;
+}
+
+.pdf-pe {
+  margin-top: 2.6cqi;
+  font-family: var(--font-ui);
+  font-size: 1.5cqi;
+  color: var(--ink-3);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* A primeira página: o livro, o título, o subtítulo e a imagem. */
+.pdf-capa {
+  margin-bottom: 3.6cqi;
+}
+
+.pdf-livro {
+  display: flex;
+  align-items: center;
+  gap: 2.4cqi;
+  margin-bottom: 5cqi;
+  font-family: var(--font-ui);
+  font-size: 1.6cqi;
+  line-height: 1.35;
+  color: var(--ink-2);
+}
+
+.pdf-livro img {
+  width: 8cqi;
+  height: auto;
+}
+
+.pdf-livro strong {
+  display: block;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.pdf-titulo {
+  margin: 0;
+  font-family: var(--font-titulo);
+  font-size: 5.4cqi;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  hyphens: manual;
+}
+
+.pdf-subtitulo {
+  margin: 1.6cqi 0 0;
+  font-size: 2.7cqi;
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--ink-2);
+  text-wrap: pretty;
+  hyphens: manual;
+}
+
+.pdf-meta {
+  margin: 2.2cqi 0 0;
+  font-family: var(--font-ui);
+  font-size: 1.55cqi;
+  color: var(--ink-3);
+}
+
+.pdf-figura {
+  position: relative;
+  margin-top: 4cqi;
+  aspect-ratio: 1100 / 468;
+  border-radius: 1.2cqi;
+}
+
+.pdf-figura .ilustracao {
+  position: absolute;
+  inset: 0;
+}
+
+/* O texto, em tipografia de livro. */
+.pdf-corpo h2 {
+  margin: 4.4cqi 0 1.6cqi;
+  font-family: var(--font-titulo);
+  font-size: 3.2cqi;
+  font-weight: 600;
+  line-height: 1.2;
+  text-wrap: balance;
+  hyphens: manual;
+}
+
+.pdf-corpo h3 {
+  margin: 3.2cqi 0 1.2cqi;
+  font-family: var(--font-titulo);
+  font-size: 2.5cqi;
+  font-weight: 600;
+  line-height: 1.25;
+  hyphens: manual;
+}
+
+.pdf-corpo > :first-child {
+  margin-top: 0;
+}
+
+.pdf-corpo p {
+  margin: 0 0 1.5cqi;
+  text-align: justify;
+}
+
+.pdf-corpo p.cortado {
+  text-align-last: justify;
+}
+
+.pdf-corpo :is(ul, ol) {
+  margin: 0 0 1.5cqi;
+  padding-left: 4.2cqi;
+}
+
+.pdf-corpo li {
+  margin-bottom: 0.7cqi;
+  padding-left: 0.6cqi;
+}
+
+.pdf-corpo li::marker {
+  color: var(--ink-3);
+}
+
+.pdf-corpo code {
+  padding: 0.05em 0.16em;
+  border-radius: 0.5cqi;
+  background: var(--well);
+  font-family: var(--font-codigo);
+  font-size: 0.86em;
+  hyphens: manual;
+}
+
+.pdf-codigo {
+  margin: 0 0 2cqi;
+}
+
+.pdf-codigo figcaption {
+  margin-bottom: 0.8cqi;
+  font-family: var(--font-codigo);
+  font-size: 1.45cqi;
+  color: var(--ink-2);
+}
+
+.pdf-codigo pre {
+  margin: 0;
+  padding: 2cqi 2.4cqi;
+  border: 0.15cqi solid var(--rule);
+  border-radius: 1cqi;
+  background: var(--well);
+  font-family: var(--font-codigo);
+  font-size: 1.55cqi;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  hyphens: manual;
+}
+
+.pdf-codigo pre code {
+  padding: 0;
+  background: none;
+  font-size: inherit;
+}
+
+.pdf-corpo blockquote,
+.pdf-aviso {
+  margin: 0 0 1.8cqi;
+  padding: 0.4cqi 0 0.4cqi 2.6cqi;
+  border-left: 0.5cqi solid var(--rule);
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+.pdf-aviso {
+  border-left-color: var(--aviso-nota);
+  font-style: normal;
+  color: var(--ink);
+}
+
+.pdf-aviso .rotulo {
+  margin-right: 0.6em;
+  font-family: var(--font-ui);
+  font-size: 0.86em;
+  font-weight: 600;
+  color: var(--aviso-nota);
+}
+
+.pdf-tabela {
+  width: 100%;
+  margin: 0 0 2cqi;
+  border-collapse: collapse;
+  font-family: var(--font-ui);
+  font-size: 1.5cqi;
+  line-height: 1.4;
+  hyphens: manual;
+}
+
+.pdf-tabela th,
+.pdf-tabela td {
+  padding: 0.8cqi 1cqi;
+  border-bottom: 0.12cqi solid var(--rule);
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+.pdf-tabela th {
+  font-weight: 600;
+  border-bottom-color: var(--ink-3);
+}
+
+
+@media (max-width: 699px), (max-height: 459px) {
+  .pv {
+    --pv-lateral: 0px;
+  }
+
+  .pv-lateral {
+    z-index: 30;
+    width: 148px;
+    background: var(--mac-menu);
+    box-shadow:
+      0 0 0 0.5px var(--mac-lateral-borda),
+      var(--mac-menu-sombra);
+  }
+
+  .pv .pv-ferramentas {
+    padding-left: 84px;
+    padding-right: 8px;
+    gap: 6px;
+  }
+
+  .pv-mini {
+    width: 100px;
+    contain-intrinsic-size: 100px 130px;
+  }
+
+  .pv-mini-papel {
+    width: 80px;
+  }
+
+  .pv-folhas {
+    gap: 14px;
+    padding: 14px 10px 32px;
+  }
+
+  .pv-folhas > .pdf-pagina {
+    width: calc((100cqi - 24px) * var(--zoom, 1));
+  }
+
+  .pv-so-largo,
+  .pv-zoom {
+    display: none;
+  }
+
+  .pv-titulo strong {
+    font-size: 12.5px;
+  }
+}

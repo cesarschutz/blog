@@ -5,15 +5,23 @@
  * dois (D52); nas páginas 2 em diante, o título vira "Artigos — página N". Na categoria (D29):
  * todos os artigos dela, sem paginação, com a contagem abaixo do título. O modo fica guardado no
  * navegador (`cs-post-view`, a mesma chave do blog atual) e é aplicado pelo script do <head>, sem
- * piscar. Sem JS, fica a lista e o seletor some. A lista fica numa folha só; nos cards, cada card é uma folha (D26).
+ * piscar. Sem JS, fica a lista e o seletor some. Rodada 3 (área 10): nos dois modos, cada artigo é uma ficha
+ * própria (Cartao e ItemLista), e a lista é só a pilha delas, sem a folha em volta.
  *
  * Com `destaque` (a primeira página da home, D52, C02), o primeiro artigo é o mais recente em destaque:
  * na lista, um item maior; nos cards, o lugar de dois cards quando a grade tem duas colunas ou mais.
+ *
+ * Rodada 4 (P16-1, P17-1): na home, o título vai numa etiqueta de papel colada na página com um pedaço
+ * de fita no canto de cima à esquerda (`etiqueta`; a do 16, sem a cortiça e sem o alfinete), com a
+ * contagem dentro dela; na primeira página, o traço de caneta se escreve embaixo do título
+ * (`tracoNoTitulo`, TracoTitulo). O seletor Lista / Cards é a tira de papel (SeletorModo). O destaque leva
+ * o carimbo "Novo" (E9, MaisRecente), nos cards e na lista. A paginação é um papel por botão (E6).
  */
 import ItemLista from "./ItemLista.astro";
 import Cartao from "./Cartao.astro";
 import Paginacao from "./Paginacao.astro";
 import SeletorModo from "./SeletorModo.astro";
+import TracoTitulo from "./TracoTitulo.astro";
 import type { Resumo } from "../lib/posts";
 
 interface Props {
@@ -27,28 +35,51 @@ interface Props {
   pagina?: { atual: number; ultima: number; anterior?: string; proxima?: string };
   /** O primeiro artigo em destaque (só na primeira página da home). */
   destaque?: boolean;
+  /** Rodada 4 (P16-1): o título e a contagem numa etiqueta de papel colada com fita (na home). */
+  etiqueta?: boolean;
+  /** Rodada 4 (P17-1): o traço de caneta embaixo do título (só na primeira página da home). */
+  tracoNoTitulo?: boolean;
+  /** O seletor Lista / Cards como a tira de papel (o padrão) ou a pílula de antes (amostra D4). */
+  seletorDePapel?: boolean;
+  /** O id do título (a amostra D4 põe duas listas na mesma página). */
+  idTitulo?: string;
+  /** Rodada 4 (H7): na Lista, em tela grande, o livro do artigo à direita (ItemLista; a home passa). */
+  livroAoLado?: "espelhado" | "foto";
 }
 
-const { posts, titulo, nivel = "h2", subtitulo, pagina, destaque = false } = Astro.props;
+const {
+  posts,
+  titulo,
+  nivel = "h2",
+  subtitulo,
+  pagina,
+  destaque = false,
+  etiqueta = false,
+  tracoNoTitulo = false,
+  seletorDePapel = true,
+  idTitulo = "recentes-titulo",
+  livroAoLado,
+} = Astro.props;
 const Titulo = nivel;
 // Os títulos dos artigos ficam um nível abaixo do título da seção (h1 nas páginas 2 em diante).
 const nivelDoItem = nivel === "h1" ? "h2" : "h3";
 ---
 
-<section class="recentes" aria-labelledby="recentes-titulo">
+<section class:list={["recentes", { "com-etiqueta": etiqueta }]} aria-labelledby={idTitulo}>
   <div class="topo-recentes">
-    <div>
-      <Titulo id="recentes-titulo" class="titulo-secao">{titulo}</Titulo>
+    <div class:list={{ "etiqueta-recentes papel-colado": etiqueta }}>
+      {etiqueta && <span class="fita-adesiva canto-esq" aria-hidden="true" />}
+      <Titulo id={idTitulo} class="titulo-secao">{tracoNoTitulo ? <TracoTitulo texto={titulo} /> : titulo}</Titulo>
       {subtitulo && <p class="subtitulo-secao">{subtitulo}</p>}
     </div>
-    <SeletorModo />
+    <SeletorModo papel={seletorDePapel} />
   </div>
-  <ol class="lista-modo lista-artigos folha">
-    {posts.map((p, i) => <ItemLista post={p} nivel={nivelDoItem} destaque={destaque && i === 0} />)}
+  <ol class="lista-modo lista-artigos">
+    {posts.map((p, i) => <ItemLista post={p} nivel={nivelDoItem} destaque={destaque && i === 0} carimbo={destaque && i === 0} livroAoLado={livroAoLado} />)}
   </ol>
   <template data-cartoes>
     <ul class="cartoes-modo">
-      {posts.map((p, i) => <Cartao post={p} nivel={nivelDoItem} destaque={destaque && i === 0} />)}
+      {posts.map((p, i) => <Cartao post={p} nivel={nivelDoItem} destaque={destaque && i === 0} carimbo={destaque && i === 0} />)}
     </ul>
   </template>
   <script is:inline>
@@ -87,6 +118,45 @@ const nivelDoItem = nivel === "h1" ? "h2" : "h3";
     font-family: var(--font-ui);
     font-size: 14px;
     color: var(--ink-2);
+  }
+
+  /* Com o traço de caneta embaixo do título, a contagem desce para não encostar nele (17). */
+  .topo-recentes:has([data-traco-titulo]) .subtitulo-secao {
+    margin-top: 14px;
+  }
+
+  /*
+   * A etiqueta (rodada 4, P16-1): a folha colada na página, girada −0,6°, com a fita no canto de cima à
+   * esquerda (base.css). A margem deixa a fita, que passa do canto, longe da borda da tela no celular.
+   */
+  .com-etiqueta .topo-recentes {
+    align-items: flex-end;
+    margin-bottom: clamp(20px, 2.4vw, 28px);
+  }
+
+  .etiqueta-recentes {
+    width: fit-content;
+    max-width: calc(100% - 12px);
+    margin: 10px 0 0 6px;
+    padding: 13px 24px 12px 21px;
+    rotate: -0.6deg;
+  }
+
+  .etiqueta-recentes .titulo-secao {
+    font-size: clamp(23px, 2.3vw, 27px);
+  }
+
+  .etiqueta-recentes .subtitulo-secao {
+    margin-top: 3px;
+  }
+
+  .etiqueta-recentes:has([data-traco-titulo]) .subtitulo-secao {
+    margin-top: 12px;
+  }
+
+  /* No celular, a tira de Lista / Cards desce para a linha de baixo, à direita. */
+  .com-etiqueta .topo-recentes :global(.modo) {
+    margin-left: auto;
   }
 
 </style>

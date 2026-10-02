@@ -17,6 +17,17 @@
  * amarela; FotoDoLivro) e o link para a página dele. Sem seções (menos de 3), a coluna tem só a
  * ficha. Os vistos são desenhados à mão, um por seção (vistoDeCaneta, traco.ts), aqui e na "folha".
  *
+ * Rodada 3 (área 5 da direção): o post-it e a ficha andam juntos, fixos à esquerda do texto e
+ * alinhados ao topo da folha do corpo (artigo.css). A ficha é um papel colado com um pedaço de fita no
+ * alto (G28); com o mouse ou o foco, ela toma a cor do livro de baixo para cima (0,35s, P1), como os
+ * cartões de Livros, e a ficha inteira leva ao livro. O giro e o brilho da foto do livro são os do
+ * livro 3D do site (luz.ts e luz.css, de outro construtor): aqui, nada de hover próprio de livro.
+ * Ganchos estáveis para as linhas (não renomear): `.post-it` (os pseudo-elementos ::before e ::after
+ * ficam livres, para o alfinete da linha 16), `.do-livro` (o ::after fica livre; o ::before é a
+ * pintura), `.fita`, `.cabeca-ficha`, `.foto`, `.sobre`, `.dados`, `.nome-livro`, `.ver` e os
+ * atributos `data-livro-nome`, `data-volume` e `data-publicado` (ficha-do-livro.ts), para a ficha de
+ * empréstimo com carimbo da linha 19.
+ *
  * "recolhivel": no início do texto, nas telas menores.
  *
  * "folha" (C2, D49): nas telas sem a lateral, o nome da seção atual toma o lugar da marca no
@@ -25,7 +36,9 @@
  */
 import FotoDoLivro from "./FotoDoLivro.astro";
 import { ICONES } from "../lib/icones";
+import "../styles/ficha-do-livro.css";
 import { dadosDoLivro, type Livro } from "../lib/estante";
+import { dadosDaFicha, pinturaDoLivro } from "../lib/ficha-do-livro";
 import { posicaoNoLivro } from "../lib/fotos";
 import type { Resumo, SecaoDoSumario } from "../lib/posts";
 import { tituloComQuebras } from "../lib/formato";
@@ -88,7 +101,7 @@ const DO_LIVRO: TituloAMao = livro?.serie ? "Da série" : "Do livro";
         </nav>
         <div class="progresso" aria-hidden="true" hidden data-progresso-sumario data-minutos={minutos}>
           <p class="numeros">
-            <span class="lido">0% lido</span>
+            <span class="lido" style="--lido-pct:0"></span>
             <span class="falta" data-falta>
               <span class="faltam">faltam <span data-minutos-falta>{minutos}</span> min</span>
               <span class="chegou">chegou ao fim</span>
@@ -105,8 +118,9 @@ const DO_LIVRO: TituloAMao = livro?.serie ? "Da série" : "Do livro";
       )}
       {
         livro && (
-          <div class="folha do-livro ficha">
-            <p class="cabeca-ficha">{DO_LIVRO}</p>
+          <div class="folha do-livro ficha ficha-colada" style={pinturaDoLivro(livro)} {...dadosDaFicha(livro, atual)}>
+            <span class="fita" aria-hidden="true"></span>
+            <p class="cabeca-ficha"><span>{DO_LIVRO}</span></p>
             <div class="foto">
               <FotoDoLivro livro={livro} atual={atual} prefixo="ficha-lateral" largura={220} />
             </div>
@@ -487,6 +501,16 @@ const DO_LIVRO: TituloAMao = livro?.serie ? "Da série" : "Do livro";
     padding: 0 4px;
   }
 
+  /*
+   * "NN% lido" (rodada 3): o número vem de uma variável (artigo.ts), escrito por um contador do CSS, e
+   * não por texto trocado no HTML: mexer nos filhos a cada 1% fazia o navegador recalcular o estilo de
+   * uns mil elementos (os `:has()` da página). O progresso é só visual (aria-hidden).
+   */
+  .lido::before {
+    counter-reset: lido var(--lido-pct, 0);
+    content: counter(lido) "% lido";
+  }
+
   .numeros {
     display: flex;
     justify-content: space-between;
@@ -557,24 +581,27 @@ const DO_LIVRO: TituloAMao = livro?.serie ? "Da série" : "Do livro";
   }
 
   /*
-   * ---------- o livro do artigo: a ficha do volume (D46; C05, D52; D57) ----------
+   * ---------- o livro do artigo: a ficha do volume (D46; C05, D52; D57; rodada 3) ----------
    * Uma ficha pautada de fichário, escrita à caneta preta: no cabeçalho, "Do livro" à mão sobre a linha
    * vermelha; embaixo, a foto do livro deitado na mesa, com a fita e uma etiqueta por artigo (a deste,
    * amarela; FotoDoLivro), direto na ficha, sem painel; e os dados do volume datilografados (JetBrains
    * Mono) nas linhas azuis da pauta, com o nome e o link. Reta, como toda folha: só o post-it gira. A
-   * pauta segue as linhas do texto (--linha).
+   * pauta segue as linhas do texto (--linha). Rodada 3: colada com fita e pintada com a cor do livro
+   * no hover (ficha-do-livro.css); a ficha inteira é o link (o ::after do `.sobre` a cobre).
    */
   .do-livro {
     --linha: 24px;
     flex: none;
-    overflow: hidden;
     border-radius: 3px;
+    /* A fita passa da borda de cima: um respiro para ela não encostar no post-it. */
+    margin-top: 4px;
   }
 
   .cabeca-ficha {
     margin: 0;
     padding: 9px 14px 3px;
     border-bottom: 1.5px solid var(--pauta-cabeca);
+    border-radius: 3px 3px 0 0;
     color: var(--ink);
     font-family: var(--font-mao);
     font-weight: 600;
@@ -584,6 +611,8 @@ const DO_LIVRO: TituloAMao = livro?.serie ? "Da série" : "Do livro";
 
   /* A foto, centrada; a sombra da mesa e as pontas das etiquetas já têm a folga delas na imagem. */
   .foto {
+    position: relative;
+    z-index: 1;
     display: grid;
     justify-items: center;
     margin: 6px 8px -6px;
@@ -625,6 +654,15 @@ const DO_LIVRO: TituloAMao = livro?.serie ? "Da série" : "Do livro";
     text-decoration: none;
   }
 
+  /* A ficha inteira leva ao livro: o link cobre a ficha (a foto, o cabeçalho e a pauta). */
+  .sobre::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    border-radius: 3px;
+  }
+
   .dados {
     font-family: var(--font-codigo);
     font-size: 12px;
@@ -657,31 +695,109 @@ const DO_LIVRO: TituloAMao = livro?.serie ? "Da série" : "Do livro";
     transition: translate 0.2s;
   }
 
-  /* O link vai de uma borda da ficha à outra: o anel do foco fica por dentro (a ficha corta o de fora). */
-  .sobre:focus-visible {
-    outline-offset: -3px;
+  /*
+   * A tinta do livro passa por cima da pauta e da linha do cabeçalho; o texto fica por cima dela e muda
+   * para a tinta clara do livro no instante em que a cor chega nele (a cor sobe do pé: primeiro o "Ver o
+   * livro", por último o "Do livro"); ao sair, a cor desce do alto e o texto volta antes de ela sair de
+   * baixo dele. Os atrasos seguem a curva da pintura (ficha-do-livro.css).
+   */
+  .cabeca-ficha > span,
+  .dados,
+  .nome-livro,
+  .ver {
+    position: relative;
+    z-index: 1;
+    transition: color 0.06s linear var(--sai, 0s);
   }
 
-  .sobre:hover .nome-livro {
-    color: var(--acento);
+  .cabeca-ficha > span {
+    --entra: 0.27s;
+    --sai: 0s;
   }
 
-  .sobre:hover .ver {
+  .dados {
+    --entra: 0.15s;
+    --sai: 0.13s;
+  }
+
+  .nome-livro {
+    --entra: 0.13s;
+    --sai: 0.15s;
+  }
+
+  .ver {
+    --entra: 0.11s;
+    --sai: 0.17s;
+  }
+
+  .do-livro:is(:hover, :has(:focus-visible)) :is(.cabeca-ficha > span, .nome-livro, .ver) {
+    color: var(--sobre-pinta);
+    transition: color 0.08s linear var(--entra);
+  }
+
+  .do-livro:is(:hover, :has(:focus-visible)) .dados {
+    color: color-mix(in oklab, var(--sobre-pinta) 84%, var(--pinta));
+    transition: color 0.08s linear var(--entra);
+  }
+
+  .do-livro:is(:hover, :has(:focus-visible)) .ver svg {
+    translate: 3px 0;
+  }
+
+  .do-livro:is(:hover, :has(:focus-visible)) .ver {
     text-decoration: underline;
     text-underline-offset: 0.18em;
   }
 
-  .sobre:hover .ver svg {
-    translate: 3px 0;
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    .ver svg {
+    .ver svg,
+    .cabeca-ficha > span,
+    .dados,
+    .nome-livro,
+    .ver,
+    .do-livro:is(:hover, :has(:focus-visible)) :is(.cabeca-ficha > span, .dados, .nome-livro, .ver) {
       transition: none;
     }
   }
 
-  /* ---------- recolhível ---------- */
+  /*
+   * ---------- recolhível ----------
+   * Rodada 4, S4 (H5: tudo vira papel): o "Neste artigo" dobrado no início do texto, nas telas sem a
+   * lateral, é o post-it do desktop: o mesmo amarelo (--post-it), sem borda (transparente: o tamanho não
+   * muda), o canto de 2px e a sombra do post-it, com a borda de baixo levantada; o título à mão, na caneta
+   * da leitura, como no desktop. Reto: está dentro do texto. Aberto, o fio sob o título é o do post-it.
+   */
+  .recolhivel {
+    border-color: transparent;
+    border-radius: 2px 2px 4px 3px;
+    background: var(--post-it);
+    box-shadow: var(--sombra-post-it);
+  }
+
+  .recolhivel > summary {
+    padding-block: 8px 7px;
+    color: var(--caneta);
+    font-family: var(--font-mao);
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 1.05;
+  }
+
+  .recolhivel > summary::before {
+    width: 6px;
+    height: 6px;
+    margin-right: 2px;
+  }
+
+  .recolhivel[open] > summary {
+    border-bottom-color: color-mix(in oklab, var(--ink) 14%, transparent);
+  }
+
+  .recolhivel > summary:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
 
   .recolhivel ol {
     margin: 0;
@@ -814,6 +930,10 @@ const DO_LIVRO: TituloAMao = livro?.serie ? "Da série" : "Do livro";
    * Nas telas sem a lateral: desce do cabeçalho como o menu do celular (D46), recortada de cima para
    * baixo, com os itens chegando em sequência; um véu escurece a página por baixo (Cabecalho.astro).
    */
+  /*
+   * Rodada 4, S4: a folha que desce do cabeçalho também é o post-it (o mesmo amarelo, o canto de 2px no
+   * recorte, o título à mão na caneta). O comportamento não muda.
+   */
   .folha-celular {
     position: fixed;
     z-index: 29;
@@ -825,7 +945,10 @@ const DO_LIVRO: TituloAMao = livro?.serie ? "Da série" : "Do livro";
     padding: 18px 18px 14px;
     overflow: auto;
     scrollbar-width: thin;
-    clip-path: inset(0 0 100% 0 round 14px);
+    border-color: transparent;
+    border-radius: 2px;
+    background: var(--post-it);
+    clip-path: inset(0 0 100% 0 round 2px);
     visibility: hidden;
     transition:
       clip-path 0.34s cubic-bezier(0.6, 0, 0.8, 0.4),
@@ -851,7 +974,7 @@ const DO_LIVRO: TituloAMao = livro?.serie ? "Da série" : "Do livro";
   }
 
   :global(:root[data-sumario-aberto]) .folha-celular {
-    clip-path: inset(0 0 0 0 round 14px);
+    clip-path: inset(0 0 0 0 round 2px);
     visibility: visible;
     transition: clip-path 0.46s cubic-bezier(0.2, 0.75, 0.2, 1);
   }
@@ -870,6 +993,24 @@ const DO_LIVRO: TituloAMao = livro?.serie ? "Da série" : "Do livro";
     transition:
       opacity 0.3s calc(0.12s + var(--i, 0) * 0.05s),
       translate 0.3s cubic-bezier(0.2, 0.75, 0.2, 1) calc(0.12s + var(--i, 0) * 0.05s);
+  }
+
+  .folha-celular > .titulo {
+    margin: 0 0 10px -1px;
+    color: var(--caneta);
+    font-family: var(--font-mao);
+    font-weight: 600;
+    font-size: 26px;
+    line-height: 1.05;
+  }
+
+  .folha-celular .bolinha,
+  .folha-celular .secao.lida > a:not([aria-current]) .bolinha {
+    fill: var(--post-it);
+  }
+
+  .folha-celular .dica-atalhos {
+    color: var(--ink-2);
   }
 
   .folha-celular .secao {

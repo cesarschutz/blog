@@ -1,0 +1,446 @@
+/*
+ * Rodada 4 do redesenho (a versão final, direção §2, V1): o nicho afundado. Os livros ficam dentro de um
+ * rebaixo cortado na página, com parede do fundo, teto, chão e o friso da frente; nada é móvel e nada é de
+ * madeira. Os abajures de latão do 18 (PontoDeLuz) ficam no teto do nicho, mais longe dos livros, com o cone
+ * de 44° até o chão e a poça de luz onde ele pousa. No lugar do antigo estante-moderna.css (a prateleira de
+ * madeira do 18, que saiu do protótipo).
+ *
+ * Quem usa: a fileira da home e a do topo da página do livro (Colecao.astro), o filtro por livro e a estante
+ * do 404 (Estante.astro). A geometria de cada uso fica no componente; aqui, o desenho.
+ *
+ * O chão é trocável (combinado da rodada 4): o componente põe `data-chao` na raiz. Desde a E3 o padrão é a
+ * lâmina de vidro (vidro.css); o nicho continua para a amostra dos livros e para o rodapé (`chao="nicho"`). Este
+ * arquivo só desenha o nicho sob `[data-chao^="nicho"]` (o prefixo deixa a amostra criar, por exemplo,
+ * "nicho-laca" para a V5 e ganhar o nicho de graça); com outro valor, as peças continuam no HTML, vazias. Os
+ * abajures, o cone e a poça (abaixo) valem em todo chão.
+ *
+ * As peças, de trás para a frente (todas `aria-hidden`, sem ponteiro):
+ *   .nicho              a caixa recuada (cantos de 3px, pontas fechadas)
+ *   .nicho-parede       a parede do fundo, mais escura que a página, com as sombras das laterais
+ *   .nicho-teto         a sombra do teto, que desce do alto (a abertura a faz crescer)
+ *   .nicho-chao         o chão, um nada mais claro que a parede, onde os livros pisam e a luz pousa
+ *   .nicho-friso        a borda da frente, abaixo do chão, com o fio de luz no alto e a sombra logo abaixo
+ *
+ * As cores saem dos tokens por `color-mix` (direção §2): no claro, a parede é o papel com 9% de tinta; no
+ * escuro, o papel com 45% de preto. Nada anima aqui (a abertura anima as peças por transform e opacidade).
+ */
+
+/* ---------- as cores do nicho (os dois temas) ---------- */
+
+:root {
+  --nicho-parede: color-mix(in oklab, var(--paper), var(--ink) 9%);
+  --nicho-chao: color-mix(in oklab, var(--nicho-parede), var(--paper-hi) 4%);
+  --nicho-friso: color-mix(in oklab, var(--nicho-parede), var(--ink) 10%);
+  --nicho-fio: color-mix(in oklab, var(--paper-hi) 70%, transparent);
+  /* A sombra quente do teto (18% a 0), das laterais (10% a 0) e a do fio do friso (22%). */
+  --nicho-sombra-teto: color-mix(in oklab, var(--sombra-quente) 18%, transparent);
+  --nicho-sombra-lado: color-mix(in oklab, var(--sombra-quente) 10%, transparent);
+  --nicho-sombra-fio: color-mix(in oklab, var(--sombra-quente) 22%, transparent);
+  /*
+   * Os abajures (direção §2): o cone em repouso e aceso, e a poça no chão, em repouso e acesa. No claro, a
+   * poça de 10% e 25% da direção sumia a olho nu no chão claro (o risco que a própria direção previu para o
+   * V3): ela fica em 16% e 36%.
+   */
+  --cone-repouso: 0.2;
+  --cone-aceso: 0.55;
+  --poca-repouso: 0.16;
+  --poca-acesa: 0.36;
+}
+
+:root[data-theme="dark"] {
+  --nicho-parede: color-mix(in oklab, var(--paper), black 45%);
+  --nicho-friso: color-mix(in oklab, var(--nicho-parede), black 30%);
+  --nicho-fio: color-mix(in oklab, var(--luz-quente) 18%, transparent);
+  /* No escuro, a sombra quente é o preto (tokens.ts): as mesmas forças, um nada mais fortes no teto. */
+  --nicho-sombra-teto: color-mix(in oklab, var(--sombra-quente) 34%, transparent);
+  --nicho-sombra-lado: color-mix(in oklab, var(--sombra-quente) 22%, transparent);
+  --nicho-sombra-fio: color-mix(in oklab, var(--sombra-quente) 40%, transparent);
+  --cone-repouso: 0.35;
+  --cone-aceso: 0.9;
+  --poca-repouso: 0.28;
+  --poca-acesa: 0.45;
+}
+
+/* ---------- o nicho ---------- */
+
+/* As peças existem em todo chão (vazias); só o nicho as desenha. */
+.nicho {
+  display: none;
+}
+
+[data-chao^="nicho"] .nicho {
+  position: absolute;
+  z-index: 0;
+  display: block;
+  overflow: hidden;
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+[data-chao^="nicho"] .nicho > * {
+  position: absolute;
+  right: 0;
+  left: 0;
+  display: block;
+}
+
+/*
+ * A parede do fundo, do alto até o chão. As laterais têm a sombra das paredes de lado (28px, 10% a 0); no
+ * pé, junto do chão, um fio de sombra de contato (a quina entre a parede e o chão).
+ */
+[data-chao^="nicho"] .nicho-parede {
+  top: 0;
+  bottom: calc(var(--k-chao-alto) + var(--k-friso));
+  background:
+    linear-gradient(to top, var(--nicho-sombra-lado), transparent 5px),
+    linear-gradient(to right, var(--nicho-sombra-lado), transparent 28px),
+    linear-gradient(to left, var(--nicho-sombra-lado), transparent 28px),
+    var(--nicho-parede);
+}
+
+/* A sombra do teto: desce do alto (48px na home), da sombra quente a 18% até nada. */
+[data-chao^="nicho"] .nicho-teto {
+  top: 0;
+  height: var(--k-sombra-teto);
+  background: linear-gradient(to bottom, var(--nicho-sombra-teto), color-mix(in oklab, var(--nicho-sombra-teto) 40%, transparent) 45%, transparent);
+  transform-origin: 50% 0;
+}
+
+/*
+ * O chão: a faixa que os livros pisam, um nada mais clara que a parede (pega a luz dos abajures), mais
+ * escura no fundo (a quina com a parede) que na frente. As laterais escurecem como as da parede.
+ */
+[data-chao^="nicho"] .nicho-chao {
+  bottom: var(--k-friso);
+  height: var(--k-chao-alto);
+  background:
+    linear-gradient(to right, var(--nicho-sombra-lado), transparent 28px),
+    linear-gradient(to left, var(--nicho-sombra-lado), transparent 28px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--nicho-parede), var(--sombra-quente) 6%), var(--nicho-chao) 55%);
+}
+
+/*
+ * O friso da frente: a borda do rebaixo, abaixo do chão. No alto, o fio de luz de 1px (a quina pega a luz)
+ * e, logo abaixo, 3px de sombra quente.
+ */
+[data-chao^="nicho"] .nicho-friso {
+  bottom: 0;
+  height: var(--k-friso);
+  background:
+    linear-gradient(var(--nicho-fio), var(--nicho-fio)) 0 0 / 100% 1px no-repeat,
+    linear-gradient(to bottom, var(--nicho-sombra-fio), transparent) 0 1px / 100% 3px no-repeat,
+    var(--nicho-friso);
+  transform-origin: 50% 0;
+}
+
+/* ---------- os abajures no nicho (PontoDeLuz; a peça de latão é a do 18, luz.css) ---------- */
+
+/*
+ * O cone sai da boca da cúpula e chega ao chão (o meio da faixa do chão), com o ângulo de `--cone-angulo`
+ * (44° na home): a largura vem da altura (2·tan(ângulo/2)). As forças são as da direção (repouso e aceso, por
+ * tema). O `:root` na frente vence a regra do tema de luz.css, que tem o mesmo peso.
+ */
+:root .lugar-luz .ponto-luz {
+  --ponto-luz-repouso: var(--cone-repouso);
+  --ponto-luz-aceso: var(--cone-aceso);
+  aspect-ratio: calc(2 * tan(var(--cone-angulo, 44deg) / 2));
+}
+
+/* O feixe longo: forte na boca, quente no meio do caminho e ainda quente ao chegar ao chão. */
+:root .lugar-luz .ponto-luz-cone {
+  background:
+    radial-gradient(ellipse 30% 16% at 50% 0%, color-mix(in oklab, var(--lampada-branca) 75%, transparent), transparent 100%),
+    radial-gradient(
+      ellipse 50% 100% at 50% 0%,
+      color-mix(in oklab, var(--luz-quente) 72%, transparent),
+      color-mix(in oklab, var(--lampada-ambar) 30%, transparent) 40%,
+      color-mix(in oklab, var(--lampada-ambar) 14%, transparent) 75%,
+      color-mix(in oklab, var(--lampada-ambar) 6%, transparent) 100%
+    );
+  -webkit-mask: conic-gradient(
+    from calc(180deg - var(--cone-angulo, 44deg) / 2) at 50% 0%,
+    transparent,
+    #000 6deg,
+    #000 calc(var(--cone-angulo, 44deg) - 6deg),
+    transparent var(--cone-angulo, 44deg)
+  );
+  mask: conic-gradient(
+    from calc(180deg - var(--cone-angulo, 44deg) / 2) at 50% 0%,
+    transparent,
+    #000 6deg,
+    #000 calc(var(--cone-angulo, 44deg) - 6deg),
+    transparent var(--cone-angulo, 44deg)
+  );
+  will-change: opacity;
+}
+
+/*
+ * No claro, a luz sobre a parede do nicho só aparece com mais âmbar (o branco quente some no bege): o feixe é
+ * mais carregado que no escuro, para os raios ficarem à vista em repouso como os do 20 (P20-2), com a força
+ * da direção (0,2).
+ */
+:root:not([data-theme="dark"]) .lugar-luz .ponto-luz-cone {
+  background:
+    radial-gradient(ellipse 30% 16% at 50% 0%, color-mix(in oklab, var(--lampada-branca) 90%, transparent), transparent 100%),
+    radial-gradient(
+      ellipse 50% 100% at 50% 0%,
+      color-mix(in oklab, var(--lampada-ambar) 84%, transparent),
+      color-mix(in oklab, var(--lampada-ambar) 54%, transparent) 40%,
+      color-mix(in oklab, var(--lampada-ambar) 28%, transparent) 75%,
+      color-mix(in oklab, var(--lampada-ambar) 12%, transparent) 100%
+    );
+}
+
+/*
+ * A poça de luz no chão, onde o cone pousa: uma elipse quente, `--poca-largura` vezes a largura do lugar
+ * (1,3) e `--poca-alto` de alto (10px). Vive dentro do feixe, para acender com ele na chegada (a curva da
+ * lâmpada, estante-moderna.ts); a força vai do repouso ao aceso com `--luz-acesa` (o hover do livro, o foco,
+ * o lugar vazio).
+ */
+.lugar-luz .ponto-luz-feixe::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: calc(var(--poca-largura, 1.3) * var(--w-luz, 100px));
+  height: var(--k-poca-alto, 10px);
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--luz-quente) 90%, transparent),
+    color-mix(in oklab, var(--lampada-ambar) 55%, transparent) 45%,
+    color-mix(in oklab, var(--lampada-ambar) 16%, transparent) 75%,
+    transparent
+  );
+  translate: -50% 50%;
+  opacity: calc(var(--poca-repouso) + (var(--poca-acesa) - var(--poca-repouso)) * var(--luz-acesa, 0));
+  transition: opacity 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* No claro, a poça puxa para o âmbar (sobre o chão claro, o branco quente não se lê). */
+:root:not([data-theme="dark"]) .lugar-luz .ponto-luz-feixe::after {
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--lampada-ambar) 95%, transparent),
+    color-mix(in oklab, var(--lampada-ambar) 55%, transparent) 45%,
+    color-mix(in oklab, var(--lampada-ambar) 14%, transparent) 78%,
+    transparent
+  );
+}
+
+/* O lugar aceso de propósito (o lugar vazio do livro aberto, P18-3). */
+.lugar-luz[data-luz-acesa] {
+  --luz-acesa: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lugar-luz .ponto-luz-feixe::after {
+    transition: none;
+  }
+}
+
+/* ---------- as lombadas no nicho (Estante.astro: o filtro por livro e a estante do 404) ---------- */
+
+/*
+ * A estante de lombadas ganha, em cima, o lugar dos abajures (`--alto-das-luzes`, o teto do nicho curto) e,
+ * embaixo, o chão e o friso. As lombadas pisam no chão, junto da parede. Sem o aparador: só o vão antes da
+ * série. O nicho fica dentro da `.tabua` (a peça do chão, depois das lombadas), presa a ela pelo pé e subindo
+ * até o alto da fileira: atrás das lombadas e dos abajures.
+ */
+.estante-moderna {
+  --alto-das-luzes: 40px;
+  --lq-luz: 0.62px;
+  --k-chao-alto: 9px;
+  --k-friso: 7px;
+  --k-sombra-teto: 30px;
+  --k-poca-alto: 6px;
+  --poca-largura: 1.6;
+  --nicho-lado: 12px;
+  --cone-angulo: 40deg;
+  position: relative;
+}
+
+.estante-moderna.estante-filtro {
+  --alto-das-luzes: 32px;
+  --lq-luz: 0.56px;
+  --k-chao-alto: 8px;
+  --k-friso: 6px;
+  --k-sombra-teto: 24px;
+  --k-poca-alto: 5px;
+  --nicho-lado: 10px;
+}
+
+/* O olho continua no mesmo lugar em relação aos livros (estante.css): sobe junto com o espaço das luzes. */
+.estante-moderna .prateleira-livros {
+  padding-top: calc(12 * var(--u) + 8px + var(--alto-das-luzes));
+  perspective-origin: 50% calc(12 * var(--u) + 8px + var(--alto-das-luzes) - 190 * var(--u));
+}
+
+/* A peça do chão: a altura do chão e do friso; o desenho é do nicho (ou de quem trocar o chão). */
+.estante-moderna .tabua.chao-estante {
+  height: calc(var(--k-chao-alto) + var(--k-friso));
+  margin: 0 0 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.estante-moderna .tabua.chao-estante::before,
+.estante-moderna .tabua.chao-estante::after {
+  content: none;
+}
+
+/*
+ * O nicho curto das lombadas: do alto da fileira (a altura do livro mais alto, a cabeça e o espaço dos
+ * abajures) até o pé do friso, e `--nicho-lado` para fora das pontas da fileira.
+ */
+.estante-moderna[data-chao^="nicho"] .nicho {
+  top: calc(-1 * (var(--alto-max) * var(--u) + 12 * var(--u) + 8px + var(--alto-das-luzes)));
+  bottom: 0;
+  left: calc(-1 * var(--nicho-lado));
+  right: calc(-1 * var(--nicho-lado));
+}
+
+/* O pé de cada lombada no chão: um fio escuro curto, a sombra de contato (no lugar da do tampo de antes). */
+.estante-moderna .lombada::before,
+:root[data-theme="dark"] .estante-moderna .lombada::before {
+  top: calc(100% - 1px);
+  right: 0;
+  left: 0;
+  height: 4px;
+  border-radius: 0 0 50% 50%;
+  background: linear-gradient(color-mix(in oklab, var(--sombra-quente) 45%, transparent), transparent);
+}
+
+:root[data-theme="dark"] .estante-moderna .lombada::before {
+  background: linear-gradient(color-mix(in oklab, var(--sombra-quente) 70%, transparent), transparent);
+}
+
+/* Sem o aparador cinza: o vão continua (a peça fica, vazia). */
+.estante-moderna .aparador {
+  background: none;
+}
+
+.estante-moderna .aparador::after {
+  content: none;
+}
+
+/*
+ * A camada dos abajures: presa ao chão (filha da `.tabua`), do alto do chão até o alto da fileira, com os
+ * mesmos lugares das lombadas (o mesmo recuo, o mesmo vão e o vão do aparador). O cone desce da boca até o
+ * meio do chão, onde fica a poça.
+ */
+.luzes-estante {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: calc(6 * var(--u));
+  height: calc(var(--alto-max) * var(--u) + 12 * var(--u) + 8px + var(--alto-das-luzes) + var(--k-chao-alto) + var(--k-friso));
+  padding-inline: calc(16 * var(--u));
+  pointer-events: none;
+}
+
+/* No nicho, a luz não passa das paredes: os cones das pontas são cortados nas laterais dele. */
+.estante-moderna[data-chao^="nicho"] .luzes-estante {
+  clip-path: inset(0 calc(-1 * var(--nicho-lado)) round 3px);
+}
+
+/*
+ * No filtro, a lombada escolhida é a única acesa, e no claro o aceso da direção (0,55) mal se distinguia do
+ * repouso nos cones curtos das lombadas: aqui ele vai a 0,85, com a poça a 50%.
+ */
+:root:not([data-theme="dark"]) .estante-moderna[data-chao^="nicho"] {
+  --cone-aceso: 0.85;
+  --poca-acesa: 0.5;
+}
+
+/* No vidro (o padrão, vidro.css), o mesmo cone aceso mais forte no claro; a poça é a do vidro. */
+:root:not([data-theme="dark"]) .estante-moderna[data-chao="vidro"] {
+  --cone-aceso: 0.85;
+}
+
+.luzes-estante .lugar-luz {
+  --w-luz: calc(var(--w) * var(--u));
+  position: relative;
+  flex: none;
+  width: var(--w-luz);
+}
+
+.luzes-estante .lugar-aparador {
+  flex: none;
+  width: calc(12 * var(--u));
+  margin: 0 calc(25 * var(--u)) 0 calc(43 * var(--u));
+}
+
+:root .luzes-estante .ponto-luz {
+  --ponto-luz-topo: calc(var(--alto-das-luzes) - 2px - 12 * var(--lq-luz));
+  --ponto-luz-pe: calc(var(--k-friso) + var(--k-chao-alto) / 2);
+}
+
+/*
+ * A luz da lombada sob o mouse, com o foco ou escolhida no filtro acende (até 16 livros na estante). A
+ * escolhida no filtro é a que "saiu" (P18-3): o abajur dela fica aceso, com a poça, enquanto o filtro vale.
+ */
+.estante-moderna .prateleira-livros:has(> :nth-child(1):is(:focus-visible, [aria-pressed="true"], [data-lv-toque])) ~ .tabua .luzes-estante > :nth-child(1),
+.estante-moderna .prateleira-livros:has(> :nth-child(2):is(:focus-visible, [aria-pressed="true"], [data-lv-toque])) ~ .tabua .luzes-estante > :nth-child(2),
+.estante-moderna .prateleira-livros:has(> :nth-child(3):is(:focus-visible, [aria-pressed="true"], [data-lv-toque])) ~ .tabua .luzes-estante > :nth-child(3),
+.estante-moderna .prateleira-livros:has(> :nth-child(4):is(:focus-visible, [aria-pressed="true"], [data-lv-toque])) ~ .tabua .luzes-estante > :nth-child(4),
+.estante-moderna .prateleira-livros:has(> :nth-child(5):is(:focus-visible, [aria-pressed="true"], [data-lv-toque])) ~ .tabua .luzes-estante > :nth-child(5),
+.estante-moderna .prateleira-livros:has(> :nth-child(6):is(:focus-visible, [aria-pressed="true"], [data-lv-toque])) ~ .tabua .luzes-estante > :nth-child(6),
+.estante-moderna .prateleira-livros:has(> :nth-child(7):is(:focus-visible, [aria-pressed="true"], [data-lv-toque])) ~ .tabua .luzes-estante > :nth-child(7),
+.estante-moderna .prateleira-livros:has(> :nth-child(8):is(:focus-visible, [aria-pressed="true"], [data-lv-toque])) ~ .tabua .luzes-estante > :nth-child(8),
+.estante-moderna .prateleira-livros:has(> :nth-child(9):is(:focus-visible, [aria-pressed="true"], [data-lv-toque])) ~ .tabua .luzes-estante > :nth-child(9),
+.estante-moderna .prateleira-livros:has(> :nth-child(10):is(:focus-visible, [aria-pressed="true"], [data-lv-toque])) ~ .tabua .luzes-estante > :nth-child(10),
+.estante-moderna .prateleira-livros:has(> :nth-child(11):is(:focus-visible, [aria-pressed="true"], [data-lv-toque])) ~ .tabua .luzes-estante > :nth-child(11),
+.estante-moderna .prateleira-livros:has(> :nth-child(12):is(:focus-visible, [aria-pressed="true"], [data-lv-toque])) ~ .tabua .luzes-estante > :nth-child(12),
+.estante-moderna .prateleira-livros:has(> :nth-child(13):is(:focus-visible, [aria-pressed="true"], [data-lv-toque])) ~ .tabua .luzes-estante > :nth-child(13),
+.estante-moderna .prateleira-livros:has(> :nth-child(14):is(:focus-visible, [aria-pressed="true"], [data-lv-toque])) ~ .tabua .luzes-estante > :nth-child(14),
+.estante-moderna .prateleira-livros:has(> :nth-child(15):is(:focus-visible, [aria-pressed="true"], [data-lv-toque])) ~ .tabua .luzes-estante > :nth-child(15),
+.estante-moderna .prateleira-livros:has(> :nth-child(16):is(:focus-visible, [aria-pressed="true"], [data-lv-toque])) ~ .tabua .luzes-estante > :nth-child(16) {
+  --luz-acesa: 1;
+}
+
+@media (hover: hover) {
+  .estante-moderna .prateleira-livros:has(> :nth-child(1):hover) ~ .tabua .luzes-estante > :nth-child(1),
+  .estante-moderna .prateleira-livros:has(> :nth-child(2):hover) ~ .tabua .luzes-estante > :nth-child(2),
+  .estante-moderna .prateleira-livros:has(> :nth-child(3):hover) ~ .tabua .luzes-estante > :nth-child(3),
+  .estante-moderna .prateleira-livros:has(> :nth-child(4):hover) ~ .tabua .luzes-estante > :nth-child(4),
+  .estante-moderna .prateleira-livros:has(> :nth-child(5):hover) ~ .tabua .luzes-estante > :nth-child(5),
+  .estante-moderna .prateleira-livros:has(> :nth-child(6):hover) ~ .tabua .luzes-estante > :nth-child(6),
+  .estante-moderna .prateleira-livros:has(> :nth-child(7):hover) ~ .tabua .luzes-estante > :nth-child(7),
+  .estante-moderna .prateleira-livros:has(> :nth-child(8):hover) ~ .tabua .luzes-estante > :nth-child(8),
+  .estante-moderna .prateleira-livros:has(> :nth-child(9):hover) ~ .tabua .luzes-estante > :nth-child(9),
+  .estante-moderna .prateleira-livros:has(> :nth-child(10):hover) ~ .tabua .luzes-estante > :nth-child(10),
+  .estante-moderna .prateleira-livros:has(> :nth-child(11):hover) ~ .tabua .luzes-estante > :nth-child(11),
+  .estante-moderna .prateleira-livros:has(> :nth-child(12):hover) ~ .tabua .luzes-estante > :nth-child(12),
+  .estante-moderna .prateleira-livros:has(> :nth-child(13):hover) ~ .tabua .luzes-estante > :nth-child(13),
+  .estante-moderna .prateleira-livros:has(> :nth-child(14):hover) ~ .tabua .luzes-estante > :nth-child(14),
+  .estante-moderna .prateleira-livros:has(> :nth-child(15):hover) ~ .tabua .luzes-estante > :nth-child(15),
+  .estante-moderna .prateleira-livros:has(> :nth-child(16):hover) ~ .tabua .luzes-estante > :nth-child(16) {
+    --luz-acesa: 1;
+  }
+}
+
+/*
+ * O lugar aceso (`--luz-acesa: 1`, posto pelas regras acima, pelas de Colecao.astro e por `data-luz-acesa`)
+ * leva o cone ao aceso e a boca ao halo cheio, na fileira e nas lombadas.
+ */
+.lugar-luz .ponto-luz-cone {
+  opacity: calc(var(--ponto-luz-repouso) + (var(--ponto-luz-aceso) - var(--ponto-luz-repouso)) * var(--luz-acesa, 0));
+}
+
+.lugar-luz .ponto-luz-lampada::after {
+  opacity: calc(0.25 + 0.75 * var(--luz-acesa, 0));
+}
+
+:root[data-theme="dark"] .lugar-luz .ponto-luz-lampada::after {
+  opacity: calc(0.55 + 0.45 * var(--luz-acesa, 0));
+}
+
+/* Acendendo, a boca vem 60ms antes do cone (como no 18); apagando, os dois juntos. */
+.lugar-luz .ponto-luz-cone {
+  transition: opacity 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) calc(60ms * var(--luz-acesa, 0));
+}

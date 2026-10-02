@@ -10,19 +10,34 @@
  *
  * Os gestos pequenos (D49, protótipo E3): "Copiar link" faz o gesto de copiar do site, o mesmo do
  * código (os elos se juntam, a caneta faz o visto e o rótulo rola até "Link copiado", com a pílula
- * crescendo sem pular; copiado.ts). Em anterior e próximo, a seta abre o próprio espaço apontando para
- * onde o leitor vai, e o canto de fora da folha dobra (a orelha), como quem vira a página. Só CSS; no
- * toque, aparecem enquanto o dedo está no cartão.
+ * crescendo sem pular; copiado.ts).
+ *
+ * Rodada 3 (área 5 da direção):
+ * - Anterior e próximo com a imagem do post (T10, a ideia do 02): dois cartões lado a lado, cada um com
+ *   a ilustração do post à esquerda (160px) e o rótulo, o título e o complemento à direita, sem a
+ *   orelha que dobrava. No hover (ou no foco, ou no dedo), o cartão sobe 2px, a seta anda 3px para onde
+ *   se vai e o detalhe da capa viva se mexe (artigo.css e artigo.ts). Sem o próximo (o artigo mais
+ *   novo), o lugar fica com o quadro tracejado e a frase do 02; sem o anterior (o primeiro), o mesmo.
+ *   No celular, um embaixo do outro.
+ * - A ficha "Do livro" do fim do artigo (telas sem a lateral) é a mesma ficha colada da lateral, com a
+ *   fita e a pintura na cor do livro (ficha-do-livro.css).
+ *
+ * Rodada 4 (P16-9 e E8): o anterior e o próximo viram fichas de catálogo, como os cards, coladas com a
+ * fita crepe (Vizinhos.astro, "o B com a fita do C"), e a ficha "Do livro" fica como está
+ * (LivroDoArtigo.astro). As duas saíram daqui em componentes próprios
+ * para a amostra D6 (nas amostras do redesenho, fora do git) mostrar as outras formas com o componente de verdade.
+ *
+ * Ganchos estáveis (não renomear): `.vizinhos`, `a.vizinho.anterior[rel=prev]` e
+ * `a.vizinho.proximo[rel=next]` (os atalhos do teclado e a troca de página os usam),
+ * `.vizinho-figura`, `.vizinho-texto`, `.dir`, `.nome`, `.sub`, `.vizinho-vazio`; e, na ficha,
+ * `.livro-do-artigo.ficha-colada`, `.fita`, `.cabeca-ficha`, `.corpo-ficha`, `.foto`.
  */
-import FotoDoLivro from "./FotoDoLivro.astro";
+import LivroDoArtigo from "./LivroDoArtigo.astro";
 import PilulaTag from "./PilulaTag.astro";
-import SinalCodigo from "./SinalCodigo.astro";
+import Vizinhos from "./Vizinhos.astro";
 import { ICONES } from "../lib/icones";
-import { dadosDoLivro, montarLivros } from "../lib/estante";
+import { montarLivros } from "../lib/estante";
 import type { Resumo } from "../lib/posts";
-import { tituloComQuebras } from "../lib/formato";
-import { posicaoNoLivro } from "../lib/fotos";
-import type { TituloAMao } from "../lib/mao";
 
 interface Props {
   post: Resumo;
@@ -37,15 +52,8 @@ const livros = await montarLivros();
 const livro = post.serie
   ? livros.find((l) => l.id === `serie-${post.serie!.chave}`)
   : livros.find((l) => post.categoria && l.slug === post.categoria.slug);
-// O título da ficha, à mão (C05, D52): só os da lista de src/data/mao.ts (o subconjunto da Caveat).
-const DO_LIVRO: TituloAMao = livro?.serie ? "Da série" : "Do livro";
-// Datilografado: "Volume 02 ·" e "6 artigos" nunca se partem por dentro (a linha quebra no ponto, no celular).
-const dadosNaFicha = livro ? dadosDoLivro(livro).split(" · ").map((parte) => parte.replaceAll(" ", "\u00a0")).join("\u00a0· ") : "";
-const posicao = livro ? posicaoNoLivro(livro, post.url) : undefined;
 const linkedin = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(endereco)}`;
 const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${tituloCompleto} ${endereco}`)}`;
-// Sempre em ordem cronológica global, sem olhar o livro (D52, B03): os rótulos não falam mais de série.
-const rotulos = { anterior: "Artigo anterior", proximo: "Próximo artigo" };
 ---
 
 <footer class="rodape-artigo">
@@ -83,56 +91,10 @@ const rotulos = { anterior: "Artigo anterior", proximo: "Próximo artigo" };
     </p>
   </aside>
 
-  <div class="fim-do-artigo">
-    {
-      livro && (
-        <a class="livro-do-artigo" href={livro.href}>
-          <span class="cabeca-ficha">{DO_LIVRO}</span>
-          <span class="corpo-ficha">
-            <span class="foto">
-              <FotoDoLivro livro={livro} atual={post} prefixo="ficha-rodape" largura={150} />
-            </span>
-            <span class="sobre-livro">
-              <span class="dados-livro">{dadosNaFicha}{posicao && <span class="sr">, {posicao}</span>}</span>
-              <span class="nome-livro">{livro.nome}</span>
-              <span class="ver-livro">
-                {livro.serie ? "Ver a série" : "Ver o livro"}
-                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
-              </span>
-            </span>
-          </span>
-        </a>
-      )
-    }
-  </div>
+  <div class="fim-do-artigo">{livro && <LivroDoArtigo livro={livro} post={post} />}</div>
 </footer>
 
-{
-  (anterior || proximo) && (
-    <nav class="vizinhos" aria-label="Outros artigos">
-      {anterior ? (
-        <a href={anterior.url} rel="prev" class="anterior">
-          <span class="dir">
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
-            {rotulos.anterior}
-          </span>
-          <span class="nome"><span set:html={tituloComQuebras(anterior.tituloCompleto)} />{anterior.codigo && <SinalCodigo curto />}</span>
-        </a>
-      ) : (
-        <span />
-      )}
-      {proximo && (
-        <a href={proximo.url} rel="next" class="proximo">
-          <span class="dir">
-            {rotulos.proximo}
-            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
-          </span>
-          <span class="nome"><span set:html={tituloComQuebras(proximo.tituloCompleto)} />{proximo.codigo && <SinalCodigo curto />}</span>
-        </a>
-      )}
-    </nav>
-  )
-}
+<Vizinhos anterior={anterior} proximo={proximo} />
 
 <script>
   import { mostrarCopiado } from "../scripts/copiado";
@@ -240,316 +202,8 @@ const rotulos = { anterior: "Artigo anterior", proximo: "Próximo artigo" };
     margin-top: 1px;
   }
 
-  /*
-   * ---------- o livro do artigo: a ficha do volume (C05, D52; D57) ----------
-   * A mesma ficha de fichário da lateral (Sumario.astro), deitada: no cabeçalho, "Do livro" à mão (caneta
-   * preta) sobre a linha vermelha; embaixo, a foto do livro deitado (D57, FotoDoLivro) e, ao lado, os
-   * dados datilografados, o nome e o link nas linhas azuis da pauta. Dentro da folha do artigo, sem
-   * sombra (DESIGN.md: painéis e caixas dentro de uma folha não levam sombra). A ficha inteira é o link;
-   * ao passar o mouse, a borda fica azul-tinta.
-   */
+  /* A ficha "Do livro" do fim do artigo (LivroDoArtigo.astro) e o anterior e próximo (Vizinhos.astro). */
   .fim-do-artigo {
-    margin-top: 30px;
-  }
-
-  .livro-do-artigo {
-    --linha: 28px;
-    display: block;
-    overflow: hidden;
-    border: 1px solid var(--rule);
-    border-radius: 3px;
-    background: var(--paper-hi);
-    color: var(--ink);
-    text-decoration: none;
-    transition: border-color 0.15s;
-  }
-
-  .livro-do-artigo:hover {
-    border-color: var(--acento);
-  }
-
-  /*
-   * Folha larga: a ficha fica do tamanho de uma ficha (a largura de um dos cartões de anterior/próximo,
-   * logo abaixo), e não uma faixa de pauta vazia de lado a lado.
-   */
-  @container (min-width: 880px) {
-    .livro-do-artigo {
-      max-width: calc((100% - 18px) / 2);
-    }
-  }
-
-  .cabeca-ficha {
-    display: block;
-    padding: 9px 20px 3px;
-    border-bottom: 1.5px solid var(--pauta-cabeca);
-    font-family: var(--font-mao);
-    font-weight: 600;
-    font-size: 25px;
-    line-height: 1.05;
-  }
-
-  /* A pauta corre a ficha inteira; a foto do livro cobre o pedaço dela à esquerda. */
-  .corpo-ficha {
-    display: flex;
-    align-items: flex-start;
-    gap: 20px;
-    padding: 18px 20px 14px;
-    /* A pauta para 10px antes do pé da ficha (não vira uma segunda borda embaixo). */
-    background: repeating-linear-gradient(to bottom, transparent 0 calc(var(--linha) - 1px), var(--pauta) calc(var(--linha) - 1px) var(--linha))
-      0 13px / 100% calc(100% - 23px) no-repeat;
-  }
-
-  /* A foto, sem painel: o livro deitado direto na ficha (a folga da sombra já está na imagem). */
-  .foto {
-    flex: none;
-    width: 150px;
-    margin: -8px -6px -10px -8px;
-  }
-
-  /* A coluna encolhe e o nome quebra com hífen: "Desenvolvimento" não cabe inteiro ao lado do livro em 375px. */
-  .sobre-livro {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    padding-top: 2px;
-    font-family: var(--font-ui);
-    line-height: var(--linha);
-  }
-
-  .dados-livro {
-    font-family: var(--font-codigo);
-    font-size: 13px;
-    color: var(--ink-2);
-    font-variant-numeric: lining-nums;
-  }
-
-  /* O nome, maior, sobe um nada para assentar na mesma linha da pauta que os dados e o link. */
-  .nome-livro {
-    position: relative;
-    top: -4px;
-    font-family: var(--font-titulo);
-    font-weight: 700;
-    font-size: 21px;
-    hyphens: auto;
-    overflow-wrap: break-word;
-  }
-
-  .ver-livro {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14.5px;
-    font-weight: 500;
-    color: var(--acento);
-  }
-
-  .ver-livro svg {
-    width: 15px;
-    height: 15px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    transition: translate 0.2s;
-  }
-
-  .livro-do-artigo:hover .ver-livro svg {
-    translate: 3px 0;
-  }
-
-  /* Celular estreito: o livro um pouco menor, para o nome ter onde quebrar. */
-  @media (max-width: 400px) {
-    .corpo-ficha {
-      gap: 14px;
-      padding-inline: 14px;
-    }
-
-    .cabeca-ficha {
-      padding-inline: 14px;
-    }
-
-    .foto {
-      width: 124px;
-    }
-
-    .nome-livro {
-      top: -3px;
-      font-size: 19px;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .ver-livro svg {
-      transition: none;
-    }
-  }
-
-  .vizinhos {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-    max-width: var(--coluna);
-    margin-top: 28px;
-  }
-
-  .vizinhos a {
-    position: relative;
-    display: grid;
-    gap: 4px;
-    padding: 14px 16px;
-    border: 1px solid var(--rule);
-    border-radius: var(--raio-painel);
-    color: var(--ink);
-    text-decoration: none;
-    transition:
-      border-color 0.15s,
-      background-color 0.15s;
-  }
-
-  .vizinhos a:hover {
-    border-color: var(--acento);
-    background: color-mix(in oklab, var(--acento) 5%, transparent);
-  }
-
-  .vizinhos a:hover .nome {
-    color: var(--acento);
-  }
-
-  .proximo {
-    text-align: right;
-  }
-
-  .dir {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-family: var(--font-ui);
-    font-size: 14px;
-    color: var(--ink-2);
-  }
-
-  .proximo .dir {
-    justify-content: flex-end;
-  }
-
-  /* A seta (D49): parada, não ocupa lugar (a margem negativa come o espaço entre ela e o texto); com o
-     mouse, o foco ou o dedo, abre o próprio espaço e empurra o rótulo, apontando para onde se vai. */
-  .dir svg {
-    flex: none;
-    width: 0;
-    height: 14px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    opacity: 0;
-    transition:
-      opacity 0.2s,
-      width 0.3s cubic-bezier(0.2, 0.75, 0.2, 1),
-      margin 0.3s cubic-bezier(0.2, 0.75, 0.2, 1);
-  }
-
-  .anterior .dir svg {
-    margin-right: -6px;
-    rotate: 180deg;
-  }
-
-  .proximo .dir svg {
-    margin-left: -6px;
-  }
-
-  /* A orelha: o canto de fora da folha dobra (0 a 16px), com o verso levemente azul e o fio azul. */
-  .vizinhos a::after {
-    content: "";
-    position: absolute;
-    top: -1px;
-    width: 0;
-    height: 0;
-    pointer-events: none;
-    transition:
-      width 0.26s cubic-bezier(0.2, 0.75, 0.2, 1),
-      height 0.26s cubic-bezier(0.2, 0.75, 0.2, 1);
-  }
-
-  .proximo::after {
-    right: -1px;
-    border-bottom-left-radius: 3px;
-    border-left: 1px solid var(--acento);
-    border-bottom: 1px solid var(--acento);
-    background: linear-gradient(to bottom left, var(--paper-hi) 50%, color-mix(in oklab, var(--acento) 12%, var(--paper-hi)) 50%);
-  }
-
-  .anterior::after {
-    left: -1px;
-    border-bottom-right-radius: 3px;
-    border-right: 1px solid var(--acento);
-    border-bottom: 1px solid var(--acento);
-    background: linear-gradient(to bottom right, var(--paper-hi) 50%, color-mix(in oklab, var(--acento) 12%, var(--paper-hi)) 50%);
-  }
-
-  .vizinhos a:not(:hover, :focus-visible, :active)::after {
-    border-color: transparent;
-  }
-
-  @media (hover: hover) {
-    .vizinhos a:hover .dir svg {
-      width: 14px;
-      margin: 0;
-      opacity: 1;
-    }
-
-    .vizinhos a:hover::after {
-      width: 16px;
-      height: 16px;
-    }
-  }
-
-  .vizinhos a:is(:focus-visible, :active) .dir svg {
-    width: 14px;
-    margin: 0;
-    opacity: 1;
-  }
-
-  .vizinhos a:is(:focus-visible, :active)::after {
-    width: 16px;
-    height: 16px;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .dir svg,
-    .vizinhos a::after {
-      transition: none;
-    }
-  }
-
-  .nome {
-    font-family: var(--font-titulo);
-    font-weight: 700;
-    font-size: 17px;
-    line-height: 1.3;
-    transition: color 0.15s;
-  }
-
-  /* O sinal do código-fonte (D52): só o ícone, colado ao fim do título, na tinta 2. */
-  .nome :global(.sinal-codigo) {
-    margin-left: 0.4em;
-    color: var(--ink-2);
-    vertical-align: -0.1em;
-  }
-
-  @media (max-width: 600px) {
-    .vizinhos {
-      grid-template-columns: 1fr;
-    }
-
-    .proximo {
-      text-align: left;
-    }
-
-    .proximo .dir {
-      justify-content: flex-start;
-    }
+    margin-top: 36px;
   }
 </style>

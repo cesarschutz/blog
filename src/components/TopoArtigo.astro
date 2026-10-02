@@ -12,6 +12,24 @@
  * O código-fonte (D52, C03): com `codigo` no frontmatter, a assinatura ganha, à direita, a pílula
  * "Código deste artigo no GitHub", com o ícone de código e a seta de link externo (abre na mesma aba,
  * como os outros links do site).
+ *
+ * Rodada 3 (área 5 da direção): a ilustração é uma foto colada na folha, 16px para dentro dela, com as
+ * quatro cantoneiras de álbum do 12 (F12-7), que se afastam e giram um nada no hover; a capa viva (D58)
+ * continua. O "Neste artigo" saiu daqui (F14-8): o post-it ao lado do texto já faz esse papel.
+ *
+ * Linha 20 (Noturno): a **cartolina** (T14, do 08). Atrás da foto, um papel grosso da cor do livro, 12px
+ * maior que ela de cada lado (8px no celular), com a fibra do papel dos livros, o fio de luz e de sombra da
+ * espessura e a sombra de papel sobre a folha; as cantoneiras prendem a foto nela, como num álbum. A luz do
+ * mouse passa por ela: `.cartolina-luz` é uma mancha quente recortada na cartolina, que o luz.ts move junto
+ * com a mancha da mesa (`data-luz-local`). O título continua na folha branca, embaixo.
+ *
+ * Rodada 4 (S2 da direção do papel): a folha vira papel (canto de 2px, sem borda, sombra curta, grão) e
+ * ganha no alto a tira da ficha do artigo ("Vol. 01 · ficha 2" e "nº 018") sobre o fio da cor do livro. A
+ * cartolina, o título e as larguras não mudam. A pílula do código-fonte vira etiqueta de papel (S7).
+ *
+ * Ganchos estáveis para as linhas (não renomear): `.foto-colada` (a foto com as cantoneiras, com
+ * `--cor`, a cor do livro; os pseudo-elementos ::before e ::after dela ficam livres, para a cartolina da
+ * linha 20) e `.cantoneira.c1` a `.c4` (no sentido do relógio, a partir do canto de cima à esquerda).
  */
 import Chip from "./Chip.astro";
 import DataLeitura from "./DataLeitura.astro";
@@ -22,6 +40,7 @@ import { ICONES } from "../lib/icones";
 import { temIlustracao } from "../lib/ilustracoes";
 import { mdEmLinha, tituloEmPartes } from "../lib/formato";
 import { url } from "../lib/url";
+import { chamadaDe } from "../lib/ficha";
 import type { Resumo } from "../lib/posts";
 import type { Livro } from "../lib/estante";
 
@@ -34,19 +53,36 @@ interface Props {
 const { post, livro } = Astro.props;
 const raiz = post.serie ? { nome: "Séries", href: url("/series/") } : { nome: "Artigos", href: url("/archive/") };
 const noGithub = post.codigo ? new URL(post.codigo).hostname === "github.com" : false;
+// A tira da ficha do artigo (rodada 4, S2): a mesma dos cards e do anterior e próximo (src/lib/ficha.ts).
+const { chamada, tombo } = await chamadaDe(post);
 ---
 
-<div class="folha topo-folha">
+<div class="folha topo-folha" style={`--cor:${post.cor}`}>
+  {
+    chamada && (
+      <p class="tira-ficha" aria-hidden="true">
+        <span>{chamada}</span>
+        <span>{tombo}</span>
+      </p>
+    )
+  }
   {
     temIlustracao(post.slug) && (
-      <figure class="ilustracao-topo painel" data-pagefind-ignore data-desenhar-topo style={`--cor:${post.cor}`}>
-        <div class="largo">
-          <Ilustracao slug={post.slug} recorte="largo" cor={post.cor} anotacoes />
-        </div>
-        <div class="medio">
-          <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} />
-        </div>
-      </figure>
+      <div class="foto-colada" style={`--cor:${post.cor}`}>
+        <span class="cartolina-luz" aria-hidden="true" data-luz-local><i></i></span>
+        <figure class="ilustracao-topo painel" data-pagefind-ignore data-desenhar-topo style={`--cor:${post.cor}`}>
+          <div class="largo">
+            <Ilustracao slug={post.slug} recorte="largo" cor={post.cor} anotacoes />
+          </div>
+          <div class="medio">
+            <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} />
+          </div>
+        </figure>
+        <span class="cantoneira c1" aria-hidden="true"></span>
+        <span class="cantoneira c2" aria-hidden="true"></span>
+        <span class="cantoneira c3" aria-hidden="true"></span>
+        <span class="cantoneira c4" aria-hidden="true"></span>
+      </div>
     )
   }
   <header class="topo">
@@ -84,15 +120,287 @@ const noGithub = post.codigo ? new URL(post.codigo).hostname === "github.com" : 
 </script>
 
 <style>
+  /*
+   * Rodada 4, S2 (H5: "tudo que ainda é card vira papel"): a folha de rosto do artigo. Papel liso, com o
+   * canto de 2px, sem a borda desenhada (fica transparente, para nenhuma largura mudar), a sombra curta do
+   * papel colado e o grão do site; no escuro, o anel de 1px a 7% e a sombra escura. No alto, a tira da
+   * ficha do artigo, como nos cards: a página do artigo é a ficha dele aberta. Sem fita, sem pauta, reta.
+   */
   .topo-folha {
+    --fio-ficha: var(--cor, var(--ink-2));
     overflow: hidden;
+    /* A borda de antes (1px) fica, transparente: a cartolina e o título não mudam de largura. */
+    border: 1px solid transparent;
+    border-radius: 2px;
+    /* O grão do site, a 40% (uma camada da própria folha por cima dele): inteiro, ele acinzentava a folha
+       até quase a cor da página e tirava contraste do texto. */
+    background:
+      linear-gradient(color-mix(in oklab, var(--paper-hi) 60%, transparent), color-mix(in oklab, var(--paper-hi) 60%, transparent)),
+      var(--grao) 0 0 / 180px 180px,
+      var(--paper-hi);
+    box-shadow:
+      0 1px 1px color-mix(in oklab, var(--sombra-quente) 16%, transparent),
+      0 2px 4px -1px color-mix(in oklab, var(--sombra-quente) 22%, transparent);
   }
 
-  /* O painel ocupa o alto da folha; o canto arredondado vem dela. Ao abrir o artigo, o desenho se
-     desenha quando a folha pousa (D51, desenho-vivo.ts). */
+  :global(:root[data-theme="dark"]) .topo-folha {
+    --fio-ficha: color-mix(in oklab, var(--cor, var(--ink-2)) 72%, var(--ink));
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--ink) 7%, transparent),
+      0 1px 1px color-mix(in oklab, var(--sombra-quente) 50%, transparent),
+      0 2px 5px -1px color-mix(in oklab, var(--sombra-quente) 60%, transparent);
+  }
+
+  /* A tira da ficha: a dos cards (Cartao.astro), em mono, sobre o fio de 2px na cor do livro. */
+  .tira-ficha {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0;
+    padding: 9px 14px 8px;
+    font-family: var(--font-codigo);
+    font-size: 11.5px;
+    line-height: 1.3;
+    color: var(--ink-2);
+    font-variant-numeric: lining-nums tabular-nums;
+    white-space: nowrap;
+  }
+
+  .tira-ficha > span:first-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tira-ficha::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: var(--fio-ficha);
+  }
+
+  /*
+   * A foto colada (rodada 3, F12-7): a ilustração fica 16px para dentro da folha, como uma foto presa
+   * no álbum, com o canto quase reto de papel fotográfico e um fio de sombra de quem está colado. Ao
+   * abrir o artigo, o desenho se desenha quando a folha pousa (D51, desenho-vivo.ts).
+   */
+  .foto-colada {
+    --lado: 22px;
+    --dentro: 32px;
+    --cartolina: 12px;
+    position: relative;
+    isolation: isolate;
+    margin: var(--dentro) var(--dentro) 0;
+  }
+
+  /*
+   * A cartolina (linha 20, T14): o papel grosso da cor do livro, 12px maior que a foto de cada lado. A cor
+   * é a do livro, igual nos dois temas, como os livros (D39): a luz de cima a deixa um nada mais clara no
+   * alto e mais funda embaixo; a fibra é o grão dos livros; a espessura, um fio de luz em cima e um de
+   * sombra embaixo; e a sombra de papel grosso sobre a folha, quente, nunca cinza.
+   */
+  .foto-colada::before {
+    content: "";
+    position: absolute;
+    z-index: -2;
+    inset: calc(-1 * var(--cartolina));
+    border-radius: 3px;
+    /* Colada à mão: um nada torta em relação à foto (3px de um lado ao outro, na tela larga). */
+    rotate: -0.14deg;
+    background:
+      var(--grao) 0 0 / 180px 180px,
+      linear-gradient(172deg, color-mix(in oklab, var(--cor), white 7%), var(--cor) 42%, color-mix(in oklab, var(--cor), black 9%)),
+      var(--cor);
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, white 22%, transparent),
+      inset 0 -1px 0 color-mix(in oklab, black 22%, transparent),
+      0 1px 1px color-mix(in oklab, var(--sombra-quente) 30%, transparent),
+      0 3px 4px -2px color-mix(in oklab, var(--sombra-quente) 28%, transparent),
+      0 16px 26px -16px color-mix(in oklab, var(--sombra-quente) 45%, transparent);
+    pointer-events: none;
+  }
+
+  :global(:root[data-theme="dark"]) .foto-colada::before {
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, white 14%, transparent),
+      inset 0 -1px 0 color-mix(in oklab, black 30%, transparent),
+      0 1px 1px rgb(0 0 0 / 0.5),
+      0 18px 28px -14px rgb(0 0 0 / 0.75);
+  }
+
+  /*
+   * A luz do mouse na cartolina: a mancha quente, recortada no papel (por baixo da foto), que o luz.ts põe
+   * onde está a mancha da mesa. No claro, ela clareia o papel colorido (soft-light, um brilho de cartolina
+   * fosca); no escuro, acende (screen). Só com mouse e sem movimento reduzido.
+   */
+  .cartolina-luz {
+    position: absolute;
+    z-index: -1;
+    inset: calc(-1 * var(--cartolina));
+    overflow: hidden;
+    border-radius: 3px;
+    rotate: -0.14deg;
+    pointer-events: none;
+  }
+
+  .cartolina-luz > i {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 560px;
+    height: 560px;
+    margin: -280px 0 0 -280px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle closest-side,
+      color-mix(in oklab, var(--luz-quente) 50%, transparent),
+      color-mix(in oklab, var(--luz-quente) 30%, transparent) 30%,
+      color-mix(in oklab, var(--luz-quente) 11%, transparent) 60%,
+      transparent
+    );
+    mix-blend-mode: soft-light;
+    opacity: 0;
+    transition: opacity 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  :global(:root[data-theme="dark"]) .cartolina-luz > i {
+    background: radial-gradient(
+      circle closest-side,
+      color-mix(in oklab, var(--luz-mouse) 30%, transparent),
+      color-mix(in oklab, var(--luz-mouse) 17%, transparent) 30%,
+      color-mix(in oklab, var(--luz-mouse) 6%, transparent) 60%,
+      transparent
+    );
+    mix-blend-mode: screen;
+  }
+
+  .cartolina-luz.ligada > i {
+    opacity: 1;
+    transition-duration: 0.45s;
+  }
+
+  @media (prefers-reduced-motion: reduce), not ((hover: hover) and (pointer: fine)) {
+    .cartolina-luz {
+      display: none;
+    }
+  }
+
   .ilustracao-topo {
     margin: 0;
-    border-radius: 0;
+    border-radius: 2px;
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--ink) 5%, transparent),
+      0 1px 2px color-mix(in oklab, var(--ink) 10%, transparent);
+  }
+
+  /*
+   * As cantoneiras de álbum (F12-7, as do 12): quatro triângulos de papel na tinta, de 22px, que
+   * abraçam os cantos da foto; cada um com o vinco de luz na dobra e a sombra fina do papel por cima
+   * da foto. Com o mouse na ilustração, as quatro se afastam 2px para fora e giram 3° (0,3s), como
+   * quem mexe na foto presa; voltam ao sair. Só translate e rotate; com movimento reduzido, paradas.
+   */
+  .cantoneira {
+    position: absolute;
+    z-index: 2;
+    width: var(--lado);
+    height: var(--lado);
+    /* A sombra fina da borda do papel cai sobre a foto (o recorte fica no ::before, senão a cortaria). */
+    filter: drop-shadow(0.6px 0.6px 0.4px color-mix(in oklab, var(--etiqueta-sombra) 32%, transparent));
+    pointer-events: none;
+    transition:
+      translate 0.3s cubic-bezier(0.2, 0.75, 0.2, 1),
+      rotate 0.3s cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  .cantoneira::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        135deg,
+        transparent calc(50% - 1.2px),
+        color-mix(in oklab, var(--paper-hi) 28%, transparent) calc(50% - 1.2px),
+        transparent calc(50% + 0.2px)
+      ),
+      color-mix(in oklab, var(--ink) 86%, var(--paper-hi));
+    clip-path: polygon(0 0, 100% 0, 0 100%);
+  }
+
+  /* No escuro, o papel das cantoneiras fica na meia-luz: claro, mas sem brilhar mais que o desenho. */
+  :global(:root[data-theme="dark"]) .cantoneira::before {
+    background:
+      linear-gradient(
+        135deg,
+        transparent calc(50% - 1.2px),
+        color-mix(in oklab, var(--paper-hi) 34%, transparent) calc(50% - 1.2px),
+        transparent calc(50% + 0.2px)
+      ),
+      color-mix(in oklab, var(--ink) 66%, var(--paper-hi));
+  }
+
+  .c1 {
+    top: -4px;
+    left: -4px;
+  }
+
+  .c2 {
+    top: -4px;
+    right: -4px;
+    rotate: 90deg;
+  }
+
+  .c3 {
+    right: -4px;
+    bottom: -4px;
+    rotate: 180deg;
+  }
+
+  .c4 {
+    bottom: -4px;
+    left: -4px;
+    rotate: 270deg;
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .foto-colada:hover .c1 {
+      translate: -2px -2px;
+      rotate: -3deg;
+    }
+
+    .foto-colada:hover .c2 {
+      translate: 2px -2px;
+      rotate: 93deg;
+    }
+
+    .foto-colada:hover .c3 {
+      translate: 2px 2px;
+      rotate: 177deg;
+    }
+
+    .foto-colada:hover .c4 {
+      translate: -2px 2px;
+      rotate: 273deg;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cantoneira {
+      transition: none;
+    }
+  }
+
+  /* No celular, a foto chega mais perto da borda e as cantoneiras encolhem com ela. */
+  @media (max-width: 600px) {
+    .foto-colada {
+      --lado: 16px;
+      --dentro: 16px;
+      --cartolina: 8px;
+    }
   }
 
   /* O painel ocupa a folha toda e o desenho fica em até 1100px, no centro. */
@@ -172,9 +480,10 @@ const noGithub = post.codigo ? new URL(post.codigo).hostname === "github.com" : 
 
   h1 {
     margin: 14px 0 0;
-    font-size: clamp(32px, 4.3vw, 50px);
-    line-height: 1.06;
-    letter-spacing: -0.014em;
+    font-size: clamp(34px, 5.2vw, 76px);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.028em;
     text-wrap: balance;
   }
 
@@ -228,7 +537,11 @@ const noGithub = post.codigo ? new URL(post.codigo).hostname === "github.com" : 
     color: var(--ink);
   }
 
-  /* A pílula do código-fonte (D52): na ponta direita da assinatura, azul-tinta como todo link. */
+  /*
+   * O código-fonte (D52): na ponta direita da assinatura, azul-tinta como todo link. Rodada 4 (S7): a
+   * pílula vira etiqueta de papel, como as de tag: canto de 2px, sem borda desenhada (transparente, para o
+   * tamanho não mudar), a sombra de 1px; no hover, o fio azul de antes.
+   */
   .codigo-fonte {
     display: inline-flex;
     align-items: center;
@@ -236,17 +549,24 @@ const noGithub = post.codigo ? new URL(post.codigo).hostname === "github.com" : 
     min-height: 36px;
     margin-left: auto;
     padding: 5px 14px 5px 12px;
-    border: 1px solid var(--rule);
-    border-radius: 999px;
+    border: 1px solid transparent;
+    border-radius: 2px;
     background: var(--paper-hi);
+    box-shadow: 0 1px 1px color-mix(in oklab, var(--sombra-quente) 16%, transparent);
     color: var(--acento);
     font-weight: 500;
     text-decoration: none;
     transition: border-color 0.15s;
   }
 
+  :global(:root[data-theme="dark"]) .codigo-fonte {
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--ink) 7%, transparent),
+      0 1px 1px color-mix(in oklab, var(--sombra-quente) 50%, transparent);
+  }
+
   .codigo-fonte:hover {
-    border-color: color-mix(in oklab, var(--acento) 60%, var(--rule));
+    border-color: var(--acento);
   }
 
   .codigo-fonte svg {

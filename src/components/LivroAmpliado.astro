@@ -164,7 +164,7 @@ import "../styles/paginas.css";
       paginas.push({
         html: `<div class="pg pg-esq colofao"><p class="fim">FIM ${d.volume ? `DO VOLUME ${d.volume}` : "DA SÉRIE"}</p><p>${
           d.serie
-            ? `${n} ${n === 1 ? "edição" : "edições"} até aqui. As próximas entram nesta mesma série.`
+            ? `${n} ${n === 1 ? "artigo" : "artigos"} até aqui. Os próximos entram nesta mesma série.`
             : n === 0
               ? "Nenhum artigo ainda. Os primeiros entram neste mesmo livro."
               : `${n} ${n === 1 ? "artigo" : "artigos"} até aqui. Os próximos entram neste mesmo livro.`
@@ -212,7 +212,8 @@ import "../styles/paginas.css";
       if (!gsap || !livro || !capa) return;
       const g = gsap;
       const qs = (el: Element, prop: string, unidade: string) => g.quickSetter(el, prop, unidade) as Escrever;
-      const vistaDoLivro = livro.parentElement!;
+      // Rodada 3: entre a vista e o livro há o envoltório do livro vivo (Livro3D, livro-vivo.css).
+      const vistaDoLivro = livro.closest<HTMLElement>(".livro-3d-vista")!;
       const chao = livro.querySelector<HTMLElement>(".chao");
       const tras = guardaDeTras;
       escrita = {
@@ -236,6 +237,12 @@ import "../styles/paginas.css";
     function desenhar() {
       if (!escrita) return;
       const p = estado.p;
+      // Rodada 3 (área A): só o livro fechado responde ao mouse (o livro vivo); abrindo, ele volta ao lugar.
+      const repouso = p < 0.001 && !fechando;
+      if (repouso !== "lvRepouso" in palco.dataset) {
+        if (repouso) palco.dataset.lvRepouso = "";
+        else delete palco.dataset.lvRepouso;
+      }
       // Abrindo, o livro vira de frente, e a lombada vai para o meio (a capa abre para a esquerda).
       escrita.livroGiro(GIRO * (1 - p));
       escrita.livroX((m.cw / 2) * p + vista.x);
@@ -564,6 +571,12 @@ import "../styles/paginas.css";
       // O giro da origem (o GSAP da gaveta o deixa no style) não vem junto.
       livro?.style.removeProperty("transform");
       livro?.style.setProperty("--giro", `${GIRO}deg`);
+      // Rodada 3 (área A): a cópia chega sem o estado do livro vivo da origem (o hover, o brilho, a onda) e,
+      // fechada, responde ao mouse como os outros livros (data-lv-repouso, livro-vivo.css e .ts).
+      for (const a of ["data-lv", "data-lv-onda", "data-lv-pose", "data-livro-parado"]) nova.removeAttribute(a);
+      for (const el of nova.querySelectorAll<HTMLElement>(".livro-vivo, .lv-brilho i")) el.removeAttribute("style");
+      nova.querySelector(".livro-vivo")?.removeAttribute("data-lv-solto");
+      palco.dataset.lvRepouso = "";
       // O livro da gaveta não tem a sombra no chão (D57): a cópia também não, senão ela sumia de uma vez
       // quando o livro volta para a gaveta.
       const chaoDaOrigem = caixa.querySelector(".chao");
@@ -629,6 +642,7 @@ import "../styles/paginas.css";
       if (fechando || !dialogo!.open) return;
       if (movimentoReduzido.matches || !caixaDeOrigem || !copia) return dialogo!.close();
       fechando = true;
+      delete palco.dataset.lvRepouso;
       const g = (gsap ??= await carregarGsap());
       const nova = copia;
       arrasto?.kill();
@@ -918,7 +932,7 @@ import "../styles/paginas.css";
     min-height: 36px;
     padding: 6px 14px;
     border: 1px solid color-mix(in oklab, var(--veu-tinta) 30%, transparent);
-    border-radius: 999px;
+    border-radius: 2px; /* papel (rodada 4, H5) */
     background: transparent;
     color: var(--veu-tinta);
     font-family: var(--font-ui);

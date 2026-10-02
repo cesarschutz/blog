@@ -1,0 +1,1533 @@
+/*
+ * O computador (rodada 3, C1 a C10): a câmera, a tela, a barra de menus, os menus, a área de trabalho, o
+ * Dock, as janelas e as peças comuns dos apps (as cápsulas de vidro, a barra lateral, os glifos). Chega
+ * sob demanda com sistema.ts. Cores só de `var(--mac-…)` (src/computador/cores.ts).
+ */
+
+/* ===================================================================================================
+ * A câmera (View Transition do documento, tipos "mac-entra" e "mac-sai"), a do protótipo 12
+ *
+ * Durante a troca, só a tela do ícone (ou o computador) tem nome de transição: a página vira uma imagem só.
+ * O movimento é o de uma câmera que se aproxima (sistema.ts, `camera`): a página cresce em volta de um
+ * ponto fixo (--mac-fx, --mac-fy) e a tela cresce junto, por cima, até ocupar a janela.
+ * =================================================================================================== */
+
+:root.mac-camera body *:not([data-mac-vt]) {
+  view-transition-name: none !important;
+}
+
+:root.mac-camera {
+  view-transition-name: root !important;
+}
+
+:root.mac-camera:is(:active-view-transition-type(mac-entra), :active-view-transition-type(mac-sai))::view-transition-old(root),
+:root.mac-camera:is(:active-view-transition-type(mac-entra), :active-view-transition-type(mac-sai))::view-transition-new(root) {
+  transform-origin: var(--mac-fx) var(--mac-fy);
+}
+
+:root.mac-camera:active-view-transition-type(mac-entra)::view-transition-old(root) {
+  animation: mac-some-no-fim 1.05s linear both;
+}
+
+:root.mac-camera:active-view-transition-type(mac-entra)::view-transition-new(root) {
+  animation: none;
+  opacity: 0;
+}
+
+:root.mac-camera:is(:active-view-transition-type(mac-entra), :active-view-transition-type(mac-sai))::view-transition-group(mac-tela) {
+  z-index: 2;
+  animation: none;
+}
+
+:root.mac-camera:is(:active-view-transition-type(mac-entra), :active-view-transition-type(mac-sai))::view-transition-old(mac-tela),
+:root.mac-camera:is(:active-view-transition-type(mac-entra), :active-view-transition-type(mac-sai))::view-transition-new(mac-tela) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  mix-blend-mode: plus-lighter;
+}
+
+:root.mac-camera:active-view-transition-type(mac-entra)::view-transition-old(mac-tela) {
+  animation: mac-tela-apaga 1.05s linear both;
+}
+
+:root.mac-camera:active-view-transition-type(mac-entra)::view-transition-new(mac-tela) {
+  animation: mac-tela-acende 1.05s linear both;
+}
+
+:root.mac-camera:active-view-transition-type(mac-sai)::view-transition-old(root) {
+  animation: none;
+  opacity: 0;
+}
+
+:root.mac-camera:active-view-transition-type(mac-sai)::view-transition-new(root) {
+  animation: mac-aparece-cedo 1.05s linear both;
+}
+
+:root.mac-camera:active-view-transition-type(mac-sai)::view-transition-old(mac-tela) {
+  animation: mac-mesa-apaga 1.05s linear both;
+}
+
+:root.mac-camera:active-view-transition-type(mac-sai)::view-transition-new(mac-tela) {
+  animation: mac-tela-volta 1.05s linear both;
+}
+
+@keyframes mac-some-no-fim {
+  0%,
+  62% {
+    opacity: 1;
+  }
+
+  88%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes mac-aparece-cedo {
+  0%,
+  10% {
+    opacity: 0;
+  }
+
+  36%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes mac-tela-apaga {
+  0%,
+  30% {
+    opacity: 1;
+  }
+
+  60%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes mac-tela-acende {
+  0%,
+  26% {
+    opacity: 0;
+  }
+
+  62%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes mac-mesa-apaga {
+  0%,
+  40% {
+    opacity: 1;
+  }
+
+  72%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes mac-tela-volta {
+  0%,
+  38% {
+    opacity: 0;
+  }
+
+  70%,
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Com o computador aberto, a página fica parada e escondida embaixo (nada dela é pintado). */
+:root.mac-aberto {
+  overflow: hidden;
+  scrollbar-gutter: auto;
+}
+
+:root.mac-aberto body > :not(.mac, .mac-fora) {
+  visibility: hidden;
+}
+
+/* A troca de tema pelo lustre da barra de menus usa o círculo do blog (tema.ts); nada da página escondida
+   embaixo (o lustre do cabeçalho, a luz dele) entra nela com nome próprio, por cima do computador. */
+:root.mac-aberto.trocando-tema body * {
+  view-transition-name: none !important;
+}
+
+/* ===================================================================================================
+ * O computador
+ * =================================================================================================== */
+
+/* A caixa do Terminal suspenso por cima do blog, fora do computador (sistema.ts, `terminalNoBlog`). */
+.mac-fora {
+  --mac-fonte: system-ui, -apple-system, BlinkMacSystemFont, "IBM Plex Sans Variable", "Segoe UI", sans-serif;
+  --mac-mono: ui-monospace, "SF Mono", Menlo, "JetBrains Mono Variable", Consolas, monospace;
+  position: relative;
+  z-index: 1100;
+  color: var(--mac-texto);
+  font: 400 13px/1.35 var(--mac-fonte);
+  -webkit-font-smoothing: antialiased;
+}
+
+.mac {
+  --mac-barra-h: 30px;
+  --mac-raio: 20px;
+  --mac-icone-tam: clamp(42px, 2.4vw + 18px, 56px);
+  --mac-fonte: system-ui, -apple-system, BlinkMacSystemFont, "IBM Plex Sans Variable", "Segoe UI", sans-serif;
+  --mac-mono: ui-monospace, "SF Mono", Menlo, "JetBrains Mono Variable", Consolas, monospace;
+
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  background: var(--mac-moldura);
+  color: var(--mac-texto);
+  font: 400 13px/1.35 var(--mac-fonte);
+  letter-spacing: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: contain;
+  outline: none;
+}
+
+.mac:not([open]) {
+  display: none;
+}
+
+.mac::backdrop {
+  background: transparent;
+}
+
+.mac *,
+.mac *::before,
+.mac *::after {
+  box-sizing: border-box;
+}
+
+/* Sem peso de especificidade: as classes de botão dos apps (e as do sistema) vencem sempre. */
+:where(.mac, .mac-fora) button {
+  font: inherit;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Os estilos do blog para títulos e parágrafos não entram no computador. */
+.mac :where(h1, h2, h3, h4, p, dl, dd, ol, ul) {
+  font-family: inherit;
+  letter-spacing: inherit;
+}
+
+.mac :where(h1, h2, h3, h4) {
+  margin: 0;
+}
+
+.mac :focus-visible {
+  outline: 3px solid var(--mac-foco);
+  outline-offset: 1px;
+}
+
+/* A tela: o papel de parede (o SVG de cores.ts, rasterizado uma vez) e os cantos de cima arredondados,
+   como a tela do MacBook dentro da moldura preta. */
+.mac-tela {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+  /* Os dois papéis de parede sempre pintados, o do tema por cima: a troca de tema (o círculo) já encontra o
+     outro pronto, sem um quadro vazio. */
+  background-color: var(--mac-parede-meio);
+  background-image: var(--mac-parede-claro), var(--mac-parede-escuro);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+}
+
+:root[data-theme="dark"] .mac-tela {
+  background-image: var(--mac-parede-escuro), var(--mac-parede-claro);
+}
+
+@media (min-width: 700px) and (min-height: 460px) {
+  .mac-tela {
+    border-radius: 12px 12px 0 0;
+  }
+}
+
+/* ---------- os glifos de traço ---------- */
+
+.mac-glifo {
+  display: block;
+  width: 16px;
+  height: 16px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.45;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ===================================================================================================
+ * A barra de menus
+ * =================================================================================================== */
+
+.mac-barra {
+  position: absolute;
+  top: env(safe-area-inset-top, 0px);
+  left: 0;
+  right: 0;
+  z-index: 9500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--mac-barra-h);
+  padding: 0 8px 0 10px;
+  /* O vidro da barra: quase transparente, como no Golden Gate, só um véu desfocado sobre o papel. */
+  background: var(--mac-barra-vidro);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  backdrop-filter: blur(18px) saturate(1.5);
+  color: var(--mac-barra-texto);
+  text-shadow: var(--mac-barra-sombra);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.mac-barra-menus,
+.mac-barra-extras {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  min-width: 0;
+}
+
+.mac-barra-item,
+.mac-barra-extra {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  height: 24px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.mac-barra-item.aberto,
+.mac-barra-extra:active {
+  background: var(--mac-barra-item-ativo);
+}
+
+.mac-barra-item:focus-visible,
+.mac-barra-extra:focus-visible {
+  outline: 2px solid var(--mac-acento);
+  outline-offset: -2px;
+}
+
+.mac-barra-app {
+  font-weight: 700;
+}
+
+.mac-barra-marca {
+  padding: 0 11px;
+}
+
+.mac-marca {
+  display: block;
+  width: 13px;
+  height: 17px;
+  filter: drop-shadow(var(--mac-barra-sombra));
+}
+
+.mac-marca .marca-capa {
+  fill: currentColor;
+}
+
+.mac-marca .marca-dobra {
+  fill: var(--mac-barra-marca-letra);
+  opacity: 0.35;
+}
+
+.mac-marca .marca-letras path {
+  fill: var(--mac-barra-marca-letra);
+}
+
+.mac-barra-extras {
+  gap: 2px;
+}
+
+.mac-barra-extra {
+  padding: 0 7px;
+}
+
+.mac-bateria {
+  width: 25px;
+  height: 13px;
+}
+
+.mac-bateria .b-casco {
+  stroke-width: 1.2;
+  opacity: 0.55;
+}
+
+.mac-bateria .b-carga {
+  fill: currentColor;
+  stroke: none;
+}
+
+.mac-bateria .b-polo {
+  stroke-width: 1.6;
+  opacity: 0.55;
+}
+
+/* A aparência: o lustre do blog em miniatura, aceso no claro e apagado no escuro (o tema do blog e o do
+   computador andam juntos). */
+.mac-barra-tema .g-apagado,
+:root[data-theme="dark"] .mac-barra-tema .g-aceso {
+  display: none;
+}
+
+:root[data-theme="dark"] .mac-barra-tema .g-apagado {
+  display: block;
+}
+
+.mac-barra-tema .g-lampada {
+  fill: currentColor;
+}
+
+.mac-barra-tema .g-raios {
+  stroke-width: 1.1;
+}
+
+.mac-barra-relogio {
+  padding: 0 6px 0 8px;
+  font-variant-numeric: tabular-nums;
+  white-space: pre;
+}
+
+/* O entalhe da câmera, no meio do alto (MacBook Pro). */
+.mac-entalhe {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 190px;
+  height: var(--mac-barra-h);
+  margin-left: -95px;
+  border-radius: 0 0 12px 12px;
+  background: var(--mac-entalhe);
+}
+
+.mac-entalhe span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--mac-entalhe-reflexo), var(--mac-entalhe-lente) 60%);
+}
+
+/* Telas estreitas: sem o entalhe e com menos menus (o nome do app e os dois primeiros ficam). */
+@media (max-width: 1099px) {
+  .mac-so-largo-largo {
+    display: none;
+  }
+}
+
+@media (max-width: 899px) {
+  .mac-entalhe {
+    display: none;
+  }
+}
+
+@media (max-width: 699px), (max-height: 459px) {
+  .mac {
+    --mac-barra-h: 34px;
+  }
+
+  .mac-so-largo-medio,
+  .mac-so-largo {
+    display: none;
+  }
+
+  .mac-barra-relogio {
+    padding-right: 4px;
+  }
+}
+
+/* ---------- os menus (numa camada própria, logo embaixo da barra: menus.ts) ---------- */
+
+.mac-menus {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + var(--mac-barra-h) + 1px);
+  left: 0;
+  right: 0;
+  z-index: 9800;
+  height: 0;
+}
+
+.mac-menu {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 232px;
+  max-width: calc(100vw - 12px);
+  padding: 5px;
+  border-radius: 12px;
+  background: var(--mac-menu);
+  -webkit-backdrop-filter: blur(30px) saturate(1.8);
+  backdrop-filter: blur(30px) saturate(1.8);
+  box-shadow:
+    0 0 0 0.5px var(--mac-menu-borda),
+    var(--mac-menu-sombra);
+  color: var(--mac-texto);
+  text-shadow: none;
+  font-weight: 400;
+  outline: none;
+}
+
+.mac-menu-item {
+  display: grid;
+  grid-template-columns: 18px 1fr auto;
+  align-items: center;
+  width: 100%;
+  height: 24px;
+  padding: 0 10px 0 4px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  text-align: left;
+  white-space: nowrap;
+  outline: none;
+  cursor: default;
+}
+
+.mac-menu-item:focus {
+  background: var(--mac-acento);
+  color: var(--mac-sobre-acento);
+}
+
+.mac .mac-janela:focus-visible,
+.mac .mac-menu-item:focus-visible,
+.mac .mac-menu:focus-visible,
+.mac .mac-mesa-icone:focus-visible {
+  outline: none;
+}
+
+.mac-menu-item[aria-disabled="true"] {
+  color: var(--mac-texto-3);
+}
+
+.mac-menu-item[aria-disabled="true"]:focus {
+  background: none;
+  color: var(--mac-texto-3);
+}
+
+.mac-menu-marca {
+  font-size: 12px;
+  text-align: center;
+}
+
+.mac-menu-rotulo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 2px;
+}
+
+.mac-menu-atalho {
+  padding-left: 28px;
+  color: var(--mac-texto-2);
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+}
+
+.mac-menu-item:focus .mac-menu-atalho {
+  color: inherit;
+}
+
+.mac-menu-separador {
+  height: 1px;
+  margin: 5px 10px;
+  background: var(--mac-separador);
+}
+
+/* ===================================================================================================
+ * A área de trabalho: três ícones, em coluna, no alto, à direita (como o macOS arruma)
+ * =================================================================================================== */
+
+.mac-mesa {
+  position: absolute;
+  top: calc(env(safe-area-inset-top, 0px) + var(--mac-barra-h) + 14px);
+  right: calc(env(safe-area-inset-right, 0px) + 16px);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mac-mesa-icone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 92px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: default;
+  outline: none;
+}
+
+.mac-mesa-figura {
+  display: grid;
+  place-items: center;
+  width: 70px;
+  height: 66px;
+  border-radius: 9px;
+}
+
+.mac-mesa-figura .mac-app-icone {
+  width: 58px;
+}
+
+.mac-pasta--mesa {
+  width: 64px;
+  height: 52px;
+}
+
+.mac-mesa-nome {
+  max-width: 100%;
+  padding: 1px 6px 2px;
+  border-radius: 5px;
+  color: var(--mac-mesa-texto);
+  text-shadow: var(--mac-mesa-texto-sombra);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.mac-mesa-icone.escolhido .mac-mesa-figura {
+  background: var(--mac-mesa-escolhido);
+}
+
+.mac-mesa-icone.escolhido .mac-mesa-nome {
+  background: var(--mac-selecao);
+  color: var(--mac-sobre-acento);
+  text-shadow: none;
+}
+
+.mac-mesa-icone:focus-visible .mac-mesa-figura {
+  outline: 3px solid var(--mac-foco);
+  outline-offset: 0;
+}
+
+@media (max-width: 699px), (max-height: 459px) {
+  .mac-mesa {
+    right: calc(env(safe-area-inset-right, 0px) + 8px);
+    gap: 4px;
+  }
+
+  .mac-mesa-icone {
+    width: 80px;
+  }
+
+  .mac-mesa-figura {
+    width: 60px;
+    height: 56px;
+  }
+
+  .mac-mesa-figura .mac-app-icone {
+    width: 50px;
+  }
+
+  .mac-pasta--mesa {
+    width: 54px;
+    height: 44px;
+  }
+}
+
+/* ---------- a pasta do macOS ---------- */
+
+.mac-pasta .p-fundo {
+  fill: var(--mac-pasta-fundo);
+}
+
+.mac-pasta .p-frente {
+  fill: var(--mac-pasta-frente-1);
+}
+
+.mac-pasta .p-brilho {
+  fill: none;
+  stroke: var(--mac-pasta-brilho);
+  stroke-width: 1.2;
+  stroke-linecap: round;
+  opacity: 0.9;
+}
+
+.mac-pasta .p-gravura {
+  fill: none;
+  stroke: var(--mac-pasta-gravura);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  opacity: 0.8;
+}
+
+.mac-pasta--mesa {
+  filter: drop-shadow(0 2px 3px var(--mac-separador));
+}
+
+/* ===================================================================================================
+ * Os ícones dos apps: o esquadro arredondado (22,5%), com o relevo de vidro e a sombra no chão
+ * =================================================================================================== */
+
+.mac-app-icone {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 22.5%;
+  box-shadow:
+    var(--mac-icone-brilho),
+    var(--mac-icone-sombra);
+}
+
+.mac-app-icone svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.mac-app-icone--finder {
+  background: linear-gradient(180deg, var(--mac-icone-finder-1), var(--mac-icone-finder-2) 58%, var(--mac-icone-finder-3));
+}
+
+.mac-app-icone--finder .i-aba {
+  fill: var(--mac-icone-finder-aba);
+}
+
+.mac-app-icone--finder .i-folha {
+  fill: var(--mac-icone-finder-folha);
+}
+
+.mac-app-icone--finder .i-folha-atras {
+  opacity: 0.75;
+}
+
+.mac-app-icone--finder .i-linha {
+  fill: none;
+  stroke: var(--mac-icone-finder-2);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  opacity: 0.45;
+}
+
+.mac-app-icone--finder .i-frente {
+  fill: var(--mac-icone-finder-folha);
+}
+
+.mac-app-icone--finder .i-etiqueta {
+  fill: var(--mac-icone-finder-2);
+  opacity: 0.22;
+}
+
+.mac-app-icone--previa {
+  background: linear-gradient(180deg, var(--mac-icone-previa-1), var(--mac-icone-previa-2));
+}
+
+.mac-app-icone--previa .i-pagina {
+  fill: var(--mac-icone-previa-folha);
+  filter: drop-shadow(0 1px 1.5px var(--mac-separador));
+}
+
+.mac-app-icone--previa .i-dobra {
+  fill: var(--mac-icone-previa-dobra);
+}
+
+.mac-app-icone--previa .i-linhas {
+  fill: none;
+  stroke: var(--mac-icone-previa-linha);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}
+
+.mac-app-icone--previa .i-faixa {
+  fill: var(--mac-icone-previa-faixa);
+}
+
+.mac-app-icone--previa .i-vidro {
+  fill: var(--mac-icone-previa-vidro);
+  opacity: 0.55;
+}
+
+.mac-app-icone--previa .i-lente,
+.mac-app-icone--previa .i-cabo {
+  fill: none;
+  stroke: var(--mac-icone-previa-lente);
+  stroke-linecap: round;
+}
+
+.mac-app-icone--previa .i-lente {
+  stroke-width: 2.6;
+}
+
+.mac-app-icone--previa .i-cabo {
+  stroke-width: 4.4;
+}
+
+.mac-app-icone--terminal {
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--mac-icone-terminal-1), var(--mac-icone-terminal-2));
+}
+
+.mac-app-icone--terminal .i-barra {
+  fill: var(--mac-icone-terminal-barra);
+  opacity: 0;
+}
+
+.mac-app-icone--terminal .i-prompt {
+  fill: none;
+  stroke: var(--mac-icone-terminal-texto);
+  stroke-width: 3.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mac-app-icone--editor {
+  background: linear-gradient(160deg, var(--mac-icone-editor-1), var(--mac-icone-editor-2) 55%, var(--mac-icone-editor-3));
+}
+
+.mac-app-icone--editor .i-chave {
+  fill: none;
+  stroke: var(--mac-icone-editor-texto);
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.mac-app-icone--editor .i-cursor {
+  fill: none;
+  stroke: var(--mac-icone-editor-cursor);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.mac-app-icone--sobre {
+  background: linear-gradient(180deg, var(--mac-icone-sobre-1), var(--mac-icone-sobre-2));
+}
+
+.mac-app-icone--sobre .marca-capa {
+  fill: var(--mac-icone-sobre-letra);
+  opacity: 0;
+}
+
+.mac-app-icone--sobre .marca-dobra {
+  fill: none;
+}
+
+.mac-app-icone--sobre .marca-letras path {
+  fill: var(--mac-icone-sobre-letra);
+}
+
+/* A lixeira não é um esquadro: é o cesto de vidro em pé. */
+.mac-app-icone--lixeira {
+  background: none;
+  box-shadow: none;
+}
+
+.mac-app-icone--lixeira .l-corpo {
+  fill: var(--mac-icone-lixeira-1);
+  stroke: var(--mac-icone-lixeira-2);
+  stroke-width: 1;
+  opacity: 0.9;
+}
+
+.mac-app-icone--lixeira .l-frisos {
+  fill: none;
+  stroke: var(--mac-icone-lixeira-traco);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  opacity: 0.55;
+}
+
+.mac-app-icone--lixeira .l-borda {
+  fill: var(--mac-icone-lixeira-2);
+}
+
+.mac-app-icone--lixeira svg {
+  filter: drop-shadow(0 2px 3px var(--mac-separador));
+}
+
+/* ===================================================================================================
+ * O Dock (dock.ts): o vidro, os ícones, o ponto, o separador, as vagas das minimizadas e o rótulo.
+ * Sem contexto de empilhamento no .mac-dock: o vidro (9000) fica embaixo das miniaturas (9001) e os
+ * botões (9002), em cima.
+ * =================================================================================================== */
+
+.mac-dock {
+  --t: var(--mac-icone-tam);
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 6px);
+  width: max-content;
+  max-width: calc(100% - 12px);
+  margin-inline: auto;
+  padding: 5px 5px 9px;
+}
+
+.mac-dock-fundo {
+  position: absolute;
+  inset: 0;
+  z-index: 9000;
+  border-radius: calc(var(--t) * 0.36 + 8px);
+  background: var(--mac-dock);
+  -webkit-backdrop-filter: blur(22px) saturate(1.8);
+  backdrop-filter: blur(22px) saturate(1.8);
+  box-shadow:
+    0 0 0 0.5px var(--mac-dock-borda),
+    var(--mac-dock-brilho),
+    var(--mac-dock-sombra);
+  transform-origin: 50% 50%;
+}
+
+.mac-dock-faixa {
+  display: flex;
+  align-items: flex-end;
+}
+
+.mac-dock-item {
+  position: relative;
+  z-index: 9002;
+  display: flex;
+  justify-content: center;
+  width: calc(var(--t) + 4px);
+  height: var(--t);
+}
+
+.mac-dock-botao {
+  display: block;
+  width: var(--t);
+  height: var(--t);
+  padding: 0;
+  border: 0;
+  border-radius: 24%;
+  background: none;
+  cursor: default;
+  transform-origin: 50% 100%;
+}
+
+.mac-dock-botao:focus-visible {
+  outline: 2px solid var(--mac-acento);
+  outline-offset: 2px;
+}
+
+.mac-dock-pulo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 5%;
+}
+
+.mac-dock-botao:active .mac-app-icone {
+  filter: brightness(0.82);
+}
+
+.mac-dock-ponto {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: var(--mac-dock-ponto);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.mac-dock-item[data-aberto] .mac-dock-ponto {
+  opacity: 1;
+}
+
+.mac-dock-separador {
+  position: relative;
+  z-index: 9002;
+  align-self: center;
+  width: 1px;
+  height: calc(var(--t) * 0.78);
+  margin: 0 7px;
+  border-radius: 1px;
+  background: var(--mac-dock-separador);
+}
+
+/* A vaga da janela minimizada: vazia (a própria janela, encolhida, fica por cima) e o selo do app no canto. */
+.mac-dock-item--janela .mac-dock-pulo {
+  position: relative;
+  padding: 0;
+}
+
+.mac-dock-vaga {
+  position: absolute;
+  inset: 0;
+}
+
+.mac-dock-selo {
+  position: absolute !important;
+  right: -2px;
+  bottom: -2px;
+  width: 44% !important;
+}
+
+.mac-dock-rotulo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 9003;
+  padding: 4px 10px 5px;
+  border-radius: 8px;
+  background: var(--mac-rotulo);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  backdrop-filter: blur(20px) saturate(1.6);
+  box-shadow:
+    0 0 0 0.5px var(--mac-rotulo-borda),
+    var(--mac-vidro-sombra);
+  color: var(--mac-rotulo-texto);
+  font-size: 13px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+
+.mac-dock-rotulo.visivel {
+  opacity: 1;
+  transition-delay: 0.06s;
+}
+
+@media (max-width: 699px), (max-height: 459px) {
+  .mac {
+    --mac-icone-tam: 46px;
+  }
+
+  .mac-dock {
+    padding: 4px 4px 8px;
+  }
+
+  .mac-dock-separador {
+    margin: 0 4px;
+  }
+}
+
+/* ===================================================================================================
+ * As janelas (janelas.ts)
+ * =================================================================================================== */
+
+.mac-janela {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 10;
+  border-radius: var(--mac-raio);
+  background: var(--mac-janela);
+  box-shadow:
+    var(--mac-janela-contorno),
+    var(--mac-janela-sombra-inativa);
+  color: var(--mac-texto);
+  transform-origin: 0 0;
+  outline: none;
+  contain: layout style;
+}
+
+.mac-janela[data-ativa] {
+  box-shadow:
+    var(--mac-janela-contorno),
+    var(--mac-janela-sombra);
+}
+
+.mac-janela-corpo {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+}
+
+.mac-janela.arrastando {
+  will-change: transform;
+}
+
+.mac-janela.arrastando,
+.mac-janela.redimensionando {
+  user-select: none;
+}
+
+.mac-janela.no-genio {
+  will-change: transform, clip-path;
+  pointer-events: none;
+}
+
+.mac-janela.minimizada {
+  pointer-events: none;
+  box-shadow: var(--mac-janela-contorno);
+}
+
+.mac-janela.escondida {
+  visibility: hidden;
+}
+
+/* As áreas que arrastam a janela não selecionam texto. */
+.mac [data-arrastar] {
+  user-select: none;
+}
+
+/* ---------- os semáforos ---------- */
+
+.mac-semaforos {
+  position: absolute;
+  top: var(--sy);
+  left: var(--sx);
+  z-index: 8;
+  display: flex;
+  gap: 8px;
+}
+
+.mac-semaforo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--mac-semaforo-inativo);
+  box-shadow: inset 0 0 0 0.5px var(--mac-semaforo-inativo-borda);
+  cursor: default;
+}
+
+/* O alvo do dedo e do mouse é maior que a bolinha. */
+.mac-semaforo::before {
+  content: "";
+  position: absolute;
+  inset: -5px -4px;
+}
+
+.mac-semaforo svg {
+  width: 8px;
+  height: 8px;
+  fill: none;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0;
+}
+
+.mac-janela[data-ativa] .mac-semaforo--fechar,
+.mac-semaforos:hover .mac-semaforo--fechar,
+.mac-semaforos:focus-within .mac-semaforo--fechar {
+  background: var(--mac-semaforo-fechar);
+  box-shadow: inset 0 0 0 0.5px var(--mac-semaforo-fechar-borda);
+}
+
+.mac-janela[data-ativa] .mac-semaforo--minimizar,
+.mac-semaforos:hover .mac-semaforo--minimizar,
+.mac-semaforos:focus-within .mac-semaforo--minimizar {
+  background: var(--mac-semaforo-minimizar);
+  box-shadow: inset 0 0 0 0.5px var(--mac-semaforo-minimizar-borda);
+}
+
+.mac-janela[data-ativa] .mac-semaforo--ampliar:not(:disabled),
+.mac-semaforos:hover .mac-semaforo--ampliar:not(:disabled),
+.mac-semaforos:focus-within .mac-semaforo--ampliar:not(:disabled) {
+  background: var(--mac-semaforo-ampliar);
+  box-shadow: inset 0 0 0 0.5px var(--mac-semaforo-ampliar-borda);
+}
+
+.mac-semaforos:hover svg,
+.mac-semaforos:focus-within svg {
+  opacity: 1;
+}
+
+.mac-semaforo--fechar svg {
+  stroke: var(--mac-semaforo-fechar-sinal);
+}
+
+.mac-semaforo--minimizar svg {
+  stroke: var(--mac-semaforo-minimizar-sinal);
+}
+
+.mac-semaforo--ampliar svg {
+  stroke: var(--mac-semaforo-ampliar-sinal);
+}
+
+.mac-semaforo:disabled svg {
+  display: none;
+}
+
+.mac-semaforo:active:not(:disabled) {
+  filter: brightness(0.82);
+}
+
+.mac-semaforo:focus-visible {
+  outline: 2px solid var(--mac-acento);
+  outline-offset: 2px;
+}
+
+/* ---------- as bordas e os cantos que redimensionam ---------- */
+
+.mac-alca {
+  position: absolute;
+  z-index: 7;
+}
+
+.mac-alca--n,
+.mac-alca--s {
+  left: 12px;
+  right: 12px;
+  height: 8px;
+  cursor: ns-resize;
+}
+
+.mac-alca--n {
+  top: -4px;
+}
+
+.mac-alca--s {
+  bottom: -4px;
+}
+
+.mac-alca--e,
+.mac-alca--w {
+  top: 12px;
+  bottom: 12px;
+  width: 8px;
+  cursor: ew-resize;
+}
+
+.mac-alca--e {
+  right: -4px;
+}
+
+.mac-alca--w {
+  left: -4px;
+}
+
+.mac-alca--ne,
+.mac-alca--nw,
+.mac-alca--se,
+.mac-alca--sw {
+  width: 18px;
+  height: 18px;
+}
+
+.mac-alca--ne {
+  top: -6px;
+  right: -6px;
+  cursor: nesw-resize;
+}
+
+.mac-alca--sw {
+  bottom: -6px;
+  left: -6px;
+  cursor: nesw-resize;
+}
+
+.mac-alca--nw {
+  top: -6px;
+  left: -6px;
+  cursor: nwse-resize;
+}
+
+.mac-alca--se {
+  bottom: -6px;
+  right: -6px;
+  cursor: nwse-resize;
+}
+
+@media (max-width: 699px), (max-height: 459px) {
+  .mac {
+    --mac-raio: 14px;
+  }
+
+  .mac-alca,
+  .mac-semaforo--ampliar {
+    display: none;
+  }
+
+  /* No toque, os semáforos ficam um pouco maiores (o alvo já é maior que a bolinha). */
+  .mac-semaforo {
+    width: 14px;
+    height: 14px;
+  }
+
+  .mac-semaforo::before {
+    inset: -8px -5px;
+  }
+}
+
+/* ===================================================================================================
+ * As peças comuns dos apps: a barra de título simples, a barra de ferramentas com as cápsulas de vidro e a
+ * barra lateral que vai de ponta a ponta (Golden Gate).
+ * =================================================================================================== */
+
+.mac-titulo-simples {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  padding: 0 80px;
+  background: var(--mac-barra-janela);
+  border-bottom: 1px solid var(--mac-separador);
+  color: var(--mac-janela-titulo);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.mac-titulo-simples span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mac-janela:not([data-ativa]) .mac-titulo-simples {
+  color: var(--mac-janela-titulo-inativa);
+}
+
+.mac-ferramentas {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 52px;
+  padding: 0 12px;
+}
+
+.mac-ferramentas-titulo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--mac-janela-titulo);
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.mac-ferramentas-titulo > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mac-janela:not([data-ativa]) .mac-ferramentas-titulo {
+  color: var(--mac-janela-titulo-inativa);
+}
+
+.mac-capsula {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  height: 32px;
+  padding: 0 2px;
+  border-radius: 999px;
+  background: var(--mac-capsula);
+  box-shadow:
+    0 0 0 0.5px var(--mac-capsula-borda),
+    var(--mac-vidro-brilho),
+    0 1px 3px var(--mac-separador);
+}
+
+.mac-capsula > button,
+.mac-capsula > a {
+  display: grid;
+  place-items: center;
+  min-width: 32px;
+  height: 28px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--mac-texto);
+  text-decoration: none;
+  cursor: default;
+}
+
+.mac-capsula > :is(button, a):hover:not(:disabled) {
+  background: var(--mac-capsula-passa);
+}
+
+.mac-capsula > button:disabled {
+  color: var(--mac-texto-3);
+}
+
+.mac-capsula > [aria-pressed="true"] {
+  background: var(--mac-capsula-marcada);
+  box-shadow: 0 1px 2px var(--mac-separador);
+}
+
+.mac-capsula-divisa {
+  width: 1px;
+  height: 16px;
+  margin: 0 1px;
+  background: var(--mac-separador);
+}
+
+.mac-capsula-texto {
+  padding: 0 12px !important;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.mac-busca-campo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: var(--mac-capsula);
+  box-shadow:
+    0 0 0 0.5px var(--mac-capsula-borda),
+    var(--mac-vidro-brilho);
+  color: var(--mac-texto-2);
+}
+
+.mac-busca-campo input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: none;
+  color: var(--mac-texto);
+  font: inherit;
+  outline: none;
+  user-select: text;
+}
+
+.mac-busca-campo:focus-within {
+  box-shadow:
+    0 0 0 3px var(--mac-foco),
+    var(--mac-vidro-brilho);
+}
+
+/* A barra lateral: um painel de vidro solto dentro da janela, que deixa ver a área de trabalho por trás. */
+.mac-lateral {
+  position: absolute;
+  top: 7px;
+  bottom: 7px;
+  left: 7px;
+  display: flex;
+  flex-direction: column;
+  border-radius: calc(var(--mac-raio) - 7px);
+  background: var(--mac-lateral);
+  -webkit-backdrop-filter: blur(28px) saturate(1.6);
+  backdrop-filter: blur(28px) saturate(1.6);
+  box-shadow: 0 0 0 0.5px var(--mac-lateral-borda);
+  overflow: hidden;
+}
+
+.mac-janela:not([data-ativa]) .mac-lateral,
+.mac-janela.arrastando .mac-lateral {
+  background: var(--mac-lateral-solida);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.mac-lateral-rolagem {
+  flex: 1;
+  overflow: auto;
+  padding: 44px 8px 10px;
+  scrollbar-width: thin;
+}
+
+.mac-lateral-grupo {
+  margin: 12px 0 3px;
+  padding: 0 10px;
+  color: var(--mac-lateral-titulo);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.mac-lateral-grupo:first-child {
+  margin-top: 4px;
+}
+
+.mac-lateral-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  height: 28px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--mac-texto);
+  text-align: left;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.mac-lateral-item .mac-glifo {
+  color: var(--mac-lateral-icone);
+}
+
+.mac-lateral-item > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mac-lateral-item[aria-current="true"],
+.mac-lateral-item[aria-selected="true"] {
+  background: var(--mac-passa);
+  font-weight: 500;
+}
+
+.mac-lateral-item:focus-visible {
+  outline: 2px solid var(--mac-acento);
+  outline-offset: -2px;
+}
+
+.mac-ponto-cor {
+  width: 10px;
+  height: 10px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--cor);
+  box-shadow: inset 0 0 0 0.5px var(--mac-separador);
+}
+
+/* As barras de rolagem finas, no tom do sistema. */
+.mac * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--mac-texto-3) transparent;
+}
+
+/* ===================================================================================================
+ * Movimento reduzido: nada desliza (o sistema troca direto, sem câmera nem gênio)
+ * =================================================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .mac-dock-ponto,
+  .mac-dock-rotulo {
+    transition: none;
+  }
+}

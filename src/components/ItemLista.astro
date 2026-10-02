@@ -1,26 +1,52 @@
 ---
 /**
- * Um artigo numa lista, no formato do blog atual (pedido do Cesar em 24/09/2026, D27): em cima a
- * categoria, a data e o tempo de leitura; o título inteiro, grande; a descrição completa; as tags; e,
- * à direita, a miniatura quadrada da ilustração num painel tingido. A linha inteira é clicável e
- * ganha um fundo leve ao passar o mouse, com o título em azul-tinta. A lista fica numa folha
- * (.lista-artigos.folha, D26). O `data-livro` serve ao filtro por livro do arquivo e das tags (D33).
+ * Um artigo em modo "lista" (D27), como ficha própria, deitada (rodada 3, área 10, F12-1: "quando for
+ * lista podia ser fichas separadas, na horizontal"). Cada item é uma ficha separada das outras (12px
+ * entre elas, e não mais uma folha contínua com fios), com:
  *
- * O colchete na margem (D49, protótipo E2): com o mouse (ou o foco no título), a caneta escreve um
- * colchete na margem esquerda, de cima para baixo (0,34s), dizendo "este aqui"; ao sair, ele termina
- * de passar e some por baixo (0,2s). É da caneta preta (C04, D52: o rascunho do mouse é preto; era
- * azul-tinta). O tremor é o de cada título (src/lib/traco.ts), e o SVG estica até a altura do item.
- * Só CSS.
+ * - a tira da ficha no alto, na largura toda: a chamada ("Vol. 05 · ficha 2" ou "Coleção Java ·
+ *   ed. 7") e o tombo ("nº 028") sobre o fio na cor do livro (src/lib/ficha.ts), a mesma do card;
+ * - a ilustração à esquerda ("gostei da imagem à esquerda na lista"), 200px a 1440, colada na ficha;
+ * - ao lado, o chip do livro, a data e o tempo, o título inteiro, o resumo e as tags com os ícones.
+ *
+ * A ficha inteira é clicável. No hover (ou com o foco no título), a caneta escreve um colchete na
+ * margem esquerda, de cima para baixo (0,34s, D49), e a ficha sobe 2px, com a sombra mais alta; a capa
+ * viva mexe o detalhe do desenho (D58, `.item.completo`). Ao sair, o colchete termina de passar e some
+ * por baixo (0,2s). É da caneta preta (C04, D52); o tremor é o de cada título (src/lib/traco.ts). A
+ * subida usa `translate`: `transform` e `opacity` ficam para a entrada ao rolar (`data-revelar`,
+ * revelar.ts, do construtor E).
+ *
+ * Em tela pequena (até 640px), a ilustração vai para cima, na largura toda. O `data-livro` serve ao
+ * filtro por livro do arquivo e das tags (D33).
  *
  * O destaque (D52, C02): o primeiro item da primeira página da home é o mais recente, com o rótulo
- * "Mais recente", o título e a descrição maiores e, no lugar da miniatura, o desenho no recorte médio,
- * grande, que se desenha ao entrar na tela (D41, desenho-vivo.ts). Até 860px, o desenho vai para cima,
- * na largura toda: no tablet, o recorte largo com as anotações (como o card do destaque); no celular,
- * o médio.
+ * "Mais recente", o título e o resumo maiores e a ilustração grande à esquerda, que se desenha ao entrar
+ * (D41, desenho-vivo.ts). Até 860px, ela vai para cima: no tablet, o recorte largo com as anotações;
+ * no celular, o médio.
+ *
+ * `comLivro` (protótipo 14, G8, na página da tag): em tela grande, o livro de onde o artigo vem, de pé,
+ * à direita.
+ *
+ * `livroAoLado` (rodada 4, H7): nas outras listas (Todos os artigos e a home em Lista), em tela grande, o
+ * livro do artigo também vai à direita, no espaço que sobrava, de uma de duas formas:
+ * - "espelhado": o mesmo livro 3D da tag, mas virado para o outro lado, com a capa olhando para o texto
+ *   (o giro de −38°, que mostra a capa e o corte das folhas, e não a lombada);
+ * - "foto": a foto do livro deitado da ficha "Do livro" do post (FotoDoLivro), com a etiqueta deste
+ *   artigo em amarelo, saindo das folhas.
+ * A ficha inteira dispara o hover do livro (`data-livro-gira` e `data-foto-gira`). O destaque da home não
+ * leva livro (ele já tem a ilustração grande e o carimbo). Abaixo de 1100px, o livro sai.
+ *
+ * Fora das listas desta base (Recentes e ListaFiltrada, que já não põem a folha em volta), qualquer
+ * `.lista-artigos` com estas fichas vira só a pilha delas (a regra global no fim).
  */
+import IconeTag from "./IconeTag.astro";
 import Ilustracao from "./Ilustracao.astro";
+import LivroEmPe from "./LivroEmPe.astro";
+import FotoDoLivro from "./FotoDoLivro.astro";
 import MaisRecente from "./MaisRecente.astro";
 import MetaItem from "./MetaItem.astro";
+import { montarLivros } from "../lib/estante";
+import { chamadaDe } from "../lib/ficha";
 import { mdEmLinha, tituloEmPartes } from "../lib/formato";
 import { temIlustracao } from "../lib/ilustracoes";
 import { urlTag, type Resumo } from "../lib/posts";
@@ -32,63 +58,165 @@ interface Props {
   nivel?: "h2" | "h3";
   /** O mais recente, na primeira página da home (D52). */
   destaque?: boolean;
+  /** Protótipo 14 (G8): o livro do artigo à direita, em tela grande. */
+  comLivro?: boolean;
+  /** Rodada 4 (E9): o carimbo "Novo" ao lado de "Mais recente" (só no destaque da home; MaisRecente). */
+  carimbo?: boolean;
+  /** Rodada 4 (H7): o livro do artigo à direita, em tela grande, nas listas que não são a da tag. */
+  livroAoLado?: "espelhado" | "foto";
 }
 
-const { post, nivel = "h3", destaque = false } = Astro.props;
+const { post, nivel = "h3", destaque = false, comLivro = false, carimbo = false, livroAoLado } = Astro.props;
+// A forma do livro à direita: a da tag (como está), ou a das outras listas (nunca no destaque).
+const formaDoLivro = comLivro ? "tag" : destaque ? undefined : livroAoLado;
+const livro = formaDoLivro ? (await montarLivros()).find((l) => l.id === post.livro) : undefined;
 const Titulo = nivel;
 const comMiniatura = temIlustracao(post.slug);
-// A altura típica de um item; o SVG estica até a de verdade.
-const ALTURA = 170;
+const { chamada, tombo } = await chamadaDe(post);
+const tags = post.tags.slice(0, 4);
+// A altura típica do miolo da ficha; o SVG do colchete estica até a de verdade.
+const ALTURA = 150;
 ---
 
-<li class:list={["item", "completo", { "com-miniatura": comMiniatura, destaque }]} data-livro={post.livro}>
-  <svg class="colchete" viewBox={`0 0 14 ${ALTURA}`} preserveAspectRatio="none" aria-hidden="true" focusable="false"
-    ><path d={colcheteDeCaneta(post.tituloCompleto, ALTURA)} /></svg
-  >
-  <div class="texto">
-    {destaque && <MaisRecente />}
-    <MetaItem post={post} />
-    <Titulo class="titulo">
-      <a href={post.url} set:html={tituloEmPartes(post.tituloCompleto)} />
-    </Titulo>
-    <p class="descricao" set:html={mdEmLinha(post.descricao)} />
-    {post.tags.length > 0 && (
-      <p class="tags">
-        {post.tags.slice(0, 4).map((t) => (
-          <a href={urlTag(t)}>#{t}</a>
-        ))}
-      </p>
+<li
+  class:list={["item", "completo", "folha", "ficha-lista", { "com-miniatura": comMiniatura, destaque, "com-livro": !!livro }]}
+  data-livro={post.livro}
+  data-livro-gira={livro && formaDoLivro === "espelhado" ? "" : undefined}
+  data-foto-gira={livro && formaDoLivro === "foto" ? "" : undefined}
+  data-revelar
+  style={`--cor:${post.cor}`}
+>
+  <p class="tira-ficha" aria-hidden="true"><span>{chamada}</span><span>{tombo}</span></p>
+  <div class="miolo-ficha">
+    <svg class="colchete" viewBox={`0 0 14 ${ALTURA}`} preserveAspectRatio="none" aria-hidden="true" focusable="false"
+      ><path d={colcheteDeCaneta(post.tituloCompleto, ALTURA)} /></svg
+    >
+    {comMiniatura && (destaque ? (
+      <div class="miniatura painel" aria-hidden="true" data-desenhar style={`--cor:${post.cor}`}>
+        <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} tamanho="cartao" decorativa class="recorte-medio" />
+        <Ilustracao slug={post.slug} recorte="largo" cor={post.cor} tamanho="cartao" anotacoes decorativa class="recorte-largo" />
+      </div>
+    ) : (
+      <div class="miniatura painel" aria-hidden="true" style={`--cor:${post.cor}`}>
+        <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} tamanho="cartao" decorativa />
+      </div>
+    ))}
+    <div class="texto">
+      {destaque && <MaisRecente carimbo={carimbo ? post.publicado : undefined} />}
+      <MetaItem post={post} />
+      <Titulo class="titulo">
+        <a href={post.url} set:html={tituloEmPartes(post.tituloCompleto)} />
+      </Titulo>
+      <p class="descricao" set:html={mdEmLinha(post.descricao)} />
+      {tags.length > 0 && (
+        <p class="tags">
+          {tags.map((t) => (
+            <a href={urlTag(t)}>
+              <IconeTag nome={t} class="icone-tag-ficha" />
+              {t}
+            </a>
+          ))}
+        </p>
+      )}
+    </div>
+    {livro && formaDoLivro !== "foto" && (
+      <div class:list={["livro-item", { "livro-espelhado": formaDoLivro === "espelhado" }]} aria-hidden="true">
+        {/* Na lista, sem as folhas por baixo da capa (só servem ao livro que abre): menos faces para desenhar. */}
+        <LivroEmPe livro={livro} altura={124} transicao="ao-clicar" folhas={formaDoLivro === "espelhado" ? 0 : 3} />
+        <span class="nome-do-livro">{livro.nome}</span>
+      </div>
+    )}
+    {livro && formaDoLivro === "foto" && (
+      <div class="livro-item livro-foto" aria-hidden="true">
+        <span class="foto-moldura"><FotoDoLivro livro={livro} atual={post} prefixo={`lista-${post.slug}`} largura={142} /></span>
+        <span class="nome-do-livro">{livro.nome}</span>
+      </div>
     )}
   </div>
-  {comMiniatura && (destaque ? (
-    <div class="miniatura painel" aria-hidden="true" data-desenhar style={`--cor:${post.cor}`}>
-      <Ilustracao slug={post.slug} recorte="medio" cor={post.cor} tamanho="cartao" decorativa class="recorte-medio" />
-      <Ilustracao slug={post.slug} recorte="largo" cor={post.cor} tamanho="cartao" anotacoes decorativa class="recorte-largo" />
-    </div>
-  ) : (
-    <div class="miniatura painel" aria-hidden="true" style={`--cor:${post.cor}`}>
-      <Ilustracao slug={post.slug} recorte="quadrado" cor={post.cor} tamanho="miniatura" decorativa />
-    </div>
-  ))}
 </li>
 
 <style>
-  .item {
+  /* ---------- a ficha ---------- */
+
+  .ficha-lista {
+    --raio-ficha: 6px;
+    --fio-ficha: var(--cor, var(--ink-2));
     position: relative;
-    transition: background-color 0.15s;
+    border-radius: var(--raio-ficha);
+    transition:
+      translate 0.2s cubic-bezier(0.2, 0.7, 0.2, 1),
+      box-shadow 0.2s;
   }
 
-  /* O fio só entre itens à vista: com o filtro por livro (D33), o primeiro visível fica sem fio. */
-  .item:not([hidden]) ~ .item:not([hidden]) {
-    border-top: 1px solid var(--rule);
+  :global(:root[data-theme="dark"]) .ficha-lista {
+    --fio-ficha: color-mix(in oklab, var(--cor, var(--ink-2)) 72%, var(--ink));
   }
 
-  .item:hover {
-    background: color-mix(in oklab, var(--acento) 5%, transparent);
+  @media (hover: hover) {
+    .ficha-lista:hover {
+      translate: 0 -2px;
+      box-shadow: var(--sombra-folha-alta);
+    }
+  }
+
+  .ficha-lista:has(.titulo a:focus-visible) {
+    outline: 2px solid var(--acento);
+    outline-offset: 3px;
+  }
+
+  .tira-ficha {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0;
+    padding: 9px 16px 8px clamp(16px, 2vw, 26px);
+    font-family: var(--font-codigo);
+    font-size: 11.5px;
+    line-height: 1.3;
+    color: var(--ink-2);
+    font-variant-numeric: lining-nums tabular-nums;
+    white-space: nowrap;
+  }
+
+  .tira-ficha > span:first-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tira-ficha::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: var(--fio-ficha);
+  }
+
+  /* O miolo: a ilustração à esquerda e o texto ao lado (e o livro à direita, na tag). */
+  .miolo-ficha {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(16px, 2vw, 26px);
+    align-items: start;
+    padding: 16px clamp(16px, 2vw, 26px) 18px;
+  }
+
+  .com-miniatura .miolo-ficha {
+    grid-template-columns: clamp(150px, 14vw, 200px) minmax(0, 1fr);
+  }
+
+  .miniatura {
+    aspect-ratio: 3 / 2;
+    border-radius: 4px;
   }
 
   .titulo {
-    margin: 0;
+    margin: 8px 0 0;
+    font-size: clamp(20px, 1.7vw, 24px);
     line-height: 1.2;
     text-wrap: pretty;
   }
@@ -99,18 +227,84 @@ const ALTURA = 170;
     transition: color 0.15s;
   }
 
+  /* O link do título cobre a ficha inteira; o chip da categoria e as tags ficam por cima. */
+  .titulo a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
   .item:hover .titulo a {
     color: var(--acento);
   }
 
-  /* O colchete: escondido por cima (clip-path, com a folga de 4px da espessura do traço); ao chegar, se
-     escreve para baixo; ao sair, a ponta de cima desce até sumir. */
+  /* O resumo numa medida de leitura: na ficha larga (1440), ele não atravessa a ficha inteira. */
+  .descricao {
+    max-width: 78ch;
+    margin: 8px 0 0;
+    font-family: var(--font-ui);
+    font-size: 15.5px;
+    line-height: 1.6;
+    color: var(--ink-2);
+  }
+
+  .descricao :global(code) {
+    font-size: 0.88em;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 12px;
+    margin: 10px 0 0;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+
+  /* As tags são links para a página da tag (D38), por cima do link que cobre o item, com alvo de 24px. */
+  .tags a {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .tags a:hover {
+    color: var(--acento);
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+
+  .tags :global(.icone-tag-ficha) {
+    --traco-tag: 1px;
+    flex: none;
+    width: 19px;
+    height: 19px;
+    margin: -3px 4px -3px -2px;
+    transition: rotate 0.35s cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .tags a:hover :global(.icone-tag-ficha) {
+      rotate: -10deg;
+    }
+  }
+
+  /* ---------- o colchete da caneta (D49) ---------- */
+
+  /* Escondido por cima (clip-path, com a folga de 4px da espessura do traço); ao chegar, se escreve para
+     baixo; ao sair, a ponta de cima desce até sumir. Fica na margem esquerda do miolo da ficha. */
   .colchete {
     position: absolute;
-    top: 14px;
-    left: 4px;
-    width: 14px;
-    height: calc(100% - 28px);
+    top: 16px;
+    left: clamp(3px, 0.5vw, 7px);
+    width: 12px;
+    height: calc(100% - 34px);
     overflow: visible;
     pointer-events: none;
     clip-path: inset(calc(100% + 4px) -4px -4px -4px);
@@ -149,6 +343,14 @@ const ALTURA = 170;
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .ficha-lista {
+      transition: box-shadow 0.2s;
+    }
+
+    .ficha-lista:hover {
+      translate: none;
+    }
+
     .colchete,
     .item:hover .colchete,
     .item:has(.titulo a:focus-visible) .colchete {
@@ -157,90 +359,25 @@ const ALTURA = 170;
     }
   }
 
-  /* ---------- home, arquivo, categorias, tags e séries ---------- */
-
-  .completo {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: clamp(16px, 2vw, 28px);
-    align-items: start;
-    padding: 22px clamp(18px, 2vw, 26px);
-  }
-
-  .completo.com-miniatura {
-    grid-template-columns: minmax(0, 1fr) clamp(104px, 11vw, 148px);
-  }
-
-  /* O link do título cobre a linha inteira; o chip da categoria fica por cima (MetaItem). */
-  .completo .titulo a::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-  }
-
-  .completo .titulo {
-    margin-top: 8px;
-    font-size: clamp(21px, 1.8vw, 25px);
-  }
-
-  /* A descrição vai até perto da miniatura, sem vão branco no meio da linha (pedido de 26/09/2026). */
-  .descricao {
-    margin: 8px 0 0;
-    font-family: var(--font-ui);
-    font-size: 15.5px;
-    line-height: 1.6;
-    color: var(--ink-2);
-  }
-
-  .descricao :global(code) {
-    font-size: 0.88em;
-  }
-
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px 10px;
-    margin: 10px 0 0;
-    font-family: var(--font-codigo);
-    font-size: 12.5px;
-    color: var(--ink-2);
-  }
-
-  /* As tags são links para a página da tag (D38), por cima do link que cobre o item, com alvo de 24px. */
-  .tags a {
-    position: relative;
-    z-index: 2;
-    display: inline-flex;
-    align-items: center;
-    min-height: 24px;
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .tags a:hover {
-    color: var(--acento);
-    text-decoration: underline;
-    text-underline-offset: 0.18em;
-  }
-
-  .miniatura {
-    aspect-ratio: 1;
-  }
-
+  /* ---------- tela pequena: a ilustração em cima ---------- */
 
   @media (max-width: 640px) {
-    .completo,
-    .completo.com-miniatura {
+    .tira-ficha {
+      padding-inline: 14px;
+    }
+
+    .miolo-ficha,
+    .com-miniatura .miolo-ficha {
+      grid-template-columns: minmax(0, 1fr);
       gap: 14px;
-      padding: 18px 16px;
+      padding: 12px 14px 16px;
     }
 
-    .completo.com-miniatura {
-      grid-template-columns: minmax(0, 1fr) 84px;
+    .miniatura {
+      aspect-ratio: 2 / 1;
     }
 
-    .completo .titulo {
+    .titulo {
       font-size: 20px;
     }
 
@@ -248,36 +385,101 @@ const ALTURA = 170;
       font-size: 15px;
     }
 
-    .tags {
-      display: none;
+    /* O colchete fica na margem de 14px, ao lado da ilustração e do texto. */
+    .colchete {
+      top: 12px;
+      left: 1px;
+      height: calc(100% - 28px);
+    }
+  }
+
+  /*
+   * ---------- a lista com o livro (protótipo 14, G8) ----------
+   * Na tag, em tela grande: a imagem à esquerda, o texto no meio e, à direita, o livro de onde o artigo
+   * vem, de pé. Abaixo de 1100px, o livro sai.
+   */
+  .livro-item {
+    display: none;
+  }
+
+  @media (min-width: 1100px) {
+    .com-livro.com-miniatura .miolo-ficha {
+      grid-template-columns: clamp(150px, 14vw, 200px) minmax(0, 1fr) 132px;
+      align-items: center;
     }
 
-    .miniatura {
-      margin-top: 4px;
+    .com-livro .livro-item {
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+      padding-top: 6px;
+    }
+
+    .nome-do-livro {
+      max-width: 13ch;
+      font-family: var(--font-ui);
+      font-size: 12.5px;
+      line-height: 1.3;
+      text-align: center;
+      color: var(--ink-2);
+    }
+
+    /*
+     * Rodada 4 (H7), o livro espelhado: o giro parado vai a −38° (a capa olhando para a esquerda, para o
+     * texto, com o corte das folhas à vista), e o hover o traz 18° para a frente, do mesmo jeito.
+     */
+    .livro-espelhado {
+      --livro-vira: 18deg;
+    }
+
+    /*
+     * Fora da tela, o livro nem é desenhado: são até 28 livros 3D (umas 15 faces cada) em Todos os
+     * artigos, e, rolando com a CPU 4× mais lenta, eles levavam quadros de 67 a 83ms. A caixa guarda o
+     * tamanho (o livro de 124px e o nome), para a página não pular.
+     */
+    .livro-espelhado,
+    .livro-foto {
+      content-visibility: auto;
+      contain-intrinsic-size: auto 132px auto 172px;
+      padding-block: 8px 4px;
+    }
+
+    .livro-espelhado :global(.livro-3d) {
+      --giro: -38deg;
+    }
+
+    .com-livro.com-miniatura:has(.livro-foto) .miolo-ficha {
+      grid-template-columns: clamp(150px, 14vw, 200px) minmax(0, 1fr) 142px;
+    }
+
+    /* A foto do livro deitado (H7, forma "foto"): 142px, a largura da ficha "Do livro" na lateral do post. */
+    .livro-foto {
+      align-self: center;
+    }
+
+    .foto-moldura {
+      display: block;
+      width: 142px;
     }
   }
 
   /* ---------- o destaque (D52, C02) ---------- */
 
-  .destaque.completo {
-    padding-block: 28px;
+  .destaque .miolo-ficha {
+    padding-block: 22px 24px;
   }
 
-  .destaque.completo.com-miniatura {
-    grid-template-columns: minmax(0, 1fr) clamp(260px, 36%, 460px);
+  .destaque.com-miniatura .miolo-ficha {
+    grid-template-columns: clamp(260px, 40%, 500px) minmax(0, 1fr);
     column-gap: clamp(24px, 3vw, 44px);
     align-items: center;
-  }
-
-  .destaque .miniatura {
-    aspect-ratio: 3 / 2;
   }
 
   .destaque :global(.recorte-largo) {
     display: none;
   }
 
-  .destaque.completo .titulo {
+  .destaque .titulo {
     margin-top: 10px;
     font-size: clamp(26px, 2.5vw, 33px);
     line-height: 1.12;
@@ -293,16 +495,10 @@ const ALTURA = 170;
     margin-top: 14px;
   }
 
-  /* Até 860px, a coluna do texto ficaria estreita ao lado do desenho: ele vai para cima, largo. */
   @media (max-width: 860px) {
-    .destaque.completo.com-miniatura {
+    .destaque.com-miniatura .miolo-ficha {
       grid-template-columns: minmax(0, 1fr);
       row-gap: 18px;
-    }
-
-    .destaque .miniatura {
-      order: -1;
-      margin-top: 0;
     }
   }
 
@@ -321,17 +517,32 @@ const ALTURA = 170;
   }
 
   @media (max-width: 640px) {
-    .destaque.completo,
-    .destaque.completo.com-miniatura {
-      padding: 16px 16px 22px;
+    .destaque .miniatura {
+      aspect-ratio: 3 / 2;
     }
 
-    .destaque.completo .titulo {
+    .destaque .titulo {
       font-size: 24px;
     }
 
     .destaque .descricao {
       font-size: 15.5px;
     }
+  }
+
+  /*
+   * ---------- a pilha de fichas ----------
+   * A lista que recebe estas fichas (`.lista-artigos`, de base.css, com ou sem a `.folha` em volta) vira
+   * só a pilha delas: sem papel nem sombra própria, 12px entre uma ficha e outra.
+   */
+  :global(.lista-artigos:has(> .ficha-lista)) {
+    display: grid;
+    gap: 12px;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
   }
 </style>

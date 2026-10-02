@@ -1,0 +1,234 @@
+/*
+ * Rodada 4, segunda parte (E3): o chão do protótipo é a **lâmina de vidro** (a V2 da amostra D1, a forma
+ * limpa do 17), com a **luz embaixo do livro** da V4 (a estante do 18): no hover, no foco, no toque e no livro
+ * escolhido, além do cone do abajur, acende a luz no tampo, embaixo do livro. No vidro, essa luz é a poça no
+ * tampo, a aresta da frente que se acende (a luz corre por dentro do vidro) e o clarão que atravessa a lâmina
+ * e pousa na página; o lugar vazio (o livro na gaveta ou aberto embaixo) e a lombada escolhida no filtro ficam
+ * acesos. Sem laca e sem madeira: o vidro é tinta e folha translúcidas.
+ *
+ * Vale onde o chão é `data-chao="vidro"` (o padrão de Colecao, FileiraTopo e Estante): a fileira da home, a do
+ * topo da página do livro (encolhendo ao rolar) e o filtro de lombadas (Todos os artigos e a tag). O desenho
+ * partiu do da V2 do construtor E (nas amostras do redesenho, fora do git).
+ *
+ * As peças: a `.tabua` (o chão, embaixo dos livros) pinta a aresta da frente (`--k-friso` de alto, embaixo);
+ * o `::before` dela é o tampo visto de cima (onde os livros pisam); o `::after`, a sombra difusa na página; o
+ * reflexo dos livros é o `-webkit-box-reflect` do lugar de cada livro (`.tomba`, só na home: não é opacidade
+ * nem filtro num ancestral do livro 3D). A luz embaixo mora na camada dos abajures, no feixe de cada um
+ * (`.ponto-luz-feixe`): a poça é o `::after` (nicho.css) e a aresta acesa e o clarão na página, o `::before`
+ * (aqui). Assim ela acende com o abajur na chegada e segue `--luz-acesa` (o hover, o foco, o lugar vazio).
+ *
+ * Variáveis: `--poca-sobe` (do alto da aresta ao meio da poça), `--k-luz-abaixo` (o clarão sob a lâmina),
+ * `--luz-baixo-repouso` e `--luz-baixo-acesa`, `--vidro-*` (as cores, por tema). Cores só por token.
+ */
+
+/* ---------- as cores do vidro (os dois temas) ---------- */
+
+:root {
+  /* O tampo, um véu fumê; a aresta (a espessura do vidro), a tinta a 13%; o fio de luz da quina de cima, a
+     folha a 85%; a quina de baixo, mais escura; a sombra na página, a sombra quente a 14%. */
+  --vidro-tampo: color-mix(in oklab, var(--ink) 6%, transparent);
+  --vidro-tampo-fundo: color-mix(in oklab, var(--ink) 2%, transparent);
+  --vidro-aresta: color-mix(in oklab, var(--ink) 13%, transparent);
+  --vidro-fio: color-mix(in oklab, var(--paper-hi) 85%, transparent);
+  --vidro-brilho: color-mix(in oklab, var(--paper-hi) 30%, transparent);
+  --vidro-quina: color-mix(in oklab, var(--ink) 24%, transparent);
+  --vidro-sombra: color-mix(in oklab, var(--sombra-quente) 14%, transparent);
+  --vidro-reflexo: rgb(0 0 0 / 0.1);
+  /* A luz embaixo do livro: a aresta acesa e o clarão na página. No claro, o âmbar (o branco quente some no
+     vidro claro). */
+  --luz-baixo: var(--lampada-ambar);
+  --luz-baixo-fio: color-mix(in oklab, var(--lampada-ambar) 70%, var(--luz-quente));
+  --luz-baixo-repouso: 0.1;
+  --luz-baixo-acesa: 1;
+}
+
+:root[data-theme="dark"] {
+  --vidro-tampo: color-mix(in oklab, var(--paper-hi) 26%, transparent);
+  --vidro-tampo-fundo: color-mix(in oklab, var(--paper-hi) 10%, transparent);
+  --vidro-aresta: color-mix(in oklab, var(--paper-hi) 85%, transparent);
+  --vidro-fio: color-mix(in oklab, var(--luz-quente) 30%, transparent);
+  --vidro-brilho: color-mix(in oklab, var(--luz-quente) 9%, transparent);
+  --vidro-quina: color-mix(in oklab, var(--sombra-quente) 45%, transparent);
+  --vidro-sombra: color-mix(in oklab, var(--sombra-quente) 50%, transparent);
+  --vidro-reflexo: rgb(0 0 0 / 0.16);
+  --luz-baixo: color-mix(in oklab, var(--lampada-ambar) 80%, var(--luz-quente));
+  --luz-baixo-fio: var(--luz-quente);
+  --luz-baixo-repouso: 0.2;
+}
+
+/* ---------- a lâmina na fileira (Colecao: a home e o topo da página do livro) ---------- */
+
+/*
+ * As medidas (as variáveis de Colecao.astro): o tampo à vista de 16px na home (o olho está um pouco acima dos
+ * livros), a aresta de 6px, 1,5% mais larga que a fileira de cada lado, e 18px embaixo para o reflexo. A poça
+ * fica logo atrás do pé dos livros, 5px acima da aresta.
+ */
+.colecao.colecao[data-chao="vidro"] {
+  --chao-recuo: 6px;
+  --chao-alto: 16px;
+  --friso-alto: 6px;
+  --abaixo: 18px;
+  --poca-largura: 1.5;
+  --poca-alto: 12px;
+  --poca-sobe: calc(5px * var(--kc));
+  --k-luz-abaixo: calc(26px * var(--kc));
+  --vidro-sobra: 1.5%;
+}
+
+.colecao.colecao-topo[data-chao="vidro"] {
+  --chao-recuo: 4px;
+  --chao-alto: 10px;
+  --friso-alto: 4px;
+  --abaixo: 0px;
+  --poca-alto: 8px;
+  --poca-sobe: 3px;
+  --k-luz-abaixo: 12px;
+}
+
+/* A poça (o fim do cone) logo atrás do pé dos livros, e não no meio do tampo. */
+.colecao.colecao[data-chao="vidro"] .lugar-luz .ponto-luz {
+  --ponto-luz-pe: calc(var(--k-abaixo) + var(--k-friso) + var(--poca-sobe));
+}
+
+/* A aresta da frente: o vidro de lado, fumê, com o fio de luz na quina de cima, um brilho comprido e a quina
+   de baixo mais escura. */
+:is(.colecao.colecao, .estante.estante-moderna)[data-chao="vidro"] .tabua {
+  margin-inline: calc(-1 * var(--vidro-sobra));
+  border: 0;
+  border-radius: 0 0 1px 1px;
+  box-shadow: none;
+  background:
+    linear-gradient(to bottom, var(--vidro-fio) 0 1px, transparent 1px) 0 100% / 100% var(--k-friso) no-repeat,
+    linear-gradient(to top, var(--vidro-quina) 0 1px, transparent 1px) 0 100% / 100% var(--k-friso) no-repeat,
+    linear-gradient(to right, transparent 4%, var(--vidro-brilho) 26% 34%, transparent 52%, color-mix(in oklab, var(--vidro-brilho) 55%, transparent) 70% 74%, transparent 90%) 0 100% / 100% var(--k-friso) no-repeat,
+    linear-gradient(var(--vidro-aresta), var(--vidro-aresta)) 0 100% / 100% var(--k-friso) no-repeat;
+}
+
+/* O tampo visto de cima: um véu fumê que clareia até a quina da frente (o fundo, junto da parede, mais
+   estreito: a perspectiva). */
+:is(.colecao.colecao, .estante.estante-moderna)[data-chao="vidro"] .tabua::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 var(--k-friso) 0;
+  height: calc(var(--k-chao) - var(--k-friso) + 2px);
+  border-radius: 0;
+  background:
+    linear-gradient(to top, var(--vidro-fio) 0 1px, transparent 1px),
+    linear-gradient(to bottom, transparent, var(--vidro-tampo-fundo) 25%, var(--vidro-tampo));
+  clip-path: polygon(0.9% 0, 99.1% 0, 100% 100%, 0 100%);
+  pointer-events: none;
+}
+
+/* A sombra da lâmina, difusa e afastada (ela flutua sobre a página, sem suportes). */
+:is(.colecao.colecao, .estante.estante-moderna)[data-chao="vidro"] .tabua::after {
+  content: "";
+  position: absolute;
+  inset: auto 4% auto 4%;
+  top: calc(100% + 8px * var(--vidro-k, var(--kc)));
+  width: auto;
+  height: calc(24px * var(--vidro-k, var(--kc)));
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--vidro-sombra), color-mix(in oklab, var(--vidro-sombra) 36%, transparent) 62%, transparent);
+  opacity: 1;
+  pointer-events: none;
+}
+
+/* O reflexo dos livros no vidro (10%, cortado em 40px), a partir do pé (a vista de cima põe o pé uns 13px
+   abaixo da caixa do livro). */
+.colecao-home[data-chao="vidro"] .tomba {
+  -webkit-box-reflect: below calc(26px * var(--kc)) linear-gradient(transparent calc(100% - 40px * var(--kc)), var(--vidro-reflexo));
+}
+
+/* O rótulo do volume no alto, sobre o papel (sem a parede do nicho atrás). */
+.colecao.colecao[data-chao="vidro"] .vol {
+  color: var(--ink-2);
+  text-shadow:
+    0 0 6px var(--paper),
+    0 0 2px var(--paper);
+}
+
+/* ---------- a lâmina no filtro de lombadas (Estante) ---------- */
+
+/* O tampo curto (8px), a aresta de 4px, 8px mais larga de cada lado; os abajures voltam para cima das
+   lombadas (a camada mora na `.tabua`, que ficou mais larga). */
+.estante.estante-moderna[data-chao="vidro"] {
+  --k-chao-alto: 8px;
+  --k-friso: 4px;
+  --k-poca-alto: 7px;
+  --poca-largura: 1.8;
+  --poca-sobe: 3px;
+  --k-luz-abaixo: 10px;
+  --vidro-sobra: 8px;
+  --vidro-k: 0.6;
+}
+
+.estante.estante-moderna[data-chao="vidro"] .tabua.chao-estante {
+  margin: 0 calc(-1 * var(--vidro-sobra));
+}
+
+.estante.estante-moderna[data-chao="vidro"] .tabua.chao-estante::before {
+  height: calc(var(--k-chao-alto) + 2px);
+}
+
+.estante.estante-moderna[data-chao="vidro"] .tabua.chao-estante::after {
+  content: "";
+}
+
+.estante.estante-moderna[data-chao="vidro"] .luzes-estante {
+  left: var(--vidro-sobra);
+  right: var(--vidro-sobra);
+}
+
+:root .estante.estante-moderna[data-chao="vidro"] .luzes-estante .ponto-luz {
+  --ponto-luz-pe: calc(var(--k-friso) + var(--poca-sobe));
+}
+
+/* ---------- a luz embaixo do livro (a da V4, no vidro) ---------- */
+
+/*
+ * A poça no tampo (nicho.css, `.ponto-luz-feixe::after`): no vidro, fraca em repouso e forte acesa, para o
+ * "acende embaixo" ser um acontecimento, como na laca da V4.
+ */
+[data-chao="vidro"] {
+  --poca-repouso: 0.12;
+  --poca-acesa: 0.82;
+}
+
+:root[data-theme="dark"] [data-chao="vidro"] {
+  --poca-repouso: 0.24;
+  --poca-acesa: 0.9;
+}
+
+/*
+ * A aresta acesa e o clarão na página: logo abaixo do pé, a aresta da frente se acende embaixo do livro (a
+ * luz corre por dentro do vidro e sai na quina, mais forte no meio e sumindo para os lados), e o que atravessa
+ * a lâmina pousa na página, embaixo dela, como um clarão macio. Na largura do lugar e mais um pouco.
+ */
+[data-chao="vidro"] .lugar-luz .ponto-luz-feixe::before {
+  content: "";
+  position: absolute;
+  top: calc(100% + var(--poca-sobe, 4px));
+  left: 50%;
+  width: calc(var(--w-luz, 100px) * 1.7);
+  height: calc(var(--k-friso, 6px) + var(--k-luz-abaixo, 16px));
+  translate: -50% 0;
+  background:
+    radial-gradient(closest-side, var(--luz-baixo-fio), transparent) 50% 0 / 70% 2px no-repeat,
+    radial-gradient(closest-side, var(--luz-baixo), color-mix(in oklab, var(--luz-baixo) 55%, transparent) 55%, transparent) 50% 0 / 100% var(--k-friso, 6px) no-repeat,
+    radial-gradient(ellipse 46% 100% at 50% 0, color-mix(in oklab, var(--luz-baixo) 50%, transparent), color-mix(in oklab, var(--luz-baixo) 16%, transparent) 55%, transparent) 50% 100% / 100% calc(100% - var(--k-friso, 6px)) no-repeat;
+  opacity: calc(var(--luz-baixo-repouso) + (var(--luz-baixo-acesa) - var(--luz-baixo-repouso)) * var(--luz-acesa, 0));
+  transition: opacity 0.4s cubic-bezier(0.2, 0.7, 0.2, 1) calc(90ms * var(--luz-acesa, 0));
+  pointer-events: none;
+}
+
+/* Na estante, os lugares de luz são estreitos (as lombadas): o clarão passa mais para os lados. */
+.estante-moderna[data-chao="vidro"] .lugar-luz .ponto-luz-feixe::before {
+  width: calc(var(--w-luz, 40px) * 2.2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-chao="vidro"] .lugar-luz .ponto-luz-feixe::before {
+    transition: none;
+  }
+}

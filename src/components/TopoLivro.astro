@@ -1,185 +1,802 @@
 ---
 /**
- * Topo da página do livro, de categoria ou de série (D29, D30, D31): uma folha com o livro aberto em
- * três quartos num painel tingido pela cor dele e, ao lado, a trilha, o nome, o subtítulo, a
- * contagem e as tags mais usadas (com o ícone de cada uma, D52). O livro chega da pilha do painel ou
- * da grade de livros por transição de página (LivroEmPe). O slot recebe o que for próprio da página
- * (na série Java, os números das LTS). No canto de baixo, à direita, a marca d'água do livro (D39).
+ * O painel do livro, no topo da página do livro e da série (rodada 3, área 4; o palco do 15, que o Cesar
+ * "GOSTOU MUITOOO", embaixo da fileira com todos os livros, FileiraTopo).
+ *
+ * - À esquerda, o texto: "Livros / Volume 05", o nome grande, a frase do livro e "N artigos · o último
+ *   em 2026", com o número rodando para cima ao chegar (o contador, T3), e embaixo os vizinhos de estante
+ *   como links de texto ("← Vol. 04 IA" e "Vol. 06 DevOps →"), que trocam de livro como a fileira.
+ * - À direita, o livro grande (P2; a capa com até 300px a 1440) com as tags do livro em volta: no
+ *   máximo seis à vista, as mais usadas no alto, e "+N" embaixo, que abre as demais. Cada tag leva à
+ *   tag já filtrada por este livro (`/tags/<Nome>/?livro=<chave>`, O5). A lupa no canto do livro abre o
+ *   livro ampliado (A9). O hover do livro é o de todo livro 3D (área 1, livro.css), por `data-livro-gira`.
+ * - A marca d'água do desenho continua, no canto de cima à direita (D39, O4).
+ *
+ * Rodada 4, H5 (S1; docs/redesenho/rodada-4/direcao-papel.md): o painel é a ficha de catálogo do livro,
+ * colada com fita (catalogo.css): canto de 6px, sem borda, a sombra curta do papel e o grão; no alto, a tira
+ * em mono ("Volume 03 · 2 artigos · o último em 2026", com o número rodando ao chegar, e o autor à direita)
+ * sobre o fio de 2px na cor do livro, e a fita da ficha "Do livro" no meio, cruzando a borda de cima. A
+ * trilha "Livros / Volume 03" e a linha da contagem saíram: a tira já diz as duas coisas. Na série, a
+ * tira diz "Série 01 · 7 artigos" (a série também é livro; nada de "edições"). A marca d'água fica num
+ * recorte próprio (o painel não corta mais nada, para a fita poder passar da borda).
+ *
+ * As tags saem de trás do livro quando a página termina de chegar (a abertura, a cortina ou a troca de
+ * livro): o estado de espera vem dos atributos que o <head> já põe (`data-abertura`, `data-vai-chegar`),
+ * então não há piscada e, sem JS, elas estão no lugar. O livro chega da fileira pela transição de
+ * página (LivroEmPe, nome fixo). O slot recebe o que for próprio da página (na série Java, as LTS).
  */
 import LivroAmpliado from "./LivroAmpliado.astro";
 import LivroEmPe from "./LivroEmPe.astro";
 import MarcaDagua from "./MarcaDagua.astro";
 import PilulaTag from "./PilulaTag.astro";
+import { ICONES } from "../lib/icones";
 import type { Livro } from "../lib/estante";
-import { url } from "../lib/url";
+import "../styles/catalogo.css";
 
 interface Props {
   livro: Livro;
-  /** Para onde a trilha volta; por padrão, as categorias. */
+  /** Os vizinhos na fileira (o volume de antes e o de depois; a série vem depois do último volume). */
+  anterior?: Livro;
+  proximo?: Livro;
+  /** Para onde a trilha volta; por padrão, os livros. */
   trilha?: { nome: string; href: string };
   /** Texto abaixo do nome; por padrão, o subtítulo do livro. */
   descricao?: string;
 }
 
-const { livro, trilha = { nome: "Categorias", href: url("/categories/") }, descricao = livro.descricao } = Astro.props;
-// As tags mais usadas nos artigos desta categoria.
+const { livro, anterior, proximo, descricao = livro.descricao } = Astro.props;
+
+const dois = (n?: number) => String(n ?? 1).padStart(2, "0");
+const lugar = livro.serie ? `Série ${dois(livro.revista?.numero)}` : `Volume ${dois(livro.volume)}`;
+const rotulo = (l: Livro) => (l.serie ? "Série" : `Vol. ${dois(l.volume)}`);
+const rotuloLongo = (l: Livro) => (l.serie ? "Série" : `Volume ${dois(l.volume)}`);
+
+// O nome acompanha a coluna: o tamanho sai da palavra mais longa (Desenvolvimento cabe inteiro).
+const letras = Math.max(...livro.nome.split(/\s+/).map((p) => p.length), 4);
+
+// A tira da ficha (rodada 4, S1): "Volume 03 · 2 artigos · o último em 2026". O número vira contador
+// (contador.ts). Na série também são artigos (o Cesar: "a série é livro também").
+const n = livro.posts.length;
+const anos = livro.posts.map((p) => p.publicado.getUTCFullYear());
+const [primeiroAno, ultimoAno] = [Math.min(...anos), Math.max(...anos)];
+const palavraDaConta = n === 1 ? "artigo" : "artigos";
+const quando = n === 0 ? "" : primeiroAno !== ultimoAno ? `de ${primeiroAno} a ${ultimoAno}` : n === 1 ? `de ${ultimoAno}` : `o último em ${ultimoAno}`;
+
+// As tags do livro, das mais usadas para as menos (empate: a ordem do alfabeto).
 const contagem = new Map<string, number>();
 for (const p of livro.posts) for (const t of p.tags) contagem.set(t, (contagem.get(t) ?? 0) + 1);
-const tags = [...contagem]
-  .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "pt-BR"))
-  .slice(0, 6)
-  .map(([nome]) => nome);
+const tags = [...contagem].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "pt-BR")).map(([nome, qtd]) => ({ nome, qtd }));
+const NO_ANEL = 6;
+const noAnel = tags.slice(0, NO_ANEL);
+const resto = tags.slice(NO_ANEL);
+// Os lados alternam (a mais usada à direita, no alto; a segunda à esquerda, no alto…): as duas de cima
+// são sempre as mais usadas. Em cada lado, os ângulos na elipse em volta do livro.
+const ANGULOS: Record<number, number[]> = { 1: [0], 2: [-30, 30], 3: [-42, 0, 42] };
+const naDireita = Math.ceil(noAnel.length / 2);
+const naEsquerda = noAnel.length - naDireita;
+const noLado = noAnel.map((t, i) => {
+  const direita = i % 2 === 0;
+  const k = Math.floor(i / 2);
+  const graus = ANGULOS[direita ? naDireita : naEsquerda][k];
+  const rad = (graus * Math.PI) / 180;
+  // Quase na vertical, com uma curva leve: as de cima e as de baixo chegam um nada mais perto da capa.
+  const cx = (direita ? 1 : -1) * (0.84 + 0.16 * Math.cos(rad));
+  const cy = Math.sin(rad);
+  return { ...t, estilo: `--cx:${cx.toFixed(3)};--cy:${cy.toFixed(3)};--ancora:${direita ? "0%" : "-100%"};--i:${i}` };
+});
+const filtro = { chave: livro.id.replace(/^(livro|serie)-/, ""), nome: livro.nome };
 ---
 
-<header class="topo-livro folha" style={`--cor:${livro.cores.cor}`}>
-  <MarcaDagua livro={livro} />
-  <div class="palco painel" data-livro-gira>
-    <LivroEmPe livro={livro} ampliavel />
+<header class="topo-livro folha ficha-catalogo" style={`--cor:${livro.cores.cor};--letras:${letras}`} data-topo-livro>
+  <span class="fita-catalogo" aria-hidden="true"></span>
+  <div class="recorte-marca" aria-hidden="true">
+    <MarcaDagua livro={livro} />
   </div>
+  <p class="tira-catalogo tira-livro">
+    <span>
+      {lugar} ·{" "}
+      {
+        n > 0 ? (
+          <>
+            <span class="numero" data-conta={n}>
+              {n}
+            </span>{" "}
+            {palavraDaConta} · {quando}
+          </>
+        ) : (
+          "Ainda sem artigos"
+        )
+      }
+    </span>
+    <span>Cesar Schutz</span>
+  </p>
   <div class="texto">
-    <a class="trilha" href={trilha.href}>{trilha.nome}</a>
     <h1>{livro.nome}</h1>
     <p class="descricao">{descricao}</p>
-    <p class="conta">{livro.contagem}</p>
     <slot />
+  </div>
+
+  <div class:list={["anel", { "sem-tags": tags.length === 0 }]}>
+    <div class="livro-centro" data-livro-gira>
+      <LivroEmPe livro={livro} altura={450} ampliavel fluido />
+    </div>
     {
       tags.length > 0 && (
-        <ul class="tags" aria-label="Tags mais usadas neste livro">
-          {tags.map((t) => (
-            <li>
-              <PilulaTag nome={t} />
+        <ul class="tags-anel" aria-label={`Tags de ${livro.nome} (abrem a tag só com os artigos deste livro)`}>
+          {noLado.map((t) => (
+            <li style={t.estilo}>
+              <PilulaTag nome={t.nome} contagem={t.qtd} livro={filtro} />
             </li>
           ))}
+          {resto.length > 0 && (
+            <li class="mais" style={`--i:${noAnel.length}`}>
+              <details class="mais-tags" data-mais-tags>
+                <summary aria-label={`Mais ${resto.length} ${resto.length === 1 ? "tag" : "tags"} de ${livro.nome}`}>+{resto.length}</summary>
+                <ul>
+                  {resto.map((t) => (
+                    <li>
+                      <PilulaTag nome={t.nome} contagem={t.qtd} livro={filtro} />
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            </li>
+          )}
         </ul>
       )
     }
   </div>
+
+  {
+    (anterior || proximo) && (
+      <nav class="vizinhos-livro" aria-label="Os livros ao lado na estante">
+        {anterior && (
+          <a class="vizinho-livro para-tras" href={anterior.href} rel="prev" data-vizinho-livro aria-label={`Livro anterior: ${rotuloLongo(anterior)}, ${anterior.nome}`}>
+            <span class="seta" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false" set:html={ICONES.seta} />
+            </span>
+            <span class="vizinho-vol" aria-hidden="true">{rotulo(anterior)}</span>
+            <span class="vizinho-nome" aria-hidden="true">{anterior.nome}</span>
+          </a>
+        )}
+        {proximo && (
+          <a class="vizinho-livro para-frente" href={proximo.href} rel="next" data-vizinho-livro aria-label={`Próximo livro: ${rotuloLongo(proximo)}, ${proximo.nome}`}>
+            <span class="vizinho-vol" aria-hidden="true">{rotulo(proximo)}</span>
+            <span class="vizinho-nome" aria-hidden="true">{proximo.nome}</span>
+            <span class="seta" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false" set:html={ICONES.seta} />
+            </span>
+          </a>
+        )}
+      </nav>
+    )
+  }
 </header>
 
 <LivroAmpliado />
 
+<script>
+  import { criarContador, mudarContador } from "../scripts/contador";
 
-<style>
-  .topo-livro {
-    position: relative;
-    overflow: clip;
-    isolation: isolate;
-    display: grid;
-    grid-template-columns: minmax(250px, 34%) minmax(0, 1fr);
-    gap: clamp(22px, 3vw, 40px);
-    align-items: center;
-    padding: 14px clamp(22px, 3vw, 40px) 14px 14px;
-  }
+  const raiz = document.documentElement;
+  const topo = document.querySelector<HTMLElement>("[data-topo-livro]");
+  const reduzido = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* O palco do livro: o painel tingido, como o dos desenhos (D26). */
-  /* A marca d'água, cortada pela borda da folha, atrás do texto. */
-  .topo-livro > :global(.marca-dagua) {
-    right: -70px;
-    bottom: -110px;
-  }
-
-  .topo-livro > :global(.marca-dagua.emblema) {
-    right: -40px;
-    bottom: -60px;
-  }
-
-  .palco,
-  .texto {
-    position: relative;
-    z-index: 1;
+  /*
+   * Os vizinhos trocam de livro como a fileira: o grande volta para o vão dele e o escolhido desce
+   * (troca.js, tipo "livro"; o script do <head> dá o nome ao livro da fileira que leva à página nova). A
+   * seta sai pela frente e volta por trás, como na paginação.
+   */
+  for (const a of document.querySelectorAll<HTMLAnchorElement>("[data-vizinho-livro]")) {
+    a.addEventListener("click", (e) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      raiz.setAttribute("data-troca-livro", "");
+      a.classList.remove("indo");
+      void a.offsetWidth;
+      a.classList.add("indo");
+    });
+    a.addEventListener("animationend", () => a.classList.remove("indo"));
   }
 
   /*
-   * O livro fica no meio do palco pelo que se vê dele, e não pela caixa (D57): de lado e visto de um
-   * pouco acima, a lombada, mais perto do olho, passa da caixa embaixo e à esquerda (uns 6px), e o alto
-   * aparece em cima. O padding desigual compensa.
+   * A troca de livro (pela fileira ou pelos vizinhos) fica anotada na sessão: na página nova, o contador
+   * roda enquanto o livro desce, e não depois do pouso (antes, "0 artigos" ficava parado um segundo).
    */
-  .palco {
+  const CHAVE = "cs-troca-de-livro";
+  addEventListener("click", (e) => {
+    const a = (e.target as HTMLElement).closest<HTMLAnchorElement>(".estante-topo a[data-troca-livro], a[data-vizinho-livro]");
+    if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    try {
+      sessionStorage.setItem(CHAVE, JSON.stringify({ para: new URL(a.href).pathname, t: Date.now() }));
+    } catch {}
+  });
+  let veioDaFileira = false;
+  try {
+    const d = JSON.parse(sessionStorage.getItem(CHAVE) || "null");
+    sessionStorage.removeItem(CHAVE);
+    veioDaFileira = !!d && d.para === location.pathname && Date.now() - d.t < 8000;
+  } catch {}
+
+  /*
+   * "N artigos" roda para cima ao chegar (T3): as fitas partem do zero e vão ao número quando a página
+   * aparece: na troca de livro, enquanto o livro desce; depois da cortina, quando ela sai; depois da
+   * abertura, quando ela acaba; sem troca, logo depois da primeira pintura. Com movimento reduzido, o
+   * número fica escrito, parado.
+   */
+  const numero = topo?.querySelector<HTMLElement>("[data-conta]");
+  if (numero && !reduzido) {
+    const alvo = Number(numero.dataset.conta);
+    criarContador(numero, 0, String(alvo).length);
+    let rodou = false;
+    const rodar = () => {
+      if (rodou) return;
+      rodou = true;
+      mudarContador(numero, alvo);
+    };
+    if (raiz.dataset.abertura) addEventListener("cs:aberto", () => setTimeout(rodar, 200), { once: true });
+    else if (raiz.hasAttribute("data-vai-chegar")) {
+      if (veioDaFileira) requestAnimationFrame(() => setTimeout(rodar, 380));
+      // A cortina avisa quando começa a sair (a página nova aparece por baixo).
+      addEventListener("cs:cortina-saindo", () => setTimeout(rodar, 120), { once: true });
+      addEventListener("cs:chegou", rodar, { once: true });
+    } else requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(rodar, 120)));
+    setTimeout(rodar, 3200);
+  }
+
+  // O "+N": fecha com Esc (o foco volta para ele) e com um clique fora.
+  for (const mais of document.querySelectorAll<HTMLDetailsElement>("[data-mais-tags]")) {
+    mais.addEventListener("keydown", (e) => {
+      if (e.key !== "Escape" || !mais.open) return;
+      e.stopPropagation();
+      mais.open = false;
+      mais.querySelector("summary")?.focus();
+    });
+    document.addEventListener("pointerdown", (e) => {
+      if (mais.open && !mais.contains(e.target as Node)) mais.open = false;
+    });
+  }
+</script>
+
+<style>
+  /* ---------- o painel ---------- */
+
+  .topo-livro {
+    --pad-alto: clamp(22px, 2.4vw, 34px);
+    --pad-lado: clamp(20px, 3vw, 44px);
+    position: relative;
+    isolation: isolate;
     display: grid;
-    place-items: center;
-    min-height: 360px;
-    padding: 24px 19px 36px 29px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "tira tira"
+      "texto anel"
+      "vizinhos anel";
+    grid-template-rows: auto 1fr auto;
+    column-gap: clamp(20px, 3vw, 48px);
+    padding: var(--pad-alto) var(--pad-lado) clamp(22px, 2.4vw, 32px);
   }
 
-  /* O título acompanha a largura da coluna: "Observabilidade" cabe inteiro no celular. */
+  /*
+   * A tira de catálogo, de ponta a ponta no alto da ficha (catalogo.css): as margens negativas a levam às
+   * bordas, e o conteúdo começa abaixo dela com a folga de antes.
+   */
+  .tira-livro {
+    grid-area: tira;
+    z-index: 2;
+    margin: calc(-1 * var(--pad-alto)) calc(-1 * var(--pad-lado)) var(--pad-alto);
+    padding-inline: max(14px, calc(var(--pad-lado) - 6px));
+  }
+
+  /* O número da tira roda ao chegar (o contador): na tinta, um nada mais forte que o resto da linha. */
+  .tira-livro .numero {
+    color: var(--ink);
+  }
+
+  /* A marca d'água no seu recorte, do tamanho da ficha e com os cantos dela: só ela é cortada. */
+  .recorte-marca {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  .recorte-marca > :global(.marca-dagua) {
+    right: -90px;
+    top: -60px;
+    width: 600px;
+  }
+
+  .recorte-marca > :global(.marca-dagua.emblema) {
+    right: -40px;
+    top: -30px;
+    width: 340px;
+  }
+
+  /* ---------- o texto ---------- */
+
   .texto {
-    container-type: inline-size;
-    min-width: 0;
-  }
-
-  .trilha {
-    /* Acima do h1 logo abaixo: a caixa do texto grande (line-height 1,02) sobe e pegava o clique (D54). */
+    grid-area: texto;
     position: relative;
     z-index: 1;
-    font-family: var(--font-ui);
-    font-size: 14.5px;
-    color: var(--ink-2);
-    text-decoration: none;
+    align-self: center;
+    container-type: inline-size;
+    min-width: 0;
+    max-width: 640px;
+    padding-top: 8px;
   }
 
-  .trilha:hover {
-    color: var(--acento);
-    text-decoration: underline;
-    text-underline-offset: 0.18em;
-  }
-
+  /* O nome grande do 14: o tamanho sai da palavra mais longa (--letras) e da largura da coluna. */
   h1 {
-    margin: 6px 0 0;
+    margin: 0;
     font-weight: 800;
-    font-size: clamp(24px, 10cqi, 56px);
-    line-height: 1.02;
-    letter-spacing: -0.012em;
+    font-size: clamp(34px, calc(100cqi / (var(--letras) * 0.68)), 100px);
+    line-height: 0.96;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+    /* Palavra nunca parte no meio: o tamanho já garante que a mais longa cabe (Besley 800: até 0,65em por letra). */
+    overflow-wrap: normal;
+    hyphens: manual;
   }
 
   .descricao {
-    max-width: 48ch;
-    margin: 12px 0 0;
-    font-size: 19px;
+    max-width: 46ch;
+    margin: 16px 0 0;
+    font-size: clamp(17px, 1.45vw, 20.5px);
     line-height: 1.5;
     color: var(--ink-2);
+    text-wrap: pretty;
   }
 
-  /* O quadradinho na cor da categoria, como no chip (D26). */
-  .conta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin: 16px 0 0;
-    font-family: var(--font-ui);
-    font-size: 14.5px;
-    color: var(--ink-2);
-    font-variant-numeric: lining-nums;
-  }
 
-  .conta::before {
-    content: "";
-    width: 9px;
-    height: 9px;
-    border-radius: 2px;
-    background: color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro));
-  }
+  /* ---------- os vizinhos de estante ---------- */
 
-  .tags {
+  .vizinhos-livro {
+    grid-area: vizinhos;
+    position: relative;
+    z-index: 1;
+    align-self: end;
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    margin: 18px 0 0;
+    gap: 10px 36px;
+    max-width: 640px;
+    margin-top: 28px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--font-ui);
+  }
+
+  .vizinho-livro {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    padding-block: 4px;
+    color: var(--ink-2);
+    font-size: 14.5px;
+    text-decoration: none;
+  }
+
+  .vizinho-vol {
+    font-size: 13px;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  .vizinho-nome {
+    font-weight: 600;
+    color: var(--ink);
+    transition: color 0.15s;
+  }
+
+  .vizinho-livro:is(:hover, :focus-visible) .vizinho-nome {
+    color: var(--acento);
+  }
+
+  .vizinho-livro:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  /* A seta numa janela (como na paginação): anda 3px no hover e, no clique, sai pela frente e volta por trás. */
+  .seta {
+    --rumo: 1;
+    display: inline-grid;
+    align-self: center;
+    margin-inline: -3px;
+    padding-inline: 3px;
+    overflow: hidden;
+  }
+
+  .para-tras .seta {
+    --rumo: -1;
+  }
+
+  .seta svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: translate 0.25s cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  .para-tras .seta svg {
+    rotate: 180deg;
+  }
+
+  .vizinho-livro:is(:hover, :focus-visible) .seta svg {
+    translate: calc(3px * var(--rumo));
+  }
+
+  .vizinho-livro.indo .seta svg {
+    animation: seta-vai 0.32s both;
+  }
+
+  @keyframes seta-vai {
+    0% {
+      translate: calc(3px * var(--rumo));
+      animation-timing-function: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+    }
+
+    43.7% {
+      translate: calc(130% * var(--rumo));
+      animation-timing-function: steps(1, end);
+    }
+
+    43.8% {
+      translate: calc(-130% * var(--rumo));
+      animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    100% {
+      translate: 0;
+    }
+  }
+
+  /* ---------- o livro e o anel de tags ---------- */
+
+  /*
+   * O anel: a caixa do livro com espaço em volta para as tags. --rx e --ry são as distâncias, a partir do
+   * centro do livro, onde as tags se apoiam (a de cada lado encosta pela ponta de dentro). --kc é a
+   * escala do livro (LivroEmPe fluido): 1 a 1280px (a capa com 300px), menos nas telas menores.
+   */
+  .anel {
+    --kc: 1;
+    --rx: calc(186px * var(--kc));
+    --ry: calc(176px * var(--kc));
+    --lado-tag: 176px;
+    grid-area: anel;
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: calc(2 * var(--rx) + 2 * var(--lado-tag));
+    max-width: 100%;
+    min-height: calc(450px * var(--kc) + 84px);
+    padding: 4px 0 44px;
+  }
+
+  .anel.sem-tags {
+    --lado-tag: 72px;
+    padding-bottom: 24px;
+  }
+
+  /* O halo da cor do livro atrás dele (o palco do 15), mais forte no escuro. */
+  .anel::before {
+    content: "";
+    position: absolute;
+    inset: -8% -4%;
+    z-index: -1;
+    background: radial-gradient(closest-side, color-mix(in oklab, var(--cor) 13%, transparent), transparent);
+    pointer-events: none;
+  }
+
+  :global(:root[data-theme="dark"]) .anel::before {
+    background: radial-gradient(closest-side, color-mix(in oklab, var(--cor) 18%, transparent), transparent);
+  }
+
+  /*
+   * O livro fica no meio pelo que se vê dele, e não pela caixa (D57): de lado e visto de um pouco acima, a
+   * lombada, mais perto do olho, passa da caixa embaixo e à esquerda. O padding desigual compensa.
+   */
+  .livro-centro {
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: 18px 19px 30px 29px;
+    border-radius: 12px;
+  }
+
+  .livro-centro:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 2px;
+  }
+
+  .tags-anel {
+    margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  @media (max-width: 760px) {
+  .tags-anel > li {
+    position: absolute;
+    z-index: 2;
+    left: calc(50% + 5px + var(--cx) * var(--rx));
+    top: calc(50% - 18px + var(--cy) * var(--ry));
+    translate: var(--ancora) -50%;
+  }
+
+  .tags-anel > li.mais {
+    left: 50%;
+    top: auto;
+    bottom: 4px;
+    translate: -50% 0;
+  }
+
+  /* As pílulas do anel no papel da folha: o halo e a marca d'água não passam por trás do texto. */
+  .tags-anel :global(.pilula-tag) {
+    background: var(--paper-hi);
+    white-space: nowrap;
+  }
+
+  /*
+   * A chegada (do 15): cada tag sai de trás do livro e vai para o seu lugar, girando um nada pelo caminho,
+   * uma depois da outra. Enquanto a página chega (a abertura ou a troca, que o <head> marca antes da
+   * primeira pintura), elas esperam escondidas; quando a marca sai, a animação começa sozinha.
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(html[data-js]:is([data-abertura], [data-vai-chegar])) .tags-anel > li {
+      opacity: 0;
+    }
+
+    :global(html[data-js]:not([data-abertura], [data-vai-chegar])) .tags-anel > li:not(.mais) {
+      animation: tag-sai-do-livro 0.75s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      animation-delay: calc(0.12s + var(--i) * 0.055s);
+    }
+
+    :global(html[data-js]:not([data-abertura], [data-vai-chegar])) .tags-anel > li.mais {
+      animation: tag-chega 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      animation-delay: calc(0.16s + var(--i) * 0.055s);
+    }
+  }
+
+  /*
+   * --voo é 1 no anel (a tag sai de trás do livro) e 0 na fileira do celular (ela só desce um pouco). Uma
+   * variável, e não outra animação: trocar o nome da animação num media query a recomeçaria.
+   */
+  @keyframes tag-sai-do-livro {
+    from {
+      opacity: 0;
+      transform: translate(calc(var(--cx) * var(--rx) * -0.85 * var(--voo, 1)), calc(var(--cy) * var(--ry) * -0.5 * var(--voo, 1) - 12px * (1 - var(--voo, 1)))) rotate(calc(var(--cy) * 30deg * var(--voo, 1))) scale(calc(1 - 0.45 * var(--voo, 1)));
+    }
+
+    40% {
+      opacity: 1;
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes tag-chega {
+    from {
+      opacity: 0;
+      transform: translateY(-12px);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* O "+N": uma pílula tracejada que abre o resto num papel por cima do livro. */
+  .mais-tags summary {
+    display: inline-grid;
+    place-items: center;
+    min-width: 42px;
+    min-height: 30px;
+    padding: 0 11px;
+    border: 1px dashed color-mix(in oklab, var(--ink) 32%, transparent);
+    border-radius: 2px;
+    background: var(--paper-hi);
+    font: 500 13.5px/1 var(--font-ui);
+    color: var(--ink-2);
+    font-variant-numeric: lining-nums;
+    cursor: pointer;
+    list-style: none;
+    transition:
+      border-color 0.15s,
+      color 0.15s;
+  }
+
+  .mais-tags summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .mais-tags summary:is(:hover, :focus-visible),
+  .mais-tags[open] summary {
+    border-color: var(--acento);
+    color: var(--acento);
+  }
+
+  .mais-tags summary:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 3px;
+  }
+
+  .mais-tags ul {
+    position: absolute;
+    z-index: 3;
+    left: 50%;
+    bottom: calc(100% + 10px);
+    translate: -50% 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    width: max-content;
+    max-width: min(440px, 80vw);
+    margin: 0;
+    padding: 12px;
+    border-radius: 2px;
+    background: var(--paper-hi);
+    box-shadow:
+      0 1px 1px color-mix(in oklab, var(--sombra-quente) 16%, transparent),
+      var(--sombra-folha-alta);
+    list-style: none;
+  }
+
+  :global(:root[data-theme="dark"]) .mais-tags ul {
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--ink) 7%, transparent),
+      var(--sombra-folha-alta);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .mais-tags[open] ul {
+      transition:
+        opacity 0.2s,
+        transform 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    @starting-style {
+      .mais-tags[open] ul {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+    }
+  }
+
+  /* ---------- telas menores ---------- */
+
+  /* Entre 1100 e 1400px, o livro um pouco menor: o texto ao lado não fica estreito demais. */
+  @media (max-width: 1399px) {
+    .anel {
+      --kc: 0.86;
+      --lado-tag: 168px;
+    }
+  }
+
+  /* Um embaixo do outro: o texto, o livro com o anel, os vizinhos. */
+  @media (max-width: 1099px) {
     .topo-livro {
       grid-template-columns: minmax(0, 1fr);
-      padding: 12px 12px 24px;
+      grid-template-rows: auto;
+      grid-template-areas:
+        "tira"
+        "texto"
+        "anel"
+        "vizinhos";
     }
 
-    .palco {
-      min-height: 340px;
+    .texto,
+    .vizinhos-livro {
+      max-width: none;
     }
 
-    .texto {
-      padding: 0 10px;
+    .anel {
+      --kc: 0.9;
+      justify-self: center;
+      margin-top: 8px;
+    }
+
+    .vizinhos-livro {
+      justify-content: space-between;
+      margin-top: 8px;
+    }
+  }
+
+  @media (max-width: 760px) {
+    .anel {
+      --kc: 0.8;
+      --lado-tag: 132px;
+    }
+
+    .tags-anel :global(.pilula-tag small) {
+      display: none;
+    }
+  }
+
+  /* Celular: sem anel; as tags numa fileira embaixo do livro, e a marca d'água menor. */
+  @media (max-width: 640px) {
+    .topo-livro {
+      --pad-alto: 22px;
+      --pad-lado: 16px;
+      padding: var(--pad-alto) var(--pad-lado) 18px;
+    }
+
+    .anel {
+      --kc: 0.66;
+      width: 100%;
+      min-height: 0;
+      padding: 4px 0 6px;
+    }
+
+    .tags-anel {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .tags-anel > li,
+    .tags-anel > li.mais {
+      position: relative;
+      left: auto;
+      top: auto;
+      bottom: auto;
+      translate: none;
+    }
+
+    .tags-anel :global(.pilula-tag small) {
+      display: inline;
+    }
+
+    .tags-anel > li {
+      --voo: 0;
+    }
+
+    .mais-tags ul {
+      bottom: auto;
+      top: calc(100% + 8px);
+      max-width: calc(100vw - 48px);
+    }
+
+    .vizinhos-livro {
+      gap: 8px 16px;
+    }
+
+    .vizinho-livro {
+      font-size: 14px;
+    }
+
+    .recorte-marca > :global(.marca-dagua) {
+      right: -130px;
+      top: -40px;
+      width: 340px;
+    }
+
+    .recorte-marca > :global(.marca-dagua.emblema) {
+      right: -60px;
+      top: -20px;
+      width: 220px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .seta svg {
+      transition: none;
+    }
+
+    .vizinho-livro.indo .seta svg {
+      animation: none;
     }
   }
 </style>

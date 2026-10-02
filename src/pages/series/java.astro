@@ -3,25 +3,38 @@
  * Página da série "Atualizações do Java" (/series/java/, D32; /java/ redireciona para cá), portada do
  * blog atual (skill serie-java). Como as páginas de categoria (D31): o painel lateral à esquerda, com o livro da série fora da pilha, e o
  * livro aberto no topo, que chega da pilha ou da página de séries por transição de página.
+ *
+ * Rodada 4, H5 (S11, S12; docs/redesenho/rodada-4/direcao-papel.md): "Comece por aqui" é um bilhete de papel
+ * colado na página (o `.papel-colado` com a fita no canto de cima à esquerda), girado −0,5°, com o fio de
+ * 2px no laranja da série na borda de cima; o fundo tingido saiu. As edições são fichas de catálogo
+ * (catalogo.css), com a mesma tira dos cards desses posts ("Coleção Java · ed. 7", "nº 025", de
+ * src/lib/ficha.ts); a próxima LTS tem o fio da tira tracejado, no lugar do contorno tracejado da caixa.
  */
 import Base from "../../layouts/Base.astro";
 import { paginaDeColecao } from "../../lib/seo";
-import ComPainel from "../../components/ComPainel.astro";
+// Rodada 3, área 4: a fileira de cima com todos os livros, como na página do livro (no lugar do painel lateral).
+import FileiraTopo from "../../components/FileiraTopo.astro";
 import TopoLivro from "../../components/TopoLivro.astro";
 import { montarLivros } from "../../lib/estante";
 import { GUIA_JAVA, JAVA_LTS, RELEASED_LTS } from "../../data/java";
 import { serie } from "../../data/series";
 import { getResumos } from "../../lib/posts";
 import { url } from "../../lib/url";
+import { chamadaDe } from "../../lib/ficha";
+import "../../styles/catalogo.css";
 
 const resumos = await getResumos();
 const java = serie("java")!;
-const versoes = JAVA_LTS.map((lts) => ({ lts, post: resumos.find((r) => r.slug === `java-${lts.version}`) })).filter(
-  (v) => v.post,
+const versoes = await Promise.all(
+  JAVA_LTS.map((lts) => ({ lts, post: resumos.find((r) => r.slug === `java-${lts.version}`) }))
+    .filter((v) => v.post)
+    .map(async (v) => ({ ...v, tira: await chamadaDe(v.post!) })),
 );
 const guia = resumos.find((r) => r.slug === GUIA_JAVA);
 const proxima = JAVA_LTS.find((v) => v.upcoming);
-const livro = (await montarLivros()).find((l) => l.id === "serie-java")!;
+const livros = await montarLivros();
+const i = livros.findIndex((l) => l.id === "serie-java");
+const livro = livros[i];
 const DESCRICAO =
   "Cada versão LTS do Java explicada: o que mudou desde a LTS anterior, em qual versão cada recurso chegou, com exemplos de código e fontes oficiais.";
 ---
@@ -32,10 +45,13 @@ const DESCRICAO =
   atual="series"
   jsonLd={paginaDeColecao("Atualizações do Java", DESCRICAO, Astro.url.pathname, Astro.site)}
 >
-  <ComPainel tipo="series" atual={livro.id}>
+  <div class="wrap pagina-do-livro">
+  <FileiraTopo livros={livros} atual={livro.id} />
   <div class="java" style={`--cor:${java.destaque};--cor-texto:${java.destaqueTexto ?? java.destaque}`}>
     <TopoLivro
       livro={livro}
+      anterior={livros[i - 1]}
+      proximo={livros[i + 1]}
       descricao="Uma leitura por versão LTS: o que as versões intermediárias trouxeram desde a LTS anterior, em qual versão cada recurso chegou, com exemplos de código, diagramas e fontes oficiais."
       trilha={{ nome: "Séries", href: url("/series/") }}
     >
@@ -48,7 +64,8 @@ const DESCRICAO =
 
     {
       guia && (
-        <a class="guia folha" href={guia.url}>
+        <a class="guia papel-colado" href={guia.url} data-unidade>
+          <span class="fita-adesiva canto-esq" aria-hidden="true" />
           <span class="guia-rotulo">Comece por aqui</span>
           <span class="guia-titulo">{guia.titulo}</span>
           <span class="guia-texto">
@@ -61,17 +78,23 @@ const DESCRICAO =
 
     <ul class="versoes" aria-label="Versões LTS">
       {
-        versoes.map(({ lts, post }) => (
+        versoes.map(({ lts, post, tira }) => (
           <li>
-            <a class:list={["versao", "folha", { proxima: lts.upcoming }]} href={post!.url}>
-              <span class="topo-versao">
-                <span class="numero">{lts.version}</span>
-                <span class="selo">{lts.upcoming ? "Próxima LTS" : "LTS"}</span>
+            <a class:list={["versao", "folha", "ficha-catalogo", { proxima: lts.upcoming }]} href={post!.url}>
+              <span class:list={["tira-catalogo", { tracejada: lts.upcoming }]} aria-hidden="true">
+                <span>{tira.chamada}</span>
+                <span>{tira.tombo}</span>
               </span>
-              <span class="subtitulo">{post!.subtitulo}</span>
-              <span class="rodape-versao">
-                <span>{lts.covers}</span>
-                <span>{lts.upcoming ? `previsto: ${lts.release}` : lts.release}</span>
+              <span class="corpo-versao">
+                <span class="topo-versao">
+                  <span class="numero">{lts.version}</span>
+                  <span class="selo">{lts.upcoming ? "Próxima LTS" : "LTS"}</span>
+                </span>
+                <span class="subtitulo">{post!.subtitulo}</span>
+                <span class="rodape-versao">
+                  <span>{lts.covers}</span>
+                  <span>{lts.upcoming ? `previsto: ${lts.release}` : lts.release}</span>
+                </span>
               </span>
             </a>
           </li>
@@ -79,12 +102,12 @@ const DESCRICAO =
       }
     </ul>
   </div>
-  </ComPainel>
+  </div>
 </Base>
 
 <style>
-  :global(.com-painel) {
-    padding-top: 32px;
+  .pagina-do-livro {
+    padding-top: 12px;
   }
 
   /* Texto pequeno no laranja da série usa a variante escura (D35); o grande fica na cor da capa. */
@@ -109,21 +132,48 @@ const DESCRICAO =
     font-variant-numeric: lining-nums;
   }
 
-  /* Guia e versões são folhas (D26); o guia leva um leve tom da série. */
+  /*
+   * "Comece por aqui" (rodada 4, S11): o bilhete colado na página, com o fio de 2px no laranja da série na
+   * borda de cima, por baixo da fita, e um nada torto (−0,5°). No hover, endireita e o título fica azul.
+   */
   .guia {
     display: grid;
     gap: 4px;
-    margin-top: 32px;
-    padding: 20px 22px;
-    border-color: color-mix(in oklab, var(--destaque) 40%, var(--rule));
-    background: color-mix(in oklab, var(--destaque) 6%, var(--paper-hi));
+    width: fit-content;
+    max-width: min(100%, 720px);
+    margin-top: 36px;
+    padding: 22px 26px 20px;
     color: var(--ink);
     text-decoration: none;
-    transition: border-color 0.15s;
+    rotate: -0.5deg;
+    transition: rotate 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
 
-  .guia:hover {
-    border-color: var(--destaque);
+  .guia::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 2px;
+    border-radius: 2px 2px 0 0;
+    background: var(--cor);
+  }
+
+  .guia :global(.fita-adesiva) {
+    --fita-x: -14px;
+    --fita-y: -8px;
+  }
+
+  @media (hover: hover) {
+    .guia:hover {
+      rotate: 0deg;
+    }
+  }
+
+  .guia:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 4px;
   }
 
   .guia:hover .guia-titulo {
@@ -156,17 +206,25 @@ const DESCRICAO =
     list-style: none;
   }
 
+  /* As edições (rodada 4, S12): fichas de catálogo, com a tira dos cards desses posts no alto. */
   .versao {
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
     height: 100%;
-    padding: 18px 18px 16px;
+    overflow: hidden;
     color: var(--ink);
     text-decoration: none;
     transition:
       transform 0.2s,
       box-shadow 0.2s;
+  }
+
+  .corpo-versao {
+    flex: 1;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 10px;
+    padding: 16px 18px 16px;
   }
 
   .versao:hover {
@@ -178,13 +236,13 @@ const DESCRICAO =
     color: var(--acento);
   }
 
-  .versao.proxima {
-    border-style: dashed;
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .versao:hover {
       transform: none;
+    }
+
+    .guia {
+      transition: none;
     }
   }
 

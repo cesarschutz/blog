@@ -1,0 +1,455 @@
+---
+/**
+ * As fichas de Tags (F11-2, G27; rodada 4, P19-2): todas as tags como fichas de fichário, de A a Z, com a
+ * orelha da letra (a ficha-guia) na primeira de cada uma. A tira de cima, em mono, com "Tag · N artigos" e
+ * a mini-estante dos livros em que ela aparece, apoiada na linha vermelha da ficha; o nome e o ícone
+ * grande, que se mexe no hover da ficha inteira; os três últimos artigos nas linhas da pauta e "Todos os N".
+ *
+ * A lista leva `data-fichas-caem` (as fichas caem de cima, fichas-caem.ts) e `data-fora-da-troca`; com
+ * `jogadas`, também `data-jogadas` (chegando pela cortina, as de cima vêm jogadas do alto à direita,
+ * troca.js). Cada ficha leva `data-letra` (a inicial, sem acento) e `data-n`. Uma linha que não enche fica
+ * no meio (P16-7). Saiu da página de Tags na rodada 4 para a amostra D3 (nas amostras do redesenho, fora do git) usar a mesma:
+ * `ancora` muda o prefixo das âncoras de letra (únicas na página), `alfinetes` põe o alfinete da cortiça
+ * do 16 (pintado pela amostra) e `limite` mostra só as primeiras.
+ */
+import IconeTag from "./IconeTag.astro";
+import { ICONES } from "../lib/icones";
+import { coresDoLivroCss, montarLivros } from "../lib/estante";
+import { urlTag, type Grupo, type Resumo } from "../lib/posts";
+import { tituloComQuebras } from "../lib/formato";
+
+interface Props {
+  tags: Grupo[];
+  /** Prefixo das âncoras de letra (`letra-B`); a amostra usa um por forma. */
+  ancora?: string;
+  /** Chegando pela cortina, as de cima vêm jogadas do alto (troca.js). */
+  jogadas?: boolean;
+  /** O alfinete da cortiça (amostra D3, forma C), na cor do livro em que a tag mais aparece. */
+  alfinetes?: boolean;
+  /** Só as primeiras N (as chegadas da amostra). */
+  limite?: number;
+  /** Sem a orelha da letra. */
+  semSeparador?: boolean;
+  /** De A a Z (o fichário) ou das mais usadas às menos usadas (a cortiça do 16). */
+  ordem?: "letra" | "uso";
+  class?: string;
+}
+
+const { tags, ancora = "letra-", jogadas = false, alfinetes = false, limite, semSeparador = false, ordem = "letra", class: classe } = Astro.props;
+const colecao = await montarLivros();
+const recentes = (posts: Resumo[]) => [...posts].sort((a, b) => b.publicado.getTime() - a.publicado.getTime()).slice(0, 3);
+// Os livros da tag, na ordem da estante, com quantos artigos da tag cada um tem.
+const livrosDa = (posts: Resumo[]) =>
+  colecao.map((l) => ({ livro: l, n: posts.filter((p) => p.livro === l.id).length })).filter((x) => x.n > 0);
+// O livro em que a tag mais aparece: a cor do alfinete dela (a cortiça do 16).
+const livroDaTag = (posts: Resumo[]) => [...livrosDa(posts)].sort((a, b) => b.n - a.n)[0]?.livro;
+const palavra = (n: number) => (n === 1 ? "artigo" : "artigos");
+const inicial = (nome: string) => nome.normalize("NFD").replace(/\p{M}/gu, "").charAt(0).toUpperCase();
+const fichas = (ordem === "uso" ? [...tags] : [...tags].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"))).slice(0, limite ?? tags.length);
+---
+
+<div class:list={["area-fichas", classe]} id={`${ancora}todas`}>
+  <ul class="fichas-tags" data-fichas-caem data-fora-da-troca data-jogadas={jogadas ? "" : undefined}>
+    {
+      fichas.map((t, i) => {
+        const n = t.posts.length;
+        const livros = livrosDa(t.posts);
+        const L = inicial(t.nome);
+        const primeira = ordem === "letra" && (i === 0 || inicial(fichas[i - 1].nome) !== L);
+        const principal = alfinetes ? livroDaTag(t.posts) : undefined;
+        return (
+          <li class="ficha-tag" data-letra={L} data-n={n} id={primeira ? `${ancora}${L}` : undefined} style={principal ? `--cor:${principal.cores.cor}` : undefined}>
+            {alfinetes && <span class="alfinete" aria-hidden="true" />}
+            {primeira && !semSeparador && (
+              <span class="separador-letra" aria-hidden="true">
+                {L}
+              </span>
+            )}
+            <p class="tira-ficha">
+              <span class="tira-texto">
+                Tag · {n} {palavra(n)}
+              </span>
+              <span class="mini-estante" role="list" aria-label={livros.length === 1 ? "No livro" : "Nos livros"}>
+                {livros.map(({ livro, n: k }) => (
+                  <span
+                    role="listitem"
+                    class:list={["mini-lombada", { "de-serie": livro.serie }]}
+                    style={`${coresDoLivroCss(livro)};--h:${livro.emPe.altura}`}
+                    title={`${livro.nome}: ${k} ${palavra(k)}`}
+                  >
+                    <span class="sr">
+                      {livro.nome}, {k} {palavra(k)}
+                    </span>
+                  </span>
+                ))}
+              </span>
+            </p>
+            <div class="cabeca-ficha">
+              <h3>
+                <a href={urlTag(t.nome)}>#{t.nome}</a>
+              </h3>
+              <a class="icone-link" href={urlTag(t.nome)} tabindex="-1" aria-hidden="true">
+                <IconeTag nome={t.nome} class="icone-ficha" />
+              </a>
+            </div>
+            <div class="pauta-ficha">
+              <ol class="recentes" aria-label="Os mais recentes">
+                {recentes(t.posts).map((p) => (
+                  <li>
+                    <a href={p.url} set:html={tituloComQuebras(p.titulo)} />
+                  </li>
+                ))}
+              </ol>
+              <a class="todos" href={urlTag(t.nome)}>
+                {n === 1 ? "Ver a tag" : `Todos os ${n}`}
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
+              </a>
+            </div>
+          </li>
+        );
+      })
+    }
+  </ul>
+</div>
+
+<style>
+  /* ---------- as fichas (F11-2, G27) ---------- */
+
+  /*
+   * As fichas de A a Z, em linhas de --k (quantas fichas de 290px cabem na largura, como a grade de antes).
+   * Uma linha que não enche (uma gaveta com uma ou duas fichas, ou a última) fica no meio (P16-7).
+   */
+  .area-fichas {
+    container: fichas / inline-size;
+  }
+
+  .fichas-tags {
+    --k: 1;
+    --vao-x: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: stretch;
+    gap: 22px var(--vao-x);
+    /* Uma gaveta com uma ficha só não encolhe a página de uma vez (o rodapé subiria e a tela pularia). */
+    min-height: min(62vh, 620px);
+    align-content: flex-start;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .fichas-tags > .ficha-tag {
+    flex: 0 0 calc((100% - (var(--k) - 1) * var(--vao-x)) / var(--k));
+    min-width: 0;
+  }
+
+  @container fichas (min-width: 604px) {
+    .fichas-tags {
+      --k: 2;
+    }
+  }
+
+  @container fichas (min-width: 918px) {
+    .fichas-tags {
+      --k: 3;
+    }
+  }
+
+  @container fichas (min-width: 1232px) {
+    .fichas-tags {
+      --k: 4;
+    }
+  }
+
+  /*
+   * O separador de letra (o 19, F12-8): a orelha da ficha-guia, à esquerda da primeira ficha de cada letra,
+   * no vão entre as fichas. Com "Todas", as letras dividem a linha, e é a orelha que mostra onde cada uma
+   * começa. A ficha-guia é de papel manilha (o latão bem claro sobre a folha), não de madeira.
+   */
+  .separador-letra {
+    position: absolute;
+    top: 14px;
+    right: 100%;
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 46px;
+    border: 1px solid var(--rule);
+    border-right: 0;
+    border-radius: 5px 0 0 5px;
+    background: color-mix(in oklab, var(--latao) 22%, var(--paper-hi));
+    box-shadow: -2px 2px 4px -2px color-mix(in oklab, var(--sombra-quente) 30%, transparent);
+    color: var(--ink);
+    font-family: var(--font-titulo);
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  :global(:root[data-theme="dark"]) .separador-letra {
+    background: color-mix(in oklab, var(--latao) 30%, var(--paper-hi));
+    color: var(--ink);
+  }
+
+  @media (max-width: 640px) {
+    .fichas-tags {
+      padding-left: 14px;
+    }
+
+    .separador-letra {
+      width: 18px;
+    }
+  }
+
+  /*
+   * A ficha: papel de fichário, cantos quase retos, a linha vermelha da cabeça sob a tira e a pauta azul
+   * nas linhas dos artigos (de uma borda à outra, como numa ficha de verdade). A pauta continua até o pé,
+   * com as linhas em branco, para as fichas da mesma linha terminarem juntas.
+   */
+  .ficha-tag {
+    --lado: 20px;
+    --linha: 30px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 0 var(--lado);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: var(--paper-hi);
+    box-shadow: var(--sombra-folha);
+    transition: transform 0.32s cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  /* A sombra mais alta do hover numa camada própria: só a opacidade anima. */
+  .ficha-tag::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    border-radius: inherit;
+    box-shadow: var(--sombra-folha-alta);
+    opacity: 0;
+    transition: opacity 0.32s;
+    pointer-events: none;
+  }
+
+  .tira-ficha {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 34px;
+    margin: 0 calc(-1 * var(--lado));
+    padding: 6px var(--lado) 0;
+    border-bottom: 1.5px solid var(--pauta-cabeca);
+    font-family: var(--font-codigo);
+    font-size: 12px;
+    line-height: 1;
+    color: var(--ink-2);
+  }
+
+  .tira-texto {
+    padding-bottom: 7px;
+    white-space: nowrap;
+  }
+
+  /*
+   * A mini-estante (D52, B11): uma lombada por livro, na ordem da coleção, com a altura proporcional à
+   * de verdade e o papel em cima, de pé sobre a linha vermelha da ficha. Os livros não mudam com o tema.
+   */
+  .mini-estante {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: flex-end;
+    gap: 2px;
+  }
+
+  .mini-lombada {
+    display: block;
+    width: 6px;
+    height: calc(var(--h) * 0.03px);
+    border-top: calc((var(--h) - 400) * 0.03px) solid var(--livro-papel);
+    border-radius: 1px 1px 0 0;
+    background: var(--livro-cor);
+  }
+
+  .mini-lombada.de-serie {
+    border-top: 2px solid var(--livro-destaque);
+    background: var(--livro-papel);
+  }
+
+  /* O nome e o ícone grande, na mesma linha de base. */
+  .cabeca-ficha {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    padding: 14px 0 10px;
+  }
+
+  h3 {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.15;
+    overflow-wrap: break-word;
+    /* Nome longo de uma palavra só (Microsserviços) quebra com hífen, e só quando não cabe. */
+    text-wrap: wrap;
+    hyphens: auto;
+  }
+
+  h3 a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  h3 a:is(:hover, :focus-visible) {
+    color: var(--acento);
+  }
+
+  .icone-link {
+    flex: none;
+    display: block;
+    color: var(--ink);
+  }
+
+  .ficha-tag :global(.icone-ficha) {
+    --traco-tag: 1.25px;
+    --papel-da-tag: color-mix(in oklab, var(--ink) 6%, var(--paper-hi));
+    width: 64px;
+    height: 64px;
+    margin: -4px -4px -2px 0;
+    transform-origin: 50% 88%;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* O hover da ficha inteira (F11-2): ela sobe um nada, a sombra cresce e o ícone inclina e sobe. */
+  @media (hover: hover) {
+    .ficha-tag:hover {
+      transform: translateY(-3px);
+    }
+
+    .ficha-tag:hover::after {
+      opacity: 1;
+    }
+
+    .ficha-tag:hover :global(.icone-ficha) {
+      transform: translateY(-2px) rotate(-8deg);
+    }
+  }
+
+  .ficha-tag:focus-within :global(.icone-ficha) {
+    transform: translateY(-2px) rotate(-8deg);
+  }
+
+  /*
+   * A pauta: cada linha de texto sobre uma linha azul (a linha de base 3px acima dela, as pernas do p e
+   * do g cruzando, como à mão), "Todos os N" na linha seguinte e as linhas em branco até o pé.
+   */
+  .pauta-ficha {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-height: calc(4 * var(--linha) + 6px);
+    margin: 0 calc(-1 * var(--lado));
+    padding: 0 var(--lado) 6px;
+    background: repeating-linear-gradient(to bottom, transparent 0 calc(var(--linha) - 1px), var(--pauta) calc(var(--linha) - 1px) var(--linha));
+    background-position: 0 -3px;
+  }
+
+  .recentes {
+    align-self: stretch;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .recentes a {
+    display: block;
+    color: var(--ink);
+    font-size: 15.5px;
+    line-height: var(--linha);
+    text-decoration: none;
+  }
+
+  .recentes a:is(:hover, :focus-visible) {
+    color: var(--acento);
+  }
+
+  .todos {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    line-height: var(--linha);
+    color: var(--acento);
+  }
+
+  .todos svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.2s cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  .todos:is(:hover, :focus-visible) svg {
+    transform: translateX(3px);
+  }
+
+  /* No celular estreito, o ícone e o nome encolhem um pouco, para "#Microsserviços" caber inteiro. */
+  @media (max-width: 400px) {
+    .ficha-tag {
+      --lado: 16px;
+    }
+
+    .ficha-tag :global(.icone-ficha) {
+      width: 52px;
+      height: 52px;
+    }
+  }
+
+  /*
+   * A entrada (área 6, item 3): com JS e sem movimento reduzido, as fichas esperam escondidas pela queda
+   * (fichas-caem.ts). Antes de o script chegar, elas já nascem escondidas, e a folga as devolve em 3s se
+   * ele não vier; com ele (`data-caem`), cada uma aparece quando cai (`data-caiu`).
+   */
+  @media (prefers-reduced-motion: no-preference) {
+    :global(:root[data-js]) .fichas-tags:not([data-caem]) > .ficha-tag:not([data-caiu]) {
+      animation: ficha-folga 0s linear 3s backwards;
+    }
+
+    .fichas-tags[data-caem] > .ficha-tag:not([data-caiu]) {
+      opacity: 0;
+    }
+  }
+
+  @keyframes ficha-folga {
+    from {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ficha-tag,
+    .ficha-tag::after,
+    .ficha-tag :global(.icone-ficha),
+    .todos svg {
+      transition: none;
+    }
+
+    .ficha-tag:hover,
+    .ficha-tag:hover :global(.icone-ficha),
+    .ficha-tag:focus-within :global(.icone-ficha),
+    .todos:is(:hover, :focus-visible) svg {
+      transform: none;
+    }
+  }
+</style>

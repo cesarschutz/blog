@@ -12,13 +12,25 @@ const { titulo, descricao, trilha } = Astro.props;
 <header class="cabecalho-pagina">
   {trilha && <a class="trilha" href={trilha.href}>{trilha.nome}</a>}
   <h1>{titulo}</h1>
-  {descricao && <p class="descricao">{descricao}</p>}
-  <slot />
+  <div class="pe-titulo">
+    {descricao && <p class="descricao">{descricao}</p>}
+    <slot />
+  </div>
 </header>
 
 <style>
+  /*
+   * Protótipo 14 (G1): o título das páginas na tipografia grande do 01, em Besley, com um fio de tinta
+   * embaixo, como a linha do topo da home; a descrição fica no pé, à esquerda.
+   */
   .cabecalho-pagina {
-    padding: 44px 0 26px;
+    padding: clamp(28px, 4vw, 52px) 0 28px;
+  }
+
+  .pe-titulo {
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid var(--ink);
   }
 
   .trilha {
@@ -33,14 +45,16 @@ const { titulo, descricao, trilha } = Astro.props;
 
   h1 {
     margin: 8px 0 0;
-    font-size: clamp(34px, 5vw, 52px);
-    line-height: 1.05;
-    letter-spacing: -0.012em;
+    font-size: clamp(46px, 8.4vw, 124px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    text-wrap: balance;
   }
 
   .descricao {
     max-width: 60ch;
-    margin: 12px 0 0;
+    margin: 0;
     font-size: 18px;
     color: var(--ink-2);
   }

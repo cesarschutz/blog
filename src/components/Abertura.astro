@@ -6,13 +6,14 @@
  * ou "caderno") e o tira sozinho depois de 7s, por segurança, se este script não assumir. Andando por
  * dentro do site, vale a troca de página (troca.js).
  *
- * - Na home, a estante se monta (A3): uma folha de papel cobre a página, a caneta risca um fio onde vai
- *   ficar a tábua, o fio engrossa e vira a tábua, e a coleção é posta nela, livro a livro, da esquerda
- *   para a direita (cada um entra pela direita, desliza até encostar no anterior, inclinado pelo atrito,
- *   e assenta), com a contagem da coleção embaixo ("Volume 01"… "E a revista"). A estante é a de
- *   verdade, levantada por cima do papel. Montada, ela volta para a folha da abertura e o papel esmaece.
- *   Durante a abertura, a estante não responde ao mouse (B12, D52). Depois, quando o desenho do destaque
- *   termina, o caderno do cabeçalho e o grande acenam juntos, uma vez (B13, D52).
+ * - Na home (rodada 4, A1, E3 e E12: a sequência do 18, melhorada, com o nome do 20): uma folha de papel cobre
+ *   a página; a caneta risca o fio da aresta da lâmina de vidro; a lâmina aparece; os livros chegam um a um
+ *   pela direita, com a contagem embaixo ("Volume 01"… "Série"); quando eles param, os dois cadernos
+ *   acenam; a fileira desce para o lugar, a página aparece em volta e o nome gigante entra da direita para a
+ *   esquerda (uma frente desfocada; os números rodam quando ela passa por eles); a assinatura se escreve
+ *   quando os cadernos fecham; e as luzes acendem uma a uma, seguidas só da onda de molas e, depois dela, só do
+ *   brilho (~4,9s, `A1` abaixo). A fileira é a de verdade, levantada por cima do papel. Durante a abertura, a
+ *   estante não responde ao mouse (B12, D52).
  * - Nas outras páginas, o caderno "cs" carrega (a caneta escreve o fio, contando até 100), abre e fecha
  *   (contracapa, miolo pautado e capa com frente e verso, no papel dos livros, igual nos dois temas) e
  *   voa em arco até a marca do cabeçalho, subindo por baixo dela, sobre a folha ainda limpa (revisão 14,
@@ -70,9 +71,19 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
   const cena = document.querySelector<HTMLElement>("[data-abertura-site]");
   const modo = raiz.dataset.abertura;
   if (cena && (modo === "estante" || modo === "caderno")) void abrir(cena, modo);
-  else cena?.remove();
+  else {
+    cena?.remove();
+    // A home chegando pela troca de página: o aceno e a assinatura logo que ela chega (E12).
+    if (raiz.hasAttribute("data-vai-chegar") && !matchMedia("(prefers-reduced-motion: reduce)").matches) acenoNaChegada();
+  }
 
   const esperar = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+  /**
+   * Na home (rodada 4), o aviso do fim (`cs:aberto`) espera o nome começar a entrar: quem o ouve (os números
+   * da página, que rodam 0,2s depois dele) não se adianta à frente de luz, e o quadro em que o CSS da abertura
+   * sai (o mais pesado) fica sozinho.
+   */
+  let avisoDaHome: Promise<void> | null = null;
   /** Se a abertura já pôs as folhas da página para chegar (no fim do caderno). */
   let chegadaPedida = false;
 
@@ -146,17 +157,21 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
       // Sem a cena (pulada antes de ela montar, ou sem o GSAP), a estante que o CSS da abertura escondia
       // aparece de uma vez: a trava das transições sai junto, e os livros apareciam esmaecendo (D54).
       if (!tl) {
-        const pecas = [...document.querySelectorAll<HTMLElement>("[data-estante] :is(.prateleira-livros > *, .tabua)")];
+        const pecas = [...document.querySelectorAll<HTMLElement>("[data-estante] :is(.prateleira-livros > *, .tabua, .nicho > *, .luzes-fileira)")];
         pecas.forEach((p) => (p.style.transition = "none"));
         requestAnimationFrame(() => requestAnimationFrame(() => pecas.forEach((p) => p.style.removeProperty("transition"))));
       }
       delete raiz.dataset.abertura;
       cena.remove();
       irAoAlvo();
-      dispatchEvent(new CustomEvent("cs:aberto"));
-      // Pulada antes de as folhas chegarem, a página já está no lugar: quem espera a chegada (o desenho do
-      // topo do artigo) começa agora, e não pela reserva (D54).
-      if (!chegadaPedida) dispatchEvent(new CustomEvent("cs:chegou"));
+      const avisar = () => {
+        dispatchEvent(new CustomEvent("cs:aberto"));
+        // Pulada antes de as folhas chegarem, a página já está no lugar: quem espera a chegada (o desenho do
+        // topo do artigo) começa agora, e não pela reserva (D54).
+        if (!chegadaPedida) dispatchEvent(new CustomEvent("cs:chegou"));
+      };
+      if (avisoDaHome && tl && !pulou) void avisoDaHome.then(avisar);
+      else avisar();
     };
 
     try {
@@ -200,141 +215,271 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
   }
 
   /**
-   * O aceno do fim da abertura da home (B13, D52): depois que o desenho do destaque termina (o
-   * desenho-vivo.ts avisa com `cs:desenhou`), o caderno do cabeçalho e o grande da abertura abrem um
-   * pouco e fecham, juntos e uma vez, com o mesmo movimento do hover (a classe `acena`, Marca.astro).
-   * Sem desenho no destaque, logo depois da abertura. Com o mouse já num deles, ele fica aberto: a
-   * classe só soma ao hover.
+   * O aceno dos cadernos e a assinatura (B13 e C04, D52; rodada 4, E12): o caderno do cabeçalho e o grande da
+   * home abrem um pouco e fecham, juntos e uma vez, com o mesmo movimento do hover (a classe `acena`,
+   * Marca.astro); quando a capa começa a fechar (0,8s depois), a caneta preta assina embaixo de "Schutz", em
+   * 0,7s. Antes (até a rodada 4) isso esperava o fim da abertura e o desenho do destaque, e vinha a 2,95s e de
+   * 3,75 a 4,7s; o Cesar achou demorado (E12): agora vem quando os livros param (na abertura, ~1,8s; na troca
+   * de página, logo que a página chega). Com o mouse já num deles, ele fica aberto: a classe só soma ao hover.
    *
-   * Quando o caderno fecha, a caneta preta assina embaixo de "Schutz" (C04, D52; Marca.astro): até lá,
-   * a assinatura espera escondida (`a-escrever`). Se o aceno não vier (o desenho não terminou), ela é
-   * escrita mesmo assim, 6s depois da estante.
+   * Até a hora dela, a assinatura espera escondida (`a-escrever`, Marca.astro). Devolve o controle: `acenar()`
+   * começa, `pular()` põe tudo no fim (sem aceno, assinatura à vista).
    */
-  function acenoNoFim() {
+  function aceno() {
     const assinatura = document.querySelector<SVGElement>(".marca-grande .assinatura");
     assinatura?.classList.add("a-escrever");
-    let assinou = false;
+    const marcas = () => [...document.querySelectorAll<HTMLElement>(".cabecalho .marca, .marca-grande")];
+    let assinando: Animation | null = null;
+    let relogios: number[] = [];
+    let feito = false;
     const assinar = () => {
-      if (assinou || !assinatura) return;
-      assinou = true;
+      if (!assinatura) return;
       assinatura.classList.remove("a-escrever");
       if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      assinatura.classList.add("escreve");
-      assinatura.addEventListener("animationend", () => assinatura.classList.remove("escreve"), { once: true });
+      assinando = assinatura.animate(
+        [{ clipPath: "inset(-60% 100% -60% -4%)" }, { clipPath: "inset(-60% -4% -60% -4%)" }],
+        { duration: 700, easing: "cubic-bezier(0.5, 0.05, 0.25, 1)" },
+      );
     };
-    const acenar = () => {
-      // A assinatura começa quando a capa começa a fechar (ela fica aberta 0,75s).
-      setTimeout(assinar, 800);
-      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      const marcas = [...document.querySelectorAll<HTMLElement>(".cabecalho .marca, .marca-grande")];
-      for (const m of marcas) m.classList.add("acena");
-      // Aberto por um instante (a capa chega aos 38° em ~0,5s) e fecha com a volta do hover.
-      setTimeout(() => marcas.forEach((m) => m.classList.remove("acena")), 750);
-    };
-    // Espera o desenho do destaque só se ele estiver à vista quando a estante assenta; abaixo da dobra
-    // (tela baixa, celular) o desenho só começa quando o leitor rola, e o aceno vem logo depois da estante.
-    addEventListener(
-      "cs:aberto",
-      () => {
-        setTimeout(assinar, 6000);
-        // O desenho à vista: em cards, a miniatura da lista fica escondida (0×0), e vice-versa.
-        const desenho = [...document.querySelectorAll<HTMLElement>("[data-desenhar] svg.ilustracao")].find(
-          (el) => el.getClientRects().length > 0,
-        );
-        const r = desenho?.getBoundingClientRect();
-        if (r && r.top < innerHeight * 0.9 && r.bottom > 0) {
-          // Se o desenho não avisar (o GSAP não veio), o aceno vem mesmo assim.
-          let acenou = false;
-          const uma = () => { if (!acenou) { acenou = true; acenar(); } };
-          addEventListener("cs:desenhou", () => setTimeout(uma, 150), { once: true });
-          setTimeout(uma, 4500);
-        } else setTimeout(acenar, 400);
+    return {
+      acenar() {
+        if (feito) return;
+        feito = true;
+        // A assinatura começa quando a capa começa a fechar (ela fica aberta 0,75s).
+        relogios.push(window.setTimeout(assinar, 800));
+        if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        const ms = marcas();
+        for (const m of ms) m.classList.add("acena");
+        // Aberto por um instante (a capa chega aos 38° em ~0,5s) e fecha com a volta do hover.
+        relogios.push(window.setTimeout(() => ms.forEach((m) => m.classList.remove("acena")), 750));
       },
-      { once: true },
-    );
+      pular() {
+        feito = true;
+        relogios.forEach(clearTimeout);
+        relogios = [];
+        marcas().forEach((m) => m.classList.remove("acena"));
+        assinatura?.classList.remove("a-escrever");
+        assinando?.finish();
+      },
+    };
   }
 
-  /* ---------- A3: a estante se monta (home) ---------- */
-  async function estante(gsap: GSAP, cena: HTMLElement, { fim }: Controle) {
+  /*
+   * Chegando à home por dentro do site (a cortina, troca.js): os cadernos acenam e a assinatura se escreve
+   * logo que a página chega (`cs:chegou`), como na abertura (E12). O CSS já esconde a assinatura desde a
+   * primeira pintura (`data-vai-chegar`, posto no <head>).
+   */
+  function acenoNaChegada() {
+    if (!document.querySelector("[data-colecao='home']") || !document.querySelector(".marca-grande")) return;
+    const a = aceno();
+    addEventListener("cs:chegou", () => a.acenar(), { once: true });
+    // Se a chegada não avisar (interrompida), a assinatura aparece mesmo assim.
+    setTimeout(() => a.pular(), 6000);
+  }
+
+  /* ---------- A1 (rodada 4): a lâmina aparece, os livros chegam, o nome entra e as luzes acendem (home) ---------- */
+
+  /**
+   * Os tempos da abertura da home (rodada 4, A1 e E3, E12), em segundos a partir do primeiro risco:
+   *
+   *  1. 0 a 0,28        o fio da aresta da lâmina de vidro se risca da esquerda para a direita (E3: o chão é a
+   *                     lâmina; com `chao="nicho"`, o fio do chão do nicho);
+   *  2. 0,26 a 0,66     a lâmina aparece, crescendo do fio (com o nicho, ele se abre), e os abajures
+   *                     (apagados) aparecem;
+   *  3. 0,62 a ~1,80    os livros chegam um a um pela direita, com "Volume 01"… "Série";
+   *  4. ~1,82 a ~2,26   os livros param, e os dois cadernos ("cs" do cabeçalho e o grande) abrem e fecham
+   *                     (E12); a fileira desce para o lugar dela e a página aparece em volta (o papel sai);
+   *  5. ~1,96 a ~2,41   o nome gigante entra da direita para a esquerda (a frente desfocada, por cima do papel
+   *                     que sai); os números rodam quando ela passa por eles;
+   *  6. ~2,46           a abertura acaba: o quadro mais pesado (o CSS da abertura sai, a página acorda) fica
+   *                     num momento parado (os cadernos abertos, nada correndo);
+   *  7. ~2,62 a ~3,32   a assinatura embaixo de "Schutz", quando os cadernos começam a fechar (E12);
+   *  8. ~2,62           as luzes acendem uma a uma; depois, só a onda de molas e, depois dela, só o brilho
+   *                     (estante-moderna.ts, `sequencia`): acaba em ~4,9s.
+   *
+   * No celular, os livros chegam um nada mais depressa. Pulada (clique, tecla, roda), tudo vai ao fim: o nome
+   * à vista, os números no lugar, a assinatura escrita, as luzes acesas, sem aceno, sem onda e sem brilho.
+   */
+  const A1 = { fio: 0.28, chao: 0.26, livros: 0.62, passo: 0.085, dur: 0.5, desce: 0.44, nomeDepois: 0.14, nome: 0.45, fimDepois: 0.05, luzesDepois: 0.21 };
+
+  async function estante(gsap: GSAP, cena: HTMLElement, { pulou, fim }: Controle) {
     const prat = document.querySelector<HTMLElement>("[data-estante]");
     if (!prat) return { tl: null };
-    acenoNoFim();
-    const { CustomEase } = await import("gsap/CustomEase");
+    const acenos = aceno();
+    const [{ CustomEase }, { sequencia, acenderJa }, { mudarContador }] = await Promise.all([
+      import("gsap/CustomEase"),
+      import("../scripts/estante-moderna"),
+      import("../scripts/contador"),
+    ]);
     gsap.registerPlugin(CustomEase);
     // O livro inclina pelo atrito enquanto desliza e, ao parar, passa um pouco do prumo e assenta.
     const assenta = CustomEase.create("assenta", "M0,0 C0.2,0 0.35,1.22 0.55,1.1 0.7,1.02 0.82,0.98 1,1");
     // As fontes, no máximo 2,2s (como no caderno): a estante se monta com a de reserva, se preciso (D54).
     await Promise.race([document.fonts.ready, esperar(2200)]);
     // As esperas acima podem passar da trava de 7s do <head>: com a página já à vista, não toca (D54).
-    if (!raiz.dataset.abertura) return { tl: null };
+    if (!raiz.dataset.abertura) {
+      acenos.pular();
+      return { tl: null };
+    }
     const papel = cena.querySelector<HTMLElement>(".abertura-papel")!;
     const conta = cena.querySelector<HTMLElement>(".abertura-conta")!;
     const celular = matchMedia("(max-width: 640px)").matches;
     const W = innerWidth, H = innerHeight;
-    const soLivros = [...prat.querySelectorAll<HTMLElement>(".prateleira-livros > .lombada")];
-    const aparador = prat.querySelector<HTMLElement>(".prateleira-livros > .aparador");
+    const livros = [...prat.querySelectorAll<HTMLElement>(".prateleira-livros > .livro-colecao")];
     const tabua = prat.querySelector<HTMLElement>(".tabua")!;
+    const comNicho = prat.matches("[data-chao^='nicho']");
+    const nicho = comNicho ? prat.querySelector<HTMLElement>(".nicho") : null;
+    const parte = (nome: string) => nicho?.querySelector<HTMLElement>(`.nicho-${nome}`) ?? null;
+    const [parede, teto, chao, friso] = ["parede", "teto", "chao", "friso"].map(parte);
+    const luzes = prat.querySelector<HTMLElement>(".luzes-fileira");
+    // A partir daqui, as luzes, a onda e o brilho da fileira são da abertura (estante-moderna.ts a deixa).
+    prat.setAttribute("data-conduzida", "");
+
+    // A coleção de verdade vai para o meio da tela (é ela que volta ao lugar no fim).
     const r = prat.getBoundingClientRect();
-    // A estante de verdade vai para o meio da tela, maior (é ela que volta ao lugar no fim).
     const s = Math.min(celular ? 1.05 : 1.4, (W * 0.84) / r.width, (H * 0.5) / r.height);
     gsap.set(prat, { x: W / 2 - (r.left + r.width / 2), y: H * 0.47 - (r.top + r.height / 2), scale: s, transformOrigin: "50% 50%" });
+    // O fio corre na quina de cima da frente do chão: a aresta do vidro (ou o friso do nicho), de ponta a ponta.
+    const kc = parseFloat(getComputedStyle(prat).getPropertyValue("--kc")) || 1;
+    const frente = (parseFloat(getComputedStyle(prat).getPropertyValue("--friso-alto")) || 6) * kc;
     const rt = tabua.getBoundingClientRect();
-    const pintar = montarFio(gsap, cena, rt.left, rt.top + rt.height / 2, rt.width);
-    gsap.set(conta, { top: rt.bottom + 26, opacity: 0 });
+    const rn = (nicho ?? tabua).getBoundingClientRect();
+    const yFio = friso ? friso.getBoundingClientRect().top + 0.5 : rt.bottom - frente * s + 0.5;
+    const pintar = montarFio(gsap, cena, rn.left, yFio, rn.width);
+    gsap.set(conta, { top: Math.max(rn.bottom, rt.bottom) + 30, opacity: 0 });
     const p = { v: 0 };
     pintar(0);
+
+    // O nome gigante espera coberto (o papel da página, com a frente desfocada na ponta direita), para entrar
+    // depois dos livros, da direita para a esquerda (o 20). Coberto, ele sobe para cima do papel da abertura
+    // (CSS, `data-capa-nome`): a frente passa nítida enquanto o papel ainda sai.
+    const nome = document.querySelector<HTMLElement>(".nome-gigante");
+    let capaNome: HTMLElement | null = null;
+    if (nome) {
+      capaNome = document.createElement("span");
+      capaNome.className = "abertura-capa-nome";
+      capaNome.setAttribute("aria-hidden", "true");
+      nome.append(capaNome);
+      nome.dataset.capaNome = "";
+    }
+    const tirarCapa = () => {
+      capaNome?.remove();
+      capaNome = null;
+      if (nome) delete nome.dataset.capaNome;
+    };
+    // Os números da coleção (a página os montou no zero, contador.ts): rodam quando a frente passa por eles.
+    const numeros = [...document.querySelectorAll<HTMLElement>("[data-odometro]")]
+      .filter((el) => el.querySelector(".coluna"))
+      .map((el) => {
+        const b = el.getBoundingClientRect();
+        return { el, x: b.left + b.width / 2, rodou: false };
+      });
+    const rodarAte = (x: number) => {
+      for (const n of numeros) {
+        if (n.rodou || n.x < x) continue;
+        n.rodou = true;
+        // Pulada a abertura, o número vai direto ao fim, sem rodar.
+        const fitas = pulou() ? [...n.el.querySelectorAll<HTMLElement>(".fita")] : [];
+        fitas.forEach((f) => (f.style.transition = "none"));
+        mudarContador(n.el, Number(n.el.dataset.odometro));
+        if (fitas.length) {
+          void n.el.offsetWidth;
+          requestAnimationFrame(() => fitas.forEach((f) => f.style.removeProperty("transition")));
+        }
+      }
+    };
     cena.dataset.pronto = "";
 
+    const pecasDaCena = [prat, ...livros, tabua, ...([parede, teto, chao, friso, luzes].filter(Boolean) as HTMLElement[])];
+    let conduziu = false;
+    let soltarAviso = () => {};
+    avisoDaHome = new Promise<void>((r) => (soltarAviso = r));
     const tl = gsap.timeline({
       onComplete: () => {
-        // No mesmo instante em que o CSS da abertura sai (os livros estão escondidos por ele até aqui).
-        // A opacidade só depois de ele sair: antes, os livros voltavam a 0 por um quadro e, já sem a trava
-        // das transições, reapareciam esmaecendo (a estante piscava no fim).
-        const pecas = [prat, ...soLivros, tabua, ...(aparador ? [aparador] : [])];
-        gsap.set(pecas, { clearProps: "transform" });
-        fim();
-        gsap.set(pecas, { clearProps: "opacity" });
+        tirarCapa();
+        rodarAte(-Infinity);
+        soltarAviso();
+        if (pulou()) acenos.pular();
+        if (!conduziu) acenderJa(prat);
       },
     });
-    // 1. a caneta risca o fio (é o carregamento); o fio engrossa e vira a tábua, tomando a cor dela
-    tl.to(p, { v: 1, duration: celular ? 0.4 : 0.55, ease: "power1.inOut", onUpdate: () => pintar(p.v) }, 0.15)
-      .to(".abertura-caneta", { y: "-=10", rotation: 16, opacity: 0, duration: 0.25, ease: "power2.in" })
-      .to(tabua, { opacity: 1, duration: 0.2 }, "<")
-      .fromTo(tabua, { scaleY: 0.15 }, { scaleY: 1, duration: 0.3, ease: "power2.out", transformOrigin: "50% 50%" }, "<")
-      .fromTo(".abertura-fio .fio-tinta", { "--vira": 0 }, { "--vira": 1, duration: 0.18, ease: "power1.inOut" }, "<")
-      .to(".abertura-fio", { opacity: 0, duration: 0.2 }, "<");
-    // 2. a coleção é posta na prateleira, um livro por vez, deslizando até o vizinho
-    const t0 = tl.duration() - 0.1;
-    const passo = celular ? 0.065 : 0.075, dur = celular ? 0.5 : 0.55;
-    // A contagem aparece com o primeiro livro, e não com a tábua vazia.
-    tl.to(conta, { opacity: 1, duration: 0.2 }, t0 + 0.05);
-    // Da esquerda para a direita (Volume 01 primeiro): cada um entra pela direita, desliza pela tábua
-    // vazia até encostar no anterior, que sente o baque; o livro inclinado assenta no giro dele.
-    soLivros.forEach((b, i) => {
+    // 1. a caneta risca o fio da aresta
+    tl.to(p, { v: 1, duration: celular ? 0.26 : A1.fio, ease: "power1.inOut", onUpdate: () => pintar(p.v) }, 0)
+      .to(".abertura-caneta", { y: "-=10", rotation: 16, opacity: 0, duration: 0.22, ease: "power2.in" }, A1.fio)
+      .to(".abertura-fio", { opacity: 0, duration: 0.2 }, A1.chao + 0.06);
+    // 2. o chão aparece: a lâmina cresce do fio (para cima, o tampo; o fio vira a aresta) e a sombra dela
+    //    vem junto; com o nicho, ele se abre (o friso nasce do fio, a parede escurece, a sombra do teto cresce)
+    if (comNicho) {
+      if (friso) tl.fromTo(friso, { opacity: 0, scaleY: 0.2 }, { opacity: 1, scaleY: 1, duration: 0.3, ease: "power2.out" }, A1.chao);
+      if (chao) tl.fromTo(chao, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, A1.chao + 0.02);
+      if (parede) tl.fromTo(parede, { opacity: 0 }, { opacity: 1, duration: 0.42, ease: "power1.inOut" }, A1.chao + 0.02);
+      if (teto) tl.fromTo(teto, { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.4, ease: "power2.out" }, A1.chao + 0.04);
+    }
+    const origem = `50% ${(tabua.offsetHeight - frente).toFixed(1)}px`;
+    tl.fromTo(tabua, { opacity: 0 }, { opacity: 1, duration: 0.24, ease: "power1.out" }, A1.chao)
+      .fromTo(tabua, { scaleY: 0.12 }, { scaleY: 1, duration: 0.4, ease: "power2.out", transformOrigin: origem }, A1.chao);
+    if (luzes) tl.fromTo(luzes, { opacity: 0 }, { opacity: 1, duration: 0.28, ease: "power1.out" }, A1.chao + 0.14);
+    // 3. os livros chegam um a um, entrando pela direita (no nicho, pela parede da direita: o recorte dele os
+    //    esconde antes) e deslizando até o lugar; o vizinho sente o baque; o inclinado assenta.
+    const passo = celular ? 0.08 : A1.passo, dur = celular ? 0.48 : A1.dur;
+    tl.to(conta, { opacity: 1, duration: 0.2 }, A1.livros + 0.05);
+    livros.forEach((b, i) => {
       const rb = b.getBoundingClientRect();
-      const x0 = Number(gsap.getProperty(b, "x")) || 0;
-      const r0 = Number(gsap.getProperty(b, "rotation")) || 0;
-      const fora = x0 + (W - rb.left) / s + 24;
-      const t = t0 + i * passo;
-      const revista = b.classList.contains("de-serie");
-      // O inclinado gira pelo canto de baixo à direita, como no CSS (estante.css): pelo meio, ele terminava
-      // a abertura 2 a 3px afundado na tábua (D54).
-      const giro = b.classList.contains("inclinada") ? "100% 100%" : "50% 100%";
-      const rotulo = revista ? "E a revista" : `Volume ${String(i + 1).padStart(2, "0")}`;
+      const fora = comNicho ? (rn.right - rb.left) / s + 6 : (W - rb.left) / s + 24;
+      const t = A1.livros + i * passo;
+      // A série é livro também (H2, rodada 4): o rótulo dela é "Série", como o da fileira.
+      const rotulo = b.classList.contains("de-serie") ? "Série" : `Volume ${String(i + 1).padStart(2, "0")}`;
       tl.set(b, { opacity: 1 }, t)
-        .fromTo(b, { x: fora }, { x: x0, duration: dur, ease: "power3.out" }, t)
-        .fromTo(b, { rotation: r0 - 3.5 }, { rotation: r0, duration: dur, ease: assenta, transformOrigin: giro }, t)
+        .fromTo(b, { x: fora }, { x: 0, duration: dur, ease: "power3.out" }, t)
+        .fromTo(b, { rotation: -3.5 }, { rotation: 0, duration: dur, ease: assenta, transformOrigin: "50% 100%" }, t)
         .call(() => { conta.textContent = rotulo; }, undefined, t + 0.12);
-      // O aparador só aparece quando a revista está chegando nele.
-      if (revista && aparador) tl.to(aparador, { opacity: 1, duration: 0.2 }, t + dur * 0.6);
-      if (i > 0) tl.to(soLivros[i - 1], { xPercent: -3, duration: 0.07, yoyo: true, repeat: 1, ease: "power1.out" }, t + dur * 0.6);
+      if (i > 0) tl.to(livros[i - 1], { xPercent: -3, duration: 0.07, yoyo: true, repeat: 1, ease: "power1.out" }, t + dur * 0.6);
     });
-    // 3. a estante volta para a folha da abertura; o papel se desfaz em volta depois que ela já passou
-    //    pelo título (senão, ela cruzava o nome meio esmaecido)
-    const t1 = t0 + (soLivros.length - 1) * passo + dur + 0.05;
-    tl.to(conta, { opacity: 0, duration: 0.2 }, t1 - 0.05)
-      .to(prat, { x: 0, y: 0, scale: 1, duration: celular ? 0.8 : 0.95, ease: "power3.inOut" }, t1)
-      .to(papel, { opacity: 0, duration: 0.45, ease: "power1.inOut" }, t1 + 0.5);
+    // 4. os livros param: os cadernos acenam (E12); a fileira desce para o lugar dela e a página aparece em volta
+    const t1 = A1.livros + Math.max(0, livros.length - 1) * passo + dur + 0.02;
+    tl.call(() => { if (!pulou()) acenos.acenar(); }, undefined, t1)
+      .to(conta, { opacity: 0, duration: 0.18 }, t1 - 0.06)
+      .to(prat, { x: 0, y: 0, scale: 1, duration: A1.desce, ease: "power3.inOut" }, t1)
+      .to(papel, { opacity: 0, duration: 0.4, ease: "power1.inOut" }, t1 + 0.06);
+    // 5. o nome entra da direita para a esquerda: a capa (papel, com a frente desfocada) anda para a
+    //    esquerda e o descobre; os números rodam quando a frente passa por eles
+    const tNome = t1 + A1.nomeDepois;
+    if (capaNome && nome) {
+      // A frente começa e termina fora do recorte do nome (que passa dele `--pad`, até 32px): 56px de folga
+      // de cada lado, para ela não aparecer parada na borda antes de entrar nem ficar no "C" depois.
+      const folga = 56;
+      const capa = capaNome;
+      tl.fromTo(
+        capa,
+        { x: folga },
+        {
+          x: -1.22 * nome.offsetWidth - folga,
+          duration: A1.nome,
+          ease: "power2.inOut",
+          onStart: () => soltarAviso(),
+          onUpdate: () => {
+            const c = capa.getBoundingClientRect();
+            rodarAte(c.left + c.width * 0.955);
+          },
+          onComplete: tirarCapa,
+        },
+        tNome,
+      );
+    } else tl.call(() => (rodarAte(-Infinity), soltarAviso()), undefined, tNome);
+    // 6. a página está à vista e o nome também: a abertura acaba (o resto não prende a página)
+    const tFim = Math.max(t1 + A1.desce, tNome + A1.nome) + A1.fimDepois;
+    tl.call(() => {
+      gsap.set(pecasDaCena, { clearProps: "transform" });
+      fim();
+      gsap.set(pecasDaCena, { clearProps: "opacity" });
+    }, undefined, tFim);
+    // 7 e 8. a assinatura vem com o aceno (0,8s depois dele); as luzes acendem uma a uma; depois, só a onda de
+    //    molas e, depois dela, só o brilho
+    tl.call(() => {
+      conduziu = true;
+      if (pulou()) acenderJa(prat);
+      else sequencia(prat, { molas: true });
+    }, undefined, tFim + A1.luzesDepois - 0.05);
     return { tl };
   }
 
@@ -426,12 +571,16 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
         .call(() => raiz.classList.add("caderno-pousou"), undefined, tTroca)
         .set(livro, { opacity: 0 }, tTroca);
     } else tl.to(livro, { opacity: 0, duration: 0.3 }, t3);
+    // Rodada 3 (revisão final, correção comum 4): em Livros (a chegada própria), o desfile dos cartões começa
+    // quando o caderno levanta voo (t3), 0,3s antes: os cartões chegam do fundo ainda embaixo do papel, e a
+    // montagem assenta até ~3,5s depois da chegada de fora (antes, ~4,8s).
+    if (propria) tl.call(() => dispatchEvent(new CustomEvent("cs:abertura-chega")), undefined, t3);
     tl.to(papel, { opacity: 0, duration: 0.35, ease: "power1.inOut" }, tPapel)
       .call(() => {
         chegadaPedida = true;
         irAoAlvo();
-        if (propria) dispatchEvent(new CustomEvent("cs:abertura-chega"));
-        else if (troca) {
+        if (propria) return;
+        if (troca) {
           // Quando a última folha pousa, o desenho do artigo pode se desenhar (desenho-vivo.ts).
           const pousa = troca.chegar(troca.unidades(), { t0: 0 });
           setTimeout(() => dispatchEvent(new CustomEvent("cs:chegou")), pousa);
@@ -451,8 +600,10 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     overflow: hidden;
   }
 
-  /* As transições do CSS atrapalham o GSAP a ler o estado final: durante a abertura, só ele anima. */
-  :global(:root[data-abertura] *) {
+  /* As transições do CSS atrapalham o GSAP a ler o estado final: durante a abertura, só ele anima. As fitas
+     dos números da home e a capa dos cadernos são a exceção (rodada 4, A1 e E12): rodam e acenam ainda na
+     abertura. */
+  :global(:root[data-abertura] *:not(.fita, .marca-capa-3d)) {
     transition: none !important;
   }
 
@@ -482,8 +633,61 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     pointer-events: none;
   }
 
-  :global(:root[data-abertura="estante"] [data-estante] :is(.prateleira-livros > *, .tabua)) {
+  /* Rodada 4 (A1): as peças do nicho, os livros e os abajures esperam escondidos; o script os mostra. */
+  :global(:root[data-abertura="estante"] [data-estante] :is(.prateleira-livros > *, .tabua, .nicho > *, .luzes-fileira)) {
     opacity: 0;
+  }
+
+  /* Os livros entram pela parede da direita do nicho: fora dele, o recorte os esconde. */
+  :global(:root[data-abertura="estante"] .colecao-home[data-chao^="nicho"] .fileira) {
+    clip-path: inset(-400px calc(50% - var(--nicho-largura) / 2));
+  }
+
+  /*
+   * A capa do nome gigante (rodada 4, A1; a frente do 20): o papel da página por cima do nome, com a frente
+   * desfocada na ponta direita, que o script leva para a esquerda (1,22 nome e mais as folgas, 0,45s). Ela tem
+   * 2,44 vezes a largura do nome e começa com a frente logo depois da borda direita dele; no claro, a frente é de sombra
+   * quente clareando, e no escuro, de luz quente. Em cima e embaixo, a capa passa do nome e se perde
+   * (máscara), e o nome a recorta perto da borda (sem rolagem lateral).
+   */
+  :global(.nome-gigante[data-capa-nome]) {
+    position: relative;
+    overflow: clip;
+    overflow-clip-margin: var(--pad, 16px);
+  }
+
+  /* Coberto pela capa, o nome sobe para cima do papel da abertura (E12: ele entra enquanto o papel sai). */
+  :global(:root[data-abertura="estante"] .nome-gigante[data-capa-nome]) {
+    z-index: 101;
+  }
+
+  /* Chegando à home pela troca de página, a assinatura espera escondida até os cadernos acenarem (E12). */
+  :global(:root[data-vai-chegar] .marca-grande .assinatura) {
+    clip-path: inset(-60% 100% -60% -4%);
+  }
+
+  :global(.abertura-capa-nome) {
+    --frente: color-mix(in oklab, var(--sombra-quente) 12%, var(--paper));
+    position: absolute;
+    z-index: 5;
+    top: -30%;
+    bottom: -30%;
+    left: -122%;
+    width: 244%;
+    background: linear-gradient(
+      90deg,
+      var(--paper) 0 90.5%,
+      var(--frente) 93%,
+      color-mix(in oklab, var(--frente) 45%, transparent) 96.5%,
+      transparent 100%
+    );
+    -webkit-mask: linear-gradient(transparent, #000 14%, #000 86%, transparent);
+    mask: linear-gradient(transparent, #000 14%, #000 86%, transparent);
+    pointer-events: none;
+  }
+
+  :global(:root[data-theme="dark"] .abertura-capa-nome) {
+    --frente: color-mix(in oklab, var(--luz-quente) 24%, var(--paper));
   }
 
   /* O caderno pousa na marca do cabeçalho: até lá, a marca espera. */
@@ -520,12 +724,11 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
   }
 
   /*
-   * Na estante, o fio é um risco de caneta legível (--ink-2) enquanto a caneta escreve e, quando ela
-   * levanta, passa para a cor da tábua em que ele vira (o script leva --vira de 0 a 1). Antes ele já
-   * nascia na cor da borda da tábua, e no escuro quase não aparecia (~1,4:1; revisão 12, D52).
+   * Na home, o fio é um risco de caneta legível (--ink-2), na aresta da lâmina de vidro (rodada 4, E3; no nicho,
+   * no alto do friso): quando a caneta levanta, a lâmina cresce dele e ele se apaga.
    */
   [data-modo="estante"] .fio-tinta {
-    stroke: color-mix(in oklab, var(--tabua) calc(var(--vira, 0) * 100%), var(--ink-2));
+    stroke: var(--ink-2);
     stroke-width: 2;
   }
 

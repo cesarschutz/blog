@@ -1,24 +1,25 @@
 ---
 /**
- * A gaveta da estante (briefing §5.1, D43, D49): tirar o livro da estante como numa estante de verdade
- * (protótipo D1, src/scripts/estante-gesto.ts). No clique, toque ou Enter numa lombada, o livro tomba
- * pela cabeça dentro do próprio vão, vem para a frente (e o vizinho da direita, sem apoio, tomba até
- * encostar no outro) e só então anda até a gaveta, girando da lombada até os 38° (fechado, com a
- * lombada bem à vista); o lugar dele fica vazio. Com mouse, dá também para puxar a cabeça do livro e
- * arrastá-lo até a gaveta. Ao lado aparece o sumário, como antes da D40: "Neste livro" (ou "Ordem de
- * leitura", nas séries) e os artigos por ano, com "Ver o livro" (a página do livro) e "Fechar livro".
- * A gaveta abre crescendo, e o que está embaixo desce junto; fecha recolhendo, enquanto o livro volta;
- * na troca de livro, vai da altura de um para a do outro (D47). Livro sem artigos: no lugar do
- * sumário, pequeno, o livro aberto com as páginas em branco, na cor dele (D57, LivroEmBranco).
- * Clicar no livro, ou na lupa, abre o livro ampliado (D33, D43). "Fechar livro", Esc ou a mesma
- * lombada guardam o livro: ele volta até a frente do lugar dele, entra empurrando o vizinho de volta e
- * assenta. Outro livro primeiro guarda o aberto e só depois sai da estante (D49). Com movimento
- * reduzido, tudo direto no estado final.
+ * A gaveta (briefing §5.1, D43, D49; rodada 3, P7): o livro sai da estante e vai para uma gaveta que abre
+ * embaixo, com o sumário dele. Dois modos, a mesma gaveta:
  *
- * O livro que voa é o próprio livro da gaveta, já no lugar final: o GSAP o põe em cima da lombada e o
- * traz de volta ao lugar dele (só transformações). Cada livro vem pronto num <template>; o script só
- * monta. O desenho da capa só é buscado quando o livro abre (/livros/<slug>.svg) e entra inline. Sem
- * JS, a lombada leva à página do livro.
+ * - "fileira" (rodada 3, área 10, P7: "seria legal principalmente na home"): a fileira de livros 3D da
+ *   home (Colecao.astro). Clicar num livro (ou Enter nele) o tira da fileira: ele vem para a frente e
+ *   desce para a gaveta que abre embaixo, girando até os 38° e crescendo até a capa ter 180px; o lugar
+ *   dele fica vazio, com o contorno tracejado. Clicar em outro guarda o primeiro e tira o segundo; Esc,
+ *   "Fechar livro" ou o lugar vazio guardam. O movimento é de src/scripts/gaveta-fileira.ts.
+ * - "estante" (o blog de hoje, D49): a estante de lombadas (Estante.astro), com o gesto de tirar o livro
+ *   pela cabeça (src/scripts/estante-gesto.ts). Fica para as linhas que voltam às lombadas na home.
+ *
+ * O sumário (rodada 3): o volume, o nome e a frase do livro, a contagem (que roda para cima, T3), os
+ * cinco artigos mais recentes (título, pontilhado e data), "Ver o livro" e "Fechar livro". Livro sem
+ * artigos: o livro aberto com as páginas em branco (D57, LivroEmBranco). Clicar no livro da gaveta, ou
+ * na lupa, abre o livro ampliado (D33, D43). Com movimento reduzido, tudo direto no estado final.
+ *
+ * O livro que voa é o próprio livro da gaveta, já no lugar final: o GSAP o põe em cima do livro da
+ * fileira (ou da lombada) e o traz de volta ao lugar dele (só transformações). Cada livro vem pronto
+ * num <template>; o script só monta. O desenho da capa só é buscado quando o livro abre
+ * (/livros/<slug>.svg) e entra inline. Sem JS, o livro leva à página dele.
  */
 import Livro3D from "./Livro3D.astro";
 import LivroAmpliado from "./LivroAmpliado.astro";
@@ -26,31 +27,30 @@ import LivroEmBranco from "./LivroEmBranco.astro";
 import SinalCodigo from "./SinalCodigo.astro";
 import { ICONES } from "../lib/icones";
 import { coresDoLivroCss, dadosDoLivro, paginasDoLivro, type Livro } from "../lib/estante";
-import { diaEMes } from "../lib/formato";
-import type { Resumo } from "../lib/posts";
-import "../styles/estante.css";
+import { dataPorExtenso } from "../lib/formato";
+import "../styles/gaveta.css";
 
 interface Props {
   livros: Livro[];
+  /** "fileira": a fileira 3D da home (Colecao); "estante": a estante de lombadas (Estante). */
+  modo?: "fileira" | "estante";
+  /** O nível do nome do livro no sumário (h3 quando a gaveta fica dentro de uma seção com h2). */
+  nivel?: "h2" | "h3";
 }
 
-const { livros } = Astro.props;
-
-type Linha = { tipo: "ano"; ano: number } | { tipo: "post"; post: Resumo; parte?: number };
-function linhas(l: Livro): Linha[] {
-  if (l.serie) return l.posts.map((post, i) => ({ tipo: "post", post, parte: i + 1 }));
-  const saida: Linha[] = [];
-  let ano: number | undefined;
-  for (const post of l.posts) {
-    const a = post.publicado.getUTCFullYear();
-    if (a !== ano) saida.push({ tipo: "ano", ano: (ano = a) });
-    saida.push({ tipo: "post", post });
-  }
-  return saida;
-}
+const { livros, modo = "estante", nivel = "h2" } = Astro.props;
+const Titulo = nivel;
+const ULTIMOS = 5;
+const ultimos = (l: Livro) => [...l.posts].sort((a, b) => b.publicado.getTime() - a.publicado.getTime()).slice(0, ULTIMOS);
+const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.volume).padStart(2, "0")}`);
+// "2 artigos · o último em 2026": o número roda (T3); o resto fica escrito.
+const palavra = (l: Livro) => (l.serie ? (l.posts.length === 1 ? "edição" : "edições") : l.posts.length === 1 ? "artigo" : "artigos");
+const resto = (l: Livro) => l.contagem.split(" · ").slice(1).join(" · ");
 ---
 
-<div class="gaveta" id="gaveta" data-gaveta hidden></div>
+<div class:list={["gaveta", `gaveta-${modo}`]} id="gaveta" data-gaveta={modo} hidden>
+  {modo === "fileira" && <div class="gaveta-tampo" aria-hidden="true" />}
+</div>
 <LivroAmpliado />
 
 {
@@ -75,36 +75,56 @@ function linhas(l: Livro): Linha[] {
         </div>
         <div class="sumario-livro">
           <div class="topo-sumario">
-            <h2 id={`sumario-${l.id}`} tabindex="-1">{l.serie ? "Ordem de leitura" : "Neste livro"}</h2>
-            <span class="meta-sumario">{l.posts.length > 0 ? `${l.nome}, ${l.contagem}` : l.nome}</span>
-            <div class="acoes-livro">
-              <a class="botao-primario" href={l.href}
-                >{l.serie ? "Ver a série" : "Ver o livro"}<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} /></a
-              >
-              <button type="button" class="botao" data-fechar-livro>Fechar livro</button>
-            </div>
+            <p class="volume-sumario">{rotuloDoVolume(l)}</p>
+            <Titulo id={`sumario-${l.id}`} class="titulo-sumario" tabindex="-1" data-titulo-sumario>
+              {l.nome}
+            </Titulo>
+            {l.descricao && <p class="frase-sumario">{l.descricao}</p>}
+            <p class="meta-sumario">
+              {l.posts.length > 0 ? (
+                <>
+                  <span class="conta-sumario" data-conta-sumario={l.posts.length}>{l.posts.length}</span> {palavra(l)}
+                  {resto(l) && <> · {resto(l)}</>}
+                </>
+              ) : (
+                "Ainda sem artigos"
+              )}
+            </p>
           </div>
-          {l.posts.length === 0 && (
+          {l.posts.length === 0 ? (
             <div class="vazio-livro">
               <LivroEmBranco livro={l} largura={132} preguicoso={false} />
               <p class="sem-artigos">Este livro ainda não tem artigos.</p>
             </div>
+          ) : (
+            <>
+              <p class="rotulo-indice-livro" id={`ultimos-${l.id}`}>
+                {l.posts.length > ULTIMOS ? `Os ${ULTIMOS} mais recentes` : l.serie ? "As edições" : "Os artigos"}
+              </p>
+              <ol class="indice-livro" aria-labelledby={`ultimos-${l.id}`}>
+                {ultimos(l).map((post) => (
+                  <li>
+                    <a href={post.url}>
+                      <span class="titulo-item">
+                        {post.tituloCompleto}
+                        {post.codigo && <SinalCodigo curto />}
+                      </span>
+                      <span class="pontilhado" aria-hidden="true" />
+                      <time class="dia" datetime={post.publicado.toISOString()}>
+                        {dataPorExtenso(post.publicado)}
+                      </time>
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </>
           )}
-          <ul class="indice-livro" aria-labelledby={`sumario-${l.id}`} hidden={l.posts.length === 0}>
-            {linhas(l).map((linha) =>
-              linha.tipo === "ano" ? (
-                <li class="ano" aria-hidden="true">{linha.ano}</li>
-              ) : (
-                <li>
-                  <a href={linha.post.url}>
-                    <span class="titulo-item">{linha.parte && <span class="parte">Parte {linha.parte}</span>}{linha.post.tituloCompleto}{linha.post.codigo && <SinalCodigo curto />}</span>
-                    <span class="pontilhado" aria-hidden="true" />
-                    <span class="dia">{diaEMes(linha.post.publicado)}</span>
-                  </a>
-                </li>
-              ),
-            )}
-          </ul>
+          <div class="acoes-livro">
+            <a class="botao-primario" href={l.href}
+              >{l.serie ? "Ver a série" : "Ver o livro"}<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} /></a
+            >
+            <button type="button" class="botao" data-fechar-livro>Fechar livro</button>
+          </div>
         </div>
       </div>
     </template>
@@ -127,12 +147,20 @@ function linhas(l: Livro): Linha[] {
 </style>
 
 <script>
+  // A gaveta da fileira 3D da home (rodada 3, P7).
+  import { gavetaDaFileira } from "../scripts/gaveta-fileira";
+
+  gavetaDaFileira();
+</script>
+
+<script>
   import { GIRO, medidasDoLivro3D } from "../lib/livro-3d";
   import { descanso, endireitar, levantar, profundidade, quemTomba, tombar, type Tombado } from "../scripts/estante-gesto";
   import { prepararPrateleira } from "../scripts/estante-viva";
   import { carregarArrastar, carregarGsap, movimentoReduzido, temMouse, type GSAP } from "../scripts/gsap";
 
-  const gaveta = document.querySelector<HTMLElement>("[data-gaveta]");
+  // A gaveta da estante de lombadas (o modo "estante"); a da fileira 3D é de gaveta-fileira.ts.
+  const gaveta = document.querySelector<HTMLElement>("[data-gaveta='estante']");
   const estante = document.querySelector<HTMLElement>("[data-estante]");
   const prateleira = estante?.querySelector<HTMLElement>(".prateleira-livros");
   if (gaveta && estante && prateleira) {
@@ -276,7 +304,7 @@ function linhas(l: Livro): Linha[] {
           { ...fim, duration: troca ? 0.55 : 0.8, ease: "power3.inOut", overwrite: true, clearProps: MEDIDAS },
         );
       }
-      const tl = gsap.timeline({ onComplete: () => foco && no.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true }) });
+      const tl = gsap.timeline({ onComplete: () => foco && no.querySelector<HTMLElement>("[data-titulo-sumario]")?.focus({ preventScroll: true }) });
       const registro: Aberto = { id, lombada, no, vizinho: naMao?.vizinho ?? null, tl };
       aberto = registro;
 

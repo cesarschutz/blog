@@ -1,0 +1,405 @@
+---
+/**
+ * O fichário de Tags (rodada 4, P19-2; o 19 com o móvel trocado): um arquivo de aço esmaltado, com uma
+ * gaveta por letra (as sem tag, apagadas) e a gaveta "Todas" na última. Cada frente tem o porta-etiqueta
+ * de latão com o cartão de papel e a letra em mono, e o puxador de concha, também de latão. Nada de
+ * madeira: no claro, o esmalte é a tinta a 85% sobre o papel (um grafite quente); no escuro, a folha.
+ *
+ * - Em pé (≥ 1000px, ao lado da nuvem, com a altura dela): 3 colunas × 9 linhas, gavetas de 52 × 34px,
+ *   A a Z e "Todas" no fim. Deitado (abaixo de 1000px, embaixo da nuvem): 9 × 3; abaixo de 700px, 7 × 4,
+ *   com "Todas" ocupando duas casas.
+ * - O comportamento é o do 19 (src/scripts/fichario.ts): a gaveta puxada sai 18px para perto do leitor,
+ *   com a borda de cima à vista e a sombra embaixo (0,4s); "Todas" puxa as gavetas com tag em cascata.
+ *
+ * `material="madeira"` só existe para a amostra D3 (nas amostras do redesenho, fora do git), que pinta a madeira do 19 por cima
+ * (o protótipo não usa madeira). Sem JS, cada gaveta é um link para a primeira ficha da letra.
+ */
+interface Props {
+  /** As tags: o nome e o número de artigos. */
+  tags: { nome: string; n: number }[];
+  /** Só na amostra (D3): "madeira" troca o aço pela madeira do 19, pintada pela página da amostra. */
+  material?: "aco" | "madeira";
+  /** O id do título (único na página; a amostra tem mais de um fichário). */
+  id?: string;
+  /** Para onde as gavetas levam sem JS: o prefixo das âncoras das fichas (`letra-B`). */
+  ancora?: string;
+}
+
+const { tags, material = "aco", id = "fichario-titulo", ancora = "letra-" } = Astro.props;
+const LETRAS = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"];
+const inicial = (nome: string) => nome.normalize("NFD").replace(/\p{M}/gu, "").charAt(0).toUpperCase();
+const porLetra = new Map<string, number>();
+for (const t of tags) porLetra.set(inicial(t.nome), (porLetra.get(inicial(t.nome)) ?? 0) + 1);
+const assuntos = (n: number) => (n === 1 ? "1 assunto" : `${n} assuntos`);
+const fichas = tags.length;
+const gavetas = porLetra.size;
+---
+
+<section class="fichario" aria-labelledby={id} data-fichario data-unidade data-material={material}>
+  <h2 id={id} class="sr">Fichário das tags, uma gaveta por letra</h2>
+  <div class="armario">
+    <p class="placa-armario" data-dica-fichario data-padrao={`${fichas} fichas em ${gavetas} gavetas`}>{fichas} fichas em {gavetas} gavetas</p>
+    <nav class="gavetas" aria-label="Gavetas do fichário, por letra">
+      {
+        LETRAS.map((L) => {
+          const n = porLetra.get(L) ?? 0;
+          return n > 0 ? (
+            <a class="gaveta-letra" href={`#${ancora}${L}`} data-gaveta-letra={L} aria-label={`Gaveta ${L}: ${assuntos(n)}`} title={assuntos(n)}>
+              <span class="frente-gaveta">
+                <span class="porta-etiqueta">
+                  <span>{L}</span>
+                </span>
+                <span class="puxador" />
+              </span>
+            </a>
+          ) : (
+            <span class="gaveta-letra vazia" aria-hidden="true">
+              <span class="frente-gaveta">
+                <span class="porta-etiqueta">
+                  <span>{L}</span>
+                </span>
+                <span class="puxador" />
+              </span>
+            </span>
+          );
+        })
+      }
+      <a class="gaveta-letra gaveta-todas" href={`#${ancora}todas`} data-gaveta-letra="todas" aria-label={`Todas as gavetas: ${assuntos(fichas)}`} aria-current="true">
+        <span class="frente-gaveta">
+          <span class="porta-etiqueta">
+            <span>Todas</span>
+          </span>
+          <span class="puxador" />
+        </span>
+      </a>
+    </nav>
+    <span class="rodape-armario" aria-hidden="true"></span>
+  </div>
+</section>
+
+<style>
+  /*
+   * As cores do móvel, todas tiradas dos tokens: o esmalte, a luz e a sombra dele, o vão escuro entre as
+   * gavetas e a tinta da letra no cartão (escura nos dois temas, porque o cartão é o papel dos livros, igual
+   * nos dois). O latão é o das luzes (--latao, --latao-luz, --latao-escuro).
+   */
+  .fichario {
+    --esmalte: color-mix(in oklab, var(--ink) 85%, var(--paper));
+    --esmalte-luz: color-mix(in oklab, var(--esmalte), var(--paper-hi) 16%);
+    --esmalte-sombra: color-mix(in oklab, var(--esmalte), black 34%);
+    --vao: color-mix(in oklab, var(--esmalte), black 62%);
+    --frente: color-mix(in oklab, var(--esmalte), var(--paper-hi) 13%);
+    --gravado: color-mix(in oklab, var(--veu) 86%, var(--latao-escuro));
+    --sombra-movel: color-mix(in oklab, var(--sombra-quente) 45%, transparent);
+    --gaveta-l: 52px;
+    --gaveta-a: 34px;
+    --vao-gaveta: 5px;
+    --borda-movel: 10px;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  :global(:root[data-theme="dark"]) .fichario {
+    --esmalte: color-mix(in oklab, var(--paper-hi), var(--ink) 7%);
+    --esmalte-luz: color-mix(in oklab, var(--esmalte), var(--ink) 14%);
+    --esmalte-sombra: color-mix(in oklab, var(--esmalte), black 45%);
+    --vao: color-mix(in oklab, var(--paper), black 62%);
+    --frente: color-mix(in oklab, var(--esmalte), var(--ink) 5%);
+    --sombra-movel: color-mix(in oklab, black 75%, transparent);
+  }
+
+  /*
+   * O móvel: a caixa de aço com o tampo (a borda de cima um nada mais larga, com o fio de luz na quina), o
+   * esmalte acetinado (a luz vem do alto) e a sombra quente no papel. Embaixo, o rodapé recuado.
+   */
+  .armario {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: var(--borda-movel);
+    padding-top: 0;
+    border-radius: 6px 6px 3px 3px;
+    background:
+      linear-gradient(180deg, color-mix(in oklab, var(--esmalte-luz) 70%, transparent), transparent 18%, transparent 82%, color-mix(in oklab, var(--esmalte-sombra) 40%, transparent)),
+      var(--esmalte);
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, var(--paper-hi) 26%, transparent),
+      inset 1px 0 0 color-mix(in oklab, var(--paper-hi) 10%, transparent),
+      inset -1px 0 0 color-mix(in oklab, black 22%, transparent),
+      0 1px 1px var(--sombra-movel),
+      0 18px 26px -16px var(--sombra-movel);
+  }
+
+  /* A placa do alto: o que há no fichário (e, com uma gaveta aberta, quantas fichas há nela). */
+  .placa-armario {
+    margin: 0;
+    padding: 9px 2px 8px;
+    color: color-mix(in oklab, var(--paper-hi) 78%, var(--esmalte));
+    font-family: var(--font-codigo);
+    font-size: 11px;
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  :global(:root[data-theme="dark"]) .placa-armario {
+    color: var(--ink-2);
+  }
+
+  /*
+   * As gavetas no vão escuro do móvel. O olho está um pouco acima do móvel (a borda de cima de uma gaveta
+   * puxada aparece). Em pé: 3 × 9, as linhas repartem a altura que sobrar (a da nuvem ao lado).
+   */
+  .gavetas {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(3, var(--gaveta-l));
+    grid-template-rows: repeat(9, var(--gaveta-a));
+    align-content: space-between;
+    gap: var(--vao-gaveta);
+    padding: var(--vao-gaveta);
+    border-radius: 2px;
+    background: linear-gradient(180deg, color-mix(in oklab, black 30%, transparent), transparent 40%), var(--vao);
+    box-shadow:
+      inset 0 2px 3px color-mix(in oklab, black 45%, transparent),
+      0 1px 0 color-mix(in oklab, var(--paper-hi) 12%, transparent);
+    perspective: 1000px;
+    perspective-origin: 50% -12%;
+  }
+
+  /* O rodapé do móvel: a base recuada, mais escura, que o separa do papel. */
+  .rodape-armario {
+    display: block;
+    height: 7px;
+    margin: 8px calc(var(--borda-movel) * -1 + 6px) calc(var(--borda-movel) * -1);
+    border-radius: 0 0 2px 2px;
+    background: linear-gradient(180deg, var(--esmalte-sombra), color-mix(in oklab, var(--esmalte-sombra), black 20%));
+  }
+
+  .gaveta-letra {
+    position: relative;
+    display: grid;
+    min-width: 0;
+    color: inherit;
+    text-decoration: none;
+    transform-style: preserve-3d;
+    transition: transform 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /*
+   * A frente da gaveta: o aço esmaltado com o bisel (a quina de cima pega a luz), o porta-etiqueta de latão
+   * com o cartão e a letra, e o puxador de concha embaixo dele.
+   */
+  .frente-gaveta {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 3px;
+    min-height: var(--gaveta-a);
+    border-radius: 2px;
+    background: linear-gradient(180deg, var(--esmalte-luz), var(--frente) 30%, color-mix(in oklab, var(--frente), black 10%));
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, var(--paper-hi) 30%, transparent),
+      inset 0 -1px 0 color-mix(in oklab, black 30%, transparent),
+      0 0 0 1px color-mix(in oklab, black 26%, transparent);
+  }
+
+  .porta-etiqueta {
+    display: grid;
+    place-items: center;
+    padding: 1.5px;
+    border-radius: 1.5px;
+    background: linear-gradient(170deg, var(--latao-luz), var(--latao) 46%, var(--latao-escuro));
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, white 40%, transparent),
+      0 1px 1px color-mix(in oklab, black 40%, transparent);
+  }
+
+  .porta-etiqueta > span {
+    display: block;
+    min-width: 22px;
+    padding: 1px 4px 0;
+    border-radius: 1px;
+    background: var(--etiqueta-papel);
+    box-shadow: inset 0 1px 1.5px color-mix(in oklab, black 26%, transparent);
+    color: var(--gravado);
+    font-family: var(--font-codigo);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1.35;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .gaveta-todas .porta-etiqueta > span {
+    padding-inline: 3px;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .puxador {
+    display: block;
+    width: 18px;
+    height: 4px;
+    border-radius: 0 0 9px 9px / 0 0 4px 4px;
+    background:
+      linear-gradient(180deg, color-mix(in oklab, black 42%, transparent), transparent 75%),
+      linear-gradient(90deg, var(--latao-escuro), var(--latao-luz) 45%, var(--latao) 70%, var(--latao-escuro));
+    box-shadow: 0 1px 0 color-mix(in oklab, black 35%, transparent);
+  }
+
+  /*
+   * A borda de cima da caixa da gaveta (só com ela puxada): o plano que vai da frente para dentro do móvel,
+   * com as paredes de aço e os topos das fichas lá dentro.
+   */
+  .gaveta-letra::before {
+    content: "";
+    position: absolute;
+    right: 2px;
+    bottom: 100%;
+    left: 2px;
+    height: 18px;
+    background:
+      repeating-linear-gradient(90deg, transparent 0 7px, color-mix(in oklab, var(--etiqueta-papel) 34%, transparent) 7px 8px, transparent 8px 11px) 7px 5px / calc(100% - 14px) 62% no-repeat,
+      linear-gradient(90deg, var(--esmalte-luz) 0 2px, color-mix(in oklab, var(--vao), black 25%) 2px calc(100% - 2px), var(--esmalte-luz) calc(100% - 2px));
+    opacity: 0;
+    transform: rotateX(90deg);
+    transform-origin: 50% 100%;
+    transition: opacity 0.25s;
+    pointer-events: none;
+  }
+
+  /* A sombra da gaveta puxada no móvel, embaixo dela (só a opacidade anima). */
+  .gaveta-letra::after {
+    content: "";
+    position: absolute;
+    right: -2px;
+    bottom: -8px;
+    left: -2px;
+    height: 12px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, color-mix(in oklab, black 60%, transparent), transparent);
+    opacity: 0;
+    transition: opacity 0.4s;
+    pointer-events: none;
+  }
+
+  .gaveta-letra.puxada {
+    transform: translateZ(18px);
+  }
+
+  .gaveta-letra.puxada::before,
+  .gaveta-letra.puxada::after {
+    opacity: 1;
+  }
+
+  /* No hover, a gaveta fechada sai um nada; em qualquer uma, a letra do cartão fica azul-tinta (é um link). */
+  @media (hover: hover) {
+    a.gaveta-letra:not(.puxada):hover {
+      transform: translateZ(6px);
+    }
+
+    a.gaveta-letra:hover .porta-etiqueta > span {
+      color: var(--acento);
+    }
+
+    :global(:root[data-theme="dark"]) a.gaveta-letra:hover .porta-etiqueta > span {
+      color: var(--cortina-tinta);
+    }
+  }
+
+  a.gaveta-letra:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+
+  /* A gaveta escolhida (uma letra só): a letra em azul-tinta no cartão, como o que está marcado no site. */
+  .gaveta-letra[aria-current]:not(.gaveta-todas) .porta-etiqueta > span {
+    color: var(--acento);
+    box-shadow:
+      inset 0 1px 1.5px color-mix(in oklab, black 26%, transparent),
+      inset 0 -2px 0 color-mix(in oklab, var(--acento) 70%, transparent);
+  }
+
+  :global(:root[data-theme="dark"]) .gaveta-letra[aria-current]:not(.gaveta-todas) .porta-etiqueta > span {
+    color: var(--cortina-tinta);
+  }
+
+  /* As letras sem tag: a gaveta apagada, recuada no vão, com o cartão em branco quase sumindo. */
+  .gaveta-letra.vazia .frente-gaveta {
+    background: linear-gradient(180deg, color-mix(in oklab, var(--frente), black 26%), color-mix(in oklab, var(--frente), black 34%));
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, var(--paper-hi) 8%, transparent),
+      0 0 0 1px color-mix(in oklab, black 30%, transparent);
+  }
+
+  .gaveta-letra.vazia :is(.porta-etiqueta, .puxador) {
+    opacity: 0.42;
+  }
+
+  .gaveta-letra.vazia .porta-etiqueta > span {
+    color: color-mix(in oklab, var(--gravado) 40%, transparent);
+  }
+
+  /* ---------- deitado: embaixo da nuvem (abaixo de 1000px) ---------- */
+
+  @media (max-width: 999.98px) {
+    .fichario {
+      align-items: center;
+    }
+
+    .armario {
+      width: fit-content;
+      max-width: 100%;
+    }
+
+    .gavetas {
+      flex: none;
+      grid-template-columns: repeat(9, minmax(0, var(--gaveta-l)));
+      grid-template-rows: repeat(3, var(--gaveta-a));
+      perspective-origin: 50% -60%;
+    }
+  }
+
+  @media (max-width: 699.98px) {
+    .fichario {
+      --vao-gaveta: 4px;
+      --borda-movel: 8px;
+    }
+
+    .gavetas {
+      grid-template-columns: repeat(7, minmax(0, var(--gaveta-l)));
+      grid-template-rows: repeat(4, var(--gaveta-a));
+    }
+
+    .gaveta-todas {
+      grid-column: span 2;
+    }
+
+    .porta-etiqueta > span {
+      min-width: 18px;
+      padding-inline: 2px;
+      font-size: 10.5px;
+    }
+
+    .puxador {
+      width: 15px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gaveta-letra,
+    .gaveta-letra::before,
+    .gaveta-letra::after {
+      transition: none;
+    }
+  }
+</style>

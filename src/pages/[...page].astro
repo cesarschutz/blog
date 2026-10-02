@@ -8,17 +8,24 @@
  * o destaque ocupa dois, e ela mostra 11 artigos (a grade fecha certinho com 1, 2, 3 ou 4 colunas); da
  * segunda em diante, 12 artigos, só a lista e a paginação. Nenhum post se repete nem fica de fora.
  * O nome do arquivo, `[...page]`, é o parâmetro de resto (a página 1 é a raiz).
+ *
+ * Rodada 4 (a versão final): o traço de caneta do 17 embaixo de "A coleção" e de "Artigos recentes" (P17-1,
+ * só na primeira página), "Artigos recentes" numa etiqueta de papel colada com fita (P16-1) e a paginação
+ * em papel, um por botão (P16-2, E6). Sem a frase "8 livros e uma série · Ver os livros" ao lado de "A
+ * coleção" (E11). O nome gigante e os números ficam aqui; a entrada deles é da Abertura (A1).
  */
 import type { GetStaticPaths } from "astro";
 import Base from "../layouts/Base.astro";
-import Estante from "../components/Estante.astro";
-import Gaveta from "../components/Gaveta.astro";
+import Colecao from "../components/Colecao.astro";
 import Recentes from "../components/Recentes.astro";
+import TracoTitulo from "../components/TracoTitulo.astro";
+import { LIVRO_NA_LISTA } from "../lib/lista";
 import Marca from "../components/Marca.astro";
 import { TEXTOS } from "../data/site";
 import { montarLivros } from "../lib/estante";
 import { getResumos, type Resumo } from "../lib/posts";
 import { url } from "../lib/url";
+import { dataPorExtenso } from "../lib/formato";
 
 export const getStaticPaths = (async () => {
   // 12 lugares por página, como no blog atual (`SITE.pageSize`); na primeira, o destaque vale dois. Os
@@ -40,6 +47,13 @@ const livros = primeira ? await montarLivros() : [];
 const resumos = await getResumos();
 // Como no blog atual: o total de artigos publicados abaixo do título da lista (D33).
 const total = `${resumos.length} ${resumos.length === 1 ? "artigo publicado" : "artigos publicados"}`;
+// Os números da coleção (protótipo 14, G1): rolam como odômetro quando a página abre.
+const numeros = [
+  { nome: "Artigos", valor: resumos.length, href: url("/archive/") },
+  { nome: "Livros", valor: livros.length, href: url("/categories/") },
+  { nome: "Tags", valor: new Set(resumos.flatMap((r) => r.tags)).size, href: url("/tags/") },
+];
+const ultimo = resumos[0];
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
@@ -61,24 +75,49 @@ const jsonLd = {
     primeira && (
       <>
         {/*
-          A abertura (D33) é uma folha: a identidade (a marca grande e a apresentação do blog atual) e a
-          estante; a gaveta do livro aberto abre dentro da folha (D26). O post-it das frases saiu (D39).
+          Protótipo 14 (G1, G2): o topo do 01 no papel e nas fontes do atual. O nome gigante (com o caderno
+          "cs" que abre e a assinatura embaixo), uma linha com a apresentação, os números da coleção e o
+          último artigo, e a coleção lado a lado, que é a estante da abertura.
         */}
-        <div class="wrap topo-home">
-          <div class="folha folha-abertura">
-            <div class="abertura">
-              <div class="identidade">
-                <h1 class="marca-abertura">
-                  <Marca variante="grande" semLink />
-                </h1>
-                <p class="frase">{TEXTOS.apresentacao}</p>
-              </div>
-              <div class="cena">
-                <Estante livros={livros} />
-              </div>
-            </div>
-            <Gaveta livros={livros} />
+        <div class="wrap topo-grade">
+          <h1 class="nome-gigante">
+            <Marca variante="gigante" semLink />
+          </h1>
+          <div class="linha-grade">
+            <p class="frase">{TEXTOS.apresentacao}</p>
+            <dl class="numeros">
+              {
+                numeros.map((n) => (
+                  <div>
+                    <dt>{n.nome}</dt>
+                    <dd>
+                      <a href={n.href} data-odometro={n.valor}>
+                        {n.valor}
+                      </a>
+                    </dd>
+                  </div>
+                ))
+              }
+            </dl>
+            {
+              ultimo && (
+                <a class="ultimo" href={ultimo.url}>
+                  <span class="rotulo-ultimo">Último artigo</span>
+                  <span class="titulo-ultimo">{ultimo.titulo}</span>
+                  <span class="meta-ultimo">
+                    <time datetime={ultimo.publicado.toISOString()}>{dataPorExtenso(ultimo.publicado)}</time> · {ultimo.minutos} min
+                  </span>
+                </a>
+              )
+            }
           </div>
+          <section class="secao-colecao" aria-labelledby="colecao-titulo">
+            {/* Rodada 4 (E11): a frase "8 livros e uma série · Ver os livros" saiu ("apaga em vez de mudar"). */}
+            <div class="topo-colecao">
+              <h2 id="colecao-titulo" class="titulo-secao"><TracoTitulo texto="A coleção" /></h2>
+            </div>
+            <Colecao livros={livros} modo="home" />
+          </section>
         </div>
       </>
     )
@@ -90,6 +129,9 @@ const jsonLd = {
       subtitulo={total}
       nivel={primeira ? "h2" : "h1"}
       destaque={primeira}
+      etiqueta
+      tracoNoTitulo={primeira}
+      livroAoLado={LIVRO_NA_LISTA}
       pagina={{
         atual,
         ultima,
@@ -103,109 +145,203 @@ const jsonLd = {
 <script>
   // O desenho do destaque se desenha quando entra na tela, uma vez (D41; no primeiro card ou item, D52).
   import { desenharAoEntrar } from "../scripts/desenho-vivo";
+  import { criarContador, mudarContador } from "../scripts/contador";
 
   desenharAoEntrar();
+
+  // Os números da coleção rolam como odômetro (protótipo 14, G1): as fitas partem do zero e vão ao número,
+  // a unidade dando mais voltas que a dezena. Com a abertura, depois que ela acaba; sem ela, ao abrir.
+  const odometros = [...document.querySelectorAll<HTMLElement>("[data-odometro]")];
+  document.documentElement.classList.add("odometro-pronto");
+  if (odometros.length && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    for (const el of odometros) criarContador(el, 0, String(el.dataset.odometro).length);
+    const rolar = () =>
+      odometros.forEach((el, i) => setTimeout(() => mudarContador(el, Number(el.dataset.odometro)), 120 + i * 140));
+    if (document.documentElement.dataset.abertura) addEventListener("cs:aberto", () => setTimeout(rolar, 200), { once: true });
+    else if (document.documentElement.hasAttribute("data-vai-chegar")) addEventListener("cs:chegou", rolar, { once: true });
+    else requestAnimationFrame(() => requestAnimationFrame(rolar));
+  }
 </script>
 
 <style>
-  .topo-home {
-    padding-top: 26px;
+  /* ---------- o topo (protótipo 14, G1) ---------- */
+  .topo-grade {
+    padding-top: clamp(18px, 3vw, 40px);
   }
 
-  /* Espaço entre a abertura (ou o cabeçalho) e os artigos. */
-  .artigos-home {
-    padding-top: 56px;
-  }
-
-  .folha-abertura {
-    padding: 34px 44px 30px;
-  }
-
-  /*
-   * Computador: a identidade à esquerda e a cena à direita, no centro da altura uma da outra.
-   * Tablet (até 1359px): a cena desce para baixo da identidade, no centro.
-   */
-  .abertura {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 30px 52px;
-    align-items: center;
-  }
-
-  /* A marca (o livro grande e o nome em duas linhas, D47) acompanha a largura da coluna, até 66px. */
-  .identidade {
-    container-type: inline-size;
-    min-width: 0;
-  }
-
-  .marca-abertura {
+  /* O nome atravessa a coluna: o tamanho sai da largura dela (o caderno, o nome e a folga). */
+  .nome-gigante {
     margin: 0;
-    font-size: clamp(34px, calc(100cqi / 6.6), 66px);
-    line-height: 1;
+    font-size: min(calc(var(--util) / 7.75), 196px);
+    line-height: 0.9;
   }
 
-  .marca-abertura :global(.marca) {
-    font-size: inherit;
+  /* No celular, o nome em duas linhas, com o caderno da altura delas. */
+  @media (max-width: 700px) {
+    .nome-gigante {
+      font-size: calc(var(--util) / 5.1);
+    }
+  }
+
+  .linha-grade {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 20px 24px;
+    margin-top: clamp(22px, 3vw, 36px);
+    padding-top: 22px;
+    border-top: 1px solid var(--ink);
   }
 
   .frase {
-    max-width: 40ch;
-    margin: 20px 0 0;
-    font-size: clamp(17px, 1.4vw, 19px);
+    grid-column: 1 / span 5;
+    max-width: 44ch;
+    margin: 0;
+    font-size: clamp(17px, 1.35vw, 19px);
     line-height: 1.6;
   }
 
-  /* A cena: a estante, sem encolher além da largura da folha. */
-  .cena {
-    max-width: 100%;
-    min-width: 0;
+  .numeros {
+    grid-column: 6 / span 4;
+    display: flex;
+    gap: clamp(22px, 3vw, 44px);
+    margin: 0;
   }
 
-  @media (max-width: 1359px) {
-    .abertura {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 30px;
-    }
+  .numeros dt {
+    font-family: var(--font-ui);
+    font-size: 13.5px;
+    color: var(--ink-2);
+  }
 
+  .numeros dd {
+    margin: 6px 0 0;
+    font-family: var(--font-titulo);
+    font-size: clamp(40px, 4.4vw, 64px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  /* Algarismos proporcionais: o zero tabular da Besley vem num peso fino (o "0" de "20" destoava); a
+     largura igual das colunas vem da fita (.coluna, abaixo). */
+  .numeros a {
+    color: var(--ink);
+    text-decoration: none;
+    font-variant-numeric: lining-nums proportional-nums;
+  }
+
+  .numeros :global(.contador .fitas) {
+    font-variant-numeric: lining-nums proportional-nums;
+  }
+
+  .numeros a:hover {
+    color: var(--acento);
+  }
+
+  /* As fitas do odômetro (contador.css) usam a altura da linha: aqui, a do número. */
+  .numeros :global(.contador .coluna) {
+    width: 0.62em;
+  }
+
+  .numeros :global(.contador .fita) {
+    --rola: 1.5s;
+    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .ultimo {
+    grid-column: 10 / span 3;
+    display: grid;
+    gap: 6px;
+    align-content: start;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .rotulo-ultimo,
+  .meta-ultimo {
+    font-family: var(--font-ui);
+    font-size: 13.5px;
+    color: var(--ink-2);
+  }
+
+  .titulo-ultimo {
+    font-family: var(--font-titulo);
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.25;
+    text-wrap: balance;
+    transition: color 0.2s;
+  }
+
+  .ultimo:hover .titulo-ultimo {
+    color: var(--acento);
+  }
+
+  /* ---------- a coleção (G2) ---------- */
+  .secao-colecao {
+    margin-top: clamp(36px, 5vw, 64px);
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .topo-colecao {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 6px 18px;
+    /* O traço de caneta embaixo do título (P17-1) desce 0,42em: a coleção começa depois dele. */
+    margin-bottom: 20px;
+  }
+
+  .topo-colecao .titulo-secao {
+    margin: 0;
+  }
+
+  /* Espaço entre a coleção e os artigos. */
+  .artigos-home {
+    padding-top: clamp(40px, 5vw, 64px);
+  }
+
+  @media (max-width: 1100px) {
     .frase {
+      grid-column: 1 / -1;
       max-width: 60ch;
     }
 
-    .cena {
-      justify-self: center;
-    }
-  }
-
-  @media (max-width: 860px) {
-    .topo-home {
-      padding-top: 20px;
+    .numeros {
+      grid-column: 1 / span 7;
     }
 
-    .folha-abertura {
-      padding: 26px 22px 20px;
+    .ultimo {
+      grid-column: 8 / -1;
     }
   }
 
   @media (max-width: 640px) {
-    .abertura {
-      gap: 22px;
+    .numeros,
+    .ultimo {
+      grid-column: 1 / -1;
     }
 
-    /*
-     * Abertura mais curta no celular (D38): a marca grande sai da tela (ela já está no cabeçalho) e
-     * continua como o h1 da página para quem usa leitor de tela.
-     */
-    .marca-abertura {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
-      clip-path: inset(50%);
-      white-space: nowrap;
+    .numeros {
+      justify-content: space-between;
     }
 
-    .frase {
-      margin-top: 0;
+    .ultimo {
+      padding-top: 16px;
+      border-top: 1px solid var(--rule);
+    }
+  }
+
+  /* Até as fitas do odômetro montarem, o número fica escondido (sem JS, ele aparece escrito). */
+  :global(:root[data-js]:not(.odometro-pronto)) .numeros a {
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :global(:root[data-js]:not(.odometro-pronto)) .numeros a {
+      opacity: 1;
     }
   }
 </style>

@@ -17,9 +17,9 @@ import { montarLivros } from "../../lib/estante";
 const livros = (await montarLivros()).filter((l) => !l.serie);
 ---
 
-<Base titulo="Categorias" descricao="As categorias do blog de Cesar Schutz: cada uma é um livro da coleção." atual="categorias" chegada={{ propria: true }}>
+<Base titulo="Livros" descricao="Os livros do blog de Cesar Schutz: cada assunto é um livro da coleção." atual="categorias" chegada={{ propria: true }}>
   <div class="wrap">
-    <CabecalhoPagina titulo="Categorias" descricao="Cada categoria é um livro da coleção. Abra um para ver os artigos dele." />
+    <CabecalhoPagina titulo="Livros" descricao="Cada assunto é um livro da coleção. Abra um para ver os artigos dele; as séries ficam em Séries." />
     <GradeLivros livros={livros} />
   </div>
 </Base>
@@ -37,8 +37,23 @@ const livros = (await montarLivros()).filter((l) => !l.serie);
     const troca = janela.csTroca;
     const cartoes = novas.filter((u) => u.el.matches(".cartao-livro")).map((u) => u.el);
     const outras = novas.filter((u) => !u.el.matches(".cartao-livro"));
-    // Os cartões que ainda estão fora da tela também vêm para a pilha (e depois descem para o lugar).
-    for (const c of document.querySelectorAll<HTMLElement>("[data-grade-livros] .cartao-livro")) if (!cartoes.includes(c)) cartoes.push(c);
+    // Rodada 3 (revisão final, correção comum 4): só os cartões à vista vão para a pilha. Os que estão abaixo
+    // da dobra não entram na fila: esperam a rolagem e aparecem como as outras listas (data-revelar,
+    // revelar.ts, T13). Antes, todos iam para a pilha, e a montagem só assentava entre 3,5 e 4s.
+    const dobra = innerHeight - 40;
+    const abaixo: HTMLElement[] = [];
+    for (const c of document.querySelectorAll<HTMLElement>("[data-grade-livros] .cartao-livro")) {
+      if (cartoes.includes(c)) continue;
+      if (c.getBoundingClientRect().top >= dobra) abaixo.push(c);
+      else cartoes.push(c);
+    }
+    if (abaixo.length) {
+      abaixo.forEach((c) => {
+        c.style.opacity = "";
+        c.setAttribute("data-revelar", "");
+      });
+      dispatchEvent(new CustomEvent("cs:revelar"));
+    }
     outras.forEach((u) => (u.el.style.opacity = ""));
     troca?.chegar(outras, { t0 });
     const livros = cartoes.map((c) => ({ volume: c.querySelector(".volume")?.textContent ?? "", nome: c.querySelector(".nome")?.textContent ?? "" }));
@@ -62,8 +77,15 @@ const livros = (await montarLivros()).filter((l) => !l.serie);
     document.body.append(ficha);
     const vol = ficha.querySelector<HTMLElement>(".vol")!, nome = ficha.querySelector<HTMLElement>("b")!;
     const rnd = gsap.utils.random;
-    // Depois do caderno da abertura (entrando direto), o desfile é um pouco mais curto: a pessoa já esperou.
-    const passo = curto ? 0.08 : cel ? 0.12 : 0.13, dur = curto ? 0.6 : 0.75, z = cel ? -900 : -1600, k = P / (P - z);
+    // Rodada 4 (A3): o desfile do blog de hoje (o 11), com os tempos dele: cada cartão voa 0,75s, um a cada
+    // 0,13s (0,12s no celular), e o nome dele aparece grande à esquerda quando ele está chegando à pilha; com
+    // a pilha pronta, cada um vai ao lugar em 0,7s, 60ms entre eles, saindo primeiro o de cima. Sob a
+    // cortina, ele começa aos 0,42s (troca.js): com os quatro cartões à vista (1440), assenta por volta de
+    // 2,7s; com oito, por volta de 3,4s (até 3,5s do clique). Os cartões abaixo da dobra não entram na pilha:
+    // aparecem ao rolar. Depois do caderno da abertura, mais curto: a pessoa já esperou por ele.
+    const n = cartoes.length, um = Math.max(1, n - 1);
+    const passo = curto ? Math.min(0.08, 0.5 / um) : Math.min(cel ? 0.12 : 0.13, 0.95 / um), dur = curto ? 0.6 : 0.75, z = cel ? -900 : -1600, k = P / (P - z);
+    const distribui = curto ? 0.6 : 0.7, passoDistribui = curto ? Math.min(0.05, 0.3 / um) : Math.min(0.06, 0.42 / um);
     const tl = gsap.timeline({
       onComplete: () => {
         ficha.remove();
@@ -104,11 +126,11 @@ const livros = (await montarLivros()).filter((l) => !l.serie);
       { once: true },
     );
     // Da pilha para a grade: sai primeiro o de cima (o último volume); cada um sobe um pouco no caminho.
-    const tDist = t0 + 0.1 + (cartoes.length - 1) * passo + dur + 0.1;
+    const tDist = t0 + 0.1 + (n - 1) * passo + dur + 0.1;
     tl.to(ficha, { opacity: 0, duration: 0.25 }, tDist - 0.1);
     [...cartoes].reverse().forEach((c, j) => {
-      tl.to(c, { x: 0, y: 0, rotationZ: 0, scale: 1, duration: 0.7, ease: "power3.inOut" }, tDist + j * 0.06)
-        .to(c, { z: 70, duration: 0.35, ease: "power2.out", yoyo: true, repeat: 1 }, tDist + j * 0.06);
+      tl.to(c, { x: 0, y: 0, rotationZ: 0, scale: 1, duration: distribui, ease: "power3.inOut" }, tDist + j * passoDistribui)
+        .to(c, { z: 70, duration: distribui / 2, ease: "power2.out", yoyo: true, repeat: 1 }, tDist + j * passoDistribui);
     });
   }
 
@@ -166,11 +188,11 @@ const livros = (await montarLivros()).filter((l) => !l.serie);
     text-wrap: balance;
   }
 
-  /* No celular, a ficha fica embaixo (em cima, ela cobria o título da página). */
+  /* No celular, a ficha fica embaixo (em cima, ela cobria o título da página), acima do ícone do computador. */
   @media (max-width: 640px) {
     .ficha-desfile {
       top: auto;
-      bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 78px);
       translate: none;
       left: 18px;
       right: 18px;

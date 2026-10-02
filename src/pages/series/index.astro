@@ -4,17 +4,34 @@
  * o livro da série (a revista, quase de frente), o nome, a descrição, as edições em ordem de leitura e
  * "Começar pelo guia" (a primeira edição). Com mais de uma, os livros lado a lado, como a grade das
  * categorias. Cada série tem a própria encadernação (docs/capas/CAPAS.md).
+ *
+ * Rodada 3 do redesenho (área A): o palco do livro tem o ponto de luz com o cone (T8, PontoDeLuz) e, com o
+ * mouse ou o foco nele (ou no nome da série), a cor da série sobe e pinta o palco inteiro (P1: uma forma
+ * grande na cor do livro), enquanto o livro gira com a mola (livro-vivo.css).
+ *
+ * Rodada 4, H5 (S10; docs/redesenho/rodada-4/direcao-papel.md): o destaque é uma ficha de catálogo
+ * (catalogo.css): canto de 6px, sem borda, a sombra curta, e no alto a tira em mono, "Série 01 · 7 artigos"
+ * e o ano, sobre o fio de 2px na cor da série. A série também é livro (o Cesar): nada de "edições". O
+ * palco tem canto de 4px.
  */
 import Base from "../../layouts/Base.astro";
+import PontoDeLuz from "../../components/PontoDeLuz.astro";
 import CabecalhoPagina from "../../components/CabecalhoPagina.astro";
 import GradeLivros from "../../components/GradeLivros.astro";
 import LivroEmPe from "../../components/LivroEmPe.astro";
 import { ICONES } from "../../lib/icones";
 import { montarLivros } from "../../lib/estante";
+import "../../styles/catalogo.css";
 
 const livros = (await montarLivros()).filter((l) => l.serie);
 const unica = livros.length === 1 ? livros[0] : undefined;
 const primeira = unica?.posts[0];
+// A tira (rodada 4, S10): "Série 01 · 7 artigos" e quando, como nos cards de Livros.
+const nArtigos = unica?.posts.length ?? 0;
+const anos = unica?.posts.map((p) => p.publicado.getUTCFullYear()) ?? [];
+const [primeiroAno, ultimoAno] = [Math.min(...anos), Math.max(...anos)];
+const quando = nArtigos === 0 ? "Ainda sem artigos" : primeiroAno !== ultimoAno ? `de ${primeiroAno} a ${ultimoAno}` : nArtigos === 1 ? `de ${ultimoAno}` : `o último em ${ultimoAno}`;
+const lugar = `Série ${String(unica?.revista?.numero ?? 1).padStart(2, "0")}`;
 ---
 
 <Base titulo="Séries" descricao="As séries do blog de Cesar Schutz: assuntos que rendem mais de um artigo, em ordem de leitura." atual="series">
@@ -22,12 +39,23 @@ const primeira = unica?.posts[0];
     <CabecalhoPagina titulo="Séries" descricao="Assuntos que rendem mais de um artigo, para ler em ordem." />
     {
       unica ? (
-        <section class="destaque-serie folha" aria-labelledby="nome-serie">
-          <a class="palco painel" href={unica.href} style={`--cor:${unica.cores.cor}`} aria-label={`Abrir a série ${unica.nome}`} data-livro-gira>
+        <section
+          class="destaque-serie folha ficha-catalogo"
+          aria-labelledby="nome-serie"
+          style={`--pinta:${unica.cores.destaqueTexto ?? unica.cores.cor};--fio-ficha:${unica.cores.destaque ?? unica.cores.cor}`}
+        >
+          <p class="tira-catalogo tira-serie">
+            <span>
+              {lugar}
+              {nArtigos > 0 && ` · ${nArtigos} ${nArtigos === 1 ? "artigo" : "artigos"}`}
+            </span>
+            <span>{quando}</span>
+          </p>
+          <a class="palco painel" href={unica.href} style={`--cor:${unica.cores.cor}`} aria-label={`Abrir a série ${unica.nome}`} data-livro-gira data-luz>
+            <PontoDeLuz />
             <LivroEmPe livro={unica} altura={330} transicao="ao-clicar" />
           </a>
           <div class="texto">
-            <p class="volume">Série · {unica.contagem}</p>
             <h2 id="nome-serie">
               <a href={unica.href}>{unica.nome}</a>
             </h2>
@@ -66,33 +94,105 @@ const primeira = unica?.posts[0];
 
 <style>
   .destaque-serie {
+    --pad-alto: 20px;
+    --pad-dir: 40px;
+    --pad-esq: 20px;
     display: grid;
     grid-template-columns: minmax(280px, 400px) minmax(0, 1fr);
-    gap: 40px;
+    column-gap: 40px;
     align-items: start;
-    padding: 20px 40px 20px 20px;
+    padding: var(--pad-alto) var(--pad-dir) 20px var(--pad-esq);
+  }
+
+  /* A tira de ponta a ponta, no alto da ficha (catalogo.css). */
+  .tira-serie {
+    grid-column: 1 / -1;
+    margin: calc(-1 * var(--pad-alto)) calc(-1 * var(--pad-dir)) var(--pad-alto) calc(-1 * var(--pad-esq));
+    padding-inline: 20px;
   }
 
   .palco {
+    /* Linha 18: a luz de quadro tem a peça de latão acima da boca; a boca desce para ela caber no palco. */
+    --ponto-luz-topo: 36px;
+    --ponto-luz-pe: 26px;
+    --lq-luz: 0.9px;
+    position: relative;
+    isolation: isolate;
     display: grid;
     place-items: center;
     min-height: 400px;
-    padding: 32px 20px;
+    padding: 64px 20px 32px;
+    overflow: hidden;
+    border-radius: 4px;
+  }
+
+  /*
+   * A pintura (P1): a cor da série sobe e pinta o palco inteiro, de baixo para cima, em 0,35s, com o
+   * mouse ou o foco no palco ou no nome da série; por cima dela, um véu escuro leve, para o livro e a
+   * luz continuarem à frente. Só clip-path e opacidade.
+   */
+  .palco::before,
+  .palco::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  .palco::before {
+    background: var(--pinta);
+    clip-path: inset(100% 0 0 0);
+    transition: clip-path 0.35s cubic-bezier(0.65, 0, 0.25, 1);
+  }
+
+  .palco::after {
+    background: color-mix(in oklab, var(--pinta), black 30%);
+    opacity: 0;
+    transition: opacity 0.35s cubic-bezier(0.65, 0, 0.25, 1) 0.1s;
+  }
+
+  .palco:is(:hover, :focus-visible)::before,
+  .destaque-serie:has(h2 a:is(:hover, :focus-visible)) .palco::before {
+    clip-path: inset(0 0 0 0);
+  }
+
+  .palco:is(:hover, :focus-visible)::after,
+  .destaque-serie:has(h2 a:is(:hover, :focus-visible)) .palco::after {
+    opacity: 0.45;
+  }
+
+  .palco > :global(.livro-em-pe) {
+    z-index: 1;
+  }
+
+  /* O nome da série também acende a luz do palco e gira o livro (a mesma pose de livro-vivo.css). */
+  .destaque-serie:has(h2 a:is(:hover, :focus-visible)) :global(.ponto-luz-cone) {
+    opacity: var(--ponto-luz-aceso);
+    transition-delay: 60ms;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .destaque-serie:has(h2 a:is(:hover, :focus-visible)) :global(.livro-vivo) {
+      transform: translate3d(0, calc(-1 * var(--lv-sobe)), 0) rotateZ(-2deg) rotateY(var(--livro-vira, -18deg));
+      transition: transform 0.55s var(--lv-mola);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .palco::before,
+    .palco::after {
+      transition: none;
+    }
   }
 
   .texto {
     padding-block: 18px;
   }
 
-  .volume {
-    margin: 0;
-    font-family: var(--font-ui);
-    font-size: 14px;
-    color: var(--ink-2);
-  }
-
   h2 {
-    margin: 6px 0 0;
+    margin: 0;
     font-size: clamp(30px, 3.4vw, 40px);
     line-height: 1.1;
   }
@@ -168,14 +268,22 @@ const primeira = unica?.posts[0];
 
   @media (max-width: 860px) {
     .destaque-serie {
+      --pad-alto: 14px;
+      --pad-dir: 14px;
+      --pad-esq: 14px;
       grid-template-columns: minmax(0, 1fr);
       gap: 8px;
-      padding: 14px 14px 18px;
+      padding: var(--pad-alto) var(--pad-dir) 18px var(--pad-esq);
+    }
+
+    .tira-serie {
+      padding-inline: 14px;
+      margin-bottom: 6px;
     }
 
     .palco {
       min-height: 0;
-      padding: 26px 16px;
+      padding: 56px 16px 26px;
     }
 
     .texto {
