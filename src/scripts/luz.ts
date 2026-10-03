@@ -36,9 +36,10 @@ function posicionarLocais() {
 }
 
 function posicionar() {
+  // Todas as medidas locais vêm antes das escritas nos discos da mesa.
+  posicionarLocais();
   const t = `translate3d(${luz.x.toFixed(1)}px, ${luz.y.toFixed(1)}px, 0)`;
   for (const d of discos) d.style.transform = t;
-  posicionarLocais();
 }
 
 function acenderLocais(acesa: boolean) {

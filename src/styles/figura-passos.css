@@ -29,6 +29,12 @@
   opacity: 0.42;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .figura-passos[data-pronto] [data-passo]:is(.visivel, :not(.visivel)) {
+    transition: none;
+  }
+}
+
 .figura-passos .trajeto {
   fill: none;
   stroke: var(--tom, var(--ink-2));

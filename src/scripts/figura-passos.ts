@@ -9,7 +9,8 @@
  * voltar um passo, o passo desfeito sai). Com movimento reduzido, as trocas são imediatas.
  */
 
-const reduzido = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+const movimentoReduzido = matchMedia("(prefers-reduced-motion: reduce)");
+const reduzido = () => movimentoReduzido.matches;
 /** Um tempo dentro do passo (etapa-2 entra um tempo depois da etapa-1), em ms. */
 const TEMPO = 1000;
 
@@ -65,6 +66,27 @@ function montar(figura: HTMLElement) {
 
   /** 0 = a figura inteira (o começo e o "Ver tudo"); de 1 a total = montando. */
   let atual = 0;
+  const animacoes = new Set<Animation>();
+  const imediatos = new Set<SVGElement>();
+
+  function animar(el: SVGElement, quadros: Keyframe[], opcoes: KeyframeAnimationOptions) {
+    const animacao = el.animate(quadros, opcoes);
+    animacoes.add(animacao);
+    animacao.addEventListener("finish", () => animacoes.delete(animacao), { once: true });
+  }
+
+  function pararAnimacoes() {
+    for (const animacao of animacoes) animacao.cancel();
+    animacoes.clear();
+  }
+
+  /** Confirma as trocas imediatas juntas, em vez de forçar layout para cada peça do SVG. */
+  function assentar() {
+    if (!imediatos.size) return;
+    void svg!.getBoundingClientRect();
+    for (const el of imediatos) el.style.transition = "";
+    imediatos.clear();
+  }
 
   function mostrar(n: number, visivel: boolean, devagar: boolean) {
     for (const el of pecas.get(n) ?? []) {
@@ -75,20 +97,24 @@ function montar(figura: HTMLElement) {
       }
       el.style.transition = "none";
       el.classList.toggle("visivel", visivel);
-      void el.getBoundingClientRect();
-      el.style.transition = "";
+      imediatos.add(el);
     }
   }
 
   function ir(alvo: number, { animar = true } = {}) {
+    pararAnimacoes();
     alvo = Math.min(total, Math.max(1, alvo));
     const antes = atual;
     atual = alvo;
     const mexer = animar && !reduzido();
     // Ao entrar no passo a passo (vindo da figura inteira), tudo volta à base de uma vez, e o passo
     // escolhido entra.
-    if (antes === 0 && mexer) mostrar(alvo, false, false);
+    if (antes === 0 && mexer) {
+      mostrar(alvo, false, false);
+      assentar();
+    }
     for (const n of pecas.keys()) mostrar(n, n <= alvo, mexer && n === alvo && (alvo > antes || antes === 0));
+    assentar();
 
     // Os passos anteriores esmaecem (sem sumir), para o que entrou se destacar; no último, a figura fica
     // inteira, como a figura parada.
@@ -107,14 +133,18 @@ function montar(figura: HTMLElement) {
     figura.dataset.modo = "passos";
     figura.classList.toggle("no-fim", noFim);
     tudo!.hidden = noFim;
+    // Uma tecla pode voltar ao primeiro passo ou esconder "Ver tudo": o foco precisa continuar útil.
+    if ((document.activeElement === anterior && anterior!.disabled) || (document.activeElement === tudo && noFim)) proximo!.focus({ preventScroll: true });
     trazerParaAVista(alvo, mexer);
   }
 
   /** A figura inteira, parada: o começo, e o "Ver tudo". */
   function verTudo() {
+    pararAnimacoes();
     atual = 0;
     rolagens.forEach((r) => clearTimeout(r));
     for (const n of pecas.keys()) mostrar(n, true, false);
+    assentar();
     for (const els of pecas.values()) for (const el of els) el.classList.remove("antes");
     destacarSelo(0);
     marcarLista(0);
@@ -188,13 +218,12 @@ function montar(figura: HTMLElement) {
       for (const a of atrasados) {
         // Um grupo atrasado dentro de outro já entra com ele.
         if (a !== el && atrasados.some((b) => b !== a && b.contains(a))) continue;
-        a.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay: (tempoDe(a) - 1) * TEMPO, easing: "ease-out", fill: "backwards" });
+        animar(a, [{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay: (tempoDe(a) - 1) * TEMPO, easing: "ease-out", fill: "backwards" });
       }
     }
     const trajetos = els.flatMap((el) => (el.classList.contains("trajeto") ? [el] : [...el.querySelectorAll<SVGElement>(".trajeto")]));
     for (const t of trajetos) {
-      t.getAnimations().forEach((a) => a.cancel());
-      t.animate(
+      animar(t,
         [
           { strokeDashoffset: 0, strokeOpacity: 0 },
           { strokeDashoffset: -0.06, strokeOpacity: 1, offset: 0.06 },
@@ -291,6 +320,14 @@ function montar(figura: HTMLElement) {
     else if (ev.key === "ArrowLeft" && atual > 1) ir(atual - 1);
     else return;
     ev.preventDefault();
+  });
+
+  movimentoReduzido.addEventListener("change", () => {
+    if (!reduzido()) return;
+    pararAnimacoes();
+    rolagens.forEach((r) => clearTimeout(r));
+    rolagens = [];
+    marcarEntrada(0, false);
   });
 
   barra.hidden = false;
