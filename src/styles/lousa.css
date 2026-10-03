@@ -395,7 +395,7 @@
 }
 
 .frase-destaque.animada .palavra {
-  color: var(--ink-3);
+  color: var(--ink-2);
   transition: color 0.3s;
 }
 
@@ -438,5 +438,12 @@
 
   .frase-destaque.animada .palavra {
     color: var(--ink);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .frase-destaque.animada .palavra {
+    color: var(--ink);
+    transition: none;
   }
 }

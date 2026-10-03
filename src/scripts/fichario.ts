@@ -54,6 +54,11 @@ export function fichario(movel: HTMLElement, lista: HTMLElement) {
   if (dica) dica.setAttribute("aria-live", "polite");
   let atual = "todas";
   let vez = 0;
+  const saidas = new Set<Animation>();
+  const cancelarSaidas = () => {
+    saidas.forEach((a) => a.cancel());
+    saidas.clear();
+  };
 
   // As fichas que caem na chegada e ao rolar (o comportamento de Tags da base).
   fichasCaem(lista);
@@ -69,8 +74,10 @@ export function fichario(movel: HTMLElement, lista: HTMLElement) {
       g.style.setProperty("transition-delay", cascata && !reduzido.matches ? `${i * CASCATA}ms` : "0ms");
       g.classList.add("puxada");
     });
-    for (const g of gavetas) g.toggleAttribute("aria-current", quais.includes(g) && quais.length === 1);
-    if (todas) todas.toggleAttribute("aria-current", quais.includes(todas));
+    for (const g of gavetas) {
+      if (quais.includes(g) && (quais.length === 1 || g === todas)) g.setAttribute("aria-current", "true");
+      else g.removeAttribute("aria-current");
+    }
   }
 
   /** As fichas abaixo da dobra caem quando entram na tela. */
@@ -99,15 +106,17 @@ export function fichario(movel: HTMLElement, lista: HTMLElement) {
     if (letra === atual) return;
     atual = letra;
     const minha = ++vez;
+    cancelarSaidas();
     const novas = fichas.filter((f) => letra === "todas" || f.dataset.letra === letra);
     const saindo = fichas.filter((f) => !f.hidden && !novas.includes(f));
     if (!reduzido.matches && saindo.length) {
       const anims = saindo
         .filter((f) => f.getBoundingClientRect().top < innerHeight && f.getBoundingClientRect().bottom > 0)
         .map((f) => f.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-10px)" }], { duration: SAI, easing: "cubic-bezier(0.55, 0.085, 0.68, 0.53)", fill: "forwards" }));
+      anims.forEach((a) => saidas.add(a));
       await Promise.all(anims.map((a) => a.finished.catch(() => {})));
+      anims.forEach((a) => { a.cancel(); saidas.delete(a); });
       if (minha !== vez) return;
-      anims.forEach((a) => a.cancel());
     }
     for (const f of fichas) {
       const fica = novas.includes(f);
@@ -125,8 +134,15 @@ export function fichario(movel: HTMLElement, lista: HTMLElement) {
     const topo = lista.getBoundingClientRect().top;
     if (innerHeight - topo < 200) scrollBy({ top: topo - innerHeight * 0.5, behavior: reduzido.matches ? "instant" : "smooth" });
     if (reduzido.matches) return;
-    requestAnimationFrame(() => cairAoVer(novas));
+    requestAnimationFrame(() => { if (minha === vez && !reduzido.matches) cairAoVer(novas); });
   }
+
+  reduzido.addEventListener("change", () => {
+    if (!reduzido.matches) return;
+    cancelarSaidas();
+    olho?.disconnect();
+    fichas.forEach((f) => { f.dataset.caiu = ""; });
+  });
 
   for (const g of gavetas) {
     g.addEventListener("click", (e) => {

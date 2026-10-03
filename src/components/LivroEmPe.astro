@@ -19,6 +19,8 @@ import "../styles/livro.css";
 
 interface Props {
   livro: Livro;
+  /** O link já fornece o nome; a impressão repetida na capa não faz parte dele. */
+  decorativo?: boolean;
   /** Altura do livro em px. */
   altura?: number;
   /**
@@ -45,7 +47,7 @@ interface Props {
   parado?: boolean;
 }
 
-const { livro, altura = 300, transicao = "fixa", ampliavel = false, fluido = false, desenho = "inline", folhas = 3, parado = false } = Astro.props;
+const { decorativo = false, livro, altura = 300, transicao = "fixa", ampliavel = false, fluido = false, desenho = "inline", folhas = 3, parado = false } = Astro.props;
 const m = medidasDoLivro3D(livro.emPe.largura, altura);
 const px = (v: number) => (fluido ? `calc(${Math.round(v * 100) / 100}px * var(--kc, 1))` : `${Math.round(v * 100) / 100}px`);
 const estilo = [
@@ -64,6 +66,7 @@ const estilo = [
 
 <div
   class="livro-em-pe"
+  aria-hidden={decorativo ? "true" : undefined}
   style={estilo}
   data-vt={transicao === "ao-clicar" ? livro.id : undefined}
   data-ampliar-livro={ampliavel ? "" : undefined}
