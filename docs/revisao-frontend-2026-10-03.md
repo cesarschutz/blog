@@ -165,7 +165,7 @@ Não se mede INP de campo e não se promete aceleração nem FPS garantido a par
 - node --check nos scripts e git diff --check passaram. O diff completo foi revisado; src/content,
   public, package.json e package-lock.json não têm alterações em relação à base.
 
-São 31 arquivos alterados e nove commits locais contra a main: os seis recuperados e três de
+Na publicação recuperada eram 31 arquivos alterados e nove commits locais contra a main: os seis recuperados e três de
 consolidação, documentação e limpeza final do diff. O inventário forense inicial, hashes, patches, histórico e evidências estão
 no pacote. As limitações físicas de Safari/iOS, leitores de tela e INP real continuam as descritas.
 
@@ -253,3 +253,34 @@ separadamente no PR; as aprovações descritas aqui são resultados locais.
 - https://www.w3.org/WAI/tutorials/images/functional/
 
 - https://github.com/actions/upload-artifact#uploading-hidden-files
+
+## Recuperação e validação independente
+
+Foi recuperada a implementação completa dos seis commits originais e do commit de testes de uma retomada intermediária, incluindo suas duas alterações documentais ainda não commitadas. O ZIP antigo foi conferido e contém somente um patch parcial e dois documentos. Esta entrega traz todos os arquivos versionados do projeto; não depende desse ZIP.
+
+Nesta retomada, em uma cópia independente, foram executados novamente npm ci (com o lockfile, usando o cache offline), check, contraste, build de produção forçado, links, regressões comparadas à main, plugins, interações e matriz. A matriz voltou a passar em 338 casos, 39 rotas e nove larguras com ambos os temas e resize. As três conferências de artigos passaram nos cinco tamanhos e dois temas, mais movimento reduzido: criptografia, Claude Code e Java 17. O dev foi aberto em Chrome nas rotas home e criptografia, sem exceções. Novos traces registram movimento normal, mouse, rolagem, navegação/volta e controles de figuras.
+
+A base main foi novamente consultada e continua em 9938819. Nenhum arquivo editorial, SVG artístico, imagem pública, dependência ou lockfile foi alterado. A revisão do diff inclui os arquivos de implementação, scripts e workflow. Uma linha vazia no fim do componente Ilustracao foi removida. O teste de tema recebeu sincronização do evento de movimento reduzido e captura da moldura do desenho; um timeout na execução conjunta ficou preservado nos logs, em vez de ser apagado.
+
+O build da base original tem postbuild preso ao Chrome do sistema. Para medir a base no ambiente atual, o script de OG foi executado por uma cópia temporária com o caminho explícito do Chrome Headless Shell, seguida do Pagefind. Não se alterou a fonte da base medida nem se ignorou o postbuild. A versão corrigida usa o suporte configurável recuperado.
+
+### Nova rodada Lighthouse, após a correção de hover
+
+36 novas execuções sequenciais: três amostras por versão/página/perfil. JSON e HTML identificados em evidencias-desta-retomada/lighthouse.
+
+| Página / perfil | Performance | Acessibilidade | LCP ms | TBT ms | CLS |
+|---|---:|---:|---:|---:|---:|
+| home / mobile | 73 → 73 | 96 → 96 | 4801 → 4801 | 37 → 29 | 0.0002 → 0.0002 |
+| home / desktop | 98 → 98 | 96 → 96 | 921 → 961 | 0 → 0 | 0.0001 → 0.0001 |
+| criptografia / mobile | 70 → 70 | 97 → 100 | 4876 → 4877 | 94 → 124.5 | 0.0038 → 0.0038 |
+| criptografia / desktop | 97 → 96 | 100 → 100 | 941 → 941 | 0 → 0 | 0.0001 → 0.0001 |
+| arquivo / mobile | 64 → 64 | 96 → 96 | 6302 → 6301 | 0 → 0 | 0.0001 → 0.0001 |
+| arquivo / desktop | 92 → 96 | 100 → 96 | 1162 → 1163 | 0 → 0 | 0.0007 → 0.0007 |
+
+Best Practices e SEO: 100 nas 36 novas execuções. A melhoria reproduzida é acessibilidade 97 → 100 em criptografia mobile. Não há ganho geral comprovado de performance: a home mobile mantém 73 e o artigo mantém 70; o TBT mediano do artigo passou de 94 para 124,5ms nesta rodada. As amostras e os traces estão disponíveis para revisão. A variação do arquivo desktop (92 → 96) não é apresentada como melhoria comprovada, e o falso positivo intermitente de contraste no seletor Lista continua documentado.
+
+A verificação adicional dos ancestrais dos textos SVG identificou visibilidade herdada transitória logo após Ver tudo. O diagnóstico confirma que ela assenta no próximo frame; a nova asserção aguarda o estado visível e exige zero textos ocultos por qualquer ancestral. Os logs de investigação e falha inicial foram mantidos.
+
+O rebuild final manteve todos os assets client-side de _astro byte a byte iguais aos usados nas 36 medições desta rodada; as diferenças de HTML/prerender/índice e cinco imagens OG foram registradas em build-comparacao.json. A matriz foi repetida sobre esse rebuild. A última checagem de links encontrou 120 HTML, 5.772 links e 22 redirecionamentos, sem links/âncoras quebrados; a contagem de 5.763 acima pertence à rodada intermediária recuperada.
+
+Fechamento desta rodada: matriz repetida sobre o rebuild aprovada (338 casos/39 rotas), tema com visibilidade herdada aprovado em 375/1440px, check final com zero erros/warnings e cinco hints, 63 desenhos aprovados e git diff --check limpo. A continuação adiciona dois commits aos nove recuperados remotamente, mantendo 31 arquivos alterados contra a main. O PR #3 é reaproveitado.

@@ -336,3 +336,7 @@ Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
 - A imagem de compartilhamento precisa de Chrome no build (D10); os runners do GitHub Actions têm.
 - `prerender` nas regras de especulação (B14) fica para depois: exigiria revisar os scripts que rodam
   ao carregar (abertura, desenhos, contagem de visitas).
+
+## Revalidação independente após recuperação
+
+Nesta retomada foram recuperados também a branch remota e o PR #3, preservando as mesmas árvores da revisão original. Reexecutados build/check/contraste/links, plugins/regressões/interações, matriz de 338 casos, três artigos e 36 Lighthouse. O teste de tema passa a verificar a visibilidade herdada do texto SVG e a aguardar a entrega da media query e o frame de estilo. Evidências desta rodada são distintas das rodadas anteriores; as métricas completas estão no relatório.
