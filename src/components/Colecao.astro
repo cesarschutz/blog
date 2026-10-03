@@ -196,7 +196,7 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Vol. ${String(l.volu
             <div class:list={["livro-colecao", { "de-serie": l.serie, "abre-serie": abreSerie }]} style={estilo} data-livro-colecao={l.id}>
               <span class="vao-marca" aria-hidden="true" />
               <a class="tomba" href={l.href} aria-label={`${rotuloDoVolume(l)}: ${l.nome}, ${l.contagem.toLowerCase()}`}>
-                <LivroEmPe livro={l} altura={ALTURA} transicao="ao-clicar" fluido folhas={0} />
+                <LivroEmPe decorativo livro={l} altura={ALTURA} transicao="ao-clicar" fluido folhas={0} />
               </a>
               <a class="nome-livro" href={l.href}>
                 <span class="sr">{rotuloDoVolume(l)}: </span>
@@ -208,7 +208,7 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Vol. ${String(l.volu
             <a class:list={["livro-colecao", { "abre-serie": abreSerie }]} style={estilo} href={l.href} data-troca-livro title={l.nome}>
               <span class="sr">{l.nome}</span>
               <span class="tomba">
-                <LivroEmPe livro={l} altura={ALTURA} transicao="ao-clicar" fluido folhas={0} />
+                <LivroEmPe decorativo livro={l} altura={ALTURA} transicao="ao-clicar" fluido folhas={0} />
               </span>
             </a>
           );

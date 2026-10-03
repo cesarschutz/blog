@@ -38,11 +38,30 @@ function cabecalho(tabela) {
   return celulas.filter(Boolean).join(", ");
 }
 
+/** Um cabeçalho de canto vazio indica uma matriz: a primeira célula de cada linha nomeia o item. */
+function marcarCabecalhos(tabela) {
+  const secoes = tabela.children ?? [];
+  const topo = secoes.find((n) => n.tagName === "thead");
+  const primeiraLinha = topo?.children?.find((n) => n.tagName === "tr");
+  const colunas = primeiraLinha?.children?.filter((n) => n.tagName === "th") ?? [];
+  colunas.forEach((n) => { n.properties = { ...n.properties, scope: "col" }; });
+  if (colunas.length < 2 || texto(colunas[0]).trim()) return;
+  for (const corpo of secoes.filter((n) => n.tagName === "tbody")) {
+    for (const linha of corpo.children ?? []) {
+      const primeira = linha.children?.find((n) => n.tagName === "td" || n.tagName === "th");
+      if (!primeira || primeira.tagName !== "td" || !texto(primeira).trim()) continue;
+      primeira.tagName = "th";
+      primeira.properties = { ...primeira.properties, scope: "row" };
+    }
+  }
+}
+
 export function rehypeTabela() {
   const envolver = (no) => {
     if (!Array.isArray(no.children)) return;
     no.children = no.children.map((filho) => {
       if (filho.type === "element" && filho.tagName === "table") {
+        marcarCabecalhos(filho);
         // Quem chega pelo Tab ouve o que é a parada (D54): uma região com o nome das colunas.
         const colunas = cabecalho(filho);
         const nome = colunas ? `Tabela: ${colunas.length > 80 ? `${colunas.slice(0, 79)}…` : colunas}` : "Tabela";

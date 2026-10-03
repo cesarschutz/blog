@@ -162,7 +162,7 @@
   border-bottom: 1px solid var(--rule);
 }
 
-.prose th {
+.prose thead th {
   background: var(--well);
   font-weight: 650;
   white-space: nowrap;
@@ -172,12 +172,12 @@
  * Código nas células (D39): quebra só nos pontos (<wbr> do rehype-tabela), nunca no meio do nome; o
  * que não couber faz a tabela rolar para o lado.
  */
-.prose td code {
+.prose :is(td, th[scope="row"]) code {
   overflow-wrap: normal;
   word-break: normal;
 }
 
-.prose tr:last-child td {
+.prose tr:last-child :is(td, th[scope="row"]) {
   border-bottom: 0;
 }
 
@@ -265,4 +265,9 @@
 .prose .expressive-code .frame {
   content-visibility: auto;
   contain-intrinsic-size: auto calc(var(--linhas, 10) * 23.1px + 72px);
+}
+
+/* Cabeçalhos de linha mantêm a aparência das células que já nomeavam os itens. */
+.prose th[scope="row"] {
+  font-weight: inherit;
 }
