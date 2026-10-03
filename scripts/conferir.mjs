@@ -14,6 +14,7 @@ import { mkdirSync } from "node:fs";
 import { join, dirname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright-core";
+import { opcoesDoChrome } from "./chrome.mjs";
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), "..");
 const argumentos = process.argv.slice(2);
@@ -50,7 +51,7 @@ try {
 
 let navegador;
 try {
-  navegador = await chromium.launch({ channel: "chrome", headless: true });
+  navegador = await chromium.launch(opcoesDoChrome);
 } catch (erro) {
   console.error("conferir: não achei o Chrome.", erro.message);
   process.exit(2);
