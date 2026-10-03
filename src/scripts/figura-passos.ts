@@ -126,6 +126,7 @@ function montar(figura: HTMLElement) {
 
     if (numero) numero.textContent = String(alvo);
     falado.textContent = `: ${textos[alvo - 1] ?? ""}`;
+    const focoAntes = document.activeElement;
     anterior!.disabled = alvo === 1;
     const noFim = alvo === total;
     if (rotuloProximo) rotuloProximo.textContent = noFim ? "Do início" : "Próximo";
@@ -134,7 +135,7 @@ function montar(figura: HTMLElement) {
     figura.classList.toggle("no-fim", noFim);
     tudo!.hidden = noFim;
     // Uma tecla pode voltar ao primeiro passo ou esconder "Ver tudo": o foco precisa continuar útil.
-    if ((document.activeElement === anterior && anterior!.disabled) || (document.activeElement === tudo && noFim)) proximo!.focus({ preventScroll: true });
+    if ((focoAntes === anterior && anterior!.disabled) || (focoAntes === tudo && noFim)) proximo!.focus({ preventScroll: true });
     trazerParaAVista(alvo, mexer);
   }
 

@@ -18,6 +18,13 @@ import { carregarTraco, movimentoReduzido, type GSAP } from "./gsap";
 
 const FORMAS = ":is(path, rect, circle, ellipse, line, polyline, polygon)";
 const raiz = document.documentElement;
+const desenhosAtivos = new Set<ReturnType<GSAP["timeline"]>>();
+movimentoReduzido.addEventListener("change", () => {
+  if (!movimentoReduzido.matches) return;
+  for (const tl of desenhosAtivos) { tl.progress(1); tl.kill(); }
+  desenhosAtivos.clear();
+  document.querySelectorAll("[data-desenhar], [data-desenhar-topo]").forEach((area) => area.setAttribute("data-desenhado", ""));
+});
 
 function desenhar(gsap: GSAP, svg: SVGSVGElement) {
   // O contorno: tudo o que é traço, menos cor, hachura e tracejado; no recorte anotado (o card largo do
@@ -31,9 +38,10 @@ function desenhar(gsap: GSAP, svg: SVGSVGElement) {
   gsap.set(tintas, { fillOpacity: 0 });
   gsap.set(textos, { opacity: 0 });
   gsap.set(tracos, { drawSVG: "0%" });
-  gsap
+  const tl = gsap
     .timeline({
       onComplete: () => {
+        desenhosAtivos.delete(tl);
         gsap.set(tracos, { clearProps: "strokeDasharray,strokeDashoffset" });
         // O desenho do destaque terminou: depois da abertura, os cadernos da marca acenam (B13, D52).
         dispatchEvent(new CustomEvent("cs:desenhou"));
@@ -42,6 +50,7 @@ function desenhar(gsap: GSAP, svg: SVGSVGElement) {
     .to(tracos, { drawSVG: "100%", duration: 1.1, stagger: passo, ease: "power1.inOut" })
     .to(tintas, { fillOpacity: 1, duration: 0.6, stagger: 0.03, clearProps: "fillOpacity" }, "-=0.4")
     .to(textos, { opacity: 1, duration: 0.4, stagger: 0.06, clearProps: "opacity" }, "<");
+  desenhosAtivos.add(tl);
 }
 
 /** A sequência do C1, pelas camadas das ilustrações do site. */
@@ -69,7 +78,8 @@ function desenharPorCamadas(gsap: GSAP, svg: SVGSVGElement, celular: boolean) {
     if (tudo.length) gsap.set(tudo, { clearProps: "strokeDasharray,strokeDashoffset,fillOpacity,opacity,clipPath" });
   };
   // Só as camadas que o desenho tem (o GSAP avisa quando o alvo é uma lista vazia).
-  const tl = gsap.timeline({ defaults: { ease: "power1.inOut" }, onComplete: limpar });
+  const tl = gsap.timeline({ defaults: { ease: "power1.inOut" }, onComplete: () => { desenhosAtivos.delete(tl); limpar(); } });
+  desenhosAtivos.add(tl);
   const se = (lista: SVGGraphicsElement[], fazer: () => void) => { if (lista.length) fazer(); };
   // O ponto de partida vai direto, antes da primeira pintura da área.
   se(papeis, () => gsap.set(papeis, { fillOpacity: 0 }));
@@ -144,7 +154,7 @@ export function desenharAoEntrar() {
           (g) => {
             // O recorte à vista (o card do destaque traz o largo e o médio, e mostra um só).
             const svg = [...area.querySelectorAll<SVGSVGElement>("svg.ilustracao")].find((s) => s.getBoundingClientRect().width > 0);
-            if (!area.hasAttribute("data-desenhado") && svg) desenhar(g, svg);
+            if (!movimentoReduzido.matches && !area.hasAttribute("data-desenhado") && svg) desenhar(g, svg);
             mostrar(area);
           },
           () => mostrar(area),
@@ -195,7 +205,7 @@ export function desenharTopoDoArtigo() {
     gsap.then((g) => {
       clearTimeout(reserva);
       // A reserva já o mostrou inteiro (o GSAP chegou tarde): fica assim, sem se desenhar de novo (D54).
-      if (area.hasAttribute("data-desenhado")) return;
+      if (movimentoReduzido.matches || area.hasAttribute("data-desenhado")) return void mostrar(area);
       // O desenho à vista (no celular, o recorte médio) e com o topo na tela; senão, pronto.
       const svg = [...area.querySelectorAll<SVGSVGElement>("svg.ilustracao")].find((s) => s.getBoundingClientRect().width > 0);
       const r = area.getBoundingClientRect();
