@@ -165,8 +165,8 @@ Não se mede INP de campo e não se promete aceleração nem FPS garantido a par
 - node --check nos scripts e git diff --check passaram. O diff completo foi revisado; src/content,
   public, package.json e package-lock.json não têm alterações em relação à base.
 
-São 31 arquivos alterados e oito commits locais contra a main: os seis recuperados e dois de
-consolidação/documentação. O inventário forense inicial, hashes, patches, histórico e evidências estão
+São 31 arquivos alterados e nove commits locais contra a main: os seis recuperados e três de
+consolidação, documentação e limpeza final do diff. O inventário forense inicial, hashes, patches, histórico e evidências estão
 no pacote. As limitações físicas de Safari/iOS, leitores de tela e INP real continuam as descritas.
 
 ## SVGs, imagens, fontes e bundles
