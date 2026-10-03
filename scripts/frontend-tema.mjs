@@ -28,12 +28,26 @@ try {
     await p.locator('[data-botao-tema]').click({ force: true });
     await p.waitForFunction(() => document.documentElement.dataset.theme === 'dark');
     await p.waitForFunction(() => !document.documentElement.classList.contains('trocando-tema'));
+    // A troca já ocorreu durante a etapa; aguarda somente para a captura representar a figura assentada.
+    await p.waitForTimeout(2500);
+    await figura.locator('.figura-palco').scrollIntoViewIfNeeded();
     await p.screenshot({ path: `${pasta}/tema-etapa-dark-${largura}.png` });
     await figura.locator('.passos-tudo').click();
-    const medir = () => figura.evaluate(e => ({
-      efeitos: e.getAnimations({subtree:true}).filter(a => a.constructor.name === 'Animation').length,
-      ocultos: [...e.querySelectorAll('svg text')].filter(t => t.getBoundingClientRect().width > 0 && getComputedStyle(t).opacity === '0').length,
-    }));
+    const medir = () => figura.evaluate(e => {
+      const ocultos = [...e.querySelectorAll('svg text')].filter(texto => {
+        if (!texto.getBoundingClientRect().width) return false;
+        for (let alvo = texto; alvo && alvo !== e; alvo = alvo.parentElement) {
+          const estilo = getComputedStyle(alvo);
+          if (estilo.opacity === '0' || estilo.visibility === 'hidden') return true;
+        }
+        return false;
+      }).length;
+      return {
+        efeitos: e.getAnimations({subtree:true}).filter(a => a.constructor.name === 'Animation').length,
+        ocultos,
+      };
+    });
+    await p.waitForFunction(() => [...document.querySelector('.figura-passos').querySelectorAll('svg text')].every(t => getComputedStyle(t).visibility !== 'hidden'));
     const aposTroca = await medir();
     assert.equal(aposTroca.efeitos, 0);
     assert.equal(aposTroca.ocultos, 0);
@@ -42,9 +56,16 @@ try {
     await p.locator('[data-botao-tema]').click({ force: true });
     await p.waitForFunction(() => document.documentElement.dataset.theme === 'light');
     await p.waitForFunction(() => !document.documentElement.classList.contains('trocando-tema'));
+    await p.evaluate(() => {
+      window.reducaoConfirmada = false;
+      matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', e => { window.reducaoConfirmada = e.matches; }, { once: true });
+    });
     await p.emulateMedia({ reducedMotion: 'reduce' });
+    await p.waitForFunction(() => window.reducaoConfirmada);
     await p.waitForFunction(() => document.querySelector('.figura-passos').getAnimations({subtree:true}).filter(a => a.constructor.name === 'Animation').length === 0);
     await figura.locator('.passos-tudo').click();
+    // A visibilidade herdada dos textos SVG pode assentar no próximo frame após trocar a media query.
+    await p.waitForFunction(() => [...document.querySelector('.figura-passos').querySelectorAll('svg text')].every(t => getComputedStyle(t).visibility !== 'hidden'));
     const aposReducao = await medir();
     assert.equal(aposReducao.ocultos, 0);
     await p.screenshot({ path: `${pasta}/tema-etapa-light-${largura}.png` });
