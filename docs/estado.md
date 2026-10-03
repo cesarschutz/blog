@@ -6,14 +6,18 @@ fica em `docs/decisoes.md` (D1 a D69 e D74; a D70 à D73 estão em outras worktr
 
 ## Revisão técnica de frontend (03/10/2026)
 
-Branch `improve/frontend-performance-ux`, baseada na main `9938819`: corrigidos efeitos atrasados
-sobrepostos e confirmações de layout por peça no motor de FiguraPassos, cancelamento dinâmico de
-movimento reduzido, foco dos controles e da busca, fila de revelações e ordem de leitura/escrita da
-luz. Detalhes, fontes, testes e limites em `docs/revisao-frontend-2026-10-03.md`.
-A execução local do Chrome foi bloqueada por socket; build Astro/check/links/contraste passam,
-postbuild e conferência visual das mudanças dependem da workflow de revisão e das capturas do PR.
-O push não autenticou e o conector recusou criar a branch (403); PR e execução da workflow pendentes.
-Não houve alteração editorial, de arte, das decisões de produto ou publicação na main.
+Branch improve/frontend-performance-ux, baseada na main 9938819. Estado da conversa anterior
+recuperado do diretório original, com seis commits, scripts não commitados e 36 Lighthouse. ZIP antigo
+tinha apenas o patch inicial. A revisão foi concluída em uma cópia independente: corridas em figuras/Tags,
+reduced motion dinâmico, foco, medidas da luz, hover único, contraste, semântica e 57 dimensões SVG.
+
+Revalidação: build/check/contraste/links, 63 desenhos, regressões/interações/tema, matriz de 338 casos
+com resize, três artigos em 320–1600px nos dois temas, development e traces passaram. Mais 36 Lighthouse
+completos e seis pareados confirmaram criptografia mobile 97 → 100 em acessibilidade; não há ganho geral
+de performance demonstrado. Detalhes e limites em docs/revisao-frontend-2026-10-03.md.
+
+Nesta retomada, a escrita no GitHub foi aceita. Branch remota e entrega em ZIP completo, sem mudança
+na main ou publicação do site. Sem edição de artigos, arte, assets públicos ou dependências de aplicação.
 
 ## Fase atual
 
@@ -56,8 +60,7 @@ decisão do Cesar está no fim do `CLAUDE-CODE.md`.
 
 Revisão de interface de 28/09/2026 (skill `better-interface`, instalada em `.claude/skills/better-*`, sem
 commit): aplicados o anel de foco dos cards, a marca do cabeçalho em 320–400px, os rótulos da lousa de
-loop em tela estreita e o `aria-valuetext` do slider da lousa. **Ainda abertos** (o Cesar decide): campo
-da busca sem anel de foco, medida do artigo em 1280/1600px (D46), `text-wrap: balance` nos títulos de
+loop em tela estreita e o `aria-valuetext` do slider da lousa. **Ainda abertos** (o Cesar decide): medida do artigo em 1280/1600px (D46), `text-wrap: balance` nos títulos de
 cards, foco fino da lombada e do bloco de código, `:hover` em "Ver a série" e "Todos os N", cores soltas
 fora de token, `aria-pressed` redundante nos botões das lousas e "do Java" a 4,11:1.
 
@@ -313,9 +316,8 @@ Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
     passo terminou" fica, das cinco ideias no fim da página (a sugestão é a 1, o Próximo que se enche,
     ou ela com a 5, os traços embaixo da figura)?
 14. **Lighthouse fora do cabeçalho (achados da D69, que já estão no ar):**
-    - a mesma auditoria de nome (`label-content-name-mismatch`, peso 0) falha por outros elementos: os 9
-      livros da fileira da home, os 2 vizinhos da página de um livro, as 22 tags de Tags e o livro de
-      Séries. Corrijo do mesmo jeito (o nome vindo do texto, com o enfeite fora do nome)?
+    - a mesma auditoria de nome (`label-content-name-mismatch`, peso 0) falha por outros elementos: os 2 vizinhos da página de um livro, as 22 tags de Tags e o livro de
+      Séries. A fileira foi corrigida nesta revisão; ficam esses outros casos para verificar com o mesmo critério.
     - o "Lista" do seletor de modo dá contraste 1,18 no Lighthouse. É falso positivo (a tinta azul é
       recortada por `clip-path`, e o texto está sobre o papel, com 6,48:1), mas custa 4 pontos: nota 96
       na home, no arquivo, na página de um livro e na de uma tag. Vale mexer na tinta para a nota voltar
