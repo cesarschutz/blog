@@ -12,6 +12,7 @@ import rehypeKatex from "rehype-katex";
 import remarkDirective from "remark-directive";
 import { remarkTemMatematica } from "./src/plugins/remark-tem-matematica.mjs";
 import { remarkMarcacoes } from "./src/plugins/marcacoes.mjs";
+import { rehypeImagens } from "./src/plugins/rehype-imagens.mjs";
 import { rehypeTabela } from "./src/plugins/rehype-tabela.mjs";
 import { rehypeAvisos } from "./src/plugins/rehype-avisos.mjs";
 import { rehypeNotasLaterais } from "./src/plugins/rehype-notas-laterais.mjs";
@@ -128,7 +129,7 @@ export default defineConfig({
   markdown: {
     processor: unified({
       remarkPlugins: [remarkMath, remarkTemMatematica, remarkDirective, remarkMarcacoes],
-      rehypePlugins: [rehypeKatex, rehypeTabela, rehypeAvisos, rehypeNotasLaterais, [rehypeApresentacao, { base: comBase("/") }]],
+      rehypePlugins: [rehypeKatex, rehypeImagens, rehypeTabela, rehypeAvisos, rehypeNotasLaterais, [rehypeApresentacao, { base: comBase("/") }]],
     }),
   },
 });
