@@ -4,6 +4,17 @@ Painel, não diário: fase atual, próximos passos, perguntas abertas e riscos. 
 fica em `docs/decisoes.md` (D1 a D69 e D74; a D70 à D73 estão em outras worktrees, sem commit) e no histórico do git; controles de rodadas fechadas, em
 `docs/historico/`.
 
+## Revisão técnica de frontend (03/10/2026)
+
+Branch `improve/frontend-performance-ux`, baseada na main `9938819`: corrigidos efeitos atrasados
+sobrepostos e confirmações de layout por peça no motor de FiguraPassos, cancelamento dinâmico de
+movimento reduzido, foco dos controles e da busca, fila de revelações e ordem de leitura/escrita da
+luz. Detalhes, fontes, testes e limites em `docs/revisao-frontend-2026-10-03.md`.
+A execução local do Chrome foi bloqueada por socket; build Astro/check/links/contraste passam,
+postbuild e conferência visual das mudanças dependem da workflow de revisão e das capturas do PR.
+O push não autenticou e o conector recusou criar a branch (403); PR e execução da workflow pendentes.
+Não houve alteração editorial, de arte, das decisões de produto ou publicação na main.
+
 ## Fase atual
 
 **No ar desde 25/09/2026 em <https://blog.cesarschutz.com.br>** (repositório `cesarschutz/blog`,

@@ -1,0 +1,35 @@
+name: Revisão do frontend
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: frontend-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run contraste
+      - run: node scripts/frontend-regressao.mjs
+      - run: npm run build
+      - run: npm run links
+      - name: Matriz de páginas e telas
+        run: node scripts/frontend-paginas.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-audit
+          path: .astro/frontend-audit/
