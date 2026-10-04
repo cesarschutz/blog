@@ -131,7 +131,7 @@ a tag Pagamentos pode ser renomeada ou removida (vai virar Cobrança), e desenho
 novos para os 13. A página final
 (<https://claude.ai/code/artifact/a08fa29f-5a3d-45ec-bcaf-7d0f13ab12a5>; no dev, `/amostra/colecoes/final/`)
 mostrou o conjunto novo de desenhos ("O mesmo problema, um século antes": a máquina que fazia o trabalho
-do livro antes do software), as 13 cores, as frases e os textos. **Aplicada no site em 04/10/2026**, a
+do livro antes do software), as 13 cores, as frases e os textos. **Aplicada e publicada em 04/10/2026** (main, deploy 61), a
 pedido do Cesar: os 13 em `src/livros/livros.json`, os desenhos e ícones novos, os posts que mudaram de
 livro, a tag Pagamentos virou Cobrança e os redirecionamentos (`/categories/Carreira/` e
 `/tags/Pagamentos/`); `CAPAS.md`, `briefing.md`, `DESIGN.md` e `estilo-desenho.md` acompanham. Ficou de

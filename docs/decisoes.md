@@ -3266,7 +3266,7 @@ nada muda.
   pedir?
 
 ## D78 · A coleção de 13 livros
-- **Data:** 01/10/2026 · **Status:** decidido; aplicado no site em 04/10/2026, a pedido do Cesar ("temos
+- **Data:** 01/10/2026 · **Status:** decidido; aplicado e **publicado** em 04/10/2026 (deploy 61 na main), a pedido do Cesar ("temos
   que arrumar os livros do blog para esses novos, arrumar as frases deles, e cada post colocar em um
   livro, e ajustar as tags de cada post"). Pendente: a marca "cs" (fica no verde até ele decidir).
 - **Pedido do Cesar:** trocar os 8 livros por uma coleção que junte os de hoje com as 16 categorias do
