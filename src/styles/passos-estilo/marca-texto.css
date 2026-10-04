@@ -1,0 +1,424 @@
+/*
+ * Controles da figura em passos, estilo "marca-texto" (em prova, D67). Tudo em [data-estilo="marca-texto"].
+ *
+ * Uma passada de marca-texto amarelo num caderno (o --marca-texto da caneta, D48):
+ * - os traços de progresso são riscos de marca-texto, com a ponta chanfrada (a ponta de feltro deixa as
+ *   duas pontas paralelas) e as bordas um pouco tortas; o da vez é pintado da esquerda para a direita
+ *   enquanto o passo entra, e a tinta fica mais forte onde a ponta encostou e onde parou;
+ * - na lista, o passo da vez é grifado como num livro (o grifo cobre o texto, e não a caixa); os passos
+ *   feitos ficam com o marca-texto baixo (o tipo 20 da caneta), e os que faltam, sem nada;
+ * - os botões são palavras escritas no caderno, em azul-tinta (o que se clica); o Próximo é a ação
+ *   principal, sublinhado por uma passada de marca-texto, que sobe e cobre a palavra com o mouse.
+ */
+
+.figura-passos[data-estilo="marca-texto"] {
+  /* A tinta: no claro, o amarelo multiplica com o que está embaixo, como no papel; no escuro, o
+     marca-texto do tema já é translúcido e fica por cima, sem mistura. */
+  --mt-tinta: var(--marca-texto);
+  --mt-mistura: multiply;
+  /* Onde a ponta encosta e onde ela para, a mesma passada duas vezes: um amarelo mais carregado. */
+  --mt-poca: color-mix(in oklab, var(--marca-texto), var(--diag-ambar) 6%);
+  /* O passo feito: a tinta que já secou, um pouco mais clara que a da vez. */
+  --mt-seca: color-mix(in oklab, var(--marca-texto) 74%, var(--paper-hi));
+  /* A pauta do traço que ainda falta: uma linha de lápis fina. */
+  --mt-pauta: color-mix(in oklab, var(--ink-3) 42%, transparent);
+  /* O amarelo fraco do mouse por cima de um passo ou de uma palavra. */
+  --mt-pairar: color-mix(in oklab, var(--marca-texto) 45%, transparent);
+  --mt-risco: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .figura-passos[data-estilo="marca-texto"] {
+    --mt-mistura: normal;
+    --mt-poca: var(--marca-texto);
+    --mt-seca: color-mix(in oklab, var(--marca-texto) 58%, transparent);
+    --mt-pauta: color-mix(in oklab, var(--ink-3) 50%, transparent);
+    --mt-pairar: color-mix(in oklab, var(--marca-texto) 55%, transparent);
+  }
+}
+
+:root[data-theme="dark"] .figura-passos[data-estilo="marca-texto"] {
+  --mt-mistura: normal;
+  --mt-poca: var(--marca-texto);
+  --mt-seca: color-mix(in oklab, var(--marca-texto) 58%, transparent);
+  --mt-pauta: color-mix(in oklab, var(--ink-3) 50%, transparent);
+  --mt-pairar: color-mix(in oklab, var(--marca-texto) 55%, transparent);
+}
+
+/* ---------- os traços de progresso: um risco de marca-texto por passo ---------- */
+
+.figura-passos[data-estilo="marca-texto"] .passos-segmentos {
+  gap: 9px;
+  margin-top: 12px;
+  padding-inline: 2px;
+}
+
+/* O risco inteiro, recortado na forma da passada: as pontas chanfradas e paralelas, as bordas tortas. */
+.figura-passos[data-estilo="marca-texto"] .passos-segmentos > span {
+  height: var(--mt-risco);
+  overflow: visible;
+  border-radius: 0;
+  background: none;
+  clip-path: polygon(
+    4px 0.6px,
+    27% 0,
+    61% 0.9px,
+    100% 0.3px,
+    calc(100% - 4px) 100%,
+    66% calc(100% - 0.8px),
+    31% 100%,
+    0 calc(100% - 0.6px)
+  );
+}
+
+/* Cada risco um pouco diferente do outro, como a mão deixa: nenhum é cópia do vizinho. */
+.figura-passos[data-estilo="marca-texto"] .passos-segmentos > span:nth-child(3n + 2) {
+  transform: translateY(0.5px) rotate(-0.35deg);
+  clip-path: polygon(
+    4px 0.2px,
+    35% 0.8px,
+    72% 0,
+    100% 0.7px,
+    calc(100% - 4px) calc(100% - 0.4px),
+    58% 100%,
+    19% calc(100% - 0.9px),
+    0 100%
+  );
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-segmentos > span:nth-child(3n) {
+  transform: translateY(-0.5px) rotate(0.3deg);
+  clip-path: polygon(
+    4px 0.9px,
+    22% 0.2px,
+    54% 0,
+    100% 0.5px,
+    calc(100% - 4px) calc(100% - 0.2px),
+    74% 100%,
+    40% calc(100% - 0.7px),
+    0 calc(100% - 0.3px)
+  );
+}
+
+/* O que falta: a pauta fina, como a linha do caderno onde a passada vai. */
+.figura-passos[data-estilo="marca-texto"] .passos-segmentos > span::before {
+  content: "";
+  position: absolute;
+  top: calc(50% - 0.75px);
+  right: 4px;
+  left: 2px;
+  height: 1.5px;
+  border-radius: 1px;
+  background: var(--mt-pauta);
+}
+
+/* A tinta: a passada, com a ponta mais carregada onde o feltro encostou (à esquerda) e onde parou. */
+.figura-passos[data-estilo="marca-texto"] .passos-segmentos > span::after {
+  visibility: hidden;
+  background-color: var(--mt-tinta);
+  background-image:
+    linear-gradient(var(--mt-poca), var(--mt-poca)),
+    linear-gradient(var(--mt-poca), var(--mt-poca));
+  background-repeat: no-repeat;
+  background-position:
+    left top,
+    right top;
+  background-size:
+    6px 100%,
+    4px 100%;
+  transform: none;
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-segmentos > span:is(.feito, .atual)::after {
+  visibility: visible;
+}
+
+/* No escuro, a tinta é translúcida: a pauta some embaixo dela para não riscar a passada (enquanto o
+   passo entra, ela recua junto com a ponta, mais abaixo). */
+.figura-passos[data-estilo="marca-texto"] .passos-segmentos > span.atual::before {
+  clip-path: inset(0 0 0 100%);
+}
+
+/* O passo feito: a tinta secou um pouco; a da vez continua viva. */
+.figura-passos[data-estilo="marca-texto"] .passos-segmentos > span.feito::after {
+  background-color: var(--mt-seca);
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-segmentos > span.feito::before {
+  visibility: hidden;
+}
+
+/* ---------- a barra: palavras escritas no caderno ---------- */
+
+.figura-passos[data-estilo="marca-texto"] .passos-barra {
+  gap: 6px 4px;
+  margin-top: 10px;
+  font-size: 15.5px;
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-barra button {
+  position: relative;
+  isolation: isolate;
+  gap: 5px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  color: var(--acento);
+  font-weight: 500;
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-barra button svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-barra .passos-anterior {
+  width: 40px;
+  padding: 0;
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-barra .passos-anterior svg {
+  width: 19px;
+  height: 19px;
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-barra button:disabled {
+  color: color-mix(in oklab, var(--ink-3) 70%, transparent);
+}
+
+/* A passada atrás das palavras: no Próximo e no Passo a passo, um sublinhado largo de marca-texto; nos
+   outros, só quando o mouse passa, bem fraca. */
+.figura-passos[data-estilo="marca-texto"] .passos-barra button::before {
+  content: "";
+  position: absolute;
+  top: calc(50% + 0.05em);
+  right: 5px;
+  left: 6px;
+  z-index: -1;
+  height: 0.5em;
+  background: var(--mt-pairar);
+  mix-blend-mode: var(--mt-mistura);
+  clip-path: polygon(3px 0.5px, 46% 0, 100% 0.6px, calc(100% - 3px) 100%, 52% calc(100% - 0.5px), 0 100%);
+  opacity: 0;
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-barra button.passos-anterior::before {
+  right: 8px;
+  left: 9px;
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-barra button:is(.passos-proximo, .passos-comecar) {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-barra button:is(.passos-proximo, .passos-comecar) svg {
+  color: var(--acento);
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-barra button:is(.passos-proximo:not(.recomecar), .passos-comecar)::before {
+  background: var(--mt-tinta);
+  opacity: 1;
+}
+
+/* No fim, "Do início" volta a ser uma palavra comum, em azul-tinta: o leitor já viu tudo. */
+.figura-passos[data-estilo="marca-texto"] .passos-barra button.passos-proximo.recomecar {
+  color: var(--acento);
+  font-weight: 500;
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-barra .passos-tudo {
+  font-weight: 400;
+  color: var(--ink-2);
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-contador {
+  min-width: 6.5em;
+  color: var(--ink-3);
+  font-size: 14px;
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-contador b {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+@media (hover: hover) {
+  .figura-passos[data-estilo="marca-texto"] .passos-barra button:not(:disabled):hover {
+    background: none;
+  }
+
+  .figura-passos[data-estilo="marca-texto"] .passos-barra button:not(:disabled):hover::before {
+    opacity: 1;
+  }
+
+  /* No Próximo, a passada sobe e cobre a palavra inteira. */
+  .figura-passos[data-estilo="marca-texto"] .passos-barra button:is(.passos-proximo:not(.recomecar), .passos-comecar):hover::before {
+    top: calc(50% - 0.55em);
+    height: 1.12em;
+  }
+
+  .figura-passos[data-estilo="marca-texto"] .passos-barra .passos-tudo:hover {
+    color: var(--acento);
+  }
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-barra button:focus-visible {
+  outline-offset: 1px;
+}
+
+/* ---------- a lista: o passo da vez grifado, como num livro ---------- */
+
+.figura-passos[data-estilo="marca-texto"] .passos-lista {
+  margin-top: 8px;
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-botao {
+  /* Em bloco, e não em flex: o texto fica em linha, e o grifo segue as linhas, não a caixa. */
+  position: relative;
+  display: block;
+  padding: 7px 8px 7px calc(8px + 1.4em + 10px);
+  border-radius: 4px;
+  background: none;
+  color: var(--ink-2);
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-lista > li.atual .passos-botao,
+.figura-passos[data-estilo="marca-texto"] .passos-lista > li.feito .passos-botao {
+  background: none;
+  color: var(--ink);
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-lista > li.adiante .passos-botao {
+  color: var(--ink-2);
+}
+
+/* O número: escrito à mão no caderno, sem bolinha; o do passo da vez em negrito, na tinta. */
+.figura-passos[data-estilo="marca-texto"] .passos-num,
+.figura-passos[data-estilo="marca-texto"] .passos-lista > li:is(.atual, .adiante) .passos-num {
+  position: absolute;
+  top: 7px;
+  left: 8px;
+  display: block;
+  width: 1.4em;
+  height: auto;
+  margin: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--ink-3);
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: calc(0.95em * 1.45 / 0.8125);
+  text-align: end;
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-lista > li:is(.atual, .feito) .passos-num {
+  color: var(--ink);
+}
+
+/* O grifo: uma passada que cobre o texto, linha a linha, e não a caixa. Só a forma do texto. */
+.figura-passos[data-estilo="marca-texto"] .passos-texto {
+  padding: 0 3px;
+  margin: 0 -3px;
+  background-color: transparent;
+  background-image: linear-gradient(var(--mt-grifo, transparent), var(--mt-grifo, transparent));
+  background-repeat: no-repeat;
+  background-position: 0 88%;
+  background-size: 100% 0%;
+  -webkit-box-decoration-break: slice;
+  box-decoration-break: slice;
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-lista > li.atual .passos-texto {
+  --mt-grifo: var(--mt-tinta);
+  background-size: 100% 74%;
+}
+
+/* O passo feito: o marca-texto baixo (o tipo 20 da caneta), que lembra por onde a leitura passou. */
+.figura-passos[data-estilo="marca-texto"] .passos-lista > li.feito .passos-texto {
+  --mt-grifo: var(--mt-seca);
+  background-size: 100% 30%;
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-texto code {
+  background-color: transparent;
+}
+
+@media (hover: hover) {
+  .figura-passos[data-estilo="marca-texto"] .passos-lista > li:not(.atual) .passos-botao:hover {
+    background: none;
+    color: var(--ink);
+  }
+
+  .figura-passos[data-estilo="marca-texto"] .passos-lista > li:not(.atual, .feito) .passos-botao:hover .passos-texto {
+    --mt-grifo: var(--mt-pairar);
+    background-size: 100% 74%;
+  }
+}
+
+.figura-passos[data-estilo="marca-texto"] .passos-botao:focus-visible {
+  outline-offset: 0;
+}
+
+/* ---------- o movimento: só a passada, e só quando o passo entra ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  .figura-passos[data-estilo="marca-texto"] .passos-barra button::before {
+    transition:
+      top 0.24s cubic-bezier(0.2, 0.8, 0.3, 1),
+      height 0.24s cubic-bezier(0.2, 0.8, 0.3, 1),
+      opacity 0.18s;
+  }
+
+  .figura-passos[data-estilo="marca-texto"] .passos-texto {
+    transition: background-size 0.4s cubic-bezier(0.2, 0.8, 0.3, 1);
+  }
+
+  /* O risco da vez é pintado da esquerda para a direita durante o passo: a ponta chanfrada vai na frente. */
+  .figura-passos[data-estilo="marca-texto"][data-entrando] .passos-segmentos > span.atual::after {
+    animation: mt-passada var(--duracao-passo, 1s) cubic-bezier(0.35, 0.1, 0.45, 1) both;
+  }
+
+  .figura-passos[data-estilo="marca-texto"][data-entrando] .passos-segmentos > span.atual::before {
+    animation: mt-pauta var(--duracao-passo, 1s) cubic-bezier(0.35, 0.1, 0.45, 1) both;
+  }
+
+  /* O grifo do passo da vez corre junto, mais depressa: o texto fica legível logo. */
+  .figura-passos[data-estilo="marca-texto"][data-entrando] .passos-lista > li.atual .passos-texto {
+    animation: mt-grifo 0.55s cubic-bezier(0.3, 0.1, 0.3, 1) both;
+  }
+}
+
+@keyframes mt-passada {
+  from {
+    clip-path: polygon(0 0, 0 0, -4px 100%, 0 100%);
+  }
+
+  to {
+    clip-path: polygon(0 0, calc(100% + 4px) 0, 100% 100%, 0 100%);
+  }
+}
+
+@keyframes mt-pauta {
+  from {
+    clip-path: inset(0 0 0 0);
+  }
+
+  to {
+    clip-path: inset(0 0 0 100%);
+  }
+}
+
+@keyframes mt-grifo {
+  from {
+    background-size: 0% 74%;
+  }
+
+  to {
+    background-size: 100% 74%;
+  }
+}

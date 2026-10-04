@@ -31,6 +31,7 @@ A figura mostra a cena: a cobrança passa, a resposta se perde no caminho de vol
   ]}
   legenda="Azul é o app, verde o serviço e âmbar o adquirente; a fatura é o papel, e vermelho é o que deu errado."
   fim="segmentos"
+  estilo="marca-texto"
 />
 
 O serviço roda em várias instâncias atrás de um load balancer. O reenvio pode cair numa instância diferente da primeira, e pode chegar enquanto a primeira ainda está trabalhando.
@@ -83,6 +84,7 @@ A janela some porque :marca[verificar e gravar passam a ser a mesma operação].
   ]}
   legenda="Azul é o app, verde o serviço, roxo a tabela cobranca e âmbar o adquirente; a chave é petróleo, e vermelho é o que deu errado."
   fim="segmentos"
+  estilo="marca-texto"
 />
 
 1. O app pede a cobrança de R\$ 250 e manda junto a chave de idempotência que ele gerou, `5b0e7a52…`. A chave é a mesma em todas as tentativas desse pedido.
@@ -177,6 +179,7 @@ A mesma falha de rede, com e sem a chave de idempotência. Até a resposta se pe
   ]}
   legenda="Azul é o app, verde o serviço, roxo a tabela cobranca e âmbar o adquirente; vermelho é o que deu errado."
   fim="segmentos"
+  estilo="marca-texto"
 />
 
 - A chave é gerada pelo **cliente**, uma por intenção, e repetida em todas as tentativas dessa intenção. Id de pedido só serve se o pedido só puder ser cobrado uma vez.

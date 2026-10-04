@@ -156,6 +156,7 @@ Cada propriedade do `Cartao` passa pelo filtro, uma de cada vez, e cada uma toma
   ]}
   legenda="O cartão (azul) passa pelo filtro (verde); em verde, o que o filtro mudou."
   fim="segmentos"
+  estilo="marca-texto"
 />
 
 O método `valorDe` trata dois tipos de `writer`: `BeanPropertyWriter` para campos de objetos e records, e `MapProperty` para entradas de um `Map` (:grifo[o filtro também é aplicado a mapas], como aparece na seção 4). A função `mascarar` remove espaços e hífens, mantém os 6 primeiros e os 4 últimos dígitos e, se o valor for curto demais para ser um número de cartão, mascara tudo.
@@ -428,6 +429,7 @@ A figura mostra os dois caminhos até o log. O `log.info("{}", pedido)` leva o c
   ]}
   legenda="Em vermelho, o caminho que vaza o cartão; em verde, o que passa pelo filtro."
   fim="segmentos"
+  estilo="marca-texto"
 />
 
 **O que passa pelo filtro e o que não passa.** Com o mixin em `Object`, passam objetos, records, objetos aninhados, itens de listas e entradas de `Map` (a chave vira o nome da propriedade). Uma `String` solta não passa, inclusive uma `String` que já contém JSON: `logJson.toJson("5502091234567890")` sai inteiro. Se o sistema loga :nota[o corpo cru da requisição]{texto="comum em filtro de log HTTP"} como texto, o filtro não protege.

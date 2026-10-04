@@ -59,6 +59,7 @@ Na figura, o KMS, o banco e o disco ficam lado a lado, e os números seguem a or
   ]}
   legenda="Cada cor é um ator: o KMS (azul), o banco (roxo) e o disco (âmbar); em vermelho, o que falha."
   fim="segmentos"
+  estilo="marca-texto"
 />
 
 O ganho é que o acesso ao dado passa a depender também de quem pode usar a chave. Se a chave for desativada ou apagada, os dados ficam ilegíveis, inclusive os backups. Tirar a permissão de um usuário :ondulado[não basta]: no RDS, o banco guarda uma autorização própria na chave (um *grant*), criada junto com a instância.
@@ -108,6 +109,7 @@ Na figura, as duas linhas mostram a mesma conexão, com alguém no meio do camin
   ]}
   legenda="Cada cor é um ator: o cliente (petróleo), o intermediário (âmbar) e o banco (roxo); vermelho é o que falha, e verde, o que dá certo."
   fim="segmentos"
+  estilo="marca-texto"
 />
 
 A própria documentação do PostgreSQL resume isso numa tabela: com `require`, a coluna de proteção contra *man-in-the-middle* diz "No"; só com `verify-full` ela diz "Yes".

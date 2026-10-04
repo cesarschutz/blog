@@ -121,7 +121,7 @@ export default defineConfig({
     sitemap({
       // Fora do sitemap: as imagens de compartilhamento, os protótipos para escolha (noindex) e a
       // /busca/livros/, que é um pedaço da busca e não uma página (D61).
-      filter: (pagina) => !/\/(og|prototipos|busca|animacoes-test(-2)?)\//.test(pagina),
+      filter: (pagina) => !/\/(og|prototipos|busca|animacoes-test(-[23])?)\//.test(pagina),
       serialize(item) {
         const slug = item.url.match(/\/posts\/([^/]+)\/?$/)?.[1];
         const data = slug && modificadoEm[slug];

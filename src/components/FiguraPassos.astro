@@ -20,6 +20,9 @@ import { figura as lerFigura } from "../lib/figuras";
 import { mdEmLinha } from "../lib/formato";
 import "../styles/figura.css";
 import "../styles/figura-passos.css";
+import "../styles/passos-estilo/marca-texto.css";
+import "../styles/passos-estilo/lapis.css";
+import "../styles/passos-estilo/fita.css";
 
 interface Props {
   figura: string;
@@ -29,9 +32,11 @@ interface Props {
   legenda?: string;
   /** Em prova (D67): o aviso de que o passo terminou de entrar (as ideias de figura-passos.css). */
   fim?: "botao" | "anel" | "selo" | "grifo" | "segmentos";
+  /** Em prova: o desenho dos controles (src/styles/passos-estilo/), com o mesmo comportamento. */
+  estilo?: "marca-texto" | "lapis" | "fita";
 }
 
-const { figura, passos, legenda, fim } = Astro.props;
+const { figura, passos, legenda, fim, estilo } = Astro.props;
 const { svg } = lerFigura(figura);
 const maiorPasso = Math.max(0, ...[...svg.matchAll(/\sdata-passo="(\d+)"/g)].map((m) => Number(m[1])));
 if (maiorPasso !== passos.length) {
@@ -39,7 +44,7 @@ if (maiorPasso !== passos.length) {
 }
 ---
 
-<figure class="figura figura-passos" data-pagefind-ignore data-total={passos.length} data-fim={fim}>
+<figure class="figura figura-passos" data-pagefind-ignore data-total={passos.length} data-fim={fim} data-estilo={estilo}>
   <div class="figura-palco painel" set:html={svg} />
   {fim === "segmentos" && <div class="passos-segmentos" aria-hidden="true">{passos.map(() => <span />)}</div>}
   <p class="dica-rolar" aria-hidden="true">Arraste para o lado para ver a figura inteira.</p>

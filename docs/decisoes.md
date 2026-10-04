@@ -2670,6 +2670,14 @@ nada muda.
   Os parágrafos que apresentavam as peças (play, arrastar, caneta) foram reescritos, e a lista da
   cobrança ganhou o sexto passo, como a figura. As lousas e animações antigas continuam só na
   `/animacoes-test/`. O desenho dos controles (fita, lápis, marca-texto) o Cesar decide depois.
+- **O desenho dos controles (04/10/2026):** três estilos em prova na `/animacoes-test-3/` (marca-texto,
+  lápis e fita, em `src/styles/passos-estilo/`, pela prop `estilo=`). O Cesar escolheu o **marca-texto**,
+  aplicado às 9 peças dos cinco posts (`estilo="marca-texto"`): os traços de progresso são riscos de
+  marca-texto, o passo da vez fica grifado na lista e o Próximo vem sublinhado. As lousas antigas não
+  mudaram.
+- **A luz que acompanhava o mouse saiu (04/10/2026, pedido do Cesar):** a mancha âmbar da mesa (T5 da
+  D61) não aparece mais; o `Luz.astro` deixou de pôr o `.luz-mesa`, e sem ela o `luz.ts` não acende a
+  mancha nem as luzes locais. O brilho das lombadas, o livro vivo e o lustre do tema ficam.
 - **Se aprovar:** a figura em passos vira a `Figura` com `passos`. A `Lousa` e a `Animacao` saem dos
   posts, peça por peça, pela revisão dos posts, e as duas páginas de teste e a dos controles saem do ar.
   A D65 (a escolha dos controles) deixa de ter objeto: o formato novo tem um controle só.

@@ -1,0 +1,428 @@
+/* Controles da figura em passos, estilo "fita" (em prova). Tudo em [data-estilo="fita"].
+ *
+ * A fita-crepe e os papéis colados do "papel e luz" (D61, o .papel-colado e a .fita-adesiva do base.css):
+ * - os traços de progresso são pedaços de fita-crepe colados embaixo da figura, com as pontas rasgadas;
+ *   onde ainda não há fita, só a linha a lápis por onde ela vai passar; o da vez se desenrola da
+ *   esquerda para a direita enquanto o passo entra (a ponta da direita fica reta, como a fita que ainda
+ *   está saindo do rolo, e rasga quando o passo acaba);
+ * - na lista, o passo da vez é um pedacinho de post-it colado com fita, e os feitos têm uma tira de fita
+ *   sobre o número;
+ * - os botões são etiquetas de papel presas com fita; o Próximo (e o "Passo a passo") é a etiqueta
+ *   principal, no amarelo do post-it.
+ * As formas das pontas rasgadas são máscaras (SVG em data URI, só forma); a cor vem sempre dos tokens.
+ */
+
+.figura-passos[data-estilo="fita"] {
+  /* A fita-crepe: o creme da --fita, translúcido (mais denso no escuro, como no base.css). */
+  --fx-fita: color-mix(in oklab, var(--fita) 72%, transparent);
+  --fx-fita-forte: color-mix(in oklab, var(--fita) 90%, transparent);
+  /* A trama do crepe: fibras finas no comprido, quase nada. */
+  --fx-crepe: repeating-linear-gradient(
+    97deg,
+    color-mix(in oklab, var(--sombra-quente) 3%, transparent) 0 1px,
+    transparent 1px 5px,
+    color-mix(in oklab, var(--sombra-quente) 2%, transparent) 5px 6px,
+    transparent 6px 8px,
+    color-mix(in oklab, var(--sombra-quente) 4%, transparent) 8px 9px,
+    transparent 9px 15px
+  );
+  /* As bordas compridas um nada mais escuras, onde a fita dobra sobre o papel. */
+  --fx-borda:
+    inset 0 1px 0 color-mix(in oklab, var(--sombra-quente) 10%, transparent),
+    inset 0 -1px 0 color-mix(in oklab, var(--sombra-quente) 12%, transparent);
+  /* O rasgo das pontas curtas, para os pedaços pequenos (lista e botões). */
+  --fx-rasgo: polygon(
+    0 8%, 5% 0, 9% 11%, 14% 2%, 86% 0, 91% 9%, 95% 1%, 100% 10%,
+    100% 90%, 96% 100%, 91% 92%, 86% 100%, 13% 98%, 8% 90%, 4% 100%, 0 93%
+  );
+  /* As pontas rasgadas dos traços (máscaras: forma, não cor). Duas variações de cada lado. */
+  --fx-ponta-esq-1: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 12' preserveAspectRatio='none'%3E%3Cpath d='M6 0H1.6L3 1.3 0.7 2.8 2.5 4.4 0 6 2.1 7.7 0.5 9.2 2.7 10.7 1.3 12H6Z'/%3E%3C/svg%3E");
+  --fx-ponta-esq-2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 12' preserveAspectRatio='none'%3E%3Cpath d='M6 0H0.8L2.6 1.8 0.2 3.3 2.2 5.2 1 6.6 2.9 8.1 0.3 9.9 2 11.2 0.9 12H6Z'/%3E%3C/svg%3E");
+  --fx-ponta-dir-1: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 12' preserveAspectRatio='none'%3E%3Cpath d='M0 0H4.6L3.1 1.6 5.6 3 3.4 4.8 6 6.3 3.8 7.9 5.4 9.6 3.2 11 4.9 12H0Z'/%3E%3C/svg%3E");
+  --fx-ponta-dir-2: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 6 12' preserveAspectRatio='none'%3E%3Cpath d='M0 0H5.3L3.5 1.2 5.8 2.9 3 4.5 5 6.1 3.7 7.4 5.9 9 3.3 10.6 5.2 12H0Z'/%3E%3C/svg%3E");
+  --fx-ponta-esq: var(--fx-ponta-esq-1);
+  --fx-ponta-dir: var(--fx-ponta-dir-1);
+  --fx-cheio: linear-gradient(var(--ink), var(--ink));
+}
+
+html[data-theme="dark"] .figura-passos[data-estilo="fita"] {
+  --fx-fita: color-mix(in oklab, var(--fita) 36%, transparent);
+  --fx-fita-forte: color-mix(in oklab, var(--fita) 52%, transparent);
+  --fx-crepe: repeating-linear-gradient(
+    97deg,
+    color-mix(in oklab, var(--ink) 3%, transparent) 0 1px,
+    transparent 1px 5px,
+    color-mix(in oklab, var(--ink) 2%, transparent) 5px 6px,
+    transparent 6px 8px,
+    color-mix(in oklab, var(--ink) 4%, transparent) 8px 9px,
+    transparent 9px 15px
+  );
+  --fx-borda:
+    inset 0 1px 0 color-mix(in oklab, var(--ink) 8%, transparent),
+    inset 0 -1px 0 color-mix(in oklab, var(--sombra-quente) 30%, transparent);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) .figura-passos[data-estilo="fita"] {
+    --fx-fita: color-mix(in oklab, var(--fita) 36%, transparent);
+    --fx-fita-forte: color-mix(in oklab, var(--fita) 52%, transparent);
+    --fx-borda:
+      inset 0 1px 0 color-mix(in oklab, var(--ink) 8%, transparent),
+      inset 0 -1px 0 color-mix(in oklab, var(--sombra-quente) 30%, transparent);
+  }
+}
+
+/* ---------- os traços de progresso: pedaços de fita-crepe ---------- */
+
+.figura-passos[data-estilo="fita"] .passos-segmentos {
+  gap: 7px;
+  margin-top: 12px;
+  padding-inline: 2px;
+}
+
+.figura-passos[data-estilo="fita"] .passos-segmentos > span {
+  height: 15px;
+  overflow: visible;
+  border-radius: 0;
+  background: none;
+}
+
+/* Variações à mão: cada pedaço com o seu giro, a sua altura e o seu rasgo. */
+.figura-passos[data-estilo="fita"] .passos-segmentos > span:nth-child(3n + 1) {
+  rotate: -0.7deg;
+}
+
+.figura-passos[data-estilo="fita"] .passos-segmentos > span:nth-child(3n + 2) {
+  --fx-ponta-esq: var(--fx-ponta-esq-2);
+  rotate: 0.5deg;
+  translate: 0 1px;
+}
+
+.figura-passos[data-estilo="fita"] .passos-segmentos > span:nth-child(3n) {
+  --fx-ponta-dir: var(--fx-ponta-dir-2);
+  rotate: -0.25deg;
+  translate: 0 -0.5px;
+}
+
+.figura-passos[data-estilo="fita"] .passos-segmentos > span:nth-child(even) {
+  --fx-ponta-dir: var(--fx-ponta-dir-2);
+}
+
+/* A linha a lápis por onde a fita vai passar (aparece através da fita). */
+.figura-passos[data-estilo="fita"] .passos-segmentos > span::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 3px;
+  left: 3px;
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--ink-3) 70%, transparent) 0 3px,
+    transparent 3px 7px
+  );
+}
+
+/* Debaixo da fita já colada, a linha a lápis não aparece mais. */
+.figura-passos[data-estilo="fita"] .passos-segmentos > span.feito::before,
+.figura-passos[data-estilo="fita"]:not([data-entrando]) .passos-segmentos > span.atual::before {
+  visibility: hidden;
+}
+
+/* O pedaço de fita: pontas rasgadas pela máscara; ainda não colado, fica enrolado (recortado a zero). */
+.figura-passos[data-estilo="fita"] .passos-segmentos > span::after {
+  inset: 1px -1px;
+  background: var(--fx-crepe), var(--fx-fita);
+  box-shadow: var(--fx-borda);
+  transform: none;
+  clip-path: inset(0 100% 0 0);
+  mask:
+    var(--fx-ponta-esq) left / 6px 100% no-repeat,
+    var(--fx-cheio) center / calc(100% - 11px) 100% no-repeat,
+    var(--fx-ponta-dir) right / 6px 100% no-repeat;
+}
+
+.figura-passos[data-estilo="fita"] .passos-segmentos > span.feito::after {
+  clip-path: inset(0);
+  background: var(--fx-crepe), var(--fx-fita);
+}
+
+/* O da vez: a mesma fita, mais densa, e colada um tico mais firme (a borda de baixo mais escura). */
+.figura-passos[data-estilo="fita"] .passos-segmentos > span.atual::after {
+  clip-path: inset(0);
+  background: var(--fx-crepe), var(--fx-fita-forte);
+  box-shadow:
+    var(--fx-borda),
+    inset 0 -2px 0 color-mix(in oklab, var(--sombra-quente) 8%, transparent);
+}
+
+/* ---------- a lista: o post-it da vez e a fita dos feitos ---------- */
+
+.figura-passos[data-estilo="fita"] .passos-lista {
+  margin-top: 14px;
+}
+
+.figura-passos[data-estilo="fita"] .passos-lista > li + li {
+  margin-top: 3px;
+}
+
+.figura-passos[data-estilo="fita"] .passos-botao {
+  position: relative;
+  min-height: 40px;
+  border-radius: 2px;
+}
+
+/* O passo da vez: um pedacinho de post-it, um nada torto, colado no alto com uma tira de fita. */
+.figura-passos[data-estilo="fita"] .passos-lista > li.atual .passos-botao {
+  width: fit-content;
+  max-width: 100%;
+  padding-right: 16px;
+  background: var(--post-it);
+  box-shadow: var(--sombra-post-it);
+  rotate: -0.35deg;
+}
+
+.figura-passos[data-estilo="fita"] .passos-lista > li.atual .passos-botao::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  width: 46px;
+  height: 13px;
+  margin-left: -23px;
+  background: var(--fx-crepe), var(--fx-fita-forte);
+  box-shadow: var(--fx-borda);
+  clip-path: var(--fx-rasgo);
+  rotate: 2.5deg;
+  pointer-events: none;
+}
+
+.figura-passos[data-estilo="fita"] .passos-lista > li.atual .passos-num {
+  background: var(--acento);
+  color: var(--sobre-acento);
+}
+
+/* Os feitos: o número fica na tinta mais clara, preso por uma tira de fita que passa por cima dele. */
+.figura-passos[data-estilo="fita"] .passos-lista > li.feito .passos-num {
+  position: relative;
+  background: var(--ink-2);
+  color: var(--paper-hi);
+}
+
+.figura-passos[data-estilo="fita"] .passos-lista > li.feito .passos-num::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: -8px;
+  width: 22px;
+  height: 10px;
+  background: var(--fx-crepe), var(--fx-fita-forte);
+  box-shadow: var(--fx-borda);
+  clip-path: var(--fx-rasgo);
+  rotate: -38deg;
+}
+
+.figura-passos[data-estilo="fita"] .passos-lista > li.feito:nth-child(even) .passos-num::after {
+  rotate: -31deg;
+  translate: 1px -1px;
+}
+
+.figura-passos[data-estilo="fita"] .passos-lista > li.feito .passos-botao {
+  color: var(--ink);
+}
+
+@media (hover: hover) {
+  .figura-passos[data-estilo="fita"] .passos-lista > li:not(.atual) .passos-botao:hover {
+    background: color-mix(in oklab, var(--post-it) 45%, transparent);
+  }
+}
+
+.figura-passos[data-estilo="fita"] .passos-botao:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 2px;
+}
+
+/* ---------- a barra: etiquetas de papel presas com fita ---------- */
+
+.figura-passos[data-estilo="fita"] .passos-barra {
+  gap: 12px 12px;
+  margin-top: 16px;
+  padding-top: 4px;
+}
+
+.figura-passos[data-estilo="fita"] .passos-barra button {
+  position: relative;
+  min-height: 40px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 2px;
+  background: var(--paper-hi);
+  box-shadow: var(--sombra-folha);
+  color: var(--acento);
+  rotate: -0.6deg;
+}
+
+/* A tira de fita que prende cada etiqueta no alto. */
+.figura-passos[data-estilo="fita"] .passos-barra button::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: 50%;
+  width: 30px;
+  height: 11px;
+  margin-left: -15px;
+  background: var(--fx-crepe), var(--fx-fita);
+  box-shadow: var(--fx-borda);
+  clip-path: var(--fx-rasgo);
+  rotate: -5deg;
+  pointer-events: none;
+}
+
+.figura-passos[data-estilo="fita"] .passos-barra .passos-anterior {
+  width: 42px;
+  rotate: 1deg;
+}
+
+.figura-passos[data-estilo="fita"] .passos-barra .passos-anterior::before {
+  width: 22px;
+  margin-left: -11px;
+  rotate: 7deg;
+}
+
+.figura-passos[data-estilo="fita"] .passos-barra .passos-tudo {
+  rotate: 0.7deg;
+}
+
+.figura-passos[data-estilo="fita"] .passos-barra .passos-tudo::before {
+  rotate: 4deg;
+  translate: 4px 0;
+}
+
+/* A etiqueta principal: o Próximo e o "Passo a passo", no amarelo do post-it, maior e mais firme. */
+.figura-passos[data-estilo="fita"] .passos-barra :is(.passos-proximo, .passos-comecar) {
+  padding: 0 18px;
+  background: var(--post-it);
+  box-shadow: var(--sombra-post-it);
+  color: var(--acento);
+  font-weight: 600;
+  rotate: -1.1deg;
+}
+
+.figura-passos[data-estilo="fita"] .passos-barra :is(.passos-proximo, .passos-comecar)::before {
+  width: 40px;
+  height: 12px;
+  margin-left: -20px;
+  background: var(--fx-crepe), var(--fx-fita-forte);
+  rotate: 3deg;
+}
+
+/* No fim, "Do início" vira uma etiqueta comum, de papel: o leitor já viu tudo. */
+.figura-passos[data-estilo="fita"] .passos-barra .passos-proximo.recomecar {
+  padding: 0 15px;
+  background: var(--paper-hi);
+  box-shadow: var(--sombra-folha);
+  font-weight: 400;
+  rotate: 0.6deg;
+}
+
+.figura-passos[data-estilo="fita"] .passos-barra .passos-proximo.recomecar::before {
+  width: 30px;
+  margin-left: -15px;
+  background: var(--fx-crepe), var(--fx-fita);
+}
+
+/* Desabilitado: a etiqueta perde a fita (só sobra a marca de onde ela estava) e a tinta clareia. */
+.figura-passos[data-estilo="fita"] .passos-barra button:disabled {
+  background: color-mix(in oklab, var(--paper-hi) 60%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--rule) 70%, transparent);
+  color: var(--ink-3);
+}
+
+.figura-passos[data-estilo="fita"] .passos-barra button:disabled::before {
+  background: color-mix(in oklab, var(--fita) 22%, transparent);
+  box-shadow: none;
+}
+
+.figura-passos[data-estilo="fita"] .passos-barra button:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 3px;
+}
+
+.figura-passos[data-estilo="fita"] .passos-contador {
+  color: var(--ink-2);
+}
+
+@media (hover: hover) {
+  /* Ao passar o mouse, a etiqueta descola um nada da página (a fita segura no alto). */
+  .figura-passos[data-estilo="fita"] .passos-barra button:not(:disabled):hover {
+    box-shadow: var(--sombra-folha-alta), var(--sombra-folha);
+  }
+
+  .figura-passos[data-estilo="fita"] .passos-barra :is(.passos-proximo:not(.recomecar), .passos-comecar):hover {
+    background: color-mix(in oklab, var(--post-it) 82%, var(--fita));
+  }
+}
+
+/* ---------- movimento ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* O da vez se desenrola: a fita sai do rolo da esquerda para a direita durante o passo. */
+  .figura-passos[data-estilo="fita"][data-entrando] .passos-segmentos > span.atual::after {
+    animation: fita-desenrola var(--duracao-passo, 1s) linear both;
+  }
+
+  /* Enquanto sai do rolo, a ponta da direita é reta; ao acabar o passo, ela rasga. */
+  .figura-passos[data-estilo="fita"][data-entrando] .passos-segmentos > span.atual::after {
+    mask:
+      var(--fx-ponta-esq) left / 6px 100% no-repeat,
+      var(--fx-cheio) right / calc(100% - 5px) 100% no-repeat;
+  }
+
+  /* As etiquetas: descolam um nada ao passar o mouse e assentam ao apertar. */
+  .figura-passos[data-estilo="fita"] .passos-barra button {
+    transition:
+      translate 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.22s,
+      background-color 0.2s,
+      color 0.2s;
+  }
+
+  .figura-passos[data-estilo="fita"] .passos-barra button:not(:disabled):active {
+    translate: 0 1px;
+    box-shadow: 0 0 0 0.5px color-mix(in oklab, var(--sombra-quente) 20%, transparent);
+    transition-duration: 0.06s;
+  }
+
+  /* O post-it da vez assenta ao chegar. */
+  .figura-passos[data-estilo="fita"][data-entrando] .passos-lista > li.atual .passos-botao {
+    animation: fita-cola 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
+  .figura-passos[data-estilo="fita"] .passos-barra button:not(:disabled):hover {
+    translate: 0 -1px;
+  }
+}
+
+@keyframes fita-desenrola {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes fita-cola {
+  from {
+    translate: 0 -2px;
+    rotate: -1.2deg;
+  }
+
+  to {
+    translate: 0 0;
+    rotate: -0.35deg;
+  }
+}
