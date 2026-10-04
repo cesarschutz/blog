@@ -146,7 +146,8 @@ atropelavam a partir de ~1890px. **Para o Cesar decidir:** no celular, os 14 liv
 ficam com ~20px de lombada (o título vira enfeite; o projeto pede todos à vista, sem rolagem lateral).
 Depois, no mesmo dia, a fileira da home passou a mostrar a capa (a opção 1 das três que o Cesar viu em
 foto): na tela larga, os livros quase de frente, encolhendo para caber; abaixo de ~1100px, giram até a
-lombada, como antes (D78, `docs/decisoes.md`).
+lombada, como antes (D78, `docs/decisoes.md`). E, a pedido dele, a doca: com o mouse, o livro sob ele
+cresce como os ícones do Dock do Mac, e os vizinhos menos (`src/scripts/doca.ts`).
 
 Protótipo dos controles dos desenhos (01/10/2026, no ar em `/prototipos/controles/`, com noindex e fora
 do sitemap e da busca): cinco opções (régua e lápis, marca-texto, caderno e caneta, post-its e fita,

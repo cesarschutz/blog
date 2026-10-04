@@ -51,6 +51,7 @@ Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
       fichário de Tags (`fichas-caem.ts`, `fichario.ts`) e a entrada ao rolar (`revelar.ts`,
       `embaralha.ts`);
     - a cordinha do rodapé, a aba "topo" e o voo do livro da home até a página dele;
+    - a doca da fileira da home: com o mouse, o livro sob ele cresce, e os vizinhos menos (`doca.ts`, D78);
     - o computador (`src/computador/`, carregado sob demanda a partir do primeiro hover, foco ou
       toque no ícone).
 

@@ -3354,5 +3354,10 @@ nada muda.
     largura nenhuma (o lugar de cada volume fica abaixo dos 100px), mas os títulos estão na capa.
     Alternativas: as opções 2 e 3 (no celular, a 2 deixava os livros com ~58px de altura e a 3 escondia
     metade da coleção).
+  - A doca na fileira da home (04/10/2026, pedido do Cesar: "um efeito tipo o dock do Mac, quando passar
+    o mouse no livro ele aumentar de tamanho"): o livro sob o mouse cresce até 1,5×, os vizinhos menos, e
+    a fileira abre espaço sem passar de onde vai o texto (`src/scripts/doca.ts`; o detalhe em
+    `docs/movimento.md`, "Estante e gaveta"). Só com mouse; sem movimento reduzido, nada cresce. O
+    tamanho, o alcance e a velocidade são constantes no topo do script.
   - O número desta decisão: a main usou D61 para o redesenho no ar; a coleção, que era D61 na branch,
     passou a D78 quando a main entrou nela.

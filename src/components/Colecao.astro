@@ -273,6 +273,8 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Vol. ${String(l.volu
 <script>
   // As luzes acendem, a onda de molas e a onda de luz, na chegada (uma depois da outra).
   import "../scripts/estante-moderna";
+  // A doca da home (D78): com o mouse, o livro sob ele cresce, e os vizinhos um pouco menos.
+  import "../scripts/doca";
 
   const raiz = document.documentElement;
   // Os livros 3D da coleção da home entram no segundo quadro: o primeiro (o nome, os números e o resto da
