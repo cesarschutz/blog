@@ -1,7 +1,7 @@
 # Estado do projeto
 
 Painel, não diário: fase atual, próximos passos, perguntas abertas e riscos. O detalhe de cada rodada
-fica em `docs/decisoes.md` (D1 a D69 e D72 a D75; a D70 e a D71 estão em outras worktrees, sem commit) e no histórico do git; controles de rodadas fechadas, em
+fica em `docs/decisoes.md` (D1 a D70 e D72 a D75; a D71 está em outra worktree, sem commit) e no histórico do git; controles de rodadas fechadas, em
 `docs/historico/`.
 
 ## Fase atual
@@ -174,6 +174,15 @@ Botão da busca do cabeçalho (D69, 02/10/2026, **publicado**): o Lighthouse apo
 no build, e o cabeçalho ficou idêntico pixel a pixel nos dois temas, de 320 a 1600px. Feito na worktree
 `.claude/worktrees/kind-shaw-14748f` (branch `claude/kind-shaw-14748f`) e publicado a pedido do Cesar.
 
+Tabelas no celular (D70, 02/10/2026, **publicado** em 03/10/2026): a pergunta que o post dos mods
+deixou (as colunas encolhiam até uma palavra por linha antes de a tabela rolar) foi medida nas 69 tabelas
+dos posts e resolvida com as escolhas do Cesar. Até 700px, a coluna de texto tem piso de 11em, o respiro
+das células cai para 10px, a tabela do `<details>` vai de borda a borda da caixa, e a tabela que passa da
+tela ganha o aviso "Arraste para o lado" (o script do artigo mede). Em 390px, das 59 tabelas de três
+colunas ou mais, as com texto a duas palavras por linha caem de 42 para 14, e as que rolam ficam em 35
+(antes 36). Feito na worktree `.claude/worktrees/lucid-khayyam-cc18a1`; o estudo e as fotos estão em
+`.astro/depuracao/tabelas/` de lá (fora do git), até a pergunta 16 fechar.
+
 Tinta do seletor Lista / Cards (D72, 02/10/2026, **publicada**): o Lighthouse dava 96 de acessibilidade
 na home, no arquivo, na página de um livro e na de uma tag, por um falso positivo de contraste no botão
 solto do seletor. A caixa azul da tinta cobria a tira inteira, recortada por `clip-path`, e o axe não
@@ -253,6 +262,7 @@ movimento e com movimento reduzido, com trace de CPU 4× sem tarefas longas dura
 | D67 | figura em passos (em prova): um formato só no lugar da lousa de passos, da de comparação e da animação com play |
 | D68 | pedido do Cesar num post termina na pergunta "vira regra para os próximos posts?" |
 | D69 | o botão da busca do cabeçalho com o nome vindo do texto "Buscar" (sem `aria-label`), para a auditoria de nome do Lighthouse passar sem mudar a aparência |
+| D70 | tabelas no celular: piso de 11em na coluna de texto, respiro menor, a tabela do `<details>` de borda a borda e o aviso "Arraste para o lado" |
 | D72 | a tinta do seletor Lista / Cards com a caixa só em volta do botão ativo, para o falso positivo de contraste do Lighthouse sumir (nota 100) sem mudar a aparência nem o movimento |
 | D73 | o nome dos livros da home, dos vizinhos, das tags e do livro de Séries vindo de um texto `.sr`, sem `aria-label`, com o `content-visibility` da home no livro, e não no link |
 | D74 | a apresentação de um post no estilo do blog: `.pptx` com os desenhos e a caneta do próprio post e as notas do apresentador (skill `apresentacao`, `scripts/slides/`) |
@@ -280,6 +290,9 @@ movimento e com movimento reduzido, com trace de CPU 4× sem tarefas longas dura
 7. **`scripts/desenho/render.mjs` fotografa a abertura do site (D51)** em vez da folha de conferência:
    falta `reducedMotion: "reduce"` na página que ele abre (achado em 29/09/2026; contornado com uma
    cópia local).
+8. **Tabelas no celular (D70, publicado):** olhar uma tabela larga no iPhone (o Safari não foi
+   testado; a do "O cockpit", no post dos mods, serve). Quando a pergunta 16 fechar, apagar
+   `.astro/depuracao/tabelas/` e a worktree `lucid-khayyam-cc18a1`.
 
 ## Perguntas abertas para o Cesar
 
@@ -323,9 +336,6 @@ Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
     - o tamanho: cerca de 3.300 palavras, acima do teto de ~3.000 do formato detalhado. Fica assim, ou
       as seções do marketplace, dos comandos e de como se testa um mod viram um segundo post ("como
       publicar e manter um plugin")?
-    - as tabelas largas no celular: hoje as colunas encolhem até uma palavra por linha antes de a
-      tabela rolar de lado (a linha do tempo foi resolvida no conteúdo, em duas colunas). Vale uma
-      largura mínima no CSS das tabelas, para todos os posts?
     - o campo `codigo` do post apontando para o `claude-code-kit` (hoje ele é só do `blog-exemplos`)?
     - a branch local `post-claude-code-mod` (vazia, criada na pasta do projeto antes da worktree) e a
       worktree `.claude/worktrees/post-do-claude-md-ao-mod` podem ser apagadas depois da publicação.
@@ -353,6 +363,18 @@ Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
       `.claude/skills`.
     - a worktree `.claude/worktrees/wonderful-pike-800bfd` (a da D73) pode ser apagada: a D73 já está na
       `main`.
+16. **Tabelas no celular (D70), o que ficou para decidir:**
+    - a coluna de lista curta: o piso do texto tira largura da coluna vizinha. Na tabela do JWT, em 430
+      e 480px, a coluna `alg` (`HS256 / HS384 / HS512`) fica com um item por linha, e a tabela sobe de
+      580 para 674px. Um degrau menor (6,5em) para a coluna com menos de 30 letras e 4 palavras ou mais
+      leva essa tabela a 534px, mas mexe em 21 colunas e faz 3 tabelas a mais rolarem em 360px. Entra?
+    - o tablet: em 768px, quatro tabelas largas (duas de quatro colunas, a de cinco e a de sete)
+      continuam rolando com coluna de texto abaixo de 160px, porque o piso só vale até 700px (ele
+      melhoraria três delas). Estendo o piso para qualquer largura?
+    - o conteúdo: duas tabelas do `java-29` têm célula com parágrafo (219 e 463 letras), e a linha
+      continua com 253 e 417px. Viram texto ou lista na revisão do post?
+    - a regra para os próximos posts (D68): "célula de tabela é para frase curta, e cabeçalho curto"
+      entra na skill `post`, em Recursos de Markdown?
 
 ## Riscos a acompanhar
 

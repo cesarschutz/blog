@@ -266,7 +266,8 @@ src/lib/                 posts, formatos, busca (Pagefind), código (Expressive 
                          colchete, círculo, rasura, ondinha, ícones de data, tempo, código, lupa, lua,
                          sol, contornos dos botões e a assinatura, D52, C04), figuras (lê figuras,
                          animações e logos, e troca `data-marca` pelo logo, D58)
-src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, apresentação)
+src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, apresentação) e o aviso das
+                         tabelas que passam da tela no celular (D70)
 src/scripts/tema.ts      tema: a lâmpada do cabeçalho alterna claro e escuro, acendendo e apagando
                          (D39, D61; a lâmpada em lampada.ts)
 src/scripts/             também: troca.js (a cortina e as chegadas), luz, estante-moderna, fichas-caem,
@@ -357,6 +358,12 @@ src/evidencias/<slug>/   prints que provam algo do texto (PNG)
   O dev tem o mesmo problema, e reiniciar não basta: pare o dev, apague `.astro/data-store.json` e
   suba de novo (o sintoma é o código sem moldura, com título e linguagem grudados, "Sem AOPJava",
   porque o HTML guardado aponta para um `ec.*.css` que não existe mais).
+- Mudou o HTML que um plugin de Markdown gera (`src/plugins/`)? O mesmo cache guarda o HTML dos posts
+  `.md` e não percebe a mudança no código do plugin: no build e no deploy, os posts que não mudaram saem
+  com o HTML antigo (os `.mdx` são refeitos). As opções do plugin no `astro.config.mjs` contam: o
+  `rehype-tabela` tem a opção `saida` (D70); suba o número dela e o cache se refaz sozinho, aqui e no
+  deploy. Plugin sem essa opção: `npm run build -- --force` e, depois do push, apagar os caches
+  `astro-cache-*`.
 - Suba o dev com `npm run dev -- --host 127.0.0.1`. Sem isso ele escuta só em `localhost` (IPv6), e o
   endereço <http://127.0.0.1:4322> que o Cesar usa não abre.
 - No bash do Claude, `node -e '…'` quebra com apóstrofo no texto ("d'água"): escreva o script num

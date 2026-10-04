@@ -80,6 +80,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D67 | Figura em passos: um formato só no lugar da lousa de passos, da lousa de comparação e da animação com play (abre inteira, cada passo soma, nada some, o leitor manda) | em prova em `/animacoes-test-2/` |
 | D68 | Pedido do Cesar num post termina na pergunta "vira regra para os próximos posts?" | decidido |
 | D69 | O botão da busca do cabeçalho: o nome vem do texto "Buscar", sem `aria-label`, e a tecla desenhada fica fora do nome | decidido e publicado |
+| D70 | Tabelas no celular: piso de 11em na coluna de texto, respiro menor nas células, a tabela do `<details>` de borda a borda e o aviso "Arraste para o lado" | decidido e publicado; falta conferir no iPhone |
 | D72 | A tinta do seletor Lista / Cards: a caixa azul fica só em volta do botão ativo e salta na troca, para o Lighthouse não tomar o azul pelo fundo do botão solto | decidido e publicado |
 | D73 | O nome dos livros da home, dos vizinhos do livro, das tags da nuvem e do livro de Séries vem de um texto `.sr`, sem `aria-label`; na home, o `content-visibility` no livro, e não no link | decidido e publicado |
 | D74 | A apresentação de um post (PPT) no estilo do blog, com os desenhos, os prints e a caneta do próprio post e as notas do apresentador (skill `apresentacao`, `scripts/slides/`) | decidido e publicado |
@@ -2759,6 +2760,102 @@ nada muda.
 - **Mudado:** `src/components/Cabecalho.astro` (a marcação do botão, a regra da faixa até 1100px e o
   comentário do campo). Feito na worktree `.claude/worktrees/kind-shaw-14748f`, com o dev na porta 4390 e
   o preview na 4391.
+
+## D70 · Tabelas no celular: o piso da coluna de texto, a largura e o aviso
+- **Data:** 02/10/2026 · **Status:** decidido e publicado (03/10/2026, a pedido do Cesar); falta
+  conferir no iPhone.
+- **Pedido do Cesar:** medir o problema visto na D66 (no celular, as colunas encolhem até a palavra mais
+  longa antes de a tabela rolar de lado), propor uma ou duas regras de CSS com fotos de antes e depois
+  e, com o OK dele, aplicar.
+- **A medição** (dev, Chrome pelo `playwright-core`, celular emulado, nos 29 posts):
+  - 69 tabelas em 23 posts; 59 com três colunas ou mais (45 de três, 12 de quatro, 1 de cinco, 1 de
+    sete). 21 das 59 são as tabelas de JEPs da série Java, dentro de um `<details>`.
+  - Em 390px, **47 das 59** tinham alguma coluna de texto abaixo de 160px (em 320px, 48). Em 42, a pior
+    célula tinha duas palavras por linha ou menos. 23 tinham linha de 150px ou mais (6 de 200px ou mais;
+    a pior, 300px).
+  - 35 das 47 têm três colunas: o problema não é só das tabelas de quatro colunas ou mais.
+  - Em 320px, as 59 já rolavam, todas com as colunas no mínimo. De 1024px para cima, nenhuma linha passa
+    de 150px: é problema de celular.
+  - "Coluna de texto", na medição: alguma célula com 5 palavras ou mais, ou mediana de 3 ou mais.
+- **Decidido** (as três escolhas do Cesar, pelas fotos de antes e depois):
+  1. **O piso.** Até 700px (o corte das figuras), a coluna de texto nunca fica com menos de **11em
+     (171px)**. Coluna de texto, para a regra: alguma célula do corpo com 30 letras ou mais; o
+     `rehype-tabela` marca a célula do cabeçalho com `data-texto`. Rótulo, número, versão e sim/não
+     ficam sem piso. O que não couber faz a tabela rolar dentro da moldura (a página nunca rola).
+  2. **A largura.** Até 700px, o respiro lateral das células cai de 14 para 10px, e a tabela de dentro
+     de um `<details>` vai de borda a borda da caixa, sem a moldura própria.
+  3. **O aviso, com JS.** A tabela que passa da moldura mais de 12px (mais que o respiro da última
+     célula: alguma letra de fora) ganha embaixo "Arraste para o lado para ver a tabela inteira.", na
+     letra do aviso das figuras. Um observador no `artigo.ts` mede e põe o aviso; o CSS o mostra até
+     700px. Sem JS, a tabela rola igual, sem o aviso. Como o aviso não está no HTML, não vai para o RSS
+     nem para a busca.
+- **Resultado** (as 59 tabelas, em 390px):
+  - texto a duas palavras por linha ou menos: de 42 para 14 tabelas;
+  - linha de 150px ou mais: de 23 para 9 (de 200px ou mais, de 6 para 2); a altura somada das tabelas cai
+    de 60.864 para 51.606px;
+  - cabem na tela 24 (antes 23) e rolam mais de 12px 35 (antes 36). Quatro que cabiam passam a rolar
+    (cockpit, bloqueio, W3C e JWT: três colunas, duas de texto), com as linhas caindo de 182–228px para
+    112–158px; cinco deixam de rolar (tabelas de JEPs);
+  - em 320px: texto picado de 42 para 18, linha de 150px ou mais de 24 para 10;
+  - acima de 700px nada muda (768, 1024 e 1280px: 207 medidas iguais às de antes).
+- **Alternativas medidas e descartadas** (390px, as 59):
+  - largura mínima da tabela só com quatro colunas ou mais (a ideia do pedido): de 47 para 43 apertadas;
+  - largura mínima da tabela pelo número de colunas (30, 40 e 50em): resolve o texto, mas as 59 passam a
+    rolar, inclusive a que não tem texto (a do ledger);
+  - só o piso: 54 das 59 rolam (as de JEPs passam uns 34px e cortam a última coluna);
+  - só a largura: nenhuma tabela nova rola, mas 29 continuam com o texto picado;
+  - piso de 13em: 10 com texto picado, mas só 15 cabem e 44 rolam;
+  - piso que acompanha a tela (`min()` com `vw`): não faz nada em 320px, onde o problema é maior.
+- **Efeito colateral medido:** o piso tira largura da coluna vizinha que não é de texto. Em 10 das 621
+  medidas (69 tabelas × 9 larguras, de 320 a 700px), a tabela ou a linha mais alta cresceu, quase sempre
+  uma linha (23px). O caso que pesa é a tabela do JWT em 430 e 480px: a coluna `alg`
+  (`HS256 / HS384 / HS512`) cai de 85 para 67px e fica com um item por linha, e a tabela sobe de 580 para
+  674px em 430px e de 511 para 651px em 480px (de 360 a 412px ela melhora: de 743–812 para 674px). Um
+  degrau menor para a coluna de "lista
+  curta" (menos de 30 letras e 4 palavras ou mais, 21 colunas no blog), de 6,5em, levaria essa tabela a
+  534px em todas as larguras, mas no conjunto quase não muda (altura somada −0,04% em 390px) e faz 3
+  tabelas a mais rolarem em 360px. **Não aplicado:** fica para o Cesar decidir.
+- **O que a regra não resolve:**
+  - célula com parágrafo: duas tabelas do `java-29` têm célula de 219 e de 463 letras, e a linha continua
+    com 253 e 417px. É do conteúdo, e vai para a revisão em lote;
+  - o cabeçalho não quebra e segura a coluna larga ("Para quem vem do" ocupa 161px para "Java 7"):
+    cabeçalho curto ajuda;
+  - em tablet (768px), quatro tabelas largas (duas de quatro colunas, a de cinco e a de sete) continuam
+    rolando com coluna de texto abaixo de 160px: o piso só vale até 700px, e melhoraria três delas.
+    Fica para o Cesar decidir se estende.
+- **Só na tela:** no papel, a tabela continua encolhendo para caber na folha, sem piso e sem aviso.
+- **Achado ao aplicar, o cache de conteúdo:** o Astro guarda o HTML dos posts `.md` e só o refaz quando
+  a configuração muda; o código de um plugin não conta. Testado: com o plugin alterado, o build comum
+  manteve o HTML antigo do `java-25` (o `.mdx` foi refeito). No deploy, que reaproveita o cache, os 17
+  posts `.md` com tabela sairiam sem a marca das colunas. Solução: o `rehype-tabela` ganhou a opção
+  `saida` no `astro.config.mjs` (as opções entram na comparação). Com ela, o build comum registrou
+  "Astro config changed" e refez tudo sozinho, sem `--force` e sem apagar cache à mão. Mudou o HTML que
+  o plugin gera? Sobe o número.
+- **Conferido:** `check` (0 erros), `build`, `links` (nenhum quebrado) e `conferir` nos 23 posts com
+  tabela, contra o site gerado (320 a 1600px, dois temas e movimento reduzido: tudo ok, sem rolagem
+  lateral da página). A implementação bate com o protótipo aprovado (621 medidas iguais, de 320 a 700px).
+  O aviso aparece e some com o `<details>` que abre e com a janela que muda de largura, não sai na
+  impressão e não desloca a página ao carregar (CLS zero, com rede rápida e lenta: as tabelas ficam a
+  mais de 2.600px do topo).
+- **Não conferido:** o Safari do iPhone (aqui só há Chrome). O piso é `min-width` em célula, com valor
+  fixo; vale olhar no aparelho depois de publicar.
+- **Número e base:** enquanto esta era feita, entraram na `main` a D67, a D68, a D69 (o botão da busca,
+  de outra sessão), a D72, a D73, a D74 e a D75 (a D71 está reservada por outra worktree): por isso esta
+  é a D70. A worktree foi trazida para a `main` de 02/10/2026 (`04f2ded`) antes da conferência, e o envio
+  juntou o commit com a `main` de 03/10/2026 (`0a893de`, já com o post de Parquet, a D72 e a D73).
+- **Publicação:** o app recusou trazer a `main` para a worktree (ela mexeu em skills, arquivos protegidos,
+  e a origem do repositório ainda não estava confirmada no app). O commit foi montado em cima da
+  `origin/main` sem escrever nada protegido na worktree (`git merge-tree`, com o conflito do registro e do
+  painel resolvido à mão, e `git commit-tree`), conferido na árvore extraída e enviado com
+  `git push origin <commit>:refs/heads/main`. A branch da worktree ficou com o commit de antes da junção.
+- **Trabalho numa worktree** (`.claude/worktrees/lucid-khayyam-cc18a1`, dev na 4380 e preview na 4381),
+  porque havia outras sessões na pasta do projeto. O estudo (scripts de medição, as regras testadas, as
+  medidas e as fotos) ficou em `.astro/depuracao/tabelas/` dessa worktree, fora do git, e sai quando a
+  pergunta 16 do painel (as quatro perguntas que ficaram) fechar.
+- **Mudado:** `src/plugins/rehype-tabela.mjs` (marca as colunas de texto), `src/styles/prosa.css` (o
+  piso, a largura e o aviso), `src/scripts/artigo.ts` (o observador do aviso), `astro.config.mjs` (a
+  opção `saida`), o `DESIGN.md` (Components, Tabelas), o `docs/briefing.md` (§5.3), a regra de interface
+  (a lista do que tem JS), o `CLAUDE.md` (armadilhas) e o painel.
 
 ## D72 · A tinta do seletor Lista / Cards: a caixa só em volta do botão ativo
 - **Data:** 02/10/2026 · **Status:** decidido; publicado em 03/10/2026. A D70 (as tabelas no celular), a

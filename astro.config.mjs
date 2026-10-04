@@ -128,7 +128,10 @@ export default defineConfig({
   markdown: {
     processor: unified({
       remarkPlugins: [remarkMath, remarkTemMatematica, remarkDirective, remarkMarcacoes],
-      rehypePlugins: [rehypeKatex, rehypeTabela, rehypeAvisos, rehypeNotasLaterais, [rehypeApresentacao, { base: comBase("/") }]],
+      // `saida` (D70): o Astro guarda o HTML dos posts .md e só o refaz quando esta configuração muda;
+      // o código do plugin não conta, as opções contam. Mudou o HTML que o rehype-tabela gera? Suba o
+      // número: o cache de conteúdo é refeito aqui e no deploy, sem `--force` nem apagar cache à mão.
+      rehypePlugins: [rehypeKatex, [rehypeTabela, { saida: 2 }], rehypeAvisos, rehypeNotasLaterais, [rehypeApresentacao, { base: comBase("/") }]],
     }),
   },
 });

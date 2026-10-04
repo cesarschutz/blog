@@ -42,6 +42,8 @@ Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
     cada animação, carregada sob demanda), a `Figura` (só um observador que liga os detalhes que se
     mexem enquanto ela está na tela; o movimento é CSS) e a capa viva (`capa-viva.ts`: o evento vai
     até o fim mesmo que o mouse saia) (D58);
+  - o aviso "Arraste para o lado" das tabelas (`artigo.ts`: um observador mede se a tabela passa da
+    moldura e põe o aviso; quem rola a tabela e quem mostra o aviso, até 700px, é o CSS) (D70);
   - do visual "papel e luz" (D61):
     - a luz: a lâmpada da troca de tema, a luz do mouse, os abajures e a onda e o brilho dos livros
       (`lampada.ts`, `luz.ts`, `livro-vivo.ts`, `estante-moderna.ts`);
