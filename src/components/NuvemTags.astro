@@ -8,6 +8,10 @@
  * a 1000px ou mais), a nuvem fica um nada mais baixa (16 a 38px) e centra as palavras na altura dele.
  * H5 (S8): é uma folha lisa de papel (catalogo.css: canto de 2px, sem borda, a sombra curta e o grão), sem
  * pauta; ao lado do aço do fichário, lê como a ficha que saiu da gaveta.
+ *
+ * O nome de cada link ("AOP, 2 artigos") vem de um texto `.sr`, e não de um aria-label (D73): a palavra e o
+ * expoente da tela ficam fora do nome (aria-hidden). Um aria-label que não contém o texto da tela, como
+ * ele é pintado ("AOP" colado no "2"), falha na auditoria de nome do Lighthouse.
  */
 import IconeTag from "./IconeTag.astro";
 import { urlTag, type Grupo } from "../lib/posts";
@@ -37,9 +41,10 @@ const nuvem = [...tags].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
         const n = t.posts.length;
         return (
           <li style={`--peso:${peso(n).toFixed(3)}`}>
-            <a href={urlTag(t.nome)} aria-label={`${t.nome}, ${n} ${palavra(n)}`}>
+            <a href={urlTag(t.nome)}>
+              <span class="sr">{`${t.nome}, ${n} ${palavra(n)}`}</span>
               <IconeTag nome={t.nome} class="icone-nuvem" />
-              <span class="palavra">
+              <span class="palavra" aria-hidden="true">
                 {t.nome}
                 <svg class="traco traco-leve traco-preto" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false">
                   <path d={tracoDeCaneta(t.nome, 103, 0.9, Math.max(4, Math.round(t.nome.length / 1.6)))} />

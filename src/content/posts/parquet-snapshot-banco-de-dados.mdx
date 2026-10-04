@@ -1,0 +1,77 @@
+---
+title: "Parquet e snapshots — o arquivo não garante a fotografia"
+description: "Como o Parquet organiza dados por colunas, o que torna um snapshot consistente e por que exportar tabelas não substitui um backup do banco."
+published: 2026-10-03
+category: Dados
+tags: [Banco de Dados, Trade-offs]
+formato: resumo
+draft: false
+---
+
+import Figura from "../../components/Figura.astro";
+
+Você recebe uma pasta com arquivos `.parquet` e ouve que aquilo é um snapshot do banco. Antes de usar os dados no relatório ou planejar uma restauração, precisa responder duas perguntas: como os arquivos foram gravados e qual estado do banco eles representam?
+
+Parquet responde à primeira. Snapshot responde à segunda. O infográfico separa essas responsabilidades em quatro quadros: a organização por colunas, o instante da leitura, os arquivos exportados e a recuperação do banco. Azul identifica o dado na origem; verde, o material exportado; âmbar, os cuidados com consistência e recuperação.
+
+<Figura figura="parquet-snapshot-banco-de-dados/formato-e-fotografia" legenda="Leia os quadros de 1 a 4: colunas na origem (azul), exportação (verde) e garantias que precisam ser verificadas (âmbar)." />
+
+## Parquet: o formato do arquivo
+
+O [Apache Parquet é um formato aberto e colunar](https://parquet.apache.org/docs/overview/). No quadro 1, os valores de cada coluna aparecem agrupados: identificadores juntos, datas juntas, valores juntos. É uma representação simplificada da organização física, não uma mudança na tabela que o usuário consulta.
+
+Isso ajuda quando a análise usa poucas colunas. Para somar os valores dos pedidos, não é necessário carregar os nomes dos clientes. Um leitor compatível pode acessar as colunas relevantes; o [DuckDB documenta essa otimização como *projection pushdown*](https://duckdb.org/docs/current/data/parquet/overview#partial-reading).
+
+Por dentro, o arquivo tem :caixa[grupos de linhas] (*row groups*), divididos em blocos por coluna (*column chunks*), além de metadados que indicam onde encontrá-los. Essa [estrutura do arquivo](https://parquet.apache.org/docs/file-format/) permite localizar os blocos necessários. Colunar não significa que toda uma coluna gigantesca fique num único bloco.
+
+A [compressão pode ser escolhida por coluna](https://parquet.apache.org/docs/overview/motivation/), aproveitando as características dos valores. O formato admite [codecs como Snappy e Zstandard](https://parquet.apache.org/docs/file-format/data-pages/compression/). Não existe uma taxa de economia garantida: tamanho e desempenho dependem dos dados, da configuração e do leitor.
+
+## Snapshot: o estado capturado
+
+No quadro 2, o relógio representa o ponto de referência da leitura. Um snapshot é uma visão dos dados em determinado momento. A extração pode levar minutos; para representar uma fotografia consistente, suas leituras precisam compartilhar :duplo[o mesmo estado de referência].
+
+Considere este exemplo hipotético: uma transação grava o pedido 42 e seus itens juntos. O exportador lê `pedidos` antes desse commit e `itens_pedido` depois. Os arquivos resultantes podem conter os itens do pedido 42, mas não o pedido. Cada leitura foi válida isoladamente; juntas, elas não representam um único estado do banco.
+
+O problema está na leitura da origem. Gravar os resultados em Parquet :ondulado[não corrige] essa diferença. No PostgreSQL, por exemplo, [Read Committed e Repeatable Read usam referências diferentes](https://www.postgresql.org/docs/current/transaction-iso.html#XACT-REPEATABLE-READ): no primeiro, cada comando pode enxergar um snapshot novo; no segundo, as consultas da mesma transação usam uma visão estável, estabelecida pelo primeiro comando que não seja de controle da transação.
+
+:::exclamacao
+Dar a dois arquivos o mesmo horário no nome não faz suas leituras compartilharem um snapshot. Se a extração usa conexões paralelas, confirme como a ferramenta coordena a visão entre elas.
+:::
+
+Essa garantia precisa vir do banco e do mecanismo de extração. Ela também não significa que todos os bancos, réplicas ou serviços de uma empresa estejam sincronizados naquele instante.
+
+## Onde os arquivos entram
+
+O quadro 3 mostra a saída: arquivos separados por tabela, pertencentes à mesma extração. Uma exportação consistente de pedidos e itens pode ser gravada em Parquet para análise posterior. O estado capturado vem do processo de leitura; o formato define a representação no destino.
+
+Além dos valores, é preciso conferir os tipos. A [especificação de tipos lógicos do Parquet](https://parquet.apache.org/docs/file-format/types/logicaltypes/) descreve como interpretar decimais, datas e timestamps. Ao validar uma exportação, compare a precisão monetária, os valores nulos e a semântica dos horários com a origem. Um arquivo que abre sem erro ainda pode ter uma conversão inadequada para o negócio.
+
+Há também outro uso de “snapshot”: a versão de uma tabela num lakehouse. Na [especificação do Apache Iceberg](https://iceberg.apache.org/spec/#snapshots), os snapshots apontam para os metadados que identificam os arquivos daquela versão. :grifo[Essa camada pertence à tabela], não ao formato Parquet sozinho.
+
+Uma pasta com arquivos Parquet não ganha automaticamente transações e histórico consultável. E um snapshot de uma tabela Iceberg não prova, por si só, que duas tabelas foram extraídas do banco de origem no mesmo instante. Para o contexto arquitetural, veja o post sobre [data lake, data warehouse e lakehouse](/posts/data-lake-vs-data-warehouse/).
+
+## Exportação e backup
+
+O quadro 4 separa duas finalidades: analisar os dados e recuperar o banco. Exportar tabelas para Parquet pode atender à primeira. Para a segunda, é preciso um mecanismo que preserve o necessário à restauração, dentro do escopo escolhido.
+
+| Conceito | O que define | O que conferir |
+| --- | --- | --- |
+| Parquet | Representação colunar dos dados | Tipos, compressão e compatibilidade |
+| Snapshot | Estado de referência da captura | Consistência e escopo da leitura |
+| Backup | Material destinado à recuperação | Objetos incluídos e restauração testada |
+
+A [documentação de backup lógico do PostgreSQL](https://www.postgresql.org/docs/current/backup-dump.html) ilustra essa diferença: `pg_dump` produz uma exportação internamente consistente de um banco; objetos globais, como roles e tablespaces, exigem atenção adicional com `pg_dumpall`. Mesmo backups nativos têm limites de escopo.
+
+Uma exportação de valores em Parquet não deve ser presumida como cópia de índices, constraints, procedures ou permissões. A pergunta prática é: :marca[consigo restaurar o que preciso com esse material?] A resposta deve vir de um teste de recuperação, não da extensão dos arquivos.
+
+:::postit
+Para análise, confira formato e consistência. Para recuperação, confira o escopo do backup e teste a restauração.
+:::
+
+## Fontes
+
+- Apache Parquet: [visão geral](https://parquet.apache.org/docs/overview/), [motivação](https://parquet.apache.org/docs/overview/motivation/) e [estrutura do arquivo](https://parquet.apache.org/docs/file-format/).
+- Apache Parquet: [compressão](https://parquet.apache.org/docs/file-format/data-pages/compression/) e [tipos lógicos](https://parquet.apache.org/docs/file-format/types/logicaltypes/).
+- DuckDB: [leitura parcial de Parquet](https://duckdb.org/docs/current/data/parquet/overview#partial-reading).
+- PostgreSQL: [isolamento de transações](https://www.postgresql.org/docs/current/transaction-iso.html#XACT-REPEATABLE-READ) e [backup lógico](https://www.postgresql.org/docs/current/backup-dump.html).
+- Apache Iceberg: [especificação dos snapshots](https://iceberg.apache.org/spec/#snapshots).

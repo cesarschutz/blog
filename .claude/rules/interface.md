@@ -42,6 +42,8 @@ Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
     cada animação, carregada sob demanda), a `Figura` (só um observador que liga os detalhes que se
     mexem enquanto ela está na tela; o movimento é CSS) e a capa viva (`capa-viva.ts`: o evento vai
     até o fim mesmo que o mouse saia) (D58);
+  - o aviso "Arraste para o lado" das tabelas (`artigo.ts`: um observador mede se a tabela passa da
+    moldura e põe o aviso; quem rola a tabela e quem mostra o aviso, até 700px, é o CSS) (D70);
   - do visual "papel e luz" (D61):
     - a luz: a lâmpada da troca de tema, a luz do mouse, os abajures e a onda e o brilho dos livros
       (`lampada.ts`, `luz.ts`, `livro-vivo.ts`, `estante-moderna.ts`);
@@ -55,6 +57,12 @@ Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
   Artigo sem esses componentes funciona sem JS (as marcações da caneta são estáticas). Peça nova com
   JS entra nesta lista.
 - GSAP só carregado sob demanda (`src/scripts/gsap.ts`), nunca no layout.
+- **Nome acessível (D69, D73):** link ou botão com texto na tela não leva `aria-label` que não contenha
+  esse texto. O nome vem do conteúdo: o enfeite fica com `aria-hidden="true"` e o que falta na tela
+  entra num `<span class="sr">` (`base.css`). O texto que dá o nome nunca fica em `display: none` nem
+  dentro de `content-visibility: hidden`: nos dois casos ele sai do nome. É o que a auditoria
+  `label-content-name-mismatch` do Lighthouse confere (texto com `aria-hidden` conta, porque está na
+  tela).
 
 ## Livros
 
@@ -114,10 +122,19 @@ Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
   `animation-range`), nunca o atalho `animation` com a timeline depois. O minificador do build (Lightning
   CSS) junta os dois num atalho só, com a timeline dentro, e o Chrome descarta a declaração: funciona no
   dev e some no site publicado (D62).
+- **Fundo recortado por `clip-path` engana o medidor de contraste** (D72): o axe (Lighthouse) monta os
+  fundos pelas caixas dos elementos e não enxerga o recorte. Uma caixa com fundo de cor só pode cobrir o
+  texto que ela pinta de verdade; se o recorte esconde o fundo sobre outro texto, a `color-contrast`
+  reprova esse texto (o "Lista" do seletor de modo, nota 96). Pseudo-elemento não resolve: o axe desiste
+  de medir e deixa o texto sem conferência. E a caixa recortada fica em pixels inteiros, com folga em
+  volta do recorte: o Chrome pinta a caixa em pixels inteiros, e uma caixa com fração come a borda dele.
 - O `clearProps: "all"` do GSAP apaga o `style` inline **inteiro** do elemento, inclusive o que não
   foi o próprio GSAP quem pôs ali (cores e medidas em variáveis CSS escritas no HTML): passe a lista
   das propriedades que a animação mexeu, nunca `"all"` num elemento com estilo próprio (D52, revisão
   10b).
+- O `.sr` (`base.css`) é `position: absolute`. Dentro de um lugar com `perspective` (os livros 3D), ele
+  se prende a esse lugar e o Chrome muda a suavização do livro em alguns pixels: o elemento que leva o
+  `.sr` precisa de `position: relative` (o `a.tomba` da `Colecao`, D73).
 
 ## Conferir
 

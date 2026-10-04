@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200"
+  aria-label="Quatro quadros: Parquet agrupa valores por coluna; snapshot exige uma referência comum para as leituras; a exportação gera arquivos de pedidos e itens; a recuperação exige conferir o escopo e testar o backup.">
+  <g data-parte="colunas">
+    <g class="tinta tom-azul">
+      <circle cx="68" cy="62" r="25" class="selo"/>
+      <rect x="64" y="132" width="454" height="272" rx="8" class="hachura"/>
+      <rect x="57" y="125" width="454" height="272" rx="8" class="papel"/>
+      <rect x="57" y="125" width="454" height="272" rx="8" class="linha"/>
+      <rect x="83" y="179" width="106" height="190" rx="4" class="lavado"/>
+      <rect x="221" y="179" width="126" height="190" rx="4" class="lavado"/>
+      <rect x="379" y="179" width="106" height="190" rx="4" class="cor"/>
+      <path d="M57 169 H511 M83 233 H189 M83 285 H189 M83 337 H189 M221 233 H347 M221 285 H347 M221 337 H347 M379 233 H485 M379 285 H485 M379 337 H485" class="linha"/>
+    </g>
+    <g class="tom-azul">
+      <text x="68" y="70" text-anchor="middle" class="selo-texto">1</text>
+      <text x="110" y="72" class="titulo-caixa texto-tom">Dados por coluna</text>
+      <text x="136" y="155" text-anchor="middle" class="codigo">id</text>
+      <text x="284" y="155" text-anchor="middle" class="codigo">data</text>
+      <text x="432" y="155" text-anchor="middle" class="codigo">valor</text>
+      <text x="136" y="215" text-anchor="middle" class="codigo">41</text>
+      <text x="284" y="215" text-anchor="middle" class="codigo">03/10</text>
+      <text x="432" y="215" text-anchor="middle" class="codigo">100</text>
+      <text x="136" y="267" text-anchor="middle" class="codigo">42</text>
+      <text x="284" y="267" text-anchor="middle" class="codigo">03/10</text>
+      <text x="432" y="267" text-anchor="middle" class="codigo">200</text>
+      <text x="136" y="319" text-anchor="middle" class="codigo">43</text>
+      <text x="284" y="319" text-anchor="middle" class="codigo">03/10</text>
+      <text x="432" y="319" text-anchor="middle" class="codigo">300</text>
+      <text x="57" y="444" class="texto-caixa">Para somar, leia a coluna valor.</text>
+      <text x="57" y="480" class="texto-caixa">O leitor usa os blocos necessários.</text>
+    </g>
+  </g>
+  <g data-parte="instante">
+    <g class="tinta tom-ambar">
+      <circle cx="648" cy="62" r="25" class="selo"/>
+      <circle cx="867" cy="215" r="78" class="hachura"/>
+      <circle cx="860" cy="208" r="78" class="lavado"/>
+      <circle cx="860" cy="208" r="78" class="linha"/>
+      <path d="M860 208 V160 M860 208 L895 225 M860 130 V140 M938 208 H928 M860 286 V276 M782 208 H792" class="linha"/>
+      <path d="M860 299 V319 M706 339 V319 H1014 V339" class="linha-tom"/>
+      <path d="M696 329 L706 339 L716 329 M1004 329 L1014 339 L1024 329" class="linha-tom"/>
+      <rect x="632" y="350" width="150" height="48" rx="5" class="lavado"/>
+      <rect x="939" y="350" width="150" height="48" rx="5" class="lavado"/>
+      <rect x="632" y="350" width="150" height="48" rx="5" class="linha"/>
+      <rect x="939" y="350" width="150" height="48" rx="5" class="linha"/>
+    </g>
+    <g class="tom-ambar">
+      <text x="648" y="70" text-anchor="middle" class="selo-texto">2</text>
+      <text x="690" y="72" class="titulo-caixa texto-tom">Um estado comum</text>
+      <text x="706" y="382" text-anchor="middle" class="codigo">pedidos</text>
+      <text x="1014" y="382" text-anchor="middle" class="codigo">itens</text>
+      <text x="630" y="444" class="texto-caixa">As duas leituras compartilham a visão.</text>
+      <text x="630" y="480" class="texto-caixa">O formato não oferece essa garantia.</text>
+    </g>
+  </g>
+  <g class="tinta"><path d="M45 535 H1155 M585 35 V500 M585 585 V1060" class="linha"/></g>
+  <g data-parte="arquivos">
+    <g class="tinta tom-verde">
+      <circle cx="68" cy="602" r="25" class="selo"/>
+      <path d="M73 684 H237 L271 718 V908 H73 Z" transform="translate(7 7)" class="hachura"/>
+      <path d="M73 684 H237 L271 718 V908 H73 Z" class="lavado"/>
+      <path d="M73 684 H237 L271 718 V908 H73 Z M237 684 V718 H271" class="linha"/>
+      <path d="M314 684 H478 L512 718 V908 H314 Z" transform="translate(7 7)" class="hachura"/>
+      <path d="M314 684 H478 L512 718 V908 H314 Z" class="lavado"/>
+      <path d="M314 684 H478 L512 718 V908 H314 Z M478 684 V718 H512" class="linha"/>
+      <path d="M104 738 V814 M135 738 V814 M166 738 V814 M197 738 V814 M228 738 V814 M345 738 V814 M376 738 V814 M407 738 V814 M438 738 V814 M469 738 V814" class="linha"/>
+      <path d="M104 763 H228 M104 789 H228 M345 763 H469 M345 789 H469" class="linha"/>
+    </g>
+    <g class="tom-verde">
+      <text x="68" y="610" text-anchor="middle" class="selo-texto">3</text>
+      <text x="110" y="612" class="titulo-caixa texto-tom">Saída em arquivos</text>
+      <text x="172" y="851" text-anchor="middle" class="titulo-caixa">pedidos</text>
+      <text x="413" y="851" text-anchor="middle" class="titulo-caixa">itens</text>
+      <text x="172" y="883" text-anchor="middle" class="codigo">.parquet</text>
+      <text x="413" y="883" text-anchor="middle" class="codigo">.parquet</text>
+      <text x="57" y="970" class="texto-caixa">Valide os tipos e os valores exportados.</text>
+      <text x="57" y="1006" class="texto-caixa">Arquivo legível não prova consistência.</text>
+    </g>
+  </g>
+  <g data-parte="recuperacao">
+    <g class="tinta tom-ambar">
+      <circle cx="648" cy="602" r="25" class="selo"/>
+      <path d="M696 745 V704 Q696 693 707 693 H798 Q809 693 809 704 V719 H1044 Q1055 719 1055 730 V904 H696 Z" transform="translate(7 7)" class="hachura"/>
+      <path d="M696 745 V704 Q696 693 707 693 H798 Q809 693 809 704 V719 H1044 Q1055 719 1055 730 V904 H696 Z" class="lavado"/>
+      <path d="M696 745 V704 Q696 693 707 693 H798 Q809 693 809 704 V719 H1044 Q1055 719 1055 730 V904 H696 Z" class="linha"/>
+      <path d="M707 755 H1068 L1055 904 H696 Z" class="papel"/>
+      <path d="M707 755 H1068 L1055 904 H696 Z" class="linha"/>
+      <path d="M733 797 L745 809 L766 782 M733 846 L745 858 L766 831" class="linha-tom"/>
+    </g>
+    <g class="tom-ambar">
+      <text x="648" y="610" text-anchor="middle" class="selo-texto">4</text>
+      <text x="690" y="612" class="titulo-caixa texto-tom">Recuperar o banco</text>
+      <text x="787" y="807" class="texto-caixa">Escopo conferido</text>
+      <text x="787" y="856" class="texto-caixa">Restauração testada</text>
+      <text x="630" y="970" class="texto-caixa">Quais dados e objetos o backup inclui?</text>
+      <text x="630" y="1006" class="texto-caixa">Uma exportação pode não conter tudo.</text>
+    </g>
+  </g>
+  <text x="600" y="1128" text-anchor="middle" class="titulo-caixa">Parquet define o formato. A extração define a fotografia.</text>
+</svg>

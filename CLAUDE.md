@@ -34,6 +34,12 @@ outras portas) sai.
   detalhado (com o TL;DR recolhível) ou resumo (com o infográfico), a estrutura do que entra e as
   fontes (os links que ele estudou ou, sem eles, fontes confiáveis). Os links ficam ao longo do texto
   e também em `## Fontes`.
+- **Escrita do post (D71):** o título tem de fazer sentido sozinho ("Assunto — complemento", com o
+  assunto dizendo do que o post trata; nunca pergunta, gancho ou o nome do exemplo); a abertura diz o
+  assunto antes do exemplo; nunca a primeira pessoa ("criei", "testei", "fiz"); a descrição com o
+  essencial em 160 caracteres. Assunto que não cabe vira **post em partes** (parte 1 e parte 2, dois
+  posts ligados). Regras na skill `post` (seções "Escrita" e "Post em partes"), conferidas por
+  `npm run escrita -- <slug>`; a pesquisa está em `docs/escrita/`.
 - **Caneta do caderno (D48):** a última etapa de todo post é a passada de caneta (skill **`caneta`**):
   ler o guia vivo `docs/marcacoes.md` inteiro, propor as marcações (trecho, tipo, motivo), aplicar só
   com o OK do Cesar e testar em 320, 390, 768, 1280 e 1600px nos dois temas. Ajuste que o Cesar pedir
@@ -163,6 +169,8 @@ npm run links        # confere links internos, âncoras e redirecionamentos do d
 npm run conferir -- <slug> [--base URL] [--capturas]   # o post em 320–1600px × claro/escuro: rolagem
                      # lateral, console, rede, alt e marcas da caneta (D53); sai 1 com problema.
                      # Aceita um caminho no lugar do slug (/<caminho>/)
+npm run escrita -- <slug>   # as regras de escrita do post (D71): título, descrição, TL;DR, abertura,
+                     # primeira pessoa e os avisos de post em partes; sem slug, o levantamento de todos
 npm run setup        # confere o ambiente (Node, dependências, skills, Chrome, motor do Impeccable)
 npm run apresentacao -- <slug> --pptx <arquivo> --titulo "…"   # slides do NotebookLM
 node scripts/slides/capturar.mjs <slug> [--base URL]   # as fotos do post para a apresentação (D74)
@@ -222,6 +230,8 @@ docs/historico/          rodadas fechadas: o prompt da Fase 0, os controles da D
                          (controle, regras dos agentes, diagnósticos, pesquisa e sugestões da D52) e
                          os protótipos superados
 docs/virada.md           plano para o domínio passar ao blog novo (só com OK do Cesar)
+docs/escrita/            a pesquisa das regras de escrita e de post em partes (D71), com as fontes e a
+                         leitura dos 29 posts
 docs/figura-em-passos/   a figura em passos (D67, em prova): o pedido (README), a pesquisa e a auditoria
                          das peças animadas de 02/10/2026
 docs/redesenho/          redesenho (D55, D61): pedido, regras e status (README), a direção de cada modelo
@@ -266,13 +276,14 @@ src/lib/                 posts, formatos, busca (Pagefind), código (Expressive 
                          colchete, círculo, rasura, ondinha, ícones de data, tempo, código, lupa, lua,
                          sol, contornos dos botões e a assinatura, D52, C04), figuras (lê figuras,
                          animações e logos, e troca `data-marca` pelo logo, D58)
-src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, apresentação)
+src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, apresentação) e o aviso das
+                         tabelas que passam da tela no celular (D70)
 src/scripts/tema.ts      tema: a lâmpada do cabeçalho alterna claro e escuro, acendendo e apagando
                          (D39, D61; a lâmpada em lampada.ts)
 src/scripts/             também: troca.js (a cortina e as chegadas), luz, estante-moderna, fichas-caem,
                          fichario, revelar e embaralha (D61)
-scripts/                 contraste, links, apresentacao, og, copiar-katex, desenho/, bench-busca/,
-                         marca, caveat-titulos (subconjunto da Caveat, C05), verificar-ambiente
+scripts/                 contraste, links, escrita (as regras de escrita do post, D71), apresentacao, og,
+                         copiar-katex, desenho/, bench-busca/, marca, caveat-titulos (subconjunto da Caveat, C05), verificar-ambiente
                          (npm run setup e hook do início da sessão), livros/ (as fotos dos livros, D57),
                          foto.mjs (foto de uma página ou peça, sem MCP, D58), slides/ (as apresentações
                          no estilo do blog, D74: estilo.py, capturar.mjs, conferir.py, fontes.py e o
@@ -296,7 +307,8 @@ src/evidencias/<slug>/   prints que provam algo do texto (PNG)
 
 ## Skills
 
-- `post`: todo post, nos modos Novo e Adaptar, com o checklist único e a revisão em lote
+- `post`: todo post, nos modos Novo e Adaptar, com o checklist único, as regras de escrita (título,
+  descrição, TL;DR, abertura e voz, D71), o post em partes e a revisão em lote
   (`.claude/revisao-posts.md`)
 - `desenho`: a capa de cada post (o que desenhar, capa viva, regras técnicas, recortes, validação)
 - `figura`: figuras coloridas, animação com play, logos das ferramentas e print como evidência (D58)
@@ -357,6 +369,12 @@ src/evidencias/<slug>/   prints que provam algo do texto (PNG)
   O dev tem o mesmo problema, e reiniciar não basta: pare o dev, apague `.astro/data-store.json` e
   suba de novo (o sintoma é o código sem moldura, com título e linguagem grudados, "Sem AOPJava",
   porque o HTML guardado aponta para um `ec.*.css` que não existe mais).
+- Mudou o HTML que um plugin de Markdown gera (`src/plugins/`)? O mesmo cache guarda o HTML dos posts
+  `.md` e não percebe a mudança no código do plugin: no build e no deploy, os posts que não mudaram saem
+  com o HTML antigo (os `.mdx` são refeitos). As opções do plugin no `astro.config.mjs` contam: o
+  `rehype-tabela` tem a opção `saida` (D70); suba o número dela e o cache se refaz sozinho, aqui e no
+  deploy. Plugin sem essa opção: `npm run build -- --force` e, depois do push, apagar os caches
+  `astro-cache-*`.
 - Suba o dev com `npm run dev -- --host 127.0.0.1`. Sem isso ele escuta só em `localhost` (IPv6), e o
   endereço <http://127.0.0.1:4322> que o Cesar usa não abre.
 - No bash do Claude, `node -e '…'` quebra com apóstrofo no texto ("d'água"): escreva o script num

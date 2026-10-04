@@ -195,8 +195,12 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Vol. ${String(l.volu
           ) : modo === "home" ? (
             <div class:list={["livro-colecao", { "de-serie": l.serie, "abre-serie": abreSerie }]} style={estilo} data-livro-colecao={l.id}>
               <span class="vao-marca" aria-hidden="true" />
-              <a class="tomba" href={l.href} aria-label={`${rotuloDoVolume(l)}: ${l.nome}, ${l.contagem.toLowerCase()}`}>
-                <LivroEmPe decorativo livro={l} altura={ALTURA} transicao="ao-clicar" fluido folhas={0} />
+              {/* O nome do link vem do texto `.sr`, e não de um aria-label (D73): o livro inteiro é enfeite
+                  (aria-hidden, Livro3D), e um aria-label que não contém o texto pintado na capa e na lombada
+                  falha na auditoria de nome do Lighthouse. O modo "topo", logo abaixo, já fazia assim. */}
+              <a class="tomba" href={l.href}>
+                <span class="sr">{`${rotuloDoVolume(l)}: ${l.nome}, ${l.contagem.toLowerCase()}`}</span>
+                <LivroEmPe livro={l} altura={ALTURA} transicao="ao-clicar" fluido folhas={0} />
               </a>
               <a class="nome-livro" href={l.href}>
                 <span class="sr">{rotuloDoVolume(l)}: </span>
@@ -208,7 +212,7 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Vol. ${String(l.volu
             <a class:list={["livro-colecao", { "abre-serie": abreSerie }]} style={estilo} href={l.href} data-troca-livro title={l.nome}>
               <span class="sr">{l.nome}</span>
               <span class="tomba">
-                <LivroEmPe decorativo livro={l} altura={ALTURA} transicao="ao-clicar" fluido folhas={0} />
+                <LivroEmPe livro={l} altura={ALTURA} transicao="ao-clicar" fluido folhas={0} />
               </span>
             </a>
           );
@@ -529,8 +533,14 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Vol. ${String(l.volu
     pointer-events: none;
   }
 
-  /* O livro da home é o link que o tira para a gaveta, na largura do lugar; o foco é um anel em volta dele. */
+  /*
+   * O livro da home é o link que o tira para a gaveta, na largura do lugar; o foco é um anel em volta dele.
+   * O link segura o próprio texto `.sr` (o nome dele, D73): sem o `position: relative`, a caixa do texto se
+   * prende ao lugar do livro, que tem `perspective`, e o Chrome muda a suavização da quina de um livro (de 3 a
+   * 10 pixels, em 390 e em 1280px). Com ele, nenhum pixel muda.
+   */
   a.tomba {
+    position: relative;
     justify-self: stretch;
     border-radius: 4px;
     outline-offset: 6px;
@@ -603,10 +613,14 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Vol. ${String(l.volu
 
   /* ---------- home ---------- */
 
-  /* Até o segundo quadro (o script), cada livro guarda o lugar sem ser desenhado; sem JS, aparece direto. */
-  :global(:root[data-js]:not(.colecao-pronta)) .colecao-home .tomba {
+  /*
+   * Até o segundo quadro (o script), cada livro guarda o lugar sem ser desenhado; sem JS, aparece direto. Quem
+   * espera é o livro, e não o link (D73): o nome do link é o texto `.sr` dentro dele, e texto dentro de
+   * `content-visibility: hidden` não entra no nome (o link ficaria sem nome até o script chegar). O livro tem
+   * largura e altura próprias (LivroEmPe), as mesmas que o `contain-intrinsic-size` reservava no link.
+   */
+  :global(:root[data-js]:not(.colecao-pronta)) .colecao-home .tomba :global(.livro-em-pe) {
     content-visibility: hidden;
-    contain-intrinsic-size: calc(var(--cw0) * var(--kc)) calc(214px * var(--kc));
   }
 
   /* Embaixo do friso, os nomes (duas linhas de 13px). */

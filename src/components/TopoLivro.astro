@@ -150,8 +150,12 @@ const filtro = { chave: livro.id.replace(/^(livro|serie)-/, ""), nome: livro.nom
   {
     (anterior || proximo) && (
       <nav class="vizinhos-livro" aria-label="Os livros ao lado na estante">
+        {/* O nome de cada vizinho vem do texto `.sr` ("Livro anterior: Volume 03, Dados"), e não de um
+            aria-label (D73): o que se vê ("Vol. 03" e o nome) fica fora do nome, com aria-hidden, e um
+            aria-label que não contém o texto da tela falha na auditoria de nome do Lighthouse. */}
         {anterior && (
-          <a class="vizinho-livro para-tras" href={anterior.href} rel="prev" data-vizinho-livro aria-label={`Livro anterior: ${rotuloLongo(anterior)}, ${anterior.nome}`}>
+          <a class="vizinho-livro para-tras" href={anterior.href} rel="prev" data-vizinho-livro>
+            <span class="sr">{`Livro anterior: ${rotuloLongo(anterior)}, ${anterior.nome}`}</span>
             <span class="seta" aria-hidden="true">
               <svg viewBox="0 0 24 24" focusable="false" set:html={ICONES.seta} />
             </span>
@@ -160,7 +164,8 @@ const filtro = { chave: livro.id.replace(/^(livro|serie)-/, ""), nome: livro.nom
           </a>
         )}
         {proximo && (
-          <a class="vizinho-livro para-frente" href={proximo.href} rel="next" data-vizinho-livro aria-label={`Próximo livro: ${rotuloLongo(proximo)}, ${proximo.nome}`}>
+          <a class="vizinho-livro para-frente" href={proximo.href} rel="next" data-vizinho-livro>
+            <span class="sr">{`Próximo livro: ${rotuloLongo(proximo)}, ${proximo.nome}`}</span>
             <span class="vizinho-vol" aria-hidden="true">{rotulo(proximo)}</span>
             <span class="vizinho-nome" aria-hidden="true">{proximo.nome}</span>
             <span class="seta" aria-hidden="true">
