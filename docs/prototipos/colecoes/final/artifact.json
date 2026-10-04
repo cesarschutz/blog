@@ -1,0 +1,30 @@
+{
+  "observacao": "Os textos fixos da página do resultado final (final/gerar.mjs). O resto vem de final/dados.json.",
+  "titulo": "Treze volumes",
+  "data": "1º de outubro de 2026",
+  "lead": "A coleção que você escolheu (a sugestão 5 com Frontend), pronta para aprovar: os 13 livros em ordem alfabética, que é a ordem dos volumes, com desenhos, cores, frases e textos novos. Os livros de hoje mantêm o nome, e Carreira sai.",
+  "comoLer": "A estante abaixo é a da home, montada com os componentes do site. Depois vêm a ideia do conjunto e as cores, e um livro por folha, na ordem dos volumes: a capa, a frase, o que ele abrange, os posts de hoje que vão para ele, a cor e o desenho com o motivo. No fim, o que fica para você decidir e o que muda no site quando você aprovar.",
+  "conjunto": {
+    "titulo": "O mesmo problema, um século antes",
+    "paragrafos": [
+      "Cada livro leva a máquina ou o instrumento que fazia, com ferro, latão, madeira e papel, o trabalho que o livro faz com software: registrar cada venda, provar que alguém tentou abrir, acertar dois relógios, ligar quem chama a quem atende, contar milhões de cartões, manter a máquina na rotação certa.",
+      "Os objetos vêm de uma sala de trabalho entre o século XVII e 1890 (o prumo, mais antigo que todos, é a exceção) e são desenhados do mesmo jeito: vista de três quartos, luz do alto à esquerda, sombra hachurada e um único traço tracejado, que é sempre a máquina no instante em que faz o seu trabalho (a gaveta que salta, o cartão que cai, a cápsula a caminho). Cada desenho tem uma data e uma história conferida.",
+      "As cores são como os tecidos de uma série encadernada, e cada uma tem um motivo no objeto, no material ou no assunto: o vermelho-lacre da Segurança, como você sugeriu, o azul da cianotipia na Arquitetura, o verde das cédulas em Pagamentos. Três livros claros, um a cada quatro, dão ritmo à estante. Todas foram conferidas no contraste da capa e como cor da categoria no site, nos dois temas."
+    ]
+  },
+  "decidir": [
+    "A marca do site. O \"cs\" do cabeçalho é desenhado como a capa do Volume 01, no verde da Arquitetura de hoje (#2D4B46). Com a Arquitetura em azul de cianotipia, a marca pode acompanhar ou ficar verde como está. A direção de arte e a crítica recomendam acompanhar, e a marca passaria a ser o \"livro da casa\", sem depender de qual livro é o Volume 01 (que agora muda com a ordem alfabética). Se ficar verde, funciona também; o Testes fica um pouco perto dela.",
+    "As frases de hoje que ficam. Seis livros mantêm a frase de hoje (Arquitetura de Software, Dados, DevOps, IA, Segurança e SRE), porque o editor e a crítica não acharam frase melhor. Cada um mostra a alternativa nova: se preferir trocar, elas estão prontas.",
+    "IA com o Turco. O autômato enxadrista tinha um enxadrista escondido no gabinete. A ficha conta isso como uma verdade sobre a IA (há gente dentro, nos dados e em quem a usa), sem tom de piada. Se preferir outro objeto, a reserva é o autômato escritor redesenhado no traço novo.",
+    "O SRE quase não muda de cor: o latão fica perto do ocre de hoje, de propósito, para a estante ter um livro claro e quente nesse lugar. Todas as outras cores mudaram."
+  ],
+  "muda": [
+    "Os livros: src/livros/livros.json com os 13 (título, frase, temas, subtítulo, cor e medidas), em ordem alfabética, e os desenhos e ícones novos no lugar dos de hoje.",
+    "Os posts: quatro mudam de livro. A chave de idempotência e o efeito externo vão para Sistemas Distribuídos, o filtro do SNS para Integração e Eventos e o ledger para Pagamentos.",
+    "Carreira sai, e /categories/Carreira/ passa a redirecionar para /categories/ (o livro não tem posts).",
+    "A tag Pagamentos vira Cobrança, como você autorizou: nos três posts de cobrança, com o mesmo ícone, e /tags/Pagamentos/ redirecionando para /tags/Cobrança/. O ledger fica só no livro.",
+    "Os volumes mudam de número (ordem alfabética). Os endereços dos livros não mudam, porque usam o nome.",
+    "As fotos dos livros (o deitado e o aberto), as imagens de compartilhamento e as conferências do site (build, links e contraste), refeitas."
+  ],
+  "rodape": "Na branch claude/magical-einstein-tneg5o; nada foi para o site. No dev, /amostra/colecoes/final/ mostra a coleção com os componentes do site. A direção de arte, os textos, a crítica e a pesquisa dos textos dos desenhos (a ligação com hoje e os links), com as fontes, estão em docs/prototipos/colecoes/final/. Os links vieram da busca na web: a rede deste ambiente não deixou abrir as páginas para conferir uma a uma."
+}

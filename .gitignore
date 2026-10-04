@@ -55,3 +55,7 @@ __pycache__/
 # Redesenho (D55, D61): os protótipos ficam só nesta máquina (decisão do Cesar, 02/10/2026). Dentro
 # deles há fontes do Fontshare, cuja licença (ITF FFL) proíbe redistribuir por repositório.
 /redesenho/
+
+# Scripts temporários de teste e de conferência (os agentes criam e apagam)
+scripts/.teste-*.mjs
+scripts/.*-tmp.mjs

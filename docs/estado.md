@@ -124,6 +124,27 @@ com a tabela dos bugs que já aconteceram.
 O escuro dos desenhos do corpo (D60, 01/10/2026, publicado): painel próprio, um pouco acima da folha e
 mais neutro, caixas com o tom puro a 45% e tinta um pouco menos branca. A capa não mudou.
 
+Coleções (01/10/2026, branch `claude/magical-einstein-tneg5o`): o Cesar viu as cinco sugestões
+(<https://claude.ai/code/artifact/564ccedf-bf19-48f1-be36-cb247408a804>) e **decidiu (D78)**: a sugestão
+5 mais Frontend, 13 livros, Carreira sai, os livros de hoje mantêm o nome, volumes em ordem alfabética,
+a tag Pagamentos pode ser renomeada ou removida (vai virar Cobrança), e desenhos, cores, frases e textos
+novos para os 13. A página final
+(<https://claude.ai/code/artifact/a08fa29f-5a3d-45ec-bcaf-7d0f13ab12a5>; no dev, `/amostra/colecoes/final/`)
+mostrou o conjunto novo de desenhos ("O mesmo problema, um século antes": a máquina que fazia o trabalho
+do livro antes do software), as 13 cores, as frases e os textos. **Aplicada e publicada em 04/10/2026** (main, deploy 61), a
+pedido do Cesar: os 13 em `src/livros/livros.json`, os desenhos e ícones novos, os posts que mudaram de
+livro, a tag Pagamentos virou Cobrança e os redirecionamentos (`/categories/Carreira/` e
+`/tags/Pagamentos/`); `CAPAS.md`, `briefing.md`, `DESIGN.md` e `estilo-desenho.md` acompanham. Ficou de
+fora a marca "cs", que continua no verde `#2D4B46` (pergunta 00). O texto de cada desenho (completo e
+curto, para um possível hover) segue em `docs/prototipos/colecoes/final/dados.json`. Controle, direção
+de arte, textos e crítica em `docs/prototipos/colecoes/final/`. Valem a regra dos posts (conferir se a
+coleção ainda serve e avisar, na skill `post`) e os volumes em ordem alfabética (`CAPAS.md`). Testado em 04/10/2026 no build (três agentes): home, `/categories/` e as 13
+páginas dos livros, arquivo com filtro, posts que mudaram, tags (Cobrança), busca, RSS e os
+redirecionamentos, de 320 a 1920px nos dois temas: sem erro de console, sem 404, sem rolagem lateral;
+`check`, `links` e `contraste` passam. Corrigido no caminho: os nomes embaixo dos livros da home, que se
+atropelavam a partir de ~1890px. **Para o Cesar decidir:** no celular, os 14 livros da fileira da home
+ficam com ~20px de lombada (o título vira enfeite; o projeto pede todos à vista, sem rolagem lateral).
+
 Protótipo dos controles dos desenhos (01/10/2026, no ar em `/prototipos/controles/`, com noindex e fora
 do sitemap e da busca): cinco opções (régua e lápis, marca-texto, caderno e caneta, post-its e fita,
 carimbo e numerador), cada uma resolvendo a animação com play, a lousa de passos e a de comparação num
@@ -315,6 +336,13 @@ movimento e com movimento reduzido, com trace de CPU 4× sem tarefas longas dura
 
 ## Perguntas abertas para o Cesar
 
+00. **Coleções (D78, aplicada em 04/10/2026):** (1) a marca "cs" acompanha a Arquitetura no azul
+    (`#2d4f77`) ou fica no verde `#2D4B46`? (2) o texto do desenho vai para um hover nos livros? (3) no
+    celular, a fileira da home com 14 livros fica com lombadas de ~20px: manter, duas fileiras abaixo de
+    700px, ou rolagem lateral só na fileira? (4) achados dos testes que já existiam antes: a tira
+    "Volume · artigos" corta com reticências (1280px no índice, 390px no topo do livro); vizinhos trocados
+    entre dois posts da mesma data (sns × w3c); a busca indexa a tira do topo do artigo; o contador
+    "Livros" da home conta a série (14); no Chromium 141, os abajures da home somem acima de 1100px.
 0. **D54:** as perguntas do fim de `docs/ajustes-d54/controle.md` (chegada da folha longa no celular
    lento, voltar sem bfcache, trava de rolagem do menu, desfile de Categorias no celular,
    redirecionamentos em inglês, busca que volta aberta, textos dos slides e das tags, comportamentos

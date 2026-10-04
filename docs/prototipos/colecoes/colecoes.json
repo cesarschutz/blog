@@ -1,0 +1,1556 @@
+{
+  "observacao": "Dados das sugestões de coleção (docs/prototipos/colecoes). A página /amostra/colecoes/ (só no dev) lê daqui. Livro: título, linhas, corpo e entrelinha do título na capa (scripts/livros/titulo-da-capa.mjs), frase, abrange, cor e o motivo, instrumento e o motivo, desenho (o slug do arquivo em src/livros/desenhos e icones), emPe (lombada na estante). Sugestão: os livros na ordem dos volumes e, de cada livro, os posts que iriam para ele.",
+  "livros": {
+    "arquitetura-de-software": {
+      "titulo": "Arquitetura de Software",
+      "linhas": [
+        "Arquitetura",
+        "de Software"
+      ],
+      "corpo": 73,
+      "entrelinha": 70,
+      "frase": "As decisões caras de desfazer.",
+      "abrange": [
+        "decisões e trade-offs (ADRs, overengineering)",
+        "DDD e bounded contexts",
+        "Clean e Hexagonal",
+        "padrões (GoF, Fowler)",
+        "C4 e docs-as-code",
+        "microsserviços ou monólito modular",
+        "consistência entre serviços (idempotência, outbox, saga, CQRS)",
+        "resiliência (timeout, retry, circuit breaker)",
+        "estratégia técnica (dívida técnica, Tech Radar)"
+      ],
+      "cor": "#2d4b46",
+      "instrumento": "arco e pedra angular",
+      "desenho": "arquitetura-de-software",
+      "emPe": {
+        "altura": 660,
+        "largura": 150
+      },
+      "deHoje": true,
+      "nomeCor": "verde-pátina",
+      "motivoCor": "a pátina que o cobre e o bronze ganham com o tempo nos prédios: a cor do que foi feito para durar",
+      "motivoDesenho": "a pedra angular é a peça que segura o arco e não se tira depois: a decisão cara de desfazer"
+    },
+    "desenvolvimento-de-software": {
+      "titulo": "Desenvolvimento de Software",
+      "linhas": [
+        "Desenvolvimento",
+        "de Software"
+      ],
+      "corpo": 50,
+      "entrelinha": 48,
+      "frase": "O ofício dentro de cada serviço.",
+      "abrange": [
+        "Java, Spring e JVM",
+        "concorrência (threads, virtual threads, modelo de memória)",
+        "performance (profiling, GC, JFR, p99)",
+        "build (Gradle, Maven)",
+        "serialização (Jackson)",
+        "testes (JUnit, Testcontainers, contract testing)",
+        "refatoração e padrões de código",
+        "o que roda por baixo (TCP, sinais, sistema operacional)",
+        "web e front-end, quando aparecer"
+      ],
+      "cor": "#7a4430",
+      "instrumento": "paquímetro medindo uma peça",
+      "desenho": "desenvolvimento-de-software",
+      "emPe": {
+        "altura": 628,
+        "largura": 146
+      },
+      "deHoje": true,
+      "nomeCor": "tijolo",
+      "motivoCor": "o vermelho do óxido de ferro (a argila queimada) e do zarcão, a primeira demão de toda peça de ferro da oficina",
+      "motivoDesenho": "o instrumento de medir com precisão a peça que se fez: o ofício dentro de cada serviço"
+    },
+    "dados": {
+      "titulo": "Dados",
+      "linhas": [
+        "Dados"
+      ],
+      "corpo": 108,
+      "entrelinha": 108,
+      "frase": "Onde o dado mora e por onde ele anda.",
+      "abrange": [
+        "bancos relacionais (PostgreSQL)",
+        "bloqueio otimista e pessimista, isolamento e MVCC",
+        "NoSQL (MongoDB, DynamoDB)",
+        "modelagem e índices",
+        "migração de esquema (Flyway, Liquibase)",
+        "CDC (Debezium)",
+        "streaming (Kafka Streams, Flink)",
+        "lake, warehouse e lakehouse (Iceberg, dbt, DuckDB)",
+        "contratos de dados e Data Mesh",
+        "busca vetorial (pgvector)"
+      ],
+      "cor": "#5f4662",
+      "instrumento": "gaveta de fichas",
+      "desenho": "dados",
+      "emPe": {
+        "altura": 604,
+        "largura": 128
+      },
+      "deHoje": true,
+      "nomeCor": "ameixa",
+      "motivoCor": "o roxo das cópias do mimeógrafo a álcool, que copiou fichas, listas e registros por décadas",
+      "motivoDesenho": "a ficha é o registro e a gaveta é o índice; a ficha que volta é o dado que anda"
+    },
+    "ia": {
+      "titulo": "IA",
+      "linhas": [
+        "IA"
+      ],
+      "corpo": 108,
+      "entrelinha": 108,
+      "frase": "Software feito com IA e software que usa IA.",
+      "abrange": [
+        "LLMs e modelos (Claude, GPT, Gemini, abertos)",
+        "programar com IA (Claude Code, AI coding em produção)",
+        "agentes e MCP",
+        "RAG",
+        "prompts e contexto",
+        "evals e observabilidade de LLM (Langfuse, LangSmith)",
+        "guardrails e prompt injection",
+        "LLM local (Ollama)",
+        "Bedrock e fine-tuning"
+      ],
+      "cor": "#6e2f45",
+      "instrumento": "autômato escritor",
+      "desenho": "ia",
+      "emPe": {
+        "altura": 584,
+        "largura": 120
+      },
+      "deHoje": true,
+      "nomeCor": "vinho",
+      "motivoCor": "o vermelho do marroquim das encadernações finas; não há convenção que ligue a cor ao assunto",
+      "motivoDesenho": "o Escritor de Jaquet-Droz (1774) é uma máquina que escreve e se programa: um LLM do século XVIII"
+    },
+    "seguranca": {
+      "titulo": "Segurança",
+      "linhas": [
+        "Segurança"
+      ],
+      "corpo": 82,
+      "entrelinha": 82,
+      "frase": "Quem pode o quê e como provar.",
+      "abrange": [
+        "identidade e acesso (OAuth 2.0, OIDC, JWT, passkeys e WebAuthn)",
+        "Zero Trust",
+        "criptografia em repouso e em trânsito (TLS, KMS)",
+        "segredos (Vault, AWS Secrets Manager)",
+        "OWASP e CVEs",
+        "cadeia de suprimentos (SBOM, SLSA, Sigstore)",
+        "runtime security e segurança de IA",
+        "conformidade (PCI DSS, LGPD)"
+      ],
+      "cor": "#606a37",
+      "instrumento": "carta lacrada e sinete",
+      "desenho": "seguranca",
+      "emPe": {
+        "altura": 642,
+        "largura": 138
+      },
+      "deHoje": true,
+      "nomeCor": "oliva",
+      "motivoCor": "o verde-oliva das fardas (no Brasil desde 1931): a cor de quem guarda",
+      "motivoDesenho": "o sinete prova quem mandou e o lacre prova que ninguém abriu: identidade e prova"
+    },
+    "devops": {
+      "titulo": "DevOps",
+      "linhas": [
+        "DevOps"
+      ],
+      "corpo": 108,
+      "entrelinha": 108,
+      "frase": "O caminho do commit até a produção.",
+      "abrange": [
+        "containers e Kubernetes (Jobs, CronJobs, ciclo de vida do pod)",
+        "CI/CD (GitHub Actions)",
+        "GitOps (Argo CD)",
+        "infraestrutura como código (Terraform)",
+        "entrega progressiva (canary, feature flags)",
+        "plataforma interna (IDP, Backstage)",
+        "nuvem AWS (EKS, rede, contas e landing zones)",
+        "edge e proxies (HTTP/3)",
+        "FinOps"
+      ],
+      "cor": "#465976",
+      "instrumento": "guindaste de porto",
+      "desenho": "devops",
+      "emPe": {
+        "altura": 598,
+        "largura": 130
+      },
+      "deHoje": true,
+      "nomeCor": "azul-ardósia",
+      "motivoCor": "o azul das camisas de trabalho que deu nome ao colarinho azul: a cor da operação, do cais",
+      "motivoDesenho": "o guindaste do porto empilha contêineres, do navio até o pátio"
+    },
+    "sre": {
+      "titulo": "SRE",
+      "linhas": [
+        "SRE"
+      ],
+      "corpo": 108,
+      "entrelinha": 108,
+      "frase": "O que mantém a produção de pé.",
+      "abrange": [
+        "logs estruturados",
+        "tracing (OpenTelemetry, W3C Trace Context)",
+        "métricas e APM",
+        "wide events e cardinalidade",
+        "SLOs, SLIs e error budgets",
+        "alertas e ruído",
+        "incidentes e post-mortems",
+        "profiling contínuo e eBPF",
+        "chaos engineering",
+        "custo de observabilidade"
+      ],
+      "cor": "#c4a050",
+      "instrumento": "farol",
+      "desenho": "sre",
+      "emPe": {
+        "altura": 616,
+        "largura": 126
+      },
+      "deHoje": true,
+      "nomeCor": "ocre",
+      "motivoCor": "o ocre, dos pigmentos mais antigos, e o amarelo da cautela na sinalização",
+      "motivoDesenho": "o farol fica aceso o tempo todo e avisa antes de o navio bater"
+    },
+    "carreira": {
+      "titulo": "Carreira",
+      "linhas": [
+        "Carreira"
+      ],
+      "corpo": 104,
+      "entrelinha": 104,
+      "frase": "O lado humano de construir software.",
+      "abrange": [
+        "o papel do arquiteto",
+        "liderança técnica",
+        "times e Team Topologies",
+        "DevEx (DORA, SPACE)",
+        "decisões em grupo (RFCs, o ADR como conversa)",
+        "comunicação técnica",
+        "o estudo e o caderno"
+      ],
+      "cor": "#9a7650",
+      "corTexto": "#816342",
+      "instrumento": "compasso",
+      "desenho": "carreira",
+      "emPe": {
+        "altura": 632,
+        "largura": 134
+      },
+      "deHoje": true,
+      "nomeCor": "couro",
+      "motivoCor": "o couro de bezerro das encadernações, a cor do caderno que envelhece com o uso",
+      "motivoDesenho": "o instrumento de quem traça o plano antes de construir"
+    },
+    "java-e-spring": {
+      "titulo": "Java e Spring",
+      "linhas": [
+        "Java",
+        "e Spring"
+      ],
+      "corpo": 107,
+      "entrelinha": 103,
+      "frase": "O ofício dentro de cada serviço.",
+      "abrange": [
+        "JVM (GC, JIT, memória, JFR, thread dump)",
+        "concorrência (virtual threads, atomics, executors)",
+        "Spring Boot (autoconfiguração, AOP e proxies, Data JPA, Actuator)",
+        "Jackson e serialização",
+        "build (Gradle, Maven)",
+        "testes (JUnit, Testcontainers, slices do Spring)",
+        "performance (profiling, p99)",
+        "o que roda por baixo (TCP, sinais)"
+      ],
+      "cor": "#7a4430",
+      "instrumento": "paquímetro medindo uma peça",
+      "desenho": "desenvolvimento-de-software",
+      "emPe": {
+        "altura": 628,
+        "largura": 146
+      },
+      "deHoje": true,
+      "nomeCor": "tijolo",
+      "motivoCor": "o vermelho do óxido de ferro (a argila queimada) e do zarcão, a primeira demão de toda peça de ferro da oficina",
+      "motivoDesenho": "o instrumento de medir com precisão a peça que se fez: o ofício dentro de cada serviço",
+      "renomeiaDe": "Desenvolvimento de Software"
+    },
+    "backend": {
+      "titulo": "Backend",
+      "linhas": [
+        "Backend"
+      ],
+      "corpo": 101,
+      "entrelinha": 101,
+      "frase": "O ofício dentro de cada serviço.",
+      "abrange": [
+        "Java, Spring e JVM",
+        "runtimes e frameworks web",
+        "modelos de concorrência (threads, virtual threads, reativo)",
+        "performance (profiling, GC, JFR, p99)",
+        "build (Gradle, Maven)",
+        "serialização (Jackson)",
+        "padrões do lado do servidor",
+        "outras linguagens e WebAssembly, quando aparecerem"
+      ],
+      "cor": "#7a4430",
+      "instrumento": "paquímetro medindo uma peça",
+      "desenho": "desenvolvimento-de-software",
+      "emPe": {
+        "altura": 628,
+        "largura": 146
+      },
+      "deHoje": true,
+      "nomeCor": "tijolo",
+      "motivoCor": "o vermelho do óxido de ferro (a argila queimada) e do zarcão, a primeira demão de toda peça de ferro da oficina",
+      "motivoDesenho": "o instrumento de medir com precisão a peça que se fez: o ofício dentro de cada serviço",
+      "renomeiaDe": "Desenvolvimento de Software"
+    },
+    "observabilidade": {
+      "titulo": "Observabilidade",
+      "linhas": [
+        "Observabilidade"
+      ],
+      "corpo": 53,
+      "entrelinha": 53,
+      "frase": "Descobrir o que aconteceu em produção.",
+      "abrange": [
+        "logs estruturados",
+        "tracing (OpenTelemetry, W3C Trace Context)",
+        "métricas e APM",
+        "wide events e cardinalidade",
+        "SLOs, SLIs e error budgets",
+        "alertas e ruído",
+        "incidentes e post-mortems",
+        "profiling contínuo e eBPF",
+        "chaos engineering",
+        "custo de observabilidade"
+      ],
+      "cor": "#c4a050",
+      "instrumento": "farol",
+      "desenho": "sre",
+      "emPe": {
+        "altura": 616,
+        "largura": 126
+      },
+      "deHoje": true,
+      "nomeCor": "ocre",
+      "motivoCor": "o ocre, dos pigmentos mais antigos, e o amarelo da cautela na sinalização",
+      "motivoDesenho": "o farol fica aceso o tempo todo e avisa antes de o navio bater",
+      "renomeiaDe": "SRE"
+    },
+    "pagamentos": {
+      "titulo": "Pagamentos",
+      "linhas": [
+        "Pagamentos"
+      ],
+      "corpo": 70,
+      "entrelinha": 70,
+      "frase": "Dinheiro não pode sumir nem dobrar.",
+      "abrange": [
+        "ledger e partidas dobradas",
+        "saldo e conciliação",
+        "cartões e bandeiras (Visa, Mastercard, Elo)",
+        "adquirência (autorização, captura, estorno, chargeback)",
+        "Pix, Open Finance e Drex",
+        "cooperativas de crédito (Unicred, Sicoob, Sicredi)",
+        "payment rails",
+        "fraude e risco",
+        "regras das bandeiras e do Banco Central",
+        "BaaS e embedded finance"
+      ],
+      "cor": "#467866",
+      "nomeCor": "verde-cédula",
+      "motivoCor": "o verso verde das cédulas americanas desde 1861 e, por tradição dos fabricantes, o verde do papel de razão; um tom mais fundo que o da pesquisa, para a tinta clara ter mais contraste",
+      "instrumento": "caixa registradora mecânica",
+      "motivoDesenho": "inventada em 1879 contra a fraude: registra cada venda, guarda o dinheiro e fecha o caixa no fim do dia, que é conciliação",
+      "desenho": "pagamentos",
+      "emPe": {
+        "altura": 622,
+        "largura": 136
+      }
+    },
+    "integracao": {
+      "titulo": "Integração e Eventos",
+      "linhas": [
+        "Integração",
+        "e Eventos"
+      ],
+      "corpo": 81,
+      "entrelinha": 78,
+      "frase": "Como um sistema fala com o outro.",
+      "abrange": [
+        "mensageria (SQS, SNS, Kafka, RabbitMQ)",
+        "pub/sub e filtros de mensagem",
+        "arquitetura orientada a eventos",
+        "webhooks",
+        "DLQ e redrive",
+        "ordem e entrega pelo menos uma vez",
+        "design de API e API-First (REST, OpenAPI, GraphQL, gRPC)",
+        "contratos e evolução de esquema (AsyncAPI, Schema Registry)"
+      ],
+      "cor": "#72aba5",
+      "nomeCor": "verde-água de isolador",
+      "motivoCor": "o vidro dos isoladores das linhas de telégrafo e de telefone saía verde-água, pelo ferro da areia",
+      "instrumento": "mesa telefônica manual, com jaques e cordões",
+      "motivoDesenho": "a telefonista liga quem chama a quem atende: o roteamento e o contrato entre quem envia e quem recebe",
+      "desenho": "integracao",
+      "emPe": {
+        "altura": 610,
+        "largura": 134
+      }
+    },
+    "sistemas-distribuidos": {
+      "titulo": "Sistemas Distribuídos",
+      "linhas": [
+        "Sistemas",
+        "Distribuídos"
+      ],
+      "corpo": 70,
+      "entrelinha": 67,
+      "frase": "Quando o timeout não diz o que aconteceu.",
+      "abrange": [
+        "idempotência e retry",
+        "escrita dupla, outbox e inbox",
+        "saga e compensação",
+        "CQRS e event sourcing",
+        "modelos de consistência",
+        "resiliência (timeout, circuit breaker, bulkhead, backpressure)",
+        "cache distribuído",
+        "service mesh",
+        "execução durável (Temporal)",
+        "multi-região e serverless"
+      ],
+      "cor": "#1c2c51",
+      "nomeCor": "azul-marinho",
+      "motivoCor": "o azul dos uniformes da Marinha britânica (1748); os relógios de pêndulo de Huygens nasceram para achar a longitude no mar, comparando a hora de bordo com a do porto",
+      "instrumento": "dois relógios de pêndulo na mesma viga",
+      "motivoDesenho": "em 1665, Huygens viu que dois relógios pendurados na mesma viga acabavam balançando em sincronia, acertados só pelo que os ligava: cada máquina com o seu relógio e um meio comum entre elas",
+      "desenho": "sistemas-distribuidos",
+      "emPe": {
+        "altura": 648,
+        "largura": 146
+      }
+    },
+    "testes": {
+      "titulo": "Testes",
+      "linhas": [
+        "Testes"
+      ],
+      "corpo": 108,
+      "entrelinha": 108,
+      "frase": "A prova de que o código faz o que deve.",
+      "abrange": [
+        "TDD e BDD",
+        "pirâmide de testes",
+        "JUnit e Testcontainers",
+        "testes de slice do Spring",
+        "contract testing (Pact)",
+        "testes de carga e de performance (k6, Gatling)",
+        "chaos engineering",
+        "dados de teste",
+        "testes com IA"
+      ],
+      "cor": "#383532",
+      "nomeCor": "pedra de toque",
+      "motivoCor": "a pedra preta em que se risca o ouro para conferir a pureza: \"pedra de toque\" é, ao pé da letra, o teste",
+      "instrumento": "fio de prumo diante da parede",
+      "motivoDesenho": "o prumo não mede, compara com uma referência que não falha; o fantasma é a vertical verdadeira ao lado da parede que saiu do prumo",
+      "desenho": "testes",
+      "emPe": {
+        "altura": 596,
+        "largura": 124
+      }
+    },
+    "fundamentos": {
+      "titulo": "Fundamentos",
+      "linhas": [
+        "Fundamentos"
+      ],
+      "corpo": 63,
+      "entrelinha": 63,
+      "frase": "O que todo framework esconde.",
+      "abrange": [
+        "sistema operacional (processos, threads, sinais)",
+        "redes (TCP, DNS, TLS)",
+        "concorrência e modelo de memória",
+        "estruturas de dados e algoritmos",
+        "teoria das filas",
+        "desempenho do hardware (cache de CPU, memória)"
+      ],
+      "cor": "#a69d91",
+      "nomeCor": "cinza-pedra",
+      "motivoCor": "associação: o cinza da pedra; calculus, em latim, é a pedrinha de contar que deu nome ao cálculo",
+      "instrumento": "ábaco",
+      "motivoDesenho": "o instrumento de contar mais antigo ainda em uso: cada conta é um registro, e o cálculo acontece sem nenhuma camada por cima",
+      "desenho": "fundamentos",
+      "emPe": {
+        "altura": 630,
+        "largura": 140
+      }
+    },
+    "frontend": {
+      "titulo": "Frontend",
+      "linhas": [
+        "Frontend"
+      ],
+      "frase": "Do servidor até a tela do usuário.",
+      "abrange": [
+        "frameworks (React, Vue, Svelte) e meta-frameworks (Next, Nuxt, Astro)",
+        "SSR, RSC e streaming",
+        "a plataforma web (HTML, CSS e as APIs do navegador)",
+        "design systems",
+        "Core Web Vitals e performance de página",
+        "renderização no edge",
+        "estado no cliente",
+        "build do front (Vite e bundlers)",
+        "acessibilidade e i18n",
+        "mobile multiplataforma"
+      ],
+      "cor": "#2a2621"
+    }
+  },
+  "sugestoes": [
+    {
+      "id": "hoje",
+      "nome": "A coleção de hoje",
+      "ideia": "Os 8 livros como estão, para comparar.",
+      "livros": [
+        "arquitetura-de-software",
+        "desenvolvimento-de-software",
+        "dados",
+        "ia",
+        "seguranca",
+        "devops",
+        "sre",
+        "carreira"
+      ],
+      "sobrescreve": {
+        "arquitetura-de-software": {
+          "abrange": [
+            "Microsserviços",
+            "Domínios",
+            "Eventos",
+            "Consistência"
+          ]
+        },
+        "desenvolvimento-de-software": {
+          "abrange": [
+            "Java",
+            "Spring",
+            "Testes",
+            "Refatoração"
+          ]
+        },
+        "dados": {
+          "abrange": [
+            "Bancos",
+            "Modelagem",
+            "CDC",
+            "Pipelines"
+          ]
+        },
+        "ia": {
+          "abrange": [
+            "LLMs",
+            "Agentes",
+            "RAG",
+            "Prompts"
+          ]
+        },
+        "seguranca": {
+          "abrange": [
+            "Identidade",
+            "Segredos",
+            "Criptografia",
+            "Compliance"
+          ]
+        },
+        "devops": {
+          "abrange": [
+            "Containers",
+            "Kubernetes",
+            "CI/CD",
+            "Nuvem"
+          ]
+        },
+        "sre": {
+          "abrange": [
+            "Observabilidade",
+            "SLOs",
+            "Alertas",
+            "Incidentes"
+          ]
+        },
+        "carreira": {
+          "abrange": [
+            "O papel do arquiteto",
+            "O estudo",
+            "O time"
+          ]
+        }
+      }
+    },
+    {
+      "id": "s1",
+      "nome": "Os oito e Pagamentos",
+      "ideia": "A estante de hoje inteira, mais o livro do assunto que mais identifica o Cesar e que hoje some dentro de Arquitetura de Software: Pagamentos. Nada sai, nada muda de nome. As 16 categorias do site de notícias entram como itens do que cada livro abrange.",
+      "livros": [
+        "arquitetura-de-software",
+        "desenvolvimento-de-software",
+        "dados",
+        "ia",
+        "seguranca",
+        "devops",
+        "sre",
+        "carreira",
+        "pagamentos"
+      ],
+      "posts": {
+        "arquitetura-de-software": [
+          "cronjob-vs-endpoint-sqs",
+          "overhead-vs-overkill",
+          "cobranca-duplicada-no-retry",
+          "efeito-externo-sem-registro-local",
+          "sns-filter-policy"
+        ],
+        "desenvolvimento-de-software": [
+          "aop-jdk-proxy-cglib",
+          "aoputils-gettargetclass",
+          "atomicboolean-parada-graciosa",
+          "gradle-tipos-de-dependencia",
+          "jackson-filtros-mascarando-cartao",
+          "virtual-threads-pinning-close-wait"
+        ],
+        "dados": [
+          "bloqueio-otimista-e-pessimista",
+          "data-lake-vs-data-warehouse"
+        ],
+        "ia": [],
+        "seguranca": [
+          "criptografia-em-repouso-e-em-transito",
+          "jwt-estrutura-e-campos"
+        ],
+        "devops": [
+          "kubernetes-cronjob-concorrencia",
+          "sigterm-sigkill-kubernetes"
+        ],
+        "sre": [
+          "logging-estruturado-spring-boot",
+          "w3c-trace-context",
+          "wide-events-canonical-log-lines"
+        ],
+        "carreira": [],
+        "pagamentos": [
+          "arquitetura-de-ledger"
+        ]
+      },
+      "sobrescreve": {
+        "desenvolvimento-de-software": {
+          "vemDe": "Desenvolvimento de Software de hoje; do site de notícias, Backend & Runtimes, Testes & Qualidade, Fundamentos de Computação e Frontend & Web."
+        },
+        "dados": {
+          "vemDe": "Dados de hoje; do site de notícias, Dados & Streaming."
+        },
+        "ia": {
+          "vemDe": "IA de hoje; do site de notícias, IA & LLMs e AIOps & Agents (e o Bedrock, de Cloud)."
+        },
+        "seguranca": {
+          "vemDe": "Segurança de hoje; do site de notícias, Segurança & IAM e o PCI DSS de Fintech & Pagamentos."
+        },
+        "devops": {
+          "vemDe": "DevOps de hoje; do site de notícias, DevOps & Plataformas e Cloud."
+        },
+        "sre": {
+          "vemDe": "SRE de hoje; do site de notícias, Observabilidade & SRE e o chaos engineering de Testes & Qualidade."
+        },
+        "carreira": {
+          "vemDe": "Carreira de hoje; do site de notícias, a estrutura dos times de Arq. Corporativa (Team Topologies, DevEx)."
+        },
+        "pagamentos": {
+          "vemDe": "Novo. O ledger de Arquitetura de Software; do site de notícias, Fintech & Pagamentos."
+        },
+        "arquitetura-de-software": {
+          "abrange": [
+            "decisões e trade-offs (ADRs, overengineering)",
+            "DDD e bounded contexts",
+            "Clean e Hexagonal",
+            "padrões (GoF, Fowler)",
+            "C4 e docs-as-code",
+            "microsserviços ou monólito modular",
+            "consistência entre serviços (idempotência, outbox, saga, CQRS)",
+            "resiliência (timeout, retry, circuit breaker)",
+            "mensageria e eventos (SQS, SNS, Kafka, AsyncAPI)",
+            "design de API (REST, OpenAPI, GraphQL)"
+          ],
+          "vemDe": "Arquitetura de Software de hoje, sem o ledger; do site de notícias, Design & Padrões, Sist. Distribuídos, Integração & Eventos e a estratégia técnica de Arq. Corporativa."
+        }
+      },
+      "custo": "Entra um livro novo, Pagamentos, como Volume 09 (desenho e cor novos). Nenhum livro sai, muda de nome ou de número. Um post troca de livro: o ledger, de Arquitetura de Software para Pagamentos. É a menor mudança que dá livro ao domínio."
+    },
+    {
+      "id": "s2",
+      "nome": "O que os posts pedem",
+      "ideia": "Os oito e Pagamentos, mais o livro da mensageria: ela é tag de quatro posts e assunto de um (o filtro do SNS), e no site de notícias é uma categoria forte (Integração & Eventos). Com ela, Arquitetura de Software fica com as decisões e as garantias entre serviços, e a conversa entre sistemas ganha casa.",
+      "livros": [
+        "arquitetura-de-software",
+        "desenvolvimento-de-software",
+        "dados",
+        "ia",
+        "seguranca",
+        "devops",
+        "sre",
+        "carreira",
+        "pagamentos",
+        "integracao"
+      ],
+      "posts": {
+        "arquitetura-de-software": [
+          "cronjob-vs-endpoint-sqs",
+          "overhead-vs-overkill",
+          "cobranca-duplicada-no-retry",
+          "efeito-externo-sem-registro-local"
+        ],
+        "desenvolvimento-de-software": [
+          "aop-jdk-proxy-cglib",
+          "aoputils-gettargetclass",
+          "atomicboolean-parada-graciosa",
+          "gradle-tipos-de-dependencia",
+          "jackson-filtros-mascarando-cartao",
+          "virtual-threads-pinning-close-wait"
+        ],
+        "dados": [
+          "bloqueio-otimista-e-pessimista",
+          "data-lake-vs-data-warehouse"
+        ],
+        "ia": [],
+        "seguranca": [
+          "criptografia-em-repouso-e-em-transito",
+          "jwt-estrutura-e-campos"
+        ],
+        "devops": [
+          "kubernetes-cronjob-concorrencia",
+          "sigterm-sigkill-kubernetes"
+        ],
+        "sre": [
+          "logging-estruturado-spring-boot",
+          "w3c-trace-context",
+          "wide-events-canonical-log-lines"
+        ],
+        "carreira": [],
+        "pagamentos": [
+          "arquitetura-de-ledger"
+        ],
+        "integracao": [
+          "sns-filter-policy"
+        ]
+      },
+      "sobrescreve": {
+        "desenvolvimento-de-software": {
+          "vemDe": "Desenvolvimento de Software de hoje; do site de notícias, Backend & Runtimes, Testes & Qualidade, Fundamentos de Computação e Frontend & Web."
+        },
+        "dados": {
+          "vemDe": "Dados de hoje; do site de notícias, Dados & Streaming."
+        },
+        "ia": {
+          "vemDe": "IA de hoje; do site de notícias, IA & LLMs e AIOps & Agents (e o Bedrock, de Cloud)."
+        },
+        "seguranca": {
+          "vemDe": "Segurança de hoje; do site de notícias, Segurança & IAM e o PCI DSS de Fintech & Pagamentos."
+        },
+        "devops": {
+          "vemDe": "DevOps de hoje; do site de notícias, DevOps & Plataformas e Cloud."
+        },
+        "sre": {
+          "vemDe": "SRE de hoje; do site de notícias, Observabilidade & SRE e o chaos engineering de Testes & Qualidade."
+        },
+        "carreira": {
+          "vemDe": "Carreira de hoje; do site de notícias, a estrutura dos times de Arq. Corporativa (Team Topologies, DevEx)."
+        },
+        "pagamentos": {
+          "vemDe": "Novo. O ledger de Arquitetura de Software; do site de notícias, Fintech & Pagamentos."
+        },
+        "integracao": {
+          "vemDe": "Novo. A mensageria de Arquitetura de Software; do site de notícias, Integração & Eventos."
+        },
+        "arquitetura-de-software": {
+          "vemDe": "Arquitetura de Software de hoje, sem o ledger e sem a mensageria; do site de notícias, Design & Padrões, Sist. Distribuídos e a estratégia técnica de Arq. Corporativa."
+        }
+      },
+      "custo": "Entram dois livros novos, Pagamentos (Volume 09) e Integração e Eventos (Volume 10). Nenhum livro sai, muda de nome ou de número. Dois posts trocam de livro: o ledger vai para Pagamentos e o SNS Filter Policy para Integração e Eventos. Os dois livros novos começam com um post cada."
+    },
+    {
+      "id": "s3",
+      "nome": "Os nomes do que tem dentro",
+      "ideia": "Os mesmos livros da sugestão 2, com dois nomes trocados pelo que está dentro deles, a palavra que o leitor procura: Desenvolvimento de Software vira Java e Spring (os seis posts são de Java e Spring) e SRE vira Observabilidade (os três posts são de observabilidade). Reabre a D30, de 24/09.",
+      "livros": [
+        "arquitetura-de-software",
+        "java-e-spring",
+        "dados",
+        "ia",
+        "seguranca",
+        "devops",
+        "observabilidade",
+        "carreira",
+        "pagamentos",
+        "integracao"
+      ],
+      "posts": {
+        "arquitetura-de-software": [
+          "cronjob-vs-endpoint-sqs",
+          "overhead-vs-overkill",
+          "cobranca-duplicada-no-retry",
+          "efeito-externo-sem-registro-local"
+        ],
+        "java-e-spring": [
+          "aop-jdk-proxy-cglib",
+          "aoputils-gettargetclass",
+          "atomicboolean-parada-graciosa",
+          "gradle-tipos-de-dependencia",
+          "jackson-filtros-mascarando-cartao",
+          "virtual-threads-pinning-close-wait"
+        ],
+        "dados": [
+          "bloqueio-otimista-e-pessimista",
+          "data-lake-vs-data-warehouse"
+        ],
+        "ia": [],
+        "seguranca": [
+          "criptografia-em-repouso-e-em-transito",
+          "jwt-estrutura-e-campos"
+        ],
+        "devops": [
+          "kubernetes-cronjob-concorrencia",
+          "sigterm-sigkill-kubernetes"
+        ],
+        "observabilidade": [
+          "logging-estruturado-spring-boot",
+          "w3c-trace-context",
+          "wide-events-canonical-log-lines"
+        ],
+        "carreira": [],
+        "pagamentos": [
+          "arquitetura-de-ledger"
+        ],
+        "integracao": [
+          "sns-filter-policy"
+        ]
+      },
+      "sobrescreve": {
+        "dados": {
+          "vemDe": "Dados de hoje; do site de notícias, Dados & Streaming."
+        },
+        "ia": {
+          "vemDe": "IA de hoje; do site de notícias, IA & LLMs e AIOps & Agents (e o Bedrock, de Cloud)."
+        },
+        "seguranca": {
+          "vemDe": "Segurança de hoje; do site de notícias, Segurança & IAM e o PCI DSS de Fintech & Pagamentos."
+        },
+        "devops": {
+          "vemDe": "DevOps de hoje; do site de notícias, DevOps & Plataformas e Cloud."
+        },
+        "carreira": {
+          "vemDe": "Carreira de hoje; do site de notícias, a estrutura dos times de Arq. Corporativa (Team Topologies, DevEx)."
+        },
+        "pagamentos": {
+          "vemDe": "Novo. O ledger de Arquitetura de Software; do site de notícias, Fintech & Pagamentos."
+        },
+        "integracao": {
+          "vemDe": "Novo. A mensageria de Arquitetura de Software; do site de notícias, Integração & Eventos."
+        },
+        "arquitetura-de-software": {
+          "vemDe": "Arquitetura de Software de hoje, sem o ledger e sem a mensageria; do site de notícias, Design & Padrões, Sist. Distribuídos e a estratégia técnica de Arq. Corporativa."
+        },
+        "java-e-spring": {
+          "vemDe": "Desenvolvimento de Software de hoje, com o nome do que tem dentro (era Java até a D30); do site de notícias, Backend & Runtimes, Testes & Qualidade e Fundamentos de Computação."
+        },
+        "observabilidade": {
+          "vemDe": "SRE de hoje, com o nome que tinha até a D30; do site de notícias, Observabilidade & SRE e o chaos engineering de Testes & Qualidade."
+        }
+      },
+      "custo": "Os livros da sugestão 2, com dois nomes trocados (reabre a D30): Desenvolvimento de Software → Java e Spring e SRE → Observabilidade, os dois com o desenho, a cor e o volume de hoje; Observabilidade troca também a frase (\"O que mantém a produção de pé.\" → \"Descobrir o que aconteceu em produção.\"). Os endereços antigos passam a levar aos novos; o redirecionamento Java → Desenvolvimento de Software passa a apontar direto para Java e Spring, e o Observabilidade → SRE da D30 sai, porque o endereço volta a ser a página do livro. Dois posts trocam de livro (os da sugestão 2) e nove só trocam o nome do livro. Frontend & Web fica de fora (o blog não escreve sobre isso)."
+    },
+    {
+      "id": "s4",
+      "nome": "A arquitetura em três",
+      "ideia": "O livro que mais mistura assuntos, Arquitetura de Software, se abre em três: as decisões (Arquitetura de Software), as garantias quando algo falha (Sistemas Distribuídos) e a conversa entre sistemas (Integração e Eventos). Mais Pagamentos, com o domínio; nenhum nome muda.",
+      "livros": [
+        "arquitetura-de-software",
+        "desenvolvimento-de-software",
+        "dados",
+        "ia",
+        "seguranca",
+        "devops",
+        "sre",
+        "carreira",
+        "pagamentos",
+        "integracao",
+        "sistemas-distribuidos"
+      ],
+      "posts": {
+        "arquitetura-de-software": [
+          "cronjob-vs-endpoint-sqs",
+          "overhead-vs-overkill"
+        ],
+        "desenvolvimento-de-software": [
+          "aop-jdk-proxy-cglib",
+          "aoputils-gettargetclass",
+          "atomicboolean-parada-graciosa",
+          "gradle-tipos-de-dependencia",
+          "jackson-filtros-mascarando-cartao",
+          "virtual-threads-pinning-close-wait"
+        ],
+        "dados": [
+          "bloqueio-otimista-e-pessimista",
+          "data-lake-vs-data-warehouse"
+        ],
+        "ia": [],
+        "seguranca": [
+          "criptografia-em-repouso-e-em-transito",
+          "jwt-estrutura-e-campos"
+        ],
+        "devops": [
+          "kubernetes-cronjob-concorrencia",
+          "sigterm-sigkill-kubernetes"
+        ],
+        "sre": [
+          "logging-estruturado-spring-boot",
+          "w3c-trace-context",
+          "wide-events-canonical-log-lines"
+        ],
+        "carreira": [],
+        "pagamentos": [
+          "arquitetura-de-ledger"
+        ],
+        "integracao": [
+          "sns-filter-policy"
+        ],
+        "sistemas-distribuidos": [
+          "cobranca-duplicada-no-retry",
+          "efeito-externo-sem-registro-local"
+        ]
+      },
+      "sobrescreve": {
+        "desenvolvimento-de-software": {
+          "vemDe": "Desenvolvimento de Software de hoje; do site de notícias, Backend & Runtimes, Testes & Qualidade, Fundamentos de Computação e Frontend & Web."
+        },
+        "dados": {
+          "vemDe": "Dados de hoje; do site de notícias, Dados & Streaming."
+        },
+        "ia": {
+          "vemDe": "IA de hoje; do site de notícias, IA & LLMs e AIOps & Agents (e o Bedrock, de Cloud)."
+        },
+        "seguranca": {
+          "vemDe": "Segurança de hoje; do site de notícias, Segurança & IAM e o PCI DSS de Fintech & Pagamentos."
+        },
+        "devops": {
+          "vemDe": "DevOps de hoje; do site de notícias, DevOps & Plataformas e Cloud."
+        },
+        "sre": {
+          "vemDe": "SRE de hoje; do site de notícias, Observabilidade & SRE e o chaos engineering de Testes & Qualidade."
+        },
+        "carreira": {
+          "vemDe": "Carreira de hoje; do site de notícias, a estrutura dos times de Arq. Corporativa (Team Topologies, DevEx)."
+        },
+        "pagamentos": {
+          "vemDe": "Novo. O ledger de Arquitetura de Software; do site de notícias, Fintech & Pagamentos."
+        },
+        "integracao": {
+          "vemDe": "Novo. A mensageria de Arquitetura de Software; do site de notícias, Integração & Eventos."
+        },
+        "sistemas-distribuidos": {
+          "vemDe": "Novo. A consistência de Arquitetura de Software; do site de notícias, Sist. Distribuídos."
+        },
+        "arquitetura-de-software": {
+          "abrange": [
+            "decisões e trade-offs (ADRs, overengineering)",
+            "DDD e bounded contexts",
+            "Clean e Hexagonal",
+            "padrões (GoF, Fowler)",
+            "C4 e docs-as-code",
+            "microsserviços ou monólito modular",
+            "atributos de qualidade (custo, latência, disponibilidade)",
+            "estratégia técnica (dívida técnica, Tech Radar)",
+            "governança de API"
+          ],
+          "vemDe": "As decisões de Arquitetura de Software de hoje; do site de notícias, Design & Padrões e a estratégia técnica de Arq. Corporativa."
+        }
+      },
+      "custo": "Entram três livros novos: Pagamentos (Volume 09), Integração e Eventos (10) e Sistemas Distribuídos (11). Nenhum livro sai, muda de nome ou de número. Quatro posts trocam de livro: a chave de idempotência e o efeito externo vão para Sistemas Distribuídos (é o que eles ensinam), o SNS Filter Policy para Integração e Eventos e o ledger para Pagamentos. Arquitetura de Software, o Volume 01, fica com os dois posts de decisão. IA e Carreira continuam sem posts."
+    },
+    {
+      "id": "s5",
+      "nome": "O espelho do site de notícias",
+      "ideia": "O blog com o mesmo índice do site de notícias: as 16 categorias viram 12 livros, com os nomes de lá sem o \"&\". As duas de IA viram uma; Design & Padrões e Arq. Corporativa entram em Arquitetura de Software; Cloud entra em DevOps; Frontend & Web fica de fora. Carreira, que não é categoria lá, sai.",
+      "livros": [
+        "arquitetura-de-software",
+        "backend",
+        "dados",
+        "ia",
+        "seguranca",
+        "devops",
+        "observabilidade",
+        "sistemas-distribuidos",
+        "integracao",
+        "pagamentos",
+        "testes",
+        "fundamentos"
+      ],
+      "posts": {
+        "arquitetura-de-software": [
+          "cronjob-vs-endpoint-sqs",
+          "overhead-vs-overkill"
+        ],
+        "backend": [
+          "aop-jdk-proxy-cglib",
+          "aoputils-gettargetclass",
+          "atomicboolean-parada-graciosa",
+          "gradle-tipos-de-dependencia",
+          "jackson-filtros-mascarando-cartao",
+          "virtual-threads-pinning-close-wait"
+        ],
+        "dados": [
+          "bloqueio-otimista-e-pessimista",
+          "data-lake-vs-data-warehouse"
+        ],
+        "ia": [],
+        "seguranca": [
+          "criptografia-em-repouso-e-em-transito",
+          "jwt-estrutura-e-campos"
+        ],
+        "devops": [
+          "kubernetes-cronjob-concorrencia",
+          "sigterm-sigkill-kubernetes"
+        ],
+        "observabilidade": [
+          "logging-estruturado-spring-boot",
+          "w3c-trace-context",
+          "wide-events-canonical-log-lines"
+        ],
+        "sistemas-distribuidos": [
+          "cobranca-duplicada-no-retry",
+          "efeito-externo-sem-registro-local"
+        ],
+        "integracao": [
+          "sns-filter-policy"
+        ],
+        "pagamentos": [
+          "arquitetura-de-ledger"
+        ],
+        "testes": [],
+        "fundamentos": []
+      },
+      "sobrescreve": {
+        "dados": {
+          "vemDe": "Dados de hoje; do site de notícias, Dados & Streaming."
+        },
+        "ia": {
+          "vemDe": "IA de hoje; do site de notícias, IA & LLMs e AIOps & Agents (e o Bedrock, de Cloud)."
+        },
+        "seguranca": {
+          "vemDe": "Segurança de hoje; do site de notícias, Segurança & IAM e o PCI DSS de Fintech & Pagamentos."
+        },
+        "devops": {
+          "vemDe": "DevOps de hoje; do site de notícias, DevOps & Plataformas, Cloud e a parte de Platform Engineering e DevEx de Arq. Corporativa.",
+          "abrange": [
+            "containers e Kubernetes",
+            "CI/CD e GitOps",
+            "entrega progressiva",
+            "infraestrutura como código (Terraform)",
+            "plataforma interna e Platform Engineering (IDP, Backstage)",
+            "DevEx e DORA",
+            "nuvem (AWS, Azure, GCP: computação, rede, landing zones)",
+            "CDN e edge",
+            "Well-Architected e FinOps"
+          ]
+        },
+        "pagamentos": {
+          "vemDe": "Novo. O ledger de Arquitetura de Software; do site de notícias, Fintech & Pagamentos."
+        },
+        "integracao": {
+          "vemDe": "Novo. A mensageria de Arquitetura de Software; do site de notícias, Integração & Eventos."
+        },
+        "sistemas-distribuidos": {
+          "vemDe": "Novo. A consistência de Arquitetura de Software; do site de notícias, Sist. Distribuídos."
+        },
+        "arquitetura-de-software": {
+          "abrange": [
+            "DDD e bounded contexts",
+            "padrões (GoF, Fowler)",
+            "Clean e Hexagonal",
+            "C4, ADRs e docs-as-code",
+            "decisões e trade-offs (overengineering)",
+            "microsserviços ou monólito modular",
+            "estrutura dos times (Team Topologies)",
+            "governança de API",
+            "estratégia técnica (dívida técnica, Tech Radar)",
+            "o papel do arquiteto"
+          ],
+          "vemDe": "Arquitetura de Software de hoje e o papel do arquiteto, de Carreira; do site de notícias, Design & Padrões e Arq. Corporativa."
+        },
+        "backend": {
+          "vemDe": "Desenvolvimento de Software de hoje, com o nome do site de notícias; de lá, Backend & Runtimes."
+        },
+        "observabilidade": {
+          "abrange": [
+            "logs estruturados",
+            "tracing (OpenTelemetry, W3C Trace Context)",
+            "métricas e APM",
+            "wide events e cardinalidade",
+            "SLOs, SLIs e error budgets",
+            "alertas e ruído",
+            "incidentes e post-mortems",
+            "profiling contínuo e eBPF",
+            "custo de observabilidade"
+          ],
+          "vemDe": "SRE de hoje, com o nome do site de notícias (e o que tinha até a D30); de lá, Observabilidade & SRE."
+        },
+        "testes": {
+          "vemDe": "Novo. Os testes de Desenvolvimento de Software; do site de notícias, Testes & Qualidade."
+        },
+        "fundamentos": {
+          "vemDe": "Novo. O que hoje é item de Desenvolvimento de Software; do site de notícias, Fundamentos de Computação."
+        }
+      },
+      "custo": "Entram cinco livros novos, com os números depois dos de hoje: Sistemas Distribuídos (08), Integração e Eventos (09), Pagamentos (10), Testes (11) e Fundamentos (12). Sai Carreira: o papel do arquiteto vai para Arquitetura de Software, e /categories/Carreira/ leva para lá. Dois nomes trocados, reabrindo a D30: Desenvolvimento de Software → Backend e SRE → Observabilidade, com os redirecionamentos e os ajustes da sugestão 3. Quatro posts trocam de livro (os da sugestão 4) e nove só trocam o nome do livro. Três livros começam sem posts (IA, Testes e Fundamentos): o fundamento que já aparece no blog (o PID 1, o CLOSE_WAIT, a visibilidade entre threads) está dentro de posts que ensinam a ferramenta, em Backend e em DevOps."
+    },
+    {
+      "id": "final",
+      "nome": "A coleção de 13",
+      "ideia": "A sugestão 5 com Frontend, escolhida pelo Cesar (D78): treze livros em ordem alfabética, que é a ordem dos volumes. Desenhos, cores, frases e textos novos; os livros de hoje mantêm o nome e Carreira sai.",
+      "livros": [
+        "arquitetura-de-software",
+        "dados",
+        "desenvolvimento-de-software",
+        "devops",
+        "frontend",
+        "fundamentos",
+        "ia",
+        "integracao",
+        "pagamentos",
+        "seguranca",
+        "sistemas-distribuidos",
+        "sre",
+        "testes"
+      ],
+      "posts": {
+        "arquitetura-de-software": [
+          "cronjob-vs-endpoint-sqs",
+          "overhead-vs-overkill"
+        ],
+        "dados": [
+          "bloqueio-otimista-e-pessimista",
+          "data-lake-vs-data-warehouse"
+        ],
+        "desenvolvimento-de-software": [
+          "aop-jdk-proxy-cglib",
+          "aoputils-gettargetclass",
+          "atomicboolean-parada-graciosa",
+          "gradle-tipos-de-dependencia",
+          "jackson-filtros-mascarando-cartao",
+          "virtual-threads-pinning-close-wait"
+        ],
+        "devops": [
+          "kubernetes-cronjob-concorrencia",
+          "sigterm-sigkill-kubernetes"
+        ],
+        "frontend": [],
+        "fundamentos": [],
+        "ia": [],
+        "integracao": [
+          "sns-filter-policy"
+        ],
+        "pagamentos": [
+          "arquitetura-de-ledger"
+        ],
+        "seguranca": [
+          "criptografia-em-repouso-e-em-transito",
+          "jwt-estrutura-e-campos"
+        ],
+        "sistemas-distribuidos": [
+          "cobranca-duplicada-no-retry",
+          "efeito-externo-sem-registro-local"
+        ],
+        "sre": [
+          "logging-estruturado-spring-boot",
+          "w3c-trace-context",
+          "wide-events-canonical-log-lines"
+        ],
+        "testes": []
+      },
+      "sobrescreve": {
+        "arquitetura-de-software": {
+          "titulo": "Arquitetura de Software",
+          "linhas": [
+            "Arquitetura",
+            "de Software"
+          ],
+          "corpo": 73,
+          "entrelinha": 70,
+          "frase": "As decisões caras de desfazer.",
+          "abrange": [
+            "decisões e trade-offs (overhead e overkill, overengineering)",
+            "microsserviços ou monólito modular",
+            "DDD e bounded contexts",
+            "Clean, Hexagonal e os padrões de Fowler (PoEAA)",
+            "atributos de qualidade (custo, latência, disponibilidade)",
+            "C4, ADRs e docs-as-code",
+            "estratégia técnica (dívida técnica, Tech Radar)",
+            "estrutura dos times (Team Topologies, a lei de Conway)",
+            "o papel do arquiteto"
+          ],
+          "vemDe": "Arquitetura de Software de hoje, só com as decisões (o ledger vai para Pagamentos, a idempotência e o outbox para Sistemas Distribuídos, o SNS para Integração e Eventos); o papel do arquiteto, de Carreira, que sai. Do site de notícias, Design & Padrões (menos a refatoração e os padrões GoF, que são de código) e, de Arq. Corporativa, a estrutura organizacional e a estratégia técnica.",
+          "cor": "#2d4f77",
+          "nomeCor": "azul-de-cianotipia",
+          "motivoCor": "fato: Herschel (1842) chamava o azul do seu processo de azul da Prússia; o blueprint foi a cópia de toda planta das salas de desenho de 1870 aos anos 1940. A cor do que foi decidido no papel.",
+          "instrumento": "prancheta com a planta e a régua-tê",
+          "motivoDesenho": "séc. XVII; cópia em cianotipia desde 1870 · decidir no papel o que custa caro desfazer em tijolo",
+          "desenho": "arquitetura-de-software"
+        },
+        "dados": {
+          "titulo": "Dados",
+          "linhas": [
+            "Dados"
+          ],
+          "corpo": 108,
+          "entrelinha": 108,
+          "frase": "Onde o dado mora e por onde ele anda.",
+          "abrange": [
+            "bancos relacionais (PostgreSQL)",
+            "bloqueio otimista e pessimista, isolamento e MVCC",
+            "NoSQL (MongoDB, DynamoDB)",
+            "modelagem, índices e planos de execução",
+            "migração de esquema (Flyway, Liquibase)",
+            "CDC (Debezium)",
+            "streaming de dados (Kafka Streams, Flink)",
+            "lake, warehouse e lakehouse (Iceberg, dbt, DuckDB)",
+            "contratos de dados e Data Mesh",
+            "busca vetorial (pgvector)"
+          ],
+          "vemDe": "Dados de hoje; do site de notícias, Dados & Streaming inteira.",
+          "cor": "#5b457f",
+          "nomeCor": "roxo-de-mimeógrafo",
+          "motivoCor": "fato (pesquisa): as cópias do mimeógrafo a álcool (1923) eram roxas, de anilina, \"o mais legível pelo maior número de cópias\". A cor do registro copiado; é motivo do assunto, não do tabulador, e está dito. Um tom mais azul que a ameixa de hoje.",
+          "instrumento": "tabulador de Hollerith",
+          "motivoDesenho": "1890 · contar 63 milhões de pessoas em cartões, seis meses em vez de sete anos",
+          "desenho": "dados"
+        },
+        "desenvolvimento-de-software": {
+          "titulo": "Desenvolvimento de Software",
+          "linhas": [
+            "Desenvolvimento",
+            "de Software"
+          ],
+          "corpo": 50,
+          "entrelinha": 48,
+          "frase": "Entre o seu código e a máquina.",
+          "abrange": [
+            "Java e a JVM (GC, JIT, memória, JFR, thread dump)",
+            "Spring Boot (autoconfiguração, AOP e proxies, Data JPA, Actuator)",
+            "concorrência em Java (virtual threads, atomics, executors, o modelo de memória do Java)",
+            "profiling (JFR, async-profiler)",
+            "build (Gradle, Maven)",
+            "serialização (Jackson)",
+            "padrões de código (GoF) e refatoração",
+            "outros runtimes e linguagens, quando aparecerem (Kotlin, Go, WebAssembly)"
+          ],
+          "vemDe": "Desenvolvimento de Software de hoje, sem três itens que viraram livro: os testes (Testes), \"o que roda por baixo (TCP, sinais, sistema operacional)\" (Fundamentos) e \"web e front-end, quando aparecer\" (Frontend). Do site de notícias, Backend & Runtimes inteira e, de Design & Padrões, a refatoração e os padrões GoF.",
+          "cor": "#82555a",
+          "nomeCor": "garança",
+          "motivoCor": "fato (pesquisa): a garança é o vermelho dos tecidos desde a Antiguidade; a calça *garance* do exército francês (1829–1914) sustentou a indústria de Avignon. O pano que sai do tear.",
+          "instrumento": "tear de Jacquard com a cadeia de cartões",
+          "motivoDesenho": "1804 · a máquina que lê o programa e faz o trabalho",
+          "desenho": "desenvolvimento-de-software"
+        },
+        "devops": {
+          "titulo": "DevOps",
+          "linhas": [
+            "DevOps"
+          ],
+          "corpo": 108,
+          "entrelinha": 108,
+          "frase": "O caminho do commit até a produção.",
+          "abrange": [
+            "containers e Kubernetes (pods, Jobs e CronJobs, probes, ciclo de vida do pod, HPA)",
+            "CI/CD (GitHub Actions)",
+            "GitOps (Argo CD)",
+            "service mesh (Istio, Linkerd)",
+            "infraestrutura como código (Terraform)",
+            "entrega progressiva (canary, feature flags)",
+            "plataforma interna e Platform Engineering (IDP, Backstage)",
+            "DevEx e DORA",
+            "nuvem (AWS: contas e landing zones, rede, computação, Lambda; Azure e GCP quando aparecerem)",
+            "CDN, edge e proxies (Cloudflare, Nginx, Envoy)",
+            "Well-Architected e FinOps"
+          ],
+          "vemDe": "DevOps de hoje; do site de notícias, DevOps & Plataformas (menos o AI-augmented SDLC, que é de IA), Cloud (menos o Bedrock, de IA, e menos cada serviço como mecanismo, regra 5) e, de Arq. Corporativa, Platform Engineering, DevEx, DORA, FinOps e landing zones.",
+          "cor": "#92a6c2",
+          "nomeCor": "azul-pneumático",
+          "motivoCor": "fato: a carta-bilhete do tubo pneumático de Paris era de papel azul (1897–1902) e ficou para sempre o *petit bleu* (Proust mandava os seus por ele). O papel que viaja na cápsula.",
+          "instrumento": "estação de tubo pneumático",
+          "motivoDesenho": "1853 · levar a cápsula intacta do balcão até onde ela é usada, sem ninguém carregar",
+          "desenho": "devops"
+        },
+        "frontend": {
+          "titulo": "Frontend",
+          "linhas": [
+            "Frontend"
+          ],
+          "corpo": 94,
+          "entrelinha": 94,
+          "frase": "O que o navegador mostra e quanto demora.",
+          "abrange": [
+            "frameworks (React, Vue, Svelte) e meta-frameworks (Next, Nuxt, Astro)",
+            "SSR, RSC e streaming",
+            "a plataforma web (HTML, CSS e as APIs do navegador)",
+            "design systems",
+            "Core Web Vitals e performance de página",
+            "renderização no edge",
+            "estado no cliente",
+            "build do front (Vite e bundlers)",
+            "acessibilidade e i18n",
+            "mobile multiplataforma"
+          ],
+          "vemDe": "Novo. Era \"web e front-end, quando aparecer\", um item de Desenvolvimento de Software sem post. Do site de notícias, Frontend & Web inteira.",
+          "cor": "#433123",
+          "nomeCor": "negro-de-fumo",
+          "motivoCor": "fato: a tinta de Gutenberg era negro de fumo (a fuligem de lamparina) em verniz de óleo de linhaça, porque a tinta de escrever escorria do tipo de metal. A tinta de toda página impressa.",
+          "instrumento": "prensa tipográfica de ferro (Albion)",
+          "motivoDesenho": "c. 1820 · fazer a página que o leitor vê",
+          "desenho": "frontend"
+        },
+        "fundamentos": {
+          "titulo": "Fundamentos",
+          "linhas": [
+            "Fundamentos"
+          ],
+          "corpo": 63,
+          "entrelinha": 63,
+          "frase": "O que fica quando a ferramenta muda.",
+          "abrange": [
+            "sistema operacional (processos, threads, sinais, PID 1, memória virtual)",
+            "redes (TCP e os estados da conexão, DNS, HTTP, HTTP/3 e QUIC)",
+            "concorrência e modelos de memória como conceito (escalonamento, locks, deadlock, visibilidade)",
+            "estruturas de dados e algoritmos",
+            "teoria das filas (lei de Little)",
+            "desempenho do hardware (cache de CPU, memória, disco)"
+          ],
+          "vemDe": "Novo. Era \"o que roda por baixo (TCP, sinais, sistema operacional)\", um item de Desenvolvimento de Software. Do site de notícias, Fundamentos de Computação inteira, com uma ressalva: a concorrência da JVM (`java.util.concurrent`, o modelo de memória do Java) fica em Desenvolvimento de Software.",
+          "cor": "#26626a",
+          "nomeCor": "azul-vitríolo",
+          "motivoCor": "fato: as pilhas de gravidade (Callaud, anos 1860), potes de vidro com sulfato de cobre, o \"vitríolo azul\", em camada azul no fundo, alimentaram as linhas de telégrafo dos EUA e do Reino Unido. O que fica embaixo e ninguém vê.",
+          "instrumento": "telégrafo de Morse: a chave e o registrador",
+          "motivoDesenho": "1844 · o bit, o código, o protocolo e a fita, com tudo à vista",
+          "desenho": "fundamentos"
+        },
+        "ia": {
+          "titulo": "IA",
+          "linhas": [
+            "IA"
+          ],
+          "corpo": 108,
+          "entrelinha": 108,
+          "frase": "Software feito com IA e software que usa IA.",
+          "abrange": [
+            "LLMs e modelos (Claude, GPT, Gemini, abertos)",
+            "programar com IA (Claude Code, AI coding em produção, o SDLC com IA)",
+            "agentes e MCP",
+            "RAG",
+            "prompts e contexto",
+            "evals e observabilidade de LLM (Langfuse, LangSmith)",
+            "guardrails, prompt injection e segurança de IA",
+            "LLM local (Ollama)",
+            "modelos sob medida (fine-tuning, Bedrock)"
+          ],
+          "vemDe": "IA de hoje; do site de notícias, IA & LLMs e AIOps & Agents inteiras, mais o Bedrock (de Cloud), o MCP (de Integração & Eventos), o AI Security (de Segurança & IAM) e o AI-augmented SDLC (de DevOps & Plataformas).",
+          "cor": "#5d4128",
+          "nomeCor": "nogueira",
+          "motivoCor": "fato: os cilindros de cera marrom de Edison (1888–1902), do bege ao marrom escuro conforme a fornada. A memória da máquina que fala.",
+          "instrumento": "o Turco, o autômato enxadrista de Kempelen",
+          "motivoDesenho": "1770 · a máquina que parecia pensar",
+          "desenho": "ia"
+        },
+        "integracao": {
+          "titulo": "Integração e Eventos",
+          "linhas": [
+            "Integração",
+            "e Eventos"
+          ],
+          "corpo": 81,
+          "entrelinha": 78,
+          "frase": "Como um sistema fala com o outro.",
+          "abrange": [
+            "mensageria (SQS, SNS, Kafka, RabbitMQ)",
+            "pub/sub e filtros de mensagem",
+            "arquitetura orientada a eventos",
+            "webhooks",
+            "DLQ e redrive",
+            "entrega pelo menos uma vez, ordem e partições",
+            "design de API e API-First (REST, OpenAPI, GraphQL e federation, gRPC)",
+            "versionamento e governança de API",
+            "contratos e evolução de esquema (AsyncAPI, Schema Registry)"
+          ],
+          "vemDe": "Novo. A mensageria de Arquitetura de Software (o SNS Filter Policy e o tema \"eventos\" do subtítulo de hoje); do site de notícias, Integração & Eventos (menos o MCP, que é de IA) e a governança de API de Arq. Corporativa.",
+          "cor": "#71a49d",
+          "nomeCor": "verde-água",
+          "motivoCor": "fato (pesquisa): os isoladores de vidro das linhas de telégrafo e de telefone saíam verde-água por causa do ferro da areia. O vidro que segura o fio entre as estações.",
+          "instrumento": "mesa telefônica manual",
+          "motivoDesenho": "1878 · ligar quem chama a quem atende; a lâmpada que acende é o evento",
+          "desenho": "integracao"
+        },
+        "pagamentos": {
+          "titulo": "Pagamentos",
+          "linhas": [
+            "Pagamentos"
+          ],
+          "corpo": 70,
+          "entrelinha": 70,
+          "frase": "Dinheiro não pode sumir nem duplicar.",
+          "abrange": [
+            "ledger e partidas dobradas",
+            "saldo e conciliação",
+            "cartões e bandeiras (Visa, Mastercard, Elo)",
+            "adquirência (autorização, captura, estorno, chargeback)",
+            "o sistema financeiro brasileiro (bancos, cooperativas, Pix, Open Finance, Drex)",
+            "trilhos de pagamento (payment rails)",
+            "fraude e risco",
+            "regras das bandeiras e do Banco Central"
+          ],
+          "vemDe": "Novo. O ledger de Arquitetura de Software; do site de notícias, Fintech & Pagamentos (menos o PCI DSS, que é de Segurança).",
+          "cor": "#4f6f57",
+          "nomeCor": "verde-cédula",
+          "motivoCor": "fato (pesquisa): o verso verde das cédulas dos EUA desde 1861, mantido em 1929 por ser \"durável e associado ao crédito forte e estável\"; o papel de razão verde é tradição de fabricante.",
+          "instrumento": "caixa registradora",
+          "motivoDesenho": "1879 · registrar cada venda contra o desvio e fechar o caixa",
+          "desenho": "pagamentos"
+        },
+        "seguranca": {
+          "titulo": "Segurança",
+          "linhas": [
+            "Segurança"
+          ],
+          "corpo": 82,
+          "entrelinha": 82,
+          "frase": "Quem pode o quê e como provar.",
+          "abrange": [
+            "identidade e acesso (OAuth 2.0, OIDC, JWT, passkeys e WebAuthn)",
+            "Zero Trust",
+            "criptografia em repouso e em trânsito (TLS, KMS)",
+            "segredos (Vault, AWS Secrets Manager)",
+            "OWASP e CVEs",
+            "cadeia de suprimentos (SBOM, SLSA, Sigstore)",
+            "runtime security",
+            "conformidade (PCI DSS, LGPD)"
+          ],
+          "vemDe": "Segurança de hoje; do site de notícias, Segurança & IAM (menos o AI Security, que é de IA) e o PCI DSS de Fintech & Pagamentos.",
+          "cor": "#7c322b",
+          "nomeCor": "vermelho-lacre",
+          "motivoCor": "fato: o lacre era tingido de vermelho com cinábrio ou vermelhão desde a Idade Média, e a partir do século XVII, à base de goma-laca, mais quebradiço de propósito, \"para mostrar com clareza se alguém mexeu na carta\". A cor da prova de que ninguém abriu, como o Cesar sugeriu; a fechadura detectora é a mesma ideia.",
+          "instrumento": "fechadura detectora de Chubb",
+          "motivoDesenho": "1818 · provar que alguém tentou abrir",
+          "desenho": "seguranca"
+        },
+        "sistemas-distribuidos": {
+          "titulo": "Sistemas Distribuídos",
+          "linhas": [
+            "Sistemas",
+            "Distribuídos"
+          ],
+          "corpo": 70,
+          "entrelinha": 67,
+          "frase": "Quando o timeout não diz o que aconteceu.",
+          "abrange": [
+            "idempotência e retry",
+            "escrita dupla, outbox e inbox",
+            "saga e compensação",
+            "CQRS e event sourcing",
+            "modelos de consistência",
+            "resiliência (timeout, circuit breaker, bulkhead, backpressure)",
+            "cache distribuído",
+            "execução durável (Temporal)",
+            "multi-região"
+          ],
+          "vemDe": "Novo. A consistência de Arquitetura de Software (Chave de idempotência e Efeito externo sem registro local, que hoje estão lá); do site de notícias, Sist. Distribuídos, menos três itens que foram para onde moram: \"microsserviços\" como decisão (Arquitetura de Software), post-mortems (SRE) e serverless (DevOps).",
+          "cor": "#202c4d",
+          "nomeCor": "azul-marinho",
+          "motivoCor": "fato (pesquisa): o azul escuro dos uniformes da Marinha britânica, fixado em 1748; e os dois relógios de Huygens eram relógios marítimos, feitos para a longitude. A cor do mar para relógios feitos para o mar.",
+          "instrumento": "os dois relógios de Huygens na mesma viga",
+          "motivoDesenho": "1665 · duas máquinas iguais que só se acertam pelo que as liga",
+          "desenho": "sistemas-distribuidos"
+        },
+        "sre": {
+          "titulo": "SRE",
+          "linhas": [
+            "SRE"
+          ],
+          "corpo": 108,
+          "entrelinha": 108,
+          "frase": "O que mantém a produção de pé.",
+          "abrange": [
+            "logs estruturados",
+            "tracing (OpenTelemetry, W3C Trace Context)",
+            "métricas e APM (Micrometer, Prometheus)",
+            "wide events e cardinalidade",
+            "SLOs, SLIs (p99) e error budgets",
+            "alertas e ruído",
+            "incidentes, on-call e post-mortems",
+            "profiling contínuo e eBPF",
+            "custo de observabilidade"
+          ],
+          "vemDe": "SRE de hoje; do site de notícias, Observabilidade & SRE inteira e os post-mortems de Sist. Distribuídos. O chaos engineering, que as sugestões anteriores punham aqui, vai para Testes (é de onde ele vem no site de notícias, e Testes precisa dele mais do que SRE).",
+          "cor": "#b59353",
+          "nomeCor": "latão",
+          "motivoCor": "fato de convenção (pesquisa): o amarelo é a cor da cautela na sinalização (ANSI Z535; o âmbar dos semáforos desde 1914). Associação de material: o latão polido dos reguladores de mostra. Mantém o lugar claro e quente do ocre de hoje, com outro motivo.",
+          "instrumento": "regulador centrífugo de Watt",
+          "motivoDesenho": "1788 · manter a rotação quando a carga muda",
+          "desenho": "sre"
+        },
+        "testes": {
+          "titulo": "Testes",
+          "linhas": [
+            "Testes"
+          ],
+          "corpo": 108,
+          "entrelinha": 108,
+          "frase": "Antes que a produção descubra.",
+          "abrange": [
+            "TDD e BDD",
+            "pirâmide de testes (unitário, integração, ponta a ponta)",
+            "JUnit e Testcontainers",
+            "testes de slice do Spring (@WebMvcTest, @DataJpaTest)",
+            "contract testing (Pact)",
+            "testes de carga e de performance (k6, Gatling)",
+            "chaos engineering",
+            "dados de teste e massa",
+            "testes com IA"
+          ],
+          "vemDe": "Novo. Os testes de Desenvolvimento de Software (o item \"testes (JUnit, Testcontainers, contract testing)\" e o tema \"testes\" do subtítulo de hoje); do site de notícias, Testes & Qualidade inteira, inclusive o chaos engineering e os testes com IA.",
+          "cor": "#39404d",
+          "nomeCor": "cinza-chumbo azulado",
+          "motivoCor": "fato: \"prumo\" vem de *plumbum*, chumbo, o metal do peso desde os romanos. A cor do oráculo.",
+          "instrumento": "fio de prumo",
+          "motivoDesenho": "antes de tudo · conferir contra a referência que não falha",
+          "desenho": "testes"
+        }
+      }
+    }
+  ],
+  "valeParaTodas": [
+    "Livro novo entra com o próximo número da coleção, como manda a regra dos livros (CAPAS.md): nenhum livro de hoje muda de volume.",
+    "A casa de cada post é o que ele ensina; o exemplo vira tag. A chave de idempotência e o efeito externo ensinam técnicas que valem fora de pagamento (\"A mesma técnica vale para webhooks, APIs públicas de pagamento e comandos consumidos de fila\"; \"banco mais fila, banco mais cache, banco mais índice de busca\"), então ficam com a arquitetura, ou com Sistemas Distribuídos onde ele existe. Pagamentos começa com o ledger, que só existe porque há dinheiro.",
+    "A tag Pagamentos (quatro posts) passa a ter o nome de um livro, e a regra das tags pede que tag não repita nome de categoria: ela sai do ledger, que vai para o livro, e muda de nome nos outros três (Cobrança, por exemplo), ou a regra ganha uma exceção.",
+    "Carreira fica nas quatro primeiras (o livro existe, desenhado, e custa zero). Sem ela, qualquer sugestão fica com um livro a menos: a sugestão 1 vira oito livros.",
+    "Os nomes da sugestão 3 (Java e Spring, Observabilidade) e o Backend da 5 servem em qualquer sugestão; trocar nome reabre a D30 e pede redirecionamento do endereço antigo.",
+    "Pagamentos é livro e não série: série é uma leitura em ordem, com começo e fim (a do Java segue as LTS); Pagamentos vai receber posts soltos (Pix, cartões, conciliação).",
+    "Integração e Eventos mantém o \"e Eventos\" do site de notícias: só \"Integração\" lembra integração contínua, e \"Mensageria\" é o nome de uma tag de quatro posts.",
+    "Fica fora em todas: Frontend & Web (o blog não escreve sobre isso; se virar assunto, é um livro novo) e Green IT. O Bedrock, de Cloud, vai para IA; o service mesh, para Sistemas Distribuídos ou Arquitetura de Software."
+  ]
+}

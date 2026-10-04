@@ -98,7 +98,7 @@ O que o blog faz e outro blog técnico em pt-BR não pode copiar sem mudar o jei
 ## Accessibility & Inclusion
 
 - Contraste mínimo dos tokens conferido por `npm run contraste` (D22), com 4,5:1 no texto pequeno;
-  a Carreira e a série Java nos títulos grandes são exceção decidida na D35.
+  a série Java nos títulos grandes é exceção decidida na D35 (a Carreira também era, até sair na D78).
 - Teclado e foco visível em tudo o que é interativo; `prefers-reduced-motion` respeitado em toda
   animação.
 - Meta de Lighthouse ≥ 95 em desempenho, acessibilidade, boas práticas e SEO, no celular, na home e

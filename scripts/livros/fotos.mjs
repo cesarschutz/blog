@@ -19,10 +19,11 @@
  * não ter) artigos. O número de artigos da lombada entra na foto: artigo novo pede foto nova (o build
  * avisa quando a foto ficou para trás, src/lib/fotos.ts).
  */
-import { mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright-core";
+import { opcoesDoChrome } from "../chrome.mjs";
 import sharp from "sharp";
 import { LIVROS, REVISTA, capa, capaDaRevista, iniciarBase, lombada, lombadaDaRevista } from "./base.mjs";
 import { medir } from "./medir.mjs";
@@ -84,7 +85,7 @@ const compacta = (e) => ({
   sombra: { contorno: e.sombra.contorno, desvio: arred(e.sombra.desvio, 1) },
 });
 
-const navegador = await chromium.launch({ channel: "chrome", headless: true });
+const navegador = await chromium.launch(opcoesDoChrome);
 try {
   iniciarBase(await medir(navegador, endereco));
   mkdirSync(PASTA, { recursive: true });
@@ -139,9 +140,11 @@ try {
       console.log(`  ${l.id}-aberto.webp (${(fotoA.bytes / 1024).toFixed(1)} KB)`);
     }
   }
-  // A busca sem resultado: o livro da marca (Volume 01, a cor do "cs").
-  const marca = LIVROS[0];
-  const fotoB = await fotografar(pagina, livroAberto({ cor: marca.cor, papel: marca.papel }), LARGURA.aberto, join(PASTA, "busca-aberto.webp"));
+  // A busca sem resultado: o livro da marca, na cor do "cs" (o token `marca` de tokens.ts). Desde a D78
+  // a marca não é mais, por definição, a cor do Volume 01 (os volumes seguem a ordem alfabética).
+  const corDaMarca = /\bmarca: "(#[0-9a-fA-F]{6})"/.exec(readFileSync(join(RAIZ, "src/styles/tokens.ts"), "utf8"))?.[1];
+  if (!corDaMarca) throw new Error("src/styles/tokens.ts: não achei o token marca");
+  const fotoB = await fotografar(pagina, livroAberto({ cor: corDaMarca, papel: LIVROS[0].papel }), LARGURA.aberto, join(PASTA, "busca-aberto.webp"));
   total += fotoB.bytes;
   dados.aberto.busca = { largura: fotoB.largura, altura: fotoB.altura };
   console.log(`  busca-aberto.webp (${(fotoB.bytes / 1024).toFixed(1)} KB)`);

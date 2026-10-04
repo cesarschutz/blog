@@ -49,6 +49,10 @@ const redirecionamentos = {
   "/exercicios": comBase("/"),
   // A página da série Java passou para /series/java/, como as categorias (D32).
   "/java": comBase("/series/java/"),
+  // A coleção de 13 livros (D78): Carreira saiu (não tinha artigos) e a tag Pagamentos virou Cobrança,
+  // porque Pagamentos virou livro. Sem codificar o destino (o Astro codifica).
+  "/categories/Carreira": comBase("/categories/"),
+  "/tags/Pagamentos": comBase("/tags/Cobrança/"),
   ...Object.fromEntries(
     Object.entries(NOMES_ANTIGOS).map(([antigo, novo]) => [
       `/categories/${antigo}`,

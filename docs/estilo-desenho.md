@@ -9,6 +9,11 @@ aprovados e podem ser afinados na Fase 5:
 
 Onde protótipo e briefing divergirem, vale o briefing.
 
+A "capa" daqui é a ilustração do post. Os desenhos das capas dos livros têm regra própria, na seção
+"Livros novos" de `docs/capas/CAPAS.md`: desde a D78, "O mesmo problema, um século antes" (a máquina
+que fazia o trabalho do livro antes do software, todas no mesmo ponto de vista, com um único fantasma
+tracejado; o conjunto em `docs/prototipos/colecoes/final/direcao-de-arte.md`).
+
 ## Ilustrações dos posts: estilo "A + C"
 
 - **Traço de caneta** com leve tremor de mão (filtro SVG global de deslocamento), terminais e
@@ -45,7 +50,8 @@ Onde protótipo e briefing divergirem, vale o briefing.
 | Anotações | Literata itálica: 25 na linha principal (`--ink`) e 20 no complemento (`--ink-2`). Linha de chamada curva em `--ink-2`, com traço 1,8 |
 | Carimbo | Contorno na cor de destaque e texto em Besley 800 |
 
-Na D30, Observabilidade virou o livro SRE (`#c4a050`); a observação abaixo vale para ele.
+Na D30, Observabilidade virou o livro SRE (`#c4a050`; `#b59353` desde a D78); a observação abaixo
+vale para ele.
 
 A conferir na Fase 5: o destaque de Observabilidade (`#C39A3E`) dá 2,24:1 sobre o papel claro. Isso
 basta para uma mancha de cor, mas não para traço fino nem texto. O protótipo de desenho testou

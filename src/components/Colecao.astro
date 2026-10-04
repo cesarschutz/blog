@@ -154,10 +154,28 @@ const RESPIRO = modo === "topo" ? 36 : 24;
 const W = `(var(--util) - ${RESPIRO}px)`;
 // A media query aproximada da largura útil (a página tem margem de ~2,4vw de cada lado e a barra de rolagem).
 const telaDe = (util: number) => Math.round((util + 16 + RESPIRO) / 0.952);
+// A largura útil para em `--largura` (1320px, base.css). Se os nomes só coubessem numa fileira mais larga que
+// isso, eles não aparecem em largura nenhuma (D78: com os 13 livros e a série, o lugar de cada volume fica
+// abaixo dos 100px mesmo na tela larga, e sem isto os nomes se atropelavam a partir de ~1890px).
+const UTIL_MAX = 1320;
+const nomesCabem = NOMES <= UTIL_MAX - RESPIRO;
+const semNomes = `.${id} .nome-livro{display:none}.${id}.colecao-home{padding-bottom:calc(14px + 18px * var(--kc))}`;
+// O giro dos livros. No "topo", a curva t^P de sempre (fica um pouco aquém da largura, e a fileira encolhe com
+// a rolagem). Na home (D78), o giro exato que faz a fileira ir até onde vai o texto, dos dois lados: a largura
+// dos livros no giro θ é FOLGA·(N·cw·cos θ + S·sin θ) = FOLGA·R·cos(θ − φ), com R = √((N·cw)² + S²) e
+// φ = atan2(S, N·cw); então θ = φ + acos(X / R), com X a largura útil menos os vãos, dividida pela FOLGA. Com
+// 13 livros e a série, a curva t^P deixava ~180px vazios de cada lado a 1280px.
+const R = Math.hypot(N * cw, S);
+const PHI = (Math.atan2(S, N * cw) * 180) / Math.PI;
+const vaos = `(${N - 1} * var(--vao) + ${extra ? `max(0px, 24px * var(--kc) - var(--vao))` : "0px"})`;
+const giro =
+  modo === "home"
+    ? `clamp(${GIRO_MIN}deg, calc(${PHI.toFixed(3)}deg + acos(clamp(-1, tan(atan2((${W} - ${vaos}) / ${FOLGA}, ${R.toFixed(2)}px)), 1))), 90deg)`
+    : `calc(90deg - ${DELTA}deg * pow(var(--tc),${P}))`;
 const css =
   `.${id}{--kc:clamp(0.42,tan(atan2(${W},${WMIN}px)),1);--tc:clamp(0,tan(atan2(${W} - ${WMIN}px,${WMAX - WMIN}px)),1);` +
-  `--gc:calc(90deg - ${DELTA}deg * pow(var(--tc),${P}));--vao:calc((${VAO_MIN}px + ${VAO_MAX - VAO_MIN}px * var(--tc)) * var(--kc));--folga:${FOLGA}}` +
-  `@media (max-width:${telaDe(NOMES)}px){.${id} .nome-livro{display:none}.${id}.colecao-home{padding-bottom:calc(14px + 18px * var(--kc))}}` +
+  `--vao:calc((${VAO_MIN}px + ${VAO_MAX - VAO_MIN}px * var(--tc)) * var(--kc));--gc:${giro};--folga:${FOLGA}}` +
+  (nomesCabem ? `@media (max-width:${telaDe(NOMES)}px){${semNomes}}` : semNomes) +
   luzesCss +
   `@media (hover:hover){${luzesHover}}` +
   `@media (max-width:699px){${luzesPar}@media (hover:hover){${luzesParHover}}}`;

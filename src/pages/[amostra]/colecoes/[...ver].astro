@@ -1,0 +1,387 @@
+---
+/**
+ * As sugestões de coleção (docs/prototipos/colecoes): cada sugestão com a estante (as lombadas, o
+ * aparador e a série, como na home) e as capas, com a frase, o que cada livro abrange, a cor e o
+ * desenho, e os posts que iriam para ele. Só no `npm run dev`:
+ *
+ * - /amostra/colecoes/: todas as sugestões;
+ * - /amostra/colecoes/<id>/: uma sugestão só;
+ * - /amostra/colecoes/livro/<slug>/: um livro grande (capa de 480 e lombada), para conferir o desenho.
+ *
+ * ?tema=escuro troca o tema.
+ */
+import Base from "../../../layouts/Base.astro";
+import Estante from "../../../components/Estante.astro";
+import Capa from "../../../components/Capa.astro";
+import MioloLombada from "../../../components/MioloLombada.astro";
+import { coresDoLivroCss, montarLivros, type Livro } from "../../../lib/estante";
+import { getResumos, type Resumo } from "../../../lib/posts";
+import { coresDoLivro, PAPEL, TINTA_PAPEL } from "../../../livros/cores.js";
+import dados from "../../../../docs/prototipos/colecoes/colecoes.json";
+import "../../../styles/livro.css";
+
+export function getStaticPaths() {
+  if (!import.meta.env.DEV) return [];
+  const sugestoes = (dados.sugestoes as { id: string }[]).map((s) => s.id);
+  const livros = Object.keys(dados.livros);
+  return [
+    { params: { amostra: "amostra", ver: undefined } },
+    ...sugestoes.map((id) => ({ params: { amostra: "amostra", ver: id } })),
+    ...livros.map((slug) => ({ params: { amostra: "amostra", ver: `livro/${slug}` } })),
+  ];
+}
+
+interface LivroProposto {
+  titulo: string;
+  linhas: string[];
+  corpo?: number;
+  entrelinha?: number;
+  frase: string;
+  abrange: string[];
+  cor: string;
+  corTexto?: string;
+  motivoCor?: string;
+  instrumento?: string;
+  motivoDesenho?: string;
+  desenho?: string;
+  emPe?: { altura: number; largura: number };
+  deHoje?: boolean;
+  /** De onde o livro vem: os livros de hoje e as categorias do site de notícias que ele junta. */
+  vemDe?: string;
+}
+interface Sugestao {
+  id: string;
+  nome: string;
+  ideia: string;
+  livros: string[];
+  posts?: Record<string, string[]>;
+  sobrescreve?: Record<string, Partial<LivroProposto>>;
+  custo?: string;
+}
+
+const LIVROS = dados.livros as unknown as Record<string, LivroProposto>;
+const SUGESTOES = dados.sugestoes as unknown as Sugestao[];
+
+// Os desenhos que já existem em src/livros (o livro sem desenho entra com o lápis do rascunho).
+const desenhos = new Set(
+  Object.keys(import.meta.glob("../../../livros/desenhos/*.svg")).map((k) => k.split("/").pop()!.replace(".svg", "")),
+);
+const icones = new Set(Object.keys(import.meta.glob("../../../livros/icones/*.svg")).map((k) => k.split("/").pop()!.replace(".svg", "")));
+const temDesenho = (slug?: string) => !!slug && desenhos.has(slug) && icones.has(slug);
+
+/** Medidas da lombada de um livro novo: alturas e larguras variadas, como numa coleção de verdade. */
+function lombadaDe(slug: string) {
+  const h = [...slug].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+  return { altura: 590 + (h % 8) * 9, largura: 122 + ((h >> 4) % 8) * 4 };
+}
+
+function contagem(posts: Resumo[]): string {
+  if (posts.length === 0) return "Ainda sem artigos";
+  return `${posts.length} ${posts.length === 1 ? "artigo" : "artigos"}`;
+}
+
+const resumos = await getResumos();
+const todos = await montarLivros();
+const serie = todos.filter((l) => l.serie);
+
+const ver = Astro.params.ver ?? "";
+const soLivro = ver.startsWith("livro/") ? ver.slice("livro/".length) : undefined;
+const soSugestao = ver && !soLivro ? ver : undefined;
+
+/** Os livros de uma sugestão, prontos para os componentes do site. */
+function montar(s: Sugestao): (Livro & { proposto: LivroProposto })[] {
+  return s.livros.map((slug, i) => {
+    const base = LIVROS[slug];
+    if (!base) throw new Error(`colecoes.json: a sugestão ${s.id} cita o livro ${slug}, que não está em "livros".`);
+    const p: LivroProposto = { ...base, ...(s.sobrescreve?.[slug] ?? {}) };
+    const posts = s.posts
+      ? (s.posts[slug] ?? []).map((id) => {
+          const r = resumos.find((x) => x.slug === id);
+          if (!r) throw new Error(`colecoes.json: o post ${id} (sugestão ${s.id}) não existe.`);
+          return r;
+        })
+      : resumos.filter((r) => r.categoria?.nome === p.titulo);
+    const arquivo = temDesenho(p.desenho) ? p.desenho! : "_rascunho";
+    return {
+      id: `${s.id}-${slug}`,
+      nome: p.titulo,
+      href: `#${s.id}-${slug}`,
+      serie: false,
+      slug: arquivo,
+      volume: i + 1,
+      linhas: p.linhas,
+      corpoNaCapa: p.corpo ?? 80,
+      entrelinhaNaCapa: p.entrelinha ?? p.corpo ?? 80,
+      frase: p.frase,
+      descricao: `${p.abrange.join(", ")}: ${p.frase.charAt(0).toLowerCase()}${p.frase.slice(1)}`,
+      cores: { ...coresDoLivro(p.cor), papel: PAPEL, tintaPapel: TINTA_PAPEL, corTexto: p.corTexto },
+      emPe: p.emPe ?? lombadaDe(slug),
+      deitada: { comprimento: 0, espessura: 0, deslocamento: 0 },
+      posts,
+      contagem: contagem(posts),
+      proposto: p,
+    };
+  });
+}
+
+const sugestoes = SUGESTOES.filter((s) => !soSugestao || s.id === soSugestao).map((s) => ({ s, livros: montar(s) }));
+// Um livro sozinho: montado como o volume 1 de uma sugestão de um livro só.
+const unico = soLivro ? montar({ id: "livro", nome: "", ideia: "", livros: [soLivro] })[0] : undefined;
+---
+
+<Base titulo="Sugestões de coleção">
+  <script is:inline slot="head">
+    (() => {
+      const tema = new URLSearchParams(location.search).get("tema");
+      if (tema) document.documentElement.dataset.theme = tema === "escuro" ? "dark" : "light";
+    })();
+  </script>
+  <div class="wrap colecoes">
+    {
+      unico ? (
+        <section class="um-livro" style={`${coresDoLivroCss(unico)};--u:1px;--w:${unico.emPe.largura}`}>
+          <div class="lombada-visual face-plana">
+            <MioloLombada livro={unico} />
+          </div>
+          <div class="capa-grande">
+            <Capa livro={unico} desenho="inline" />
+          </div>
+          <div class="ficha">
+            <p class="volume">{unico.proposto.titulo}</p>
+            <p class="frase">{unico.proposto.frase}</p>
+            <p>
+              <strong>Cor</strong> {unico.proposto.cor}
+              {unico.proposto.motivoCor && <span> · {unico.proposto.motivoCor}</span>}
+            </p>
+            <p>
+              <strong>Desenho</strong> {unico.proposto.instrumento}
+              {unico.proposto.motivoDesenho && <span> · {unico.proposto.motivoDesenho}</span>}
+            </p>
+          </div>
+        </section>
+      ) : (
+        <>
+          <h1>Sugestões de coleção</h1>
+          <p class="aviso-dev">
+            Só no dev. Cada sugestão com a estante (como na home) e as capas. /amostra/colecoes/&lt;id&gt;/ mostra uma sugestão;
+            /amostra/colecoes/livro/&lt;slug&gt;/, um livro grande.
+          </p>
+          {sugestoes.map(({ s, livros }, n) => (
+            <section class="sugestao folha" id={s.id}>
+              <header class="cabeca-sugestao">
+                <p class="rotulo">{s.id === "hoje" ? "Para comparar" : `Sugestão ${n + (SUGESTOES[0]?.id === "hoje" && !soSugestao ? 0 : 1)}`}</p>
+                <h2>{s.nome}</h2>
+                <p class="ideia">{s.ideia}</p>
+                <p class="numeros">
+                  {livros.length} livros · {livros.reduce((a, l) => a + l.posts.length, 0)} artigos distribuídos
+                </p>
+              </header>
+              <div class="palco-estante">
+                <Estante livros={[...livros, ...serie]} />
+              </div>
+              <ol class="livros">
+                {livros.map((l) => (
+                  <li id={l.id} style={coresDoLivroCss(l)}>
+                    <div class="capa-pequena">
+                      <Capa livro={l} desenho="inline" />
+                    </div>
+                    <div class="texto">
+                      <p class="volume">Volume {String(l.volume).padStart(2, "0")}</p>
+                      <h3>{l.nome}</h3>
+                      <p class="frase">{l.proposto.frase}</p>
+                      <p class="abrange">
+                        <strong>Abrange:</strong> {l.proposto.abrange.join(", ")}.
+                      </p>
+                      {l.proposto.vemDe && (
+                        <p class="vem-de">
+                          <strong>Vem de:</strong> {l.proposto.vemDe}
+                        </p>
+                      )}
+                      <p class="cor">
+                        <span class="amostra-cor" style={`background:${l.proposto.cor}`} />
+                        <span>
+                          <strong>Cor</strong> {l.proposto.cor}
+                          {l.proposto.motivoCor && <> · {l.proposto.motivoCor}</>}
+                        </span>
+                      </p>
+                      {l.proposto.instrumento && (
+                        <p class="desenho">
+                          <strong>Desenho</strong> {l.proposto.instrumento}
+                          {l.proposto.motivoDesenho && <> · {l.proposto.motivoDesenho}</>}
+                          {l.slug === "_rascunho" && <em> (ainda por desenhar)</em>}
+                        </p>
+                      )}
+                      <details class="posts">
+                        <summary>{l.contagem}</summary>
+                        <ul>
+                          {l.posts.map((p) => (
+                            <li>{p.titulo}</li>
+                          ))}
+                        </ul>
+                      </details>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+              {s.custo && (
+                <p class="custo">
+                  <strong>O que muda:</strong> {s.custo}
+                </p>
+              )}
+            </section>
+          ))}
+        </>
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  .colecoes {
+    padding-block: 32px 64px;
+  }
+
+  .aviso-dev {
+    color: var(--ink-2);
+  }
+
+  .sugestao {
+    margin-block: 32px;
+    padding: 28px clamp(16px, 3vw, 36px) 32px;
+  }
+
+  .rotulo {
+    margin: 0;
+    font-family: var(--font-ui);
+    font-size: 0.85rem;
+    color: var(--ink-2);
+  }
+
+  .cabeca-sugestao h2 {
+    margin: 4px 0 8px;
+  }
+
+  .ideia {
+    max-width: 72ch;
+    margin: 0 0 6px;
+  }
+
+  .numeros {
+    margin: 0;
+    font-family: var(--font-ui);
+    font-size: 0.9rem;
+    color: var(--ink-2);
+  }
+
+  .palco-estante {
+    margin-block: 24px 8px;
+  }
+
+  .livros {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 460px), 1fr));
+    gap: 28px 32px;
+    margin: 24px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .livros > li {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+
+  .capa-pequena {
+    width: 180px;
+  }
+
+  .texto p {
+    margin: 0 0 6px;
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+
+  .texto .volume {
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    color: var(--ink-2);
+  }
+
+  .texto h3 {
+    margin: 0 0 4px;
+    font-size: 1.25rem;
+  }
+
+  .texto .frase,
+  .ficha .frase {
+    font-style: italic;
+  }
+
+  .texto .cor {
+    display: flex;
+    gap: 8px;
+    align-items: baseline;
+  }
+
+  .amostra-cor {
+    flex: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    transform: translateY(2px);
+  }
+
+  .texto .vem-de {
+    color: var(--ink-2);
+  }
+
+  .texto .desenho em {
+    color: var(--ink-2);
+  }
+
+  .posts summary {
+    cursor: pointer;
+    font-family: var(--font-ui);
+    font-size: 0.85rem;
+    color: var(--ink-2);
+  }
+
+  .posts ul {
+    margin: 6px 0 0;
+    padding-left: 18px;
+    font-size: 0.85rem;
+    color: var(--ink-2);
+  }
+
+  .custo {
+    margin: 24px 0 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    font-size: 0.95rem;
+  }
+
+  /* Um livro grande (?livro=): a lombada colada à capa de 480 e a ficha ao lado. */
+  .um-livro {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 32px;
+    align-items: flex-start;
+  }
+
+  .face-plana {
+    --papel-h: 420px;
+    width: calc(var(--w) * 1px);
+    height: 720px;
+  }
+
+  .capa-grande {
+    width: 480px;
+    margin-left: -32px;
+  }
+
+  .ficha {
+    max-width: 36ch;
+  }
+</style>

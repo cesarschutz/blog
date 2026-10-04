@@ -3264,3 +3264,73 @@ nada muda.
   quadro), cada slide olhado, e a seção no dev: os três posts com a apresentação e o PDF (200).
 - **Pergunta em aberto (D68):** toda apresentação nova entra no post sem perguntar, ou só quando o Cesar
   pedir?
+
+## D78 · A coleção de 13 livros
+- **Data:** 01/10/2026 · **Status:** decidido; aplicado e **publicado** em 04/10/2026 (deploy 61 na main), a pedido do Cesar ("temos
+  que arrumar os livros do blog para esses novos, arrumar as frases deles, e cada post colocar em um
+  livro, e ajustar as tags de cada post"). Pendente: a marca "cs" (fica no verde até ele decidir).
+- **Pedido do Cesar:** trocar os 8 livros por uma coleção que junte os de hoje com as 16 categorias do
+  site de notícias dele (dev-note). Viu cinco sugestões (de 9 a 12 livros, em
+  `docs/prototipos/colecoes/`) e escolheu a 5, "mais livro fica melhor dividido os posts", com um livro
+  de **Frontend** a mais, "visto que tem backend".
+- **Decidido:**
+  - 13 livros: Arquitetura de Software, Dados, Desenvolvimento de Software, DevOps, Frontend,
+    Fundamentos, IA, Integração e Eventos, Pagamentos, Segurança, Sistemas Distribuídos, SRE e Testes.
+  - **Carreira sai** (não tem post). Quando for para o site, `/categories/Carreira/` precisa de
+    redirecionamento.
+  - Os livros de hoje **mantêm o nome** ("não, apenas os novos"): Desenvolvimento de Software e SRE não
+    viram Backend e Observabilidade, e a D30 fica como está.
+  - A tag **Pagamentos** pode ser renomeada ou removida, porque passa a ter o nome de um livro.
+  - **Desenhos novos para os 13**, num conjunto novo que combine (inclusive nos livros de hoje),
+    **cores novas** com motivo ("faria mais sentido Segurança ser vermelho, não?") e **frase e texto
+    novos**; o resultado final numa página para o Cesar aprovar.
+  - **Volumes em ordem alfabética**: o Volume 01 é o primeiro pelo nome, e a estante segue essa ordem.
+    Livro novo entra na sua posição e os seguintes mudam de número.
+  - **Regra dos posts:** a coleção não muda à toa, mas, ao planejar um post, o Claude confere se ele
+    cabe bem num livro; se não couber (um post de carreira, que não tem livro) ou se a coleção ficar
+    melhor com um livro novo, dividido ou renomeado (um post de arquitetura corporativa pediria um
+    livro novo ou trocar "Arquitetura de Software" por "Arquitetura"), ele avisa o Cesar e sugere.
+  - **O texto do desenho (01/10/2026, depois de ver a página final):** cada livro ganha um texto que
+    diz o que é o desenho, de quando é e qual a relação dele com o assunto do livro, em duas versões:
+    a completa e a curta (`textoDesenho` e `textoDesenhoCurto` em
+    `docs/prototipos/colecoes/final/dados.json`). O Cesar talvez use o texto num hover no site. O texto
+    da cor fica só na proposta: ele não pretende usar.
+  - **A ligação com hoje e o link (01/10/2026):** o Cesar gostou de o texto do Frontend ligar a prensa
+    ao vocabulário do CSS (font, leading, kerning, uppercase, que vêm da composição com tipo de metal)
+    e pediu o mesmo nos outros, só com o que for verdade, e um link por máquina. Cada texto passou a
+    ter uma ligação conferida com algo de hoje (blueprint; as 80 colunas; o Loom do Java; o baud e o
+    CR/LF; o Mechanical Turk; o exchange do RabbitMQ; a NCR; Hobbs e a divulgação de vulnerabilidades;
+    Lamport; Kubernetes; plumbum e o smoke test, este como "uma das explicações"); a do DevOps é só
+    imagem e está dita como imagem. Nenhum desenho mudou. Os links vieram da busca na web (a rede do
+    ambiente não deixou abrir as páginas). Pesquisa em `docs/prototipos/colecoes/final/hoje-e-links-*.md`;
+    os textos e os links em `dados.json` (`textoDesenho`, `textoDesenhoCurto`, `link`).
+- **Alternativas:** as sugestões 1 a 4 (9 a 11 livros, com Carreira); a 5 sem Frontend; os nomes do
+  site de notícias para os livros de hoje (Backend, Observabilidade).
+- **Mudado:** a skill `post` e `.claude/rules/posts.md` (a conferência da coleção no plano de cada
+  post), `docs/capas/CAPAS.md` (volumes em ordem alfabética e quando mexer na coleção), `CLAUDE.md`.
+  O controle da rodada está em `docs/prototipos/colecoes/final/controle.md`.
+- **Aplicado no site (04/10/2026):**
+  - `src/livros/livros.json` com os 13 (volume em ordem alfabética, título, corpo do título, frase,
+    subtítulo, temas, cor e lombadas); Carreira saiu, com os desenhos e as fotos dela.
+  - Os desenhos e os ícones novos em `src/livros/desenhos/` e `src/livros/icones/`, gerados de
+    `scripts/desenho/livros/<slug>.mjs`.
+  - Os posts: `cobranca-duplicada-no-retry` e `efeito-externo-sem-registro-local` em Sistemas
+    Distribuídos, `sns-filter-policy` em Integração e Eventos e `arquitetura-de-ledger` em Pagamentos;
+    os outros ficaram onde estavam (os três da main que chegaram depois, os dois de IA e o de Parquet,
+    já estavam no livro certo).
+  - A tag Pagamentos virou Cobrança (em `cobranca-duplicada-no-retry`, `efeito-externo-sem-registro-local`
+    e `jackson-filtros-mascarando-cartao`), com o mesmo ícone (`src/livros/tags/cobranca.svg`); o
+    ledger ficou só com Banco de Dados e Idempotência.
+  - Redirecionamentos em `astro.config.mjs`: `/categories/Carreira/` → `/categories/` e
+    `/tags/Pagamentos/` → `/tags/Cobrança/`.
+  - Sistemas Distribuídos foi para `#253461` (era `#202c4d` na proposta): com o marinho mais escuro, o
+    âmbar dos desenhos do corpo ficava em 4,45:1 no painel do livro (`npm run contraste`).
+  - As fotos dos livros refeitas (`scripts/livros/fotos.mjs`, que passou a aceitar o Chromium por
+    `CHROME_EXECUTABLE_PATH`); a do livro aberto da busca sem resultado fica na cor da marca, e não mais
+    na do Volume 01.
+  - A fileira da home vai até onde vai o texto, dos dois lados (pedido do Cesar depois de ver no ar: "arrume
+    para os livros irem até onde os textos vão também pros lados"): na home, o giro dos livros passa a ser
+    o exato que enche a largura útil (`Colecao.astro`); na tela larga aparece mais da capa. A fileira do
+    alto da página do livro não mudou.
+  - O número desta decisão: a main usou D61 para o redesenho no ar; a coleção, que era D61 na branch,
+    passou a D78 quando a main entrou nela.
