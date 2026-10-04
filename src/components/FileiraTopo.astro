@@ -37,7 +37,7 @@ const { livros, atual, chao = "vidro" } = Astro.props;
 
 <div class="estante-topo" data-fileira-topo data-chao={chao}>
   <nav class="chapa" aria-label="Trocar de livro">
-    <Colecao livros={livros} modo="topo" atual={atual} chao={chao} />
+    <Colecao livros={livros} atual={atual} chao={chao} />
   </nav>
 </div>
 

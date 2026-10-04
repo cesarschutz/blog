@@ -279,9 +279,9 @@ const Elemento = semLink ? "span" : "a";
 
   /*
    * A gigante (protótipo 14, G1): o caderno e "Cesar Schutz" numa linha, na largura da coluna (quem a usa
-   * dá o tamanho da letra). O caderno fica da altura das maiúsculas e um pouco mais; o "blog" sai (a
-   * página já diz o que é) e a assinatura continua embaixo do sobrenome. Em tela estreita, o nome quebra
-   * em duas linhas e o caderno cresce para a altura delas, como na grande.
+   * dá o tamanho da letra). O caderno fica da altura das maiúsculas e um pouco mais; o "blog" vira o carimbo
+   * sobre o Z (D82) e a assinatura continua embaixo do sobrenome. Em tela estreita, o nome quebra em duas
+   * linhas e o caderno cresce para a altura delas, como na grande.
    */
   .marca-gigante {
     gap: 0.16em;
@@ -305,8 +305,38 @@ const Elemento = semLink ? "span" : "a";
     filter: drop-shadow(0 0.02em 0.03em rgb(0 0 0 / 0.2));
   }
 
+  /*
+   * O carimbo (D82, pedido do Cesar): o "blog" cinza do cabeçalho, inclinado, um pouco por cima do canto do Z,
+   * como um carimbo. Fica fora do fluxo (absoluto, preso ao fim de "Schutz"): o nome não sai do lugar por
+   * causa dele. Um contorno da cor do papel (por baixo do traço) o separa do preto do Z onde os dois se cruzam.
+   * Na abertura da home, ele carimba depois da assinatura (Abertura.astro, `a-carimbar`).
+   */
+  .marca-gigante .marca-linha-nome:last-child {
+    position: relative;
+  }
+
   .marca-gigante .marca-blog {
-    display: none;
+    position: absolute;
+    top: 0.07em;
+    right: -0.19em;
+    height: 0.29em;
+    margin: 0;
+    vertical-align: baseline;
+    rotate: -13deg;
+    pointer-events: none;
+  }
+
+  .marca-gigante .marca-blog :global(path) {
+    stroke: var(--paper);
+    stroke-width: 4px;
+    stroke-linejoin: round;
+    paint-order: stroke;
+    vector-effect: non-scaling-stroke;
+  }
+
+  :global(:root[data-abertura="estante"]) .marca-gigante .marca-blog,
+  .marca-gigante .marca-blog:global(.a-carimbar) {
+    opacity: 0;
   }
 
   .marca-gigante .assinatura {

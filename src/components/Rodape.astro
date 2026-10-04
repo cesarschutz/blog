@@ -25,8 +25,8 @@
  * da ficha (que abre espaço para ela); o ícone do computador fica no canto da esquerda, longe dela.
  *
  * O nome respira o peso, de 800 a 680 e de volta em 7s, nunca abaixo de 650 (N10), só enquanto está à
- * vista e nunca com movimento reduzido. Abaixo de 900px, as colunas da direita da ficha descem e o nome vai
- * em duas linhas ("Cesar" inteiro e "Schutz" com 58% das maiúsculas), para continuar legível.
+ * vista e nunca com movimento reduzido. Abaixo de 900px, as colunas da direita da ficha descem; o nome fica
+ * numa linha só, como na tela larga (D82), quase de borda a borda.
  *
  * Ganchos (não renomear): o nome em `.rodape-parede` (`.nome-rodape`, `data-nome-rodape`), o chão em
  * `.rodape-chao`; as variáveis `--nome` (o tamanho), `--nome-visivel` (a caixa do nome, do alto das
@@ -1234,26 +1234,13 @@ const letras = (nome: string) => [...nome].map((c, k) => ({ c, k }));
 
   @media (max-width: 899.98px) {
     /*
-     * O nome em duas linhas, "Cesar" sobre "Schutz" ("Schutz" tem 3,65em), para continuar legível: numa
-     * linha só ele caberia em ~48px no celular. O tampo corta o "Schutz" com 58% das maiúsculas à vista
-     * (medido: com altura de linha 0,9, a maiúscula da segunda linha começa 0,03em mais alto que a conta
-     * simples dava, então a caixa tem 0,9 + 0,405em, e não 0,435). A maiúscula fica 0,11em abaixo do alto
-     * da linha.
+     * O nome continua numa linha só, cortado pelo tampo como na tela larga (D82, pedido do Cesar: em duas
+     * linhas, "Cesar" sobre "Schutz", ele não parecia o mesmo do resto). No celular ele vai quase de borda a
+     * borda (8px de cada lado), para ganhar o tamanho que dá.
      */
     .rodape {
-      --nome: min(128px, calc((100vw - 2 * var(--pad)) / 3.72));
-      --nome-visivel: calc(var(--nome) * (0.9 + 0.405) + var(--nome-sob-ficha));
+      --nome: calc((100vw - 16px) / 7.1);
       --cordinha-direita: max(2px, calc(var(--pad) - 6px));
-    }
-
-    .nome-rodape {
-      line-height: 0.9;
-      white-space: normal;
-    }
-
-    .nome-rodape > .nome-linha {
-      display: block;
-      translate: 0 -0.11em;
     }
 
     /* A faixa da cordinha: a ficha termina 40px antes, e o fio passa no meio dos 44px do botão. */

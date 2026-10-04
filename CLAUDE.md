@@ -268,7 +268,8 @@ src/assets/              caveat-titulos.woff: a Caveat 600 só com as letras dos
 src/layouts/Base.astro   head, anti-piscada, cabeçalho, rodapé e busca
 src/components/          peças das páginas (estante, gaveta, sumário, avisos, busca…) e dos posts (Lousa,
                          Figura, Animacao, Ferramenta, Evidencia; LousaTempo e LousaLoop só nos antigos);
-                         da D61: Colecao (a fileira da home), FileiraTopo (o alto da página do livro),
+                         da D61: ColecaoHome (a coleção da home em prateleiras, D82), Colecao e
+                         FileiraTopo (a fileira do alto da página do livro),
                          PontoDeLuz e Luz (abajures e luz), Fichario, NuvemTags e FichasTags (Tags),
                          Vizinhos e LivroDoArtigo (o fim do post), AbaTopo (voltar ao topo) e TracoTitulo
 src/computador/          o computador (D61): o ícone no canto, o macOS de mentira (sistema, janelas,
@@ -293,7 +294,7 @@ src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, 
 src/scripts/tema.ts      tema: a lâmpada do cabeçalho alterna claro e escuro, acendendo e apagando
                          (D39, D61; a lâmpada em lampada.ts)
 src/scripts/             também: troca.js (a cortina e as chegadas), luz, estante-moderna, fichas-caem,
-                         fichario, revelar e embaralha (D61); doca (a doca da fileira da home, D78)
+                         fichario, revelar e embaralha (D61); doca (a doca da coleção da home, D78)
 scripts/                 contraste, links, escrita (as regras de escrita do post, D71), apresentacao, og,
                          copiar-katex, desenho/, bench-busca/, marca, caveat-titulos (subconjunto da Caveat, C05), verificar-ambiente
                          (npm run setup e hook do início da sessão), livros/ (as fotos dos livros, D57; o

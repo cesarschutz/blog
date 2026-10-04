@@ -71,13 +71,14 @@ dúvida. Animação nova ou mudada: a regra vai para lá, o detalhe vem para cá
 Regras comuns dos livros em movimento (D40: GSAP sob demanda, só transformações e opacidade,
 o foco do teclado igual ao mouse, Esc fecha, movimento reduzido): `DESIGN.md`, Movimento.
 
-- **A doca da fileira da home** (D78, 04/10/2026, `doca.ts`; pedido do Cesar: "tipo o dock do Mac"):
-  só com mouse e sem movimento reduzido. O livro sob o mouse cresce até **1,5×**, de pé, pela base (a
-  `.tomba`), e os vizinhos crescem menos, por um sino de cosseno de **2,6 lugares** para cada lado,
-  medido do mouse ao meio de cada lugar. A fileira abre espaço como a doca: cada livro anda para o lado
-  com a soma do que os de antes cresceram, e os vãos fecham por igual o que ela cresceu, para não passar
-  de onde vai o texto (as pontas saem no máximo 10px). O maior fica por cima. O crescimento para cima
-  cabe no teto da fileira: onde o teto é baixo (abaixo de ~1100px), o aumento diminui. Segue o mouse de
+- **A doca da coleção da home** (D78, 04/10/2026, `doca.ts`; pedido do Cesar: "tipo o dock do Mac"; por
+  prateleira desde a D82): só com mouse e sem movimento reduzido. O livro sob o mouse cresce até
+  **1,14×** (era 1,5× quando os livros eram pequenos), de pé, pela base (a `.tomba`), e os vizinhos da
+  mesma prateleira crescem menos, por um sino de cosseno de **2,2 lugares** para cada lado, medido do
+  mouse ao meio de cada lugar. A prateleira abre espaço como a doca: cada livro anda para o lado com a
+  soma do que os de antes cresceram, e os vãos fecham por igual o que ela cresceu, para não passar de onde
+  vai o texto (as pontas saem no máximo 10px). O maior fica por cima (o `z-index` da `.tomba`). O
+  crescimento para cima cabe no teto do lugar (onde fica o abajur). Segue o mouse de
   perto, sem mola (24% do caminho a cada 1/60 s, pelo tempo do quadro), e volta ao repouso no mesmo
   ritmo ao sair; no clique, volta na hora (a viagem até a página do livro parte do repouso). O hover do
   livro vivo (a mola, o seguir o mouse) continua por dentro.

@@ -11,12 +11,16 @@
  *
  * Rodada 4 (a versão final): o traço de caneta do 17 embaixo de "A coleção" e de "Artigos recentes" (P17-1,
  * só na primeira página), "Artigos recentes" numa etiqueta de papel colada com fita (P16-1) e a paginação
- * em papel, um por botão (P16-2, E6). Sem a frase "8 livros e uma série · Ver os livros" ao lado de "A
- * coleção" (E11). O nome gigante e os números ficam aqui; a entrada deles é da Abertura (A1).
+ * em papel, um por botão (P16-2, E6). A entrada do nome gigante é da Abertura (A1).
+ *
+ * D82 (04/10/2026, pedido do Cesar): saiu a linha entre o nome e os livros (a frase de apresentação, os números
+ * Artigos, Livros e Tags com o odômetro e o último artigo), para os livros subirem e os artigos virem logo
+ * depois; o nome ficou um pouco menor, com o "blog" carimbado sobre o Z (Marca.astro); e a coleção virou uma
+ * estante de prateleiras, com os livros sempre de capa e grandes (ColecaoHome.astro).
  */
 import type { GetStaticPaths } from "astro";
 import Base from "../layouts/Base.astro";
-import Colecao from "../components/Colecao.astro";
+import ColecaoHome from "../components/ColecaoHome.astro";
 import Recentes from "../components/Recentes.astro";
 import TracoTitulo from "../components/TracoTitulo.astro";
 import { LIVRO_NA_LISTA } from "../lib/lista";
@@ -25,7 +29,6 @@ import { TEXTOS } from "../data/site";
 import { montarLivros } from "../lib/estante";
 import { getResumos, type Resumo } from "../lib/posts";
 import { url } from "../lib/url";
-import { dataPorExtenso } from "../lib/formato";
 
 export const getStaticPaths = (async () => {
   // 12 lugares por página, como no blog atual (`SITE.pageSize`); na primeira, o destaque vale dois. Os
@@ -47,13 +50,6 @@ const livros = primeira ? await montarLivros() : [];
 const resumos = await getResumos();
 // Como no blog atual: o total de artigos publicados abaixo do título da lista (D33).
 const total = `${resumos.length} ${resumos.length === 1 ? "artigo publicado" : "artigos publicados"}`;
-// Os números da coleção (protótipo 14, G1): rolam como odômetro quando a página abre.
-const numeros = [
-  { nome: "Artigos", valor: resumos.length, href: url("/archive/") },
-  { nome: "Livros", valor: livros.length, href: url("/categories/") },
-  { nome: "Tags", valor: new Set(resumos.flatMap((r) => r.tags)).size, href: url("/tags/") },
-];
-const ultimo = resumos[0];
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
@@ -74,49 +70,16 @@ const jsonLd = {
   {
     primeira && (
       <>
-        {/*
-          Protótipo 14 (G1, G2): o topo do 01 no papel e nas fontes do atual. O nome gigante (com o caderno
-          "cs" que abre e a assinatura embaixo), uma linha com a apresentação, os números da coleção e o
-          último artigo, e a coleção lado a lado, que é a estante da abertura.
-        */}
+        {/* O nome gigante (com o caderno "cs" que abre, a assinatura e o "blog" carimbado) e a estante da coleção. */}
         <div class="wrap topo-grade">
           <h1 class="nome-gigante">
             <Marca variante="gigante" semLink />
           </h1>
-          <div class="linha-grade">
-            <p class="frase">{TEXTOS.apresentacao}</p>
-            <dl class="numeros">
-              {
-                numeros.map((n) => (
-                  <div>
-                    <dt>{n.nome}</dt>
-                    <dd>
-                      <a href={n.href} data-odometro={n.valor}>
-                        {n.valor}
-                      </a>
-                    </dd>
-                  </div>
-                ))
-              }
-            </dl>
-            {
-              ultimo && (
-                <a class="ultimo" href={ultimo.url}>
-                  <span class="rotulo-ultimo">Último artigo</span>
-                  <span class="titulo-ultimo">{ultimo.titulo}</span>
-                  <span class="meta-ultimo">
-                    <time datetime={ultimo.publicado.toISOString()}>{dataPorExtenso(ultimo.publicado)}</time> · {ultimo.minutos} min
-                  </span>
-                </a>
-              )
-            }
-          </div>
           <section class="secao-colecao" aria-labelledby="colecao-titulo">
-            {/* Rodada 4 (E11): a frase "8 livros e uma série · Ver os livros" saiu ("apaga em vez de mudar"). */}
             <div class="topo-colecao">
               <h2 id="colecao-titulo" class="titulo-secao"><TracoTitulo texto="A coleção" /></h2>
             </div>
-            <Colecao livros={livros} modo="home" />
+            <ColecaoHome livros={livros} />
           </section>
         </div>
       </>
@@ -145,153 +108,43 @@ const jsonLd = {
 <script>
   // O desenho do destaque se desenha quando entra na tela, uma vez (D41; no primeiro card ou item, D52).
   import { desenharAoEntrar } from "../scripts/desenho-vivo";
-  import { criarContador, mudarContador } from "../scripts/contador";
 
   desenharAoEntrar();
-
-  // Os números da coleção rolam como odômetro (protótipo 14, G1): as fitas partem do zero e vão ao número,
-  // a unidade dando mais voltas que a dezena. Com a abertura, depois que ela acaba; sem ela, ao abrir.
-  const odometros = [...document.querySelectorAll<HTMLElement>("[data-odometro]")];
-  document.documentElement.classList.add("odometro-pronto");
-  if (odometros.length && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    for (const el of odometros) criarContador(el, 0, String(el.dataset.odometro).length);
-    const rolar = () =>
-      odometros.forEach((el, i) => setTimeout(() => mudarContador(el, Number(el.dataset.odometro)), 120 + i * 140));
-    if (document.documentElement.dataset.abertura) addEventListener("cs:aberto", () => setTimeout(rolar, 200), { once: true });
-    else if (document.documentElement.hasAttribute("data-vai-chegar")) addEventListener("cs:chegou", rolar, { once: true });
-    else requestAnimationFrame(() => requestAnimationFrame(rolar));
-  }
 </script>
 
 <style>
-  /* ---------- o topo (protótipo 14, G1) ---------- */
+  /* ---------- o topo ---------- */
   .topo-grade {
     padding-top: clamp(18px, 3vw, 40px);
   }
 
-  /* O nome atravessa a coluna: o tamanho sai da largura dela (o caderno, o nome e a folga). */
+  /*
+   * O nome na coluna: o tamanho sai da largura dela (o caderno, o nome e a folga). D82: um pouco menor que a
+   * largura inteira (era 1/7,75 dela, até 196px), com o "blog" carimbado sobre o Z na sobra da direita.
+   */
   .nome-gigante {
     margin: 0;
-    font-size: min(calc(var(--util) / 7.75), 196px);
+    font-size: min(calc(var(--util) / 8.9), 168px);
     line-height: 0.9;
   }
 
   /* No celular, o nome em duas linhas, com o caderno da altura delas. */
   @media (max-width: 700px) {
     .nome-gigante {
-      font-size: calc(var(--util) / 5.1);
+      font-size: calc(var(--util) / 5.6);
     }
   }
 
-  .linha-grade {
-    display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    gap: 20px 24px;
-    margin-top: clamp(22px, 3vw, 36px);
-    padding-top: 22px;
-    border-top: 1px solid var(--ink);
-  }
-
-  .frase {
-    grid-column: 1 / span 5;
-    max-width: 44ch;
-    margin: 0;
-    font-size: clamp(17px, 1.35vw, 19px);
-    line-height: 1.6;
-  }
-
-  .numeros {
-    grid-column: 6 / span 4;
-    display: flex;
-    gap: clamp(22px, 3vw, 44px);
-    margin: 0;
-  }
-
-  .numeros dt {
-    font-family: var(--font-ui);
-    font-size: 13.5px;
-    color: var(--ink-2);
-  }
-
-  .numeros dd {
-    margin: 6px 0 0;
-    font-family: var(--font-titulo);
-    font-size: clamp(40px, 4.4vw, 64px);
-    font-weight: 800;
-    line-height: 1;
-    letter-spacing: -0.03em;
-  }
-
-  /* Algarismos proporcionais: o zero tabular da Besley vem num peso fino (o "0" de "20" destoava); a
-     largura igual das colunas vem da fita (.coluna, abaixo). */
-  .numeros a {
-    color: var(--ink);
-    text-decoration: none;
-    font-variant-numeric: lining-nums proportional-nums;
-  }
-
-  .numeros :global(.contador .fitas) {
-    font-variant-numeric: lining-nums proportional-nums;
-  }
-
-  .numeros a:hover {
-    color: var(--acento);
-  }
-
-  /* As fitas do odômetro (contador.css) usam a altura da linha: aqui, a do número. */
-  .numeros :global(.contador .coluna) {
-    width: 0.62em;
-  }
-
-  .numeros :global(.contador .fita) {
-    --rola: 1.5s;
-    transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .ultimo {
-    grid-column: 10 / span 3;
-    display: grid;
-    gap: 6px;
-    align-content: start;
-    color: var(--ink);
-    text-decoration: none;
-  }
-
-  .rotulo-ultimo,
-  .meta-ultimo {
-    font-family: var(--font-ui);
-    font-size: 13.5px;
-    color: var(--ink-2);
-  }
-
-  .titulo-ultimo {
-    font-family: var(--font-titulo);
-    font-size: 19px;
-    font-weight: 700;
-    line-height: 1.25;
-    text-wrap: balance;
-    transition: color 0.2s;
-  }
-
-  .ultimo:hover .titulo-ultimo {
-    color: var(--acento);
-  }
-
-  /* ---------- a coleção (G2) ---------- */
+  /* ---------- a coleção ---------- */
   .secao-colecao {
-    margin-top: clamp(36px, 5vw, 64px);
-    padding-top: 20px;
+    margin-top: clamp(26px, 3.4vw, 44px);
+    padding-top: 18px;
     border-top: 1px solid var(--rule);
   }
 
+  /* O traço de caneta embaixo do título (P17-1) desce 0,42em: a coleção começa depois dele. */
   .topo-colecao {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 6px 18px;
-    /* O traço de caneta embaixo do título (P17-1) desce 0,42em: a coleção começa depois dele. */
-    margin-bottom: 20px;
+    margin-bottom: 4px;
   }
 
   .topo-colecao .titulo-secao {
@@ -300,48 +153,6 @@ const jsonLd = {
 
   /* Espaço entre a coleção e os artigos. */
   .artigos-home {
-    padding-top: clamp(40px, 5vw, 64px);
-  }
-
-  @media (max-width: 1100px) {
-    .frase {
-      grid-column: 1 / -1;
-      max-width: 60ch;
-    }
-
-    .numeros {
-      grid-column: 1 / span 7;
-    }
-
-    .ultimo {
-      grid-column: 8 / -1;
-    }
-  }
-
-  @media (max-width: 640px) {
-    .numeros,
-    .ultimo {
-      grid-column: 1 / -1;
-    }
-
-    .numeros {
-      justify-content: space-between;
-    }
-
-    .ultimo {
-      padding-top: 16px;
-      border-top: 1px solid var(--rule);
-    }
-  }
-
-  /* Até as fitas do odômetro montarem, o número fica escondido (sem JS, ele aparece escrito). */
-  :global(:root[data-js]:not(.odometro-pronto)) .numeros a {
-    opacity: 0;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    :global(:root[data-js]:not(.odometro-pronto)) .numeros a {
-      opacity: 1;
-    }
+    padding-top: clamp(28px, 4vw, 52px);
   }
 </style>

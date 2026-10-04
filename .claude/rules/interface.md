@@ -51,7 +51,9 @@ Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
       fichário de Tags (`fichas-caem.ts`, `fichario.ts`) e a entrada ao rolar (`revelar.ts`,
       `embaralha.ts`);
     - a cordinha do rodapé, a aba "topo" e o voo do livro da home até a página dele;
-    - a doca da fileira da home: com o mouse, o livro sob ele cresce, e os vizinhos menos (`doca.ts`, D78);
+    - a doca da coleção da home: com o mouse, o livro sob ele cresce, e os vizinhos da prateleira menos
+      (`doca.ts`, D78, D82);
+    - o carimbo do "blog" no nome gigante da home, que carimba depois da assinatura (`Abertura.astro`, D82);
     - a contracapa: no livro ampliado, o botão "Virar o livro" gira o livro até o verso impresso
       (`LivroAmpliado.astro`, D78);
     - o computador (`src/computador/`, carregado sob demanda a partir do primeiro hover, foco ou
@@ -75,9 +77,9 @@ Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
   abre na gaveta (`/livros/<slug>.svg`).
 - Os componentes são `Capa`, `MioloLombada` (a lombada, em pé e, girada, deitada no `PainelHome`),
   `Estante` (também no modo "filtro" do arquivo e das tags), `Gaveta`, `Livro3D`, `LivroEmPe`,
-  `TopoLivro` e `GradeLivros`, e, da D61, `Colecao` (a fileira da home), `FileiraTopo` (o alto da
-  página do livro), `PontoDeLuz` e `Luz` (abajures e luz): altere esses, sem criar outros em
-  paralelo. As peças paradas da D57 são imagens: `FotoDoLivro` (o livro deitado da ficha "Do livro", com as etiquetas em SVG por cima)
+  `TopoLivro` e `GradeLivros`, e, da D61, `ColecaoHome` (a coleção da home em prateleiras de capas, D82),
+  `Colecao` (a fileira do alto da página do livro, dentro da `FileiraTopo`), `PontoDeLuz` e `Luz`
+  (abajures e luz): altere esses, sem criar outros em paralelo. As peças paradas da D57 são imagens: `FotoDoLivro` (o livro deitado da ficha "Do livro", com as etiquetas em SVG por cima)
   e `LivroEmBranco` (o livro aberto do livro sem artigos e da busca sem resultado), de
   `node scripts/livros/fotos.mjs` (`src/lib/fotos.ts`). `LivroAmpliado` copia o
   livro 3D para o visor e monta nele as páginas de dentro, de `/livros/<slug>.json` (D49).
@@ -137,7 +139,7 @@ Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
   10b).
 - O `.sr` (`base.css`) é `position: absolute`. Dentro de um lugar com `perspective` (os livros 3D), ele
   se prende a esse lugar e o Chrome muda a suavização do livro em alguns pixels: o elemento que leva o
-  `.sr` precisa de `position: relative` (o `a.tomba` da `Colecao`, D73).
+  `.sr` precisa de `position: relative` (o `a.tomba` da `ColecaoHome`, D73).
 
 ## Conferir
 

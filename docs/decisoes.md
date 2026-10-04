@@ -88,6 +88,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D77 | As apresentações no estilo do blog também entram no post (seção "Apresentação"), pelo `npm run apresentacao -- … --pdf`; as três primeiras: as duas partes dos mods e Parquet | decidido e publicado |
 | D79 | A parte 2 do post dos mods (`claude-code-csr-cockpit`) só atualizada para o cockpit 0.16.0, sem post novo: seis abas, as telas novas como print e os fatos em dia | decidido e publicado |
 | D81 | Post de DNS (`dns-tipos-de-registro`): detalhado, no livro DevOps, com as tags novas DNS e Redes, exemplos em `example.com` e a apresentação no estilo do blog | decidido e publicado |
+| D82 | A home da coleção em prateleiras de capas (7, 5 ou 4 livros por prateleira, sem lombada nem rolagem lateral), sem a linha de números, o nome menor com o "blog" carimbado sobre o Z, o nome do rodapé numa linha no celular, a revisão geral das telas e a faxina do código | decidido pelo Claude a pedido do Cesar; ele revê no ar |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -3475,4 +3476,46 @@ nada muda.
 - **Conferência:** `conferir` ok em 320 a 1600px nos dois temas e com movimento reduzido; `check`,
   `build`, `links` e `contraste` sem falhas; detector do Impeccable sem achados; Lighthouse 100 no
   desktop e 97 no celular, pelo contraste do resumo "Neste artigo" (componente do site, não do post).
+
+## D82 · A home da coleção em prateleiras, a revisão geral e a faxina do código (04/10/2026)
+
+- **Pedido do Cesar:** a home "não está valorizando os livros; estão mais bonitos na tela de um livro
+  selecionado, como eles ficam lá em cima; quando era menos livro era muito mais bonito, quero tipo
+  aquela forma", pensando bem nas telas pequenas e grandes ("em telas pequenas virar os livros também
+  não ficou muito bom"); tirar a linha entre o nome e os livros (a frase, os números e o último artigo);
+  o nome um pouco menor e o "blog" cinza do cabeçalho carimbado, inclinado, por cima do Z, sem tirar o
+  nome do lugar; e, no celular, o nome do rodapé numa linha só, como na tela larga. Depois, a revisão de
+  todas as telas atrás de bugs (animação, desenho, detalhe), a publicação e a faxina do código e das
+  regras. Sem parar para perguntar: ele revê no ar.
+- **Por que a home tinha perdido a força (medido):** com 14 livros numa fileira só, a conta da largura
+  encolhia todos para ~116px de altura na tela larga (eram 214px com 9 livros) e, abaixo de ~1100px,
+  girava cada um até a lombada (~20px de largura no celular). A fileira do alto da página do livro
+  parece melhor porque não é obrigada a encher a largura (os livros ficam em 132px) e mostra a capa e a
+  lombada a 40°.
+- **Pesquisa:** três agentes (o mapa do código, referências na web e maquetes por CSS injetado no dev,
+  em `pesquisa/` do rascunho da sessão). NN/g e Baymard: o que fica escondido atrás de um gesto lateral
+  é visto por um terço dos leitores, a rolagem lateral é rejeitada no desktop, e grades de 5 a 8 colunas
+  funcionam; os livros são a navegação principal do blog, então ficam todos à vista.
+- **Decisão (a forma):** a coleção da home vira uma **estante de prateleiras de capas** (`ColecaoHome.astro`):
+  os livros ficam sempre de capa (giro de 26°, a opção 1 da D78) e grandes, e quem muda com a largura é
+  o número de livros por prateleira: **7 a partir de 900px** (7 + 7, até 214px de altura, o tamanho do
+  protótipo de 9 livros), **5 de 600 a 899px** (5 + 5 + 4) e **4 abaixo de 600px** (4 + 4 + 3 + 3,
+  com a estante sangrando a margem da página, a 8px da borda). As prateleiras curtas ficam no fim,
+  centradas; a série é sempre a última, depois de um vão maior. Cada livro tem o seu abajur (sempre
+  aceso, D78) e cada prateleira a sua lâmina de vidro. Sem nomes embaixo (a capa já diz o nome; some o
+  link duplicado da pergunta 15 da D73) e sem rolagem lateral. A doca continua, por prateleira e com
+  aumento de 1,14× (era 1,5×, com os livros pequenos). A abertura da home risca a lâmina de cada
+  prateleira, uma depois da outra (0,12s a mais por prateleira). A fileira do alto da página do livro
+  não mudou (`Colecao.astro`, agora só ela).
+- **Alternativas medidas e descartadas:** a faixa de capas com rolagem lateral no celular (bonita, mas
+  só 3 dos 14 livros à vista); duas prateleiras de 7 lombadas em tamanho cheio no celular (o Cesar não
+  gostou das lombadas); 3 por prateleira no celular (livros de 141px, mas 5 prateleiras, mais de uma
+  tela e meia antes dos artigos); 3 prateleiras de 5 em 1024px (dois terços da tela só de livros).
+- **O topo da home:** saiu a linha com a frase de apresentação, os números (com o odômetro) e o último
+  artigo; o nome ficou ~13% menor (1/8,9 da largura útil, até 168px; no celular, 1/5,6); o "blog" do
+  cabeçalho virou o carimbo do nome gigante: absoluto (o nome não sai do lugar), inclinado −13°, um
+  pouco por cima do canto do Z, com um contorno da cor do papel onde cruza a letra; na abertura, ele
+  carimba depois da assinatura (desce grande e girado, passa um nada do tamanho e assenta, 0,42s).
+- **O rodapé no celular:** "Cesar Schutz" numa linha só, quase de borda a borda, cortado pelo feltro
+  com 58% das maiúsculas à vista, como na tela larga (antes, abaixo de 900px, ia em duas linhas).
 

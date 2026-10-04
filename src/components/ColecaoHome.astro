@@ -1,0 +1,395 @@
+---
+/**
+ * A coleção da home em prateleiras (D82, 04/10/2026, pedido do Cesar: "a home não está valorizando os livros;
+ * quando era menos livro era muito mais bonito"). Com 14 livros numa fileira só, a conta da largura encolhia
+ * todos para ~116px e, abaixo de ~1100px, girava cada um até a lombada; aqui eles ficam sempre de capa (giro
+ * de 26°, a opção 1 da D78) e grandes, e quem muda com a largura é o número de livros por prateleira:
+ *
+ *   900px ou mais   7 por prateleira (7 + 7), até 214px de altura (o tamanho do protótipo de 9 livros)
+ *   600 a 899px     5 por prateleira (5 + 5 + 4)
+ *   até 599px       4 por prateleira (4 + 4 + 3 + 3), a estante na largura da tela
+ *
+ * As prateleiras mais curtas ficam no fim, centradas, e a série é sempre a última, depois de um vão maior. Sem
+ * rolagem lateral e sem nomes embaixo (a capa já diz o nome). A pesquisa e as maquetes estão na D82.
+ *
+ * Um DOM só, sem JavaScript para montar: cada livro é um lugar (`.livro-colecao`) com o seu abajur em cima
+ * (`.lugar-luz`, sempre aceso na home, D78), o livro (o link `a.tomba`) e, no primeiro lugar de cada prateleira,
+ * a lâmina de vidro da prateleira inteira (`.tabua`, desenhada por vidro.css, da largura dos lugares dela). A
+ * quebra das prateleiras é um `<span class="quebra">` entre os lugares, à vista só na forma em que ela vale, e
+ * o primeiro lugar de cada prateleira é marcado no servidor para cada forma (`p7`, `p5`, `p4`, com o número de
+ * livros dela em `--f7`, `--f5`, `--f4`). Todas as prateleiras têm o mesmo tamanho de livro (`--kc`, na raiz):
+ * o que faz a mais larga caber na largura útil da página.
+ *
+ * O resto continua igual: a doca com o mouse (doca.ts, agora por prateleira), o livro vivo (hover com mola e
+ * brilho), a chegada (as luzes acendem uma a uma, a onda de molas e o brilho, estante-moderna.ts), a abertura
+ * da home (Abertura.astro: o fio de cada lâmina, os livros entrando um a um) e a viagem do livro clicado até a
+ * página dele (troca.js, `data-abre-livro`). A fileira do alto da página do livro é outra peça (Colecao.astro,
+ * modo "topo").
+ */
+import LivroEmPe from "./LivroEmPe.astro";
+import PontoDeLuz from "./PontoDeLuz.astro";
+import "../styles/nicho.css";
+import "../styles/vidro.css";
+import type { Livro } from "../lib/estante";
+
+interface Props {
+  livros: Livro[];
+}
+
+const { livros } = Astro.props;
+const ALTURA = 214;
+const GIRO = 26;
+const FOLGA = 1.06;
+const N = livros.length;
+const u = ALTURA / 720;
+const cw = Math.round(480 * u);
+const sws = livros.map((l) => Math.round(l.emPe.largura * u));
+const rad = (g: number) => (g * Math.PI) / 180;
+// O lugar de cada livro é o mesmo para todos (o da lombada mais larga): as prateleiras ficam alinhadas e a
+// lâmina de cada uma tem a largura certa sem medir nada.
+const LUGAR = Math.ceil((cw * Math.cos(rad(GIRO)) + Math.max(...sws) * Math.sin(rad(GIRO))) * FOLGA);
+const temSerie = livros.some((l) => l.serie) && livros.some((l) => !l.serie);
+
+/**
+ * As formas, da mais larga para a mais estreita: `n` livros por prateleira a partir da tela `de` (px), o vão entre
+ * os livros e o vão antes da série (no tamanho cheio), e quanto da largura útil fica de respiro (`respiro`, px; no
+ * celular a estante passa da margem da página e vai de borda a borda, `sangra`).
+ */
+const FORMAS = [
+  { n: 7, de: 900, vao: 18, serie: 32, respiro: 24, sangra: 0 },
+  { n: 5, de: 600, vao: 16, serie: 30, respiro: 16, sangra: 0 },
+  { n: 4, de: 0, vao: 10, serie: 20, respiro: 0, sangra: 1 },
+];
+
+/** As prateleiras de uma forma: o menor número delas, as mais cheias primeiro (14 em 4 = 4 + 4 + 3 + 3). */
+function prateleiras(n: number) {
+  const k = Math.ceil(N / n);
+  const base = Math.floor(N / k);
+  return Array.from({ length: k }, (_, i) => base + (i < N % k ? 1 : 0));
+}
+
+const indiceDaSerie = livros.findIndex((l, i) => temSerie && l.serie && !livros[i - 1]?.serie);
+const formas = FORMAS.map((f, j) => {
+  const ate = j === 0 ? undefined : FORMAS[j - 1].de - 0.02;
+  const tamanhos = prateleiras(f.n);
+  const inicios: number[] = [];
+  let i = 0;
+  for (const t of tamanhos) {
+    inicios.push(i);
+    i += t;
+  }
+  // A largura de cada prateleira no tamanho cheio: os lugares, os vãos e o vão a mais antes da série (quando ela
+  // não abre a prateleira). A mais larga dá o tamanho dos livros.
+  const larguras = tamanhos.map((t, k) => {
+    const de = inicios[k];
+    const comSerie = indiceDaSerie > de && indiceDaSerie < de + t;
+    return t * LUGAR + (t - 1) * f.vao + (comSerie ? f.serie - f.vao : 0);
+  });
+  return { ...f, ate, tamanhos, inicios, larguras, maior: Math.max(...larguras) };
+});
+
+// A largura útil de cada forma: a do conteúdo (suave.css, --util) menos o respiro; no celular, a estante sangra a
+// margem da página e vai até 8px da borda da tela (a conta deixa mais 8px de folga de cada lado).
+const util = (f: (typeof formas)[number]) => (f.sangra ? `(var(--util) + 2 * var(--pad) - 16px)` : `(var(--util) - ${f.respiro}px)`);
+const media = (f: (typeof formas)[number]) =>
+  [f.de ? `(min-width:${f.de}px)` : "", f.ate ? `(max-width:${f.ate}px)` : ""].filter(Boolean).join(" and ");
+
+let css = "";
+for (const f of formas) {
+  // O tamanho (--kc): a prateleira mais larga na largura útil, no máximo o tamanho cheio.
+  let regras = `.colecao-home{--kc:clamp(0.3,tan(atan2(${util(f)},${f.maior}px)),1);--vao-cheio:${f.vao}px;--serie-cheio:${f.serie}px}`;
+  if (f.sangra) regras += `.colecao-home{margin-inline:calc(8px - var(--pad))}`;
+  // As quebras desta forma e o primeiro lugar de cada prateleira (a lâmina dela).
+  // (Seletores mais fortes que os do componente, que é quem esconde a quebra e a lâmina.)
+  regras += `.colecao-home .prateleira-livros>.quebra.q${f.n}{display:block}`;
+  regras += `.colecao-home .p${f.n}{--fila:var(--f${f.n});--fila-serie:var(--s${f.n},0)}`;
+  regras += `.colecao-home.colecao-home .prateleira-livros>.livro-colecao.p${f.n}>.tabua{display:block}`;
+  // A série que abre uma prateleira não leva o vão a mais.
+  if (indiceDaSerie >= 0 && f.inicios.includes(indiceDaSerie)) regras += `.colecao-home .prateleira-livros>.livro-colecao.abre-serie{margin-left:0}`;
+  css += `@media ${media(f) || "all"}{${regras}}`;
+}
+
+const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Vol. ${String(l.volume).padStart(2, "0")}`);
+/** As classes e as variáveis de cada lugar: em que formas ele abre uma prateleira, e o tamanho dela. */
+const lugarDe = (i: number) => {
+  const classes: string[] = [];
+  const vars = [`--sw0:${sws[i]}px`, `--i:${i}`];
+  for (const f of formas) {
+    const k = f.inicios.indexOf(i);
+    if (k < 0) continue;
+    classes.push(`p${f.n}`);
+    vars.push(`--f${f.n}:${f.tamanhos[k]}`);
+    if (indiceDaSerie > i && indiceDaSerie < i + f.tamanhos[k]) vars.push(`--s${f.n}:1`);
+  }
+  return { classes, estilo: vars.join(";") };
+};
+/** As formas em que há quebra depois do lugar i. */
+const quebrasDepois = (i: number) => formas.filter((f) => f.inicios.includes(i + 1)).map((f) => `q${f.n}`);
+---
+
+<div
+  class="colecao colecao-home"
+  data-colecao="home"
+  data-chao="vidro"
+  data-estante
+  data-luzes-ao-chegar
+  data-onda-propria
+  style={`--lugar0:${LUGAR}px;--cw0:${cw}px`}
+>
+  <style is:inline set:html={css}></style>
+  <div class="prateleira-livros">
+    {
+      livros.map((l, i) => {
+        const { classes, estilo } = lugarDe(i);
+        const quebras = quebrasDepois(i);
+        return (
+          <>
+            <div
+              class:list={["livro-colecao", ...classes, { "de-serie": l.serie, "abre-serie": i === indiceDaSerie }]}
+              style={estilo}
+              data-livro-colecao={l.id}
+            >
+              {/* A lâmina da prateleira (só no primeiro lugar de cada uma, na forma da vez), o abajur e o livro. */}
+              <span class="tabua chao-fileira" aria-hidden="true" />
+              <span class="lugar-luz" aria-hidden="true">
+                <PontoDeLuz />
+              </span>
+              {/* O nome do link vem do texto `.sr` (D73): o livro inteiro é enfeite (aria-hidden, Livro3D). */}
+              <a class="tomba" href={l.href}>
+                <span class="sr">{`${rotuloDoVolume(l)}: ${l.nome}, ${l.contagem.toLowerCase()}`}</span>
+                <LivroEmPe livro={l} altura={ALTURA} transicao="ao-clicar" fluido folhas={0} />
+              </a>
+            </div>
+            {quebras.length > 0 && <span class:list={["quebra", ...quebras]} aria-hidden="true" />}
+          </>
+        );
+      })
+    }
+  </div>
+</div>
+
+<script>
+  // As luzes acendem, a onda de molas e a onda de luz, na chegada (uma depois da outra).
+  import "../scripts/estante-moderna";
+  // A doca: com o mouse, o livro sob ele cresce, e os vizinhos da mesma prateleira um pouco menos.
+  import "../scripts/doca";
+
+  const raiz = document.documentElement;
+  // Os livros 3D entram no segundo quadro: o primeiro (o nome e o resto da página) não carrega também as capas
+  // duras, e nenhum quadro passa da régua com a CPU lenta.
+  requestAnimationFrame(() => requestAnimationFrame(() => raiz.classList.add("colecao-pronta")));
+  for (const colecao of document.querySelectorAll<HTMLElement>("[data-colecao='home']")) {
+    // O livro leva à página dele, e a troca de página é a do livro que voa (troca.js, `data-abre-livro` com o
+    // destino), sem a cortina. O livro solta o hover na hora: a viagem começa da pose de repouso dele.
+    colecao.addEventListener("click", (e) => {
+      const a = (e.target as HTMLElement).closest<HTMLAnchorElement>("a.tomba");
+      if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      raiz.dataset.abreLivro = new URL(a.href).pathname;
+      const caixa = a.closest(".livro-colecao")?.querySelector<HTMLElement>(".livro-3d-caixa");
+      if (caixa) (window as unknown as { csLivroVivo?: { soltar: (c: HTMLElement) => void } }).csLivroVivo?.soltar(caixa);
+    });
+    // Voltando pelo histórico, a página volta sem o nome de transição que o livro ganhou na saída (Base.astro dá
+    // o nome ao livro que leva à página de onde se veio) e sem a marca da troca: do bfcache, na hora; carregada de
+    // novo, quando a chegada acaba. Sem isso, o nome ficava no livro e ele voava junto na próxima troca.
+    const semNomes = () => {
+      for (const el of colecao.querySelectorAll<HTMLElement>("[data-vt]")) el.style.removeProperty("view-transition-name");
+    };
+    addEventListener("pageshow", (e) => {
+      if (!e.persisted) return;
+      delete raiz.dataset.abreLivro;
+      semNomes();
+    });
+    addEventListener("cs:chegou", semNomes);
+  }
+</script>
+
+<style is:global>
+  /* As contas da coleção registradas com tipo: cada livro herda o número pronto, e não a conta inteira. */
+  @property --kc {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 1;
+  }
+
+  @property --gc {
+    syntax: "<angle>";
+    inherits: true;
+    initial-value: 90deg;
+  }
+</style>
+
+<style>
+  /*
+   * As medidas, em px de desenho, que encolhem com os livros (--kc). As do chão (`--chao-recuo`, `--chao-alto`,
+   * `--friso-alto`, `--abaixo`) vêm da lâmina de vidro (vidro.css); as dos abajures, daqui:
+   *
+   *   --teto            do alto do lugar ao alto do livro (o abajur fica nele)
+   *   --abajur-altura   de onde o abajur sai (a plaquinha) ao alto do livro
+   *   --entre           o espaço entre uma prateleira e o abajur da de baixo
+   */
+  .colecao-home {
+    --gc: 26deg;
+    --folga: 1.06;
+    --teto: 66px;
+    --cabeca: 10px;
+    --abajur-altura: 54px;
+    --abajur-escala: 0.85;
+    --cone-angulo: 40deg;
+    --poca-largura: 1.3;
+    --entre: 22px;
+    --vao: calc(var(--vao-cheio, 18px) * var(--kc));
+    --lugar: calc(var(--lugar0) * var(--kc));
+    --k-teto: calc(var(--teto) * var(--kc));
+    --k-entre: calc(var(--entre) * var(--kc));
+    --k-cabeca: calc(var(--cabeca) * var(--kc));
+    --k-chao-alto: calc(var(--chao-alto) * var(--kc));
+    --k-friso: calc(var(--friso-alto) * var(--kc));
+    --k-chao: calc((var(--chao-recuo) + var(--chao-alto) + var(--friso-alto)) * var(--kc));
+    --k-abaixo: calc(var(--abaixo, 0px) * var(--kc));
+    --k-poca-alto: calc(var(--poca-alto) * var(--kc));
+    --lq-luz: calc(var(--abajur-escala) * var(--kc) * 1px);
+    --boca: calc(var(--k-teto) - var(--abajur-altura) * var(--kc) + 18 * var(--lq-luz));
+    position: relative;
+    min-width: 0;
+    /* O que passa do lugar (a caixa do livro, a sombra da lâmina, a doca) cabe na margem e não alarga a página. */
+    overflow: clip;
+    overflow-clip-margin: 12px;
+  }
+
+  /* As prateleiras: os lugares lado a lado, centrados, e a quebra de cada forma. */
+  /* O espaço entre as prateleiras fica no alto de cada lugar (`--entre`); a primeira o devolve. */
+  .prateleira-livros {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-end;
+    column-gap: var(--vao);
+    margin-top: calc(-1 * var(--k-entre));
+  }
+
+  .quebra {
+    display: none;
+    flex-basis: 100%;
+    height: 0;
+  }
+
+  /*
+   * O lugar: o abajur no teto, o livro de pé e, embaixo, o chão (a lâmina) e o espaço do reflexo. O livro fica no
+   * meio dele (a caixa da capa é mais larga que o lugar quando gira).
+   */
+  .livro-colecao {
+    position: relative;
+    flex: none;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: unsafe center;
+    align-items: end;
+    width: var(--lugar);
+    padding-top: calc(var(--k-entre) + var(--k-teto) + var(--k-cabeca));
+    padding-bottom: calc(var(--k-chao) + var(--k-abaixo));
+    color: var(--ink);
+  }
+
+  /* O vão a mais antes da série. */
+  .abre-serie {
+    margin-left: calc((var(--serie-cheio, 24px) - var(--vao-cheio, 18px)) * var(--kc));
+  }
+
+  /*
+   * A lâmina da prateleira, no primeiro lugar dela: da largura de todos os lugares (mais 1,5% de cada lado, a
+   * sobra do vidro), no pé do lugar, embaixo dos livros e dos abajures (vidro.css a desenha: a aresta, o tampo e
+   * a sombra na página).
+   */
+  .colecao-home.colecao-home .tabua {
+    --fila-largura: calc(var(--fila, 1) * var(--lugar) + (var(--fila, 1) - 1) * var(--vao) + var(--fila-serie, 0) * (var(--serie-cheio, 24px) - var(--vao-cheio, 18px)) * var(--kc));
+    --vidro-sobra: calc(var(--fila-largura) * 0.015);
+    display: none;
+    position: absolute;
+    z-index: 0;
+    left: calc(-1 * var(--vidro-sobra));
+    bottom: var(--k-abaixo);
+    width: calc(var(--fila-largura) + 2 * var(--vidro-sobra));
+    height: var(--k-chao);
+    margin: 0;
+    pointer-events: none;
+  }
+
+  /* O abajur: a camada do lugar inteiro, atrás do livro; o cone desce da boca até logo atrás do pé dele. */
+  .lugar-luz {
+    --w-luz: var(--lugar);
+    --luz-acesa: 1;
+    position: absolute;
+    inset: var(--k-entre) 0 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .lugar-luz :global(.ponto-luz) {
+    --ponto-luz-topo: var(--boca);
+  }
+
+  /* O livro (o link), por cima do abajur e da lâmina; o foco é um anel em volta dele. */
+  .tomba {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: unsafe center;
+    justify-self: stretch;
+    transform-origin: 50% 100%;
+    color: inherit;
+    text-decoration: none;
+    border-radius: 4px;
+    outline-offset: 6px;
+    perspective: calc(900px * var(--kc));
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .tomba:focus-visible {
+    outline: 2px solid var(--acento);
+  }
+
+  /*
+   * O clique e o mouse valem no lugar de cada livro, não na caixa dele (que passa por cima dos vizinhos); o
+   * livro vivo acha o livro pela `.livro-colecao`.
+   */
+  .livro-colecao :global(.livro-em-pe) {
+    pointer-events: none;
+  }
+
+  /* O giro de capa (o mesmo de todos), por cima do --giro do livro 3D (livro.css). */
+  .livro-colecao :global(.livro-3d) {
+    --giro: var(--gc);
+  }
+
+  /* A sombra quente de cada livro (livro-vivo.css) cai na lâmina, da largura dele de capa, baixa. */
+  .livro-colecao :global(.livro-3d-caixa::after) {
+    width: calc(var(--cw) * (0.42 + 0.85 * cos(var(--gc))));
+    height: calc(var(--bh) * 0.085);
+    translate: -46% -22%;
+  }
+
+  :global(:root[data-theme="dark"]) .livro-colecao :global(.livro-3d-caixa::after) {
+    width: calc(var(--cw) * (0.5 + 0.95 * cos(var(--gc))));
+    height: calc(var(--bh) * 0.11);
+    translate: -50% -26%;
+  }
+
+  /*
+   * Até o segundo quadro (o script), cada livro guarda o lugar sem ser desenhado; sem JS, aparece direto. Quem
+   * espera é o livro, e não o link (D73): o nome do link é o texto `.sr` dentro dele.
+   */
+  :global(:root[data-js]:not(.colecao-pronta)) .colecao-home .tomba :global(.livro-em-pe) {
+    content-visibility: hidden;
+  }
+
+  /* No celular, o abajur mais perto do livro e as prateleiras mais juntas. */
+  @media (max-width: 599.98px) {
+    .colecao-home {
+      --teto: 58px;
+      --abajur-altura: 48px;
+      --entre: 18px;
+    }
+  }
+</style>
