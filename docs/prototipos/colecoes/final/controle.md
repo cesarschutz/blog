@@ -75,7 +75,7 @@ Ler este arquivo; continuar da primeira etapa que não está feita. O dev:
 `npx astro dev --host 127.0.0.1 --port 4322` (no Linux da nuvem, o Chromium fica em
 `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`; `CHROME_PATH` aponta para ele nos scripts).
 
-## Depois do OK do Cesar (aplicar no site)
+## Depois do OK do Cesar (aplicar no site): feito em 04/10/2026, menos a marca (6) e o hover (7)
 
 1. `src/livros/livros.json`: os 13 em ordem alfabética (volume, título, linhas e corpo do título,
    frase, temas, subtítulo, cor e cores de `cores.js`, instrumento, medidas da lombada); Carreira sai.

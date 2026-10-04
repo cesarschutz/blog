@@ -138,7 +138,12 @@ livro, a tag Pagamentos virou Cobrança e os redirecionamentos (`/categories/Car
 fora a marca "cs", que continua no verde `#2D4B46` (pergunta 00). O texto de cada desenho (completo e
 curto, para um possível hover) segue em `docs/prototipos/colecoes/final/dados.json`. Controle, direção
 de arte, textos e crítica em `docs/prototipos/colecoes/final/`. Valem a regra dos posts (conferir se a
-coleção ainda serve e avisar, na skill `post`) e os volumes em ordem alfabética (`CAPAS.md`).
+coleção ainda serve e avisar, na skill `post`) e os volumes em ordem alfabética (`CAPAS.md`). Testado em 04/10/2026 no build (três agentes): home, `/categories/` e as 13
+páginas dos livros, arquivo com filtro, posts que mudaram, tags (Cobrança), busca, RSS e os
+redirecionamentos, de 320 a 1920px nos dois temas: sem erro de console, sem 404, sem rolagem lateral;
+`check`, `links` e `contraste` passam. Corrigido no caminho: os nomes embaixo dos livros da home, que se
+atropelavam a partir de ~1890px. **Para o Cesar decidir:** no celular, os 14 livros da fileira da home
+ficam com ~20px de lombada (o título vira enfeite; o projeto pede todos à vista, sem rolagem lateral).
 
 Protótipo dos controles dos desenhos (01/10/2026, no ar em `/prototipos/controles/`, com noindex e fora
 do sitemap e da busca): cinco opções (régua e lápis, marca-texto, caderno e caneta, post-its e fita,
@@ -331,10 +336,13 @@ movimento e com movimento reduzido, com trace de CPU 4× sem tarefas longas dura
 
 ## Perguntas abertas para o Cesar
 
-00. **Coleções (D78, aplicada em 04/10/2026):** a marca "cs" acompanha a Arquitetura no azul
-    (`#2d4f77`) ou fica no verde `#2D4B46`? Se mudar: `DESIGN.md`, `tokens.ts` e `scripts/marca.mjs`
-    (passo 7 do fim de `docs/prototipos/colecoes/final/controle.md`). E o texto do desenho vai para um
-    hover nos livros?
+00. **Coleções (D78, aplicada em 04/10/2026):** (1) a marca "cs" acompanha a Arquitetura no azul
+    (`#2d4f77`) ou fica no verde `#2D4B46`? (2) o texto do desenho vai para um hover nos livros? (3) no
+    celular, a fileira da home com 14 livros fica com lombadas de ~20px: manter, duas fileiras abaixo de
+    700px, ou rolagem lateral só na fileira? (4) achados dos testes que já existiam antes: a tira
+    "Volume · artigos" corta com reticências (1280px no índice, 390px no topo do livro); vizinhos trocados
+    entre dois posts da mesma data (sns × w3c); a busca indexa a tira do topo do artigo; o contador
+    "Livros" da home conta a série (14); no Chromium 141, os abajures da home somem acima de 1100px.
 0. **D54:** as perguntas do fim de `docs/ajustes-d54/controle.md` (chegada da folha longa no celular
    lento, voltar sem bfcache, trava de rolagem do menu, desfile de Categorias no celular,
    redirecionamentos em inglês, busca que volta aberta, textos dos slides e das tags, comportamentos
