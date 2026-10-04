@@ -31,8 +31,8 @@
  * verso, quase de frente (VERSO, com a lombada à direita), erguendo-o um nada no meio da volta e endireitando
  * um pouco a vista. O verso é impresso na cor do livro, como a capa: no alto, a linha da coleção; a frase; "Neste
  * volume", com o que o livro abrange; e embaixo "A capa", com o texto curto do desenho e o link sobre a máquina;
- * no pé, a marca e o endereço (paginas.css, "o verso"). O texto completo da capa, a cor e o link ficam no
- * colofão do fim do volume, como num livro de verdade. Virado, o arrasto e o clique no livro não folheiam;
+ * no pé, a marca e o endereço (paginas.css, "o verso"). A história inteira de cada capa fica na página As
+ * capas (/capas/). Virado, o arrasto e o clique no livro não folheiam;
  * "Abrir o livro" (ou a seta) desvira e abre, e fechar o visor desvira antes de o livro voltar.
  */
 import { ICONES } from "../lib/icones";
@@ -185,21 +185,14 @@ import "../styles/paginas.css";
       }
       const n = d.posts.length;
       const cc = d.contracapa;
-      // O colofão (D78): no fim do volume, como num livro de verdade, "Sobre a capa" com o texto completo do
-      // desenho, a cor e o link sobre a máquina.
-      const sobreACapa = cc
-        ? `<div class="sobre-capa"><p class="cab">SOBRE A CAPA</p><p class="sobre-texto">${esc(cc.capa.completo)}</p><p class="sobre-cor"><span class="amostra" aria-hidden="true"></span><span><b>${esc(
-            cc.cor.nome.charAt(0).toUpperCase() + cc.cor.nome.slice(1),
-          )}.</b> ${esc(cc.cor.motivo)}</span></p><p class="sobre-link">${link(cc.capa.link.url, `${esc(cc.capa.link.titulo)} ↗`)}</p></div>`
-        : "";
       paginas.push({
-        html: `<div class="pg pg-esq colofao${cc ? " com-capa" : ""}"><div class="fim-do-volume"><p class="fim">FIM ${d.volume ? `DO VOLUME ${d.volume}` : "DA SÉRIE"}</p><p>${
+        html: `<div class="pg pg-esq colofao"><p class="fim">FIM ${d.volume ? `DO VOLUME ${d.volume}` : "DA SÉRIE"}</p><p>${
           d.serie
             ? `${n} ${n === 1 ? "artigo" : "artigos"} até aqui. Os próximos entram nesta mesma série.`
             : n === 0
               ? "Nenhum artigo ainda. Os primeiros entram neste mesmo livro."
               : `${n} ${n === 1 ? "artigo" : "artigos"} até aqui. Os próximos entram neste mesmo livro.`
-        }</p><p>${link(d.href, d.serie ? "Ver a série inteira" : "Ver o livro inteiro")}</p></div>${sobreACapa}</div>`,
+        }</p><p>${link(d.href, d.serie ? "Ver a série inteira" : "Ver o livro inteiro")}</p></div>`,
         rotulo: "fim",
       });
       const px = d.proximo;
@@ -561,7 +554,6 @@ import "../styles/paginas.css";
       lado = "dir";
       prepararEscrita();
       medirPagina();
-      for (const c of livro.querySelectorAll<HTMLElement>(".colofao.com-capa")) caber(c, "--fc");
       desenhar();
       atualizarBarra();
     }
@@ -928,7 +920,6 @@ import "../styles/paginas.css";
       medirPagina();
       if (livro) {
         caber(livro.querySelector<HTMLElement>(".vi-corpo"), "--f");
-        for (const c of livro.querySelectorAll<HTMLElement>(".colofao.com-capa")) caber(c, "--fc");
       }
       vista.x = 0;
       if (!celular.matches) lado = "dir";

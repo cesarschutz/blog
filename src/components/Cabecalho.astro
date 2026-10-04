@@ -31,7 +31,7 @@ import { url } from "../lib/url";
 import "../styles/traco.css";
 
 interface Props {
-  atual?: "artigos" | "categorias" | "series" | "tags";
+  atual?: "artigos" | "categorias" | "series" | "tags" | "capas";
   /** Artigo com sumário: o nome da seção atual pode ocupar o lugar da marca (C2, D49). */
   sumario?: boolean;
 }
@@ -48,6 +48,8 @@ const ITENS = [
   { chave: "categorias", nome: "Livros", nota: "Os livros da coleção", href: url("/categories/") },
   { chave: "series", nome: "Séries", nota: "Para ler em ordem", href: url("/series/") },
   { chave: "tags", nome: "Tags", nota: "Por assunto", href: url("/tags/") },
+  // D78: a história de cada capa da coleção (/capas/).
+  { chave: "capas", nome: "Capas", nota: "A máquina de cada capa", href: url("/capas/") },
 ] as const;
 ---
 

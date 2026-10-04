@@ -123,8 +123,10 @@ um livro de capa dura de verdade, com as mesmas artes de capa e de lombada (`Liv
   SCHUTZ" na capa); a frase grande em Newsreader itálico; um fio; "NESTE VOLUME" com o que o livro abrange;
   embaixo, "A CAPA", com o texto curto do desenho e "Saiba mais em <site> ↗"; no pé, a marca "cs" como carimbo
   e o endereço. Por cima, o grão e a luz da capa espelhada (o vinco da dobradiça a 22 da lombada, agora à
-  direita). O texto completo da capa, a cor e o link ficam no colofão (o fim do volume). Os textos ficam em
-  `src/livros/livros.json` (`contracapa`); a letra diminui só o que precisar para caber.
+  direita). A história inteira de cada capa fica na página As capas (`/capas/`): o livro grande e, ao lado, a
+  máquina, a relação com o livro e o que o tracejado mostra. Os textos ficam em `src/livros/livros.json`
+  (`contracapa`; o texto curto começa com "Máquina (época):", que a página lê, e o completo tem "A relação com
+  o livro:" e uma frase com "tracejad", que ela separa); a letra do verso diminui só o que precisar para caber.
 - **O livro ampliado aberto:** enquanto a capa abre, a vista se endireita (`--aberto`, `livro.css`) e o
   livro fica de frente, um livro só: a capa aberta à esquerda e, atrás das folhas da direita, a guarda da
   contracapa (`.guarda-de-tras`, `paginas.css`), as duas na cor do livro (na série, no papel) e passando o

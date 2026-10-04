@@ -1,0 +1,438 @@
+---
+/**
+ * As capas (/capas/, D78, a pedido do Cesar): a história de cada capa da coleção, numa página só. O princípio
+ * do conjunto é "O mesmo problema, um século antes" (docs/capas/CAPAS.md): cada livro leva na capa a máquina
+ * que fazia, antes do software, o trabalho do assunto dele.
+ *
+ * - No alto, o cabeçalho da página e o índice dos 13: o ícone, o volume, o livro e a máquina, cada um levando
+ *   à peça dele.
+ * - Cada livro é uma peça de exposição: uma ficha de catálogo (catalogo.css) com a tira em mono ("Volume 09 ·
+ *   Pagamentos" e a época da máquina), o palco com o abajur de latão e o livro grande, e ao lado o texto: o
+ *   nome da máquina, "A máquina" (a história), "A relação com" o livro, "No desenho" (o que o traço
+ *   tracejado mostra, com um tracinho tracejado na cor do livro) e, no pé, o link sobre a máquina e o caminho
+ *   para os artigos do livro. O livro e o texto trocam de lado a cada peça; no celular, o livro vem em cima.
+ * - O livro abre grande (o livro ampliado, a lupa ou o clique), e lá "Virar o livro" mostra o verso.
+ *
+ * Os textos vêm de src/livros/livros.json (`contracapa`): o nome da máquina e a época saem do texto curto
+ * ("Caixa registradora (1879): …"), e o texto completo é dividido em três: até "A relação com o livro:", a
+ * máquina; depois, a relação; e a frase do tracejado, o desenho. Sem JavaScript próprio (o livro ampliado já
+ * tem o dele); com o mouse no palco ou no nome da máquina, a cor do livro sobe e pinta o palco, como em Séries.
+ */
+import Base from "../layouts/Base.astro";
+import CabecalhoPagina from "../components/CabecalhoPagina.astro";
+import LivroAmpliado from "../components/LivroAmpliado.astro";
+import LivroEmPe from "../components/LivroEmPe.astro";
+import PontoDeLuz from "../components/PontoDeLuz.astro";
+import { iconeDoLivro } from "../lib/livros-svg";
+import { ICONES } from "../lib/icones";
+import { montarLivros } from "../lib/estante";
+import "../styles/catalogo.css";
+
+const maiuscula = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
+const livros = (await montarLivros()).filter((l) => !l.serie && l.contracapa);
+const pecas = livros.map((l) => {
+  const cc = l.contracapa!;
+  const [, objeto = l.nome, epoca = ""] = cc.capa.curto.match(/^(.*?) \(([^)]*)\):/) ?? [];
+  const [maquina, resto = ""] = cc.capa.completo.split(/\s*A relação com o livro:\s*/);
+  const frases = resto.split(/(?<=[.!?])\s+(?=["“A-ZÁÉÍÓÚÂÊÔÃÕÇ])/);
+  const i = frases.findIndex((f) => /tracejad/i.test(f));
+  const desenho = i >= 0 ? frases.splice(i, 1)[0] : "";
+  return {
+    l,
+    volume: String(l.volume).padStart(2, "0"),
+    objeto,
+    epoca,
+    epocaNaTira: maiuscula(epoca),
+    maquina,
+    relacao: maiuscula(frases.join(" ")),
+    desenho,
+    link: cc.capa.link,
+  };
+});
+const descricao =
+  "Cada livro da coleção leva na capa a máquina que fazia, antes do software, o trabalho do assunto dele: o mesmo problema, um século antes.";
+---
+
+<Base titulo="As capas" descricao={descricao} atual="capas">
+  <div class="wrap">
+    <CabecalhoPagina titulo="As capas" descricao={descricao} />
+
+    <nav class="indice" aria-label="As capas da coleção">
+      <ol>
+        {
+          pecas.map((p) => (
+            <li style={`--cor:${p.l.cores.destaque}`}>
+              <a href={`#${p.l.slug}`}>
+                <span class="indice-icone" aria-hidden="true" set:html={iconeDoLivro(p.l.slug!)} />
+                <span class="indice-vol">{p.volume}</span>
+                <span class="indice-nomes">
+                  <span class="indice-livro">{p.l.nome}</span>
+                  <span class="indice-objeto">{`${p.objeto}, ${p.epoca}`}</span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </nav>
+
+    <div class="pecas">
+      {
+        pecas.map((p, n) => (
+          <section
+            class="peca folha ficha-catalogo"
+            id={p.l.slug}
+            aria-labelledby={`objeto-${p.l.slug}`}
+            data-lado={n % 2 ? "direita" : "esquerda"}
+            style={`--cor:${p.l.cores.cor};--fio-ficha:${p.l.cores.destaque};--pinta:${p.l.cores.corTexto ?? p.l.cores.cor};--traco:${p.l.cores.destaque}`}
+          >
+            <p class="tira-catalogo tira-peca">
+              <span>{`Volume ${p.volume} · ${p.l.nome}`}</span>
+              <span>{p.epocaNaTira}</span>
+            </p>
+            <div class="palco painel" data-livro-gira data-luz>
+              <PontoDeLuz />
+              <LivroEmPe livro={p.l} altura={400} ampliavel fluido transicao="ao-clicar" />
+            </div>
+            <div class="texto">
+              <h2 id={`objeto-${p.l.slug}`}>{p.objeto}</h2>
+              <h3>A máquina</h3>
+              <p>{p.maquina}</p>
+              <h3>{`A relação com ${p.l.nome}`}</h3>
+              <p>{p.relacao}</p>
+              {p.desenho && (
+                <p class="no-desenho">
+                  <span class="tracejado" aria-hidden="true" />
+                  <span>
+                    <span class="rotulo-desenho">No desenho. </span>
+                    {p.desenho}
+                  </span>
+                </p>
+              )}
+              <p class="acoes">
+                <a class="saiba" href={p.link.url} target="_blank" rel="noopener">
+                  {p.link.titulo}
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.externo} />
+                </a>
+                <a class="ir-livro" href={p.l.href}>
+                  {`Os artigos de ${p.l.nome}`}
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
+                </a>
+              </p>
+            </div>
+          </section>
+        ))
+      }
+    </div>
+  </div>
+  <LivroAmpliado />
+</Base>
+
+<style>
+  /* ---------- o índice: os 13, em colunas, cada um levando à sua peça ---------- */
+  .indice {
+    margin: 0 0 clamp(28px, 4vw, 44px);
+  }
+
+  .indice ol {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: 0 32px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .indice a {
+    display: grid;
+    grid-template-columns: 30px 2ch minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .indice-icone {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    color: var(--cor);
+  }
+
+  .indice-icone :global(svg) {
+    width: 100%;
+    height: 100%;
+  }
+
+  .indice-vol {
+    font-family: var(--font-codigo);
+    font-size: 12px;
+    color: var(--ink-2);
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
+  /* O livro e, embaixo, a máquina da capa com a época. */
+  .indice-nomes {
+    display: grid;
+    min-width: 0;
+  }
+
+  .indice-livro {
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    font-size: 15.5px;
+    line-height: 1.3;
+  }
+
+  .indice-objeto {
+    font-family: var(--font-texto);
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1.35;
+    color: var(--ink-2);
+  }
+
+  .indice a:is(:hover, :focus-visible) .indice-livro {
+    color: var(--acento);
+  }
+
+  .indice a:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 2px;
+  }
+
+  /* ---------- as peças ---------- */
+  .pecas {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(28px, 4vw, 48px);
+    padding-bottom: clamp(32px, 5vw, 64px);
+  }
+
+  .peca {
+    --pad: 22px;
+    display: grid;
+    grid-template-columns: minmax(300px, 0.85fr) minmax(0, 1fr);
+    grid-template-areas:
+      "tira tira"
+      "palco texto";
+    column-gap: clamp(28px, 4vw, 56px);
+    align-items: center;
+    padding: 0 var(--pad) var(--pad);
+    /* Ao pular pelo índice, a peça para abaixo do cabeçalho fixo (base.css). */
+    scroll-margin-top: calc(var(--altura-topo, 64px) + 16px);
+    /* As peças fora da tela só se desenham quando chegam perto. */
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto 620px;
+  }
+
+  .peca[data-lado="direita"] {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.85fr);
+    grid-template-areas:
+      "tira tira"
+      "texto palco";
+  }
+
+  .tira-peca {
+    grid-area: tira;
+    margin: 0 calc(-1 * var(--pad)) var(--pad);
+    padding-inline: var(--pad);
+  }
+
+  .palco {
+    /* O tamanho do livro (LivroEmPe fluido): 400px de altura, menos no celular. */
+    --kc: 1;
+    /* A luz de quadro, como em Séries: a boca desce para a peça de latão caber no palco. */
+    --ponto-luz-topo: 40px;
+    --ponto-luz-pe: 28px;
+    --lq-luz: 1px;
+    grid-area: palco;
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    place-items: center;
+    min-height: 540px;
+    padding: 72px 24px 40px;
+    overflow: hidden;
+    border-radius: 4px;
+  }
+
+  /* A cor do livro sobe e pinta o palco com o mouse ou o foco nele (ou no nome da máquina), como em Séries. */
+  .palco::before,
+  .palco::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  .palco::before {
+    background: var(--pinta);
+    clip-path: inset(100% 0 0 0);
+    transition: clip-path 0.35s cubic-bezier(0.65, 0, 0.25, 1);
+  }
+
+  .palco::after {
+    background: color-mix(in oklab, var(--pinta), black 30%);
+    opacity: 0;
+    transition: opacity 0.35s cubic-bezier(0.65, 0, 0.25, 1) 0.1s;
+  }
+
+  .palco:is(:hover, :focus-within)::before,
+  .peca:has(h2:hover) .palco::before {
+    clip-path: inset(0 0 0 0);
+  }
+
+  .palco:is(:hover, :focus-within)::after,
+  .peca:has(h2:hover) .palco::after {
+    opacity: 0.45;
+  }
+
+  .palco > :global(.livro-em-pe) {
+    z-index: 1;
+  }
+
+  .peca:has(h2:hover) :global(.ponto-luz-cone) {
+    opacity: var(--ponto-luz-aceso);
+    transition-delay: 60ms;
+  }
+
+  /* ---------- o texto da peça: a placa ao lado do livro ---------- */
+  .texto {
+    grid-area: texto;
+    max-width: 64ch;
+    padding-block: 10px;
+  }
+
+  h2 {
+    margin: 0 0 6px;
+    font-size: clamp(28px, 3vw, 38px);
+    line-height: 1.12;
+    text-wrap: balance;
+  }
+
+  h3 {
+    margin: 22px 0 6px;
+    font-family: var(--font-ui);
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--ink-2);
+  }
+
+  .texto p {
+    margin: 0;
+    font-size: 17px;
+    line-height: 1.68;
+    text-wrap: pretty;
+  }
+
+  /* O tracejado do desenho: um tracinho tracejado na cor do livro, como o fantasma da capa. */
+  .texto .no-desenho {
+    display: flex;
+    gap: 12px;
+    margin-top: 22px;
+    font-style: italic;
+    color: var(--ink-2);
+  }
+
+  .tracejado {
+    flex: none;
+    width: 30px;
+    margin-top: 0.85em;
+    border-top: 2px dashed var(--traco);
+  }
+
+  .rotulo-desenho {
+    font-family: var(--font-ui);
+    font-style: normal;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink-2);
+  }
+
+  .texto .acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 26px;
+    margin-top: 26px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--font-ui);
+    font-size: 14.5px;
+    line-height: 1.4;
+  }
+
+  .acoes a {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    color: var(--acento);
+  }
+
+  .acoes svg {
+    flex: none;
+    align-self: center;
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .ir-livro {
+    text-decoration: none;
+  }
+
+  .ir-livro:hover {
+    text-decoration: underline;
+  }
+
+  /* ---------- telas menores: o livro em cima, o texto embaixo ---------- */
+  @media (max-width: 960px) {
+    .peca,
+    .peca[data-lado="direita"] {
+      --pad: 14px;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        "tira"
+        "palco"
+        "texto";
+      row-gap: 6px;
+    }
+
+    .palco {
+      min-height: 0;
+      padding: 64px 16px 30px;
+    }
+
+    .texto {
+      padding: 14px 6px 0;
+    }
+  }
+
+  @media (max-width: 640px) {
+    /* O livro grande cabe na largura da ficha. */
+    .palco {
+      --kc: 0.74;
+    }
+
+    .texto p {
+      font-size: 16.5px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .palco::before,
+    .palco::after {
+      transition: none;
+    }
+  }
+</style>

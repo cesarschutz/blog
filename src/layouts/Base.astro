@@ -41,7 +41,7 @@ interface Props {
   titulo?: string;
   descricao?: string;
   /** Item do menu que fica marcado como atual. */
-  atual?: "artigos" | "categorias" | "series" | "tags";
+  atual?: "artigos" | "categorias" | "series" | "tags" | "capas";
   /** Open Graph: "article" nos posts. */
   tipo?: "website" | "article";
   /** Imagem de compartilhamento (caminho interno, 1200×630, D10); por padrão, a do blog. */
@@ -84,7 +84,7 @@ const {
   chegada,
   cortina,
 } = Astro.props;
-const ROTULOS = { artigos: "Artigos", categorias: "Livros", series: "Séries", tags: "Tags" } as const;
+const ROTULOS = { artigos: "Artigos", categorias: "Livros", series: "Séries", tags: "Tags", capas: "Capas" } as const;
 const rotuloDaCortina = cortina?.rotulo ?? (atual ? ROTULOS[atual] : tipo === "article" ? "Artigo" : "Blog");
 const nomeDaCortina = cortina?.nome ?? titulo ?? NOME;
 // Rodada 4 (E2): a maior palavra do nome, para a cortina encolher o nome no celular em vez de partir a palavra.

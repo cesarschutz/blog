@@ -13,13 +13,18 @@ import Base from "../../layouts/Base.astro";
 import CabecalhoPagina from "../../components/CabecalhoPagina.astro";
 import GradeLivros from "../../components/GradeLivros.astro";
 import { montarLivros } from "../../lib/estante";
+import { ICONES } from "../../lib/icones";
+import { url } from "../../lib/url";
 
 const livros = (await montarLivros()).filter((l) => !l.serie);
 ---
 
 <Base titulo="Livros" descricao="Os livros do blog de Cesar Schutz: cada assunto é um livro da coleção." atual="categorias" chegada={{ propria: true }}>
   <div class="wrap">
-    <CabecalhoPagina titulo="Livros" descricao="Cada assunto é um livro da coleção. Abra um para ver os artigos dele; as séries ficam em Séries." />
+    <CabecalhoPagina titulo="Livros" descricao="Cada assunto é um livro da coleção. Abra um para ver os artigos dele; as séries ficam em Séries.">
+      {/* D78: a história de cada capa, na página As capas. */}
+      <a class="link-capas" href={url("/capas/")}>A máquina de cada capa<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} /></a>
+    </CabecalhoPagina>
     <GradeLivros livros={livros} />
   </div>
 </Base>
@@ -202,5 +207,27 @@ const livros = (await montarLivros()).filter((l) => !l.serie);
     .ficha-desfile .mascara {
       font-size: 24px;
     }
+  }
+</style>
+
+<style>
+  .link-capas {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-family: var(--font-ui);
+    font-size: 15px;
+    color: var(--acento);
+  }
+
+  .link-capas svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 </style>

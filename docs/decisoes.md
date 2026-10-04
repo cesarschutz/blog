@@ -3383,9 +3383,24 @@ nada muda.
       o grão, e a luz da contracapa espelhada da capa: o vinco da dobradiça à direita, a quina da frente
       mais escura e o fio de luz no alto. A letra diminui só o que precisar para caber (medido no
       navegador, `caber`).
-    - **O colofão:** o texto completo da capa, a cor (o nome e o motivo) e o link ficam na última página do
-      livro aberto, embaixo de "FIM DO VOLUME", como "Sobre a capa" num livro de verdade.
+    - **O colofão** teve, por algumas horas, o texto completo da capa, a cor e o link, embaixo de "FIM DO
+      VOLUME". Saiu a pedido do Cesar ("ficou ruim o texto da cor do desenho e tal"): o verso ficou como
+      estava, e a história de cada capa foi para uma página própria (abaixo). A cor não tem mais texto em
+      lugar nenhum (ele já tinha dito, na rodada dos textos, que não ia usar o texto da cor).
     - Os textos ficam em `src/livros/livros.json` (`contracapa`) e chegam pelo `/livros/<slug>.json`.
+  - **As capas** (`/capas/`, 04/10/2026, pedido do Cesar: "uma página específica elegante, com cada livro
+    grande e o texto explicando ao lado", com um lugar no cabeçalho para chegar nela). "Capas" é o quinto
+    item do cabeçalho, depois de Tags ("A máquina de cada capa" no menu do celular), e a página Livros leva
+    a ela ("A máquina de cada capa →"). No alto, o título "As capas", a frase do princípio ("o mesmo
+    problema, um século antes") e o índice dos 13 (o ícone, o volume, o livro e a máquina com a época, em
+    três colunas). Cada livro é uma peça de exposição: a ficha de catálogo com a tira ("Volume 09 ·
+    Pagamentos" e a época), o palco com o abajur de latão e o livro grande (400px; abre no livro ampliado,
+    onde vira), e ao lado o nome da máquina, "A máquina", "A relação com" o livro, "No desenho" (a frase do
+    tracejado, com um tracinho tracejado na cor do livro) e o link sobre a máquina e o dos artigos do livro.
+    O livro e o texto trocam de lado a cada peça; com o mouse, a cor do livro sobe no palco, como em
+    Séries; no celular, o livro vem em cima. Os textos saem do `contracapa` (o curto dá o nome e a época; o
+    completo é dividido em máquina, relação e tracejado). Sem JavaScript próprio. Alternativas para o
+    nome: "Coleção", "Colofão" (o termo certo de livro, mas pouco conhecido) e "Sobre as capas".
     Alternativas: a ficha na página (a mais fácil de achar) e as páginas do livro ampliado (escondidas até
     abrir).
   - O número desta decisão: a main usou D61 para o redesenho no ar; a coleção, que era D61 na branch,

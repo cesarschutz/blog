@@ -122,8 +122,8 @@ Componentes e detalhes em `.claude/rules/interface.md`. Para conferir, `/amostra
 ## URLs que não podem quebrar
 
 - `/posts/<slug>/`, com as mesmas âncoras de título de hoje (ids no estilo github-slugger, com acento)
-- `/archive/`, `/categories/`, `/tags/`, `/series/`, `/series/java/` (e `/java/`, que redireciona), `/rss.xml`, `/og/<slug>.png` e
-  `/sitemap-index.xml`
+- `/archive/`, `/categories/`, `/tags/`, `/series/`, `/series/java/` (e `/java/`, que redireciona), `/capas/` (D78),
+  `/rss.xml`, `/og/<slug>.png` e `/sitemap-index.xml`
 - `/categories/<Nome>/` e `/tags/<Nome>/` com o **nome cru** na URL (maiúsculas, acentos e espaços)
 - Redirecionamentos: `/categories/Arquitetura/`, `/Java/` e `/Observabilidade/` → o livro novo
   (`NOMES_ANTIGOS`, D30); `/posts/java-NN/` → `/posts/java-<LTS>/#java-NN` (vindo de `ABSORBED`),
@@ -274,7 +274,8 @@ src/components/          peças das páginas (estante, gaveta, sumário, avisos,
 src/computador/          o computador (D61): o ícone no canto, o macOS de mentira (sistema, janelas,
                          dock, menus) e os apps (Finder, editor, Terminal, Pré-Visualização, Sobre); os
                          dados vêm das rotas src/pages/mac/
-src/pages/               rotas; a home é [...page].astro (paginada, D27); livros/[slug].svg (desenho
+src/pages/               rotas; a home é [...page].astro (paginada, D27); capas.astro (a história de cada
+                         capa, D78); livros/[slug].svg (desenho
                          da capa, que a gaveta busca ao abrir o livro, D30);
                          posts/[slug]/apresentacao.pdf.ts (PDF) e og/[slug] (imagem, D10)
 src/plugins/             Markdown: avisos, notas laterais, apresentação, tabelas, matemática e a

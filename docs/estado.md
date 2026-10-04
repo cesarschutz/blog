@@ -150,8 +150,9 @@ lombada, como antes (D78, `docs/decisoes.md`). E, a pedido dele, a doca: com o m
 cresce como os ícones do Dock do Mac, e os vizinhos menos (`src/scripts/doca.ts`). Depois, também a pedido
 dele: os abajures da home sempre acesos e a contracapa. A primeira contracapa, no livro grande da página do
 livro, saiu no mesmo dia ("ficou horrível de feio"); agora o livro ampliado tem "Virar o livro", com o verso
-impresso na cor do livro (o que ele abrange e a capa em poucas linhas) e o texto completo da capa no
-colofão (D78, `LivroAmpliado.astro`, `paginas.css`).
+impresso na cor do livro (o que ele abrange e a capa em poucas linhas). O texto completo da capa saiu do
+colofão e foi para a página **As capas** (`/capas/`, "Capas" no cabeçalho): cada livro grande, com a
+história da máquina ao lado (D78).
 
 Protótipo dos controles dos desenhos (01/10/2026, no ar em `/prototipos/controles/`, com noindex e fora
 do sitemap e da busca): cinco opções (régua e lápis, marca-texto, caderno e caneta, post-its e fita,
@@ -350,7 +351,7 @@ mostra os custos da sessão antiga.
 
 00. **Coleções (D78, aplicada em 04/10/2026):** (1) a marca "cs" acompanha a Arquitetura no azul
     (`#2d4f77`) ou fica no verde `#2D4B46`? (2) o texto do desenho: resolvido, foi para a contracapa do
-    livro ampliado e para o colofão (04/10/2026); (3) no
+    livro ampliado e para a página As capas (04/10/2026); (3) no
     celular, a fileira da home com 14 livros fica com lombadas de ~20px: manter, duas fileiras abaixo de
     700px, ou rolagem lateral só na fileira? (4) achados dos testes que já existiam antes: a tira
     "Volume · artigos" corta com reticências (1280px no índice, 390px no topo do livro); vizinhos trocados

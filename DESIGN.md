@@ -484,6 +484,9 @@ de página e os ganchos das peças).
     ficha "Do livro" e o anterior e o próximo como fichas com fita.
   - **Listas:** a partir de 1100px, o livro 3D à direita de cada artigo, virado para o texto. Na página
     da tag fica o livro de antes.
+  - **As capas** (`/capas/`, D78): o índice dos 13 e uma ficha de catálogo por livro, como peça de
+    exposição: o palco com o abajur e o livro grande, e ao lado a história da máquina da capa. O livro e o
+    texto trocam de lado a cada peça; no celular, o livro vem em cima.
 - **Rodapé e subida:**
   - a ficha de empréstimo deitada sobre o feltro verde, com o nome gigante atrás;
   - a cordinha de latão à direita para subir ("Puxe para subir");
