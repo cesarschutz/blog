@@ -79,7 +79,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D66 | O post dos mods ("Quanto custou cada agente?"): publicado direto, com as telas do cockpit em print parado, as tags Claude Code e Plugins e o print largo que rola de lado no celular | decidido e publicado; o Cesar revê no ar |
 | D67 | Figura em passos: um formato só no lugar da lousa de passos, da lousa de comparação e da animação com play (abre inteira, cada passo soma, nada some, o leitor manda) | em prova em `/animacoes-test-2/` |
 | D68 | Pedido do Cesar num post termina na pergunta "vira regra para os próximos posts?" | decidido |
-| D71 | Regras de escrita do post (título que faz sentido sozinho, descrição, TL;DR, abertura pelo assunto, sem primeira pessoa), o post em partes e o post dos mods dividido em parte 1 e parte 2 | decidido; sem commit, esperando o Cesar ler |
+| D71 | Regras de escrita do post (título que faz sentido sozinho, descrição, TL;DR, abertura pelo assunto, sem primeira pessoa), o post em partes e o post dos mods dividido em parte 1 e parte 2 | decidido e publicado |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -2667,9 +2667,8 @@ nada muda.
   final).
 
 ## D71 · Escrita do post: título que faz sentido sozinho, abertura pelo assunto, sem primeira pessoa, e o post em partes
-- **Data:** 02/10/2026 · **Status:** decidido (as regras); o post dos mods em duas partes está na branch
-  `escrita-e-post-em-partes`, sem commit, esperando o Cesar ler. (Os números D69 e D70 estão em uso em
-  outras duas worktrees, ainda sem commit: a busca do cabeçalho e as tabelas no celular.)
+- **Data:** 02/10/2026 · **Status:** decidido e publicado em 03/10/2026 (o Cesar leu as duas partes,
+  gostou e mandou publicar na `main`).
 - **O que o Cesar disse**, lendo o post dos mods no ar (D66):
   - o título "Quanto custou cada agente?" não diz do que o post trata: "o título sempre tem que ser algo
     que lendo faça sentido, que lendo eu sei do que se trata", ainda mais porque o título aparece
@@ -2751,4 +2750,7 @@ nada muda.
   `docs/escrita/pesquisa.md`, `scripts/escrita.mjs` e o `package.json`; os dois posts, a capa nova, os
   prints e a lousa no slug da parte 2, as fotos dos livros (o IA com dois artigos), a lista de revisão e
   o painel.
-
+- **A apresentação do post dos mods (D74):** o roteiro `scripts/slides/posts/claude-code-do-claude-md-ao-mod.py`
+  foi escrito para o post único. Depois da divisão, os prints, a lousa e a capa antiga estão no slug da
+  parte 2 (`claude-code-csr-cockpit`): para gerar a apresentação de novo, o roteiro precisa ler os prints
+  de `src/evidencias/claude-code-csr-cockpit/` e fotografar as duas páginas.
