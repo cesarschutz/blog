@@ -3401,5 +3401,12 @@ nada muda.
   subseção por aba (Agentes, Diffs, Contexto, Turnos, Árvore, Inventário), cada uma com a tela e a lista
   do que cada bolinha numerada aponta, mais o detalhe do agente, o do turno, a linha de resumo e "Só
   observa". O post passou do teto do detalhado (~3.000 palavras), a pedido dele.
+- **A apresentação refeita (pedido do Cesar: "faltou arrumar tb a apresentacao ppt dele, esta as imagens
+  antigas"):** 20 slides, com as telas novas, um slide por aba (como no post), a caneta nos mesmos trechos
+  (o custo do Plan, o custo do turno com a nota "o fim menos o começo", a Contagem exata), a figura em
+  passos no lugar da lousa e os fatos de hoje (28 testes, versão 0.16.0, dois arquivos gravados). O PDF
+  virou os slides WebP do post (`npm run apresentacao -- … --pdf`).
+- **Também corrigido no post:** a frase do `validate` dizia que a lista do cockpit não tinha gravação
+  de arquivo nem processo; hoje tem o git de leitura e os dois registros.
 - **Pendente:** a capa ilustrada ainda mostra US\$ 0,04 e US\$ 0,02 (os números da sessão antiga).
 

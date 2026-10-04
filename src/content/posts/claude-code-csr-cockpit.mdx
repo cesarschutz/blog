@@ -285,7 +285,7 @@ Dentro da sessão:
 
 Um mod se testa em três camadas, da mais barata para a mais cara.
 
-**`claude plugin validate`.** Num mod, além de conferir o manifesto, ele lista os eventos que o mod escuta e as chamadas que ele faz à API dos mods, sem executar nada. Serve também para :grifo[auditar o mod de outra pessoa antes de instalar]. No cockpit, a lista não tem chamada de rede, de gravação de arquivo nem de processo; do disco, só a leitura do arquivo antes de uma escrita, que serve ao diff.
+**`claude plugin validate`.** Num mod, além de conferir o manifesto, ele lista os eventos que o mod escuta e as chamadas que ele faz à API dos mods, sem executar nada. Serve também para :grifo[auditar o mod de outra pessoa antes de instalar]. No cockpit, a lista não tem chamada de rede; os processos são só os comandos de leitura do git, e as gravações, só os dois arquivos de registro.
 
 :::carimbo{texto="rodado em 04/10/2026: 28 de 28"}
 **`claude plugin test`.** [Roda os testes](https://code.claude.com/docs/en/plugins/mods/test#write-a-test) do mod contra um Claude Code de mentira, sem login e sem rede: o teste dispara os eventos, monta o painel, aperta os botões e confere o que foi desenhado. O cockpit tem [28 testes](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit/tests): um deles confere a regra de só observar, e outro desenha cada aba de uma sessão longa e bagunçada.
