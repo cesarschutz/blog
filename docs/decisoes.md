@@ -2675,6 +2675,9 @@ nada muda.
   aplicado às 9 peças dos cinco posts (`estilo="marca-texto"`): os traços de progresso são riscos de
   marca-texto, o passo da vez fica grifado na lista e o Próximo vem sublinhado. As lousas antigas não
   mudaram.
+- **A última lousa antiga também saiu (04/10/2026):** a da instalação, no post do csr-cockpit (a peça 10 da
+  auditoria), virou figura em passos (`instalacao-em-passos`, seis passos, marca-texto e traços). Nenhum
+  post usa mais `Lousa` nem `Animacao`; as peças antigas seguem só na `/animacoes-test/`.
 - **A luz que acompanhava o mouse saiu (04/10/2026, pedido do Cesar):** a mancha âmbar da mesa (T5 da
   D61) não aparece mais; o `Luz.astro` deixou de pôr o `.luz-mesa`, e sem ela o `luz.ts` não acende a
   mancha nem as luzes locais. O brilho das lombadas, o livro vivo e o lustre do tema ficam.
