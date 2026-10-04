@@ -1,6 +1,11 @@
 /**
- * Pagamentos: caixa registradora mecânica, das de latão do fim do século XIX (inventada em 1879
- * contra a fraude: registra cada venda, guarda o dinheiro e fecha o caixa no fim do dia).
+ * Pagamentos: caixa registradora mecânica, das de latão do fim do século XIX (a de Ritty, 1879, "o
+ * caixa incorruptível": registra cada venda, guarda o dinheiro e fecha o caixa no fim do dia).
+ *
+ * Coleção de 13 (direção de arte, ficha 09): fica como na rodada anterior, que já segue as regras do
+ * mundo (3/4 pela frente-direita, luz do alto à esquerda, chão, o fantasma como a máquina no instante
+ * do trabalho). O que muda: a cor e o título do livro, e a máquina um pouco mais funda e larga na
+ * base, para a caixa do desenho passar de 70% da largura da área sem achatar a abóbada.
  *
  * Vista de frente e um pouco de cima, em projeção oblíqua como a gaveta de fichas do Dados: a frente
  * é plana e o fundo (z) foge para cima e para a direita. A luz vem do alto à esquerda: os lados
@@ -20,7 +25,7 @@ const rad = (g) => (g * Math.PI) / 180;
 export default {
   instrumento: "caixa registradora mecânica",
   titulo: "Pagamentos",
-  cor: "#467866",
+  cor: "#4f6f57",
   desenho({ t, hachura, chao, ponto, linha, poli, arco, retangulo, juntar }) {
     /** Face plana por pontos 3D [x, y, z], fechada. */
     const face = (pontos) => poli(pontos.map(([x, y, z]) => P(x, y, z)), true);
@@ -39,18 +44,18 @@ export default {
     };
     const fechada = (forma) => ({ pts: forma.pts.slice(0, -1), fechada: true });
 
-    const D = 90; // a profundidade da máquina
+    const D = 96; // a profundidade da máquina
     const cm = 228; // o eixo do gabinete
 
     // ---------- a base de madeira, com a gaveta do dinheiro ----------
-    const [bx0, bx1, by0, by1] = [126, 330, 604, 668];
+    const [bx0, bx1, by0, by1] = [120, 338, 604, 668];
     t(face([[bx0, by1, 0], [bx0, by0, 0], [bx0, by0, D], [bx1, by0, D], [bx1, by1, D], [bx1, by1, 0]]), { papel: true });
     t(aresta([bx0, by0, 0], [bx1, by0, 0]));
     t(aresta([bx1, by0, 0], [bx1, by1, 0]));
     hachura(face([[bx1, by0, 0], [bx1, by1, 0], [bx1, by1, D], [bx1, by0, D]]), { angulo: 60, passo: 4.2 });
-    t(linha([130, 664], [326, 664]), { w: 3 }); // o friso do rodapé
+    t(linha([124, 664], [334, 664]), { w: 3 }); // o friso do rodapé
 
-    const [gx0, gx1, gy0, gy1] = [138, 318, 609, 634]; // a frente da gaveta
+    const [gx0, gx1, gy0, gy1] = [132, 326, 609, 634]; // a frente da gaveta
     t(retangulo(gx0, gy0, gx1 - gx0, gy1 - gy0, 2));
     const concha = juntar([arco([cm, 625.5], 10, 5.5, 0, 180), linha([cm - 10, 625.5], [cm + 10, 625.5])]);
     hachura(concha, { angulo: 60, passo: 2.8 });
@@ -67,16 +72,16 @@ export default {
     }
 
     // ---------- o gabinete, afinando para cima ----------
-    const w = (y) => 92 - (16 * (604 - y)) / 160; // a meia largura, da base ao arranque do arco
+    const w = (y) => 96 - (16 * (604 - y)) / 160; // a meia largura, da base ao arranque do arco
     const E = (y, z) => [cm + w(y), y, z]; // um ponto do lado direito
     const Q = (y, z) => [cm - w(y), y, z]; // um ponto do lado esquerdo
     // O perfil do lado, da frente para trás: a saia, os quatro degraus do teclado, o ombro e a cabeça.
     const degraus = [0, 1, 2, 3].map((i) => ({ z: 10 + 11 * i, pe: 586 - 17 * i }));
     const perfil = [[10, 604], [10, 586]];
     for (const { z, pe } of degraus) perfil.push([z, pe - 17], [z + 11, pe - 17]);
-    perfil.push([54, 504], [42, 504], [42, 444]);
-    const [sy, sz] = [444, 42]; // o arranque do arco e a frente da cabeça
-    const [rx, ry] = [w(sy), 24];
+    perfil.push([54, 504], [42, 504], [42, 446]);
+    const [sy, sz] = [446, 42]; // o arranque do arco e a frente da cabeça
+    const [rx, ry] = [w(sy), 26]; // a abóbada alta: o que a distingue do teclado do tabulador e da mesa telefônica
     const arcoFrente = (a0, a1, z) => elipse3([cm, sy, z], [rx, 0, 0], [0, -ry, 0], a0, a1);
     // Onde a silhueta da abóbada passa da frente para trás: a tangente paralela ao vetor de fundo.
     const at = 180 - (Math.atan2(ry * A, rx * B) * 180) / Math.PI;
@@ -144,7 +149,7 @@ export default {
     t(retangulo(kx - 2, kyy - 5.5, 24, 11, 5.5), { papel: true }); // a maçaneta
 
     // ---------- a sombra no chão ----------
-    chao(124, 332, 670);
-    hachura(poli([[331, 669.5], [376, 637], [380, 641], [335, 673.5]], true), { angulo: 38, passo: 3.6, margem: 0.2 });
+    chao(118, 340, 670);
+    hachura(poli([[339, 669.5], [387, 634.5], [391, 638.5], [343, 673.5]], true), { angulo: 38, passo: 3.6, margem: 0.2 });
   },
 };

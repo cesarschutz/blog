@@ -59,8 +59,8 @@ interface Sugestao {
   custo?: string;
 }
 
-const LIVROS = dados.livros as Record<string, LivroProposto>;
-const SUGESTOES = dados.sugestoes as Sugestao[];
+const LIVROS = dados.livros as unknown as Record<string, LivroProposto>;
+const SUGESTOES = dados.sugestoes as unknown as Sugestao[];
 
 // Os desenhos que já existem em src/livros (o livro sem desenho entra com o lápis do rascunho).
 const desenhos = new Set(

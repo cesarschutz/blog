@@ -391,8 +391,8 @@ export const DESENHOS = {
     },
   },
 
-  /** Pagamentos: a pilha de moedas e uma moeda de pé. */
-  Pagamentos: {
+  /** Cobrança: a pilha de moedas e uma moeda de pé (era a tag Pagamentos, que virou livro na D78). */
+  Cobrança: {
     o: "pilha de moedas",
     d({ t, elipse, arco, linha, circulo, poli }) {
       const moeda = (cx, y) => {

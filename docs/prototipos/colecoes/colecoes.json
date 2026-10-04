@@ -1213,7 +1213,7 @@
           "motivoCor": "fato: Herschel (1842) chamava o azul do seu processo de azul da Prússia; o blueprint foi a cópia de toda planta das salas de desenho de 1870 aos anos 1940. A cor do que foi decidido no papel.",
           "instrumento": "prancheta com a planta e a régua-tê",
           "motivoDesenho": "séc. XVII; cópia em cianotipia desde 1870 · decidir no papel o que custa caro desfazer em tijolo",
-          "desenho": "novo-arquitetura-de-software"
+          "desenho": "arquitetura-de-software"
         },
         "dados": {
           "titulo": "Dados",
@@ -1241,7 +1241,7 @@
           "motivoCor": "fato (pesquisa): as cópias do mimeógrafo a álcool (1923) eram roxas, de anilina, \"o mais legível pelo maior número de cópias\". A cor do registro copiado; é motivo do assunto, não do tabulador, e está dito. Um tom mais azul que a ameixa de hoje.",
           "instrumento": "tabulador de Hollerith",
           "motivoDesenho": "1890 · contar 63 milhões de pessoas em cartões, seis meses em vez de sete anos",
-          "desenho": "novo-dados"
+          "desenho": "dados"
         },
         "desenvolvimento-de-software": {
           "titulo": "Desenvolvimento de Software",
@@ -1268,7 +1268,7 @@
           "motivoCor": "fato (pesquisa): a garança é o vermelho dos tecidos desde a Antiguidade; a calça *garance* do exército francês (1829–1914) sustentou a indústria de Avignon. O pano que sai do tear.",
           "instrumento": "tear de Jacquard com a cadeia de cartões",
           "motivoDesenho": "1804 · a máquina que lê o programa e faz o trabalho",
-          "desenho": "novo-desenvolvimento-de-software"
+          "desenho": "desenvolvimento-de-software"
         },
         "devops": {
           "titulo": "DevOps",
@@ -1297,7 +1297,7 @@
           "motivoCor": "fato: a carta-bilhete do tubo pneumático de Paris era de papel azul (1897–1902) e ficou para sempre o *petit bleu* (Proust mandava os seus por ele). O papel que viaja na cápsula.",
           "instrumento": "estação de tubo pneumático",
           "motivoDesenho": "1853 · levar a cápsula intacta do balcão até onde ela é usada, sem ninguém carregar",
-          "desenho": "novo-devops"
+          "desenho": "devops"
         },
         "frontend": {
           "titulo": "Frontend",
@@ -1325,7 +1325,7 @@
           "motivoCor": "fato: a tinta de Gutenberg era negro de fumo (a fuligem de lamparina) em verniz de óleo de linhaça, porque a tinta de escrever escorria do tipo de metal. A tinta de toda página impressa.",
           "instrumento": "prensa tipográfica de ferro (Albion)",
           "motivoDesenho": "c. 1820 · fazer a página que o leitor vê",
-          "desenho": "novo-frontend"
+          "desenho": "frontend"
         },
         "fundamentos": {
           "titulo": "Fundamentos",
@@ -1349,7 +1349,7 @@
           "motivoCor": "fato: as pilhas de gravidade (Callaud, anos 1860), potes de vidro com sulfato de cobre, o \"vitríolo azul\", em camada azul no fundo, alimentaram as linhas de telégrafo dos EUA e do Reino Unido. O que fica embaixo e ninguém vê.",
           "instrumento": "telégrafo de Morse: a chave e o registrador",
           "motivoDesenho": "1844 · o bit, o código, o protocolo e a fita, com tudo à vista",
-          "desenho": "novo-fundamentos"
+          "desenho": "fundamentos"
         },
         "ia": {
           "titulo": "IA",
@@ -1376,7 +1376,7 @@
           "motivoCor": "fato: os cilindros de cera marrom de Edison (1888–1902), do bege ao marrom escuro conforme a fornada. A memória da máquina que fala.",
           "instrumento": "o Turco, o autômato enxadrista de Kempelen",
           "motivoDesenho": "1770 · a máquina que parecia pensar",
-          "desenho": "novo-ia"
+          "desenho": "ia"
         },
         "integracao": {
           "titulo": "Integração e Eventos",
@@ -1404,7 +1404,7 @@
           "motivoCor": "fato (pesquisa): os isoladores de vidro das linhas de telégrafo e de telefone saíam verde-água por causa do ferro da areia. O vidro que segura o fio entre as estações.",
           "instrumento": "mesa telefônica manual",
           "motivoDesenho": "1878 · ligar quem chama a quem atende; a lâmpada que acende é o evento",
-          "desenho": "novo-integracao"
+          "desenho": "integracao"
         },
         "pagamentos": {
           "titulo": "Pagamentos",
@@ -1430,7 +1430,7 @@
           "motivoCor": "fato (pesquisa): o verso verde das cédulas dos EUA desde 1861, mantido em 1929 por ser \"durável e associado ao crédito forte e estável\"; o papel de razão verde é tradição de fabricante.",
           "instrumento": "caixa registradora",
           "motivoDesenho": "1879 · registrar cada venda contra o desvio e fechar o caixa",
-          "desenho": "novo-pagamentos"
+          "desenho": "pagamentos"
         },
         "seguranca": {
           "titulo": "Segurança",
@@ -1456,7 +1456,7 @@
           "motivoCor": "fato: o lacre era tingido de vermelho com cinábrio ou vermelhão desde a Idade Média, e a partir do século XVII, à base de goma-laca, mais quebradiço de propósito, \"para mostrar com clareza se alguém mexeu na carta\". A cor da prova de que ninguém abriu, como o Cesar sugeriu; a fechadura detectora é a mesma ideia.",
           "instrumento": "fechadura detectora de Chubb",
           "motivoDesenho": "1818 · provar que alguém tentou abrir",
-          "desenho": "novo-seguranca"
+          "desenho": "seguranca"
         },
         "sistemas-distribuidos": {
           "titulo": "Sistemas Distribuídos",
@@ -1484,7 +1484,7 @@
           "motivoCor": "fato (pesquisa): o azul escuro dos uniformes da Marinha britânica, fixado em 1748; e os dois relógios de Huygens eram relógios marítimos, feitos para a longitude. A cor do mar para relógios feitos para o mar.",
           "instrumento": "os dois relógios de Huygens na mesma viga",
           "motivoDesenho": "1665 · duas máquinas iguais que só se acertam pelo que as liga",
-          "desenho": "novo-sistemas-distribuidos"
+          "desenho": "sistemas-distribuidos"
         },
         "sre": {
           "titulo": "SRE",
@@ -1511,7 +1511,7 @@
           "motivoCor": "fato de convenção (pesquisa): o amarelo é a cor da cautela na sinalização (ANSI Z535; o âmbar dos semáforos desde 1914). Associação de material: o latão polido dos reguladores de mostra. Mantém o lugar claro e quente do ocre de hoje, com outro motivo.",
           "instrumento": "regulador centrífugo de Watt",
           "motivoDesenho": "1788 · manter a rotação quando a carga muda",
-          "desenho": "novo-sre"
+          "desenho": "sre"
         },
         "testes": {
           "titulo": "Testes",
@@ -1538,7 +1538,7 @@
           "motivoCor": "fato: \"prumo\" vem de *plumbum*, chumbo, o metal do peso desde os romanos. A cor do oráculo.",
           "instrumento": "fio de prumo",
           "motivoDesenho": "antes de tudo · conferir contra a referência que não falha",
-          "desenho": "novo-testes"
+          "desenho": "testes"
         }
       }
     }

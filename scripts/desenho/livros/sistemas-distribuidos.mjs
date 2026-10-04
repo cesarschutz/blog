@@ -5,14 +5,20 @@
  * o seu relógio, e os dois se acertam só pela viga que os liga. O fantasma é o pêndulo do segundo
  * relógio na posição espelhada: ele oscila em oposição ao primeiro.
  *
+ * Coleção de 13 (direção de arte, ficha 11): o desenho da rodada anterior com dois ajustes. As caixas
+ * dos relógios maiores (cada uma com uns 30% da largura da área, para o ícone ler a 30px) e os
+ * mostradores mais simples: só o círculo, dois ponteiros e o eixo, sem as marcas das horas, o anel
+ * e os furos de corda. Os ponteiros entram no ícone.
+ *
  * No ícone ficam só as frentes (viga, montantes, pés, caixas, mostradores, ponteiros) e os pêndulos,
- * com a haste mais grossa: as faces que fogem, a hachura e os miúdos viram borrão em 40px.
+ * com a haste mais grossa: as faces que fogem, a hachura e os miúdos viram borrão em 30px.
  */
 const V = [10, -7]; // a fuga das faces laterais (para a direita e para cima), a mesma no desenho inteiro
 
 export default {
-  instrumento: "dois relógios de pêndulo na mesma viga",
-  cor: "#1c2c51",
+  instrumento: "os dois relógios de Huygens na mesma viga",
+  titulo: "Sistemas Distribuídos",
+  cor: "#253461",
   desenho({ t, hachura, chao, ponto, linha, poli, curva, arco, elipse, circulo, retangulo, mover, juntar }) {
     const [vx, vy] = V;
     const rad = (g) => (g * Math.PI) / 180;
@@ -40,20 +46,20 @@ export default {
     montante(54);
     montante(404);
     // as mãos-francesas, do montante à viga
-    t(poli([[72, 452], [72, 442], [108, 410], [118, 410]], true), { papel: true });
-    t(poli([[404, 452], [404, 442], [368, 410], [358, 410]], true), { papel: true });
+    t(poli([[72, 448], [72, 438], [100, 410], [110, 410]], true), { papel: true });
+    t(poli([[404, 448], [404, 438], [376, 410], [366, 410]], true), { papel: true });
     chao(44, 440, 672, { altura: 6, passo: 3.8 }); // o chão, de um pé ao outro
 
     // ---------- um relógio ----------
     const relogio = (cx, { minutos, inclinacao, fantasma = false }) => {
-      const topo = 420;
-      const meio = 46; // meia largura da caixa e raio da capota
+      const topo = 418;
+      const meio = 60; // meia largura da caixa e raio da capota: a caixa com 30% da largura da área
       const cArco = [cx, topo + meio];
-      const base = 520;
+      const base = 540;
 
       // o prego na viga e a argola da caixa
       ponto([cx, 404], 2.1);
-      t(elipse([cx, 412], 3.5, 7), { w: 2, icone: false });
+      t(elipse([cx, 411], 3.5, 6.5), { w: 2, icone: false });
 
       // o rodapé da caixa (atrás do corpo)
       bloco(cx - meio - 3, base, 2 * (meio + 3), 6, { passo: 3.6, icone: false });
@@ -76,40 +82,32 @@ export default {
       ]);
       t(frente, { papel: true });
       // a moldura da porta de vidro
-      const dentro = meio - 5;
+      const dentro = meio - 6;
       t(
         juntar([
           arco(cArco, dentro, dentro, 180, 360),
-          linha([cx + dentro, cArco[1]], [cx + dentro, base - 5]),
-          linha([cx + dentro, base - 5], [cx - dentro, base - 5]),
-          linha([cx - dentro, base - 5], [cx - dentro, cArco[1]]),
+          linha([cx + dentro, cArco[1]], [cx + dentro, base - 6]),
+          linha([cx + dentro, base - 6], [cx - dentro, base - 6]),
+          linha([cx - dentro, base - 6], [cx - dentro, cArco[1]]),
         ]),
         { w: 3, icone: false },
       );
 
-      // o mostrador: aro, anel das horas, traços das horas, furos de corda, ponteiros e o eixo
-      const c = [cx, topo + 48];
-      t(circulo(c, 35), { w: 1 });
-      t(circulo(c, 31), { w: 2, icone: false });
-      for (let i = 0; i < 12; i++) {
-        const a = rad(-90 + i * 30);
-        const u = [Math.cos(a), Math.sin(a)];
-        const r0 = i % 3 ? 28 : 26;
-        t(linha([c[0] + r0 * u[0], c[1] + r0 * u[1]], [c[0] + 31 * u[0], c[1] + 31 * u[1]]), { w: i % 3 ? 3 : 2, icone: false });
-      }
-      for (const lado of [-1, 1]) t(circulo([c[0] + lado * 13, c[1] + 11], 2), { w: 3, icone: false });
+      // o mostrador, simples: o aro, dois ponteiros e o eixo
+      const c = [cx, topo + 62];
+      t(circulo(c, 44), { w: 1 });
       const ponteiro = (angulo, comprimento, losango) => {
         const a = rad(angulo);
         const u = [Math.cos(a), Math.sin(a)];
         const n = [-u[1], u[0]];
         const p = (s, d = 0) => [c[0] + s * u[0] + d * n[0], c[1] + s * u[1] + d * n[1]];
-        t(linha(c, p(comprimento)), { w: 2 });
-        if (losango) t(poli([p(comprimento * 0.45), p(comprimento * 0.68, 3.2), p(comprimento * 0.9), p(comprimento * 0.68, -3.2)], true), { w: 2, papel: true, icone: false });
+        t(linha(c, p(comprimento)), { w: 2, icone: true });
+        if (losango) t(poli([p(comprimento * 0.45), p(comprimento * 0.68, 3.6), p(comprimento * 0.9), p(comprimento * 0.68, -3.6)], true), { w: 2, papel: true, icone: false });
       };
       const horas = 10 + minutos / 60;
-      ponteiro(-90 + horas * 30, 20, true);
-      ponteiro(-90 + minutos * 6, 28, false);
-      ponto(c, 1.8);
+      ponteiro(-90 + horas * 30, 26, true);
+      ponteiro(-90 + minutos * 6, 37, false);
+      ponto(c, 2);
 
       // o pêndulo: sai por baixo da caixa, inclinado
       const pivo = [cx, topo + 30];
@@ -117,9 +115,9 @@ export default {
         const u = [Math.sin(rad(graus)), Math.cos(rad(graus))];
         const em = (s) => [pivo[0] + s * u[0], pivo[1] + s * u[1]];
         const saida = em((base + 6 - pivo[1]) / u[1]);
-        const sBob = 190;
+        const sBob = 184;
         const bob = em(sBob);
-        const rBob = 17;
+        const rBob = 18;
         if (fantasma) {
           t(juntar([linha(saida, em(sBob - rBob)), arco(bob, rBob, rBob, -90 - graus, 270 - graus)], false), { fantasma: true });
           return;
@@ -144,7 +142,7 @@ export default {
       if (fantasma) pendulo(-inclinacao, true);
     };
 
-    relogio(172, { minutos: 10, inclinacao: 9 });
-    relogio(308, { minutos: 17, inclinacao: -9, fantasma: true });
+    relogio(160, { minutos: 10, inclinacao: 9 });
+    relogio(316, { minutos: 17, inclinacao: -9, fantasma: true });
   },
 };

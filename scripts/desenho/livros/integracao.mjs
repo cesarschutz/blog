@@ -1,14 +1,22 @@
 /**
- * Integração e Eventos: mesa telefônica manual (a central de telefonista magneto, fim do século XIX
- * e começo do XX, do tipo de mesa), vista de frente e um pouco de cima, em projeção oblíqua (a
- * profundidade sobe para a direita, como a gaveta de fichas de Dados). Atrás, o painel em pé com
- * as fileiras de jaques, cada uma com a régua das tampinhas anunciadoras por cima; na frente, o
- * tampo com os pares de cordões (os plugues em pé nos furos) e as chavinhas; embaixo do tampo,
- * à vista, os cordões descem até os contrapesos, que puxam o cordão de volta quando a ligação
- * acaba. Dois pares de cordões já ligam quem chamou a quem atende; um terceiro par atendeu a
- * chamada, e o seu outro cordão, ainda na mesa, é o fantasma: o caminho tracejado, com a seta, que
- * o plugue vai fazer até o jaque de quem recebe. Uma tampinha caída é a próxima chamada esperando.
- * Os cordões, os contrapesos, as réguas, a manivela e a hachura ficam fora do ícone da lombada.
+ * Integração e Eventos: mesa telefônica manual (a central de telefonista, de New Haven, 1878, em
+ * diante), vista de frente e um pouco de cima, em projeção oblíqua (a profundidade sobe para a
+ * direita, como a caixa registradora de Pagamentos). Atrás, o painel em pé com o campo de jaques,
+ * cada jaque com a lâmpada da linha por cima; na frente, o tampo com os pares de plugues em pé nos
+ * furos e as chavinhas; embaixo do tampo, à vista, os cordões descem até os contrapesos, que puxam o
+ * cordão de volta quando a ligação acaba. Um par de cordões já liga quem chamou a quem atende. Uma
+ * lâmpada acesa é um assinante que tirou o fone do gancho: o evento. O fantasma é o cordão que ainda
+ * vai ser encaixado, do plugue na prateleira ao jaque da lâmpada acesa.
+ *
+ * Coleção de 13 (direção de arte, ficha 08): o desenho da rodada anterior com as mudanças da ficha.
+ * Menos jaques (6 fileiras × 8 colunas, cada um um círculo em w2 com a lâmpada menor por cima, em
+ * w3, no lugar das réguas de tampinhas); uma lâmpada acesa (a única "luz" da coleção); só dois
+ * cordões, em w1; quatro pares de plugues e quatro chaves na prateleira; o fantasma sem a seta (a
+ * regra do mundo pede a máquina no instante do trabalho, nunca uma seta); e a mesa mais larga, para a
+ * caixa do desenho chegar a 85% da largura da área. Hachura na face direita do gabinete, na sombra
+ * sob a prateleira e na moldura interna do painel. No ícone: o gabinete, a prateleira, uma grade
+ * rala de jaques (4 × 5) e as duas curvas dos cordões; as lâmpadas, as chaves, os plugues, os
+ * contrapesos e a manivela ficam fora.
  */
 
 /** Projeção oblíqua: 1 unidade de profundidade anda (0,53, −0,282) na tela (28°, encurtada a 0,6). */
@@ -20,11 +28,12 @@ const LADO = [0.47, 0.883];
 
 export default {
   instrumento: "mesa telefônica manual",
-  cor: "#72aba5",
-  desenho({ t, hachura, chao, ponto, cheio, linha, poli, bezier, elipse, circulo, retangulo }) {
+  titulo: "Integração e Eventos",
+  cor: "#71a49d",
+  desenho({ t, hachura, chao, cheio, linha, poli, bezier, elipse, circulo, retangulo }) {
     // ---------- medidas ----------
-    const X0 = 92; // a mesa, na frente: esquerda
-    const X1 = 328; // e direita
+    const X0 = 70; // a mesa, na frente: esquerda
+    const X1 = 350; // e direita
     const YS = 574; // o tampo (na frente)
     const YB = 666; // o chão
     const D = 104; // a profundidade da mesa
@@ -41,13 +50,23 @@ export default {
     const PYB = YS + oy; // o pé do painel
     const PYT = PYB - HP; // o topo do painel
 
+    // ---------- o campo de jaques: 6 fileiras × 8 colunas ----------
+    const colunas = 8;
+    const fileiras = 6;
+    const passoX = 30;
+    const passoY = 20;
+    const jx = (c) => PX0 + (X1 - X0) / 2 + (c - (colunas - 1) / 2) * passoX;
+    const jy = (f) => PYT + 30 + f * passoY;
+    const acesa = [6, 1]; // o jaque cuja lâmpada acendeu: alguém tirou o fone do gancho
+
     // ---------- os pares de cordões ----------
-    const pares = [128, 166, 204, 242, 280];
+    const pares = [118, 182, 246, 310];
     const ZF = 36; // a fileira da frente (os cordões de chamada)
     const ZT = 50; // a fileira de trás (os cordões de atendimento), logo atrás
     const ZK = 14; // as chavinhas
-    // o que está plugado: [par, fileira (ZF ou ZT), jaque [coluna, fileira]]
-    const plugados = [[0, ZF, [0, 2]], [0, ZT, [2, 0]], [1, ZF, [2, 3]], [1, ZT, [4, 1]], [3, ZF, [6, 0]]];
+    // a ligação em curso: [par, fileira (ZF ou ZT), jaque [coluna, fileira]]
+    const plugados = [[1, ZF, [0, 1]], [1, ZT, [4, 0]]]; // quem chamou, à esquerda; quem atende, no alto: as duas curvas cortam o painel
+    const aguarda = [2, ZF]; // o plugue na prateleira cujo cordão é o fantasma
     const estaPlugado = (i, z) => plugados.some(([p, pz]) => p === i && pz === z);
     const furo = (i, z) => pr(pares[i], YS, z);
 
@@ -76,6 +95,8 @@ export default {
     t(linha([X0, YS + ET], [X1, YS + ET]), { w: 2 });
     t(linha([X1, YS + ET], pr(X1, YS + ET, D)), { w: 2 });
     t(poli([pr(X0, YS), pr(X1, YS), pr(X1, YS, D), pr(X0, YS, D)], true), { papel: true });
+    // a sombra sob a prateleira: o avental, embaixo da beira do tampo
+    hachura([[X0 + 1, YS + ET + 1.5], [X1 - 1, YS + ET + 1.5], [X1 - 1, YV - 1.5], [X0 + 1, YV - 1.5]], { angulo: 60, passo: 5 });
 
     // ---------- o painel ----------
     t(poli([[PX1, PYT], [PX1, PYB], pr(X1, YS, D), pr(X1, YS - HP, D)], true), { papel: true });
@@ -88,30 +109,34 @@ export default {
     const [cx, cy] = pr(X0 - CS, YC, zc);
     t(retangulo(cx, cy, X1 - X0 + 2 * CS, CH), { papel: true });
 
-    // a moldura interna e o campo de jaques: 4 fileiras de 10, cada uma com a régua das tampinhas por cima
-    const inset = 6;
-    t(retangulo(PX0 + inset, PYT + inset, X1 - X0 - 2 * inset, HP - 2 * inset), { w: 2 });
-    const colunas = 11;
-    const fileiras = 4;
-    const passoX = 18;
-    const jx = (c) => PX0 + (X1 - X0) / 2 + (c - (colunas - 1) / 2) * passoX;
-    const jy = (f) => PYT + 41 + f * 27;
+    // a moldura interna: o campo dos jaques é rebaixado, e a sombra cai no alto e à esquerda dele
+    const inset = 8;
+    const [mx0, my0, mw, mh] = [PX0 + inset, PYT + inset, X1 - X0 - 2 * inset, HP - 2 * inset];
+    t(retangulo(mx0, my0, mw, mh), { w: 2 });
+    hachura([[mx0 + 1, my0 + 1], [mx0 + mw - 1, my0 + 1], [mx0 + mw - 1, my0 + 5.5], [mx0 + 1, my0 + 5.5]], { angulo: 60, passo: 3.2, margem: 0.4 });
+    hachura([[mx0 + 1, my0 + 5.5], [mx0 + 5.5, my0 + 5.5], [mx0 + 5.5, my0 + mh - 1], [mx0 + 1, my0 + mh - 1]], { angulo: 60, passo: 3.2, margem: 0.4 });
+
+    // o campo de jaques: cada jaque um círculo (w2) com o furo, e a lâmpada da linha por cima (w3)
     const ocupados = plugados.map(([, , j]) => j);
-    const caida = [9, 1]; // a tampinha que caiu: a próxima chamada esperando
     for (let f = 0; f < fileiras; f++) {
-      t(retangulo(jx(0) - 9, jy(f) - 19.5, (colunas - 1) * passoX + 18, 7), { w: 3 });
       for (let c = 0; c < colunas; c++) {
-        if (caida[0] === c && caida[1] === f) {
-          // a tampinha aberta, pendurada pela dobradiça de baixo
-          const aba = [[jx(c) - 4, jy(f) - 12], [jx(c) - 5.5, jy(f) - 6], [jx(c) + 2.5, jy(f) - 6], [jx(c) + 4, jy(f) - 12]];
-          t(poli(aba, true), { w: 3, papel: true });
-          hachura(aba, { angulo: 60, passo: 2.2, margem: 0.4 });
-        } else t(retangulo(jx(c) - 3.5, jy(f) - 18.2, 7, 4.4, 0.6), { w: 3 });
+        const J = [jx(c), jy(f)];
+        const lamp = [J[0], J[1] - 8.5];
+        if (acesa[0] === c && acesa[1] === f) {
+          // a lâmpada acesa: o evento
+          cheio(circulo(lamp, 2.9), { icone: false });
+          for (const a of [-125, -90, -55]) {
+            const [ux, uy] = [Math.cos((a * Math.PI) / 180), Math.sin((a * Math.PI) / 180)];
+            t(linha([lamp[0] + 4.6 * ux, lamp[1] + 4.6 * uy], [lamp[0] + 8 * ux, lamp[1] + 8 * uy]), { w: 3 });
+          }
+        } else t(circulo(lamp, 1.8), { w: 3 });
         if (ocupados.some(([oc, of]) => oc === c && of === f)) continue;
-        t(circulo([jx(c), jy(f)], 2.6), { w: 3 });
-        ponto([jx(c), jy(f)], 1.3);
+        t(circulo(J, 3.4), { w: 2, icone: false });
+        cheio(circulo(J, 1.2), { icone: false });
       }
     }
+    // no ícone, uma grade rala (4 × 5) no mesmo campo: a 30px, a grade cheia vira uma mancha
+    for (let f = 0; f < 4; f++) for (let c = 0; c < 5; c++) t(circulo([jx(0) + (c * (colunas - 1) * passoX) / 4, jy(0) + (f * (fileiras - 1) * passoY) / 3], 4), { w: 2, soIcone: true });
 
     // ---------- o tampo: chavinhas, furos e plugues ----------
     for (let i = 0; i < pares.length; i++) {
@@ -119,24 +144,24 @@ export default {
       const [kx, ky] = pr(pares[i], YS, ZK);
       t(elipse([kx, ky], 3.2, 1.3), { w: 3 });
       t(linha([kx, ky], [kx, ky - 5]), { w: 2, icone: false });
-      ponto([kx, ky - 6.2], 1.7);
+      cheio(circulo([kx, ky - 6.2], 1.7), { icone: false });
       for (const z of [ZT, ZF]) {
         const [hx, hy] = furo(i, z);
         t(elipse([hx, hy], 5, 1.9), { w: 3 });
         if (estaPlugado(i, z)) continue;
         // o plugue em pé no furo: o cabo e a ponta de latão
-        t(retangulo(hx - 3.5, hy - 14, 7, 14, 1), { w: 2, papel: true });
+        t(retangulo(hx - 3.5, hy - 14, 7, 14, 1), { w: 2, papel: true, icone: false });
         t(linha([hx - 3.5, hy - 10], [hx + 3.5, hy - 10]), { w: 3 });
-        t(retangulo(hx - 1.8, hy - 20.5, 3.6, 7, 1.6), { w: 2, papel: true });
+        t(retangulo(hx - 1.8, hy - 20.5, 3.6, 7, 1.6), { w: 2, papel: true, icone: false });
       }
     }
 
-    // ---------- os cordões plugados ----------
+    // ---------- os cordões plugados: a ligação em curso ----------
     const plugueNoJaque = ([c, f], comprimento = 11) => {
       const J = [jx(c), jy(f)];
       const E = [J[0] + SAI[0] * comprimento, J[1] + SAI[1] * comprimento];
       const canto = (P, s) => [P[0] + LADO[0] * s, P[1] + LADO[1] * s];
-      t(poli([canto(J, 3.4), canto(E, 3.4), canto(E, -3.4), canto(J, -3.4)], true), { w: 2, papel: true });
+      t(poli([canto(J, 3.4), canto(E, 3.4), canto(E, -3.4), canto(J, -3.4)], true), { w: 2, papel: true, icone: false });
       const M = [J[0] + SAI[0] * 4, J[1] + SAI[1] * 4];
       t(linha(canto(M, 3.4), canto(M, -3.4)), { w: 3 });
       return E;
@@ -161,16 +186,11 @@ export default {
     t(retangulo(mx + 6, my + 10, 13, 4.4, 1.8), { w: 2, papel: true, icone: false });
     cheio(circulo([mx, my], 1.2), { icone: false });
 
-    // ---------- o fantasma: o cordão que ainda vai ser plugado, com a seta de quem o leva ----------
-    const [gx, gy] = furo(3, ZT);
-    const alvo = [10, 2];
-    const Jg = [jx(alvo[0]), jy(alvo[1])];
-    const Eg = [Jg[0] + SAI[0] * 13, Jg[1] + SAI[1] * 13];
-    t(bezier([gx, gy - 23], [gx - 6, gy - 78], [Eg[0] - 34, Eg[1] - 26], Eg), { fantasma: true });
-    // a ponta da seta, no sentido em que o plugue entra no jaque
-    const ENTRA = [-SAI[0], -SAI[1]];
-    const seta = (s, l) => [Eg[0] - ENTRA[0] * l + LADO[0] * s, Eg[1] - ENTRA[1] * l + LADO[1] * s];
-    t(poli([seta(3.6, 5.5), Eg, seta(-3.6, 5.5)]), { fantasma: "solido" });
+    // ---------- o fantasma: o cordão que ainda vai ser encaixado, do plugue ao jaque da lâmpada acesa ----------
+    const [gx, gy] = furo(...aguarda);
+    const Jg = [jx(acesa[0]), jy(acesa[1])];
+    const Eg = [Jg[0] + SAI[0] * 12, Jg[1] + SAI[1] * 12];
+    t(bezier([gx, gy - 22], [gx - 5, gy - 84], [Eg[0] + SAI[0] * 34, Eg[1] + SAI[1] * 34], Eg), { fantasma: true });
 
     chao(X0 + 2, X1 + 30, YB + 2, { altura: 7, desvio: 5 });
   },

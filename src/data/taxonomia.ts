@@ -68,7 +68,7 @@ export const CATEGORIAS: Categoria[] = dados.livros.map((l) => ({
   descricao: l.subtituloCompleto,
   temas: l.temas,
   cor: l.cor,
-  cores: { ...coresDoLivro(l.cor), papel: PAPEL, tintaPapel: TINTA_PAPEL, corTexto: l.corTexto },
+  cores: { ...coresDoLivro(l.cor), papel: PAPEL, tintaPapel: TINTA_PAPEL, corTexto: (l as { corTexto?: string }).corTexto },
   instrumento: l.instrumento,
   emPe: l.lombadaEmPe,
   deitada: l.lombadaDeitada,

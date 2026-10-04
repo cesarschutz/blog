@@ -3,8 +3,8 @@ title: "Efeito externo sem registro local — a cobrança passou e o banco não 
 published: 2026-09-11
 updated: 2026-09-20
 description: "A captura no adquirente passa e a gravação no seu banco falha: grave a intenção antes de causar o efeito. Escrita dupla, outbox e relay com SQL testado, conciliação, CDC, event sourcing e 2PC."
-tags: [Pagamentos, Mensageria, Banco de Dados]
-category: Arquitetura de Software
+tags: [Cobrança, Mensageria, Banco de Dados]
+category: Sistemas Distribuídos
 draft: false
 ---
 
