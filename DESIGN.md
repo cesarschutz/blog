@@ -589,6 +589,8 @@ categoria e a **caneta da leitura** (a barra do topo e o sumário, D58; no escur
 
 São os 13 da D78 (04/10/2026), na ordem dos volumes, que é a alfabética; Carreira saiu. O motivo de
 cada cor está em `docs/prototipos/colecoes/final/direcao-de-arte.md` (e as trocas, na `critica.md`).
+Sistemas Distribuídos entrou no site em `#253461`, e não no `#202c4d` da proposta: com ele, o âmbar
+das figuras no painel do livro ficava em 4,45:1.
 A marca "cs" continua no verde `#2D4B46` da Arquitetura de antes: se ela acompanha o azul novo, o
 Cesar ainda decide.
 

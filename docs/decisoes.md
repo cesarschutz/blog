@@ -3266,8 +3266,9 @@ nada muda.
   pedir?
 
 ## D78 · A coleção de 13 livros
-- **Data:** 01/10/2026 · **Status:** decidido; no site só depois do OK do Cesar na página final
-  (desenhos, cores e textos ainda em proposta).
+- **Data:** 01/10/2026 · **Status:** decidido; aplicado no site em 04/10/2026, a pedido do Cesar ("temos
+  que arrumar os livros do blog para esses novos, arrumar as frases deles, e cada post colocar em um
+  livro, e ajustar as tags de cada post"). Pendente: a marca "cs" (fica no verde até ele decidir).
 - **Pedido do Cesar:** trocar os 8 livros por uma coleção que junte os de hoje com as 16 categorias do
   site de notícias dele (dev-note). Viu cinco sugestões (de 9 a 12 livros, em
   `docs/prototipos/colecoes/`) e escolheu a 5, "mais livro fica melhor dividido os posts", com um livro
@@ -3308,3 +3309,24 @@ nada muda.
 - **Mudado:** a skill `post` e `.claude/rules/posts.md` (a conferência da coleção no plano de cada
   post), `docs/capas/CAPAS.md` (volumes em ordem alfabética e quando mexer na coleção), `CLAUDE.md`.
   O controle da rodada está em `docs/prototipos/colecoes/final/controle.md`.
+- **Aplicado no site (04/10/2026):**
+  - `src/livros/livros.json` com os 13 (volume em ordem alfabética, título, corpo do título, frase,
+    subtítulo, temas, cor e lombadas); Carreira saiu, com os desenhos e as fotos dela.
+  - Os desenhos e os ícones novos em `src/livros/desenhos/` e `src/livros/icones/`, gerados de
+    `scripts/desenho/livros/<slug>.mjs`.
+  - Os posts: `cobranca-duplicada-no-retry` e `efeito-externo-sem-registro-local` em Sistemas
+    Distribuídos, `sns-filter-policy` em Integração e Eventos e `arquitetura-de-ledger` em Pagamentos;
+    os outros ficaram onde estavam (os três da main que chegaram depois, os dois de IA e o de Parquet,
+    já estavam no livro certo).
+  - A tag Pagamentos virou Cobrança (em `cobranca-duplicada-no-retry`, `efeito-externo-sem-registro-local`
+    e `jackson-filtros-mascarando-cartao`), com o mesmo ícone (`src/livros/tags/cobranca.svg`); o
+    ledger ficou só com Banco de Dados e Idempotência.
+  - Redirecionamentos em `astro.config.mjs`: `/categories/Carreira/` → `/categories/` e
+    `/tags/Pagamentos/` → `/tags/Cobrança/`.
+  - Sistemas Distribuídos foi para `#253461` (era `#202c4d` na proposta): com o marinho mais escuro, o
+    âmbar dos desenhos do corpo ficava em 4,45:1 no painel do livro (`npm run contraste`).
+  - As fotos dos livros refeitas (`scripts/livros/fotos.mjs`, que passou a aceitar o Chromium por
+    `CHROME_EXECUTABLE_PATH`); a do livro aberto da busca sem resultado fica na cor da marca, e não mais
+    na do Volume 01.
+  - O número desta decisão: a main usou D61 para o redesenho no ar; a coleção, que era D61 na branch,
+    passou a D78 quando a main entrou nela.

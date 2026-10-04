@@ -42,7 +42,9 @@ O número nas lombadas e na página de cada livro é o total de artigos da categ
 A coleção de 13 (D78, aplicada em 04/10/2026), em ordem alfabética, que é a ordem dos volumes.
 Carreira saiu (não tinha post; `/categories/Carreira/` redireciona para `/categories/`). O motivo de
 cada cor e de cada desenho está em `docs/prototipos/colecoes/final/direcao-de-arte.md`, com as trocas
-da `critica.md`; os valores que valem são os de `livros.json`.
+da `critica.md`; os valores que valem são os de `livros.json` (Sistemas Distribuídos entrou em
+`#253461`, e não no `#202c4d` da proposta, porque com ele o âmbar das figuras no painel ficava em
+4,45:1).
 
 | Vol. | Título | Cor | Destaque | Título na capa | Frase | Instrumento |
 |---|---|---|---|---|---|---|
