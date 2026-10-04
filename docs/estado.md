@@ -128,14 +128,17 @@ Coleções (01/10/2026, branch `claude/magical-einstein-tneg5o`): o Cesar viu as
 (<https://claude.ai/code/artifact/564ccedf-bf19-48f1-be36-cb247408a804>) e **decidiu (D78)**: a sugestão
 5 mais Frontend, 13 livros, Carreira sai, os livros de hoje mantêm o nome, volumes em ordem alfabética,
 a tag Pagamentos pode ser renomeada ou removida (vai virar Cobrança), e desenhos, cores, frases e textos
-novos para os 13. **Pronto e aguardando o OK dele:** a página final
-(<https://claude.ai/code/artifact/a08fa29f-5a3d-45ec-bcaf-7d0f13ab12a5>; no dev, `/amostra/colecoes/final/`),
-com o conjunto novo de desenhos ("O mesmo problema, um século antes": a máquina que fazia o trabalho do
-livro antes do software), as 13 cores, as frases e os textos. Cada desenho tem um texto em duas versões (completa e curta) com o que ele é, a
-data e a relação com o assunto, para um possível hover no site. Controle, direção de arte, textos,
-crítica e o passo a passo para aplicar no site em `docs/prototipos/colecoes/final/`. Já valem a regra
-dos posts (conferir se a coleção ainda serve e avisar, na skill `post`) e os volumes em ordem
-alfabética (`CAPAS.md`). Nada muda no site antes do OK na página final.
+novos para os 13. A página final
+(<https://claude.ai/code/artifact/a08fa29f-5a3d-45ec-bcaf-7d0f13ab12a5>; no dev, `/amostra/colecoes/final/`)
+mostrou o conjunto novo de desenhos ("O mesmo problema, um século antes": a máquina que fazia o trabalho
+do livro antes do software), as 13 cores, as frases e os textos. **Aplicada no site em 04/10/2026**, a
+pedido do Cesar: os 13 em `src/livros/livros.json`, os desenhos e ícones novos, os posts que mudaram de
+livro, a tag Pagamentos virou Cobrança e os redirecionamentos (`/categories/Carreira/` e
+`/tags/Pagamentos/`); `CAPAS.md`, `briefing.md`, `DESIGN.md` e `estilo-desenho.md` acompanham. Ficou de
+fora a marca "cs", que continua no verde `#2D4B46` (pergunta 00). O texto de cada desenho (completo e
+curto, para um possível hover) segue em `docs/prototipos/colecoes/final/dados.json`. Controle, direção
+de arte, textos e crítica em `docs/prototipos/colecoes/final/`. Valem a regra dos posts (conferir se a
+coleção ainda serve e avisar, na skill `post`) e os volumes em ordem alfabética (`CAPAS.md`).
 
 Protótipo dos controles dos desenhos (01/10/2026, no ar em `/prototipos/controles/`, com noindex e fora
 do sitemap e da busca): cinco opções (régua e lápis, marca-texto, caderno e caneta, post-its e fita,
@@ -328,11 +331,10 @@ movimento e com movimento reduzido, com trace de CPU 4× sem tarefas longas dura
 
 ## Perguntas abertas para o Cesar
 
-00. **Coleções (D78):** aprovar a página final dos 13 livros
-    (<https://claude.ai/code/artifact/a08fa29f-5a3d-45ec-bcaf-7d0f13ab12a5>) e responder o que ela
-    deixa para ele: a marca "cs" acompanha a Arquitetura no azul ou fica verde; as seis frases de hoje
-    que ficam (ou as alternativas); o Turco no IA. Depois, aplicar no site pelo passo a passo do fim de
-    `docs/prototipos/colecoes/final/controle.md`.
+00. **Coleções (D78, aplicada em 04/10/2026):** a marca "cs" acompanha a Arquitetura no azul
+    (`#2d4f77`) ou fica no verde `#2D4B46`? Se mudar: `DESIGN.md`, `tokens.ts` e `scripts/marca.mjs`
+    (passo 7 do fim de `docs/prototipos/colecoes/final/controle.md`). E o texto do desenho vai para um
+    hover nos livros?
 0. **D54:** as perguntas do fim de `docs/ajustes-d54/controle.md` (chegada da folha longa no celular
    lento, voltar sem bfcache, trava de rolagem do menu, desfile de Categorias no celular,
    redirecionamentos em inglês, busca que volta aberta, textos dos slides e das tags, comportamentos

@@ -67,7 +67,8 @@ destas seções está nos próximos passos de `docs/estado.md`.
 - **URLs existentes não podem quebrar**: `/posts/<slug>/`, `/archive/`, `/categories/<nome>/`,
   `/tags/<nome>/`, `/series/`, `/java/` (hoje redireciona para `/series/java/`, D32), `/rss.xml`, e os redirecionamentos da série Java
   (`/posts/java-NN/` → `/posts/java-<LTS>/#java-NN`). Páginas que deixam de existir
-  redirecionam: `/about/` → `/` (D33), `/projects/` → `/`.
+  redirecionam: `/about/` → `/` (D33), `/projects/` → `/`, `/categories/Carreira/` → `/categories/` e
+  `/tags/Pagamentos/` → `/tags/Cobrança/` (D78).
 
 ## 3. Stack e desempenho
 
@@ -157,24 +158,33 @@ camada visual: estrutura, conteúdo, rotas e comportamento seguem as seções 5 
 
 | Vol. | Categoria | Cor | Instrumento na capa |
 |---|---|---|---|
-| 01 | Arquitetura de Software | `#2d4b46` | arco e pedra angular |
-| 02 | Desenvolvimento de Software | `#7a4430` | paquímetro |
-| 03 | Dados | `#5f4662` | gaveta de fichas |
-| 04 | IA | `#6e2f45` | autômato escritor |
-| 05 | Segurança | `#606a37` | carta lacrada e sinete |
-| 06 | DevOps | `#465976` | guindaste de porto |
-| 07 | SRE | `#c4a050` | farol |
-| 08 | Carreira | `#9a7650` | compasso |
+| 01 | Arquitetura de Software | `#2d4f77` | prancheta com a planta e a régua-tê |
+| 02 | Dados | `#5b457f` | tabulador de Hollerith |
+| 03 | Desenvolvimento de Software | `#82555a` | tear de Jacquard |
+| 04 | DevOps | `#92a6c2` | estação de tubo pneumático |
+| 05 | Frontend | `#433123` | prensa tipográfica Albion |
+| 06 | Fundamentos | `#26626a` | telégrafo de Morse |
+| 07 | IA | `#5d4128` | o Turco, autômato enxadrista de Kempelen |
+| 08 | Integração e Eventos | `#71a49d` | mesa telefônica manual |
+| 09 | Pagamentos | `#4f6f57` | caixa registradora |
+| 10 | Segurança | `#7c322b` | fechadura detectora de Chubb |
+| 11 | Sistemas Distribuídos | `#253461` | relógios de Huygens |
+| 12 | SRE | `#b59353` | regulador centrífugo de Watt |
+| 13 | Testes | `#39404d` | fio de prumo |
 
 Categoria nova = livro novo, pela seção "Livros novos" do `CAPAS.md` (desenho, ícone, volume). Todo
 livro aparece na estante e na lateral, mesmo sem artigos; o número de artigos, não.
 
-**A coleção vai passar a 13 livros (D78, decidido em 01/10/2026; entra no site depois do OK do Cesar
-na página final):** Arquitetura de Software, Dados, Desenvolvimento de Software, DevOps, Frontend,
-Fundamentos, IA, Integração e Eventos, Pagamentos, Segurança, Sistemas Distribuídos, SRE e Testes,
-com os **volumes em ordem alfabética**. Carreira sai; os livros de hoje mantêm o nome; desenhos,
-cores, frases e textos novos para os 13 (a proposta em `docs/prototipos/colecoes/final/`). A tabela
-acima é a do site até lá. Ao planejar um post, o Claude confere se a coleção ainda serve e avisa o
+**A coleção de 13 livros (D78, decidida em 01/10/2026 e aplicada em 04/10/2026, a pedido do Cesar):**
+a tabela acima, com os **volumes em ordem alfabética** (livro novo entra na sua posição e os seguintes
+mudam de número). Carreira saiu (não tinha post; `/categories/Carreira/` redireciona para
+`/categories/`); os livros de antes mantêm o nome; os 13 têm desenhos, cores, frases e textos novos. Os
+desenhos seguem um princípio só, **"O mesmo problema, um século antes"**: cada livro leva a máquina ou
+o instrumento que fazia, antes do software, o trabalho do assunto, entre o século XVII e 1890, todos
+no mesmo ponto de vista e com um único fantasma tracejado, que é a máquina no instante do trabalho
+(regra em `CAPAS.md`; o motivo de cada objeto e de cada cor, em `docs/prototipos/colecoes/final/`).
+A tag Pagamentos virou **Cobrança**, porque Pagamentos virou livro (`/tags/Pagamentos/` redireciona
+para `/tags/Cobrança/`). Ao planejar um post, o Claude confere se a coleção ainda serve e avisa o
 Cesar quando valer criar, dividir ou renomear um livro (skill `post`).
 
 - **Capa de categoria** (D32): em cima, o bloco na cor do livro com "VOLUME 0N", "CESAR SCHUTZ" e o
@@ -207,8 +217,11 @@ Cesar quando valer criar, dividir ou renomear um livro (skill `post`).
   (`color-mix` da cor com 11% sobre a superfície no claro, 20% no escuro). As áreas preenchidas do
   desenho usam a mesma cor do painel, o traço fica um pouco mais grosso (×1,2) e o preenchimento de
   destaque, mais forte (78% da cor). Valores em `docs/estilo-desenho.md`.
-- **Marca** (D33): o livro "cs" (capa do Volume 01 com a fita laranja da série), "Cesar Schutz" e
+- **Marca** (D33): o livro "cs" (capa do Volume 01, sem a fita desde a D47), "Cesar Schutz" e
   "blog" em itálico, no cabeçalho, no rodapé, grande na abertura da home e no ícone do navegador.
+  **Pendente (D78):** a marca continua no verde `#2D4B46`, a cor da Arquitetura de Software antes da
+  coleção de 13. Com a Arquitetura azul (`#2d4f77`) e os volumes em ordem alfabética (o Volume 01 muda
+  se entrar um livro antes dela), o Cesar ainda vai decidir se a marca acompanha o azul.
 - **Acabamento**: busca como campo (ícone, "Buscar" e ⌘K), GitHub e LinkedIn só com os ícones e o
   botão de tema (claro ou escuro, D39; o som dos livros saiu) no cabeçalho;
   destaque com a descrição do post, tags em pílulas e "Ler artigo"; cards que sobem 4px ao passar o
@@ -344,7 +357,7 @@ abertos quase de frente como o livro do topo da página de cada um, cada um num 
 livro num painel tingido pela cor dele, "Volume 0N" (ou "Série"), o nome, o subtítulo e a contagem.
 Ao passar o mouse, o cartão sobe, a capa acompanha o mouse com uma luz suave e entreabre, mostrando
 as páginas (D40; no toque, o primeiro toque entreabre e o segundo abre); ao clicar, o livro voa até o
-topo da página dele. Em Categorias, os oito volumes. Em Séries, enquanto houver uma série só, um
+topo da página dele. Em Categorias, os 13 volumes. Em Séries, enquanto houver uma série só, um
 **destaque largo** (D39): a revista, o nome, a descrição, as edições em ordem de leitura (número,
 título e ano) e "Começar pelo guia" (a primeira edição), com "Ver a série".
 

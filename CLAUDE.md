@@ -127,8 +127,9 @@ Componentes e detalhes em `.claude/rules/interface.md`. Para conferir, `/amostra
 - `/categories/<Nome>/` e `/tags/<Nome>/` com o **nome cru** na URL (maiúsculas, acentos e espaços)
 - Redirecionamentos: `/categories/Arquitetura/`, `/Java/` e `/Observabilidade/` → o livro novo
   (`NOMES_ANTIGOS`, D30); `/posts/java-NN/` → `/posts/java-<LTS>/#java-NN` (vindo de `ABSORBED`),
-  `/about/` → `/` (a página Sobre saiu na D33; o Cesar escreve depois), `/projects/` → `/` e
-  `/exercicios` → `/`
+  `/about/` → `/` (a página Sobre saiu na D33; o Cesar escreve depois), `/projects/` → `/`,
+  `/exercicios` → `/`, `/categories/Carreira/` → `/categories/` e `/tags/Pagamentos/` →
+  `/tags/Cobrança/` (o livro Carreira saiu e a tag virou Cobrança na coleção de 13, D78)
 - `/archive/?livro=<slug>` e `/tags/<Nome>/?livro=<slug>` abrem a lista já filtrada por um livro (D33)
 - `/2/` e `/3/`: páginas da home paginada, 12 lugares por página (na primeira, o destaque vale dois:
   11 artigos em `/`, D52)
@@ -206,8 +207,8 @@ tipos da caneta, de `src/amostra/caneta.md`), `/amostra/desenhos/` e
 `/amostra/livros/` (as capas planas, para comparar com `docs/capas/referencia/`), `/amostra/tags/`
 (os ícones das tags, lado a lado e da pílula à marca d'água) e `/amostra/lousas/` (os quadros-chave
 de cada lousa, parados, no instante de cada marca, com o estado do post; `?lousa=<slug>/<nome>`,
-`?tema=escuro`, `?quadros=todos`) e `/amostra/colecoes/` (as sugestões de coleção de livros, de
-`docs/prototipos/colecoes/colecoes.json`; `/amostra/colecoes/livro/<slug>/` mostra um livro em tamanho real).
+`?tema=escuro`, `?quadros=todos`) e `/amostra/colecoes/` (as sugestões de coleção de livros e a
+final, a de 13 da D78, de `docs/prototipos/colecoes/colecoes.json`; `/amostra/colecoes/livro/<slug>/` mostra um livro em tamanho real).
 
 Medição da busca (D2): `scripts/bench-busca/` (construir, conferir, medir), com o dev parado.
 
@@ -248,8 +249,9 @@ docs/redesenho/          redesenho (D55, D61): pedido, regras e status (README),
 redesenho/               os protótipos do redesenho (fora do git, D61): projeto Astro próprio, porta
                          4400, e as cópias do blog em novos/ (portas 4411 a 4430)
 docs/referencias/        protótipos aprovados da Fase 0 (estilo dos desenhos, lousas, "Folhas claras")
-docs/prototipos/         protótipos que ainda são referência (caneta, animações da D51) e as sugestões de
-                         coleção de livros (colecoes/, à espera da escolha do Cesar)
+docs/prototipos/         protótipos que ainda são referência (caneta, animações da D51) e a rodada da
+                         coleção de 13 livros (colecoes/, D78, já aplicada): as sugestões, e em final/
+                         a direção de arte, a crítica, os textos e os dados de cada livro
 src/content/posts/       posts; nome do arquivo = slug da URL
 src/data/                taxonomia e series (leem src/livros), java, decks (apresentações), site
                          (autor, perfis e textos), mao (os títulos à mão da papelaria, C05)

@@ -32,7 +32,7 @@ colors:
   lousa-borda: "#2C3438"
   lousa-caneta: "#F4F6F5"
   lousa-mistura: "#9FF5DC"
-  marca: "#2D4B46"
+  marca: "#2D4B46" # o verde da Arquitetura de antes da D78; se acompanha o azul novo, o Cesar decide
   marca-letra: "#F2EDE2"
   marca-fita: "#C24D1C"
   caderno-pauta: "#BEBAB0" # miolo do caderno "cs", igual nos dois temas (D52)
@@ -99,18 +99,24 @@ colors:
   # o latão no escuro (latao #E0B46A, latao-luz #FBE6BA, latao-escuro #8E6A35) fica fora das chaves: com o
   # sufixo -escuro, o nome colidiria com o latao-escuro do claro
   fita-escuro: "#D9CFAF"
-  # Livros (src/livros/livros.json e cores.js): a cor principal de cada categoria
-  arquitetura-de-software: "#2d4b46"
-  desenvolvimento-de-software: "#7a4430"
-  dados: "#5f4662"
-  ia: "#6e2f45"
-  seguranca: "#606a37"
-  devops: "#465976"
-  sre: "#c4a050"
-  sre-destaque: "#836100"
-  carreira: "#9a7650"
-  carreira-destaque: "#7f5b36"
-  carreira-texto: "#816342"
+  # Livros (src/livros/livros.json e cores.js): a cor principal de cada categoria, os 13 da D78 na ordem
+  # dos volumes; o -destaque só nas cores claras, que escurecem para o traço e o texto sobre o papel
+  arquitetura-de-software: "#2d4f77"
+  dados: "#5b457f"
+  desenvolvimento-de-software: "#82555a"
+  devops: "#92a6c2"
+  devops-destaque: "#546782"
+  frontend: "#433123"
+  fundamentos: "#26626a"
+  ia: "#5d4128"
+  integracao: "#71a49d"
+  integracao-destaque: "#3b6e67"
+  pagamentos: "#4f6f57"
+  seguranca: "#7c322b"
+  sistemas-distribuidos: "#253461"
+  sre: "#b59353"
+  sre-destaque: "#7f5d1a"
+  testes: "#39404d"
   livro-papel: "#f2ede2"
   livro-tinta-papel: "#1f1c18"
   livro-tinta-clara: "#efe8d8"
@@ -281,7 +287,7 @@ components:
     backgroundColor: "{colors.primary-escuro}"
     textColor: "{colors.on-primary-escuro}"
   painel-desenho:
-    backgroundColor: "color-mix(in oklab, #2d4b46 11%, #FFFFFE)"
+    backgroundColor: "color-mix(in oklab, #2d4f77 11%, #FFFFFE)"
     rounded: "{rounded.painel}"
   aviso-nota:
     backgroundColor: "{colors.surface}"
@@ -340,39 +346,57 @@ components:
     backgroundColor: "{colors.arquitetura-de-software}"
     textColor: "{colors.livro-tinta-clara}"
     typography: "{typography.capa-titulo}"
+  capa-dados:
+    backgroundColor: "{colors.dados}"
+    textColor: "{colors.livro-tinta-clara}"
   capa-desenvolvimento-de-software:
     backgroundColor: "{colors.desenvolvimento-de-software}"
     textColor: "{colors.livro-tinta-clara}"
-  capa-dados:
-    backgroundColor: "{colors.dados}"
+  capa-devops:
+    backgroundColor: "{colors.devops}"
+    textColor: "{colors.livro-tinta-escura}"
+  capa-frontend:
+    backgroundColor: "{colors.frontend}"
+    textColor: "{colors.livro-tinta-clara}"
+  capa-fundamentos:
+    backgroundColor: "{colors.fundamentos}"
     textColor: "{colors.livro-tinta-clara}"
   capa-ia:
     backgroundColor: "{colors.ia}"
     textColor: "{colors.livro-tinta-clara}"
+  capa-integracao:
+    backgroundColor: "{colors.integracao}"
+    textColor: "{colors.livro-tinta-escura}"
+  capa-pagamentos:
+    backgroundColor: "{colors.pagamentos}"
+    textColor: "{colors.livro-tinta-clara}"
   capa-seguranca:
     backgroundColor: "{colors.seguranca}"
     textColor: "{colors.livro-tinta-clara}"
-  capa-devops:
-    backgroundColor: "{colors.devops}"
+  capa-sistemas-distribuidos:
+    backgroundColor: "{colors.sistemas-distribuidos}"
     textColor: "{colors.livro-tinta-clara}"
   capa-sre:
     backgroundColor: "{colors.sre}"
     textColor: "{colors.livro-tinta-escura}"
-  capa-carreira:
-    backgroundColor: "{colors.carreira}"
+  capa-testes:
+    backgroundColor: "{colors.testes}"
     textColor: "{colors.livro-tinta-clara}"
   capa-papel:
     backgroundColor: "{colors.livro-papel}"
     textColor: "{colors.livro-tinta-papel}"
     typography: "{typography.capa-frase}"
     rounded: "{rounded.capa-aberta}"
+  lombada-titulo-devops:
+    backgroundColor: "{colors.livro-papel}"
+    textColor: "{colors.devops-destaque}"
+    typography: "{typography.lombada-titulo}"
+  lombada-titulo-integracao:
+    backgroundColor: "{colors.livro-papel}"
+    textColor: "{colors.integracao-destaque}"
   lombada-titulo-sre:
     backgroundColor: "{colors.livro-papel}"
     textColor: "{colors.sre-destaque}"
-    typography: "{typography.lombada-titulo}"
-  lombada-titulo-carreira:
-    backgroundColor: "{colors.livro-papel}"
-    textColor: "{colors.carreira-destaque}"
   revista-java:
     backgroundColor: "{colors.livro-papel}"
     textColor: "{colors.serie-java}"
@@ -380,9 +404,6 @@ components:
   lombada-serie-java-texto-pequeno:
     backgroundColor: "{colors.livro-papel}"
     textColor: "{colors.serie-java-texto}"
-  lombada-carreira-texto-pequeno:
-    backgroundColor: "{colors.carreira-texto}"
-    textColor: "{colors.livro-tinta-clara}"
   revista-java-tarja:
     backgroundColor: "{colors.livro-tinta-papel}"
     textColor: "{colors.serie-java-clara}"
@@ -552,14 +573,24 @@ categoria e a **caneta da leitura** (a barra do topo e o sumário, D58; no escur
 
 | Vol. | Categoria | Cor | Tinta sobre a cor | Destaque sobre o papel |
 |---|---|---|---|---|
-| 01 | Arquitetura de Software | #2d4b46 | clara | #2d4b46 |
-| 02 | Desenvolvimento de Software | #7a4430 | clara | #7a4430 |
-| 03 | Dados | #5f4662 | clara | #5f4662 |
-| 04 | IA | #6e2f45 | clara | #6e2f45 |
-| 05 | Segurança | #606a37 | clara | #606a37 |
-| 06 | DevOps | #465976 | clara | #465976 |
-| 07 | SRE | #c4a050 | escura | #836100 |
-| 08 | Carreira | #9a7650 | clara | #7f5b36 |
+| 01 | Arquitetura de Software | #2d4f77 | clara | #2d4f77 |
+| 02 | Dados | #5b457f | clara | #5b457f |
+| 03 | Desenvolvimento de Software | #82555a | clara | #82555a |
+| 04 | DevOps | #92a6c2 | escura | #546782 |
+| 05 | Frontend | #433123 | clara | #433123 |
+| 06 | Fundamentos | #26626a | clara | #26626a |
+| 07 | IA | #5d4128 | clara | #5d4128 |
+| 08 | Integração e Eventos | #71a49d | escura | #3b6e67 |
+| 09 | Pagamentos | #4f6f57 | clara | #4f6f57 |
+| 10 | Segurança | #7c322b | clara | #7c322b |
+| 11 | Sistemas Distribuídos | #253461 | clara | #253461 |
+| 12 | SRE | #b59353 | escura | #7f5d1a |
+| 13 | Testes | #39404d | clara | #39404d |
+
+São os 13 da D78 (04/10/2026), na ordem dos volumes, que é a alfabética; Carreira saiu. O motivo de
+cada cor está em `docs/prototipos/colecoes/final/direcao-de-arte.md` (e as trocas, na `critica.md`).
+A marca "cs" continua no verde `#2D4B46` da Arquitetura de antes: se ela acompanha o azul novo, o
+Cesar ainda decide.
 
 A tinta e o destaque saem sempre de `coresDoLivro()` (`src/livros/cores.js`), nunca de um valor
 fixo. No tema escuro, o destaque dos desenhos leva 42% de branco. **Os livros não mudam com o tema**
@@ -570,16 +601,15 @@ nenhum hex solto em componente ou SVG.
 **Lousa, mistura:** `lousa-mistura` não é cor de texto, só entra na mistura do destaque da lousa
 (55% no vidro, 35% no quadro, com a caneta por cima; `LOUSA` em `tokens.ts`).
 
-**Contraste da Carreira e da série: exceção decidida (D35).** O texto claro sobre a cor da Carreira
-(#9a7650) dá 3,39:1, e o laranja da série sobre o papel (#c24d1c), 4,11:1. As duas cores continuam
-**nas capas e nos títulos grandes** (acima de 3:1, o mínimo do WCAG para texto grande), e o linter
-avisa sobre `capa-carreira` e `revista-java` por isso: são avisos esperados. **Texto pequeno
-nessas cores sempre usa a variante escura:** `carreira-texto` (#816342, 4,53:1 com a tinta clara)
-atrás de texto pequeno da Carreira e `serie-java-texto` (#b8481a, 4,52:1 sobre o papel) como texto
-pequeno da série. Hoje isso vale para as lombadas, em pé e deitadas (`corTexto` e `destaqueTexto` em
-`src/livros/livros.json`, papéis `--livro-cor-texto` e `--livro-destaque-texto`), e o
-`npm run contraste` falha se alguma lombada ficar abaixo de 4,5:1. Livro novo com cor abaixo de
-4,5:1 ganha a variante do mesmo jeito.
+**Contraste da série: exceção decidida (D35).** O laranja da série sobre o papel (#c24d1c) dá 4,11:1.
+Ele continua **na capa e nos títulos grandes** (acima de 3:1, o mínimo do WCAG para texto grande), e
+o linter avisa sobre `revista-java` por isso: é um aviso esperado. **Texto pequeno nessa cor sempre
+usa a variante escura** `serie-java-texto` (#b8481a, 4,52:1 sobre o papel). Hoje isso vale para as
+lombadas, em pé e deitadas (`destaqueTexto` em `src/livros/livros.json`, papel
+`--livro-destaque-texto`), e o `npm run contraste` falha se alguma lombada ficar abaixo de 4,5:1. A
+Carreira tinha a mesma exceção (`corTexto`, papel `--livro-cor-texto`) até sair, na D78; nos 13
+livros, a tinta passa de 4,5:1 sobre a cor (o menor é o de Pagamentos, 4,60:1) e o destaque, sobre o
+papel. Livro novo com cor abaixo de 4,5:1 ganha a variante `corTexto` do mesmo jeito.
 
 ## Typography
 
@@ -769,8 +799,9 @@ frase e desenho; medidas em `docs/capas/CAPAS.md`):
 
 - **Capa:** no alto, o **papel** com "VOLUME 0N", "CESAR SCHUTZ" e o **título grande** (Bitter 800,
   até 108px) no destaque. Embaixo, **a cor do livro só com a frase** (Newsreader itálico) e o
-  **desenho do instrumento de ofício, o maior possível**, na tinta (D39; a referência de
-  `docs/capas` tem os papéis ao contrário, com as mesmas medidas). **Sem lista de
+  **desenho, o maior possível**, na tinta (D39; a referência de `docs/capas` tem os papéis ao
+  contrário, com as mesmas medidas). O desenho é a máquina que fazia o trabalho do livro antes do
+  software ("O mesmo problema, um século antes", D78; regra em `docs/capas/CAPAS.md`). **Sem lista de
   temas.** No pé, a assinatura **BLOG.CESARSCHUTZ.COM.BR**.
 - **Lombada:** ícone no papel de cima, título na vertical e número de artigos na cor do livro, com a
   divisão à mesma altura em todos, formando uma linha contínua na estante. **É uma lombada só em

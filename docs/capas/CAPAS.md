@@ -4,7 +4,8 @@ Este é o padrão visual dos livros do blog. As categorias são livros de uma co
 
 As imagens em `referencia/` são o alvo visual:
 
-- `capas.png`: as oito capas das categorias.
+- `capas.png`: as oito capas da coleção de antes da D78. Valem as medidas, a tipografia e o traço; os
+  títulos, as cores e os desenhos de hoje são os de `src/livros/` (os 13 livros, abaixo).
 - `lombada-e-capa.png`: a lombada colada à capa, para a animação de girar.
 - `estante.png`: as lombadas em pé, com a série depois do aparador.
 - `lateral.png`: as lombadas deitadas na lateral do site (Séries e Categorias), em tamanho real e ampliadas.
@@ -38,16 +39,29 @@ O número nas lombadas e na página de cada livro é o total de artigos da categ
 
 ## Os livros
 
+A coleção de 13 (D78, aplicada em 04/10/2026), em ordem alfabética, que é a ordem dos volumes.
+Carreira saiu (não tinha post; `/categories/Carreira/` redireciona para `/categories/`). O motivo de
+cada cor e de cada desenho está em `docs/prototipos/colecoes/final/direcao-de-arte.md`, com as trocas
+da `critica.md`; os valores que valem são os de `livros.json`.
+
 | Vol. | Título | Cor | Destaque | Título na capa | Frase | Instrumento |
 |---|---|---|---|---|---|---|
-| 01 | Arquitetura de Software | `#2d4b46` | `#2d4b46` | 73px | As decisões caras de desfazer. | arco e pedra angular |
-| 02 | Desenvolvimento de Software | `#7a4430` | `#7a4430` | 50px | O ofício dentro de cada serviço. | paquímetro medindo uma peça |
-| 03 | Dados | `#5f4662` | `#5f4662` | 108px | Onde o dado mora e por onde ele anda. | gaveta de fichas |
-| 04 | IA | `#6e2f45` | `#6e2f45` | 108px | Software feito com IA e software que usa IA. | autômato escritor |
-| 05 | Segurança | `#606a37` | `#606a37` | 82px | Quem pode o quê e como provar. | carta lacrada e sinete |
-| 06 | DevOps | `#465976` | `#465976` | 108px | O caminho do commit até a produção. | guindaste de porto |
-| 07 | SRE | `#c4a050` | `#836100` | 108px | O que mantém a produção de pé. | farol |
-| 08 | Carreira | `#9a7650` | `#7f5b36` | 104px | O lado humano de construir software. | compasso |
+| 01 | Arquitetura de Software | `#2d4f77` | `#2d4f77` | 73px | As decisões caras de desfazer. | prancheta com a planta e a régua-tê |
+| 02 | Dados | `#5b457f` | `#5b457f` | 108px | Onde o dado mora e por onde ele anda. | tabulador de Hollerith |
+| 03 | Desenvolvimento de Software | `#82555a` | `#82555a` | 50px | Entre o seu código e a máquina. | tear de Jacquard |
+| 04 | DevOps | `#92a6c2` | `#546782` | 108px | O caminho do commit até a produção. | estação de tubo pneumático |
+| 05 | Frontend | `#433123` | `#433123` | 94px | O que o navegador mostra e quanto demora. | prensa tipográfica Albion |
+| 06 | Fundamentos | `#26626a` | `#26626a` | 63px | O que fica quando a ferramenta muda. | telégrafo de Morse |
+| 07 | IA | `#5d4128` | `#5d4128` | 108px | Software feito com IA e software que usa IA. | o Turco, autômato enxadrista de Kempelen |
+| 08 | Integração e Eventos | `#71a49d` | `#3b6e67` | 81px | Como um sistema fala com o outro. | mesa telefônica manual |
+| 09 | Pagamentos | `#4f6f57` | `#4f6f57` | 70px | Dinheiro não pode sumir nem duplicar. | caixa registradora |
+| 10 | Segurança | `#7c322b` | `#7c322b` | 82px | Quem pode o quê e como provar. | fechadura detectora de Chubb |
+| 11 | Sistemas Distribuídos | `#253461` | `#253461` | 70px | Quando o timeout não diz o que aconteceu. | relógios de Huygens |
+| 12 | SRE | `#b59353` | `#7f5d1a` | 108px | O que mantém a produção de pé. | regulador centrífugo de Watt |
+| 13 | Testes | `#39404d` | `#39404d` | 108px | Antes que a produção descubra. | fio de prumo |
+
+Nos 13, a tinta passa de 4,5:1 sobre a cor do livro e o destaque, sobre o papel: nenhum precisa da
+variante escura para texto pequeno (`corTexto`), que só a Carreira usava.
 
 ## Capa de categoria (referência de 480 × 720px)
 
@@ -56,7 +70,7 @@ No site, declare `container-type: inline-size` na capa e escreva cada medida com
 - **Fundo e forma:** fundo no papel, cantos de 1px do lado da lombada e 3px do lado aberto, sombra `0 1px 1px rgba(0,0,0,.22), 0 18px 40px rgba(0,0,0,.24)`.
 - **Bloco de cor:** de y 0 a 300, largura inteira, na cor do livro.
 - **Linha do topo:** em y=34, de x=38 a 442. "VOLUME 01" à esquerda e "CESAR SCHUTZ" à direita, em Bitter 700 12px, letter-spacing 0.2em, na `tinta` com opacidade de 0,9.
-- **Título:** Bitter 800 com letter-spacing −0.03em, sem quebra automática, na `tinta`. Fica num bloco a partir de x=36, com 420px de largura, alinhado pela base em y=278. O corpo é o que faz a linha mais longa ocupar 404px, com teto de 108px (valores na tabela). A entrelinha é igual ao corpo em títulos de uma linha e 0,97 do corpo em títulos de duas linhas. Títulos com "de Software" quebram antes do "de".
+- **Título:** Bitter 800 com letter-spacing −0.03em, sem quebra automática, na `tinta`. Fica num bloco a partir de x=36, com 420px de largura, alinhado pela base em y=278. O corpo é o que faz a linha mais longa ocupar 404px, com teto de 108px (valores na tabela). A entrelinha é igual ao corpo em títulos de uma linha e 0,97 do corpo em títulos de duas linhas. Os de duas linhas quebram como em `linhasDoTitulo`: antes do "de" ou do "e" ("Arquitetura / de Software", "Integração / e Eventos") ou entre as duas palavras ("Sistemas / Distribuídos").
 - **Frase:** em x=38 e y=324, com 404px de largura, em Newsreader itálico 24/31px, `text-wrap: balance`, na tinta do papel. É só a frase depois dos dois-pontos do subtítulo. Os temas não aparecem na capa.
 - **Desenho:** o SVG de `desenhos/` ocupa a parte clara. O objeto fica centralizado na área de x 36 a 444 e de y 384 a 678, apoiado na base. O traço usa o `destaque`, e `--capa-papel` recebe o papel.
 - **Assinatura:** "BLOG.CESARSCHUTZ.COM.BR", centralizado em y=694, em Bitter 600 10px, letter-spacing 0.14em, opacidade de 0,55.
@@ -172,7 +186,15 @@ muda sem o OK dele, e o endereço antigo de um livro renomeado ou que saiu redir
 **Volume (D78):** os volumes seguem a **ordem alfabética** dos títulos, e a estante também. Livro novo
 entra na sua posição, e os que vêm depois dele mudam de número.
 
-- **Categoria:** escolha um instrumento de ofício que represente a categoria inteira e desenhe no estilo do projeto, com traço de 1,8, 1,2 e 0,7px, leve tremor, hachura nas sombras e um único elemento fantasma tracejado. Gere o ícone da lombada com só os traços principais. A frase segue o molde do subtítulo, e o volume é a posição do título na ordem alfabética. A ferramenta: `scripts/desenho/livros.mjs` (o desenho em geometria limpa num módulo `scripts/desenho/livros/<slug>.mjs`; ela passa a caneta, faz a hachura e grava o desenho e o ícone; manual em `docs/prototipos/colecoes/manual-desenho.md`). O corpo do título sai de `scripts/livros/titulo-da-capa.mjs`, e a cor passa por `scripts/livros/conferir-cores.mjs` antes de entrar.
+- **Categoria:** o desenho segue o princípio do conjunto (D78), **"O mesmo problema, um século antes"**: a máquina ou o instrumento que fazia, antes do software, o trabalho do assunto do livro (registrar cada venda, acertar dois relógios, ligar quem chama a quem atende), com uma data, um inventor e um motivo conferidos numa fonte. Todos vêm do mesmo mundo: a sala de trabalho entre o século XVII e 1890 (ferro fundido, latão, madeira, vidro, papel; nada de céu, mar ou rua, nem plástico, tela ou logotipo; o fio de prumo dos Testes é a única exceção, por ser anterior a tudo). O objeto não repete um ícone de tag.
+  - **Ponto de vista:** o mesmo em todos, 3/4 pela frente-direita, o olho um pouco acima, a luz do alto à esquerda (hachura nas faces da direita e de baixo) e o objeto apoiado no chão, com a faixa de sombra. O que é de parede (a fechadura) fica de frente, com uma leve fuga.
+  - **Escala:** o objeto ocupa a área toda (x 36 a 444, y 384 a 678), com de 70% a 100% da largura e de 80% a 100% da altura dela. Nada fino demais: a capa aparece com 150 a 270px de largura, e o ícone, com uns 30px.
+  - **Traço:** 1,8, 1,2 e 0,7px, com leve tremor, hachura só nas sombras e no chão, poucos pontos cheios (pinos, eixos, furos).
+  - **Fantasma:** um único elemento tracejado, que é sempre a máquina no instante em que faz o trabalho (a gaveta que salta, o cartão que cai, a cápsula que voa, a alavanca que sobe); nunca uma seta, uma onda ou uma legenda.
+  - **Ícone da lombada:** a mesma geometria reduzida, sem a hachura e sem o fantasma, que tem de ler como silhueta (de duas a quatro partes grandes, nada de grade densa).
+  - **Textos:** a frase segue o molde do subtítulo, e o volume é a posição do título na ordem alfabética. Como os 13, o livro ganha o texto do desenho (o que é, de quando e a ligação com o assunto, só com o que for verdade), em `docs/prototipos/colecoes/final/dados.json` (`textoDesenho`, `textoDesenhoCurto`, `link`).
+  - **O conjunto e o motivo de cada objeto:** `docs/prototipos/colecoes/final/direcao-de-arte.md` (seção 1, "As regras do mundo"), com as trocas da `critica.md`.
+  - **A ferramenta:** `scripts/desenho/livros.mjs` (o desenho em geometria limpa num módulo `scripts/desenho/livros/<slug>.mjs`; ela passa a caneta, faz a hachura e grava o desenho e o ícone; manual em `docs/prototipos/colecoes/manual-desenho.md`). O corpo do título sai de `scripts/livros/titulo-da-capa.mjs`, e a cor passa por `scripts/livros/conferir-cores.mjs` antes de entrar.
 - **Série:** um livro de capa dura com a capa de revista. Defina a cor de destaque, o título (palavra principal e complemento em itálico), o emblema no mesmo traço, o número de capa, a lista de edições e, se houver material especial, a tarja.
 
 ## Tags (D52)
@@ -195,7 +217,7 @@ os artigos" e as mais usadas no topo da página do livro).
   produto ou de uma marca. Os de hoje: broto com duas folhas (Spring), moedor de café de manivela
   (JVM), âncora (LTS), semáforo de ferrovia (Concorrência), carretel de linha com agulha (Virtual
   Threads), balança de pratos (Trade-offs), pena no tinteiro (Linguagem), pilha de moedas
-  (Pagamentos), caixa de correio com a bandeira levantada (Mensageria), rolo de papel com as linhas do
+  (Cobrança; era a tag Pagamentos até a D78, quando Pagamentos virou livro), caixa de correio com a bandeira levantada (Mensageria), rolo de papel com as linhas do
   registro (Logs), leme de navio (Kubernetes), barril (Banco de Dados), mala de viagem (Migração),
   cadeado de segredo (Criptografia), favos de mel com uma célula por fazer (Microsserviços), chave
   antiga com etiqueta (Idempotência), bigorna e martelo (Gradle), nuvem (AWS), espeto de notas (AOP),
