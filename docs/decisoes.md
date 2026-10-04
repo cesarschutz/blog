@@ -2807,8 +2807,8 @@ nada muda.
   instruções do projeto, revisar antes de publicar e publicar na `main`. A autorização vale para
   este post; não muda o fluxo de aprovação dos próximos.
 - **Entrega:** `parquet-snapshot-banco-de-dados`, no livro Dados, formato resumo, com as tags
-  existentes Banco de Dados e Trade-offs. Fontes oficiais de Parquet, PostgreSQL, DuckDB e Iceberg;
-  Collins e Cambridge para pronúncia. Exemplo conceitual, sem código executável.
+  existentes Banco de Dados e Trade-offs. Fontes oficiais de Parquet, PostgreSQL, DuckDB e Iceberg.
+  Exemplo conceitual, sem código executável.
 - **Visual:** capa viva (câmera, colunas e relógio), infográfico estático em quatro quadros e sete
   marcações da caneta (caixa, duplo, ondulado, exclamação, grifo, marca-texto e post-it). Foto do
   livro Dados atualizada para três artigos. Nenhuma marca ou categoria nova.
@@ -2819,3 +2819,5 @@ nada muda.
   olhadas. Detector Impeccable sem achados.
 - **Ambiente:** sem MCP Chrome DevTools nesta sessão; os scripts do projeto rodaram via
   Playwright com Chrome Headless Shell, sem alteração dos scripts versionados.
+- **Correção (04/10/2026):** removidas a seção de pronúncia e as referências aos dicionários.
+  Cesar esclareceu que a pronúncia era para a conversa, não para o post.

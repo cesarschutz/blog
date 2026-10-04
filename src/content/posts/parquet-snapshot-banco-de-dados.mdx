@@ -64,10 +64,6 @@ A [documentação de backup lógico do PostgreSQL](https://www.postgresql.org/do
 
 Uma exportação de valores em Parquet não deve ser presumida como cópia de índices, constraints, procedures ou permissões. A pergunta prática é: :marca[consigo restaurar o que preciso com esse material?] A resposta deve vir de um teste de recuperação, não da extensão dos arquivos.
 
-## Como se pronuncia
-
-No inglês americano, **Parquet** soa aproximadamente como “par-KÊI”, sem pronunciar o **t** final. **Snapshot** soa como “SNÉP-shot”, com força no começo. São aproximações para quem fala português; ouça [Parquet no Collins](https://www.collinsdictionary.com/us/dictionary/english-pronunciations/parquet) e [snapshot no Cambridge Dictionary](https://dictionary.cambridge.org/pronunciation/english/snapshot).
-
 :::postit
 Para análise, confira formato e consistência. Para recuperação, confira o escopo do backup e teste a restauração.
 :::
@@ -79,4 +75,3 @@ Para análise, confira formato e consistência. Para recuperação, confira o es
 - DuckDB: [leitura parcial de Parquet](https://duckdb.org/docs/current/data/parquet/overview#partial-reading).
 - PostgreSQL: [isolamento de transações](https://www.postgresql.org/docs/current/transaction-iso.html#XACT-REPEATABLE-READ) e [backup lógico](https://www.postgresql.org/docs/current/backup-dump.html).
 - Apache Iceberg: [especificação dos snapshots](https://iceberg.apache.org/spec/#snapshots).
-- Collins: [pronúncia de Parquet](https://www.collinsdictionary.com/us/dictionary/english-pronunciations/parquet). Cambridge Dictionary: [pronúncia de snapshot](https://dictionary.cambridge.org/pronunciation/english/snapshot).

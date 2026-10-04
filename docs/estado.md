@@ -183,8 +183,9 @@ em `saida/`, fora do git.
 
 Post de Parquet e snapshots (D75, 03/10/2026): `parquet-snapshot-banco-de-dados`, no livro Dados,
 formato resumo, com infográfico de quatro quadros, capa viva, sete marcações da caneta e fontes
-conferidas. Distingue formato colunar, consistência da extração e recuperação por backup; inclui
-pronúncia. Revisado antes da publicação na `main`, solicitada expressamente pelo Cesar.
+conferidas. Distingue formato colunar, consistência da extração e recuperação por backup.
+A seção de pronúncia e as fontes de dicionários foram removidas a pedido do Cesar em 04/10/2026.
+Revisado antes da publicação na `main`, solicitada expressamente pelo Cesar.
 `check`, `build`, `links`, contraste, validação dos SVGs e conferência nas dez combinações de
 largura/tema passaram; movimento reduzido também. A foto do livro Dados agora registra três artigos.
 
