@@ -29,9 +29,10 @@
  *   Se a última troca demorou para montar a página nova (mais de 0,3s entre a resposta e a primeira
  *   pintura), a próxima mostra a caneta já no clique e é a curta.
  *
- * Outros scripts usam `window.csTroca` (unidades, chegar) e os eventos `cs:pousou` (a folha do desenho
- * do artigo pousou) e `cs:chegou` (a chegada acabou). `data-vai-chegar` no <html>, posto já no <head>,
- * avisa os módulos que a página vai chegar por uma troca, antes do `pagereveal`.
+ * Outros scripts usam `window.csTroca` (unidades, chegar, jogar) e os eventos `cs:pousou` (a folha do desenho
+ * do artigo pousou), `cs:chegou` (a chegada acabou) e `cs:cortina-saindo` (rodada 3: a cortina começou a
+ * sair, aos 0,62s da troca; `detail` = { volta, curta, duracao }). `data-vai-chegar` no <html>, posto já
+ * no <head>, avisa os módulos que a página vai chegar por uma troca, antes do `pagereveal`.
  */
 (function () {
   var raiz = document.documentElement;
@@ -67,6 +68,31 @@
   var celular = function () { return innerWidth <= 640; };
   var rnd = function (a, b) { return a + Math.random() * (b - a); };
   var FOLHA = ".folha, [data-unidade]";
+  // Protótipo 14 (G10): a troca de página é a cortina com o nome do destino; a das folhas fica para o
+  // anterior e o próximo do artigo (na pilha) e para quem a pedir.
+  var CORTINA = true;
+  // Rodada 3 (área 7, T2): os tempos da cortina, em ms, no relógio da troca (vt.ready = 0). Ela entra até
+  // 0,38s (suave.css), segura até 0,62s e sai pelo alto até 0,98s.
+  // Rodada 4 (A3): por baixo dela, a montagem das folhas do blog de hoje (o 11): as folhas novas vêm do
+  // fundo e da direita, levemente giradas, em perspectiva, e pousam. Começam aos 0,45s, ainda cobertas,
+  // voam 0,95s com uma curva mais macia que a de hoje (para o fim do voo, que é o que a cortina deixa ver,
+  // ainda andar) e se espalham no máximo 0,15s: a última pousa por volta de 1,55s (até 1,7s do clique).
+  var CORTINA_ENTRA = 380;
+  var CORTINA_SEGURA = 620;
+  var CORTINA_SAI = 360;
+  var CORTINA_VOO = 450;
+  var CORTINA_POUSO = 950;
+  var CORTINA_ESPALHA = 150;
+  var CORTINA_CURVA = "cubic-bezier(0.2, 0.72, 0.28, 1)";
+  // O desfile de Livros (a chegada própria, o desfile do blog de hoje) começa ainda coberto, aos 0,42s:
+  // os cartões chegam à pilha enquanto a cortina sai, e tudo assenta até 3,5s do clique.
+  var CORTINA_DESFILE = 420;
+  // As fichas de Tags (rodada 4, A3, "principalmente tag"): jogadas do alto à direita a partir de 0,36s,
+  // 40ms entre elas (no máximo 0,16s entre a primeira e a última), 0,76s cada: assentam até ~1,28s.
+  var JOGA_T0 = 360;
+  var JOGA_PASSO = 40;
+  var JOGA_ESPALHA = 160;
+  var JOGA_DUR = 760;
 
   /** O fim do cabeçalho fixo: o que está embaixo dele não está à vista. */
   function topoVisivel() {
@@ -285,6 +311,32 @@
       }
     }
 
+    // Rodada 2 (protótipo 14, G7): a troca de livro pela estante do topo. O livro grande volta para o vão
+    // dele na estante e o escolhido sai da estante e abre grande; o resto da página só troca.
+    if (raiz.hasAttribute("data-troca-livro")) {
+      raiz.removeAttribute("data-troca-livro");
+      dados.tipo = "livro";
+      livrosNomeados(false).forEach(function (l) { nomear(l.el, l.n, l.el.hasAttribute("data-vt") ? "livro vem" : "livro vai"); });
+      guardar(dados);
+      return;
+    }
+    // Rodada 2 (protótipo 14, G10): a cortina. Ela passa por cima da página com o nome do destino, e a
+    // página nova monta embaixo dela; nenhum livro voa por cima da cortina. Rodada 3 (área 7, item 4): entre
+    // as páginas da home (/, /2/, /3/, a paginação), continua a troca de hoje, a das folhas, sem cortina.
+    var paginaDaHome = function (c) { return /^\/(\d+\/)?$/.test(c); };
+    // Rodada 4 (H3): da home, o livro clicado na fileira (ou o nome dele) abre a página do livro sem a
+    // cortina: o livro é a transição. A troca é a das folhas, com o par do livro (o da fileira e o grande do
+    // painel, Base.astro dá o nome aos dois): ele voa, crescendo e girando até a pose de lá ("mesmo"), e o
+    // resto da página antiga cai enquanto a nova monta. Colecao.astro marca `data-abre-livro` com o destino.
+    var abreLivro = raiz.dataset.abreLivro === para;
+    raiz.removeAttribute("data-abre-livro");
+    if (abreLivro) dados.abreLivro = true;
+    if (CORTINA && !abreLivro && !(paginaDaHome(location.pathname) && paginaDaHome(para))) {
+      dados.tipo = "cortina";
+      livrosNomeados(false).forEach(function (l) { nomear(l.el, "none"); });
+      guardar(dados);
+      return;
+    }
     // A troca geral: cada unidade à vista vira uma imagem que cai.
     var us = unidades();
     dados.tipo = "folhas";
@@ -341,7 +393,11 @@
   // pageswap, ainda a tempo de o navegador pintar e guardar a imagem dela): senão, voltando pelo bfcache, ela
   // aparecia por um quadro congelada no meio do voo (D54). No pagehide, de novo, para a saída sem troca.
   var emCurso = [];
+  // A página está saindo (pageswap, ou pagehide para o bfcache): o que terminar agora não avisa ninguém
+  // (o aviso da saída da cortina, por exemplo, não dispara na página que vai embora).
+  var encerrando = false;
   function terminarChegada() {
+    encerrando = true;
     emCurso.forEach(function (a) { try { a.finish(); } catch (err) {} });
     emCurso = [];
     dispatchEvent(new CustomEvent("cs:congelar"));
@@ -354,9 +410,12 @@
   var restaurada = false;
   addEventListener("pageshow", function (e) {
     if (!e.persisted) return;
+    encerrando = false;
     esconderCarga();
     limparNomes();
     raiz.removeAttribute("data-troca-sem-menu");
+    raiz.removeAttribute("data-troca-livro");
+    raiz.classList.remove("cortina", "cortina-volta");
     restaurada = true;
   });
 
@@ -396,9 +455,9 @@
     var W = innerWidth, H = innerHeight, cel = celular();
     var m = document.getElementById("conteudo");
     var passo = Number(opcoes.passo || (m && m.dataset.chegadaPasso) || 0.085);
-    // Com muitas folhas, a última sai no máximo 0,5s depois da primeira (a troca fecha em ~1,6s); na chegada
-    // curta (a página demorou, B14), em 0,1s.
-    passo = Math.min(opcoes.curta ? 0.02 : passo, (opcoes.curta ? 0.1 : 0.5) / Math.max(1, novas.length - 1));
+    // Com muitas folhas, a última sai no máximo 0,5s depois da primeira (a troca fecha em ~1,6s; sob a
+    // cortina, `opcoes.espalha`); na chegada curta (a página demorou, B14), em 0,1s.
+    passo = Math.min(opcoes.curta ? 0.02 : passo, (opcoes.curta ? 0.1 : opcoes.espalha || 0.5) / Math.max(1, novas.length - 1));
     var curta = !!opcoes.curta;
     var t0 = opcoes.t0 || 0, fim = 0;
     // Nada novo fica visível antes disto (ms): o voo pode começar antes, ainda transparente (revisão 2).
@@ -413,6 +472,8 @@
     var desenho = document.querySelector("[data-desenhar-topo]");
     novas.forEach(function (u, i) {
       var el = u.el, t = (t0 + i * passo) * 1000;
+      // Protótipo 14 (G5): os artigos da página do livro giram ao entrar, pelo script da página.
+      if (!u.texto && el.closest("[data-gira]")) return;
       if (u.texto) {
         animar(el,
           [{ transform: "translateY(18px)", opacity: 0, clipPath: "inset(0 0 100% 0)" }, { transform: "none", opacity: 1, clipPath: "inset(0 0 0% 0)" }],
@@ -440,17 +501,45 @@
         return;
       }
       var origem = "50% " + (u.oy || 0) + "px";
+      // Rodada 3 (área 7): a folha muito mais alta que a tela (o corpo do artigo) não voa em 3D, só sobe e
+      // assenta. Em perspectiva, o Chrome rasteriza a camada dela quase inteira (milhares de pixels de
+      // altura); com a CPU 4× e o tema escuro, faltava memória de ladrilho e a cortina por cima dela nem era
+      // pintada (filmado: arquivo → artigo, escuro, 1440).
+      if (u.r && u.r.height > H * 1.5) {
+        var durAlta = opcoes.dur ? Math.round(opcoes.dur * (cel ? 0.88 : 1)) : cel ? 850 : 1000;
+        if (desenho && el.contains(desenho)) animar(el, [], { duration: t + durAlta * 0.6 }).finished.then(function () { dispatchEvent(new CustomEvent("cs:pousou")); }, function () {});
+        animar(el, [{ transform: "translateY(" + (opcoes.volta ? -40 : 72) + "px)" }, { transform: "none" }], { duration: durAlta, delay: t, easing: QUART_OUT, fill: "backwards" });
+        animar(el, [{ opacity: 0 }, { opacity: 1 }], { duration: 240, delay: Math.max(t, visivel), easing: SAI_LOGO, fill: "backwards" });
+        fim = Math.max(fim, t + durAlta);
+        return;
+      }
       var de;
-      if (opcoes.volta) de = T3(0, 40, 260, -8, 0, 0);
+      if (opcoes.plano) {
+        // Sob a cortina (rodada 3, área 7), o mesmo pouso no plano: a folha vem do alto à direita, menor e um
+        // pouco torta, e assenta. Só se vê o fim do voo (o começo está coberto), que é igual ao da perspectiva;
+        // em 2D, o Chrome rasteriza a folha uma vez, na escala final, e a saída da cortina não engasga (em 3D,
+        // ele refazia o desenho das ilustrações a cada escala: quadros de 70 a 110ms com a CPU 4×).
+        if (opcoes.volta) de = "translate(0px, 18px) scale(1.05)";
+        else de = cel ? "translate(0px, " + Math.round(-H * 0.14) + "px) rotate(-2deg) scale(0.88)" : "translate(" + Math.round(W * 0.1) + "px, " + Math.round(-H * 0.16) + "px) rotate(" + rnd(-4, -2).toFixed(2) + "deg) scale(0.84)";
+      } else if (opcoes.volta) de = T3(0, 40, 260, -8, 0, 0);
       else {
         var z = cel ? -700 : -1600, k = P / (P - z);
         de = cel ? T3(0, (-H * 0.45) / k, z, 22, 0, -2) : T3((W * 0.3) / k, (-H * 0.5) / k, z, 16, -30, rnd(-5, -2));
       }
-      var dur = cel ? 850 : 1000;
+      // O voo: 1s (0,85s no celular); sob a cortina, `opcoes.dur` (rodada 3, área 7).
+      var dur = opcoes.dur ? Math.round(opcoes.dur * (cel ? 0.88 : 1)) : cel ? 850 : 1000;
       // A folha do desenho do artigo: ele começa quando ela está quase pousada (protótipo 08). Uma animação
       // vazia marca o tempo, para andar junto com as outras (e recomeçar com elas).
       if (desenho && el.contains(desenho)) animar(el, [], { duration: t + dur * 0.6 }).finished.then(function () { dispatchEvent(new CustomEvent("cs:pousou")); }, function () {});
-      animar(el, [{ transform: de, transformOrigin: origem }, { transform: PARADO, transformOrigin: origem }], { duration: dur, delay: t, easing: QUART_OUT, fill: "backwards" });
+      // A origem do giro vai no estilo durante o voo, e não nos quadros-chave: com `transform-origin` nos
+      // quadros, o Chrome não leva a animação para o compositor e cada quadro dependia da thread principal
+      // (rodada 3: com a CPU 4×, a saída da cortina engasgava enquanto as folhas voavam embaixo dela).
+      var origemAntes = el.style.transformOrigin;
+      el.style.transformOrigin = origem;
+      var devolverOrigem = (function (alvo, valor, antes) {
+        return function () { if (alvo.style.transformOrigin === valor) alvo.style.transformOrigin = antes; };
+      })(el, el.style.transformOrigin, origemAntes);
+      animar(el, [{ transform: de }, { transform: opcoes.plano ? "none" : PARADO }], { duration: dur, delay: t, easing: opcoes.curva || QUART_OUT, fill: "backwards" }).finished.then(devolverOrigem, devolverOrigem);
       // A opacidade vem logo (ease-out, 170ms), não antes de `visivel`: a folha aparece ainda pequena, lá no
       // fundo, enquanto as antigas somem, e a mesa nunca fica vazia.
       animar(el, [{ opacity: 0 }, { opacity: 1 }], { duration: 170, delay: Math.max(t, visivel), easing: SAI_LOGO, fill: "backwards" });
@@ -535,6 +624,14 @@
     var lenta = montagemAnterior() > MONTAGEM_LENTA;
     if (restaurada) {
       restaurada = false;
+      // Rodada 3 (área 7): voltando pelo histórico para uma página guardada no bfcache, a cortina também
+      // desce (a página volta como ficou, coberta por ela, e as folhas assentam de novo embaixo).
+      if (vt && d && d.tipo === "cortina" && !reduzido.matches) {
+        raiz.dataset.chegando = "";
+        try { vt.types.add("cortina"); } catch (err) {}
+        passarCortina(vt, false, true);
+        return;
+      }
       if (vt) {
         vt.ready.catch(function () {});
         vt.skipTransition();
@@ -561,6 +658,16 @@
     if (d.tipo === "lado") {
       trocarDeLado(vt, d);
       vt.finished.finally(avisarChegada);
+      return;
+    }
+    if (d.tipo === "cortina") {
+      passarCortina(vt, curta);
+      return;
+    }
+    if (d.tipo === "livro") {
+      // Linha 18: a fileira de cima é a mesma; as luzes dela não acendem de novo (estante-moderna.ts).
+      raiz.dataset.chegouPorLivro = "";
+      trocarDeLivro(vt, curta);
       return;
     }
 
@@ -632,6 +739,174 @@
     Promise.all([vt.finished.catch(function () {}), pousou]).then(avisarChegada);
   });
 
+  /*
+   * As fichas jogadas (rodada 4, A3; o blog de hoje em Tags): numa lista com `data-jogadas` (as fichas de
+   * Tags, que ficam fora da troca e caem ao rolar, fichas-caem.ts), as que estão acima da dobra chegam
+   * jogadas do alto à direita, por baixo da cortina: cada uma sai de cima e da direita, menor e torta (de
+   * 5 a 12°), pousa espalhada perto do lugar dela (até 26px fora e girada até 6°) e se arruma na grade.
+   * Só `transform` e `opacity`, no plano (o Chrome rasteriza cada ficha uma vez). A troca as marca com
+   * `data-caiu` e `data-jogada`, para a queda (fichas-caem.ts) não passar por cima delas. Devolve quando a
+   * última assenta (ms, no relógio da troca); fica de fora na chegada curta e na volta (aí elas caem).
+   */
+  function jogarFichas(anims, curta, volta) {
+    if (curta || volta) return 0;
+    var listas = document.querySelectorAll("#conteudo [data-jogadas]");
+    if (!listas.length) return 0;
+    var H = innerHeight, topo = topoVisivel();
+    var fichas = [];
+    for (var i = 0; i < listas.length; i++) {
+      for (var f = listas[i].firstElementChild; f; f = f.nextElementSibling) {
+        if (f.hidden) continue;
+        var r = f.getBoundingClientRect();
+        if (r.width > 0 && r.bottom > topo + 2 && r.top < H - 40) fichas.push(f);
+      }
+    }
+    return jogar(fichas, { t0: JOGA_T0, anims: anims });
+  }
+  /**
+   * Joga as fichas dadas (o gesto acima; a amostra D3 o usa sem a troca). `opcoes.t0` em ms; as animações
+   * vão para `opcoes.anims`, se houver. Devolve quando a última assenta (ms, contando de agora + t0).
+   */
+  function jogar(fichas, opcoes) {
+    opcoes = opcoes || {};
+    var anims = opcoes.anims || [];
+    var W = innerWidth, H = innerHeight, cel = celular();
+    var lista = fichas.map(function (el) { return { el: el, r: el.getBoundingClientRect() }; });
+    lista.sort(function (a, b) { return Math.round(a.r.top / 48) - Math.round(b.r.top / 48) || a.r.left - b.r.left; });
+    var passo = Math.min(JOGA_PASSO, JOGA_ESPALHA / Math.max(1, lista.length - 1));
+    var fim = 0, t0 = opcoes.t0 || 0;
+    lista.forEach(function (x, i) {
+      var el = x.el;
+      el.dataset.caiu = "";
+      el.dataset.jogada = "";
+      var t = t0 + i * passo;
+      var de = cel
+        ? "translate(" + Math.round(rnd(10, 40)) + "px, " + Math.round(-H * 0.16 + rnd(-20, 20)) + "px) rotate(" + rnd(-9, -4).toFixed(2) + "deg) scale(0.84)"
+        : "translate(" + Math.round(W * 0.12 + rnd(-30, 50)) + "px, " + Math.round(-H * 0.2 + rnd(-40, 30)) + "px) rotate(" + rnd(-12, -5).toFixed(2) + "deg) scale(0.8)";
+      var pousa = "translate(" + Math.round(rnd(-26, 26)) + "px, " + Math.round(rnd(-20, 8)) + "px) rotate(" + rnd(-6, 5).toFixed(2) + "deg) scale(0.985)";
+      var a = el.animate(
+        [
+          { transform: de, easing: "cubic-bezier(0.18, 0.7, 0.3, 1)" },
+          { transform: pousa, offset: 0.56, easing: "cubic-bezier(0.45, 0, 0.25, 1)" },
+          { transform: "none" },
+        ],
+        { duration: JOGA_DUR, delay: t, fill: "backwards" },
+      );
+      var o = el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 140, delay: t, easing: SAI_LOGO, fill: "backwards" });
+      anims.push(a, o);
+      fim = Math.max(fim, t + JOGA_DUR);
+    });
+    return fim;
+  }
+
+  /*
+   * A cortina (protótipo 14, G10; rodada 3, área 7: T2, F14-3): a do 01, no azul-tinta escuro no claro e no
+   * papel no escuro, com o nome do destino. Os tempos, no relógio da troca (vt.ready = 0):
+   * - 0 a 0,38s: entra de baixo por cima da página antiga (a nova fica escondida; a animação é do CSS, em
+   *   suave.css), com o nome pequeno no alto desde o começo e o gigante subindo pela máscara, mais devagar
+   *   que a folha (a paralaxe), até assentar aos 0,6s;
+   * - 0,38 a 0,62s: segura (a cortina de verdade, o mesmo painel já na página nova);
+   * - 0,62s: avisa `cs:cortina-saindo` (detalhe: volta, curta, duracao da saída em ms), e sai pelo alto até
+   *   0,98s, com o nome subindo um pouco junto;
+   * - por baixo dela, a página nova já está montando (rodada 4, A3: as animações do blog de hoje): as
+   *   folhas vêm do fundo e da direita, em perspectiva, a partir de 0,45s, ainda cobertas, e pousam até
+   *   ~1,55s; em Tags, as fichas de cima chegam jogadas do alto (`jogarFichas`, de 0,36 a ~1,28s); em Livros
+   *   (a chegada própria), o desfile do blog de hoje começa aos 0,42s (`window.csChegada.t0`) e assenta até
+   *   ~2,7s com quatro cartões à vista (~3,4s com oito).
+   * Voltando pelo histórico (também do bfcache, `restaurada`), tudo de cima para baixo. Na chegada curta (a
+   * página demorou, B14), ela não segura e as folhas só aparecem.
+   */
+  function passarCortina(vt, curta, restaurada) {
+    var volta = voltando() || !!restaurada;
+    var painel = document.querySelector(".cortina-painel");
+    var nome = painel && painel.querySelector(".cortina-nome");
+    var m = document.getElementById("conteudo");
+    raiz.classList.add("cortina");
+    if (volta) raiz.classList.add("cortina-volta");
+    livrosNomeados().forEach(function (l) { nomear(l.el, "none"); });
+    var SAI_EM = curta ? CORTINA_ENTRA : CORTINA_SEGURA;
+    var SAI_DUR = curta ? 280 : CORTINA_SAI;
+    var anims = [];
+    var novas = unidades();
+    var propria = m && m.dataset.chegada === "propria" && !volta && !curta;
+    var chegada = null;
+    if (propria) {
+      novas.forEach(function (u) { u.el.style.opacity = "0"; });
+      chegada = window.csChegada = { novas: novas, inicio: performance.now(), t0: CORTINA_DESFILE / 1000 };
+      setTimeout(function () {
+        if (chegada.comecou) return;
+        chegada.revelada = true;
+        novas.forEach(function (u) { u.el.style.opacity = ""; });
+        if (window.csChegada === chegada) window.csChegada = null;
+      }, 1800 + SAI_EM);
+    }
+    var fimDaChegada = propria ? 0 : chegar(novas, {
+      volta: volta,
+      t0: (curta ? SAI_EM : CORTINA_VOO) / 1000,
+      dur: CORTINA_POUSO,
+      espalha: CORTINA_ESPALHA / 1000,
+      curva: CORTINA_CURVA,
+      anims: anims,
+      curta: curta,
+    });
+    if (!propria) fimDaChegada = Math.max(fimDaChegada, jogarFichas(anims, curta, volta));
+    // O aviso da saída: uma animação vazia marca o tempo, no relógio das outras (recomeça com elas).
+    var aviso = raiz.animate([], { duration: SAI_EM });
+    anims.push(aviso);
+    aviso.finished.then(function () {
+      if (encerrando) return;
+      dispatchEvent(new CustomEvent("cs:cortina-saindo", { detail: { volta: volta, curta: curta, duracao: SAI_DUR } }));
+    }, function () {});
+    var saida = null, sobeNome = null;
+    if (painel && painel.animate) {
+      saida = painel.animate(
+        [{ clipPath: "inset(0 0 0 0)" }, { clipPath: volta ? "inset(100% 0 0 0)" : "inset(0 0 100% 0)" }],
+        { duration: SAI_DUR, delay: SAI_EM, easing: "cubic-bezier(0.7, 0, 0.2, 1)", fill: "both" },
+      );
+      anims.push(saida);
+      // Na saída, o nome gigante vai um pouco junto com a folha (a paralaxe da saída): sem preencher antes,
+      // para não brigar com a subida dele pela máscara (CSS).
+      if (nome && !curta) {
+        sobeNome = nome.animate([{ transform: "none" }, { transform: "translateY(" + (volta ? 9 : -9) + "vh)" }], { duration: SAI_DUR, delay: SAI_EM, easing: "cubic-bezier(0.55, 0, 0.35, 1)", fill: "forwards" });
+        anims.push(sobeNome);
+      }
+    }
+    emCurso.push.apply(emCurso, anims);
+    vt.ready.then(function () {
+      anims.forEach(function (a) { a.currentTime = 0; });
+      // O desfile de Livros conta do começo da troca, não do pagereveal (com a CPU lenta, ~0,2s antes).
+      if (chegada) chegada.inicio = performance.now();
+    }, function () {});
+    var recolheu = false;
+    var recolher = function () {
+      if (recolheu) return;
+      recolheu = true;
+      raiz.classList.remove("cortina", "cortina-volta");
+      [saida, sobeNome].forEach(function (a) { if (a) try { a.cancel(); } catch (err) {} });
+    };
+    if (saida) saida.finished.then(recolher, recolher);
+    else vt.finished.then(recolher, recolher);
+    setTimeout(recolher, 4000);
+    var pousou = vt.ready.then(function () { return new Promise(function (r) { setTimeout(r, Math.max(fimDaChegada, SAI_EM + SAI_DUR)); }); }, function () {});
+    Promise.all([vt.finished.catch(function () {}), pousou]).then(avisarChegada);
+  }
+
+  /*
+   * A troca de livro pela estante do topo (protótipo 14, G7): o livro grande da página antiga volta para o
+   * vão dele na estante (classe "vai") e o escolhido sai da estante e cresce até o lugar do grande ("vem"),
+   * um pouco depois. Os nomes vêm do script do <head> (Base.astro) e do HTML; aqui só as classes. Depois do
+   * pouso, os artigos do livro novo chegam girando (G5).
+   */
+  function trocarDeLivro(vt, curta) {
+    livrosNomeados().forEach(function (l) { nomear(l.el, l.n, l.el.hasAttribute("data-vt") ? "livro vai" : "livro vem"); });
+    var anims = [];
+    var fim = 900;
+    emCurso.push.apply(emCurso, anims);
+    vt.ready.then(function () { anims.forEach(function (a) { a.currentTime = 0; }); }, function () {});
+    var pousou = vt.ready.then(function () { return new Promise(function (r) { setTimeout(r, fim); }); }, function () {});
+    Promise.all([vt.finished.catch(function () {}), pousou]).then(avisarChegada);
+  }
+
   /* Artigo anterior e próximo (protótipo 06, "na pilha"). */
   function trocarDeLado(vt, d) {
     var W = innerWidth;
@@ -697,5 +972,5 @@
     }, function () {});
   }
 
-  window.csTroca = { unidades: unidades, chegar: chegar };
+  window.csTroca = { unidades: unidades, chegar: chegar, jogar: jogar };
 })();

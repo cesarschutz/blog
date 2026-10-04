@@ -1,0 +1,270 @@
+/*
+ * Rodada 3 do redesenho (área A, "Livros vivos"; T4, T6, T9, T11, T14): um comportamento só para todo
+ * livro 3D do site (a home, Livros, Séries, o topo e o painel da página do livro, o filtro, a gaveta, a
+ * ficha da busca, o livro ampliado em repouso). O script é livro-vivo.ts (carregado por Luz.astro, em
+ * toda página); a marcação é a de Livro3D.astro.
+ *
+ * - **O giro do hover com mola** (T11, T14): o livro vai de 38° para 20°, sobe uns 6px e dá um nada de
+ *   inclinação no plano, com a mola do 04 (passa do alvo e volta: as "duas viradinhas"). A saída é sem
+ *   mola (0,4s, power2.out). Mexe só no `.livro-vivo` (transform), um envoltório entre a vista e o
+ *   `.livro-3d`: o `rotateY` do livro continua livre para o GSAP, as trocas de página e a largura da
+ *   coleção. Quem dispara: o próprio livro (`.livro-em-pe`, `.livro-na-gaveta`) ou o cartão em volta dele
+ *   (`[data-livro-gira]`, `.livro-colecao`), com o mouse, o foco do teclado ou o toque (`data-lv-toque`).
+ *   Um livro (ou um ancestral) com `data-livro-parado` não se mexe. Quem gira o livro a outro ângulo de
+ *   repouso escolhe o quanto ele vira com `--livro-vira` (padrão −18°).
+ * - **O livro que acompanha o mouse** (T9): a propriedade `rotate` do mesmo envoltório (livro-vivo.ts),
+ *   que compõe com o `transform` sem passar pela transição dele.
+ * - **Sem brilho no hover** (rodada 4, H4): a luz quente que a camada `.lv-brilho` punha na capa e na
+ *   lombada amarelava o livro, e saiu. A camada só aparece na onda.
+ * - **A onda de luz da fileira** (T4, item 4): a faixa que desce cada livro, um depois do outro, branca e
+ *   fraca (neutra).
+ * - **A sombra quente** (T6): o chão do livro é marrom-âmbar no claro, nunca cinza; no escuro, o halo
+ *   quente por baixo com o núcleo preto. O contato fica no plano 3D do chão (livro.css, `.chao`); a
+ *   projetada e o halo, num chão plano por baixo da caixa (`::after`), que no hover cresce 8%.
+ *
+ * Só `transform` e `opacity` animam; nada de `filter` nem de opacidade animada em ancestral do 3D. Com
+ * movimento reduzido, o livro fica parado a 38°.
+ */
+
+:root {
+  /* A mola do 04 (spring do anime.js com bounce 0,35, amostrada): passa uns 7% do alvo e volta. */
+  --lv-mola: linear(0, 0.05, 0.171, 0.326, 0.489, 0.641, 0.772, 0.877, 0.956, 1.011, 1.045, 1.063, 1.068, 1.065, 1.057, 1.047, 1.036, 1.025, 1.016, 1.009, 1.003, 1, 0.997, 0.996, 0.996, 0.997, 0.998, 0.999, 1);
+  /* power2.out do GSAP. */
+  --lv-sai: cubic-bezier(0.5, 1, 0.89, 1);
+}
+
+/* ---------- o envoltório que gira ---------- */
+
+.livro-vivo {
+  /* A subida acompanha o tamanho do livro: 6px no livro de 270 a 300 de altura, de 3 a 8px nos outros. */
+  --lv-sobe: clamp(3px, calc(var(--bh, 300px) * 0.021), 8px);
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.4s var(--lv-sai);
+}
+
+/* A coleção da home e do topo: o repouso vem da largura (--gc, Colecao); o hover leva a 20° (ou 18° menos). */
+.livro-colecao {
+  --livro-vira: calc(max(var(--gc, 38deg) - 18deg, 20deg) - var(--gc, 38deg));
+}
+
+/*
+ * O hover (mouse), o foco do teclado, o toque (livro-vivo.ts, data-lv-toque) e a pose pedida por script
+ * (data-lv-pose, a onda da fileira). O cartão inteiro ou o livro sozinho.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @media (hover: hover) {
+    :is([data-livro-gira], .livro-colecao, .livro-em-pe, .livro-na-gaveta):hover .livro-vivo:not([data-livro-parado] .livro-vivo),
+    .palco-ampliado[data-lv-repouso] .livro-3d-caixa:hover .livro-vivo {
+      transform: translate3d(0, calc(-1 * var(--lv-sobe)), 0) rotateZ(-2deg) rotateY(var(--livro-vira, -18deg));
+      transition: transform 0.55s var(--lv-mola);
+    }
+
+    :is([data-livro-gira], .livro-colecao, .livro-em-pe, .livro-na-gaveta):hover .livro-vivo:not([data-livro-parado] .livro-vivo) .chao,
+    .palco-ampliado[data-lv-repouso] .livro-3d-caixa:hover .chao {
+      translate: 0 var(--lv-sobe);
+      transition: translate 0.55s var(--lv-mola);
+    }
+  }
+
+  :is([data-livro-gira], .livro-colecao, .livro-em-pe, .livro-na-gaveta):is(:focus-visible, :has(:focus-visible)) .livro-vivo:not([data-livro-parado] .livro-vivo),
+  [data-lv-toque] .livro-vivo:not([data-livro-parado] .livro-vivo),
+  .livro-3d-caixa[data-lv-pose] .livro-vivo {
+    transform: translate3d(0, calc(-1 * var(--lv-sobe)), 0) rotateZ(-2deg) rotateY(var(--livro-vira, -18deg));
+    transition: transform 0.55s var(--lv-mola);
+  }
+
+  :is([data-livro-gira], .livro-colecao, .livro-em-pe, .livro-na-gaveta):is(:focus-visible, :has(:focus-visible)) .livro-vivo:not([data-livro-parado] .livro-vivo) .chao,
+  [data-lv-toque] .livro-vivo:not([data-livro-parado] .livro-vivo) .chao,
+  .livro-3d-caixa[data-lv-pose] .chao {
+    translate: 0 var(--lv-sobe);
+    transition: translate 0.55s var(--lv-mola);
+  }
+
+  .livro-3d .chao {
+    transition: translate 0.4s var(--lv-sai);
+  }
+}
+
+/* Solto na hora (livro-vivo.ts): antes de alguém medir ou copiar o livro (o ampliado, a gaveta). */
+.livro-vivo[data-lv-solto],
+.livro-vivo[data-lv-solto] .chao {
+  transition: none !important;
+}
+
+/* ---------- a sombra quente: o chão plano por baixo da caixa ---------- */
+
+/*
+ * A projetada (no claro) e o halo (no escuro): uma elipse plana no pé do livro, um nada para a direita
+ * (a luz vem do alto à esquerda). O contato justo fica no plano 3D do livro (livro.css, `.chao`).
+ */
+.livro-3d-caixa {
+  isolation: isolate;
+}
+
+.livro-3d-caixa::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 100%;
+  left: 50%;
+  width: calc(var(--cw, 200px) * 1.5);
+  height: calc(var(--bh, 300px) * 0.16);
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--sombra-quente) 30%, transparent),
+    color-mix(in oklab, var(--sombra-quente) 13%, transparent) 52%,
+    transparent
+  );
+  pointer-events: none;
+  translate: -44% -62%;
+  transition:
+    transform 0.4s var(--lv-sai),
+    opacity 0.4s var(--lv-sai);
+}
+
+:root[data-theme="dark"] .livro-3d-caixa::after {
+  width: calc(var(--cw, 200px) * 1.7);
+  height: calc(var(--bh, 300px) * 0.22);
+  background: radial-gradient(
+    closest-side,
+    color-mix(in oklab, var(--halo-quente) 22%, transparent),
+    color-mix(in oklab, var(--halo-quente) 9%, transparent) 50%,
+    transparent
+  );
+  opacity: 0.6;
+  translate: -50% -58%;
+}
+
+/* A gaveta não tem chão (D57), e o livro ampliado tem o dele (LivroAmpliado). */
+:is(.livro-na-gaveta, .palco-ampliado) .livro-3d-caixa::after {
+  display: none;
+}
+
+@media (hover: hover) {
+  :is([data-livro-gira], .livro-colecao, .livro-em-pe):hover .livro-3d-caixa:not([data-livro-parado] *)::after {
+    transform: scale(1.08);
+    opacity: 0.9;
+  }
+
+  :root[data-theme="dark"] :is([data-livro-gira], .livro-colecao, .livro-em-pe):hover .livro-3d-caixa:not([data-livro-parado] *)::after {
+    opacity: 1;
+  }
+}
+
+:is([data-livro-gira], .livro-colecao, .livro-em-pe):is(:focus-visible, :has(:focus-visible)) .livro-3d-caixa::after,
+[data-lv-toque] .livro-3d-caixa::after {
+  transform: scale(1.08);
+}
+
+:root[data-theme="dark"] :is([data-livro-gira], .livro-colecao, .livro-em-pe):is(:focus-visible, :has(:focus-visible)) .livro-3d-caixa::after,
+:root[data-theme="dark"] [data-lv-toque] .livro-3d-caixa::after {
+  opacity: 1;
+}
+
+/* ---------- a onda de luz da fileira (o brilho do hover saiu) ---------- */
+
+/*
+ * Rodada 4 (H4, "tem uma luz que vai nele que tá ficando feio, um amarelo, estraga o livro, pode
+ * remover"): o livro não acende mais no hover. Saíram a mancha especular quente da capa e da lombada, a
+ * faixa da lombada, o fresnel e a varredura do mouseenter; ficam a mola do giro, o livro seguindo o mouse
+ * e a sombra. As peças continuam na marcação (Livro3D.astro), mas não aparecem.
+ *
+ * Fica só a onda de luz da fileira na entrada (uma vez por carga): a camada aparece só durante ela
+ * (`data-lv-onda`), e a faixa é branca e fraca, neutra, para não amarelar a capa.
+ */
+.lv-brilho {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.livro-3d-caixa[data-lv-onda] .lv-brilho {
+  display: block;
+}
+
+/* A mistura fica presa à face (a capa é plana dentro do 3D): nada vaza para a página. */
+.livro-3d-caixa[data-lv-onda] .capa-frente {
+  isolation: isolate;
+}
+
+.lv-brilho > i {
+  position: absolute;
+  display: none;
+  pointer-events: none;
+}
+
+/*
+ * A onda: uma faixa larga que desce o livro de cima a baixo, na capa e na lombada à mesma altura (o script
+ * dá o atraso de cada livro). Branca (a luz neutra dos livros, igual nos dois temas) e fraca, em
+ * soft-light: clareia um nada a cor, quase não mexe no papel, e não puxa para o amarelo.
+ */
+:is(.lv-brilho, .luz-brilho) > .lv-onda {
+  display: block;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 52%;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in oklab, var(--etiqueta-luz) 16%, transparent) 30%,
+    color-mix(in oklab, var(--etiqueta-luz) 38%, transparent) 50%,
+    color-mix(in oklab, var(--etiqueta-luz) 16%, transparent) 70%,
+    transparent
+  );
+  mix-blend-mode: soft-light;
+  opacity: 0;
+  transform: translateY(-105%);
+}
+
+/* Com movimento reduzido, o livro fica parado a 38° e a sombra não muda. */
+@media (prefers-reduced-motion: reduce) {
+  .livro-vivo,
+  .livro-3d .chao,
+  .livro-3d-caixa::after {
+    transition: none;
+  }
+}
+
+/* ---------- a foto do livro deitado (a ficha "Do livro" do artigo, FotoDoLivro) ---------- */
+
+/*
+ * A mesma mola, num livro que é foto: sobe 6px e gira 2° no plano, como o livro do artigo do 04. O
+ * mouse ainda inclina a foto (livro-vivo.ts, `rotate`), com uma perspectiva só dela. Sem brilho (H4).
+ */
+.foto-do-livro {
+  transition: transform 0.4s var(--lv-sai);
+}
+
+/* O mouse inclina a foto na mesa: uma perspectiva só para ela, no lugar onde ela está. */
+:is(.do-livro, .livro-do-artigo, [data-foto-gira]) :has(> .foto-do-livro) {
+  perspective: 760px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @media (hover: hover) {
+    :is(.do-livro, .livro-do-artigo, [data-foto-gira]):hover .foto-do-livro {
+      transform: translateY(-6px) rotate(-2deg);
+      transition: transform 0.55s var(--lv-mola);
+    }
+  }
+
+  :is(.do-livro, .livro-do-artigo, [data-foto-gira]):is(:focus-visible, :has(:focus-visible)) .foto-do-livro,
+  [data-lv-toque] .foto-do-livro {
+    transform: translateY(-6px) rotate(-2deg);
+    transition: transform 0.55s var(--lv-mola);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .foto-do-livro {
+    transition: none;
+  }
+}

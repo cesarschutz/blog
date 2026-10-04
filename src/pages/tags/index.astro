@@ -1,265 +1,72 @@
 ---
 /**
- * Tags (/tags/, D39, D52): cada tag numa folha, das mais usadas às menos usadas. No alto do cartão
- * (D52, B11), o nome, a contagem e os livros de onde vêm os artigos, numa estante em miniatura (as
- * lombadas na ordem da coleção, com o papel em cima e a cor do livro embaixo, como as de verdade); ao
- * lado, o ícone da tag (src/livros/tags/), que inclina um nada quando o mouse passa pelo nome ou por
- * ele. Embaixo, os três artigos mais recentes e "Todos os N".
+ * Tags (/tags/, D39, D52; rodada 3, área 6: F11-2, F12-8, F13-3, F14-4, G16, G27, T13; rodada 4: P19-2,
+ * P19-4, P16-7, A3).
+ *
+ * - No alto, a nuvem (NuvemTags: o nome de cada tag do tamanho da contagem, de A a Z) e, ao lado dela, o
+ *   fichário do 19 em aço esmaltado com latão (Fichario.astro, src/scripts/fichario.ts): a 1000px ou mais,
+ *   em pé à direita, com a mesma altura da nuvem; abaixo, embaixo dela, deitado. Puxar uma letra mostra só
+ *   as fichas dela, que caem de cima; "Todas" puxa as gavetas em cascata e mostra todas.
+ * - Embaixo, todas as tags como fichas (FichasTags), de A a Z, com a orelha da letra na primeira de cada
+ *   uma; uma linha que não enche fica no meio (P16-7).
+ * - A entrada: chegando pela cortina, as fichas acima da dobra vêm jogadas do alto à direita, tortas, e se
+ *   arrumam na grade (A3, `data-jogadas`, troca.js); a nuvem e o fichário montam como as folhas, e depois
+ *   as gavetas saem em cascata. As de baixo da dobra caem de cima quando entram na tela (P19-4,
+ *   fichas-caem.ts); chegando de fora, todas as de cima caem quando a abertura termina.
+ *
+ * Para as linhas: `.nuvem-tags`, `.fichas-tags` e `.ficha-tag` são estáveis; cada ficha leva
+ * `data-letra` (a inicial, sem acento) e `data-n` (a contagem). Sem JS, a página lista tudo, parada, e as
+ * gavetas levam à primeira ficha de cada letra.
  */
 import Base from "../../layouts/Base.astro";
 import CabecalhoPagina from "../../components/CabecalhoPagina.astro";
-import IconeTag from "../../components/IconeTag.astro";
-import { ICONES } from "../../lib/icones";
-import { coresDoLivroCss, montarLivros } from "../../lib/estante";
-import { getTags, urlTag, type Resumo } from "../../lib/posts";
-import { tituloComQuebras } from "../../lib/formato";
+import NuvemTags from "../../components/NuvemTags.astro";
+import Fichario from "../../components/Fichario.astro";
+import FichasTags from "../../components/FichasTags.astro";
+import { getTags } from "../../lib/posts";
 
 const tags = await getTags();
-const colecao = await montarLivros();
-const recentes = (posts: Resumo[]) => [...posts].sort((a, b) => b.publicado.getTime() - a.publicado.getTime()).slice(0, 3);
-// Os livros da tag, na ordem da estante, com quantos artigos da tag cada um tem.
-const livrosDa = (posts: Resumo[]) =>
-  colecao.map((l) => ({ livro: l, n: posts.filter((p) => p.livro === l.id).length })).filter((x) => x.n > 0);
-const palavra = (n: number) => (n === 1 ? "artigo" : "artigos");
 ---
 
 <Base titulo="Tags" descricao="Todas as tags do blog de Cesar Schutz, com o número de artigos de cada uma." atual="tags">
   <div class="wrap">
-    <CabecalhoPagina titulo="Tags" descricao={`${tags.length} tags, das mais usadas às menos usadas.`} />
-    <ul class="grade-tags">
-      {
-        tags.map((t) => {
-          const n = t.posts.length;
-          const livros = livrosDa(t.posts);
-          return (
-            <li class="tag folha">
-              <div class="cabeca-tag">
-                <div class="nome-tag">
-                  <h2>
-                    <a href={urlTag(t.nome)}>#{t.nome}</a>
-                  </h2>
-                  <p class="dados">
-                    <span>
-                      {n} {palavra(n)}
-                    </span>
-                    <span class="livros" role="list" aria-label="Livros">
-                      {livros.map(({ livro, n: k }) => (
-                        <span
-                          role="listitem"
-                          class:list={["mini-lombada", { "de-serie": livro.serie }]}
-                          style={`${coresDoLivroCss(livro)};--h:${livro.emPe.altura}`}
-                          title={`${livro.nome}: ${k} ${palavra(k)}`}
-                        >
-                          <span class="sr">
-                            {livro.nome}, {k} {palavra(k)}
-                          </span>
-                        </span>
-                      ))}
-                    </span>
-                  </p>
-                </div>
-                <a class="icone-link" href={urlTag(t.nome)} tabindex="-1" aria-hidden="true">
-                  <IconeTag nome={t.nome} class="icone-cartao" />
-                </a>
-              </div>
-              <ol class="recentes">
-                {recentes(t.posts).map((p) => (
-                  <li>
-                    <a href={p.url} set:html={tituloComQuebras(p.titulo)} />
-                  </li>
-                ))}
-              </ol>
-              {n > 3 && (
-                <a class="todos" href={urlTag(t.nome)}>
-                  Todos os {n}
-                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
-                </a>
-              )}
-            </li>
-          );
-        })
-      }
-    </ul>
+    <CabecalhoPagina titulo="Tags" descricao={`${tags.length} tags: a nuvem pelo uso, o fichário por letra.`} />
+    <div class="topo-tags">
+      <NuvemTags tags={tags} aoLado />
+      <Fichario tags={tags.map((t) => ({ nome: t.nome, n: t.posts.length }))} />
+    </div>
+    <h2 class="sr">As fichas das tags, de A a Z</h2>
+    <FichasTags tags={tags} jogadas />
   </div>
 </Base>
 
+<script>
+  // Rodada 4 (P19-2): o fichário (as gavetas por letra) e as fichas que caem (fichas-caem.ts).
+  import { fichario } from "../../scripts/fichario";
+  import { fichasCaem } from "../../scripts/fichas-caem";
+
+  const lista = document.querySelector<HTMLElement>("[data-fichas-caem]");
+  const movel = document.querySelector<HTMLElement>("[data-fichario]");
+  if (lista && movel) fichario(movel, lista);
+  else if (lista) fichasCaem(lista);
+</script>
+
 <style>
-  .grade-tags {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr));
-    gap: 18px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .tag {
-    display: flex;
-    flex-direction: column;
-    padding: 20px 20px 16px 22px;
-  }
-
-  /* O alto do cartão: o nome e os dados à esquerda, o ícone à direita, os dois na mesma linha de base. */
-  .cabeca-tag {
-    display: flex;
-    align-items: flex-end;
-    gap: 14px;
-    padding-bottom: 14px;
-  }
-
-  .nome-tag {
-    flex: 1;
-    min-width: 0;
-  }
-
-  h2 {
-    margin: 0;
-    font-size: 21px;
-    line-height: 1.2;
-    overflow-wrap: break-word;
-    /* Nome longo de uma palavra só (Microsserviços) quebra com hífen, e só quando não cabe; sem o
-       balanceamento dos títulos, que hifenizava "Virtual" para igualar as linhas. */
-    text-wrap: wrap;
-    hyphens: auto;
-  }
-
-  h2 a {
-    color: var(--ink);
-    text-decoration: none;
-  }
-
-  .cabeca-tag:has(a:hover) h2 a,
-  h2 a:focus-visible {
-    color: var(--acento);
-  }
-
-  .dados {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 6px 12px;
-    margin: 8px 0 0;
-    font-family: var(--font-ui);
-    font-size: 14px;
-    line-height: 1.2;
-    color: var(--ink-2);
-  }
-
   /*
-   * A estante em miniatura: uma lombada por livro, na ordem da coleção, com a altura proporcional à de
-   * verdade (livros.json) e o papel em cima (a parte de cima da lombada, 400 da base fica na cor), sobre
-   * uma tábua fina. Os livros não mudam com o tema (D39).
+   * A nuvem e o fichário (rodada 4, P19-2). A 1000px ou mais, a nuvem ocupa o que sobra e o fichário fica em
+   * pé à direita, com a mesma altura: a linha estica os dois (a nuvem centra as palavras na altura; o
+   * fichário reparte a sobra entre as gavetas). Abaixo, um embaixo do outro, com o fichário deitado.
    */
-  .livros {
-    display: inline-flex;
-    align-items: flex-end;
-    gap: 2px;
-    padding: 0 3px;
-    border-bottom: 2px solid var(--tabua);
+  .topo-tags {
+    display: grid;
+    gap: clamp(18px, 2.4vw, 26px);
+    margin-bottom: clamp(24px, 3vw, 30px);
   }
 
-  .mini-lombada {
-    display: block;
-    width: 6px;
-    height: calc(var(--h) * 0.03px);
-    border-top: calc((var(--h) - 400) * 0.03px) solid var(--livro-papel);
-    border-radius: 1px 1px 0 0;
-    background: var(--livro-cor);
-  }
-
-  .mini-lombada.de-serie {
-    border-top: 2px solid var(--livro-destaque);
-    background: var(--livro-papel);
-  }
-
-  /* O ícone da tag: leva à tag como o nome (o link é um só para o leitor de tela e o teclado). */
-  .icone-link {
-    flex: none;
-    display: block;
-    color: var(--ink);
-  }
-
-  .tag :global(.icone-cartao) {
-    --traco-tag: 1.25px;
-    --papel-da-tag: color-mix(in oklab, var(--ink) 6%, var(--paper-hi));
-    width: 68px;
-    height: 68px;
-    margin: -6px -4px -2px 0;
-    transform-origin: 50% 90%;
-    transition: transform 0.45s cubic-bezier(0.2, 0.75, 0.2, 1);
-  }
-
-  @media (hover: hover) {
-    .cabeca-tag:has(a:hover) :global(.icone-cartao) {
-      transform: rotate(-6deg);
-    }
-  }
-
-  .recentes {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    border-top: 1px solid var(--rule);
-  }
-
-  .recentes li {
-    border-bottom: 1px solid var(--rule);
-  }
-
-  .recentes a {
-    display: block;
-    padding: 7px 0;
-    color: var(--ink);
-    font-size: 15.5px;
-    line-height: 1.4;
-    text-decoration: none;
-  }
-
-  .recentes a:hover {
-    color: var(--acento);
-  }
-
-  .todos {
-    display: inline-flex;
-    gap: 4px;
-    align-items: center;
-    align-self: flex-start;
-    margin-top: auto;
-    padding-top: 10px;
-    font-family: var(--font-ui);
-    font-size: 14px;
-    color: var(--acento);
-  }
-
-  .todos svg {
-    width: 14px;
-    height: 14px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-
-  /* No celular estreito, o ícone e o nome encolhem um pouco, para "#Microsserviços" caber inteiro. */
-  @media (max-width: 400px) {
-    .tag {
-      padding-inline: 18px 16px;
-    }
-
-    .tag :global(.icone-cartao) {
-      width: 54px;
-      height: 54px;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .tag :global(.icone-cartao) {
-      transition: none;
-    }
-
-    .cabeca-tag:has(a:hover) :global(.icone-cartao) {
-      transform: none;
+  @media (min-width: 1000px) {
+    .topo-tags {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: stretch;
     }
   }
 </style>

@@ -1,0 +1,143 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 462"
+  aria-label="Animação: o app pede ao serviço de autorização a cobrança de R$ 250; o serviço captura no adquirente, que lança a cobrança na fatura do cliente. A resposta 201 se perde no caminho de volta, o relógio do app estoura o timeout sem que ele saiba se cobrou, e o app envia o pedido de novo. O serviço captura outra vez, e a fatura fica com duas cobranças de R$ 250: o cliente foi cobrado duas vezes.">
+  <g class="tinta">
+    <g class="tom-azul">
+      <rect x="32" y="37" width="250" height="130" rx="12" class="hachura"/>
+      <rect x="25" y="30" width="250" height="130" rx="12" class="lavado"/>
+      <rect x="25" y="30" width="250" height="130" rx="12" class="linha"/>
+      <path d="M285 68 H463 M449 59 L463 68 L449 77" class="linha-tom"/>
+      <rect x="142" y="212" width="16" height="10" rx="2" class="lavado"/>
+      <rect x="142" y="212" width="16" height="10" rx="2" class="linha"/>
+      <circle cx="150" cy="268" r="44" class="lavado"/>
+      <circle cx="150" cy="268" r="44" class="linha"/>
+      <path d="M150 224 V232 M194 268 H186 M150 312 V304 M106 268 H114" class="linha"/>
+    </g>
+    <g class="tom-verde">
+      <rect x="482" y="37" width="250" height="130" rx="12" class="hachura"/>
+      <rect x="475" y="30" width="250" height="130" rx="12" class="lavado"/>
+      <rect x="475" y="30" width="250" height="130" rx="12" class="linha"/>
+      <path d="M735 68 H906 M892 59 L906 68 L892 77" class="linha-tom"/>
+      <path d="M465 132 H400" class="linha-tom"/>
+      <path d="M364 132 H292" class="fantasma"/>
+      <path d="M304 123 L290 132 L304 141" class="linha"/>
+    </g>
+    <g class="tom-ambar">
+      <rect x="925" y="37" width="257" height="130" rx="12" class="hachura"/>
+      <rect x="918" y="30" width="257" height="130" rx="12" class="lavado"/>
+      <rect x="918" y="30" width="257" height="130" rx="12" class="linha"/>
+      <rect x="934" y="60" width="44" height="30" rx="4" class="papel"/>
+      <rect x="934" y="60" width="44" height="30" rx="4" class="linha"/>
+      <path d="M934 68 H978" class="linha"/>
+      <rect x="940" y="76" width="10" height="8" rx="2" class="linha"/>
+      <path d="M908 132 H737 M751 123 L737 132 L751 141" class="linha-tom"/>
+      <path d="M1046 172 V230 M1037 216 L1046 230 L1055 216" class="linha-tom"/>
+    </g>
+    <rect x="732" y="250" width="450" height="196" rx="8" class="hachura"/>
+    <rect x="720" y="238" width="450" height="196" rx="8" class="papel"/>
+    <rect x="720" y="238" width="450" height="196" rx="8" class="linha"/>
+    <path d="M742 296 H1150 M742 356 H990 M742 410 H990" class="linha"/>
+  </g>
+
+  <g data-marca="aplicacao" transform="translate(41 47) scale(.52)"/>
+  <g data-marca="servidor" transform="translate(491 47) scale(.52)"/>
+
+  <g class="tom-azul">
+    <text x="107" y="84" class="titulo-caixa">App</text>
+    <text x="107" y="116" class="texto-caixa">do cliente</text>
+    <text x="375" y="46" text-anchor="middle" class="nota-pequena">cobrar R$ 250</text>
+    <text x="742" y="278" class="titulo-caixa texto-tom">Fatura</text>
+    <text x="846" y="278" class="texto-caixa">do cartão do cliente</text>
+  </g>
+  <g class="tom-verde">
+    <text x="557" y="84" class="titulo-caixa">Serviço</text>
+    <text x="557" y="116" class="texto-caixa">de autorização</text>
+    <text x="822" y="46" text-anchor="middle" class="nota-pequena">capturar R$ 250</text>
+    <text x="375" y="112" text-anchor="middle" class="nota-pequena">resposta 201</text>
+  </g>
+  <g class="tom-ambar">
+    <text x="990" y="84" class="titulo-caixa">Adquirente</text>
+    <text x="990" y="116" class="texto-caixa">cobra no cartão</text>
+    <text x="822" y="112" text-anchor="middle" class="nota-pequena">capturada</text>
+    <text x="1024" y="206" text-anchor="end" class="nota-pequena">lança na fatura</text>
+  </g>
+
+  <g class="tom-vermelho">
+    <text x="380" y="172" text-anchor="middle" class="nota-pequena texto-tom">a resposta se perde</text>
+    <text x="150" y="352" text-anchor="middle" class="codigo texto-tom">timeout</text>
+    <path d="M150 237 A31 31 0 0 1 150 299 A31 31 0 0 1 150 237" pathLength="1" class="traco-tom" data-parte="arco"/>
+    <path d="M371 121 L393 143" pathLength="1" class="traco-tom" data-parte="x-1"/>
+    <path d="M393 121 L371 143" pathLength="1" class="traco-tom" data-parte="x-2"/>
+  </g>
+  <text x="150" y="380" text-anchor="middle" class="nota-pequena">cobrou ou não?</text>
+  <path d="M150 268 V244" class="traco-tom" data-parte="ponteiro"/>
+  <circle cx="150" cy="268" r="4" class="ponto"/>
+
+  <g class="tom-azul">
+    <path d="M198 268 C 340 270 540 290 566 174" pathLength="1" class="traco-tom" data-parte="reenvio"/>
+    <path d="M554 187 L566 174 L571 191" class="traco-tom" data-parte="reenvio-ponta"/>
+    <text x="430" y="318" text-anchor="middle" class="nota-pequena texto-tom">envia de novo, sem saber</text>
+  </g>
+
+  <text x="742" y="338" class="nota-pequena">pedido 123</text>
+  <text x="990" y="338" text-anchor="end" class="codigo">R$ 250,00</text>
+  <g class="tom-vermelho">
+    <text x="742" y="392" class="nota-pequena texto-tom">pedido 123</text>
+    <text x="990" y="392" text-anchor="end" class="codigo texto-tom">R$ 250,00</text>
+  </g>
+  <g data-parte="carimbo">
+    <g class="tom-vermelho" transform="rotate(-4 1075 372)">
+      <rect x="1003" y="336" width="144" height="72" rx="8" class="traco-tom"/>
+      <text x="1075" y="366" text-anchor="middle" class="nota texto-tom">cobrado</text>
+      <text x="1075" y="396" text-anchor="middle" class="nota texto-tom">duas vezes</text>
+    </g>
+  </g>
+
+  <rect x="284" y="116" width="88" height="32" class="papel" opacity="0" data-parte="tampa-fantasma"/>
+  <rect x="288" y="150" width="184" height="30" class="papel" opacity="0" data-parte="tampa-perde"/>
+  <rect x="90" y="328" width="120" height="32" class="papel" opacity="0" data-parte="tampa-timeout"/>
+  <rect x="80" y="361" width="140" height="27" class="papel" opacity="0" data-parte="tampa-duvida"/>
+  <rect x="312" y="298" width="236" height="31" class="papel" opacity="0" data-parte="tampa-reenvio"/>
+  <rect x="738" y="314" width="256" height="35" class="papel" opacity="0" data-parte="tampa-l1"/>
+  <rect x="738" y="368" width="256" height="35" class="papel" opacity="0" data-parte="tampa-l2"/>
+
+  <g class="tom-azul" opacity="0" data-parte="pedido-1">
+    <rect x="284" y="57" width="36" height="22" rx="3" class="lavado"/>
+    <rect x="284" y="57" width="36" height="22" rx="3" class="traco-tom"/>
+    <path d="M285 58 L302 70 L319 58" class="traco-tom"/>
+  </g>
+  <g class="tom-verde" opacity="0" data-parte="captura-1">
+    <rect x="734" y="57" width="36" height="22" rx="3" class="lavado"/>
+    <rect x="734" y="57" width="36" height="22" rx="3" class="traco-tom"/>
+    <path d="M735 58 L752 70 L769 58" class="traco-tom"/>
+  </g>
+  <g class="tom-ambar" opacity="0" data-parte="capturada">
+    <rect x="866" y="121" width="36" height="22" rx="3" class="lavado"/>
+    <rect x="866" y="121" width="36" height="22" rx="3" class="traco-tom"/>
+    <path d="M867 122 L884 134 L901 122" class="traco-tom"/>
+  </g>
+  <g class="tom-ambar" opacity="0" data-parte="moeda-1">
+    <circle cx="1046" cy="186" r="13" class="lavado"/>
+    <circle cx="1046" cy="186" r="13" class="traco-tom"/>
+    <circle cx="1046" cy="186" r="6" class="traco-tom"/>
+  </g>
+  <g class="tom-verde" opacity="0" data-parte="resposta">
+    <rect x="430" y="121" width="36" height="22" rx="3" class="lavado"/>
+    <rect x="430" y="121" width="36" height="22" rx="3" class="traco-tom"/>
+    <path d="M431 122 L448 134 L465 122" class="traco-tom"/>
+  </g>
+  <g class="tom-azul" opacity="0" data-parte="pedido-2">
+    <rect x="180" y="257" width="36" height="22" rx="3" class="lavado"/>
+    <rect x="180" y="257" width="36" height="22" rx="3" class="traco-tom"/>
+    <path d="M181 258 L198 270 L215 258" class="traco-tom"/>
+  </g>
+  <g class="tom-verde" opacity="0" data-parte="captura-2">
+    <rect x="734" y="57" width="36" height="22" rx="3" class="lavado"/>
+    <rect x="734" y="57" width="36" height="22" rx="3" class="traco-tom"/>
+    <path d="M735 58 L752 70 L769 58" class="traco-tom"/>
+  </g>
+  <g class="tom-ambar" opacity="0" data-parte="moeda-2">
+    <circle cx="1046" cy="186" r="13" class="lavado"/>
+    <circle cx="1046" cy="186" r="13" class="traco-tom"/>
+    <circle cx="1046" cy="186" r="6" class="traco-tom"/>
+  </g>
+</svg>

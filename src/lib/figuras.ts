@@ -4,12 +4,31 @@
  * src/marcas/<nome>.svg (viewBox 0 0 100 100).
  *
  * Um logo entra numa figura por um marcador, que vira o desenho do logo na hora do build:
- *   <g data-marca="aws" transform="translate(40 60) scale(.8)"/>
+ *   <g data-marca="kubernetes" transform="translate(40 60) scale(.8)"/>
  * Assim o logo é desenhado uma vez só e reaparece em qualquer figura, do tamanho que ela pedir.
+ *
+ * Todo logo passa pela regra de marca do dono (D64, src/marcas/regras.json): o redesenho à mão só onde a
+ * política permite; onde ela pede o arquivo oficial, ele entra sem alteração (src/marcas/oficiais/); onde
+ * ela não permite o logo, ou a marca ainda não foi conferida, o build quebra com o motivo.
  */
+import regras from "../marcas/regras.json";
 const figuras = import.meta.glob<string>("../figuras/**/*.svg", { query: "?raw", import: "default", eager: true });
 const animacoes = import.meta.glob<string>("../animacoes/**/*.svg", { query: "?raw", import: "default", eager: true });
 const marcas = import.meta.glob<string>("../marcas/*.svg", { query: "?raw", import: "default", eager: true });
+const oficiais = import.meta.glob<string>("../marcas/oficiais/*.svg", { query: "?url", import: "default", eager: true });
+
+type Uso = "redesenho" | "oficial" | "nao";
+export interface RegraDeMarca {
+  marca: string;
+  dono: string;
+  texto: Uso;
+  diagrama: Uso;
+  condicoes: string;
+  fontes: string[];
+  conferido: string;
+  certeza: string;
+}
+export type DesenhoDaMarca = { tipo: "redesenho"; miolo: string } | { tipo: "oficial"; url: string };
 
 const raizDe = (fonte: string) => fonte.match(/<svg\b[^>]*>/)?.[0] ?? "";
 
@@ -22,11 +41,41 @@ export function miolo(fonte: string): string {
     .trim();
 }
 
-/** O miolo do logo de uma ferramenta (src/marcas/<nome>.svg). */
-export function marca(nome: string): string {
+/** A regra de marca registrada (src/marcas/regras.json), ou undefined se a marca não foi conferida. */
+export function regraDaMarca(nome: string): RegraDeMarca | undefined {
+  const regra = (regras as Record<string, unknown>)[nome];
+  return regra && typeof regra === "object" ? (regra as RegraDeMarca) : undefined;
+}
+
+/**
+ * O logo de uma ferramenta, no texto (o ícone ao lado do nome) ou num diagrama, conforme a regra de marca:
+ * o redesenho da casa (src/marcas/<nome>.svg) ou o arquivo oficial (src/marcas/oficiais/<nome>.svg).
+ */
+export function marca(nome: string, onde: "texto" | "diagrama"): DesenhoDaMarca {
+  const regra = regraDaMarca(nome);
+  if (!regra) {
+    throw new Error(
+      `O logo "${nome}" não tem a regra de marca conferida. Antes de usar, leia a política oficial do dono da marca e registre o resultado em src/marcas/regras.json (skill figura, "Logos das ferramentas", D64).`,
+    );
+  }
+  const uso = regra[onde];
+  if (uso === "nao") {
+    throw new Error(
+      `A marca ${regra.marca} (${regra.dono}) não permite o logo ${onde === "texto" ? "no texto" : "em diagrama"}: use só o nome. ${regra.condicoes} Fonte: ${regra.fontes[0]} (conferido em ${regra.conferido}).`,
+    );
+  }
+  if (uso === "oficial") {
+    const url = oficiais[`../marcas/oficiais/${nome}.svg`];
+    if (!url) {
+      throw new Error(
+        `A marca ${regra.marca} só permite o arquivo oficial, sem alterar: baixe-o da fonte (${regra.fontes.join(", ")}) para src/marcas/oficiais/${nome}.svg, com o OK do Cesar.`,
+      );
+    }
+    return { tipo: "oficial", url };
+  }
   const fonte = marcas[`../marcas/${nome}.svg`];
   if (!fonte) throw new Error(`Falta o logo src/marcas/${nome}.svg.`);
-  return miolo(fonte);
+  return { tipo: "redesenho", miolo: miolo(fonte) };
 }
 
 export const marcasDisponiveis = () => Object.keys(marcas).map((c) => c.replace(/^\.\.\/marcas\/|\.svg$/g, ""));
@@ -38,7 +87,10 @@ export function comMarcas(fonte: string): string {
     const classe = atributos.match(/\bclass="([^"]*)"/)?.[1];
     atributos = atributos.replace(/\s*\bclass="[^"]*"/, "").trim();
     const classes = ["marca", `marca-${nome}`, classe].filter(Boolean).join(" ");
-    return `<g${atributos ? ` ${atributos}` : ""} class="${classes}">${marca(nome)}</g>`;
+    const desenho = marca(nome, "diagrama");
+    // O arquivo oficial entra como imagem, sem nenhuma alteração (nem o traço nem as cores da casa).
+    const conteudo = desenho.tipo === "oficial" ? `<image href="${desenho.url}" width="100" height="100" preserveAspectRatio="xMidYMid meet"/>` : desenho.miolo;
+    return `<g${atributos ? ` ${atributos}` : ""} class="${classes}">${conteudo}</g>`;
   });
 }
 

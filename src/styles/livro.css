@@ -881,15 +881,20 @@
   border-radius: 50% 6% 6% 50% / 50% 12% 12% 50%;
 }
 
+/*
+ * Rodada 3 do redesenho (T6, a sombra amarelada do 02): o contato e a projetada são marrom-âmbar
+ * (--sombra-quente), nunca cinza; no escuro, o núcleo do contato é preto e quem aparece é o halo quente
+ * por baixo (livro-vivo.css, o chão plano da caixa).
+ */
 .livro-3d .chao::after {
   top: var(--margem);
   left: var(--margem);
   width: calc(var(--cw) + var(--sw) * 0.1);
   height: var(--sw);
-  background: rgb(0 0 0 / 0.34);
+  background: color-mix(in oklab, var(--sombra-quente) 55%, transparent);
   box-shadow:
-    0 0 calc(3 * var(--u, 0.5px)) calc(1 * var(--u, 0.5px)) rgb(0 0 0 / 0.3),
-    0 0 calc(16 * var(--u, 0.5px)) calc(4 * var(--u, 0.5px)) rgb(0 0 0 / 0.12);
+    0 0 calc(3 * var(--u, 0.5px)) calc(1 * var(--u, 0.5px)) color-mix(in oklab, var(--sombra-quente) 45%, transparent),
+    0 0 calc(18 * var(--u, 0.5px)) calc(5 * var(--u, 0.5px)) color-mix(in oklab, var(--sombra-quente) 20%, transparent);
 }
 
 .livro-3d .chao::before {
@@ -898,8 +903,17 @@
   width: calc(var(--cw) + var(--sw) * 0.1 + 30 * var(--u, 0.5px));
   height: calc(var(--sw) + 14 * var(--u, 0.5px));
   border-radius: 40%;
-  background: rgb(0 0 0 / 0.15);
-  box-shadow: 0 0 calc(44 * var(--u, 0.5px)) calc(18 * var(--u, 0.5px)) rgb(0 0 0 / 0.13);
+  background: color-mix(in oklab, var(--sombra-quente) 22%, transparent);
+  box-shadow: 0 0 calc(44 * var(--u, 0.5px)) calc(18 * var(--u, 0.5px)) color-mix(in oklab, var(--sombra-quente) 17%, transparent);
+}
+
+:root[data-theme="dark"] .livro-3d .chao::after {
+  background: color-mix(in oklab, var(--sombra-quente) 62%, transparent);
+}
+
+:root[data-theme="dark"] .livro-3d .chao::before {
+  background: color-mix(in oklab, var(--halo-quente) 10%, transparent);
+  box-shadow: 0 0 calc(50 * var(--u, 0.5px)) calc(22 * var(--u, 0.5px)) color-mix(in oklab, var(--halo-quente) 9%, transparent);
 }
 
 /* A página de dentro e as camadas de página, logo abaixo da capa, com a seixa. */
@@ -995,25 +1009,10 @@
 }
 
 /*
- * O livro que gira ao passar o mouse (D46; o efeito de antes da D40): na grade de categorias e séries,
- * no topo da página do livro e no destaque de Séries. Parado a --giro (38°), vira um pouco para o
- * leitor. Só CSS; com movimento reduzido, fica parado.
+ * O livro que gira ao passar o mouse (D46): desde a rodada 3 do redesenho, é o giro único com mola de
+ * livro-vivo.css (no envoltório `.livro-vivo`, não no `--giro`), em todo livro 3D. `data-livro-gira`
+ * continua marcando o cartão que dispara o giro inteiro.
  */
-@media (prefers-reduced-motion: no-preference) {
-  [data-livro-gira] .livro-3d {
-    transition: transform 0.5s cubic-bezier(0.2, 0.75, 0.2, 1);
-  }
-
-  @media (hover: hover) {
-    [data-livro-gira]:hover .livro-3d {
-      --giro: 24deg;
-    }
-  }
-
-  [data-livro-gira]:focus-visible .livro-3d {
-    --giro: 24deg;
-  }
-}
 
 /* No livro 3D, a sombra é a do chão (.chao), e não a da capa. */
 .face-capa .capa-face {

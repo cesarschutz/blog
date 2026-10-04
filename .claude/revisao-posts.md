@@ -13,8 +13,8 @@ posts em 26/09/2026. Post da série Java também segue a skill `serie-java`.
 | `aoputils-gettargetclass` | Desenvolvimento de Software | 2026-05-19 | pendente | pendente | |
 | `arquitetura-de-ledger` | Arquitetura de Software | 2026-05-28 | pendente | pendente | |
 | `atomicboolean-parada-graciosa` | Desenvolvimento de Software | 2026-05-19 | pendente | pendente | |
-| `bloqueio-otimista-e-pessimista` | Dados | 2026-09-13 | pendente | pendente | |
-| `cobranca-duplicada-no-retry` | Arquitetura de Software | 2026-09-10 | pendente | 12, aplicadas em 26/09/2026 (piloto da D48) | |
+| `bloqueio-otimista-e-pessimista` | Dados | 2026-09-13 | pendente | pendente | 02/10/2026 (D65): virou `.mdx` e ganhou a animação com play (detectar ou evitar o conflito); o resto do post ainda pela revisão |
+| `cobranca-duplicada-no-retry` | Arquitetura de Software | 2026-09-10 | pendente | 12, aplicadas em 26/09/2026 (piloto da D48) | 02/10/2026 (D65): as três peças antigas no estilo novo (a animação com play e as duas lousas); o resto do post ainda pela revisão |
 | `cronjob-vs-endpoint-sqs` | Arquitetura de Software | 2026-09-23 | concluído (30/09/2026) | 59, aplicadas em 30/09/2026 | recursos da D58: `.mdx`, cinco figuras com legenda (no lugar dos diagramas de `public/`), `Lousa` de comparação, ícones das ferramentas |
 | `data-lake-vs-data-warehouse` | Dados | 2026-03-31 | pendente | pendente | |
 | `efeito-externo-sem-registro-local` | Arquitetura de Software | 2026-09-11 | pendente | pendente | |
@@ -37,3 +37,6 @@ posts em 26/09/2026. Post da série Java também segue a skill `serie-java`.
 | `wide-events-canonical-log-lines` | SRE | 2026-05-19 | pendente | pendente | |
 | `jackson-filtros-mascarando-cartao` | Desenvolvimento de Software | 2026-09-25 | concluído (25/09/2026) | 37, aplicadas em 30/09/2026 | post novo pela skill `post`; em 30/09/2026, recursos da D58: `Lousa` de passos, figura, animação com play, print e ícones |
 | `criptografia-em-repouso-e-em-transito` | Segurança | 2026-09-29 | concluído (29/09/2026) | 56, remarcado em 30/09/2026 pelas regras da D56 | post novo pela skill `post`: texto do Cesar adaptado, 29 correções aprovadas, código rodado; em 30/09/2026, recursos da D58: `Lousa`, figura, print e ícones |
+| `claude-code-do-claude-md-ao-mod` | IA | 2026-10-02 | concluído (02/10/2026); virou a parte 1 na D71 | 19, mantidas das 35 de 02/10/2026 (as que estavam em frases que continuam); o Cesar revê | post novo pela skill `post` (D66); na D71, virou a parte 1 de 2 ("Mods do Claude Code"): título e abertura novos, sem primeira pessoa, capa nova |
+| `claude-code-csr-cockpit` | IA | 2026-10-02 | concluído (02/10/2026) | 15, mantidas das do post original; o Cesar revê | a parte 2 de 2 do post dos mods (D71): o cockpit, o marketplace, os comandos, os testes e os limites, com a capa, os prints e a lousa que eram do post único |
+| `parquet-snapshot-banco-de-dados` | Dados | 2026-10-03 | concluído (03/10/2026) | 7, aplicadas em 03/10/2026 no fluxo de criação, revisão e publicação autorizado pelo Cesar | post resumo com infográfico, capa viva e fontes oficiais; foto do livro Dados atualizada; seção de pronúncia removida a pedido do Cesar em 04/10/2026 |

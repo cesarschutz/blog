@@ -11,7 +11,7 @@ renomear um livro) e os **volumes em ordem alfabética**.
 Branch: `claude/magical-einstein-tneg5o`. Nada vai para a `main` nem muda no site antes do OK do
 Cesar na página final.
 
-## Decidido pelo Cesar (D61)
+## Decidido pelo Cesar (D78)
 
 1. A coleção é a sugestão 5 mais Frontend: 13 livros.
 2. Carreira sai (não tem post; `/categories/Carreira/` precisa de redirecionamento quando for para o site).
@@ -59,7 +59,7 @@ Os desenhos novos têm o prefixo `novo-` para não sobrescrever os que o site us
 
 | # | Etapa | Status |
 |---|---|---|
-| 1 | Decisões registradas (D61, estado, este controle) | feito |
+| 1 | Decisões registradas (D78, estado, este controle) | feito |
 | 2 | Direção de arte: conceito do conjunto, objeto e cor de cada livro (Fable) | feito: `direcao-de-arte.md` ("O mesmo problema, um século antes"; paleta em `paleta.png`) |
 | 3 | Textos: frase, abrange, posts de cada livro (Fable) | feito: `textos.md` |
 | 4 | Crítica dos dois e síntese | feito: `critica.md`; aplicado em `dados.json` (Frontend `#433123` e Testes `#39404d`, que sumiam no escuro; Dados `#5b457f`; IA vira o Turco de Kempelen; frase do Frontend; fronteiras dos textos; a tag Pagamentos vira Cobrança, que o Cesar autorizou). A marca fica como pergunta |
@@ -88,7 +88,7 @@ Ler este arquivo; continuar da primeira etapa que não está feita. O dev:
 5. A tag Pagamentos vira Cobrança nos três posts de cobrança (`cobranca.svg` com o ícone de hoje); o
    ledger perde a tag.
 6. O texto do desenho (`textoDesenho` e `textoDesenhoCurto`) vai para `livros.json`, se o Cesar quiser
-   usar no hover dos livros (D61).
+   usar no hover dos livros (D78).
 7. A marca, se o Cesar decidir que acompanha a Arquitetura (`DESIGN.md`, `tokens.ts`, `scripts/marca.mjs`).
 8. `CAPAS.md` (a tabela dos livros e o princípio dos desenhos "O mesmo problema, um século antes"),
    `briefing.md`, `DESIGN.md` (as cores dos livros), `docs/estilo-desenho.md`.

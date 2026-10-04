@@ -25,7 +25,8 @@ import { assinaturaDeCaneta, tracoDeCaneta } from "../lib/traco";
 import { url } from "../lib/url";
 
 interface Props {
-  variante?: "linha" | "grande";
+  /** "gigante" (protótipo 14, G1): a grande, com o nome numa linha só, na largura da página. */
+  variante?: "linha" | "grande" | "gigante";
   /** Sem link: na abertura da home, que já é a página inicial. */
   semLink?: boolean;
   /** O traço da caneta embaixo do "blog" no hover (só o cabeçalho, C04). */
@@ -37,7 +38,7 @@ const Elemento = semLink ? "span" : "a";
 ---
 
 <Elemento
-  class:list={["marca", `marca-${variante}`]}
+  class:list={["marca", `marca-${variante}`, { "marca-grande": variante === "gigante" }]}
   href={semLink ? undefined : url("/")}
   style={`--descendente:${BLOG_DESCENDENTE}`}
 >
@@ -46,7 +47,7 @@ const Elemento = semLink ? "span" : "a";
     <svg class="marca-livro marca-capa-3d" viewBox={MARCA_VIEWBOX} focusable="false" set:html={MARCA_SVG} />
   </span>
   {
-    variante === "grande" ? (
+    variante !== "linha" ? (
       <span class="marca-texto">
         <span class="marca-nome">
           <span class="marca-linha-nome">Cesar</span> <span class="marca-linha-nome"><span class="sobrenome">Schutz<svg class="assinatura" viewBox="0 0 260 22" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d={assinaturaDeCaneta("Cesar Schutz")} /></svg></span><svg class="marca-blog" viewBox={BLOG_VIEWBOX} role="img" aria-label="blog" set:html={BLOG_SVG} /></span>
@@ -193,9 +194,12 @@ const Elemento = semLink ? "span" : "a";
     height: 2.02em;
   }
 
-  /* No livro grande, o bloco das páginas aparece um pouco à direita e embaixo da capa. */
+  /*
+   * No livro grande, o bloco das páginas fica atrás da capa, sem aparecer na borda (rodada 4: com ele um
+   * pouco à direita e embaixo, a pauta aparecia de lado e parecia defeito). Ele só se vê quando a capa abre.
+   */
   .marca-grande .marca-miolo {
-    translate: 0.045em 0.035em;
+    translate: none;
   }
 
   .marca-grande .marca-nome {
@@ -271,6 +275,57 @@ const Elemento = semLink ? "span" : "a";
   .marca-grande:is(:hover, :focus-visible) .marca-capa-3d {
     transform: rotateY(-38deg);
     transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /*
+   * A gigante (protótipo 14, G1): o caderno e "Cesar Schutz" numa linha, na largura da coluna (quem a usa
+   * dá o tamanho da letra). O caderno fica da altura das maiúsculas e um pouco mais; o "blog" sai (a
+   * página já diz o que é) e a assinatura continua embaixo do sobrenome. Em tela estreita, o nome quebra
+   * em duas linhas e o caderno cresce para a altura delas, como na grande.
+   */
+  .marca-gigante {
+    gap: 0.16em;
+    font-size: inherit;
+    letter-spacing: -0.04em;
+    align-items: flex-end;
+  }
+
+  .marca-gigante .marca-nome {
+    display: flex;
+    column-gap: 0.22em;
+    line-height: 0.9;
+  }
+
+  .marca-gigante .marca-livro {
+    height: 0.84em;
+  }
+
+  .marca-gigante .marca-livro-3d {
+    margin-bottom: 0.02em;
+    filter: drop-shadow(0 0.02em 0.03em rgb(0 0 0 / 0.2));
+  }
+
+  .marca-gigante .marca-blog {
+    display: none;
+  }
+
+  .marca-gigante .assinatura {
+    bottom: 0.1em;
+    height: 0.15em;
+  }
+
+  @media (max-width: 700px) {
+    .marca-gigante {
+      align-items: center;
+    }
+
+    .marca-gigante .marca-nome {
+      display: grid;
+    }
+
+    .marca-gigante .marca-livro {
+      height: 1.62em;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

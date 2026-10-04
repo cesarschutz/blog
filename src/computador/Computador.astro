@@ -1,0 +1,464 @@
+---
+/**
+ * O computador (rodada 3 do redesenho, C1 a C10): o ícone no canto de baixo, à esquerda (o Macintosh à
+ * caneta do protótipo 12, C2). No hover ou no foco, a tela acende e mostra a área de trabalho em
+ * miniatura, o computador dá um pulinho e a etiqueta de papel aparece. De 768px para cima ele nunca sai da
+ * tela: inteiro com a página parada; rolando para baixo, afunda 60% na borda e fica espiando; para cima,
+ * parado ou com o mouse por perto, volta inteiro (icone.ts). No celular, só aparece onde não cobre nada,
+ * e o menu tem o item "Computador".
+ *
+ * No clique, a câmera vai até a tela (a do 12) e ela vira o macOS de mentira (sistema.ts). Na página vai só
+ * este botão e icone.ts; o sistema, o CSS dele e os dados (/mac/…) chegam sob demanda, a partir do
+ * primeiro hover, foco ou toque. Sem JS, o botão não aparece.
+ */
+import { claro, escuro } from "./cores";
+import { desenhoDoComputador, TELA } from "./desenho";
+
+const d = desenhoDoComputador();
+const pct = (v: number) => `${((v / 80) * 100).toFixed(3)}%`;
+// A miniatura da área de trabalho na tela acesa usa as cores do papel de parede (cores.ts), nos dois temas.
+const tela =
+  `left:${pct(TELA.x)};top:${pct(TELA.y)};width:${pct(TELA.w)};height:${pct(TELA.h)};` +
+  `--cp-parede-1:${claro["parede-alto"]};--cp-parede-2:${claro["parede-meio"]};--cp-parede-3:${claro["parede-baixo"]};` +
+  `--cp-parede-1e:${escuro["parede-alto"]};--cp-parede-2e:${escuro["parede-meio"]};--cp-parede-3e:${escuro["parede-baixo"]}`;
+---
+
+<button type="button" id="computador" class="computador" aria-label="Abrir o computador" aria-haspopup="dialog" aria-keyshortcuts="Control+Alt+Q" hidden data-computador>
+  <span class="cp-desenho" aria-hidden="true">
+    <svg class="cp-chao" viewBox="0 0 80 80" focusable="false">
+      <ellipse class="cp-sombra" cx="39" cy="74.2" rx="35" ry="3.1"></ellipse>
+      <ellipse class="cp-sombra cp-sombra-pe" cx="38" cy="60.2" rx="18.5" ry="1.7"></ellipse>
+      <path class="cp-preenche" d={d.mesa.teclado}></path>
+      <path class="cp-traco" d={d.mesa.teclado}></path>
+      {d.mesa.teclas.map((t, i) => <path class:list={["cp-traco", "cp-fino", i < 2 && "cp-teclas"]} d={t} />)}
+      <path class="cp-traco cp-fino" d={d.mesa.fio}></path>
+      <path class="cp-preenche" d={d.mesa.mouse}></path>
+      <path class="cp-traco" d={d.mesa.mouse}></path>
+      <path class="cp-traco cp-fino" d={d.mesa.botao}></path>
+    </svg>
+    <span class="cp-maquina">
+      <svg viewBox="0 0 80 80" focusable="false">
+        <path class="cp-preenche" d={d.corpo.pe}></path>
+        <path class="cp-traco" d={d.corpo.pe}></path>
+        <path class="cp-preenche" d={d.corpo.gabinete}></path>
+        <path class="cp-moldura" d={d.corpo.moldura}></path>
+        <path class="cp-traco" d={d.corpo.gabinete}></path>
+        <path class="cp-traco cp-fino" d={d.corpo.moldura}></path>
+        <path class="cp-vidro" d={d.corpo.vidro}></path>
+        <path class="cp-traco cp-fino" d={d.corpo.queixo}></path>
+        <path class="cp-traco" d={d.corpo.disquete}></path>
+        <path class="cp-traco cp-fino" d={d.corpo.fenda}></path>
+        <path class="cp-luz" d={d.corpo.luz}></path>
+      </svg>
+      <span class="cp-tela" style={tela} data-cp-tela>
+        <span class="cp-cursor"></span>
+        <span class="cp-parede"></span>
+        <span class="cp-janelinha"></span>
+        <span class="cp-dockzinho"></span>
+      </span>
+    </span>
+  </span>
+  <span class="cp-etiqueta" aria-hidden="true">Abrir o computador</span>
+</button>
+
+<script>
+  import "./icone.ts";
+</script>
+
+<style>
+  /*
+   * O desenho, só com tokens do blog: o gabinete é a folha com um nada do post-it (o bege dos computadores
+   * antigos, que acompanha o tema); o vidro apagado, o verde da marca no escuro do véu (igual nos dois
+   * temas, como os livros); aceso, a área de trabalho do macOS de mentira em miniatura.
+   */
+  .computador {
+    --cp-corpo: color-mix(in oklab, var(--post-it) 32%, var(--paper-hi));
+    --cp-moldura: color-mix(in oklab, var(--ink) 7%, var(--cp-corpo));
+    --cp-vidro: color-mix(in oklab, var(--marca) 48%, var(--veu));
+    --cp-sombra: color-mix(in oklab, var(--ink) 20%, transparent);
+    --cp-mola: linear(0, 0.384, 0.667, 0.863, 0.986, 1.05, 1.07, 1.061, 1.037, 1.012, 1);
+
+    position: fixed;
+    left: max(16px, calc(env(safe-area-inset-left, 0px) + 10px));
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    z-index: 40;
+    width: 64px;
+    height: 64px;
+    padding: 0;
+    border: 0;
+    border-radius: 12px;
+    background: none;
+    color: var(--ink);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .computador[hidden],
+  :global([data-abrir-computador][hidden]) {
+    display: none !important;
+  }
+
+  /* Com o menu do celular aberto (a folha que cobre a tela), o computador sai da frente. */
+  :global(:root[data-menu-aberto]) .computador {
+    visibility: hidden;
+  }
+
+  @media print {
+    .computador {
+      display: none;
+    }
+  }
+
+  /* Onde a margem é estreita (abaixo de 1440px), um pouco menor: inteiro, cobre menos do conteúdo. */
+  @media (max-width: 1439px) {
+    .computador {
+      width: 52px;
+      height: 52px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .computador {
+      left: max(12px, calc(env(safe-area-inset-left, 0px) + 8px));
+      bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    }
+  }
+
+  .cp-desenho {
+    position: absolute;
+    inset: 0;
+    display: block;
+  }
+
+  /*
+   * O lugar do ícone (icone.ts): inteiro no canto; espiando, afundado 60% na borda; escondido, fora da
+   * tela (só no celular, onde até a parte que espia cobriria o conteúdo). É o próprio botão que anda: a
+   * área de clique vai junto. No hover, no foco e com o mouse por perto (`.chamado`), volta inteiro.
+   */
+  .computador {
+    transition: transform 0.42s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  .computador:global(.espiando) {
+    transform: translateY(60%) rotate(-3deg);
+    transition-duration: 0.3s;
+    transition-timing-function: cubic-bezier(0.55, 0, 0.75, 0.4);
+  }
+
+  .computador:global(.escondido) {
+    transform: translateY(calc(100% + 24px + env(safe-area-inset-bottom, 0px)));
+    transition-duration: 0.3s;
+    transition-timing-function: cubic-bezier(0.55, 0, 0.75, 0.4);
+  }
+
+  /* No celular, rolando, afunda depressa: o conteúdo que passa embaixo não pode esperar a transição. */
+  .computador:global(.rolando):is(:global(.espiando), :global(.escondido)) {
+    transition-duration: 0.16s;
+    transition-timing-function: cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+
+  .computador:is(:hover, :focus-visible, :global(.chamado)) {
+    transform: none;
+    transition-duration: 0.42s;
+    transition-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  .computador svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+
+  .cp-maquina {
+    position: absolute;
+    inset: 0;
+    display: block;
+    transform-origin: 47.5% 74.5%;
+  }
+
+  .cp-traco {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .cp-fino {
+    stroke-width: 1.05;
+  }
+
+  .cp-teclas {
+    stroke-dasharray: 2.6 1.5;
+  }
+
+  .cp-preenche {
+    fill: var(--cp-corpo);
+    stroke: none;
+  }
+
+  .cp-moldura {
+    fill: var(--cp-moldura);
+    stroke: none;
+  }
+
+  .cp-vidro {
+    fill: var(--cp-vidro);
+    stroke: var(--ink);
+    stroke-width: 0.9;
+  }
+
+  .cp-luz {
+    fill: var(--cp-moldura);
+    stroke: var(--ink);
+    stroke-width: 0.9;
+    transition: fill 0.3s;
+  }
+
+  .cp-sombra {
+    fill: var(--cp-sombra);
+    opacity: 0.55;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition:
+      transform 0.4s cubic-bezier(0.33, 1, 0.68, 1),
+      opacity 0.4s;
+  }
+
+  .cp-sombra-pe {
+    opacity: 0.9;
+  }
+
+  /*
+   * O vidro: um elemento HTML por cima do desenho, porque é ele que cresce na câmera (o nome de transição
+   * "mac-tela" só existe durante a troca, sistema.ts). Apagado, o cursor pisca; aceso, a tela mostra a área
+   * de trabalho em miniatura: o papel de parede, uma janelinha e o Dock.
+   */
+  .cp-tela {
+    --cp-p1: var(--cp-parede-1);
+    --cp-p2: var(--cp-parede-2);
+    --cp-p3: var(--cp-parede-3);
+    position: absolute;
+    display: block;
+    overflow: hidden;
+    border-radius: 2.6px;
+    background: var(--cp-vidro);
+  }
+
+  :global(:root[data-theme="dark"]) .cp-tela {
+    --cp-p1: var(--cp-parede-1e);
+    --cp-p2: var(--cp-parede-2e);
+    --cp-p3: var(--cp-parede-3e);
+  }
+
+  .cp-cursor {
+    position: absolute;
+    left: 15%;
+    top: 22%;
+    width: 13%;
+    height: 9%;
+    min-height: 1.5px;
+    border-radius: 1px;
+    background: var(--marca-letra);
+    opacity: 0.85;
+    animation: cp-pisca 1.1s steps(1, end) infinite;
+  }
+
+  @keyframes cp-pisca {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  .cp-parede,
+  .cp-janelinha,
+  .cp-dockzinho {
+    position: absolute;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.24s,
+      transform 0.32s cubic-bezier(0.33, 1, 0.68, 1),
+      visibility 0s linear 0.32s;
+  }
+
+  .cp-parede {
+    inset: 0;
+    background: linear-gradient(135deg, var(--cp-p1), var(--cp-p2) 55%, var(--cp-p3));
+  }
+
+  .cp-janelinha {
+    left: 18%;
+    top: 18%;
+    width: 58%;
+    height: 50%;
+    border-radius: 1.5px;
+    background: var(--paper-hi);
+    box-shadow: inset 0 2.5px 0 color-mix(in oklab, var(--ink) 10%, var(--paper-hi));
+    transform: translateY(18%) scale(0.86);
+  }
+
+  .cp-dockzinho {
+    left: 30%;
+    right: 30%;
+    bottom: 6%;
+    height: 9%;
+    min-height: 2px;
+    border-radius: 1.5px;
+    background: color-mix(in oklab, var(--paper-hi) 62%, transparent);
+    transform: translateY(60%);
+  }
+
+  .cp-etiqueta {
+    position: absolute;
+    left: calc(100% - 2px);
+    bottom: 42%;
+    padding: 4px 10px 5px 15px;
+    border: 1px solid var(--rule);
+    border-radius: 3px 6px 6px 3px;
+    background: var(--paper-hi);
+    box-shadow: var(--sombra-folha);
+    color: var(--ink);
+    font: 500 13px/1.25 var(--font-ui);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-6px) rotate(-3deg);
+    transform-origin: 0 50%;
+    transition:
+      opacity 0.16s,
+      transform 0.2s cubic-bezier(0.55, 0, 1, 0.45),
+      visibility 0s linear 0.2s;
+  }
+
+  /* O furo da etiqueta, à esquerda, como numa etiqueta de papel de verdade. */
+  .cp-etiqueta::before {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    width: 5px;
+    height: 5px;
+    margin-top: -2.5px;
+    border: 1px solid var(--ink-3);
+    border-radius: 50%;
+    background: var(--paper);
+  }
+
+  /* ---------- hover e foco: a tela acende, o computador pula, a etiqueta aparece ---------- */
+
+  .computador:is(:hover, :focus-visible, .aceso) :is(.cp-parede, .cp-janelinha, .cp-dockzinho) {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition:
+      opacity 0.24s,
+      transform 0.32s cubic-bezier(0.33, 1, 0.68, 1),
+      visibility 0s;
+  }
+
+  .computador:is(:hover, :focus-visible, .aceso) .cp-janelinha {
+    transition-delay: 0.08s;
+  }
+
+  .computador:is(:hover, :focus-visible, .aceso) .cp-dockzinho {
+    transition-delay: 0.14s;
+  }
+
+  .computador:is(:hover, :focus-visible, .aceso) .cp-cursor {
+    opacity: 0;
+    animation: none;
+  }
+
+  .computador:is(:hover, :focus-visible) .cp-luz {
+    fill: var(--aviso-dica);
+  }
+
+  .computador:is(:hover, :focus-visible) .cp-maquina {
+    animation: cp-pulo 0.62s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  .computador:is(:hover, :focus-visible) .cp-sombra-pe {
+    animation: cp-sombra-pulo 0.62s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  .computador:is(:hover, :focus-visible) .cp-etiqueta {
+    opacity: 1;
+    visibility: visible;
+    transform: rotate(-2deg);
+    transition:
+      opacity 0.2s,
+      transform 0.4s var(--cp-mola),
+      visibility 0s;
+  }
+
+  /* O pulinho: sobe, balança para um lado e para o outro, e assenta. */
+  @keyframes cp-pulo {
+    0% {
+      transform: none;
+    }
+
+    28% {
+      transform: translateY(-9%) rotate(-4deg);
+    }
+
+    52% {
+      transform: translateY(0) rotate(2.5deg);
+    }
+
+    72% {
+      transform: rotate(-1.2deg);
+    }
+
+    100% {
+      transform: none;
+    }
+  }
+
+  @keyframes cp-sombra-pulo {
+    28% {
+      transform: scale(0.78);
+      opacity: 0.5;
+    }
+  }
+
+  .computador:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 4px;
+  }
+
+  .computador:active .cp-maquina {
+    transform: translateY(2%) scale(0.97);
+  }
+
+  /* A etiqueta só aparece com mouse (no toque, o rótulo fica para o leitor de tela). */
+  @media (hover: none) {
+    .cp-etiqueta {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cp-cursor {
+      animation: none;
+    }
+
+    .computador:is(:hover, :focus-visible) .cp-maquina,
+    .computador:is(:hover, :focus-visible) .cp-sombra-pe {
+      animation: none;
+    }
+
+    .computador {
+      transition: none;
+    }
+
+    .cp-parede,
+    .cp-janelinha,
+    .cp-dockzinho {
+      transition: none;
+    }
+  }
+</style>

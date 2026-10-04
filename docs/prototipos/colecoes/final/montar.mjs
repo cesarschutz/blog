@@ -48,7 +48,7 @@ const final = {
   id: "final",
   nome: "A coleção de 13",
   ideia:
-    "A sugestão 5 com Frontend, escolhida pelo Cesar (D61): treze livros em ordem alfabética, que é a ordem dos volumes. Desenhos, cores, frases e textos novos; os livros de hoje mantêm o nome e Carreira sai.",
+    "A sugestão 5 com Frontend, escolhida pelo Cesar (D78): treze livros em ordem alfabética, que é a ordem dos volumes. Desenhos, cores, frases e textos novos; os livros de hoje mantêm o nome e Carreira sai.",
   livros: ordenados.map((l) => l.slug),
   posts,
   sobrescreve,

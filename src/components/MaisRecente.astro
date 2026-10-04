@@ -4,17 +4,139 @@
  * o traço de caneta embaixo (o mesmo sublinhado à mão do menu, src/lib/traco.ts), parado e na tinta,
  * como quem anotou no caderno qual é o último. Vai no primeiro cartão (ou no primeiro item da lista)
  * da primeira página; o leitor de tela lê o texto, e o traço é decorativo.
+ *
+ * Rodada 4 (E9, a sugestão S1 aprovada): com `carimbo` (a data do post), o carimbo "Novo" da ficha de
+ * empréstimo (o do 19) fica na mesma linha do rótulo, à direita: "Novo" e o dia, na tinta azul de
+ * almofada (a da caneta), com o aro duplo, girado −8°. Ele ocupa lugar na linha (não flutua por cima de
+ * nada): no card e na lista, fica embaixo da tira da ficha ("nº 028") e acima do chip, sem encostar em
+ * texto nenhum. Como mora dentro da ficha, sobe junto com ela no hover, no foco e no toque.
+ *
+ * A batida: quando o carimbo está inteiro na tela, 0,4s depois (e depois de a ficha pousar, se ainda estiver
+ * chegando), ele cai de 1,25 a 1 em 0,18s e assenta (0,34s ao todo), uma vez em cada forma (cards e lista). Na home com a abertura, espera ela acabar; chegando
+ * pela cortina, espera a cortina sair. Só `transform` e `opacity`. Sem JS ou com movimento reduzido, ele
+ * já está batido. Só na home, só no post mais recente (Recentes passa `carimbo` só ao destaque).
  */
+import { diaEMes } from "../lib/formato";
 import { tracoDeCaneta } from "../lib/traco";
+
+interface Props {
+  /** A data do post: com ela, o carimbo "Novo" ao lado do rótulo (E9). */
+  carimbo?: Date;
+}
+
+const { carimbo } = Astro.props;
 ---
 
-<p class="mais-recente">
-  <span class="texto"
-    >Mais recente<svg viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"
-      ><path d={tracoDeCaneta("Mais recente", 7)} /></svg
-    ></span
-  >
-</p>
+{
+  carimbo ? (
+    <div class="linha-mais-recente">
+      <p class="mais-recente">
+        <span class="texto"
+          >Mais recente<svg viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"
+            ><path d={tracoDeCaneta("Mais recente", 7)} /></svg
+          ></span
+        >
+      </p>
+      <span class="carimbo" aria-hidden="true" data-carimbo-destaque>
+        <span class="carimbo-palavra">Novo</span>
+        <span class="carimbo-data">{diaEMes(carimbo)}</span>
+      </span>
+    </div>
+  ) : (
+    <p class="mais-recente">
+      <span class="texto"
+        >Mais recente<svg viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"
+          ><path d={tracoDeCaneta("Mais recente", 7)} /></svg
+        ></span
+      >
+    </p>
+  )
+}
+
+<script>
+  // O carimbo bate quando entra inteiro na tela, 0,4s depois (e com a ficha já pousada), uma vez. Os cards que
+  // chegam depois (montados do <template> na troca para Cards) entram no mesmo olho.
+  const raiz = document.documentElement;
+  const reduzido = matchMedia("(prefers-reduced-motion: reduce)");
+  const ESPERA = 400;
+
+  const bater = (c: HTMLElement) => {
+    c.dataset.carimboDestaque = "";
+    void c.offsetWidth;
+    c.dataset.carimboDestaque = "bate";
+  };
+
+  if (!reduzido.matches && "IntersectionObserver" in window) {
+    // O olho fica no próprio carimbo (e não na ficha inteira): numa tela baixa, a ficha do destaque nunca
+    // fica 60% à vista, e o carimbo não bateria. Ele bate quando está inteiro na tela (0,95: girado, a conta
+    // da interseção não chega a 1).
+    const relogios = new Map<HTMLElement, number>();
+    let liberado = false;
+    const visiveis = new Set<HTMLElement>();
+
+    const agendar = (c: HTMLElement) => {
+      if (relogios.has(c)) return;
+      relogios.set(
+        c,
+        window.setTimeout(() => {
+          olho.unobserve(c);
+          relogios.delete(c);
+          visiveis.delete(c);
+          // Se a ficha ainda está chegando (a entrada ao rolar, revelar.ts), o carimbo espera ela pousar.
+          const ficha = c.closest("li") ?? c;
+          void Promise.all(ficha.getAnimations().map((a) => a.finished.catch(() => {}))).then(() => bater(c));
+        }, ESPERA),
+      );
+    };
+
+    const olho = new IntersectionObserver(
+      (entradas) => {
+        for (const e of entradas) {
+          const c = e.target as HTMLElement;
+          if (e.intersectionRatio >= 0.95) {
+            visiveis.add(c);
+            if (liberado) agendar(c);
+          } else {
+            visiveis.delete(c);
+            clearTimeout(relogios.get(c));
+            relogios.delete(c);
+          }
+        }
+      },
+      { threshold: [0, 0.95], rootMargin: "0px 0px -6% 0px" },
+    );
+
+    const ligar = () => {
+      for (const c of document.querySelectorAll<HTMLElement>("[data-carimbo-destaque]:not([data-carimbo-ligado])")) {
+        c.dataset.carimboLigado = "";
+        c.dataset.carimboDestaque = "espera";
+        olho.observe(c);
+      }
+    };
+
+    // Depois de a página aparecer: a abertura da home avisa com `cs:aberto`; a cortina, ao sair.
+    const liberar = () => {
+      if (liberado) return;
+      liberado = true;
+      visiveis.forEach((f) => agendar(f));
+    };
+    ligar();
+    addEventListener("cartoes:prontos", ligar);
+    if (raiz.dataset.abertura) addEventListener("cs:aberto", liberar, { once: true });
+    else if (raiz.hasAttribute("data-vai-chegar")) {
+      addEventListener("cs:cortina-saindo", () => setTimeout(liberar, 200), { once: true });
+      addEventListener("cs:chegou", liberar, { once: true });
+      setTimeout(liberar, 2500);
+    } else liberar();
+
+    // A amostra de sugestões tem "Bater de novo": bate outra vez os que estão na tela.
+    addEventListener("cs:carimbo-de-novo", () => {
+      document.querySelectorAll<HTMLElement>("[data-carimbo-destaque]").forEach((c, i) => {
+        if (c.getClientRects().length) window.setTimeout(() => bater(c), i * 160);
+      });
+    });
+  }
+</script>
 
 <style>
   .mais-recente {
@@ -48,5 +170,110 @@ import { tracoDeCaneta } from "../lib/traco";
     stroke-linecap: round;
     stroke-linejoin: round;
     vector-effect: non-scaling-stroke;
+  }
+
+  /* ---------- o carimbo "Novo" (E9) ---------- */
+
+  /* O rótulo à esquerda e o carimbo à direita, na mesma linha; a linha tem a altura do carimbo. */
+  .linha-mais-recente {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+
+  .linha-mais-recente .mais-recente {
+    margin: 4px 0 0;
+  }
+
+  /*
+   * O aro duplo (a borda e o contorno afastado 2px), "Novo" em Besley itálica e o dia em mono, na tinta
+   * da caneta, girado −8°. No claro, a tinta entra no papel (multiply); no escuro, fica por cima. A margem
+   * de cima e a da direita guardam o canto que o giro levanta (o carimbo nunca passa da linha dele).
+   */
+  .carimbo {
+    --tinta-carimbo: var(--caneta);
+    flex: none;
+    display: grid;
+    justify-items: center;
+    margin: 4px 8px 4px 0;
+    padding: 4px 12px;
+    border: 2px solid color-mix(in oklab, var(--tinta-carimbo) 80%, transparent);
+    border-radius: 6px;
+    outline: 1px solid color-mix(in oklab, var(--tinta-carimbo) 52%, transparent);
+    outline-offset: 2px;
+    color: color-mix(in oklab, var(--tinta-carimbo) 86%, transparent);
+    line-height: 1.05;
+    rotate: -8deg;
+    pointer-events: none;
+    user-select: none;
+    mix-blend-mode: multiply;
+  }
+
+  :global(:root[data-theme="dark"]) .carimbo {
+    mix-blend-mode: normal;
+  }
+
+  .carimbo-palavra {
+    font-family: var(--font-titulo);
+    font-size: 18px;
+    font-weight: 800;
+    font-style: italic;
+    letter-spacing: 0.01em;
+  }
+
+  .carimbo-data {
+    margin-top: 2px;
+    font-family: var(--font-codigo);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    font-variant-numeric: lining-nums;
+  }
+
+  /* Até bater, ele guarda o lugar, invisível (só com JS e sem movimento reduzido: o script põe `espera`). */
+  .carimbo[data-carimbo-destaque="espera"] {
+    opacity: 0;
+  }
+
+  /* A batida: cai de 1,25 a 1 em 0,18s (a tinta aparece no caminho) e assenta, afundando um nada no papel. */
+  .carimbo[data-carimbo-destaque="bate"] {
+    animation: carimbo-bate 0.34s both;
+  }
+
+  @keyframes carimbo-bate {
+    0% {
+      opacity: 0;
+      transform: scale(1.25);
+      animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0);
+    }
+
+    25% {
+      opacity: 0.85;
+    }
+
+    53% {
+      opacity: 1;
+      transform: scale(1);
+      animation-timing-function: cubic-bezier(0.25, 0.6, 0.4, 1);
+    }
+
+    72% {
+      transform: scale(0.975);
+      animation-timing-function: cubic-bezier(0.3, 0, 0.3, 1);
+    }
+
+    100% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .carimbo[data-carimbo-destaque] {
+      opacity: 1;
+      animation: none;
+    }
   }
 </style>

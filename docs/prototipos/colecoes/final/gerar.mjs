@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * A página do resultado final da coleção de 13 (D61) para o Cesar ver no app (artifact): lê
+ * A página do resultado final da coleção de 13 (D78) para o Cesar ver no app (artifact): lê
  * final/dados.json, final/artifact.json e as fotos de capturar.mjs (.render/colecoes/estante-final.webp,
  * capa-final-<slug>.webp, estante-hoje.webp) e grava .render/colecoes/final.html. As fontes do blog
  * entram como data URI, do node_modules: nada de Google Fonts.

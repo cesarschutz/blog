@@ -1,0 +1,138 @@
+---
+/**
+ * A fileira de cima da página do livro e da série (rodada 3, área 4: o topo do 14). Na página do livro, os
+ * livros da coleção; na da série, só as séries (D62). Os livros 3D lado a lado, centrados; o lugar do livro
+ * aberto embaixo fica vazio, com o contorno tracejado. Clicar em outro troca de livro: o grande volta
+ * para o vão e o escolhido desce para o painel (troca.js, tipo "livro"; Colecao.astro marca o clique).
+ *
+ * Rodada 4 (a versão final, P16-5 e E3): a fileira fica na lâmina de vidro (Colecao.astro e vidro.css), com os
+ * abajures de latão do 18, e encolhe com ela; o lugar do livro aberto fica tracejado, com o abajur e a luz
+ * embaixo acesos (P18-3). O chão é trocável pela prop `chao` (padrão "vidro"; "nicho" põe o nicho raso, que é a
+ * chapa inteira), repassada à Colecao:
+ *
+ *   .estante-topo                 o contêiner (grudado sob o cabeçalho a partir de 861px); estável
+ *   .estante-topo .chapa          o que encolhe ao rolar (os livros, os abajures e o nicho juntos)
+ *   .estante-topo .chao-fileira   o chão (o de Colecao.astro, `.tabua.chao-fileira`): a lâmina de vidro
+ *   .estante-topo .nicho          o nicho (com `chao="nicho"`), do tamanho da chapa
+ *
+ * Ao rolar (G7), a fileira gruda sob o cabeçalho e encolhe para 60%; a folha clara atrás dela aparece no
+ * fim do encolher. É animação ligada à rolagem, só CSS e só `transform` e `opacity` (a rolagem não é
+ * sequestrada). Abaixo de 861px, sem grudar: a fileira vira lombadas (o giro do 14, Colecao.astro). Com
+ * movimento reduzido, não gruda nem encolhe.
+ */
+import Colecao from "./Colecao.astro";
+import type { Livro } from "../lib/estante";
+
+interface Props {
+  /** Os livros da fileira, na ordem da coleção: os volumes (página do livro) ou as séries (página da série). */
+  livros: Livro[];
+  /** O livro aberto embaixo: o lugar dele fica vazio. */
+  atual: string;
+  /** O chão da fileira (rodada 4): "vidro" (o padrão), "nicho", "nenhum" ou outra forma da amostra (Colecao.astro). */
+  chao?: string;
+}
+
+const { livros, atual, chao = "vidro" } = Astro.props;
+---
+
+<div class="estante-topo" data-fileira-topo data-chao={chao}>
+  <nav class="chapa" aria-label="Trocar de livro">
+    <Colecao livros={livros} modo="topo" atual={atual} chao={chao} />
+  </nav>
+</div>
+
+<style>
+  .estante-topo {
+    position: relative;
+    z-index: 20;
+    margin-bottom: 22px;
+  }
+
+  /*
+   * A chapa tem a largura da fileira e mais 18px de cada lado (o tamanho do nicho, com `chao="nicho"`, que a
+   * cobre inteira). Na lâmina de vidro, um respiro embaixo para a sombra dela, dentro da folha que aparece ao
+   * rolar.
+   */
+  .chapa {
+    position: relative;
+    isolation: isolate;
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
+    padding: 0 18px;
+    border-radius: 6px;
+  }
+
+  .estante-topo:not([data-chao^="nicho"]) .chapa {
+    padding-bottom: 14px;
+    border-radius: 12px;
+  }
+
+  /*
+   * Atrás da fileira encolhida (como no 14), só na opacidade: a sombra de folha em volta do nicho, que flutua
+   * sobre o artigo como uma vitrine. O fundo é o papel da página (opaco: a 96%, o texto dos cards aparecia em
+   * fantasma entre os livros, correção da linha 17), para os outros chãos da amostra.
+   */
+  .chapa::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--paper);
+    box-shadow: var(--sombra-folha);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* A sombra quente de cada livro (área 1) passa um pouco da caixa da coleção: o recorte ganha folga. */
+  .estante-topo :global(.colecao-topo) {
+    overflow-clip-margin: 28px;
+  }
+
+  /*
+   * Sempre nas propriedades separadas, nunca o atalho `animation` com `animation-timeline` depois: o
+   * minificador do build (Lightning CSS) junta os dois num atalho só, com a timeline dentro, que o Chrome
+   * descarta inteiro (a fileira não encolhia no site publicado; no dev, sem minificar, funcionava).
+   */
+  @media (min-width: 861px) and (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: scroll()) {
+      /* A caixa grudada continua do tamanho de antes; só a chapa (encolhida) pega o mouse. */
+      .estante-topo {
+        position: sticky;
+        top: calc(var(--altura-topo) + 6px);
+        pointer-events: none;
+      }
+
+      .chapa {
+        pointer-events: auto;
+        transform-origin: 50% 0;
+        animation-name: fileira-encolhe;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: scroll(root);
+        animation-range: 0 360px;
+      }
+
+      .chapa::before {
+        animation-name: fileira-folha;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: scroll(root);
+        animation-range: 160px 340px;
+      }
+    }
+  }
+
+  @keyframes fileira-encolhe {
+    to {
+      transform: scale(0.6);
+    }
+  }
+
+  @keyframes fileira-folha {
+    to {
+      opacity: 1;
+    }
+  }
+</style>

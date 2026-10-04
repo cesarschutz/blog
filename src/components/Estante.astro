@@ -14,6 +14,21 @@
  * cabeceado) e os dois lados (as capas, .lado), em 3D, dentro da perspectiva da prateleira, com o olho
  * um pouco acima dos livros; os vizinhos se tapam de verdade.
  *
+ * Rodada 3 (área 10): na estante de filtro, o chão é a sombra quente (os tokens --sombra-quente e
+ * --halo-quente, como os livros 3D), sem a tábua cinza nem o aparador; a série fica depois de um vão.
+ * O chão continua numa peça só (`.tabua.chao-estante`), para as linhas que trocam a prateleira.
+ *
+ * Linha 18 (estante moderna): uma luz de quadro de latão em cima de cada livro (`.luzes-estante`, uma
+ * camada com os mesmos lugares da fileira), que acende ao chegar (estante-moderna.ts) e fica mais forte no
+ * livro sob o mouse e no escolhido (nicho.css). Sem o aparador cinza: no lugar dele, só o vão; por isso,
+ * nenhum livro fica inclinado.
+ *
+ * Rodada 4 (a versão final): a prateleira de madeira saiu. O chão é trocável pela prop `chao` (`data-chao` na
+ * raiz), como na Colecao: o padrão é a lâmina de vidro curta (E3, vidro.css), com a luz embaixo da lombada sob
+ * o mouse, com o foco e escolhida; "nicho" põe o nicho curto (nicho.css), que mora dentro da `.tabua`, preso
+ * pelo pé e subindo até o alto da fileira. No filtro, a lombada escolhida (a que "saiu") deixa o abajur dela
+ * e a luz embaixo acesos (P18-3).
+ *
  * - "filtro" (o arquivo e as tags, D33): menor, sem o livro inclinado, só com os livros que têm
  *   artigos na página; com JS, cada lombada filtra a lista (ListaFiltrada.astro). O número da lombada
  *   é o que a página tem daquele livro. Embaixo da tábua, o pé (D52): a legenda do mouse e, no mesmo
@@ -21,43 +36,51 @@
  *   aparece, cobre o rótulo.
  */
 import MioloLombada from "./MioloLombada.astro";
+import PontoDeLuz from "./PontoDeLuz.astro";
 import { coresDoLivroCss, larguraDaEstante, type Livro } from "../lib/estante";
 import "../styles/estante.css";
+import "../styles/nicho.css";
+import "../styles/vidro.css";
 
 interface Props {
   livros: Livro[];
   modo?: "estante" | "filtro";
+  /** O chão (rodada 4): "vidro" (o padrão, E3), "nicho", "nenhum" ou outra forma da amostra dos livros. */
+  chao?: string;
 }
 
-const { livros, modo = "estante" } = Astro.props;
+const { livros, modo = "estante", chao = "vidro" } = Astro.props;
 const filtro = modo === "filtro";
 const categorias = livros.filter((l) => !l.serie);
 const series = livros.filter((l) => l.serie);
 const comAparador = !filtro || (categorias.length > 0 && series.length > 0);
 const estilo = (l: Livro) => `${coresDoLivroCss(l)};--w:${l.emPe.largura};--h:${l.emPe.altura}`;
 const natural = larguraDaEstante(livros, comAparador);
+// Linha 18: a altura do livro mais alto (em unidades), para a camada das luzes ir da tábua até acima dele.
+const altoMax = Math.max(...livros.map((l) => l.emPe.altura));
 // Na estante de filtro, a lombada é um botão (aria-pressed): filtra a lista (D38). Nas outras, um link.
 const Lombada = filtro ? "button" : "a";
 // O rótulo começa pelo que está escrito na lombada (nome e número), para quem usa comando de voz (WCAG 2.5.3).
 const rotulo = (l: Livro) => {
   const n = l.posts.length;
   if (filtro) return `${l.nome}, ${n} ${n === 1 ? "artigo" : "artigos"}`;
-  if (l.serie) return `${l.nome}, ${n} ${n === 1 ? "parte" : "partes"}`;
   return n === 0 ? `${l.nome}, ainda sem artigos` : `${l.nome}, ${n} ${n === 1 ? "artigo" : "artigos"}`;
 };
 // A contagem da legenda embaixo da estante (D40).
 const conta = (l: Livro) => {
   const n = l.posts.length;
   if (n === 0) return "ainda sem artigos";
-  if (l.serie && !filtro) return `${n} ${n === 1 ? "edição" : "edições"}`;
   return `${n} ${n === 1 ? "artigo" : "artigos"}`;
 };
 ---
 
 <div
-  class:list={["estante", { "estante-filtro": filtro }]}
+  class:list={["estante", "estante-moderna", { "estante-filtro": filtro }]}
   data-estante={filtro ? undefined : ""}
   data-estante-filtro={filtro ? "" : undefined}
+  data-chao={chao}
+  data-luzes-ao-chegar
+  data-onda-propria
   style={`--natural:${natural}`}
 >
   <div
@@ -69,7 +92,7 @@ const conta = (l: Livro) => {
     {
       categorias.map((l, i) => (
         <Lombada
-          class:list={["lombada", "lombada-visual", { inclinada: !filtro && i === categorias.length - 1 }]}
+          class:list={["lombada", "lombada-visual"]}
           href={filtro ? undefined : l.href}
           type={filtro ? "button" : undefined}
           aria-pressed={filtro ? "false" : undefined}
@@ -112,7 +135,23 @@ const conta = (l: Livro) => {
       ))
     }
   </div>
-  <div class="tabua" aria-hidden="true"></div>
+  {/* O chão das lombadas (`.chao-estante`): a altura do chão e do friso do nicho (rodada 4), que mora aqui
+      dentro, preso pelo pé. As formas da amostra pintam outro chão aqui. */}
+  <div class="tabua chao-estante" aria-hidden="true" style={`--alto-max:${altoMax}`}>
+    <span class="nicho">
+      <span class="nicho-parede"></span>
+      <span class="nicho-teto"></span>
+      <span class="nicho-chao"></span>
+      <span class="nicho-friso"></span>
+    </span>
+    {/* Os abajures, um por livro, nos mesmos lugares da fileira (o vão do aparador também), numa camada presa
+        ao chão: por cima do nicho e por baixo dos livros. */}
+    <div class="luzes-estante">
+      {categorias.map((l) => <span class="lugar-luz" style={`--w:${l.emPe.largura}`}><PontoDeLuz /></span>)}
+      {comAparador && <span class="lugar-aparador" />}
+      {series.map((l) => <span class="lugar-luz" style={`--w:${l.emPe.largura}`}><PontoDeLuz /></span>)}
+    </div>
+  </div>
   {
     filtro ? (
       <div class="pe-estante">
@@ -127,9 +166,11 @@ const conta = (l: Livro) => {
 
 <script>
   import { estanteViva } from "../scripts/estante-viva";
+  // Linha 18: as luzes de quadro acendem ao chegar, e depois a onda de luz.
+  import "../scripts/estante-moderna";
 
   for (const prateleira of document.querySelectorAll<HTMLElement>(".estante .prateleira-livros")) {
-    // O repouso (a luz e as espiadinhas, D40) só na estante da home.
-    estanteViva(prateleira, { emRepouso: prateleira.closest("[data-estante]") !== null });
+    // O toque na cabeça (mouse, foco); sem o repouso (H11: nada se mexe sozinho com a página parada).
+    estanteViva(prateleira);
   }
 </script>

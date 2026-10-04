@@ -1,0 +1,29 @@
+---
+/**
+ * Rodada 3 do redesenho (área 8, a busca): os livros 3D da ficha do resultado, um por livro com
+ * artigos, num pedaço de HTML (o mesmo LivroEmPe de todo o site). A busca baixa isto uma vez, quando
+ * abre, e mostra o livro do resultado da vez: assim as páginas não levam no HTML um livro 3D por volume
+ * (de 12 a 35 KB cada) só para o caso de a busca abrir. Fora dos buscadores (noindex; o Pagefind só
+ * indexa os posts).
+ *
+ * O CSS dos livros (livro.css e livro-vivo.css) vem com a própria busca (Busca.astro), e o
+ * comportamento de hover (livro-vivo.ts, carregado em toda página por Luz.astro) é o de todo livro.
+ */
+import LivroEmPe from "../../components/LivroEmPe.astro";
+import { montarLivros } from "../../lib/estante";
+
+/** A altura do livro na ficha do resultado, em px (Busca.astro desenha o lugar dele com ela). */
+const ALTURA = 132;
+const livros = (await montarLivros()).filter((l) => l.posts.length > 0);
+---
+
+<meta name="robots" content="noindex" />
+<div data-livros-da-busca data-altura={ALTURA}>
+  {
+    livros.map((livro) => (
+      <div class="livro-da-busca" data-livro-busca={livro.id}>
+        <LivroEmPe livro={livro} altura={ALTURA} transicao="ao-clicar" />
+      </div>
+    ))
+  }
+</div>

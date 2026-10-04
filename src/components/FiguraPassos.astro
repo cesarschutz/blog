@@ -1,0 +1,77 @@
+---
+/**
+ * Figura em passos (em prova, D67): o formato único que substituiria a lousa de passos, a lousa de
+ * comparação e a animação com play. É uma `Figura` comum (o mesmo SVG, o mesmo estilo, a mesma clareza),
+ * que o leitor monta passo a passo:
+ *
+ * - abre inteira, como uma figura parada, com os selos numerados e a lista dos passos embaixo;
+ * - "Passo a passo" volta à base (o que não tem `data-passo`: os atores, as raias, o eixo) e o leitor
+ *   avança com Próximo e Anterior, ou clicando num passo da lista; nada anda sozinho, nada repete;
+ * - cada passo só soma: os elementos com `data-passo="n"` entram no passo n e não saem mais (nada some,
+ *   nada muda de lugar); o selo do passo acende, um ponto percorre o trajeto dele (`.trajeto`) uma vez e
+ *   os passos anteriores esmaecem um pouco;
+ * - o último passo é a figura inteira de novo; "Ver tudo" leva direto a ela.
+ *
+ * Sem JS ou no RSS: a figura inteira e a lista numerada dos passos, que batem com os selos do desenho.
+ *
+ *   <FiguraPassos figura="<slug>/<nome>" passos={["…", "…", "…"]} legenda="…" />
+ */
+import { figura as lerFigura } from "../lib/figuras";
+import { mdEmLinha } from "../lib/formato";
+import "../styles/figura.css";
+import "../styles/figura-passos.css";
+
+interface Props {
+  figura: string;
+  /** Um texto por passo, na ordem dos selos do desenho (aceita `código` e **negrito**). */
+  passos: string[];
+  /** Uma linha embaixo, dizendo como ler a figura (o que é cada cor). */
+  legenda?: string;
+  /** Em prova (D67): o aviso de que o passo terminou de entrar (as ideias de figura-passos.css). */
+  fim?: "botao" | "anel" | "selo" | "grifo" | "segmentos";
+}
+
+const { figura, passos, legenda, fim } = Astro.props;
+const { svg } = lerFigura(figura);
+const maiorPasso = Math.max(0, ...[...svg.matchAll(/\sdata-passo="(\d+)"/g)].map((m) => Number(m[1])));
+if (maiorPasso !== passos.length) {
+  throw new Error(`A figura em passos src/figuras/${figura}.svg tem ${maiorPasso} passos no desenho e ${passos.length} na lista: precisam bater.`);
+}
+---
+
+<figure class="figura figura-passos" data-pagefind-ignore data-total={passos.length} data-fim={fim}>
+  <div class="figura-palco painel" set:html={svg} />
+  {fim === "segmentos" && <div class="passos-segmentos" aria-hidden="true">{passos.map(() => <span />)}</div>}
+  <p class="dica-rolar" aria-hidden="true">Arraste para o lado para ver a figura inteira.</p>
+  <div class="passos-barra" hidden>
+    <button type="button" class="passos-comecar">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5 L18 12 L8 18.5 Z" /></svg>
+      <span>Passo a passo</span>
+    </button>
+    <button type="button" class="passos-anterior" aria-label="Passo anterior">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 L8 12 L15 19" /></svg>
+    </button>
+    <p class="passos-contador" aria-live="polite">
+      <svg class="passos-anel" viewBox="0 0 24 24" aria-hidden="true"><circle class="trilho" cx="12" cy="12" r="9.5" /><circle class="progresso" cx="12" cy="12" r="9.5" pathLength="1" /><path class="visto" d="M7.6 12.4 L10.7 15.4 L16.6 9" pathLength="1" /></svg><span class="passos-rotulo">Passo</span> <b>1</b> de {passos.length}
+    </p>
+    <button type="button" class="passos-proximo">
+      <span>Próximo</span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5 L16 12 L9 19" /></svg>
+    </button>
+    <button type="button" class="passos-tudo">Ver tudo</button>
+  </div>
+  <ol class="passos-lista">
+    {passos.map((texto, i) => (
+      <li data-passo-item={i + 1}>
+        <span class="passos-num" aria-hidden="true">{i + 1}</span>
+        <span class="passos-texto" set:html={mdEmLinha(texto)} />
+      </li>
+    ))}
+  </ol>
+  {legenda && <figcaption>{legenda}</figcaption>}
+</figure>
+
+<script>
+  import { montarFigurasEmPassos } from "../scripts/figura-passos";
+  montarFigurasEmPassos();
+</script>

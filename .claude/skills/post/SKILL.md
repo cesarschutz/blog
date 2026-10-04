@@ -8,12 +8,20 @@ description: Processo único de todo post do blog, com o mesmo checklist nos doi
 Todo post passa por aqui, do zero ou adaptado. **Tudo o que um post novo recebe, um post adaptado
 também recebe**: plano, desenho, animação onde há fluxo, conferência no navegador e qualidade.
 
+> **Lembrete (D63):** no primeiro post feito com os formatos novos (o TL;DR do detalhado, o infográfico
+> do resumo e os links ao longo do texto), ao entregar, peça ao Cesar para olhar como ficou e dizer o
+> que ajustar. Depois que ele olhar, registre os ajustes e apague este lembrete e o item do
+> `docs/estado.md`.
+
 ## Modos
 
 - **Novo:** o Cesar dá um tema ou uma ideia. Você escreve o texto.
 - **Adaptar:** o ponto de partida é um arquivo em `entrada/` (md, txt, docx, pdf ou html, com ou sem
   imagens), um texto colado na conversa ou um post que já está em `src/content/posts/`. O texto e a
   voz são do Cesar e ficam como estão (passo 3).
+
+Nos dois modos, o post começa pela conversa do passo 2: o formato (detalhado ou resumo), a estrutura
+e as fontes, combinados com o Cesar antes do plano.
 
 Como ler o que chega em `entrada/` (fora do git; nada ali é publicado):
 - `.md`, `.txt` e `.html`: leia direto. No HTML, aproveite só o conteúdo, sem o CSS ou o layout.
@@ -32,17 +40,47 @@ quebrar). **O `DESIGN.md` vence qualquer ferramenta:** o "go all out", o redesig
 `DESIGN.md` que a skill `impeccable` sugere não valem aqui. Leia também um post existente em
 `src/content/posts/` para carregar `.claude/rules/posts.md`, e o `docs/estilo-desenho.md`.
 
-### 2. Plano, antes de mexer em qualquer arquivo
+### 2. Formato, estrutura e plano, antes de mexer em qualquer arquivo
 
-Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
+**Primeiro, a conversa (D63).** Todo post, novo ou ajustado, começa com o Cesar. Pergunte e combine,
+antes de qualquer plano:
 
+- **O formato:** **detalhado** ou **resumo** (um resumo de verdade, não um tweet). Cada post se decide
+  na conversa; não há formato padrão.
+  - **Detalhado:** o post completo, de 1.500 a 2.500 palavras (8 a 12 min, teto de ~3.000), com o
+    **TL;DR** no alto (o campo `tldr`, passo 4).
+  - **Resumo:** de 700 a 1.200 palavras (4 a 6 min), com um **infográfico** que mostra o assunto inteiro
+    de uma vez, no estilo da casa (skill `figura`, "Infográfico do post resumo"), e o texto passando
+    por ele.
+- **O assunto em uma frase (D71):** antes da estrutura, escreva "este post é sobre X" e confirme com o
+  Cesar. O título, a descrição, o TL;DR e a abertura saem dessa frase. O **exemplo** do post (um projeto
+  dele, um caso, um incidente) não é o assunto: se o pedido fala de um lançamento e de um projeto feito
+  com ele, pergunte qual dos dois é o assunto e qual é o exemplo.
+- **A estrutura:** ajude o Cesar a pensar o que entra. Proponha as seções (`##`), o que cada uma diz e o
+  que fica de fora, e ajuste com ele até fechar.
+- **Uma parte ou duas (D71):** se a estrutura passa do teto do formato e tem dois assuntos que se
+  sustentam sozinhos (o conceito e a prática, o fundamento e o caso), proponha dividir em dois posts,
+  pela seção [Post em partes](#post-em-partes-d71).
+- **As fontes:** pergunte se ele já estudou o assunto. Se ele trouxer links, o post se baseia neles:
+  abra e leia cada um antes de escrever, e diga o que eles não cobrem. Se não trouxer, você busca fontes
+  confiáveis (documentação oficial, especificação, RFC, JEP, release notes, o livro ou o artigo de quem
+  criou a coisa; blog de terceiro só como apoio) e as mostra junto com a estrutura.
+- **Ajustar um post que já existe:** a mesma conversa. O campo `formato` diz o que foi combinado da
+  outra vez (os posts de antes da D63 não têm o campo e são detalhados).
+
+**Depois, o plano.** Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
+
+- **Formato e estrutura:** o que foi combinado na conversa, com as fontes de cada seção.
+- **Título, descrição e abertura (D71):** o título proposto (com duas alternativas), a `description` e a
+  primeira frase do post, pelas regras de [Escrita](#escrita-título-descrição-tldr-abertura-e-voz-d71).
+  O Cesar aprova o título antes de o texto ser escrito.
 - **Livro:** um dos livros de `src/livros/livros.json` **ou** uma série (`src/data/series.ts`). O
   subtítulo de cada livro diz o que cabe nele, e a casa do post é o que ele ensina (o exemplo, como a
   cobrança num post de idempotência, vira tag).
-- **A coleção ainda serve? (D61)** Em todo post, pense se os livros continuam bons com ele. O normal é
+- **A coleção ainda serve? (D78)** Em todo post, pense se os livros continuam bons com ele. O normal é
   não mudar nada, e aí basta dizer "a coleção serve". Mas avise o Cesar e sugira, com o motivo e as
   opções, quando:
-  - o post **não cabe bem em nenhum livro** (um post de carreira, que não tem livro desde a D61):
+  - o post **não cabe bem em nenhum livro** (um post de carreira, que não tem livro desde a D78):
     criar um livro, ou o livro mais próximo e por que ele serve;
   - o post mostra que **um livro ficaria melhor dividido** (um livro que junta assuntos que já têm
     posts suficientes para andar sozinhos);
@@ -79,11 +117,14 @@ Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
 
 ### 3. Texto
 
-- **Novo:** de 1.500 a 2.500 palavras (8 a 12 min), com teto de ~3.000; assunto maior vira série ou
-  partes. Introdução com o problema concreto em 2 ou 3 frases, seções `##` claras, tom profissional e
-  direto em pt-BR, sem enchimento.
-- **Adaptar:** **preserve o texto e a voz do Cesar.** Mude só o necessário para o formato
-  (Markdown, avisos, código, links). Correções e melhorias de conteúdo (erro técnico, fonte que falta,
+- **Novo:** no tamanho do formato combinado (passo 2): detalhado, de 1.500 a 2.500 palavras (8 a 12
+  min, teto de ~3.000; assunto maior vira [post em partes](#post-em-partes-d71)); resumo, de 700 a 1.200
+  (4 a 6 min). Seções `##` claras, tom profissional e direto em pt-BR, sem enchimento. O título, a
+  descrição, o TL;DR, a abertura e a voz seguem a seção
+  [Escrita](#escrita-título-descrição-tldr-abertura-e-voz-d71).
+- **Adaptar:** **preserve o texto e o jeito de escrever do Cesar.** Mude só o necessário para o formato
+  (Markdown, avisos, código, links) e para as regras de [Escrita](#escrita-título-descrição-tldr-abertura-e-voz-d71)
+  (título, descrição, abertura e a primeira pessoa, que sai). Correções e melhorias de conteúdo (erro técnico, fonte que falta,
   trecho confuso, corte) vêm como **sugestões separadas**, numeradas, e só entram se o Cesar aprovar
   cada uma. Os posts antigos não precisam ser encurtados.
 - **Nos dois modos:** nenhuma afirmação técnica sem fonte confiável conferida (documentação oficial,
@@ -92,15 +133,25 @@ Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
   o que o texto afirma. `## Fontes` é sempre a última seção. **Código e SQL testados antes de
   publicar** (rodados, não só "que compila"), porque o aviso de IA do post promete "com o código
   testado". O que não der para rodar aqui vai ao Cesar como pendência, dizendo o quê e por quê.
+- **Links ao longo do texto (D63):** cada fonte entra **onde o texto fala do que ela diz**, com o link nas
+  palavras do assunto (nunca "aqui" ou "neste link"), apontando para a página mais específica (a seção,
+  a âncora), e também em `## Fontes`, no fim. No máximo dois links por parágrafo, para o texto continuar
+  lendo bem. A ferramenta que já tem o ícone (`Ferramenta`) não precisa de outro link no mesmo lugar.
 - **URL antiga:** se o post já existiu em outra URL do blog, mantenha a URL ou crie o
   redirecionamento em `redirecionamentos` do `astro.config.mjs`. Nunca mude um título de seção de
   post já publicado, porque as âncoras dependem dele (D7). Depois, `npm run links`.
 
 ### 4. Estrutura
 
+Antes de seguir, rode `fnm exec --using=24 npm run escrita -- <slug>` (D71): ele confere o título, a
+descrição, o TL;DR, a abertura e a primeira pessoa, e precisa terminar sem problema (o aviso que sobrar
+vai explicado no relatório).
+
 - **Frontmatter completo** (schema em `src/content.config.ts`):
-  - `title`: "Assunto — complemento" (o que vem depois de " — " vira subtítulo);
-  - `description`: até ~200 caracteres (aceita `código` e **negrito**);
+  - `title`: "Assunto — complemento" (o que vem depois de " — " vira subtítulo). O assunto, sozinho,
+    tem de dizer do que o post trata (regras em [Escrita](#escrita-título-descrição-tldr-abertura-e-voz-d71));
+  - `description`: uma ou duas frases, com o essencial nos primeiros 160 caracteres (aceita `código` e
+    **negrito**);
   - `published`; `updated` só em revisão relevante (aparece como "Atualizado em");
   - `category` **ou** `series`, nunca os dois;
   - `tags`: de 2 a 4;
@@ -113,6 +164,13 @@ Apresente o plano e **espere a aprovação do Cesar**. O plano traz:
     GitHub" e o artigo ganha o sinal de código-fonte nas listas, nos cards, na gaveta, no anterior /
     próximo, no livro ampliado e na busca. Não repita o link no texto (a não ser que ele explique uma
     parte específica do código). Sem código publicado, o campo fica de fora;
+  - `formato` (D63): `detalhado` ou `resumo`, o que foi combinado no passo 2;
+  - `tldr` (D63), no detalhado: de 3 a 5 pontos (o esquema aceita de 2 a 6), cada um uma conclusão que
+    se entende sozinha, com o que o leitor leva do post (regras em
+    [Escrita](#escrita-título-descrição-tldr-abertura-e-voz-d71)); aceitam `código`, **negrito** e links. **Cada
+    ponto entre aspas**: com ": " no meio, o YAML lê o ponto como objeto e o build recusa. Aparece
+    fechado no alto do texto, e o leitor clica para abrir (`Tldr.astro`). No resumo, não entra: o
+    infográfico faz esse papel;
   - `draft: true` até o Cesar aprovar.
 - **Aviso de conteúdo feito com ajuda de IA:** sai sozinho no rodapé de todo artigo
   (`RodapeArtigo.astro`). Confira que ele aparece; não escreva outro no texto.
@@ -140,6 +198,9 @@ do `DESIGN.md` e do `docs/estilo-desenho.md`.
   mais específica (a do Java 21, não a do Java).
 - **Print** só quando prova algo do texto e dá para garantir que está certo. Tela que pede login
   (console da AWS, painéis internos): peça ao Cesar, ele tira o print. Sempre com o `Evidencia`.
+- **Post resumo (D63):** o infográfico é o desenho principal, logo depois da introdução: uma figura
+  grande que mostra o assunto inteiro de uma vez (a ideia dos guias do ByteByteGo, no nosso estilo),
+  pela seção "Infográfico do post resumo" da skill `figura`. O texto passa por ele, quadro a quadro.
 
 Técnica:
 - **SVG desenhado à mão**, em coordenadas, com classes e variáveis CSS: sem cor fixa, sem `id` nem
@@ -169,6 +230,8 @@ Quem manda no movimento (D58): a **capa** só mexe um detalhe no hover (`mexe-*`
 **lousa**, o leitor comanda o tempo (skill `lousa`); a **animação com play** muda a imagem e o leitor
 só dá play e pausa (skill `figura`). Nenhum desenho é comandado pela rolagem da página (D46).
 
+- **Em prova (D67):** a figura em passos (skill `figura`) pode substituir a lousa e a animação com play,
+  na página `/animacoes-test-2/`. Até o Cesar decidir, siga as regras abaixo.
 - **Só onde há fluxo** (sequência, passo a passo, antes e depois, o sistema funcionando). Post sem
   fluxo fica com a capa viva e, se ajudar, figuras paradas.
 - **Sequência em que a ordem importa, ou comparação no tempo:** a `Lousa` (passos ou comparação). A
@@ -238,8 +301,156 @@ relatório. Nada de marcação antes disso.
 - O que foi verificado (e com que resultado): navegador, trace, Impeccable, web quality, comandos.
 - As marcações da caneta (o relatório da skill `caneta`).
 - O que ficou pendente e as sugestões de conteúdo ainda não aprovadas.
+- O resultado do `npm run escrita -- <slug>` (D71) e, se o post tem partes, a conferência dos links
+  entre elas.
+- A pergunta da regra de aprendizado (D68) para cada pedido ou reclamação do Cesar nesta rodada: vira
+  regra para os próximos posts?
 
 Nunca commite nem publique sem pedido explícito do Cesar. Push na `main` publica o site.
+
+## Escrita: título, descrição, TL;DR, abertura e voz (D71)
+
+Regras do Cesar de 02/10/2026, depois de ler o post dos mods ("Quanto custou cada agente?"), com a
+pesquisa em `docs/escrita/pesquisa.md`. Valem para todo post novo e para o que for ajustado; os posts
+antigos não precisam ser corrigidos. O `npm run escrita -- <slug>` confere o que dá para conferir sozinho.
+
+**O teste de tudo:** quem lê só o título (numa busca, numa lista, num link colado) sabe do que o post
+trata? Quem lê só o título e a descrição sabe se o post é para ele? Quem lê só o primeiro parágrafo
+sabe o assunto?
+
+### Título
+
+O título aparece sozinho na busca, no RSS, no link compartilhado e na aba do navegador, e a parte de
+antes do " — " aparece sozinha em algumas listas do site (o "Último artigo" da home, por exemplo).
+
+- **O assunto vem antes do travessão e fecha sozinho.** Ele dá nome à coisa de que o post trata, com o
+  termo que o leitor procuraria: a tecnologia ou o produto e o tema ("Mods do Claude Code", "Bloqueio
+  otimista e pessimista", "Kubernetes CronJob"). Depois do travessão vem o recorte: o que o post cobre
+  do assunto ("o que são e as peças que vieram antes", "concorrência, retries e tempo máximo de execução").
+- **O termo principal fica nas primeiras palavras.** Numa lista, o leitor vê as duas primeiras palavras
+  de cada item.
+- **É uma afirmação do assunto, nunca um gancho.** Sem pergunta ("Quanto custou cada agente?"), sem
+  trocadilho, metáfora ou mistério, sem promessa ("tudo sobre", "o guia definitivo"), sem "como eu fiz".
+- **Sem nome que só o Cesar conhece.** O nome de um projeto dele, de um sistema interno ou de uma sigla
+  pouco conhecida só entra junto do que a coisa é ("o csr-cockpit, um mod de exemplo"), e nunca como o
+  assunto.
+- **O título é do assunto do post, não do exemplo.** Se o post explica um recurso e usa um projeto como
+  exemplo, o título fala do recurso.
+- **Tamanho:** o assunto com até ~45 caracteres; o título inteiro perto de 65 (o que a busca costuma
+  mostrar), com teto de 85. O que importa tem de estar nos primeiros 60.
+- **Só a primeira palavra e os nomes próprios em maiúscula**, sem ponto final e sem o tipo de texto no
+  título ("post sobre", "artigo").
+- Proponha o título com duas alternativas no plano; o Cesar escolhe. O título de um post publicado pode
+  mudar (a URL é o slug); o título de **seção** não muda (D7).
+
+| Não | Sim | O que mudou |
+|---|---|---|
+| Quanto custou cada agente? — Do CLAUDE.md ao mod no Claude Code | Mods do Claude Code — o que são e as peças que vieram antes | o assunto na frente, sem pergunta, sem o exemplo no título |
+| O dia em que o deploy derrubou o lote | Kubernetes CronJob — concorrência, retries e tempo máximo de execução | o nome da coisa no lugar da história |
+| JWT por dentro | JWT — a estrutura e o significado de cada campo | o recorte dito, sem metáfora |
+
+### Descrição (`description`)
+
+Aparece no card, na busca do site e como o resumo que a busca do Google costuma mostrar.
+
+- Uma ou duas frases com verbo, terminadas em ponto, que dizem **o que o post cobre** e deixam o leitor
+  decidir se é para ele. Podem começar por "Como…", "O que…", "Por que…".
+- **O essencial nos primeiros 160 caracteres** (é o que a busca mostra); o teto é 200.
+- Não repete o título: usa as palavras que não couberam nele. Não é uma fila de palavras-chave separadas
+  por vírgula, nem começa por "Neste post".
+- Cada post tem a sua; duas partes do mesmo assunto têm descrições diferentes.
+
+### TL;DR (`tldr`, no detalhado)
+
+- De 3 a 5 pontos, do mais importante para o menos. O primeiro diz o que a coisa é.
+- **Cada ponto é uma conclusão** que se entende sem o texto ("O mod roda dentro do Claude Code e desenha
+  na interface"), nunca um item de índice ("O post mostra o que é um mod").
+- Uma ou duas frases por ponto, até ~40 palavras. Nada que o texto não diga.
+- Em post com partes, o último ponto aponta para a outra parte.
+
+### Abertura
+
+- **O primeiro parágrafo diz o assunto e por que ele importa**, com o termo do título: o que é a coisa,
+  o que mudou ou qual é o problema, em 2 ou 3 frases. Dele dá para tirar um bom título.
+- **O segundo diz o que o post cobre e para quem** ("Este post explica…"), e o que ele não é.
+- **O exemplo, o caso e a história vêm depois.** O post não abre por uma pergunta ao leitor, por uma
+  cena ("Outro dia, revisando…"), por um print nem pelo projeto que serve de exemplo.
+- Termo que o leitor pode não conhecer é explicado na primeira vez em que aparece.
+- A imagem ou o desenho de abertura vem depois desses dois parágrafos.
+
+### Voz
+
+- **Nunca a primeira pessoa do singular**: nada de "eu", "criei", "testei", "fiz", "publiquei",
+  "aprendi", "meu repositório". Também não "nós" nem "a gente".
+- No lugar, nesta ordem de preferência:
+  - **o sujeito é a coisa**: a ferramenta, o post, o exemplo, o teste ("O teste dispara os eventos", "Este
+    post explica", "O csr-cockpit tem 15 testes");
+  - **o infinitivo ou o imperativo** para o que se faz ("Para testar um mod, rode…", "Instale só…");
+  - **"você"** quando é o leitor quem age ("o programa que você abre no terminal").
+- Voz ativa. A passiva só quando quem fez não importa ("Os mods foram lançados em 01/10/2026").
+- **O que foi rodado ou medido vira fato com data**, sem narrador: "Em 02/10/2026, os 15 testes passaram
+  na versão 2.1.287", ou o carimbo da caneta. O que não foi conferido é dito do mesmo jeito: "No
+  aplicativo de desktop, o painel ainda não foi conferido".
+- O projeto do Cesar é citado pelo nome ("o repositório claude-code-kit"), não pela posse.
+- Vale para os títulos de seção, as legendas, os `alt`, os passos das lousas e as notas da caneta.
+
+| Não | Sim |
+|---|---|
+| Testei o cockpit em três camadas | Um mod se testa em três camadas |
+| No mesmo dia publiquei um mod | A parte 2 mostra um mod pronto |
+| O que eu demorei a entender | As confusões mais comuns |
+| Eu leio essa tabela como uma escada | A tabela pode ser lida como uma escada |
+| Vou continuar colocando coisas lá | O repositório vai continuar recebendo peças |
+
+### Títulos de seção
+
+- Descritivos, com o assunto na frente, no mesmo padrão do título: quem lê só o sumário entende o
+  caminho do post.
+- Sem primeira pessoa e sem gancho. Pergunta só quando é a pergunta que o leitor faria com essas
+  palavras ("`volatile boolean` ou `AtomicBoolean`?").
+
+## Post em partes (D71)
+
+Um assunto que não cabe num post vira dois posts ligados: a parte 1 e a parte 2. Não é uma série (a
+série é uma revista da coleção, com capa e página própria, pelo `CAPAS.md`): são dois artigos comuns,
+no mesmo livro, que apontam um para o outro. Com três partes ou mais, converse com o Cesar: pode ser o
+caso de uma série.
+
+**Quando dividir** (as duas condições juntas):
+- o texto passa do teto do formato (~3.000 palavras no detalhado) depois de enxuto;
+- e há **dois assuntos que se sustentam sozinhos**: em geral o conceito e a prática (o que é e de onde
+  vem; um caso de ponta a ponta), ou o fundamento e a operação.
+
+**Quando não dividir:** só pelo tamanho; quando a parte 2 não se entende sem a 1 (aí o caminho é
+cortar texto); quando o corte cairia no meio de um raciocínio.
+
+**Como fica cada parte:**
+- **Um post inteiro:** slug, título, descrição, TL;DR, capa, tags e `## Fontes` próprios, no tamanho de
+  um post normal (cada parte dentro do formato). O mesmo livro e, em geral, as mesmas tags.
+- **Título:** cada parte tem o **assunto diferente** antes do travessão, descrevendo o que ela cobre, e
+  "(parte N de M)" no fim do complemento: "Mods do Claude Code — o que são e as peças que vieram antes
+  (parte 1 de 2)" e "Um mod do Claude Code na prática — instalação, testes e limites (parte 2 de
+  2)". Nunca "X, parte 2" com o mesmo assunto nas duas.
+- **O aviso da parte:** logo depois da abertura, `> [!NOTA] Parte N de M`, com o link da outra parte
+  e uma frase do que ela cobre.
+- **A parte 2 se lê sozinha:** o aviso dela traz a recapitulação em duas ou três frases (o que é a
+  coisa, o que a parte 1 explicou), para quem chega direto pela busca.
+- **A parte 1 termina apontando a 2**, numa seção curta que diz o que vem lá. O último ponto do TL;DR de
+  cada parte aponta a outra.
+- **Os termos e os exemplos são os mesmos** nas duas (os mesmos nomes, os mesmos tons nos desenhos), e
+  o que é definido na parte 1 ganha uma frase na primeira vez em que aparece na parte 2.
+- **A capa** das duas é da mesma família (o mesmo objeto, visto de dois jeitos).
+
+**Publicação:**
+- As partes saem **juntas**, com os links já valendo (`npm run links`). Se a parte 2 não estiver pronta,
+  a parte 1 não promete data nem aponta link.
+- A parte 2 é a mais nova. Saindo no mesmo dia, ela leva uma hora posterior no `published`
+  (`published: 2026-10-02T12:00:00Z`; a parte 1 fica só com a data), porque com a mesma data o desempate
+  é o slug e a ordem da home e o número da ficha se desencontram. Confira a ordem na home, na página do
+  livro, no número da ficha de cada parte e no "anterior / próximo".
+- **Post já publicado que vira a parte 1:** mantém o slug e a URL. Os títulos das seções que ficam não
+  mudam; as âncoras das seções que foram para a parte 2 deixam de existir, e isso vai no relatório.
+- Rode o `npm run escrita` nas duas, o `conferir` nas duas e as fotos dos livros (o livro ganha um artigo).
 
 ## Revisão em lote
 
@@ -248,11 +459,18 @@ status de cada um. Pegue o próximo "pendente", siga o checklist inteiro no modo
 já está no blog) e, ao concluir cada post, **atualize o status** na mesma hora, com a data e uma linha
 do que mudou.
 
-## Regra de aprendizado
+## Regra de aprendizado (D68)
 
-Quando o Cesar corrigir algo que vale para todos os posts, **proponha** atualizar o `DESIGN.md` (se
-for visual) ou esta skill (se for processo), para os próximos já saírem certos. Se ele corrigir a
-mesma coisa duas vezes, a mudança vira regra (CLAUDE.md).
+Todo pedido ou reclamação do Cesar sobre um post (texto, estrutura, desenho, animação, caneta,
+qualquer coisa), depois de feito, **termina com uma pergunta**: se aquilo vira regra para os próximos
+posts. Uma linha por pedido, dizendo o que viraria regra e onde ela ficaria (esta skill, `figura`,
+`lousa`, `desenho`, `caneta`, `DESIGN.md`, `docs/estilo-desenho.md`, `docs/marcacoes.md` ou
+`.claude/rules/`).
+
+- Pergunte sempre, mesmo quando o pedido parecer só daquele post: quem decide é ele.
+- **Sim:** registre na hora, no lugar certo, com a data (e no `docs/decisoes.md`, se for decisão).
+- **Não:** vale só para aquele post, e a mesma pergunta não volta.
+- Se ele corrigir a mesma coisa duas vezes, vira regra de qualquer jeito (CLAUDE.md).
 
 ## Migração dos posts do blog atual (D15)
 
@@ -270,6 +488,9 @@ trechos fica só no texto. Nem todo post tem todos os recursos, e todo desenho �
 | O trecho é… | Recurso | Onde está |
 |---|---|---|
 | o assunto do post inteiro | a capa (sempre, uma por post), com o detalhe da capa viva | skill `desenho` |
+| o post detalhado em 30 segundos | o TL;DR (campo `tldr`), fechado no alto do texto | passo 4 |
+| um assunto que não cabe num post, com conceito e prática | duas partes, cada uma um post inteiro | Post em partes |
+| o assunto inteiro numa imagem (post resumo) | o infográfico (`Figura`), logo depois da introdução | skill `figura` |
 | quem fala com quem, a arquitetura, os papéis | figura colorida (`Figura`), um tom por ator, selos se há ordem, detalhes que se mexem se ajudarem | skill `figura` |
 | um número, uma curva, o que o leitor veria no painel | gráfico (`Figura`), com eixos, unidade, o limite e a anotação | skill `figura` |
 | uma sequência em que a ordem importa | lousa de passos (`Lousa` com `passos`), com a lista numerada embaixo | skill `lousa` |
@@ -299,6 +520,7 @@ Todos aparecem juntos em `src/amostra/recursos.md`, que o dev mostra em `/amostr
 - **Notas laterais:** nota de rodapé comum (`texto[^chave]`). Só parágrafos.
 - `<details>` com `<summary>`, tabelas e KaTeX (`$…$`, `$$…$$`; `$` de texto escapado).
 - **Imagens:** `alt` descritivo; abrem no visor ao clicar.
+- **TL;DR** (D63): vem do frontmatter (`tldr`), não do texto; o dev mostra um em `/amostra/markdown/`.
 - **Sumário:** automático com 3 ou mais seções `##`.
 - **Caneta** (D48, D56, guia em `docs/marcacoes.md`, skill `caneta`): os 34 tipos de marcação em
   diretivas (`:marca[…]`, `:ondulado[…]`, `:::colchete`…) e nos atributos da cerca de código

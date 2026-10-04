@@ -1,0 +1,864 @@
+/* Opção 3, "Caderno e caneta" (protótipo, /amostra/controles/). */
+
+.cartao-proto.c3 {
+  /* A pauta: uma linha a cada 28px, e a linha cai 21px abaixo do topo de cada faixa (logo abaixo da letra). */
+  --linha: 28px;
+  --base: 21px;
+  /* A margem do caderno, até a linha vermelha: é a coluna dos botões e da seta. */
+  --margem: 60px;
+  --mola: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --suave: cubic-bezier(0.16, 1, 0.3, 1);
+  --escrita: cubic-bezier(0.45, 0, 0.55, 1);
+  --furo: color-mix(in oklab, var(--paper), var(--etiqueta-sombra) 16%);
+  --arame: color-mix(in oklab, var(--ink) 46%, transparent);
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: var(--raio-painel);
+  background: var(--paper-hi);
+}
+
+.c3 .proto-palco {
+  border-radius: 0;
+}
+
+/* ---------- a emenda: os furinhos da espiral no alto da página e os arames que passam por cima da borda ---------- */
+
+.c3-espiral {
+  position: absolute;
+  top: 0;
+  right: 12px;
+  left: 12px;
+  height: 20px;
+  pointer-events: none;
+}
+
+.c3-espiral::before,
+.c3-espiral::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  left: 0;
+}
+
+.c3-espiral::before {
+  top: 0;
+  bottom: 0;
+  background: radial-gradient(3.2px 3.6px at 10px 9.5px, var(--furo) 90%, transparent) 0 0 / 22px 20px space no-repeat;
+}
+
+/* O arame sai do furo, sobe por cima da borda (sobre o desenho) e desce por trás da folha. */
+.c3-espiral::after {
+  top: -10px;
+  height: 30px;
+  background: var(--arame);
+  --volta: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 30'%3E%3Cpath d='M10 19.2 C 9.7 13.6 9.5 6.4 10.7 3 C 11.7 0.2 15.4 0 16.4 3 C 17.1 5.2 17.2 7.8 17.2 10.4' fill='none' stroke='currentColor' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  -webkit-mask: var(--volta) 0 0 / 22px 30px space no-repeat;
+  mask: var(--volta) 0 0 / 22px 30px space no-repeat;
+}
+
+/* ---------- a página: a pauta azul e a margem vermelha ---------- */
+
+.c3-pagina {
+  position: relative;
+  padding-bottom: calc(var(--linha) - 6px);
+  background-image: linear-gradient(to bottom, transparent calc(var(--linha) - 1px), var(--pauta) calc(var(--linha) - 1px));
+  background-position: 0 calc(var(--base) - var(--linha) + 1px);
+  background-size: 100% var(--linha);
+}
+
+.c3-pagina::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--margem);
+  width: 1px;
+  background: var(--pauta-cabeca);
+  pointer-events: none;
+}
+
+.c3-margem {
+  position: relative;
+  display: grid;
+  justify-items: center;
+}
+
+/* ---------- a linha do tempo ---------- */
+
+/* A primeira faixa da pauta é o respiro da caneta; a linha do tempo fica na segunda, e os números na terceira. */
+.c3-tempo {
+  display: grid;
+  grid-template-columns: var(--margem) minmax(0, 1fr);
+  height: calc(var(--linha) * 3);
+}
+
+/* O play centrado na linha do tempo. */
+.c3-tempo .c3-margem {
+  align-items: start;
+  padding-top: calc(var(--linha) + var(--base) - 22px);
+}
+
+.c3-faixa {
+  position: relative;
+  margin: 0 20px 0 16px;
+  border-radius: 6px;
+  cursor: ew-resize;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* O foco envolve só a linha e os números (o respiro de cima é da caneta e da espiral). */
+.c3-faixa:focus-visible {
+  outline: none;
+}
+
+.c3-faixa:focus-visible::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--linha) + 2px) -8px -3px -12px;
+  border: 2px solid var(--acento);
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+.c3-faixa.arrastando {
+  cursor: grabbing;
+}
+
+/* O trilho fica na segunda linha da pauta; à direita, o espaço do corpo da caneta quando ela chega ao fim. */
+.c3-trilho {
+  position: absolute;
+  top: calc(var(--linha) + var(--base));
+  right: 60px;
+  left: 0;
+  height: 0;
+}
+
+.c3-escrita {
+  position: absolute;
+  top: -8px;
+  left: 0;
+}
+
+.c3-escrita svg {
+  display: block;
+  overflow: visible;
+}
+
+.c3-linha {
+  fill: none;
+  stroke: var(--caneta);
+  stroke-width: 1.9;
+  stroke-linejoin: round;
+}
+
+/* O começo e o fim da linha: dois risquinhos a lápis, para a faixa ter onde começar e acabar. */
+.c3-ponta-inicio,
+.c3-ponta-fim {
+  fill: none;
+  stroke: var(--ink-3);
+  stroke-width: 1.3;
+  stroke-linecap: round;
+}
+
+/* ---------- os números dos passos, escritos sobre a linha ---------- */
+
+.c3-numeros {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Os números ficam escritos na pauta de baixo, onde a caneta nunca passa por cima deles. */
+.c3-numero {
+  position: absolute;
+  top: calc(var(--linha) - 15px);
+  font-family: var(--font-texto);
+  font-size: 15px;
+  font-variant-numeric: lining-nums;
+  line-height: 1;
+  color: var(--ink-3);
+  transform: translateX(-50%);
+  transition: color 0.3s;
+}
+
+.c3-numero i {
+  position: relative;
+  z-index: 1;
+}
+
+/* O risquinho da marca, cruzando a linha em cima do número. */
+.c3-numero:not(.c3-no-inicio)::after {
+  content: "";
+  position: absolute;
+  top: calc(15px - var(--linha) - 4px);
+  left: 50%;
+  width: 1.3px;
+  height: 8px;
+  border-radius: 1px;
+  background: var(--ink-3);
+  transform: translateX(-50%) rotate(7deg);
+}
+
+/* Os segundos da animação: o "0 s" começa na marca, e a duração termina nela. */
+.c3-segundos {
+  font-size: 13.5px;
+  white-space: nowrap;
+  transform: translateX(-3px);
+}
+
+.c3-segundos + .c3-segundos {
+  transform: translateX(calc(-100% + 3px));
+}
+
+.c3-numero.passou {
+  color: var(--ink-2);
+}
+
+.c3-numero.atual {
+  color: var(--ink);
+}
+
+.c3-circulo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  overflow: visible;
+  transform: translate(-50%, -52%) rotate(-8deg);
+  pointer-events: none;
+}
+
+.c3-circulo path {
+  fill: none;
+  stroke: var(--caneta);
+  stroke-width: 2.7;
+  stroke-linecap: round;
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 1.01;
+  transition: stroke-dashoffset 0.45s var(--escrita);
+}
+
+.c3-numero.atual .c3-circulo path {
+  stroke-dashoffset: 0;
+}
+
+.c3-tique {
+  position: absolute;
+  top: -7px;
+  left: calc(100% + 1px);
+  width: 11px;
+  height: 11px;
+  overflow: visible;
+}
+
+.c3-tique path {
+  fill: none;
+  stroke: var(--caneta);
+  stroke-width: 2.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 1.01;
+  transition: stroke-dashoffset 0.3s ease-out 0.05s;
+}
+
+.c3-numero.passou .c3-tique path,
+.c3-no-fim .c3-numero.atual .c3-tique path {
+  stroke-dashoffset: 0;
+}
+
+/* ---------- a caneta: a ponta é o cursor ---------- */
+
+.c3-caneta {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Parada, a caneta fica levantada um nada; escrevendo ou arrastando, encosta no papel. */
+.c3-mao {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(2px, -6px) rotate(5deg);
+  transform-origin: 0 0;
+  filter: drop-shadow(2px 5px 2px rgb(0 0 0 / 0.13));
+  transition:
+    transform 0.35s var(--mola),
+    filter 0.35s;
+}
+
+.c3:not(.c3-escrevendo) .c3-faixa:hover .c3-mao {
+  transform: translate(1px, -3px) rotate(2deg);
+}
+
+.c3-escrevendo .c3-faixa .c3-mao,
+.c3 .c3-faixa.arrastando .c3-mao {
+  transform: none;
+  filter: drop-shadow(1px 1.5px 1px rgb(0 0 0 / 0.2));
+}
+
+/* Voltando ao começo (recomeçar, a volta do fim), a caneta sobe e corre para trás; nos 5 s do fim, descansa. */
+.c3.c3-voltando .c3-faixa .c3-mao {
+  transform: translate(3px, -11px) rotate(-3deg);
+  filter: drop-shadow(3px 7px 3px rgb(0 0 0 / 0.11));
+}
+
+.c3.c3-no-fim .c3-faixa .c3-mao {
+  transform: translate(5px, -13px) rotate(9deg);
+  filter: drop-shadow(3px 8px 3px rgb(0 0 0 / 0.1));
+}
+
+.c3-caneta-desenho {
+  position: absolute;
+  top: -48px;
+  left: -4px;
+  overflow: visible;
+  transform-origin: 4px 48px;
+}
+
+/* Escrevendo, a mão balança miúdo em volta da ponta. */
+.c3-escrevendo .c3-caneta-desenho {
+  animation: c3-escreve 0.3s ease-in-out infinite alternate;
+}
+
+@keyframes c3-escreve {
+  from {
+    transform: rotate(-1.2deg) translateY(0.3px);
+  }
+
+  to {
+    transform: rotate(2.2deg) translateY(-0.5px);
+  }
+}
+
+.c3-caneta-desenho :is(path, rect) {
+  stroke: var(--ink);
+  stroke-width: 1.1;
+  stroke-linejoin: round;
+}
+
+.c3-caneta-desenho .c3-ponta {
+  fill: color-mix(in oklab, var(--ink) 55%, var(--paper-hi));
+}
+
+.c3-caneta-desenho :is(.c3-bico, .c3-corpo) {
+  fill: color-mix(in oklab, var(--caneta) 9%, var(--paper-hi));
+}
+
+.c3-caneta-desenho .c3-carga {
+  fill: none;
+  stroke: var(--caneta);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.c3-caneta-desenho .c3-aresta {
+  fill: none;
+  stroke: color-mix(in oklab, var(--ink) 22%, transparent);
+  stroke-width: 0.7;
+}
+
+.c3-caneta-desenho .c3-tampinha {
+  fill: var(--caneta);
+}
+
+/* ---------- o play: contorno à caneta e o ícone que se transforma ---------- */
+
+.c3-tocar,
+.c3-recomecar {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    transform 0.3s var(--mola);
+}
+
+.c3-tocar {
+  width: 44px;
+  height: 44px;
+}
+
+.c3-tocar:hover,
+.c3-recomecar:hover {
+  color: var(--acento);
+}
+
+.c3-tocar:active {
+  transform: scale(0.93);
+  transition-duration: 0.06s;
+}
+
+.c3-tocar:focus-visible,
+.c3-recomecar:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 3px;
+}
+
+.c3-aro {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+}
+
+.c3-aro-base {
+  stroke: color-mix(in oklab, var(--caneta) 50%, transparent);
+  stroke-width: 1.4;
+}
+
+/* A caneta passa de novo no contorno: no mouse, numa passada; nos 5 s do fim, devagar, contando a espera. */
+.c3-aro-vivo {
+  stroke: var(--caneta);
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 1.01;
+  transition: stroke-dashoffset 0.5s var(--escrita);
+}
+
+.c3-tocar:hover .c3-aro-vivo {
+  stroke-dashoffset: 0;
+}
+
+.c3-tocar.no-fim .c3-aro-vivo {
+  animation: c3-conta 5s linear forwards;
+}
+
+@keyframes c3-conta {
+  from {
+    stroke-dashoffset: 1.01;
+  }
+
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.c3-icone {
+  position: relative;
+  width: 26px;
+  height: 26px;
+}
+
+.c3-icone path {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1.3;
+  stroke-linejoin: round;
+}
+
+.c3-icone.c3-mola {
+  animation: c3-mola 0.42s var(--mola);
+}
+
+@keyframes c3-mola {
+  0% {
+    transform: scale(0.82);
+  }
+
+  55% {
+    transform: scale(1.08);
+  }
+}
+
+/* ---------- recomeçar: a seta circular que se apaga e se redesenha enquanto gira ---------- */
+
+.c3-recomecar {
+  width: 34px;
+  height: 34px;
+  margin-top: -3px;
+}
+
+.c3-recomecar::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+}
+
+.c3-recomecar:hover {
+  transform: rotate(-22deg);
+}
+
+.c3-recomecar svg {
+  width: 22px;
+  height: 22px;
+  overflow: visible;
+}
+
+.c3-recomecar path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 0;
+}
+
+.c3-recomecar.c3-gira svg {
+  animation: c3-gira 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.c3-recomecar.c3-gira .c3-volta {
+  animation: c3-redesenha 0.9s linear;
+}
+
+.c3-recomecar.c3-gira .c3-volta-ponta {
+  animation: c3-redesenha-ponta 0.9s linear;
+}
+
+@keyframes c3-gira {
+  22% {
+    transform: rotate(28deg);
+  }
+
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+/* Apaga pelo começo durante a antecipação e se escreve de novo no giro. */
+@keyframes c3-redesenha {
+  0% {
+    stroke-dashoffset: 0;
+  }
+
+  24% {
+    stroke-dashoffset: -1.01;
+  }
+
+  24.01% {
+    stroke-dashoffset: 1.01;
+  }
+
+  80% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes c3-redesenha-ponta {
+  0%,
+  80% {
+    stroke-dashoffset: 1.01;
+  }
+
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ---------- a animação: a frase na pauta, e o recomeçar na margem ---------- */
+
+.c3-frase {
+  display: grid;
+  grid-template-columns: var(--margem) minmax(0, 1fr);
+}
+
+/* O recomeçar fica na margem, embaixo do play, na primeira linha da frase. */
+.c3-margem-frase {
+  align-items: start;
+}
+
+.c3-texto-frase,
+.c3-estado-texto {
+  margin: 0;
+  padding: 0 20px 0 12px;
+  font-family: var(--font-texto);
+  font-size: 15.5px;
+  line-height: var(--linha);
+}
+
+.c3-texto-frase {
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+/* ---------- a lousa de passos: a lista de tarefas ---------- */
+
+.c3-lista {
+  position: relative;
+}
+
+.c3-tarefas {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.c3-tarefa {
+  display: grid;
+  grid-template-columns: var(--margem) minmax(0, 1fr);
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  font-family: var(--font-texto);
+  font-size: 15.5px;
+  line-height: var(--linha);
+  color: var(--ink-2);
+  text-align: start;
+  cursor: pointer;
+  transition: color 0.25s;
+}
+
+.c3-tarefa:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: -2px;
+}
+
+.c3-tarefa code {
+  font-family: var(--font-codigo);
+  font-size: 0.84em;
+}
+
+.c3-texto {
+  padding: 0 20px 0 12px;
+}
+
+.c3-caixa {
+  position: relative;
+  justify-self: end;
+  width: 16px;
+  height: var(--linha);
+  margin-right: 9px;
+}
+
+.c3-quadrado {
+  position: absolute;
+  top: calc(var(--base) - 15px);
+  left: 0;
+  width: 16px;
+  height: 16px;
+  overflow: visible;
+}
+
+.c3-quadrado path {
+  fill: none;
+  stroke: var(--ink-3);
+  stroke-width: 1.3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.25s;
+}
+
+/* O tique da tarefa feita: maior que a caixinha, passando dela pelo alto, como quem marca depressa. */
+.c3-tique-caixa {
+  top: calc(var(--base) - 21px);
+  left: 2px;
+  width: 18px;
+  height: 18px;
+}
+
+.c3-tique-caixa path {
+  stroke-width: 1.9;
+}
+
+.c3-tarefa.feito .c3-tique-caixa path,
+.c3-no-fim .c3-tarefa.atual .c3-tique-caixa path {
+  stroke-dashoffset: 0;
+}
+
+.c3-tarefa.atual {
+  color: var(--ink);
+}
+
+.c3-tarefa.atual .c3-quadrado path,
+.c3-tarefa:hover .c3-quadrado path {
+  stroke: var(--ink-2);
+}
+
+.c3-tarefa:hover {
+  color: var(--ink);
+}
+
+/* No mouse, um tique fraquinho na caixa: dá para ticar. */
+.c3-tarefa:not(.feito):hover .c3-tique-caixa path {
+  stroke-dashoffset: 0;
+  opacity: 0.3;
+}
+
+/* A seta da margem: um indicador só, que desliza até a tarefa da vez com mola. */
+.c3-seta {
+  position: absolute;
+  top: 0;
+  left: 7px;
+  width: 22px;
+  height: 13px;
+  margin-top: -6.5px;
+  pointer-events: none;
+  transition: transform 0.38s var(--mola);
+}
+
+.c3-seta.direto {
+  transition: none;
+}
+
+.c3-seta svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.c3-seta path {
+  fill: none;
+  stroke: var(--caneta);
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1 2;
+  stroke-dashoffset: 1.01;
+  transition: stroke-dashoffset 0.25s var(--escrita);
+}
+
+.c3-seta.visivel .c3-seta-haste {
+  stroke-dashoffset: 0;
+}
+
+.c3-seta.visivel .c3-seta-ponta {
+  stroke-dashoffset: 0;
+  transition-delay: 0.18s;
+}
+
+/* ---------- a lousa de comparação: o estado da vez numa linha reservada ---------- */
+
+.c3-estado {
+  display: grid;
+  grid-template-columns: var(--margem) minmax(0, 1fr);
+  min-height: calc(var(--linha) * 2);
+}
+
+.c3-estado-numero {
+  height: var(--linha);
+  perspective: 240px;
+}
+
+.c3-estado-numero i {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-texto);
+  font-size: 16px;
+  font-variant-numeric: lining-nums;
+  line-height: var(--linha);
+  color: var(--ink);
+  transform-origin: center bottom;
+}
+
+/* Antes de a pessoa mexer, a lousa está completa: o número do último estado fica apagado, sem círculo. */
+.c3-estado-numero:not(.circulado) i {
+  color: var(--ink-3);
+}
+
+.c3-estado-numero .c3-circulo {
+  top: calc(var(--base) - 6px);
+}
+
+.c3-estado-numero.circulado .c3-circulo path {
+  stroke-dashoffset: 0;
+}
+
+.c3-estado-numero.trocou i {
+  animation: c3-digito 0.3s var(--suave);
+}
+
+.c3-estado-numero.circulado.trocou .c3-circulo path {
+  animation: c3-circula 0.45s var(--escrita);
+}
+
+@keyframes c3-digito {
+  from {
+    opacity: 0;
+    filter: blur(2px);
+    transform: translateY(6px) rotateX(-35deg);
+  }
+}
+
+@keyframes c3-circula {
+  from {
+    stroke-dashoffset: 1.01;
+  }
+}
+
+.c3-estado-texto {
+  color: var(--ink);
+}
+
+/* A frase nova se escreve da esquerda para a direita. */
+.c3-estado-texto.escrevendo {
+  animation: c3-escreve-frase 0.55s var(--escrita);
+}
+
+@keyframes c3-escreve-frase {
+  from {
+    clip-path: inset(-6px 100% -6px 0);
+  }
+
+  to {
+    clip-path: inset(-6px -6px -6px 0);
+  }
+}
+
+/* ---------- celular ---------- */
+
+@media (max-width: 480px) {
+  .cartao-proto.c3 {
+    --margem: 52px;
+  }
+
+  .c3-faixa {
+    margin-right: 14px;
+  }
+
+  .c3-texto,
+  .c3-texto-frase,
+  .c3-estado-texto {
+    padding-right: 14px;
+  }
+
+  .c3-estado {
+    min-height: calc(var(--linha) * 3);
+  }
+
+  .c3-seta {
+    left: 3px;
+    width: 20px;
+  }
+
+  .c3-caixa {
+    margin-right: 7px;
+  }
+}
+
+/* ---------- movimento reduzido: tudo no estado final ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .c3 *,
+  .c3 *::before,
+  .c3 *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .c3-tocar.no-fim .c3-aro-vivo {
+    stroke-dashoffset: 0;
+  }
+}

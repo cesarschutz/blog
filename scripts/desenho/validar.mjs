@@ -18,6 +18,19 @@ const pastas = [join(raiz, "ilustracoes")];
 const pastasDasLousas = [join(raiz, "lousas")];
 const pastasDasFiguras = [join(raiz, "figuras"), join(raiz, "animacoes")];
 const pastaDasMarcas = join(raiz, "marcas");
+// A regra de marca de cada logo (D64): sem registro, ou com "nao", o logo não entra.
+const regrasDeMarca = JSON.parse(readFileSync(join(pastaDasMarcas, "regras.json"), "utf8"));
+const regraDe = (nome) => (typeof regrasDeMarca[nome] === "object" ? regrasDeMarca[nome] : undefined);
+/** Os marcadores de logo (data-marca) de um desenho, conferidos com a regra de marca para diagrama. */
+function conferirMarcadores(corpo) {
+  const erros = [];
+  for (const [, nome] of corpo.matchAll(/\sdata-marca="([^"]+)"/g)) {
+    const regra = regraDe(nome);
+    if (!regra) erros.push(`logo "${nome}" sem regra de marca conferida (registre em src/marcas/regras.json, D64)`);
+    else if (regra.diagrama === "nao") erros.push(`a marca ${regra.marca} não permite o logo em diagrama: use só o nome (src/marcas/regras.json)`);
+  }
+  return erros;
+}
 const CLASSES_DA_LOUSA = new Set(["traco", "fino", "guia", "destaque", "fantasma", "tracejado", "hachura", "cheio", "secundario", "codigo"]);
 const TEMPO = { traco: 2, escrita: 2, revela: 2, aparece: 2, some: 2, esmaece: 3, desloca: 4 };
 const CLASSES = new Set([
@@ -34,6 +47,8 @@ const CLASSES_DA_FIGURA = new Set([
   "lavado", "linha-tom", "cheio-tom", "texto-tom", "selo", "selo-texto", "titulo-caixa", "texto-caixa",
   "eixo", "grade", "serie", "area", "limite", "ponto", "valor-eixo", "titulo-eixo", "marca-texto",
   "fluxo", "pulsa", "pisca", "gira", "balanca", "anda", "formiga", "pacote", "legenda", "referencia", "traco-tom", "risco",
+  // Figura em passos (em prova, D67): o trajeto que um ponto percorre quando o passo entra.
+  "trajeto",
   "etapa-1", "etapa-2", "etapa-3", "etapa-4", "etapa-5", "etapa-6", "etapa-7",
 ]);
 const PROPORCOES = { largo: 1100 / 468, medio: 3 / 2, quadrado: 1 };
@@ -163,6 +178,7 @@ function validarLousa(arquivo) {
     if (!auto && nome !== "svg") pilha.push(classes);
   }
   if (!temTraco) erros.push('falta o grupo class="tinta" (estilo das figuras, D59) ou class="traco" (lousa antiga) com os traços');
+  erros.push(...conferirMarcadores(corpo));
   return erros;
 }
 
@@ -186,11 +202,24 @@ function validarFigura(arquivo, { marca = false } = {}) {
     const classes = (attrs.match(/\sclass="([^"]*)"/)?.[1] ?? "").split(/\s+/).filter(Boolean);
     for (const c of classes) if (!CLASSES_DA_FIGURA.has(c)) erros.push(`classe desconhecida: ${c}`);
     if (nome === "text" && pilha.some((c) => c.includes("tinta"))) erros.push("texto dentro do grupo .tinta (ficaria tremido)");
-    for (const [, atributo] of attrs.matchAll(/\sdata-([a-z-]+)="/g)) {
-      if (!["marca", "parte"].includes(atributo)) erros.push(`atributo desconhecido: data-${atributo} (só data-marca e data-parte)`);
+    for (const [, atributo, valor] of attrs.matchAll(/\sdata-([a-z-]+)="([^"]*)"/g)) {
+      if (!["marca", "parte", "passo"].includes(atributo)) erros.push(`atributo desconhecido: data-${atributo} (só data-marca, data-parte e data-passo)`);
+      // Figura em passos (D67): o passo é um número a partir de 1, e um passo não fica dentro de outro.
+      if (atributo === "passo" && !/^[1-9]\d?$/.test(valor)) erros.push(`data-passo="${valor}" não é um número de passo (1, 2, 3…)`);
+      if (atributo === "passo" && pilha.some((c) => c.passo)) erros.push(`data-passo="${valor}" dentro de outro passo`);
     }
-    if (!auto && nome !== "svg") pilha.push(classes);
+    if (nome === "path" && classes.includes("trajeto") && !/\spathLength="1"/.test(attrs)) erros.push('trajeto sem pathLength="1"');
+    if (classes.includes("trajeto") && pilha.some((c) => c.includes("tinta"))) erros.push("trajeto dentro do grupo .tinta (tremeria ao andar)");
+    if (!auto && nome !== "svg") pilha.push(Object.assign(classes, { passo: /\sdata-passo="/.test(attrs) }));
   }
+  if (marca) {
+    // O redesenho à mão só existe se a regra de marca deixa redesenhar no texto ou no diagrama.
+    const nome = arquivo.split("/").pop().replace(/\.svg$/, "");
+    const regra = regraDe(nome);
+    if (!regra) erros.push(`sem regra de marca em src/marcas/regras.json (confira a política oficial do dono antes de desenhar, D64)`);
+    else if (regra.texto !== "redesenho" && regra.diagrama !== "redesenho")
+      erros.push(`a regra de marca não permite redesenhar (texto: ${regra.texto}, diagrama: ${regra.diagrama}): apague este arquivo`);
+  } else erros.push(...conferirMarcadores(corpo));
   return erros;
 }
 

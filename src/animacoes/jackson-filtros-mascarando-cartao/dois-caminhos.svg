@@ -22,7 +22,6 @@
     <path d="M866 124 H1120 M866 262 H1086 M866 296 H1128 M866 330 H1040 M866 460 H1110 M866 494 H1010" class="linha"/>
   </g>
 
-  <g data-marca="java" transform="translate(250 208) scale(0.52)"/>
 
   <g class="tom-azul">
     <text x="60" y="246" class="titulo-caixa">Pedido</text>

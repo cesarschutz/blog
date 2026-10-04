@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <g class="tinta tom-verde">
-    <path d="M50 5 C 43 16 26 27 24 46 C 22 64 36 76 46 81 L50 95 L54 81 C 64 76 78 64 76 46 C 74 27 57 16 50 5 Z" class="lavado"/>
-    <path d="M50 5 C 43 16 26 27 24 46 C 22 64 36 76 46 81 L50 95 L54 81 C 64 76 78 64 76 46 C 74 27 57 16 50 5 Z" class="linha"/>
-    <path d="M50 16 C 51 38 51 60 50 90" class="linha-tom"/>
-  </g>
-</svg>

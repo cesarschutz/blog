@@ -1,0 +1,116 @@
+---
+/**
+ * O traço de caneta embaixo dos títulos da home (rodada 4, P17-1, vindo da linha 17): "A coleção" e
+ * "Artigos recentes" ganham um risco de caneta preta, um nada torto, que se escreve da esquerda para a
+ * direita em 0,34s quando o título entra na tela, uma vez. Só na primeira página da home ("da identidade
+ * pro site!", o Cesar).
+ *
+ * O caminho é o `tracoDeCaneta` de src/lib/traco.ts (o mesmo do menu), com a semente do título: o
+ * tremor é sempre o mesmo para o mesmo texto. A caixa de 100 × 8 estica até a largura do texto (o traço
+ * sem escala). A escrita é só `clip-path`.
+ *
+ * Quando escreve: na primeira vez em que o título está inteiro na tela, mas só depois de a página
+ * aparecer (a abertura da home avisa com `cs:aberto`; a cortina, com `cs:cortina-saindo` e `cs:chegou`).
+ * Sem JS e com movimento reduzido, o traço já está escrito.
+ */
+import { tracoDeCaneta } from "../lib/traco";
+
+interface Props {
+  texto: string;
+}
+
+const { texto } = Astro.props;
+---
+
+<span class="com-traco" data-traco-titulo>{texto}<svg class="traco-titulo" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d={tracoDeCaneta(texto, 17, 1.1)} /></svg></span>
+
+<script>
+  const raiz = document.documentElement;
+  const titulos = [...document.querySelectorAll<HTMLElement>("[data-traco-titulo]:not([data-traco-ligado])")];
+  if (titulos.length && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    for (const t of titulos) {
+      t.dataset.tracoLigado = "";
+      t.dataset.traco = "espera";
+    }
+    const vigiar = () => {
+      const olho = new IntersectionObserver(
+        (entradas) => {
+          for (const e of entradas) {
+            // Pela razão, e não por isIntersecting (que já vale com um pedaço à vista na primeira medida).
+            if (e.intersectionRatio < 0.96) continue;
+            olho.unobserve(e.target);
+            (e.target as HTMLElement).dataset.traco = "escreve";
+          }
+        },
+        // O título inteiro à vista, e um pouco acima do pé da tela (não escreve rente à borda). Não 1: na
+        // etiqueta girada (−0,6°), a conta da interseção dá 0,999999 e o traço nunca se escrevia.
+        { threshold: 0.97, rootMargin: "0px 0px -8% 0px" },
+      );
+      for (const t of titulos) olho.observe(t);
+    };
+    let vigiando = false;
+    const quandoAparecer = () => {
+      if (vigiando) return;
+      vigiando = true;
+      vigiar();
+    };
+    if (raiz.dataset.abertura) addEventListener("cs:aberto", () => setTimeout(quandoAparecer, 250), { once: true });
+    else if (raiz.hasAttribute("data-vai-chegar")) {
+      addEventListener("cs:cortina-saindo", () => setTimeout(quandoAparecer, 260), { once: true });
+      addEventListener("cs:chegou", quandoAparecer, { once: true });
+      setTimeout(quandoAparecer, 2500);
+    } else requestAnimationFrame(() => requestAnimationFrame(quandoAparecer));
+  }
+</script>
+
+<style>
+  .com-traco {
+    position: relative;
+    display: inline-block;
+  }
+
+  .traco-titulo {
+    position: absolute;
+    left: -3px;
+    bottom: -0.42em;
+    width: calc(100% + 6px);
+    height: 8px;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  .traco-titulo path {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  /* Esperando entrar na tela: a caneta ainda não passou (o traço inteiro fora do recorte). */
+  [data-traco="espera"] .traco-titulo {
+    clip-path: inset(-6px 100% -6px 0);
+  }
+
+  [data-traco="escreve"] .traco-titulo {
+    animation: traco-titulo-escreve 0.34s cubic-bezier(0.3, 0.6, 0.25, 1) 0.06s both;
+  }
+
+  @keyframes traco-titulo-escreve {
+    from {
+      clip-path: inset(-6px 100% -6px 0);
+    }
+
+    to {
+      clip-path: inset(-6px 0 -6px 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-traco] .traco-titulo {
+      clip-path: none;
+      animation: none;
+    }
+  }
+</style>

@@ -16,11 +16,32 @@
  * botões, que vai de um para o outro como uma gota: a borda da frente corre primeiro (0,2s) e a de
  * trás alcança (0,28s); o texto troca de cor no meio do caminho. O script só mede e diz para que lado
  * ela vai (`data-rumo`); quem anima é a transição de CSS. Com movimento reduzido, pula direto.
+ *
+ * Rodada 4 (P16-1): o seletor é uma tira de papel colada com um pedaço de fita no canto de cima à direita,
+ * como a etiqueta de "Artigos recentes" (os dois do papel do 16, `.papel-colado` e `.fita-adesiva` em
+ * base.css), girada um nada para o outro lado. O azul continua sendo a tinta que escorre de um botão
+ * para o outro, mas agora só por `clip-path`: o recorte (as bordas `--tinta-l` e `--tinta-r`, registradas
+ * com @property para a transição) mostra só o lugar do botão ativo. `papel={false}` é o seletor de antes
+ * (a pílula do 18), para a amostra D4.
+ *
+ * A caixa da tinta (D72): parada, ela fica só em volta do botão ativo (`--caixa-l` e `--caixa-r`); na troca,
+ * cresce na hora para cobrir os dois botões e só encolhe quando a tinta chegou. Ela salta, e quem anima a
+ * cada quadro continua sendo só o recorte. Cobrindo a tira inteira, como antes, ela fazia o Lighthouse (axe)
+ * acusar contraste de 1,18 no botão solto: o axe mede pela caixa, não enxerga o recorte e tomava o azul
+ * pelo fundo do texto.
  */
 import { ICONES } from "../lib/icones";
+
+interface Props {
+  /** A tira de papel com fita (o padrão da rodada 4); sem ela, a pílula de antes (amostra D4). */
+  papel?: boolean;
+}
+
+const { papel = true } = Astro.props;
 ---
 
-<div class="modo" role="group" aria-label="Modo de exibição" data-modo>
+<div class:list={["modo", { "modo-papel papel-colado": papel }]} role="group" aria-label="Modo de exibição" data-modo>
+  {papel && <span class="fita-adesiva canto-dir" aria-hidden="true"></span>}
   <span class="tinta" aria-hidden="true"></span>
   <button type="button" data-valor="list"
     ><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.lista} />Lista</button
@@ -53,6 +74,11 @@ import { ICONES } from "../lib/icones";
     else if (!animar) delete s.dataset.rumo;
     s.style.setProperty("--tinta-l", `${l.toFixed(2)}px`);
     s.style.setProperty("--tinta-r", `${r.toFixed(2)}px`);
+    // A caixa da tinta, em volta do botão ativo (D72), em pixels inteiros e com 1px de folga: o navegador
+    // pinta a caixa em pixels inteiros, e uma caixa rente ao recorte comeria a ponta da gota.
+    s.style.setProperty("--caixa-l", `${Math.floor(l) - 1}px`);
+    s.style.setProperty("--caixa-r", `${Math.floor(r) - 1}px`);
+    // A transição só vale para o lado que o script pediu; a medida seguinte (sem rumo) não anima.
   };
   const marcar = (animar = false, medir = true) => {
     for (const s of seletores) {
@@ -83,6 +109,14 @@ import { ICONES } from "../lib/icones";
     for (const f of visiveis())
       f.animate([{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 220, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)" });
   };
+
+  reduzir.addEventListener("change", () => {
+    if (!reduzir.matches) return;
+    ++vez;
+    formas().forEach((f) => f.getAnimations().forEach((a) => a.cancel()));
+    raiz.dataset.postView = alvo;
+    marcar(false);
+  });
 
   const montarCartoes = () => {
     const moldes = document.querySelectorAll<HTMLTemplateElement>("template[data-cartoes]");
@@ -128,6 +162,35 @@ import { ICONES } from "../lib/icones";
 </script>
 
 <style>
+  /* As bordas do recorte da tinta, registradas para a transição andar (o recorte é o que anima). */
+  @property --tinta-l {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 3px;
+  }
+
+  @property --tinta-r {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 3px;
+  }
+
+  /*
+   * As bordas da caixa da tinta, registradas para a transição segurar o lado que encolhe (D72). Nascem rentes
+   * ao recorte, com o mesmo valor inicial dele (e não em 0px, que o minificador do build escreve sem unidade).
+   */
+  @property --caixa-l {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 3px;
+  }
+
+  @property --caixa-r {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 3px;
+  }
+
   .modo {
     position: relative;
     display: inline-flex;
@@ -137,6 +200,26 @@ import { ICONES } from "../lib/icones";
     border-radius: 999px;
     background: var(--paper-hi);
     font-family: var(--font-ui);
+  }
+
+  /*
+   * A tira de papel (rodada 4): sem a borda da pílula, com a sombra curta do papel colado, girada um nada
+   * para o lado contrário da etiqueta; a margem deixa a fita (que passa do canto) longe da borda da tela.
+   */
+  .modo.modo-papel {
+    margin-right: 6px;
+    padding: 5px;
+    border: 0;
+    border-radius: 2px;
+    rotate: 0.7deg;
+  }
+
+  /* A fita mais para fora do canto: dentro da tira, ela só encosta na ponta da tinta. */
+  .modo-papel .fita-adesiva {
+    --fita-largura: 52px;
+    --fita-x: -25px;
+    --fita-y: -11px;
+    --fita-giro: 36deg;
   }
 
   .modo[hidden],
@@ -169,32 +252,48 @@ import { ICONES } from "../lib/icones";
     color: var(--ink);
   }
 
+  /* O anel de foco rente ao botão: com o afastamento de sempre (3px), ele encostava na borda da tira. */
+  .modo button:focus-visible {
+    outline-offset: 0;
+  }
+
   /* O botão ativo não tem fundo próprio: o azul é a tinta, atrás dos dois (D49). */
   .modo button[aria-pressed="true"] {
     color: var(--sobre-acento);
   }
 
+  /*
+   * A caixa da tinta fica em volta do botão ativo (--caixa-l e --caixa-r); o recorte (com as pontas redondas
+   * da gota) desenha o azul dentro dela e desconta a caixa. As bordas do recorte (--tinta-l e --tinta-r) e
+   * as da caixa vêm do script, medidas do lado de dentro da borda.
+   */
   .tinta {
     position: absolute;
-    top: 3px;
-    bottom: 3px;
-    left: var(--tinta-l, 3px);
-    right: var(--tinta-r, 50%);
-    border-radius: 999px;
+    inset: 0 var(--caixa-r) 0 var(--caixa-l);
     background: var(--acento);
+    clip-path: inset(3px calc(var(--tinta-r) - var(--caixa-r)) 3px calc(var(--tinta-l) - var(--caixa-l)) round 999px);
   }
 
-  /* A gota: a borda da frente sai primeiro (power2.in), a de trás alcança (power3.out). */
-  .modo[data-rumo="direita"] .tinta {
-    transition:
-      right 0.2s cubic-bezier(0.55, 0.085, 0.68, 0.53),
-      left 0.28s cubic-bezier(0.215, 0.61, 0.355, 1) 0.2s;
+  .modo-papel .tinta {
+    clip-path: inset(5px calc(var(--tinta-r) - var(--caixa-r)) 5px calc(var(--tinta-l) - var(--caixa-l)) round 999px);
   }
 
-  .modo[data-rumo="esquerda"] .tinta {
+  /*
+   * A gota: a borda da frente sai primeiro (power2.in), a de trás alcança (power3.out). A caixa cresce na
+   * hora do lado da frente e só encolhe do lado de trás quando a tinta chegou (0,2s + 0,28s).
+   */
+  .modo[data-rumo="direita"] {
     transition:
-      left 0.2s cubic-bezier(0.55, 0.085, 0.68, 0.53),
-      right 0.28s cubic-bezier(0.215, 0.61, 0.355, 1) 0.2s;
+      --tinta-r 0.2s cubic-bezier(0.55, 0.085, 0.68, 0.53),
+      --tinta-l 0.28s cubic-bezier(0.215, 0.61, 0.355, 1) 0.2s,
+      --caixa-l 0s 0.48s;
+  }
+
+  .modo[data-rumo="esquerda"] {
+    transition:
+      --tinta-l 0.2s cubic-bezier(0.55, 0.085, 0.68, 0.53),
+      --tinta-r 0.28s cubic-bezier(0.215, 0.61, 0.355, 1) 0.2s,
+      --caixa-r 0s 0.48s;
   }
 
   .modo svg {
@@ -209,7 +308,7 @@ import { ICONES } from "../lib/icones";
 
   @media (prefers-reduced-motion: reduce) {
     .modo button,
-    .modo[data-rumo] .tinta {
+    .modo[data-rumo] {
       transition: none;
     }
   }

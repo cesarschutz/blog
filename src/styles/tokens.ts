@@ -47,12 +47,35 @@ export const TOKENS = [
   "painel-desenho",
   "tinta-desenho",
   "tinta-desenho-2",
+  // Rodada 2 do redesenho (protótipo 14, G10): a cortina da troca de página, com o nome do destino.
+  "cortina",
+  "cortina-tinta",
+  // Rodada 3 (área A, livros vivos e luz): a luz quente do brilho nos livros, a sombra quente e o halo
+  // embaixo deles, a luz do mouse, as três temperaturas da lâmpada do lustre e o ponto de luz dos livros.
+  "luz-quente",
+  "sombra-quente",
+  "halo-quente",
+  "luz-mouse",
+  "lampada-brasa",
+  "lampada-ambar",
+  "lampada-branca",
+  "ponto-luz",
+  // Rodada 4 (a versão final, direção §0): sem madeira em página nenhuma. Os tokens da prateleira de
+  // madeira do 18 (--madeira, --madeira-topo, --madeira-borda, --madeira-luz) saíram; fica o latão das
+  // luzes (o corpo, o brilho e a sombra), o mesmo do 18.
+  "latao",
+  "latao-luz",
+  "latao-escuro",
+  // Rodada 4 (P16-1, P16-2): a fita adesiva que cola a etiqueta de "Artigos recentes", a tira de Lista /
+  // Cards e o papel da paginação (a do 16, translúcida; o CSS a usa a 72% no claro e a 38% no escuro).
+  "fita",
 ] as const;
 
 export type Token = (typeof TOKENS)[number];
 export type Paleta = Record<Token, string>;
 
 export const claro: Paleta = {
+  // D62: as cores de antes do redesenho (a rodada 4 tinha trocado pelo papel quente do 20).
   paper: "#F1F0EB", // fundo da página
   "paper-hi": "#FFFFFE", // superfície das folhas
   well: "#F5F5F4", // código e cabeçalho de tabela: a superfície com 4% de tinta
@@ -110,9 +133,30 @@ export const claro: Paleta = {
   "painel-desenho": "#FFFFFE",
   "tinta-desenho": "#1A2124",
   "tinta-desenho-2": "#50595A",
+  cortina: "#1B2A5E", // o azul-tinta escuro (protótipo 14)
+  "cortina-tinta": "#F1F0EB", // o papel
+  // Rodada 3 (área A): a luz do brilho é quente nos dois temas (255 236 200); a sombra dos livros é
+  // marrom-âmbar, nunca cinza (60 38 8); o halo quente embaixo deles (255 170 70); a luz do mouse, âmbar
+  // claro em multiply (255 214 150); a lâmpada: brasa, âmbar e branco quente; o ponto de luz, latão.
+  "luz-quente": "#FFECC8",
+  "sombra-quente": "#3C2608",
+  "halo-quente": "#FFAA46",
+  "luz-mouse": "#FFD696",
+  "lampada-brasa": "#FF5C14",
+  "lampada-ambar": "#FFA846",
+  "lampada-branca": "#FFE8BE",
+  "ponto-luz": "#B08D57",
+  // O latão escovado dos abajures e da cordinha (o do 18).
+  latao: "#B08D57",
+  "latao-luz": "#E9D2A2",
+  "latao-escuro": "#6E532E",
+  // A fita adesiva (16): um creme amarelado translúcido, que o CSS põe a 74% sobre o que estiver embaixo
+  // (no papel quente do 20, o creme do 16, #F3EBCF, sumia).
+  fita: "#E6D7A8",
 };
 
 export const escuro: Paleta = {
+  // D62: o preto esverdeado de antes do redesenho (a rodada 4 tinha trocado pelo marrom do 19).
   paper: "#111618",
   "paper-hi": "#1A2124",
   well: "#21282A",
@@ -160,6 +204,24 @@ export const escuro: Paleta = {
   "painel-desenho": "#232B2E",
   "tinta-desenho": "#CDD3CD",
   "tinta-desenho-2": "#BCC3BE",
+  cortina: "#F1F0EB", // o papel do claro, com o texto azul (protótipo 14)
+  "cortina-tinta": "#1B2A5E",
+  // Rodada 3 (área A): no escuro, a luz do brilho um nada mais âmbar; o núcleo da sombra, preto (o que se
+  // vê é o halo quente embaixo); a luz do mouse, âmbar em screen (255 190 110); o ponto de luz, aceso.
+  "luz-quente": "#FFE3B4",
+  "sombra-quente": "#000000",
+  "halo-quente": "#FFAA46",
+  "luz-mouse": "#FFBE6E",
+  "lampada-brasa": "#FF5C14",
+  "lampada-ambar": "#FFA846",
+  "lampada-branca": "#FFE8BE",
+  "ponto-luz": "#FFC978",
+  // O latão aceso (o do 18).
+  latao: "#E0B46A",
+  "latao-luz": "#FBE6BA",
+  "latao-escuro": "#8E6A35",
+  // A fita no escuro: o mesmo creme mais apagado, que o CSS põe a 38%.
+  fita: "#D9CFAF",
 };
 
 /**

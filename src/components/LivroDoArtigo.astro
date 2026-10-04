@@ -1,0 +1,290 @@
+---
+/**
+ * A ficha "Do livro" do fim do artigo (C05, D52; D57; rodada 3), para as telas sem a coluna da esquerda:
+ * a mesma ficha de fichário da lateral (Sumario.astro), deitada. No cabeçalho, "Do livro" à mão (caneta
+ * preta) sobre a linha vermelha; embaixo, a foto do livro deitado (D57, FotoDoLivro) com uma etiqueta por
+ * artigo e, ao lado, os dados datilografados, o nome e o link nas linhas azuis da pauta. Colada com fita e
+ * pintada com a cor do livro no hover (ficha-do-livro.css). A ficha inteira é o link.
+ *
+ * Rodada 4: o protótipo a mantém como está (`forma="ficha"`). Saiu de RodapeArtigo para a amostra D6
+ * (nas amostras do redesenho, fora do git) mostrar as outras duas formas com o componente de verdade: `forma="lisa"`, a folha
+ * lisa (sem fita, sem pauta e sem a linha vermelha) e `forma="papel"`, o papel colado com duas fitas nos
+ * cantos de cima, um nada torto.
+ *
+ * Ganchos (não renomear): `.livro-do-artigo.ficha-colada`, `.fita`, `.cabeca-ficha`, `.corpo-ficha`,
+ * `.foto`, `.sobre-livro`, `.dados-livro`, `.nome-livro`, `.ver-livro`.
+ */
+import FotoDoLivro from "./FotoDoLivro.astro";
+import { ICONES } from "../lib/icones";
+import { dadosDoLivro, type Livro } from "../lib/estante";
+import { dadosDaFicha, pinturaDoLivro } from "../lib/ficha-do-livro";
+import type { Resumo } from "../lib/posts";
+import "../styles/ficha-do-livro.css";
+import { posicaoNoLivro } from "../lib/fotos";
+import type { TituloAMao } from "../lib/mao";
+
+interface Props {
+  livro: Livro;
+  post: Resumo;
+  /** "ficha" (o protótipo, como hoje), "lisa" ou "papel" (as duas da amostra D6). */
+  forma?: "ficha" | "lisa" | "papel";
+  /** O prefixo dos ids da foto (a amostra tem três fichas na mesma página). */
+  prefixo?: string;
+}
+
+const { livro, post, forma = "ficha", prefixo = "ficha-rodape" } = Astro.props;
+// O título da ficha, à mão (C05, D52): só os da lista de src/data/mao.ts (o subconjunto da Caveat).
+const DO_LIVRO: TituloAMao = livro.serie ? "Da série" : "Do livro";
+// Datilografado: "Volume 02 ·" e "6 artigos" nunca se partem por dentro (a linha quebra no ponto, no celular).
+const dadosNaFicha = dadosDoLivro(livro).split(" · ").map((parte) => parte.replaceAll(" ", "\u00a0")).join("\u00a0· ");
+const posicao = posicaoNoLivro(livro, post.url);
+---
+
+<a class:list={["livro-do-artigo", "ficha-colada", `forma-${forma}`]} href={livro.href} style={pinturaDoLivro(livro)} {...dadosDaFicha(livro, post)}>
+  {forma === "ficha" && <span class="fita" aria-hidden="true" />}
+  {
+    forma === "papel" && (
+      <>
+        <span class="fita canto-esquerdo" aria-hidden="true" />
+        <span class="fita canto-direito" aria-hidden="true" />
+      </>
+    )
+  }
+  <span class="cabeca-ficha"><span>{DO_LIVRO}</span></span>
+  <span class="corpo-ficha">
+    <span class="foto">
+      <FotoDoLivro livro={livro} atual={post} prefixo={prefixo} largura={150} />
+    </span>
+    <span class="sobre-livro">
+      <span class="dados-livro">{dadosNaFicha}{posicao && <span class="sr">, {posicao}</span>}</span>
+      <span class="nome-livro">{livro.nome}</span>
+      <span class="ver-livro">
+        {livro.serie ? "Ver a série" : "Ver o livro"}
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
+      </span>
+    </span>
+  </span>
+</a>
+
+<style>
+  .livro-do-artigo {
+    --linha: 28px;
+    display: block;
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    background: var(--paper-hi);
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  /*
+   * Folha larga: a ficha fica do tamanho de uma ficha (a largura de um dos cartões de anterior/próximo,
+   * logo abaixo), e não uma faixa de pauta vazia de lado a lado.
+   */
+  @container (min-width: 880px) {
+    .livro-do-artigo {
+      max-width: calc((100% - 18px) / 2);
+    }
+  }
+
+  .cabeca-ficha {
+    display: block;
+    padding: 9px 20px 3px;
+    border-bottom: 1.5px solid var(--pauta-cabeca);
+    font-family: var(--font-mao);
+    font-weight: 600;
+    font-size: 25px;
+    line-height: 1.05;
+  }
+
+  /* A pauta corre a ficha inteira; a foto do livro cobre o pedaço dela à esquerda. */
+  .corpo-ficha {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 18px 20px 14px;
+    /* A pauta para 10px antes do pé da ficha (não vira uma segunda borda embaixo). */
+    background: repeating-linear-gradient(to bottom, transparent 0 calc(var(--linha) - 1px), var(--pauta) calc(var(--linha) - 1px) var(--linha))
+      0 13px / 100% calc(100% - 23px) no-repeat;
+  }
+
+  /* A foto, sem painel: o livro deitado direto na ficha (a folga da sombra já está na imagem). */
+  .foto {
+    position: relative;
+    z-index: 1;
+    flex: none;
+    width: 150px;
+    margin: -8px -6px -10px -8px;
+  }
+
+  /* A coluna encolhe e o nome quebra com hífen: "Desenvolvimento" não cabe inteiro ao lado do livro em 375px. */
+  .sobre-livro {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding-top: 2px;
+    font-family: var(--font-ui);
+    line-height: var(--linha);
+  }
+
+  .dados-livro {
+    font-family: var(--font-codigo);
+    font-size: 13px;
+    color: var(--ink-2);
+    font-variant-numeric: lining-nums;
+  }
+
+  /* O nome, maior, sobe um nada para assentar na mesma linha da pauta que os dados e o link. */
+  .nome-livro {
+    top: -4px;
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    font-size: 21px;
+    hyphens: auto;
+    overflow-wrap: break-word;
+  }
+
+  .ver-livro {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--acento);
+  }
+
+  .ver-livro svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: translate 0.2s;
+  }
+
+  /*
+   * A tinta do livro passa por cima da pauta e da linha do cabeçalho; o texto fica por cima dela e muda
+   * para a tinta clara do livro no instante em que a cor chega nele (sobe do pé da ficha), e volta antes
+   * de ela sair de baixo dele (desce do alto). Os atrasos seguem a curva da pintura
+   * (ficha-do-livro.css), nas alturas desta ficha deitada.
+   */
+  .cabeca-ficha > span,
+  .dados-livro,
+  .nome-livro,
+  .ver-livro {
+    position: relative;
+    z-index: 1;
+    transition: color 0.06s linear var(--sai, 0s);
+  }
+
+  .cabeca-ficha > span {
+    --entra: 0.24s;
+    --sai: 0.03s;
+  }
+
+  .dados-livro {
+    --entra: 0.18s;
+    --sai: 0.1s;
+  }
+
+  .nome-livro {
+    --entra: 0.16s;
+    --sai: 0.12s;
+  }
+
+  .ver-livro {
+    --entra: 0.14s;
+    --sai: 0.14s;
+  }
+
+  .livro-do-artigo:is(:hover, :focus-visible) :is(.cabeca-ficha > span, .nome-livro, .ver-livro) {
+    color: var(--sobre-pinta);
+    transition: color 0.08s linear var(--entra);
+  }
+
+  .livro-do-artigo:is(:hover, :focus-visible) .dados-livro {
+    color: color-mix(in oklab, var(--sobre-pinta) 84%, var(--pinta));
+    transition: color 0.08s linear var(--entra);
+  }
+
+  .livro-do-artigo:is(:hover, :focus-visible) .ver-livro {
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+  }
+
+  .livro-do-artigo:is(:hover, :focus-visible) .ver-livro svg {
+    translate: 3px 0;
+  }
+
+  /*
+   * ---------- A, a folha lisa (só na amostra D6) ----------
+   * O mesmo conteúdo num cartão liso, como o anterior e o próximo de antes: sem fita, sem pauta e sem a
+   * linha vermelha; o "Do livro" no rótulo da interface, como "Artigo anterior".
+   */
+  .forma-lisa .cabeca-ficha {
+    padding: 14px 20px 0;
+    border-bottom: 0;
+    color: var(--ink-2);
+    font-family: var(--font-ui);
+    font-weight: 400;
+    font-size: 13.5px;
+  }
+
+  .forma-lisa .corpo-ficha {
+    padding-top: 8px;
+    background: none;
+  }
+
+  /*
+   * ---------- C, o papel colado (só na amostra D6) ----------
+   * Um papel liso (sem pauta), um nada torto, colado na folha com duas fitas nos cantos de cima.
+   */
+  .forma-papel {
+    border-radius: 1px;
+    box-shadow: 0 1px 1px color-mix(in oklab, var(--sombra-quente) 14%, transparent), 0 8px 14px -10px color-mix(in oklab, var(--sombra-quente) 45%, transparent);
+    rotate: -0.7deg;
+  }
+
+  .forma-papel .cabeca-ficha {
+    border-bottom: 0;
+  }
+
+  .forma-papel .corpo-ficha {
+    padding-top: 10px;
+    background: none;
+  }
+
+  /* Celular estreito: o livro um pouco menor, para o nome ter onde quebrar. */
+  @media (max-width: 400px) {
+    .corpo-ficha {
+      gap: 14px;
+      padding-inline: 14px;
+    }
+
+    .cabeca-ficha {
+      padding-inline: 14px;
+    }
+
+    .foto {
+      width: 124px;
+    }
+
+    .nome-livro {
+      top: -3px;
+      font-size: 19px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ver-livro svg,
+    .cabeca-ficha > span,
+    .dados-livro,
+    .nome-livro,
+    .ver-livro,
+    .livro-do-artigo:is(:hover, :focus-visible) :is(.cabeca-ficha > span, .dados-livro, .nome-livro, .ver-livro) {
+      transition: none;
+    }
+  }
+</style>

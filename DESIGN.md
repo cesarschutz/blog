@@ -1,9 +1,10 @@
 ---
 version: alpha
-name: Blog de Cesar Schutz, Folhas claras
+name: Blog de Cesar Schutz, Papel e luz
 description: >-
-  Blog técnico em pt-BR. Fundo claro e quente, conteúdo em folhas brancas, azul-tinta no que é
-  clicável e categorias como livros de uma coleção. Os valores de cor espelham src/styles/tokens.ts
+  Blog técnico em pt-BR. Papel, tinta, latão e luz (D61): o conteúdo em papel (fichas, folhas lisas e
+  etiquetas) sobre o fundo claro (no escuro, o preto esverdeado), abajures de latão sobre os livros, azul-tinta no que é clicável e
+  categorias como livros de uma coleção. Os valores de cor espelham src/styles/tokens.ts
   (interface) e docs/capas (livros); quem muda um valor muda os dois.
 colors:
   # Interface, tema claro (tokens.ts, claro)
@@ -43,6 +44,22 @@ colors:
   painel-desenho: "#FFFFFE"
   tinta-desenho: "#1A2124"
   tinta-desenho-2: "#50595A"
+  # Papel e luz (tokens.ts, D61): a cortina da troca de página, a luz quente dos livros e do mouse, a
+  # lâmpada, o latão dos abajures e da cordinha, e a fita que cola os papéis
+  cortina: "#1B2A5E"
+  cortina-tinta: "#F1F0EB"
+  luz-quente: "#FFECC8"
+  sombra-quente: "#3C2608"
+  halo-quente: "#FFAA46"
+  luz-mouse: "#FFD696"
+  lampada-brasa: "#FF5C14"
+  lampada-ambar: "#FFA846"
+  lampada-branca: "#FFE8BE"
+  ponto-luz: "#B08D57"
+  latao: "#B08D57"
+  latao-luz: "#E9D2A2"
+  latao-escuro: "#6E532E"
+  fita: "#E6D7A8"
   # Tons das figuras (tokens.ts, DIAGRAMA, D58); no escuro, com 42% de branco
   diag-azul: "#2F5FB3"
   diag-verde: "#25734E"
@@ -69,6 +86,19 @@ colors:
   painel-desenho-escuro: "#232B2E" # com 10% da cor do livro (D60)
   tinta-desenho-escuro: "#CDD3CD"
   tinta-desenho-2-escuro: "#BCC3BE"
+  cortina-escuro: "#F1F0EB"
+  cortina-tinta-escuro: "#1B2A5E"
+  luz-quente-escuro: "#FFE3B4"
+  sombra-quente-escuro: "#000000"
+  halo-quente-escuro: "#FFAA46"
+  luz-mouse-escuro: "#FFBE6E"
+  lampada-brasa-escuro: "#FF5C14"
+  lampada-ambar-escuro: "#FFA846"
+  lampada-branca-escuro: "#FFE8BE"
+  ponto-luz-escuro: "#FFC978"
+  # o latão no escuro (latao #E0B46A, latao-luz #FBE6BA, latao-escuro #8E6A35) fica fora das chaves: com o
+  # sufixo -escuro, o nome colidiria com o latao-escuro do claro
+  fita-escuro: "#D9CFAF"
   # Livros (src/livros/livros.json e cores.js): a cor principal de cada categoria
   arquitetura-de-software: "#2d4b46"
   desenvolvimento-de-software: "#7a4430"
@@ -176,8 +206,8 @@ rounded:
   marcador: 2px
   capa-lombada: 1px
   capa-aberta: 3px
-  painel: 10px
-  folha: 14px
+  painel: 10px # dentro do artigo; fora dele, o painel tingido tem 4px (D61)
+  folha: 2px # papel, não card (D61)
   full: 9999px
 spacing:
   gutter-min: 16px
@@ -241,13 +271,13 @@ components:
   link-escuro:
     backgroundColor: "{colors.surface-escuro}"
     textColor: "{colors.primary-escuro}"
-  botao-ler-artigo:
+  botao-primario:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
     typography: "{typography.label-lg}"
-    rounded: "{rounded.full}"
+    rounded: "{rounded.marcador}"
     padding: 10px
-  botao-ler-artigo-escuro:
+  botao-primario-escuro:
     backgroundColor: "{colors.primary-escuro}"
     textColor: "{colors.on-primary-escuro}"
   painel-desenho:
@@ -361,7 +391,7 @@ components:
 # Blog de Cesar Schutz: sistema visual
 
 Este arquivo é a **fonte de verdade do visual** do blog. Toda página e todo post seguem o que está
-aqui. As decisões vêm de `docs/briefing.md` §4, §6 e §7 e das decisões D26, D30, D32, D33, D35 e D58 de
+aqui. As decisões vêm de `docs/briefing.md` §4, §6 e §7 e das decisões D26, D30, D32, D33, D35, D58 e D61 de
 `docs/decisoes.md`, e os detalhes de medida estão em `docs/capas/CAPAS.md` (livros) e
 `docs/estilo-desenho.md` (desenhos e lousas). O código lê as cores de `src/styles/tokens.ts` e de
 `src/livros/cores.js`. Os valores do bloco YAML acima espelham esses arquivos: **quem muda um valor
@@ -379,10 +409,75 @@ achado dele contradisser uma decisão daqui, a decisão vence e o achado vira ex
 (`impeccable hooks ignore-value … --reason "Cesar decidiu: <decisão>"`). Mudar uma decisão é com o
 Cesar, e a mudança vem para cá.
 
+## Papel e luz (D61)
+
+Desde 02/10/2026, o site no ar é a versão final do redesenho (D55, rodada 4): **papel, tinta, latão e
+luz**. Onde as seções abaixo, escritas para as "Folhas claras" (D26), divergirem desta, vale esta. O
+detalhe de cada peça está em `docs/redesenho/rodada-4/` (`direcao.md`, `direcao-papel.md` e
+`controle.md`, com os pedidos do Cesar numerados) e em `docs/redesenho/rodada-3/` (a luz, as trocas
+de página e os ganchos das peças).
+
+- **A cara:** as cores de antes do redesenho (D62): no claro, fundo #F1F0EB, folha #FFFFFE e tinta
+  #1A2124; no escuro, o preto esverdeado (fundo #111618, folha #1A2124, tinta #E7E9E4). A rodada 4 tinha
+  trocado pelo papel quente do 20 e pelo marrom do 19, e o Cesar preferiu as de antes. O azul-tinta
+  continua sendo a cor de interação; a cor do livro, a caneta azul e os tons das figuras não mudam. Nada
+  de madeira, cortiça ou alfinete: o que fica de marcenaria é o latão dos abajures e da cordinha.
+- **Tudo é papel, e só três papéis** (`direcao-papel.md`):
+  - a **folha**: lisa, canto de 2px, sem borda, a sombra curta da espessura do papel e o grão;
+  - a **ficha de catálogo**: canto de 6px, com a tira em mono (`Vol. 03 · ficha 2 · nº 024`) sobre o
+    fio de 2px na cor do livro, e fita quando é a ficha de uma coisa só (o painel do livro, a "Do
+    livro");
+  - o **papel colado**: pequeno, preso com fita, girado entre −0,6° e −1° ("Artigos recentes",
+    Lista/Cards, um papel por botão da paginação, o "Comece por aqui").
+
+  Pílulas e botões viram etiquetas de papel de 2px. Nunca: canto de 8px ou mais, borda `--rule` em
+  volta, sombra difusa de card, pauta sob texto de leitura, fita em folha grande ou giro em grade. Os
+  quadros de dentro do artigo (figura, lousa, aviso, código) seguem as regras de antes, com o canto de
+  10px.
+- **Luz e latão:**
+  - um abajur de latão sobre cada livro em toda fileira: home, Livros, o filtro de Todos os artigos e o
+    alto da página do livro;
+  - a luz do livro escolhido acende também embaixo dele, na prateleira, e a do livro tirado no filtro
+    fica acesa;
+  - na home, os livros ficam numa lâmina de vidro, limpa, sem estante;
+  - a mancha quente que segue o mouse é fraca (21% no claro, 7,5% no escuro), e o hover não pinta o
+    livro de amarelo;
+  - a troca de tema acende e apaga a lâmpada do cabeçalho.
+- **Home:** o caderno "cs" e "Cesar Schutz" grande. O traço à caneta fica embaixo de "A coleção" e de
+  "Artigos recentes". O clique num livro voa até a página dele; a gaveta saiu da home.
+- **Movimento:**
+  - **Entrada da home:** toca só ao chegar de fora ou ao atualizar; nada toca sozinho com a página
+    parada. Os livros chegam, o nome entra da direita para a esquerda, os abajures acendem, a onda sobe
+    e desce, e depois passa o brilho. O caderno abre e a assinatura risca quando os livros param.
+  - **Entre páginas:** a cortina azul com o nome do destino. Por baixo dela, a chegada do blog de antes:
+    em Tags, as fichas jogadas do alto que se arrumam; em Livros, o desfile; nas listas, a montagem das
+    folhas.
+  - **Tags:** as fichas caem ao rolar e ao abrir uma gaveta do fichário.
+- **Páginas:**
+  - **Tags:** a nuvem numa folha e o fichário de aço com as gavetas das letras (na vertical, ao lado, em
+    tela grande; embaixo e na horizontal, no celular).
+  - **Página do livro:** a fileira no alto, que encolhe ao rolar, e as tags em volta do livro. A
+    fileira e os vizinhos só têm os livros da coleção; na página da série, só as séries (sem fileira
+    enquanto houver uma só, D62).
+  - **Post:** a cartolina da cor do livro atrás da ilustração do topo, o "Neste artigo" em post-it, a
+    ficha "Do livro" e o anterior e o próximo como fichas com fita.
+  - **Listas:** a partir de 1100px, o livro 3D à direita de cada artigo, virado para o texto. Na página
+    da tag fica o livro de antes.
+- **Rodapé e subida:**
+  - a ficha de empréstimo deitada sobre o feltro verde, com o nome gigante atrás;
+  - a cordinha de latão à direita para subir ("Puxe para subir");
+  - em página longa, a aba de fichário "topo" na borda direita, que some quando a cordinha aparece.
+- **Barra de rolagem:** uma só em todo lugar que rola, fina, no verde do caderno "cs" (no escuro, um
+  pouco mais claro). A da janela começa embaixo do cabeçalho, e o fio do cabeçalho vai até a borda.
+- **O computador:** o ícone no canto de baixo, à esquerda, abre um macOS de mentira com os livros como
+  pastas, os posts como arquivos, o Terminal e o editor (`src/computador/`, com os dados em `/mac/`).
+  A tecla ` desce o Terminal por cima da página.
+
 ## Overview
 
-Visual **"Folhas claras"** (D26): um blog técnico que parece caderno de estudo, não produto. Fundo
-claro e quente, onde o conteúdo fica em **folhas brancas** com borda fina e sombra leve. **Azul-tinta
+Visual **"Papel e luz"** (D61; antes, as "Folhas claras" da D26): um blog técnico que parece caderno
+de estudo, não produto. Fundo claro (no escuro, o preto esverdeado, D62), onde o conteúdo fica em **papel** (folhas, fichas e etiquetas)
+com a sombra curta da espessura dele, e a luz de latão sobre os livros. **Azul-tinta
 em tudo que é clicável** e só nele. Títulos com serifa (Besley), texto longo em Literata e **a
 interface numa fonte sem serifa** (IBM Plex Sans). As categorias são **livros** de uma coleção, e
 cada uma tem uma cor principal, que também é a cor dela no resto do site.
@@ -401,14 +496,15 @@ mexer na página. O site não tem som.
 
 **Interface (tokens de `src/styles/tokens.ts`).**
 
-- **Papel da página (`neutral`, #F1F0EB):** o fundo claro quente sobre o qual as folhas ficam.
-- **Folha (`surface`, #FFFFFE):** a superfície de todo conteúdo principal.
+- **Papel da página (`neutral`, #F1F0EB; no escuro, #111618):** o fundo claro e quente sobre o qual as
+  folhas ficam.
+- **Folha (`surface`, #FFFFFE; no escuro, #1A2124):** a superfície de todo conteúdo principal.
 - **Tinta (`on-surface`, #1A2124):** texto e traço dos desenhos. **Tinta 2 (#57605E)** para
   metadados e legendas; **tinta 3 (#868D8A)** só para texto grande ou decorativo, e só sobre a folha.
-- **Fio (`rule`, #E2E0D8):** bordas das folhas e divisórias.
+- **Fio (`rule`, #E2E0D8):** divisórias (as folhas não têm mais borda desenhada, D61).
 - **Poço (`well`, #F5F5F4):** código e cabeçalho de tabela, a folha com 4% de tinta.
 - **Azul-tinta (`primary`, #2549B8; #93AEFF no escuro):** a única cor de interação. Links de texto,
-  item ativo do menu, botão "Ler artigo", seletor Lista/Cards, item atual da paginação e
+  item ativo do menu, o botão principal (`.botao-primario`), seletor Lista/Cards, item atual da paginação e
   foco. A navegação do cabeçalho e do rodapé, as pílulas e os botões secundários ficam na tinta e só
   ganham o azul ao passar o mouse. Não serve de decoração.
 - **Caneta preta (D52, C04):** não é token novo, é a tinta de sempre (`on-surface`; no escuro, a
@@ -502,7 +598,8 @@ pequeno da série. Hoje isso vale para as lombadas, em pé e deitadas (`corTexto
 - **Quebras (D39):** títulos com `text-wrap: balance`, o travessão preso à palavra seguinte e, no
   celular, o h1 do artigo encolhe com a tela (até 24px) para o pedaço mais longo caber sem quebrar
   no meio. Código em linha (texto, tabelas, sumário) quebra depois dos pontos (`<wbr>`), nunca no
-  meio do nome; nas tabelas, o que não couber faz a tabela rolar.
+  meio do nome; nas tabelas, o que não couber faz a tabela rolar (no celular, a coluna de texto tem um
+  piso: Components, Tabelas).
 - **Livros:** Bitter (600, 700 e 800) e Newsreader itálico, só nas capas, nas lombadas e nos
   títulos da lateral. A caixa alta com espaçamento largo ("VOLUME 01", "CESAR SCHUTZ",
   "BLOG.CESARSCHUTZ.COM.BR") existe só aqui, como tipografia de livro.
@@ -549,12 +646,11 @@ tinta do tema com 24% (40% ao passar o mouse), por `scrollbar-width`, `scrollbar
 
 ## Elevation & Depth
 
-A profundidade é de **papel sobre mesa**, e não de cartão flutuante. As folhas têm sombra baixa e
-difusa, que sobe um pouco quando o mouse passa:
-
-- claro: `0 1px 2px rgba(40,38,30,.04), 0 10px 28px -18px rgba(40,38,30,.28)`; ao passar o mouse,
-  `0 2px 4px rgba(40,38,30,.05), 0 18px 36px -18px rgba(40,38,30,.35)`;
-- escuro: `0 12px 30px -18px rgba(0,0,0,.8)`; ao passar o mouse, `0 18px 36px -16px rgba(0,0,0,.9)`.
+A profundidade é de **papel sobre papel**, e não de cartão flutuante (D61). Toda folha, ficha e
+etiqueta tem a sombra curta da espessura do papel, tirada do token `sombra-quente` (`--sombra-folha`:
+`0 1px 1px` a 16% e `0 2px 4px -1px` a 22%); no escuro, o anel de 1px com a tinta a 7% e a sombra mais
+escura. A sombra alta (`--sombra-folha-alta`) fica só para o que levanta de verdade: a busca aberta, o
+hover das fichas.
 
 Os livros têm volume próprio (a construção de capa dura, a luz da lombada arredondada, o grão e a
 sombra de contato; na estante e na pilha, a cabeça, os lados e a tábua com espessura; pelo
@@ -562,22 +658,46 @@ sombra de contato; na estante e na pilha, a cabeça, os lados e a tábua com esp
 
 ## Shapes
 
-Folhas com raio de 14px e painéis e caixas dentro delas com 10px (aviso, tabela, `<details>`, nota
-lateral, bloco de código, resultado da busca, item de menu). Marcadores e detalhes em linha (código em linha, `kbd`, quadradinho
+Folhas e papéis colados com 2px, fichas de catálogo com 6px e o painel tingido fora do artigo com 4px
+(D61). Dentro do artigo, painéis e caixas ficam com 10px (aviso, tabela, `<details>`, nota lateral,
+bloco de código). Marcadores e detalhes em linha (código em linha, `kbd`, quadradinho
 do chip, destaque da busca) ficam entre 2 e 4px. Um painel encostado na borda da
-folha herda o canto dela. A pílula (botão "Ler artigo", tags) é totalmente arredondada. As capas
+folha herda o canto dela. Pílulas e botões são etiquetas de papel de 2px (D61); redondos, só os discos de tinta da paginação e de
+Lista/Cards. As capas
 têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm cantos quase retos.
 
 ## Components
 
-- **Folha:** superfície, fio, raio de 14px e sombra leve. Abertura da home, destaque, lista, cada
+- **Folha:** papel liso, canto de 2px, sem borda, a sombra curta e o grão (D61). Abertura da home, destaque, lista, cada
   card, topo do artigo, corpo do artigo e sumário.
 - **Painel do desenho:** a cor da categoria misturada à superfície, 11% no claro e 20% no escuro
   (o exemplo do YAML usa Arquitetura). Ele define `--fig-bg`, e as áreas preenchidas do desenho usam
   essa mesma cor.
 - **Chip de categoria:** quadradinho na cor do livro e nome tingido (34% de tinta no claro, 50% de
   branco no escuro). Leva à página da categoria.
-- **Botão "Ler artigo":** pílula azul-tinta com seta, texto em `on-primary`.
+- **Botão principal (`.botao-primario`):** etiqueta azul-tinta de 2px com seta, texto em `on-primary`
+  (D61).
+- **TL;DR (D63, `Tldr.astro`):** a ficha de catálogo dobrada no alto do texto do post detalhado. Fechada,
+  só a tira em mono ("TL;DR · o artigo em 4 pontos", com "abrir" e a seta no azul-tinta) sobre o fio de
+  2px na cor do livro, com canto de 6px e a sombra curta do papel; aberta, os pontos no corpo do texto.
+  Começa fechada; é um `<details>`, sem JS.
+- **Infográfico (D63):** a figura grande do post resumo, logo depois da introdução: de 3 a 6 quadros (o
+  que é, quem participa, como funciona, as variações, o que levar), com ícones, selos e os tons dos
+  atores, no estilo dos desenhos do corpo (skill `figura`).
+- **Tabelas (D70):** moldura de 10px com o fio `rule`, cabeçalho no poço (`well`) e sem quebra, letra de
+  15,5px e respiro de 9 × 14px nas células. **No celular (até 700px, o corte das figuras):**
+  - **o piso:** a coluna de texto (alguma célula com 30 letras ou mais; quem marca é o
+    `rehype-tabela`) nunca fica com menos de **11em (171px)**. O texto não encolhe até uma palavra por
+    linha; o que não couber faz a tabela rolar de lado, dentro da moldura (a página nunca rola);
+  - **a largura:** o respiro lateral das células cai para 10px, e a tabela de dentro de um `<details>`
+    vai de borda a borda da caixa (sem a moldura própria: a da caixa basta);
+  - **o aviso:** a tabela que passa da moldura (mais de 12px, ou seja, com letra de fora) ganha embaixo
+    "Arraste para o lado para ver a tabela inteira.", na letra do aviso das figuras (IBM Plex Sans 13px,
+    tinta 2). Diferente das figuras, que no celular sempre rolam, aqui o aviso só existe enquanto a
+    tabela passa (o script do artigo mede; sem JS, ela rola igual, sem o aviso).
+
+  Rótulo, número, versão e sim/não não têm piso. No papel, nada disso vale: a tabela encolhe para caber
+  na folha. Célula é para frase curta: parágrafo dentro de célula continua alto em qualquer largura.
 - **Caneta preta da interface** (D52, C04): a caneta preta desenha, a azul marca. Os ícones de
   calendário, relógio, código-fonte, lupa, lua e sol saem de `src/lib/traco.ts`, na tinta a 78%, traço
   1,7, **parados** (aparecem dezenas de vezes por tela: identidade no desenho, sem movimento); GitHub
@@ -701,8 +821,10 @@ Cada post tem uma ilustração, e os diagramas seguem o mesmo traço:
 - **Todo desenho é explicado no texto** (D58): o texto apresenta o desenho e diz o que olhar nele.
 - **Os desenhos do corpo** (D58; regras na skill `figura` e na `lousa`): a figura (`Figura`), a lousa
   (`Lousa`, de passos ou de comparação), a animação com play (`Animacao`), os logos das ferramentas
-  (`src/marcas/`, no texto com `Ferramenta`) e o print como evidência (`Evidencia`: borda, a linha com
-  o que é e de onde, e o clique abre a origem). Nem todo post tem todos.
+  (`src/marcas/`, no texto com `Ferramenta`, só como a regra de marca do dono permite, D64) e o print
+  como evidência (`Evidencia`: borda, a linha com o que é e de onde, e o clique abre a origem; o print
+  largo, de letra miúda, rola de lado no celular em vez de encolher, com `larga`, e pode começar pela
+  parte que importa, com `foco`, D66). Nem todo post tem todos.
 
 **Técnica (D11, D35):** SVG **desenhado à mão**, em coordenadas, com classes e variáveis CSS (sem
 `id`, sem `defs` próprios e sem cor fixa). O tremor é o filtro SVG global `feTurbulence`
@@ -810,7 +932,7 @@ caso de dúvida, vale este arquivo.
 | **Caneta da leitura** | `BarraLeitura.astro` | Rolagem (sem animação própria) e CSS | D45; D58 (cor do livro) |
 | **A busca nasce do campo** | `Busca.astro` | GSAP (Flip) e `@starting-style` | D44, D49; D52 (B06) |
 | **Filtro por livro** | `ListaFiltrada.astro`, `contador.ts` | GSAP e CSS (o contador) | D47, D49 |
-| **Troca Lista / Cards** | `SeletorModo.astro` | Web Animations API | D42, D49 |
+| **Troca Lista / Cards** | `SeletorModo.astro` | Web Animations API e CSS (a tinta) | D42, D49; D61 e D72 (a tinta) |
 | **A caneta que marca** | `traco.css` | CSS | D49; D52 (C04) |
 | **O ícone de tag inclina** | `IconeTag.astro`, `PilulaTag.astro` | CSS | D52 (B11) |
 | **A caneca** | classe `fumaca` (`desenho.css`) | CSS | D52 (C04) |

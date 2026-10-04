@@ -365,6 +365,20 @@
 }
 
 /*
+ * O chão da estante de filtro: na rodada 4, o nicho curto (nicho.css), com os abajures; a sombra quente embaixo
+ * da fileira e o contato de cada lombada saíram daqui.
+ */
+
+/* No lugar do aparador cinza, só o vão antes da série (a peça fica, vazia, com a mesma largura). */
+.estante-filtro .aparador {
+  background: none;
+}
+
+.estante-filtro .aparador::after {
+  content: none;
+}
+
+/*
  * O pé da estante de filtro (D52): uma linha só embaixo da tábua, onde a legenda do mouse e o rótulo
  * da página (o slot) dividem o lugar. Com a legenda escrita, o rótulo some por baixo dela, sem a linha
  * mudar de altura.
@@ -457,186 +471,4 @@
   }
 }
 
-/* ---------- gaveta: o livro que sai da estante e o sumário (Gaveta.astro, D43) ---------- */
-
-/* A gaveta abre dentro da folha da abertura (D26), separada da estante por um fio. */
-.gaveta {
-  margin-top: 28px;
-  padding: 40px 0 12px;
-  border-top: 1px solid var(--rule);
-}
-
-.gaveta[hidden] {
-  display: none;
-}
-
-.livro-aberto {
-  display: grid;
-  grid-template-columns: var(--cw) minmax(0, 1fr);
-  gap: 56px;
-  align-items: start;
-}
-
-@media (max-width: 760px) {
-  .gaveta {
-    margin-top: 20px;
-    padding: 28px 0 8px;
-  }
-
-  .livro-aberto {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 28px;
-  }
-}
-
-/* O livro da gaveta com a lupa no canto (o livro ampliado, D33). É ele que voa da lombada até aqui. */
-.livro-na-gaveta {
-  position: relative;
-  justify-self: center;
-}
-
-/* Na gaveta, o livro é o mesmo de Categorias e da página do livro, só sem a sombra no chão (D57). */
-.livro-na-gaveta .chao {
-  display: none;
-}
-
-.topo-sumario {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 6px 18px;
-  margin-bottom: 14px;
-}
-
-.topo-sumario h2 {
-  margin: 0;
-  font-size: 26px;
-}
-
-.topo-sumario .meta-sumario {
-  font-family: var(--font-ui);
-  font-size: 14px;
-  color: var(--ink-2);
-}
-
-/* "Ver o livro" (o caminho principal) e "Fechar livro", à direita do título; no celular, embaixo. */
-.acoes-livro {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-left: auto;
-}
-
-@media (max-width: 760px) {
-  .acoes-livro {
-    margin: 4px 0 0;
-  }
-}
-
-.indice-livro {
-  max-height: 300px;
-  margin: 0;
-  padding: 0 10px 0 0;
-  overflow: auto;
-  list-style: none;
-  scrollbar-width: thin;
-}
-
-@media (max-width: 760px) {
-  .indice-livro {
-    max-height: 380px;
-  }
-}
-
-/*
- * Lista longa (a série, com os títulos inteiros): enquanto há mais para rolar, o pé dela esmaece, para a
- * linha cortada não parecer o fim; perto do fim, o esmaecido sai. Sem rolagem, a linha do tempo da
- * rolagem fica inativa e nada esmaece. Onde o navegador não liga animação à rolagem, corta como antes.
- */
-@property --esmaece {
-  syntax: "<length>";
-  inherits: false;
-  initial-value: 0px;
-}
-
-@supports (animation-timeline: scroll()) {
-  .indice-livro {
-    mask-image: linear-gradient(to bottom, black calc(100% - var(--esmaece)), transparent);
-    animation: fim-da-lista linear both;
-    animation-timeline: scroll(self);
-    animation-range: calc(100% - 36px) 100%;
-  }
-}
-
-@keyframes fim-da-lista {
-  from {
-    --esmaece: 36px;
-  }
-
-  to {
-    --esmaece: 0px;
-  }
-}
-
-.indice-livro .ano {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  padding: 14px 0 4px;
-  background: var(--paper-hi);
-  font-family: var(--font-titulo);
-  font-weight: 600;
-  font-size: 15px;
-  color: var(--ink-2);
-  font-variant-numeric: lining-nums;
-}
-
-.indice-livro .ano:first-child {
-  padding-top: 2px;
-}
-
-/* Com o título inteiro (D33), o item pode quebrar: o pontilhado e a data ficam na última linha. */
-.indice-livro a {
-  display: grid;
-  grid-template-columns: minmax(0, max-content) minmax(18px, 1fr) auto;
-  align-items: last baseline;
-  gap: 10px;
-  padding: 7px 0;
-  color: var(--ink);
-  text-decoration: none;
-}
-
-.indice-livro .pontilhado {
-  border-bottom: 1px dotted var(--ink-3);
-  opacity: 0.8;
-  transform: translateY(-0.28em);
-}
-
-.indice-livro .dia {
-  font-family: var(--font-ui);
-  font-size: 14px;
-  color: var(--ink-2);
-  white-space: nowrap;
-}
-
-.indice-livro .parte {
-  margin-right: 8px;
-  font-style: italic;
-  color: var(--ink-2);
-}
-
-/* O sinal do código-fonte (D52, C03): só o ícone, colado ao fim do título, na tinta 2. */
-.indice-livro .sinal-codigo {
-  margin-left: 0.45em;
-  color: var(--ink-2);
-  vertical-align: -0.1em;
-}
-
-.indice-livro a:hover .titulo-item {
-  color: var(--acento);
-}
-
-.sem-artigos {
-  margin: 8px 0 0;
-  color: var(--ink-2);
-}
+/* A gaveta (o livro que sai da estante e o sumário) está em gaveta.css (Gaveta.astro). */

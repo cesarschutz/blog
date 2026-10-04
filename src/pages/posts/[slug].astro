@@ -13,6 +13,7 @@ import BarraLeitura from "../../components/BarraLeitura.astro";
 import TopoArtigo from "../../components/TopoArtigo.astro";
 import Atalhos from "../../components/Atalhos.astro";
 import Sumario from "../../components/Sumario.astro";
+import Tldr from "../../components/Tldr.astro";
 import RodapeArtigo from "../../components/RodapeArtigo.astro";
 import Comentarios from "../../components/Comentarios.astro";
 import { AUTOR, COMENTARIOS_LIGADOS } from "../../data/site";
@@ -109,14 +110,21 @@ const jsonLd = {
   <BarraLeitura />
   <article class="artigo wrap" data-artigo data-pagefind-body style={`--cor:${resumo.cor}`}>
     <div class:list={["artigo-grade", { "com-lateral": temSumario || livroDoPost }]}>
+      {/*
+        Protótipo 14 (G9) e rodada 3 (área 5): o topo (a foto colada na largura toda e o cabeçalho embaixo
+        dela, sem o índice das seções, F14-8) ocupa as duas colunas; o post-it "Neste artigo" e a ficha "Do
+        livro" começam ao lado do texto, alinhados ao topo da folha do corpo, e andam juntos (F12-6, F13-4).
+      */}
+      <div class="artigo-principal">
+      <TopoArtigo post={resumo} livro={livroDoPost} />
       {(temSumario || livroDoPost) && (
         <Sumario secoes={temSumario ? secoes : []} variante="lateral" minutos={resumo.minutos} livro={livroDoPost} atual={resumo} />
       )}
-      <div class="artigo-principal">
-      <TopoArtigo post={resumo} livro={livroDoPost} />
       <div class="folha artigo-folha">
         <div class="artigo-corpo">
           <div class="prose" data-corpo>
+            {/* O TL;DR do post detalhado (D63), fechado, antes de tudo. */}
+            {post.data.tldr && <Tldr pontos={post.data.tldr} />}
             {temSumario && <Sumario secoes={secoes} variante="recolhivel" />}
             <Content />
           </div>

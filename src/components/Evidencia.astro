@@ -7,6 +7,11 @@
  *
  *   import print from "../evidencias/<slug>/documentacao.png";
  *   <Evidencia imagem={print} alt="…" fonte="https://…" legenda="Documentação da AWS: …" />
+ *
+ * Com `larga`, o print largo e de letra miúda (a tela de um terminal) não encolhe no celular: até
+ * 700px ele fica com 720px e rola de lado dentro da moldura, como as figuras (D66). Com `foco`, a
+ * parte que importa é a da direita (o painel ao lado da conversa): no celular o print começa por ela,
+ * do tamanho em que essa fração da largura cabe na tela, e o resto fica rolando para a esquerda.
  */
 import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
@@ -19,16 +24,33 @@ interface Props {
   fonte: string;
   /** O que é, curto: "Documentação da AWS, chaves de partição". */
   legenda: string;
+  /** Print largo, de letra miúda: no celular, rola de lado em vez de encolher. */
+  larga?: boolean;
+  /** Só com `larga`: a fração da largura, contada da direita, que tem de caber na tela do celular (de 0 a 1). */
+  foco?: number;
 }
 
-const { imagem, alt, fonte, legenda } = Astro.props;
+const { imagem, alt, fonte, legenda, larga = false, foco } = Astro.props;
 const site = new URL(fonte).hostname.replace(/^www\./, "");
+const temFoco = larga && typeof foco === "number" && foco > 0 && foco < 1;
+// O print largo ocupa a coluna do texto inteira (até 1121px em 1280px de janela): as fontes maiores são
+// para a tela de alta densidade.
+const larguras = larga ? [720, 1120, 1600, 2240] : [640, 1120, 1600];
+const tamanhos = larga
+  ? temFoco
+    ? `(max-width: 700px) ${Math.round(100 / (foco as number))}vw, (max-width: 1399px) 88vw, 946px`
+    : "(max-width: 700px) 720px, (max-width: 1399px) 88vw, 946px"
+  : "(max-width: 760px) 100vw, 760px";
 ---
 
-<figure class="evidencia">
+<figure
+  class:list={["evidencia", { "evidencia-larga": larga, "evidencia-foco": temFoco }]}
+  style={temFoco ? `--foco: ${foco}` : undefined}
+>
   <a class="evidencia-imagem" href={fonte} target="_blank" rel="noopener">
-    <Image src={imagem} alt={alt} widths={[640, 1120, 1600]} sizes="(max-width: 760px) 100vw, 760px" />
+    <Image src={imagem} alt={alt} widths={larguras} sizes={tamanhos} />
   </a>
+  {larga && <p class="dica-rolar" aria-hidden="true">Arraste para o lado para ver a imagem inteira.</p>}
   <figcaption>
     {legenda} · <a href={fonte} target="_blank" rel="noopener">{site}</a>
   </figcaption>
@@ -64,5 +86,39 @@ const site = new URL(fonte).hostname.replace(/^www\./, "");
 
   figcaption a {
     color: inherit;
+  }
+
+  .dica-rolar {
+    display: none;
+  }
+
+  @media (max-width: 700px) {
+    .evidencia-larga .evidencia-imagem {
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+    }
+
+    .evidencia-larga .evidencia-imagem :global(img) {
+      width: 720px;
+      max-width: none;
+    }
+
+    /* Com foco, a rolagem começa pela direita (num bloco da direita para a esquerda, o início é a
+       borda direita) e a imagem tem a largura em que a fração do foco ocupa a moldura inteira. */
+    .evidencia-foco .evidencia-imagem {
+      direction: rtl;
+    }
+
+    .evidencia-foco .evidencia-imagem :global(img) {
+      width: calc(100% / var(--foco));
+    }
+
+    .evidencia-larga .dica-rolar {
+      display: block;
+      margin: 8px 0 0;
+      font-family: var(--font-ui);
+      font-size: 13px;
+      color: var(--ink-2);
+    }
   }
 </style>

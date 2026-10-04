@@ -5,6 +5,11 @@
  * revista) inline: fora da gaveta não há quem busque o desenho adiado (D33). Tem o mesmo
  * `view-transition-name` do livro deitado do painel (PainelHome): ao abrir a página, o navegador leva
  * o livro da pilha até aqui.
+ *
+ * Rodada 3 (área A): todo livro em pé é um livro vivo (livro-vivo.css e .ts): ao passar o mouse, focar ou
+ * tocar, ele gira com mola de 38° para 20°, sobe uns 6px, acompanha o mouse e acende o brilho na capa e
+ * na lombada; o chão é a sombra quente. Um cartão em volta pode disparar o mesmo hover inteiro com
+ * `data-livro-gira`; `parado` (ou `data-livro-parado` num ancestral) desliga.
  */
 import Livro3D from "./Livro3D.astro";
 import { ICONES } from "../lib/icones";
@@ -23,15 +28,30 @@ interface Props {
   transicao?: "fixa" | "ao-clicar";
   /** Clicar no livro abre o livro ampliado (LivroAmpliado, D33): o topo da página do livro. */
   ampliavel?: boolean;
+  /**
+   * Protótipo 14 (G2): as medidas multiplicadas por `--kc` (1 por padrão), para a estante da coleção
+   * encolher os livros quando a tela não comporta nem as lombadas.
+   */
+  fluido?: boolean;
+  /** Protótipo 14: o desenho da capa vem depois da primeira pintura (a coleção da home busca, Colecao.astro). */
+  desenho?: "inline" | "adiado";
+  /** As camadas de página por baixo da capa (3, como hoje); a coleção da home não precisa delas. */
+  folhas?: number;
+  /**
+   * Rodada 3 (área A): o livro não responde ao mouse (sem o giro com mola, o seguir e o brilho do livro
+   * vivo, livro-vivo.css e .ts), para os lugares onde o livro já está sendo animado por outra peça. O mesmo
+   * que `data-livro-parado` num ancestral.
+   */
+  parado?: boolean;
 }
 
-const { livro, altura = 300, transicao = "fixa", ampliavel = false } = Astro.props;
+const { livro, altura = 300, transicao = "fixa", ampliavel = false, fluido = false, desenho = "inline", folhas = 3, parado = false } = Astro.props;
 const m = medidasDoLivro3D(livro.emPe.largura, altura);
-const px = (v: number) => `${Math.round(v * 100) / 100}px`;
+const px = (v: number) => (fluido ? `calc(${Math.round(v * 100) / 100}px * var(--kc, 1))` : `${Math.round(v * 100) / 100}px`);
 const estilo = [
   coresDoLivroCss(livro),
   `--h:${livro.emPe.altura}`,
-  `--u:${m.u}px`,
+  fluido ? `--u:calc(${m.u}px * var(--kc, 1))` : `--u:${m.u}px`,
   `--bh:${px(m.bh)}`,
   `--cw:${px(m.cw)}`,
   `--sw:${px(m.sw)}`,
@@ -52,8 +72,9 @@ const estilo = [
   data-dados={ampliavel ? dadosDoLivro(livro) : undefined}
   data-href={ampliavel ? livro.href : undefined}
   data-paginas={ampliavel ? paginasDoLivro(livro) : undefined}
+  data-livro-parado={parado ? "" : undefined}
 >
-  <Livro3D livro={livro} desenho="inline" folhas={3} />
+  <Livro3D livro={livro} desenho={desenho} folhas={folhas} />
   {
     ampliavel && (
       <button type="button" class="lupa" data-ampliar aria-label={`Ampliar o livro ${livro.nome}`} title="Ampliar">

@@ -8,10 +8,8 @@
  *   teclado faz o mesmo. Só com mouse; no toque, a lombada abre o livro direto (Gaveta.astro, que faz o
  *   gesto de tirar e guardar, estante-gesto.ts).
  *
- * - em repouso (só a home, `emRepouso`): depois de 3s sem mouse, toque, tecla ou rolagem, com a estante
- *   ao menos metade visível e a aba ativa, a cada 4 a 7s um livro sorteado é tocado na cabeça: tomba um
- *   pouco e volta ao lugar. Qualquer interação para tudo na hora e devolve o livro ao lugar. Desligada
- *   com movimento reduzido.
+ * - em repouso: nada (rodada 4, H11). A estante não se mexe sozinha com a página parada; antes, depois de 3s
+ *   sem gesto, um livro sorteado era tocado na cabeça a cada 4 a 7s. Só o mouse, o foco e o toque a mexem.
  *
  * O livro fora da prateleira (na mão ou na gaveta) é da gaveta, e o vizinho tombado não espia: a
  * estante viva não mexe neles. O repouso de cada lombada (a inclinada da home, 6°; a escolhida no
@@ -19,14 +17,13 @@
  * transformações. Com movimento reduzido, nada se move (a legenda continua).
  *
  * Durante a abertura da home (D51, `data-abertura` no <html>), a estante é a cena: não responde ao mouse
- * nem ao foco (sem tombar e sem a legenda, B12 da D52) e o repouso espera ela acabar (`cs:aberto`).
+ * nem ao foco (sem tombar e sem a legenda, B12 da D52).
  */
 import { descanso, foraDaPrateleira } from "./estante-gesto";
 import { adiantar, carregarGsap, movimentoReduzido, temMouse, type GSAP } from "./gsap";
 
 /** Quanto o livro tocado na cabeça tomba para a frente. */
 const TOQUE = -5;
-const OCIOSO = 3000;
 
 const escolhida = (el: HTMLElement) => (el.getAttribute("aria-pressed") === "true" ? -10 : 0);
 const naAbertura = () => document.documentElement.hasAttribute("data-abertura");
@@ -46,7 +43,7 @@ export function prepararPrateleira(gsap: GSAP, prateleira: HTMLElement) {
   }
 }
 
-export function estanteViva(raiz: HTMLElement, { emRepouso = false } = {}) {
+export function estanteViva(raiz: HTMLElement) {
   const lombadas = [...raiz.querySelectorAll<HTMLElement>(".lombada")];
   const legenda = raiz.parentElement?.querySelector<HTMLElement>("[data-legenda-estante]");
   if (!lombadas.length) return;
@@ -93,76 +90,6 @@ export function estanteViva(raiz: HTMLElement, { emRepouso = false } = {}) {
         return x >= caixa.left - 3 && x <= caixa.right + 3;
       }) ?? null
     );
-  }
-
-  // ---------- em repouso ----------
-  let relogio = 0;
-  let visivel = false;
-  let ativo = false;
-  let proxima: gsap.core.Tween | null = null;
-  let espiada: gsap.core.Timeline | null = null;
-  let espiado: HTMLElement | null = null;
-
-  function iniciarRepouso() {
-    if (!gsap || ativo || !visivel || document.hidden || movimentoReduzido.matches || sob || naAbertura()) return;
-    const g = gsap;
-    ativo = true;
-    const espiar = () => {
-      const livres = lombadas.filter((el) => !foraDaPrateleira(el) && el.dataset.tombado === undefined);
-      const el = livres[Math.floor(Math.random() * livres.length)];
-      if (el) {
-        espiado = el;
-        espiada = g
-          .timeline()
-          .to(el, { rotationX: -7, duration: 0.55, ease: "power2.out" })
-          .to(el, { rotationX: 0, duration: 0.3, ease: "power2.in" }, "+=0.5")
-          .to(el, { rotationX: -0.8, duration: 0.07, ease: "power1.out" })
-          .to(el, { rotationX: 0, duration: 0.12, ease: "power1.in" });
-      }
-      proxima = g.delayedCall(4 + Math.random() * 3, espiar);
-    };
-    proxima = g.delayedCall(1.6, espiar);
-  }
-
-  function pararRepouso() {
-    if (!ativo || !gsap) return;
-    ativo = false;
-    proxima?.kill();
-    espiada?.kill();
-    proxima = espiada = null;
-    if (espiado && espiado !== sob && !foraDaPrateleira(espiado) && espiado.dataset.tombado === undefined) {
-      gsap.to(espiado, { rotationX: 0, duration: 0.25, ease: "power2.in", overwrite: "auto" });
-    }
-    espiado = null;
-  }
-
-  // Qualquer interação para tudo na hora e recomeça a contar os 3 segundos.
-  function mexeu() {
-    pararRepouso();
-    clearTimeout(relogio);
-    if (visivel && !document.hidden) relogio = window.setTimeout(iniciarRepouso, OCIOSO);
-  }
-
-  if (emRepouso && !movimentoReduzido.matches) {
-    new IntersectionObserver(
-      ([e]) => {
-        visivel = e.isIntersecting;
-        mexeu();
-      },
-      { threshold: 0.5 },
-    ).observe(raiz);
-    for (const evento of ["pointermove", "pointerdown", "keydown", "wheel", "touchstart", "scroll"]) {
-      addEventListener(evento, mexeu, { passive: true });
-    }
-    document.addEventListener("visibilitychange", mexeu);
-    // A abertura acabou: começa a contar os 3 segundos do repouso.
-    addEventListener("cs:aberto", mexeu);
-    movimentoReduzido.addEventListener("change", mexeu);
-    // Sem mouse, o GSAP vem quando a página fica ociosa, para o repouso poder começar.
-    adiantar(raiz, () => carregarGsap().then((g) => {
-      preparar(g);
-      mexeu();
-    }));
   }
 
   // O foco do teclado faz o mesmo que o mouse; a legenda aparece mesmo com movimento reduzido.

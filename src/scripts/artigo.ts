@@ -4,7 +4,7 @@
  * D52), os vistos e, sem a lateral, a seção no cabeçalho com a folha do sumário), notas laterais que abrem no
  * lugar nas telas menores, visor de imagens e a apresentação (setas, contador e tela cheia). Sem JS o artigo continua inteiro: as
  * notas abrem por âncora, a apresentação rola de lado e o PDF baixa. O Copiar do código faz o gesto de
- * copiar do site (E3, D49).
+ * copiar do site (E3, D49). A tabela que passa da tela no celular ganha o aviso "Arraste para o lado" (D70).
  */
 import { ICONES } from "../lib/icones";
 import { tracoDeCaneta } from "../lib/traco";
@@ -149,21 +149,34 @@ function leitura() {
 }
 
 let agendado = false;
+let porcentagemNaTela = -1;
+/**
+ * A cada quadro da rolagem (rodada 3, medido com a CPU 4× mais lenta): primeiro as leituras (onde estão
+ * o artigo e os títulos), depois as escritas, para o navegador não recalcular o estilo no meio do
+ * quadro; e o "NN% lido" é uma variável do CSS (Sumario.astro), mudada só quando o número muda: trocar
+ * o texto do HTML a cada quadro fazia o navegador reavaliar os `:has()` da página inteira e recalcular
+ * o estilo de uns mil elementos por quadro (o código, a caneta, as lousas).
+ */
 function aoRolar() {
   agendado = false;
+  const lido = artigo && barra ? Math.min(1, Math.max(0, -topoNaJanela(artigo) / Math.max(artigo.offsetHeight - innerHeight, 1))) : 0;
+  const agora = secoes.length ? leitura() : null;
   if (artigo && barra) {
-    const lido = Math.min(1, Math.max(0, -topoNaJanela(artigo) / Math.max(artigo.offsetHeight - innerHeight, 1)));
     barra.style.setProperty("--lido", lido.toFixed(4));
     barra.classList.toggle("escrevendo", lido > 0.002);
-    if (progressoTexto) progressoTexto.textContent = `${Math.round(lido * 100)}% lido`;
+    const porcentagem = Math.round(lido * 100);
+    if (progressoTexto && porcentagem !== porcentagemNaTela) {
+      porcentagemNaTela = porcentagem;
+      progressoTexto.style.setProperty("--lido-pct", String(porcentagem));
+    }
     if (progressoFalta && minutosFalta && minutosDoArtigo) {
       const resto = Math.max(1, Math.ceil(minutosDoArtigo * (1 - lido)));
       if (resto !== minutosNaTela) mudarContador(minutosFalta, (minutosNaTela = resto));
       progressoFalta.classList.toggle("no-fim", lido > 0.995);
     }
   }
-  if (!secoes.length) return;
-  ultimaLeitura = leitura();
+  if (!agora) return;
+  ultimaLeitura = agora;
   if (ultimaLeitura.i !== atual) marcarSumario(atual, ultimaLeitura.i);
   moverTinta();
 }
@@ -497,6 +510,23 @@ desenharFio();
 aoRolar();
 marcarSubsecao();
 
+// ---------- a capa viva no anterior e no próximo (rodada 3, T10) ----------
+
+// O detalhe do tipo evento (balança, pulsa, pisca, sobe, treme, escreve, enche) vai até o fim mesmo que
+// o mouse saia no meio, como nos cards (capa-viva.ts): a classe fica 1,4s (o evento mais longo dura 1,3s).
+// Com o dedo, o toque também mexe o desenho antes de a página trocar.
+const EVENTOS_DA_CAPA = ".mexe-balanca, .mexe-pulsa, .mexe-pisca, .mexe-sobe, .mexe-treme, .mexe-escreve, .mexe-enche";
+for (const cartao of document.querySelectorAll<HTMLElement>(".vizinhos .vizinho")) {
+  if (!cartao.querySelector(EVENTOS_DA_CAPA)) continue;
+  const mexer = () => {
+    if (reduzir.matches || cartao.classList.contains("mexendo")) return;
+    cartao.classList.add("mexendo");
+    setTimeout(() => cartao.classList.remove("mexendo"), 1400);
+  };
+  cartao.addEventListener("pointerenter", mexer);
+  cartao.addEventListener("focus", () => cartao.matches(":focus-visible") && mexer());
+}
+
 // ---------- notas laterais ----------
 
 for (const chamada of document.querySelectorAll<HTMLAnchorElement>("[data-ref-nota]")) {
@@ -690,6 +720,43 @@ if (corpoDoArtigo?.querySelector(".expressive-code .copy")) {
         if (botao) mostrarCopiado(botao, "Copiado", "");
       }
   }).observe(corpoDoArtigo, { childList: true, subtree: true });
+}
+
+// ---------- o aviso das tabelas que rolam de lado (D70) ----------
+
+// No celular, a tabela que não cabe rola dentro da moldura (prosa.css). O aviso "Arraste para o lado"
+// existe só enquanto ela passa mesmo da caixa: mais que o respiro da última célula (10px), ou seja,
+// quando alguma letra fica de fora. Aqui só se mede; quem mostra o aviso é o CSS, até 700px.
+const SOBRA_DA_TABELA = 12;
+const tabelas = [...document.querySelectorAll<HTMLElement>(".prose .tabela")];
+if (tabelas.length && "ResizeObserver" in window) {
+  const avisar = (caixa: HTMLElement) => {
+    const rola = caixa.scrollWidth - caixa.clientWidth > SOBRA_DA_TABELA;
+    if (rola === caixa.hasAttribute("data-rola")) return;
+    caixa.toggleAttribute("data-rola", rola);
+    const vizinho = caixa.nextElementSibling;
+    if (!rola) {
+      if (vizinho?.classList.contains("dica-rolar")) vizinho.remove();
+      return;
+    }
+    const aviso = document.createElement("p");
+    aviso.className = "dica-rolar";
+    aviso.setAttribute("aria-hidden", "true");
+    aviso.textContent = "Arraste para o lado para ver a tabela inteira.";
+    caixa.after(aviso);
+  };
+  // A caixa muda com a janela; a tabela, com as fontes e com o <details> que abre.
+  const observador = new ResizeObserver((entradas) => {
+    for (const { target } of entradas) {
+      const caixa = target.closest<HTMLElement>(".tabela");
+      if (caixa) avisar(caixa);
+    }
+  });
+  for (const caixa of tabelas) {
+    observador.observe(caixa);
+    const tabela = caixa.querySelector("table");
+    if (tabela) observador.observe(tabela);
+  }
 }
 
 // ---------- impressão (D54) ----------

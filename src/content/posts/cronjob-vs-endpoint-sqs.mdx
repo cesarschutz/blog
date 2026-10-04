@@ -8,7 +8,7 @@ draft: false
 ---
 
 import Figura from "../../components/Figura.astro";
-import Lousa from "../../components/Lousa.astro";
+import FiguraPassos from "../../components/FiguraPassos.astro";
 import Ferramenta from "../../components/Ferramenta.astro";
 
 Um cenário comum: um microsserviço Spring Boot roda no <Ferramenta nome="kubernetes" href="https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/">Kubernetes</Ferramenta> como API e passa a precisar de uma rotina periódica, por exemplo ler uma lista de registros do banco, aplicar validações e publicar parte deles num tópico SNS. A lógica de negócio já está no serviço, então a pergunta não é *se* o código será reaproveitado, e sim :marca[*onde* essa rotina vai rodar].
@@ -21,7 +21,7 @@ Duas abordagens aparecem com frequência. Ambas funcionam e reaproveitam o códi
 
 ### A — CronJob com a mesma imagem e outro perfil do Spring
 
-A API continua no Deployment de sempre. No horário agendado, o CronJob cria um Job, que sobe um pod com **a mesma imagem da API** e o perfil `batch`: sem servidor web, esse pod executa o job com <Ferramenta nome="spring" href="https://spring.io/projects/spring-batch">Spring Batch</Ferramenta> e termina. O exit code informa ao Kubernetes se deu certo.
+A API continua no Deployment de sempre. No horário agendado, o CronJob cria um Job, que sobe um pod com **a mesma imagem da API** e o perfil `batch`: sem servidor web, esse pod executa o job com Spring Batch e termina. O exit code informa ao Kubernetes se deu certo.
 
 No diagrama, cada cor é um papel: o Kubernetes em azul, o pod do job em verde, a API em âmbar e o destino, o SNS, em petróleo. Os números seguem a ordem da execução, e os pontos que correm pelas setas também. Com o mouse numa cor da legenda, a figura destaca só aquele papel.
 
@@ -29,7 +29,7 @@ No diagrama, cada cor é um papel: o Kubernetes em azul, o pod do job em verde, 
 
 ### B — CronJob chama um endpoint que enfileira uma mensagem no SQS, e a própria API a consome
 
-No horário agendado, o CronJob chama um endpoint da API com `curl`. O endpoint publica uma única mensagem numa fila <Ferramenta nome="sqs" href="https://aws.amazon.com/sqs/">SQS</Ferramenta>, um pedido para processar os pendentes, e responde `202 Accepted`, sem consultar o banco. Um dos pods da API consome essa mensagem (por exemplo, com o `@SqsListener` do Spring Cloud AWS): lê os registros pendentes no banco e processa um a um, publicando no SNS e marcando o status de cada registro. Se der erro, a mensagem não é apagada e volta a ficar visível na fila (ela nunca sai de lá; só fica invisível enquanto é processada), e a nova tentativa segue de onde a anterior parou, porque :grifo[o banco diz o que já foi enviado]. Depois de N tentativas, a mensagem vai para a DLQ (*dead-letter queue*, a fila das mensagens que falharam).
+No horário agendado, o CronJob chama um endpoint da API com `curl`. O endpoint publica uma única mensagem numa fila SQS, um pedido para processar os pendentes, e responde `202 Accepted`, sem consultar o banco. Um dos pods da API consome essa mensagem (por exemplo, com o `@SqsListener` do Spring Cloud AWS): lê os registros pendentes no banco e processa um a um, publicando no SNS e marcando o status de cada registro. Se der erro, a mensagem não é apagada e volta a ficar visível na fila (ela nunca sai de lá; só fica invisível enquanto é processada), e a nova tentativa segue de onde a anterior parou, porque :grifo[o banco diz o que já foi enviado]. Depois de N tentativas, a mensagem vai para a DLQ (*dead-letter queue*, a fila das mensagens que falharam).
 
 O diagrama usa as mesmas cores, com a fila e a DLQ em roxo, a cor da abordagem B, e o caminho de erro em vermelho. O lote inteiro passa pelo listener, dentro dos mesmos pods que atendem as requisições.
 
@@ -75,19 +75,18 @@ Na abordagem B, um deploy da API feito durante a janela do batch acontece no mei
 - como não foi concluída, a mensagem não foi apagada da fila: reaparece depois do visibility timeout (o prazo em que a mensagem recebida fica invisível para os outros consumidores), e um pod da versão nova a recebe e segue de onde o anterior parou, pelo status no banco. Se o registro que estava em andamento já tinha sido publicado no SNS, mas ainda não tinha sido marcado, :nota[ele é enviado de novo]{texto="duplicado no SNS"};
 - o lote termina :duplo[em duas versões do código]: parte processada pela antiga, parte pela nova.
 
-A lousa põe as duas abordagens no mesmo relógio: um lote que leva 1h10, um deploy da API às 03:30 e, na B, um visibility timeout de 2 horas. Em cima, na A, o deploy troca a API de versão, e o pod do job segue até o fim. Embaixo, na B, o deploy cancela o lote no meio, e a mensagem fica invisível na fila até as 05:00. O play mostra o tempo correndo, e arrastar sobre o desenho leva a qualquer instante.
+A figura põe as duas abordagens no mesmo relógio: um lote que leva 1h10, um deploy da API às 03:30 e, na B, um visibility timeout de 2 horas. Em cima, na A, o deploy troca a API de versão, e o pod do job segue até o fim. Embaixo, na B, o deploy cancela o lote no meio, e a mensagem fica invisível na fila até as 05:00. Em **Passo a passo**, a A aparece inteira primeiro, e depois a B, um trecho por vez.
 
-<Lousa
-  desenho="cronjob-vs-endpoint-sqs/deploy-no-meio-do-lote"
-  rotulo="Lousa comparando um deploy da API às 03:30 nas duas abordagens: na A, a API passa da v1 para a v2, e o pod do job segue e termina às 04:10 na v1; na B, o pod v1 é cancelado no meio do lote, a mensagem fica invisível até as 05:00, e só então o pod v2 a recebe e retoma de onde a v1 parou, com o lote parado 1h30 e terminado em duas versões."
-  duracao={12}
-  estados={[
-    { de: 0, texto: "03:00: nas duas abordagens, o lote começa na v1" },
-    { de: 0.19, texto: "03:30: o deploy troca a API da v1 para a v2; na A, o pod do job segue; na B, o lote é cancelado no meio, e a mensagem não é apagada" },
-    { de: 0.45, texto: "04:10: na A, o job termina na versão com que começou; na B, a v2 está no ar, mas a mensagem continua invisível" },
-    { de: 0.65, texto: "05:00: na B, a mensagem reaparece, e a v2 retoma de onde a v1 parou, pelo status no banco, depois de 1h30 parado" },
-    { de: 0.94, texto: "05:40: na B, o lote termina na v2, com parte processada por cada versão" },
+<FiguraPassos
+  figura="cronjob-vs-endpoint-sqs/deploy-em-passos"
+  passos={[
+    "**A:** o deploy não toca no pod do job, que termina às 04:10 na v1.",
+    "**B:** o lote começa às 03:00 no pod v1; às 03:30, o deploy o cancela.",
+    "**B:** a mensagem fica invisível de 03:00 a 05:00, e o lote fica parado.",
+    "**B:** às 05:00 a mensagem reaparece, e o pod v2 retoma e termina às 05:40.",
   ]}
+  legenda="A em verde, B e a mensagem em roxo, a API em âmbar; a linha vertical é o deploy das 03:30."
+  fim="segmentos"
 />
 
 :::colchete
@@ -118,7 +117,7 @@ Na abordagem A, o HPA da API continua reagindo só ao tráfego.
 
 ### 5. Quando o destino cai: retry, DLQ e redrive
 
-Imagine o <Ferramenta nome="sns" href="https://aws.amazon.com/sns/">SNS</Ferramenta> indisponível por uma hora.
+Imagine o SNS indisponível por uma hora.
 
 - **Abordagem B:** o consumidor tenta publicar, falha, e o processamento para. A mensagem não é apagada: volta à fila depois do visibility timeout, e a nova tentativa segue de onde parou, pelo status no banco, e falha de novo enquanto o SNS estiver fora. Cada tentativa conta um recebimento; atingido o `maxReceiveCount` (o limite de recebimentos da *redrive policy*), a mensagem, que representa o lote inteiro, vai para a DLQ. O intervalo entre as tentativas é o próprio visibility timeout: se ele foi dimensionado para cobrir o lote (critério 6), uma queda de uma hora pode passar entre duas tentativas; se é curto e o consumidor o estende enquanto processa, as tentativas se esgotam em minutos. Na DLQ, nada retoma sozinho: os pendentes ficam no banco até alguém, ou uma automação, fazer o redrive da mensagem para a fila principal ([SQS — DLQ redrive](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-configure-dead-letter-queue-redrive.html)), ou até o próximo disparo. E a DLQ tem prazo: :nota[a retenção]{texto="não zera ao ir para a DLQ"} conta desde o envio original, então a mensagem esquecida lá expira ([SQS — Dead-letter queues](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html)). Ela também não separa as causas: uma queda do SNS e um registro ruim que derruba o consumidor chegam lá do mesmo jeito, como o lote inteiro.
 - **Abordagem A:** o SDK da AWS tenta de novo algumas vezes, com backoff. Esgotadas as tentativas, o step falha no chunk em andamento, o job sai com exit code diferente de zero e os registros ainda não enviados continuam pendentes no banco. As novas tentativas do `backoffLimit` não resolvem uma queda longa: o Kubernetes recria o pod com atraso de :explica[10 s, 20 s, 40 s…]{nota="dobra a cada tentativa"} (limitado a seis minutos), então, com `backoffLimit: 2`, todas acontecem com o SNS ainda fora. Quem pega os pendentes é a próxima execução agendada (num job diário, até 24 horas depois) ou um disparo manual assim que o SNS voltar: `kubectl create job enviar-registros-manual --from=cronjob/enviar-registros`. Não há mensagem parada numa DLQ nem redrive a fazer, mas há atraso. E, se o step usar skip para isolar itens inválidos, a exceção de infraestrutura não pode estar entre as puláveis: senão a queda do SNS vira uma leva de itens pulados (até o `skipLimit`), e uma falha de infraestrutura fica registrada como dado ruim.
@@ -169,7 +168,7 @@ Isso pressupõe um `curl` bem configurado. Sem `--fail`, ele sai com código 0 m
 :::
 
 :::colchete
-O problema é estrutural: quem chama não consegue distinguir "a requisição não chegou" de "a requisição chegou, mas a resposta não voltou". A <Ferramenta nome="aws" href="https://aws.amazon.com/builders-library/">Amazon Builders' Library</Ferramenta> descreve exatamente esse dilema: depois de um timeout, quem chamou não sabe se a operação aconteceu, e repetir a chamada pode duplicar o efeito. A saída é tornar a operação idempotente ([Making retries safe with idempotent APIs](https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/)). Na abordagem B, isso significa uma [chave de idempotência](/posts/cobranca-duplicada-no-retry/), como a data de referência. No gatilho, uma fila FIFO resolve parte do problema: com o `MessageDeduplicationId` igual à data, uma segunda mensagem enviada em até 5 minutos é aceita, mas não é entregue, o que cobre o retry rápido do Kubernetes, mas não uma nova chamada mais tarde ([SQS — Exactly-once processing](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-exactly-once-processing.html)). O resto fica com o consumidor.
+O problema é estrutural: quem chama não consegue distinguir "a requisição não chegou" de "a requisição chegou, mas a resposta não voltou". A Amazon Builders' Library descreve exatamente esse dilema: depois de um timeout, quem chamou não sabe se a operação aconteceu, e repetir a chamada pode duplicar o efeito. A saída é tornar a operação idempotente ([Making retries safe with idempotent APIs](https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/)). Na abordagem B, isso significa uma [chave de idempotência](/posts/cobranca-duplicada-no-retry/), como a data de referência. No gatilho, uma fila FIFO resolve parte do problema: com o `MessageDeduplicationId` igual à data, uma segunda mensagem enviada em até 5 minutos é aceita, mas não é entregue, o que cobre o retry rápido do Kubernetes, mas não uma nova chamada mais tarde ([SQS — Exactly-once processing](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/FIFO-queues-exactly-once-processing.html)). O resto fica com o consumidor.
 :::
 
 A coluna de status no banco ajuda, :duplo[mas não resolve sozinha]. Se a segunda mensagem chega depois que a primeira terminou, não encontra pendentes e não faz nada. O problema é quando as duas rodam juntas, que é justamente o caso do retry rápido: dois pods leem os mesmos registros como pendentes antes que qualquer um marque "enviado", e cada registro sai duas vezes. Evitar isso exige que o consumidor reserve cada registro com uma [atualização condicional](/posts/bloqueio-otimista-e-pessimista/#4-o-update-condicional-que-muitas-vezes-dispensa-os-dois) antes de enviar, ou que só um consumidor processe o lote por vez, com um lock no banco que expire se o pod morrer (como o do [ShedLock](https://github.com/lukas-krecan/ShedLock)). Mais uma peça a construir.
@@ -244,7 +243,7 @@ O que segue foi testado com Spring Boot 4.1.1 (Spring Batch 6.0.5), Java 21 e Po
 :::
 
 :::exclamacao
-**A dependência.** No <Ferramenta nome="spring" href="https://spring.io/projects/spring-boot">Spring Boot</Ferramenta> 4, o `spring-boot-starter-batch` sozinho usa o modo sem banco do Spring Batch 6 (`ResourcelessJobRepository`): os metadados ficam em memória e somem quando o pod termina. Sem tabelas `BATCH_*`, sem histórico de execuções e sem proteção contra uma segunda execução, ou seja, sem o que os critérios 8 a 10 descrevem. O JobRepository no banco vem do `spring-boot-starter-batch-jdbc` (no Spring Boot 3, o `spring-boot-starter-batch` já trazia o JDBC; ver o [Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide)):
+**A dependência.** No Spring Boot 4, o `spring-boot-starter-batch` sozinho usa o modo sem banco do Spring Batch 6 (`ResourcelessJobRepository`): os metadados ficam em memória e somem quando o pod termina. Sem tabelas `BATCH_*`, sem histórico de execuções e sem proteção contra uma segunda execução, ou seja, sem o que os critérios 8 a 10 descrevem. O JobRepository no banco vem do `spring-boot-starter-batch-jdbc` (no Spring Boot 3, o `spring-boot-starter-batch` já trazia o JDBC; ver o [Spring Boot 4.0 Migration Guide](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide)):
 :::
 
 ```xml title="pom.xml"

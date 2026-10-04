@@ -1,6 +1,6 @@
 # Crítica da coleção de 13: direção de arte e textos
 
-Olhar de fora sobre `direcao-de-arte.md`, `paleta.png` e `textos.md`, lidos contra o `controle.md` (D61),
+Olhar de fora sobre `direcao-de-arte.md`, `paleta.png` e `textos.md`, lidos contra o `controle.md` (D78),
 o `contexto.md`, a `pesquisa-cores-e-desenhos.md`, a `critica.md` da rodada anterior, o `DESIGN.md`,
 `src/styles/tokens.ts` e `src/livros/cores.js` (como a cor do livro é usada fora da capa), as fotos
 de `.render/colecoes/` e `.render/livros/`, e os posts citados. As cores passaram por
@@ -17,7 +17,7 @@ As histórias dos objetos que proponho foram conferidas na busca na web (fontes 
    a tinta de imprensa em verniz de linhaça); Testes → `#244a45` (ardósia de toque, a pedra em que se
    faz o teste), ou `#39404d` se a marca ficar verde. As duas passam na ferramenta.
 2. **A marca acompanha a Arquitetura (azul), mas como "o livro da casa", não como "a capa do Volume
-   01"**: com volumes em ordem alfabética (D61), o Volume 01 muda no dia em que entrar um livro de A a
+   01"**: com volumes em ordem alfabética (D78), o Volume 01 muda no dia em que entrar um livro de A a
    Ar. E a direção errou ao dizer que nenhuma cor chega perto do verde da marca: o cinza-chumbo do
    Testes está a 0,036 dele. Só com a marca azul o lugar bom do Testes fica livre.
 3. **IA: o fonógrafo é fraco** (lê "música"; a ligação só existe no texto da ficha; e reproduz, não
@@ -369,7 +369,7 @@ filas; o ledger só existe por causa do dinheiro). O que ainda confunde quem vai
   fronteira do Jackson (a ferramenta em Desenvolvimento; o que mascarar, em Segurança) é fina, mas está
   escrita.
 - **Distribuição.** 21 posts: Desenvolvimento 6, SRE 3, cinco livros com 2, dois com 1, quatro com 0.
-  Quatro livros vazios em treze é 31% da estante sem número, decisão do Cesar (D61); o que vale dizer
+  Quatro livros vazios em treze é 31% da estante sem número, decisão do Cesar (D78); o que vale dizer
   a ele é que os quatro vazios são os quatro desenhos mais difíceis (seção 1) e que o Desenvolvimento,
   com 29% dos posts, é o próximo a pedir divisão (JVM e concorrência × Spring), o que a regra dos
   posts já cobre.
@@ -404,7 +404,7 @@ A frase fica logo acima do desenho, na cor do livro. Onde se ajudam, onde brigam
 
 Recomendação: **a marca acompanha a Arquitetura e vai para o azul-de-cianotipia `#2d4f77`, mas a regra
 muda de "a marca é a capa do Volume 01" para "a marca é o livro da casa, na cor da Arquitetura por
-escolha".** Três motivos: (1) com volumes em ordem alfabética (D61), "Volume 01" é instável: o
+escolha".** Três motivos: (1) com volumes em ordem alfabética (D78), "Volume 01" é instável: o
 primeiro livro de A a Ar que entrar (Algoritmos, APIs) toma o número e a regra obrigaria a marca a
 mudar de novo; (2) o azul de planta é a cor de identidade certa para o blog de um arquiteto de
 soluções, e o verde-pátina perde o motivo (a história era a do arco, que sai); (3) é o que libera o

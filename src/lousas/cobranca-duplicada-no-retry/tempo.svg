@@ -1,40 +1,163 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 260">
-  <g class="traco">
-    <path d="M130 84 H620" class="guia"/>
-    <g data-aparece="0.016 0.065"><path d="M140 60 h18 m-6 -5 l6 5 -6 5"/></g>
-    <g data-aparece="0.220 0.269"><path d="M238 40 h24 v30 l-4 4 -4 -4 -4 4 -4 -4 -4 4 -4 -4 z" class="fino"/><path d="M243 48 h13 M243 55 h9" class="fino"/></g>
-    <g data-aparece="0.424 0.473"><path d="M343 54 l14 14 m0 -14 l-14 14"/></g>
-    <g data-aparece="0.629 0.678"><path d="M462 66 a12 12 0 1 1 -4 -14 m0 0 l1 -7 m-1 7 l-7 0"/></g>
-    <path d="M130 196 H620" class="guia"/>
-    <g data-aparece="0.016 0.065"><path d="M140 172 h18 m-6 -5 l6 5 -6 5"/></g>
-    <g data-aparece="0.220 0.269"><path d="M238 152 h24 v30 l-4 4 -4 -4 -4 4 -4 -4 -4 4 -4 -4 z" class="fino"/><path d="M243 160 h13 M243 167 h9" class="fino"/></g>
-    <g data-aparece="0.424 0.473"><path d="M343 166 l14 14 m0 -14 l-14 14"/></g>
-    <g data-aparece="0.629 0.678"><path d="M462 178 a12 12 0 1 1 -4 -14 m0 0 l1 -7 m-1 7 l-7 0"/></g>
-    <g data-aparece="0.833 0.882"><path d="M538 40 h24 v30 l-4 4 -4 -4 -4 4 -4 -4 -4 4 -4 -4 z" class="fino"/><path d="M543 48 h13 M543 55 h9" class="fino"/></g>
-    <rect x="508" y="160" width="84" height="26" rx="3" class="destaque" data-aparece="0.833 0.882"/>
-    <g data-desloca="0 1 490 0">
-      <path d="M130 22 V236" class="destaque fino"/>
-      <circle cx="130" cy="18" r="5" class="cheio destaque"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 730">
+  <path d="M200 104 H1060 M200 184 H1060 M200 264 H1060 M200 470 H1060 M200 550 H1060 M200 630 H1060" class="grade"/>
+
+  <g class="tinta">
+    <g class="tom-petroleo">
+      <path d="M251 402 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0 M265 402 H288 M281 402 V409 M287 402 V408" class="linha-tom"/>
+    </g>
+
+    <g transform="translate(40 246) scale(.36)">
+      <rect x="8" y="22" width="84" height="56" rx="8" class="papel"/>
+      <path d="M16 22 H84 Q92 22 92 30 V70 Q92 78 84 78 H16 Q8 78 8 70 V30 Q8 22 16 22 Z M8 38 H92" class="linha"/>
+      <path d="M20 62 H44" class="linha"/>
+    </g>
+    <g class="tom-azul">
+    <path d="M214 108 L250 178" class="linha-tom" data-traco="0.1 0.16"/>
+    <path d="M236.5 169.2 L250 178 L250.7 161.9" class="linha-tom" data-aparece="0.16 0.17"/>
+    </g>
+    <g class="tom-verde">
+    <path d="M362 188 L398 258" class="linha-tom" data-traco="0.3 0.33"/>
+    <path d="M384.5 249.2 L398 258 L398.7 241.9" class="linha-tom" data-aparece="0.33 0.34"/>
+    </g>
+    <g class="tom-ambar">
+    <path d="M404 237 H520 V285 L505.5 291 L491 285 L476.5 291 L462 285 L447.5 291 L433 285 L418.5 291 L404 285 Z" transform="translate(6 5)" class="cor" data-aparece="0.395 0.405"/>
+    <path d="M404 237 H520 V285 L505.5 291 L491 285 L476.5 291 L462 285 L447.5 291 L433 285 L418.5 291 L404 285 Z" class="lavado" data-revela="0.375 0.395"/>
+    <path d="M404 237 H520 V285 L505.5 291 L491 285 L476.5 291 L462 285 L447.5 291 L433 285 L418.5 291 L404 285 Z" class="linha" data-traco="0.34 0.375"/>
+    </g>
+    <g class="tom-verde">
+    <path d="M538 182 L566 128" class="linha-tom fantasma" data-revela="0.46 0.5"/>
+    </g>
+    <g class="tom-vermelho">
+    <path d="M564 110 L580 126 M580 110 L564 126" class="linha-tom" data-traco="0.5 0.52"/>
+    <circle cx="618" cy="104" r="14" class="papel" data-aparece="0.52 0.53"/>
+    <circle cx="618" cy="104" r="14" class="linha-tom" data-traco="0.52 0.55"/>
+    <path d="M618 95 V104 H625" class="linha-tom" data-traco="0.55 0.56"/>
+    </g>
+    <g class="tom-azul">
+    <path d="M684 108 L720 178" class="linha-tom" data-traco="0.69 0.74"/>
+    <path d="M706.5 169.2 L720 178 L720.7 161.9" class="linha-tom" data-aparece="0.74 0.75"/>
+    </g>
+    <g class="tom-vermelho">
+    <path d="M784 188 L820 258" class="linha-tom" data-traco="0.81 0.84"/>
+    <path d="M806.5 249.2 L820 258 L820.7 241.9" class="linha-tom" data-aparece="0.84 0.85"/>
+    <path d="M826 237 H942 V285 L927.5 291 L913 285 L898.5 291 L884 285 L869.5 291 L855 285 L840.5 291 L826 285 Z" transform="translate(6 5)" class="cor" data-aparece="0.9 0.91"/>
+    <path d="M826 237 H942 V285 L927.5 291 L913 285 L898.5 291 L884 285 L869.5 291 L855 285 L840.5 291 L826 285 Z" class="lavado" data-revela="0.88 0.9"/>
+    <path d="M826 237 H942 V285 L927.5 291 L913 285 L898.5 291 L884 285 L869.5 291 L855 285 L840.5 291 L826 285 Z" class="linha" data-traco="0.85 0.88"/>
+    </g>
+
+    <g transform="translate(40 612) scale(.36)">
+      <rect x="8" y="22" width="84" height="56" rx="8" class="papel"/>
+      <path d="M16 22 H84 Q92 22 92 30 V70 Q92 78 84 78 H16 Q8 78 8 70 V30 Q8 22 16 22 Z M8 38 H92" class="linha"/>
+      <path d="M20 62 H44" class="linha"/>
+    </g>
+    <g class="tom-azul">
+    <path d="M214 474 L250 544" class="linha-tom" data-traco="0.1 0.16"/>
+    <path d="M236.5 535.2 L250 544 L250.7 527.9" class="linha-tom" data-aparece="0.16 0.17"/>
+    </g>
+    <g class="tom-petroleo">
+    <path d="M306 446 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0 M320 446 H343 M336 446 V453 M342 446 V452" class="linha-tom" data-traco="0.055 0.09"/>
+    </g>
+    <g class="tom-roxo">
+    <rect x="280" y="530" width="64" height="40" rx="6" transform="translate(5 4)" class="cor" data-aparece="0.245 0.25"/>
+    <rect x="280" y="530" width="64" height="40" rx="6" class="lavado" data-revela="0.23 0.245"/>
+    <rect x="280" y="530" width="64" height="40" rx="6" class="linha" data-traco="0.2 0.23"/>
+    </g>
+    <g class="tom-petroleo">
+    <path d="M294 550 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0 M308 550 H331 M324 550 V557 M330 550 V556" class="linha-tom" data-traco="0.25 0.265"/>
+    </g>
+    <g class="tom-verde">
+    <path d="M362 554 L398 624" class="linha-tom" data-traco="0.3 0.33"/>
+    <path d="M384.5 615.2 L398 624 L398.7 607.9" class="linha-tom" data-aparece="0.33 0.34"/>
+    </g>
+    <g class="tom-ambar">
+    <path d="M404 603 H520 V651 L505.5 657 L491 651 L476.5 657 L462 651 L447.5 657 L433 651 L418.5 657 L404 651 Z" transform="translate(6 5)" class="cor" data-aparece="0.395 0.405"/>
+    <path d="M404 603 H520 V651 L505.5 657 L491 651 L476.5 657 L462 651 L447.5 657 L433 651 L418.5 657 L404 651 Z" class="lavado" data-revela="0.375 0.395"/>
+    <path d="M404 603 H520 V651 L505.5 657 L491 651 L476.5 657 L462 651 L447.5 657 L433 651 L418.5 657 L404 651 Z" class="linha" data-traco="0.34 0.375"/>
+    </g>
+    <g class="tom-verde">
+    <path d="M538 548 L566 494" class="linha-tom fantasma" data-revela="0.46 0.5"/>
+    </g>
+    <g class="tom-vermelho">
+    <path d="M564 476 L580 492 M580 476 L564 492" class="linha-tom" data-traco="0.5 0.52"/>
+    <circle cx="618" cy="470" r="14" class="papel" data-aparece="0.52 0.53"/>
+    <circle cx="618" cy="470" r="14" class="linha-tom" data-traco="0.52 0.55"/>
+    <path d="M618 461 V470 H625" class="linha-tom" data-traco="0.55 0.56"/>
+    </g>
+    <g class="tom-azul">
+    <path d="M684 474 L720 544" class="linha-tom" data-traco="0.69 0.74"/>
+    <path d="M706.5 535.2 L720 544 L720.7 527.9" class="linha-tom" data-aparece="0.74 0.75"/>
+    </g>
+    <g class="tom-petroleo">
+    <path d="M776 446 a7 7 0 1 0 14 0 a7 7 0 1 0 -14 0 M790 446 H813 M806 446 V453 M812 446 V452" class="linha-tom" data-traco="0.65 0.685"/>
+    </g>
+    <g class="tom-roxo">
+    <rect x="776" y="530" width="110" height="40" rx="6" transform="translate(5 4)" class="cor" data-aparece="0.81 0.815"/>
+    <rect x="776" y="530" width="110" height="40" rx="6" class="lavado" data-revela="0.79 0.81"/>
+    <rect x="776" y="530" width="110" height="40" rx="6" class="linha" data-traco="0.76 0.79"/>
+    </g>
+    <g class="tom-verde">
+    <path d="M900 546 L936 476" class="linha-tom" data-traco="0.84 0.87"/>
+    <path d="M936.7 492.1 L936 476 L922.5 484.8" class="linha-tom" data-aparece="0.87 0.88"/>
     </g>
   </g>
-  <g>
-    <text x="10" y="88">Sem a chave</text>
-    <text x="10" y="110" class="secundario" data-some="0.22 0.25">nenhuma cobrança</text>
-    <text x="10" y="110" class="secundario" data-aparece="0.22 0.25" data-some="0.83 0.86">1 cobrança</text>
-    <text x="10" y="110" class="secundario" data-aparece="0.83 0.86">2 cobranças</text>
-    <text x="150" y="108" text-anchor="middle" class="secundario" data-aparece="0.016 0.065">pede</text>
-    <text x="250" y="108" text-anchor="middle" class="secundario" data-aparece="0.220 0.269">cobra</text>
-    <text x="350" y="108" text-anchor="middle" class="secundario" data-aparece="0.424 0.473">resposta se perde</text>
-    <text x="450" y="108" text-anchor="middle" class="secundario" data-aparece="0.629 0.678">tenta de novo</text>
-    <text x="10" y="200">Com a chave</text>
-    <text x="10" y="222" class="secundario" data-some="0.22 0.25">nenhuma cobrança</text>
-    <text x="10" y="222" class="secundario" data-aparece="0.22 0.25">1 cobrança</text>
-    <text x="150" y="220" text-anchor="middle" class="secundario" data-aparece="0.016 0.065">pede</text>
-    <text x="250" y="220" text-anchor="middle" class="secundario" data-aparece="0.220 0.269">cobra</text>
-    <text x="350" y="220" text-anchor="middle" class="secundario" data-aparece="0.424 0.473">resposta se perde</text>
-    <text x="450" y="220" text-anchor="middle" class="secundario" data-aparece="0.629 0.678">tenta de novo</text>
-    <text x="550" y="126" text-anchor="middle" data-aparece="0.833 0.882">cobra de novo</text>
-    <text x="550" y="178" text-anchor="middle" class="codigo destaque" data-aparece="0.833 0.882">UNIQUE</text>
-    <text x="550" y="240" text-anchor="middle" class="secundario" data-aparece="0.833 0.882">devolve a guardada</text>
+
+  <g data-marca="aplicacao" transform="translate(40 86) scale(.36)"/>
+  <g data-marca="servidor" transform="translate(40 166) scale(.36)"/>
+  <g data-marca="aplicacao" transform="translate(40 452) scale(.36)"/>
+  <g data-marca="servidor" transform="translate(40 532) scale(.36)"/>
+
+  <text x="40" y="44" class="titulo-caixa">Sem a chave</text>
+  <g class="tom-azul"><text x="86" y="111" class="texto-caixa texto-tom">App</text></g>
+  <g class="tom-verde"><text x="86" y="191" class="texto-caixa texto-tom">Serviço</text></g>
+  <g class="tom-ambar"><text x="86" y="271" class="texto-caixa texto-tom">Adquirente</text></g>
+
+  <g class="tom-azul">
+    <text x="206" y="88" class="codigo texto-tom" data-escrita="0.01 0.05">R$ 250</text>
   </g>
+  <text x="462" y="272" text-anchor="middle" class="codigo" data-escrita="0.405 0.435">R$ 250</text>
+  <g class="tom-verde">
+    <text x="530" y="160" text-anchor="end" class="codigo texto-tom" data-escrita="0.44 0.46">201</text>
+  </g>
+  <g class="tom-vermelho">
+    <text x="618" y="80" text-anchor="middle" class="texto-caixa texto-tom" data-escrita="0.56 0.6">timeout</text>
+  </g>
+  <g class="tom-azul">
+    <text x="676" y="88" class="codigo texto-tom" data-escrita="0.61 0.645">R$ 250</text>
+  </g>
+  <g class="tom-vermelho">
+    <text x="776" y="228" text-anchor="end" class="texto-caixa texto-tom" data-escrita="0.76 0.81">cobra de novo</text>
+  </g>
+  <text x="884" y="272" text-anchor="middle" class="codigo" data-escrita="0.91 0.935">R$ 250</text>
+  <g class="tom-vermelho">
+    <text x="1060" y="330" text-anchor="end" class="titulo-caixa texto-tom" data-escrita="0.945 1">duas cobranças</text>
+  </g>
+
+  <text x="40" y="410" class="titulo-caixa">Com a chave</text>
+  <g class="tom-petroleo"><text x="298" y="411" class="codigo texto-tom">5b0e7a52…</text></g>
+  <g class="tom-azul"><text x="86" y="477" class="texto-caixa texto-tom">App</text></g>
+  <g class="tom-verde"><text x="86" y="557" class="texto-caixa texto-tom">Serviço</text></g>
+  <g class="tom-ambar"><text x="86" y="637" class="texto-caixa texto-tom">Adquirente</text></g>
+
+  <g class="tom-azul">
+    <text x="206" y="454" class="codigo texto-tom" data-escrita="0.01 0.05">R$ 250</text>
+  </g>
+  <text x="280" y="516" class="texto-caixa" data-escrita="0.265 0.3">grava a chave</text>
+  <text x="462" y="638" text-anchor="middle" class="codigo" data-escrita="0.405 0.435">R$ 250</text>
+  <g class="tom-verde">
+    <text x="530" y="526" text-anchor="end" class="codigo texto-tom" data-escrita="0.44 0.46">201</text>
+  </g>
+  <g class="tom-vermelho">
+    <text x="618" y="446" text-anchor="middle" class="texto-caixa texto-tom" data-escrita="0.56 0.6">timeout</text>
+  </g>
+  <g class="tom-azul">
+    <text x="676" y="454" class="codigo texto-tom" data-escrita="0.61 0.645">R$ 250</text>
+  </g>
+  <g class="tom-roxo">
+    <text x="831" y="559" text-anchor="middle" class="codigo texto-tom" data-escrita="0.81 0.84">UNIQUE</text>
+  </g>
+  <g class="tom-verde">
+    <text x="946" y="460" class="codigo texto-tom" data-escrita="0.88 0.9">201</text>
+  </g>
+  <text x="776" y="600" class="texto-caixa" data-escrita="0.9 0.94">devolve a resposta guardada</text>
+  <text x="1060" y="696" text-anchor="end" class="titulo-caixa" data-escrita="0.945 1">uma cobrança</text>
 </svg>

@@ -1,0 +1,639 @@
+/*
+ * O Terminal (apps/terminal.ts, C5): o perfil Básico do Terminal do Mac (o fundo e o texto do tema, a
+ * SF Mono, a linha de 1,2, o cursor em bloco), a janela com a barra de título fina e o modo suspenso, o
+ * painel de vidro que desce do alto. Só var(--mac-…), nos dois temas.
+ *
+ * Nada aqui depende do .mac do computador: o suspenso também desce por cima do blog (suspensoNoBlog),
+ * dentro do .mac-fora, que traz as mesmas variáveis. Por isso as peças se zeram sozinhas (box-sizing,
+ * botões, campo, foco), sem contar com o reset do sistema.
+ */
+
+.mac-term,
+.mac-term *,
+.mac-term *::before,
+.mac-term *::after {
+  box-sizing: border-box;
+}
+
+.mac-term [hidden] {
+  display: none !important;
+}
+
+.mac-term {
+  --t-tam: 12;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--mac-term-fundo);
+  color: var(--mac-term-texto);
+  font: 400 calc(var(--t-tam) * 1px) / 1.2 var(--mac-mono);
+  font-variant-ligatures: none;
+  font-feature-settings:
+    "liga" 0,
+    "calt" 0;
+  letter-spacing: 0;
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+.mac-term:focus-visible {
+  outline: none;
+}
+
+.mac-term ::selection {
+  background: var(--mac-term-selecao);
+}
+
+/* ---------- a barra de título (só a janela) ---------- */
+
+.mac-term .mac-term-titulo {
+  flex: none;
+  height: 28px;
+  font-family: var(--mac-fonte);
+  line-height: 1;
+}
+
+.mac-term .mac-term-titulo-texto {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  max-width: 100%;
+  /* O corte com reticências fica no texto de dentro; o ícone da pasta mora fora da caixa. */
+  overflow: visible;
+}
+
+.mac-term-titulo-texto [data-titulo] {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* O ícone da pasta antes do título (o "proxy icon" do Mac), que aparece com o mouse na barra. */
+.mac-term-procuracao {
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  margin: -7px 5px 0 0;
+  width: 14px;
+  height: 14px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.mac-term-procuracao svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+  fill: var(--mac-pasta-frente-2);
+  stroke: var(--mac-pasta-fundo);
+  stroke-width: 1.1;
+}
+
+.mac-janela[data-ativa] .mac-term-titulo:hover .mac-term-procuracao {
+  opacity: 1;
+  transition-delay: 0.25s;
+}
+
+/* ---------- a área do texto ---------- */
+
+.mac-term-area {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* O lugar da barra fica sempre reservado: as colunas não mudam quando a rolagem aparece. */
+  scrollbar-gutter: stable;
+  outline: none;
+  cursor: text;
+  user-select: text;
+  -webkit-user-select: text;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--mac-term-texto) 26%, transparent) transparent;
+}
+
+.mac-term-area:focus-visible {
+  outline: none;
+}
+
+.mac-term-saida,
+.mac-term-opcoes {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.mac-term-opcoes {
+  white-space: pre;
+}
+
+.t-bloco:empty::before {
+  content: "\a0";
+}
+
+/* Os pedaços do `cat`: fora da tela, o navegador não diagrama nem pinta (a altura vem estimada). */
+.t-pedaco {
+  content-visibility: auto;
+}
+
+.t-fraco,
+.t-ramo {
+  color: var(--mac-term-fraco);
+}
+
+.t-erro {
+  color: var(--mac-term-erro);
+}
+
+.t-negrito {
+  font-weight: 700;
+}
+
+.t-pasta {
+  color: var(--mac-term-pasta);
+}
+
+/* O vídeo invertido do zsh: o % de uma saída sem quebra de linha no fim e a escolha no menu do Tab. */
+.mac-term .t-inverso {
+  background: var(--mac-term-texto);
+  color: var(--mac-term-fundo);
+}
+
+.t-sem-fim {
+  font-weight: 700;
+}
+
+/* ---------- as pastas e os arquivos clicáveis ---------- */
+
+.mac-term .t-item {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  text-align: inherit;
+  white-space: inherit;
+  cursor: pointer;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.mac-term .t-item.t-pasta {
+  color: var(--mac-term-pasta);
+}
+
+.mac-term .t-item.t-cmd {
+  font-weight: 700;
+}
+
+@media (hover: hover) {
+  .mac-term .t-item:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+}
+
+.mac-term .t-item:focus-visible {
+  outline: 2px solid var(--mac-acento);
+  outline-offset: 1px;
+  background: color-mix(in oklab, var(--mac-acento) 14%, transparent);
+}
+
+.mac-term .t-item.t-inverso:focus-visible {
+  background: var(--mac-term-texto);
+}
+
+/* O quadradinho da cor do livro: uma coluna, e a seguinte de espaço. */
+.t-cor {
+  display: inline-block;
+  width: var(--t-ch, 0.6em);
+  height: 0.66em;
+  margin-right: var(--t-ch, 0.6em);
+  border-radius: 2px;
+  background: var(--cor);
+  box-shadow: inset 0 0 0 0.5px color-mix(in oklab, var(--mac-term-texto) 28%, transparent);
+  vertical-align: -0.04em;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ---------- o prompt e o cursor em bloco ---------- */
+
+.mac-term-linha {
+  display: flex;
+  white-space: pre;
+}
+
+/* Comando demorado (a leitura de um arquivo): sem prompt até ele terminar, como no shell. */
+.mac-term-linha[data-ocupada] {
+  opacity: 0;
+}
+
+.mac-term-prompt {
+  flex: none;
+  overflow: hidden;
+  max-width: 70%;
+  text-overflow: clip;
+}
+
+.mac-term-campo {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: var(--t-lh, 1.2em);
+}
+
+.mac-term .mac-term-entrada {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: 0;
+  caret-color: transparent;
+  outline: none;
+  box-shadow: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.mac-term .mac-term-entrada::selection {
+  background: var(--mac-term-selecao);
+}
+
+/* No toque, o campo tem 16px (com menos, o Safari do iPhone amplia a página ao focar) e encolhe por
+   escala até o tamanho do texto: a letra cai no mesmo lugar, porque a fonte é monoespaçada. */
+@media (pointer: coarse) {
+  .mac-term .mac-term-entrada {
+    width: calc(100% * 16 / var(--t-tam));
+    height: calc(100% * 16 / var(--t-tam));
+    font-size: 16px;
+    transform: scale(calc(var(--t-tam) / 16));
+    transform-origin: 0 0;
+  }
+}
+
+.mac-term-cursor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--t-ch, 0.6em);
+  height: 100%;
+  background: var(--mac-term-cursor);
+  color: var(--mac-term-fundo);
+  white-space: pre;
+  pointer-events: none;
+}
+
+/* Pisca só com a janela na frente (1s, em degraus); atrás, fica vazado. */
+.mac-term.ativa .mac-term-cursor {
+  animation: mac-term-pisca 1s steps(1, end) infinite;
+}
+
+/* Com o suspenso na tela, ele é a janela "da vez" (como a Hotkey Window): as outras ficam com o cursor vazado. */
+.mac-term:not(.ativa) .mac-term-cursor,
+.mac-tela:has(> .mac-term-poco:not([hidden])) .mac-janela .mac-term-cursor {
+  background: none;
+  color: transparent;
+  box-shadow: inset 0 0 0 1px var(--mac-term-cursor);
+  animation: none;
+}
+
+@keyframes mac-term-pisca {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* As medidas da fonte (a largura de um caractere e a altura de uma linha). */
+.mac-term-sonda {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: inline-block;
+  visibility: hidden;
+  pointer-events: none;
+  white-space: pre;
+  font-family: var(--mac-mono);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0;
+  font-variant-ligatures: none;
+}
+
+.mac-term-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- o suspenso ---------- */
+
+/* O poço: da barra de menus para baixo, recortado em cima (o painel desce de trás da barra). */
+.mac-term-poco {
+  position: absolute;
+  z-index: 9400;
+  left: 0;
+  right: 0;
+  top: calc(env(safe-area-inset-top, 0px) + var(--mac-barra-h, 30px));
+  bottom: 0;
+  overflow: clip;
+  pointer-events: none;
+}
+
+/* Por cima do blog, fora do computador: do alto da janela do navegador. */
+.mac-term-poco--fora {
+  position: fixed;
+  z-index: 1100;
+  top: 0;
+}
+
+/*
+ * O painel guarda 24px por cima do recorte: a mola passa um pouco do fim e volta, e esse pedaço cobre o
+ * vão que ela abriria embaixo da barra.
+ */
+.mac-term.mac-suspenso {
+  inset: -24px 0 auto;
+  height: calc(var(--t-altura, 42vh) + 24px);
+  padding-top: 24px;
+  pointer-events: auto;
+  background: var(--mac-term-suspenso);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  backdrop-filter: blur(20px) saturate(1.6);
+  border-bottom: 1px solid color-mix(in oklab, var(--mac-term-texto) 16%, transparent);
+  border-radius: 0 0 16px 16px;
+  box-shadow: 0 22px 44px -26px color-mix(in oklab, var(--mac-moldura) 70%, transparent);
+}
+
+.mac-term-poco--fora .mac-term.mac-suspenso {
+  height: calc(var(--t-altura, 42vh) + 24px + env(safe-area-inset-top, 0px));
+  padding-top: calc(24px + env(safe-area-inset-top, 0px));
+}
+
+.mac-term.mac-suspenso.movendo {
+  will-change: transform;
+}
+
+.mac-term-recolher {
+  position: absolute;
+  top: 30px;
+  right: 12px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--mac-term-texto) 7%, transparent);
+  color: var(--mac-term-fraco);
+  font: inherit;
+  cursor: default;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.mac-term-poco--fora .mac-term-recolher {
+  top: calc(30px + env(safe-area-inset-top, 0px));
+}
+
+/* O alvo do dedo é maior que o círculo. */
+.mac-term-recolher::before {
+  content: "";
+  position: absolute;
+  inset: -9px;
+}
+
+.mac-term-recolher:hover {
+  background: color-mix(in oklab, var(--mac-term-texto) 14%, transparent);
+  color: var(--mac-term-texto);
+}
+
+.mac-term-recolher:active {
+  background: color-mix(in oklab, var(--mac-term-texto) 20%, transparent);
+}
+
+.mac-term-recolher:focus-visible {
+  outline: 2px solid var(--mac-acento);
+  outline-offset: 2px;
+}
+
+.mac-term-recolher svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* A alça embaixo: arrastar muda a altura. O alvo é maior que a faixa de 6px. */
+.mac-term-alca {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 6px;
+  cursor: ns-resize;
+  touch-action: none;
+  outline: none;
+}
+
+.mac-term-alca::before {
+  content: "";
+  position: absolute;
+  inset: -8px 0 -4px;
+}
+
+.mac-term-alca::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 2px;
+  width: 38px;
+  height: 4px;
+  margin-left: -19px;
+  border-radius: 2px;
+  background: color-mix(in oklab, var(--mac-term-texto) 20%, transparent);
+  transition:
+    background-color 0.15s ease,
+    scale 0.15s ease;
+}
+
+.mac-term-alca:hover::after,
+.mac-suspenso.arrastando .mac-term-alca::after {
+  background: color-mix(in oklab, var(--mac-term-texto) 42%, transparent);
+  scale: 1.3 1;
+}
+
+/* No teclado, a faixa da alça vira o anel de foco (o contorno de 3px numa faixa de 6px ficaria torto). */
+.mac-term .mac-term-alca:focus-visible {
+  outline: none;
+}
+
+.mac-term-alca:focus-visible::after {
+  height: 5px;
+  background: var(--mac-acento);
+  scale: 1.6 1;
+}
+
+/* ---------- o cartão com o desenho do post ---------- */
+
+.mac-term-cartao {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 9450;
+  width: 248px;
+  padding: 6px;
+  border-radius: 14px;
+  background: var(--mac-menu);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  backdrop-filter: blur(24px) saturate(1.8);
+  box-shadow:
+    0 0 0 0.5px var(--mac-menu-borda),
+    var(--mac-menu-sombra);
+  color: var(--mac-texto);
+  font: 400 12px/1.35 var(--mac-fonte);
+  text-align: left;
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  scale: 0.96;
+  transform-origin: 0 50%;
+  transition:
+    opacity 0.12s ease-in,
+    scale 0.12s ease-in,
+    visibility 0s linear 0.12s;
+}
+
+.mac-term-cartao[data-lado="esquerda"] {
+  transform-origin: 100% 50%;
+}
+
+.mac-term-cartao[data-lado="baixo"] {
+  transform-origin: 0 0;
+}
+
+.mac-term-cartao.visivel {
+  visibility: visible;
+  opacity: 1;
+  scale: 1;
+  transition:
+    opacity 0.16s ease-out,
+    scale 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+    visibility 0s;
+}
+
+/* De um item para o outro, com o cartão já aberto, ele desliza até a linha nova. */
+.mac-term-cartao.visivel.deslizando {
+  transition:
+    opacity 0.16s ease-out,
+    scale 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+    translate 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
+    visibility 0s;
+}
+
+.mac-term-cartao-figura {
+  aspect-ratio: 3 / 2;
+  border-radius: 9px;
+}
+
+.mac-term-cartao-figura svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mac-term-cartao-texto {
+  display: grid;
+  gap: 2px;
+  padding: 8px 6px 3px;
+}
+
+.mac-term-cartao-titulo {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+.mac-term-cartao-sub {
+  color: var(--mac-texto-2);
+  text-wrap: pretty;
+}
+
+.mac-term-cartao-livro {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  color: var(--mac-texto);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.mac-term-cartao-data {
+  color: var(--mac-texto-2);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.mac-term-cartao-cor {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--cor);
+}
+
+/* ---------- movimento reduzido ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .mac-term.ativa .mac-term-cursor {
+    animation: none;
+  }
+
+  .mac-term-cartao,
+  .mac-term-cartao.visivel,
+  .mac-term-cartao.visivel.deslizando {
+    scale: 1;
+    transition:
+      opacity 0.1s linear,
+      visibility 0s linear 0.1s;
+  }
+
+  .mac-term-cartao.visivel {
+    transition: opacity 0.1s linear;
+  }
+
+  .mac-term-procuracao,
+  .mac-term-recolher,
+  .mac-term-alca::after {
+    transition: none;
+  }
+}

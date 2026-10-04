@@ -3,11 +3,22 @@
  * Grade de livros (D31): as páginas de categorias e de séries mostram os livros lado a lado, grandes,
  * abertos em três quartos, como o livro do topo da página de cada um. Cada cartão é uma folha com o
  * livro num painel tingido pela cor dele, o nome, o subtítulo e a contagem. Ao passar o mouse, o
- * cartão sobe e o livro gira um pouco para o leitor (`data-livro-gira`, livro.css; o efeito de antes
- * da D40, de volta na D46). Ao clicar, o livro voa até o topo da página dele (transição de página, D29).
+ * cartão sobe e o livro gira com mola para o leitor (`data-livro-gira`, livro-vivo.css). Ao clicar, o
+ * livro voa até o topo da página dele (transição de página, D29).
+ *
+ * Rodada 3 do redesenho (área A): a cor do livro pinta o cartão inteiro no hover (P1, 0,35s), e em cima
+ * de cada livro há o ponto de luz com o cone (T8, PontoDeLuz), que acende junto (`data-luz`).
+ *
+ * Rodada 4, H5 (S9; docs/redesenho/rodada-4/direcao-papel.md): cada cartão é uma ficha de catálogo, como as
+ * dos artigos (catalogo.css): canto de 6px, sem borda, a sombra curta do papel, e no alto a tira em mono,
+ * "Volume 01 · 6 artigos" e "o último em 2026", sobre o fio de 2px na cor do livro. O "Volume 01" solto e a
+ * linha da contagem saíram (a tira diz os dois); o palco do livro tem canto de 4px. A pintura do hover é a
+ * mesma. O `.volume` continua (dentro da tira): o desfile de Livros lê o volume dele.
  */
 import LivroEmPe from "./LivroEmPe.astro";
+import PontoDeLuz from "./PontoDeLuz.astro";
 import type { Livro } from "../lib/estante";
+import "../styles/catalogo.css";
 
 interface Props {
   livros: Livro[];
@@ -17,23 +28,46 @@ interface Props {
 
 const { livros, nivel = "h2" } = Astro.props;
 const Nome = nivel;
-const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.volume).padStart(2, "0")}`);
+const dois = (n?: number) => String(n ?? 1).padStart(2, "0");
+const rotuloDoVolume = (l: Livro) => (l.serie ? `Série ${dois(l.revista?.numero)}` : `Volume ${dois(l.volume)}`);
+// A tira: quantos artigos (na série também, nunca "edições") e quando, como a contagem dos livros.
+const tira = (l: Livro) => {
+  const n = l.posts.length;
+  if (n === 0) return { quantos: "", quando: "Ainda sem artigos" };
+  const anos = l.posts.map((p) => p.publicado.getUTCFullYear());
+  const [min, max] = [Math.min(...anos), Math.max(...anos)];
+  const quando = min !== max ? `de ${min} a ${max}` : n === 1 ? `de ${max}` : `o último em ${max}`;
+  return { quantos: `${n} ${n === 1 ? "artigo" : "artigos"}`, quando };
+};
 ---
 
-<ul class:list={["grade-livros", { "um-livro": livros.length === 1 }]} data-grade-livros>
+<ul class:list={["grade-livros", { "um-livro": livros.length === 1, poucos: livros.length > 1 && livros.length < 4 }]} data-grade-livros>
   {
     livros.map((l) => (
       <li>
-        <a class="cartao-livro folha" href={l.href} data-livro-gira>
+        <a
+          class="cartao-livro folha ficha-catalogo"
+          href={l.href}
+          data-livro-gira
+          data-luz
+          style={`--cor:${l.serie ? (l.cores.destaque ?? l.cores.cor) : l.cores.cor};--pinta:${l.serie ? (l.cores.destaqueTexto ?? l.cores.cor) : (l.cores.corTexto ?? l.cores.cor)};--sobre-pinta:${l.serie ? l.cores.papel : l.cores.tinta}`}
+        >
+          <span class="tira-catalogo" aria-hidden="true">
+            <span>
+              <span class="volume">{rotuloDoVolume(l)}</span>
+              {tira(l).quantos && ` · ${tira(l).quantos}`}
+            </span>
+            <span>{tira(l).quando}</span>
+          </span>
           <span class="palco painel" style={`--cor:${l.cores.cor}`}>
+            <PontoDeLuz />
             <LivroEmPe livro={l} altura={270} transicao="ao-clicar" />
           </span>
           <span class="texto">
-            <span class="volume">{rotuloDoVolume(l)}</span>
             <Nome class="nome">{l.nome}</Nome>
             <span class="descricao">{l.descricao}</span>
-            <span class="conta" style={`--cor:${l.cores.cor}`}>
-              {l.contagem}
+            <span class="sr">
+              {rotuloDoVolume(l)}, {l.posts.length > 0 ? `${tira(l).quantos}, ${tira(l).quando}` : tira(l).quando}
             </span>
           </span>
         </a>
@@ -58,6 +92,15 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.vo
     grid-template-columns: minmax(0, 340px);
   }
 
+  /*
+   * Rodada 4 (P16-7): com menos de quatro livros, os cartões ficam no meio da linha, na largura que teriam
+   * na grade cheia, em vez de encostados à esquerda. Com um só, também no meio.
+   */
+  .grade-livros:is(.poucos, .um-livro) {
+    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 312px));
+    justify-content: center;
+  }
+
   .cartao-livro {
     display: flex;
     flex-direction: column;
@@ -70,11 +113,14 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.vo
       box-shadow 0.2s;
   }
 
+  /* O alto do palco é o respiro do cone de luz: o ponto fica lá em cima e a luz desce até o livro. */
   .palco {
     display: grid;
     place-items: center;
     margin: 12px 12px 0;
-    padding: 30px 12px 34px;
+    padding: 62px 12px 34px;
+    overflow: hidden;
+    border-radius: 4px;
   }
 
   .texto {
@@ -84,15 +130,8 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.vo
     padding: 16px 20px 20px;
   }
 
-  .volume {
-    font-family: var(--font-ui);
-    font-size: 13.5px;
-    color: var(--ink-2);
-    font-variant-numeric: lining-nums;
-  }
-
   .nome {
-    margin: 4px 0 0;
+    margin: 0;
     font-size: 22px;
     line-height: 1.2;
     transition: color 0.15s;
@@ -105,25 +144,111 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.vo
     color: var(--ink-2);
   }
 
-  /* A contagem desce até o pé do cartão, com o quadradinho da cor (como no chip, D26). */
-  .conta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: auto;
-    padding-top: 14px;
-    font-family: var(--font-ui);
-    font-size: 14px;
-    color: var(--ink-2);
-    font-variant-numeric: lining-nums;
+
+  /*
+   * Protótipo 14 (G4, do 01) e rodada 3 (P1, F14-5): no hover (ou no foco), a cor do livro sobe e pinta
+   * o cartão inteiro, de baixo para cima, em 0,35s, e o texto passa para a tinta do livro (a clara, ou a
+   * escura no SRE) quando a cor passa por ele; o painel do livro escurece (uma camada por cima dele, que
+   * acende por opacidade), para o livro e a luz continuarem destacados. A cor é a do livro (a mesma nos
+   * dois temas): a do texto pequeno na Carreira, para o contraste passar de 4,5:1; na série, o destaque.
+   */
+  .cartao-livro {
+    position: relative;
+    isolation: isolate;
   }
 
-  .conta::before {
+  .cartao-livro::before {
     content: "";
-    width: 9px;
-    height: 9px;
-    border-radius: 2px;
-    background: color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro));
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--pinta);
+    clip-path: inset(100% 0 0 0);
+    transition: clip-path 0.35s cubic-bezier(0.65, 0, 0.25, 1);
+  }
+
+  /* O texto vira quando a cor chega nele: o pé primeiro, a tira por último. */
+  .nome,
+  .descricao,
+  .tira-catalogo {
+    transition: color 0.16s cubic-bezier(0.2, 0.7, 0.2, 1) var(--vira-texto, 0.1s);
+  }
+
+  .descricao {
+    --vira-texto: 0.06s;
+  }
+
+  .nome {
+    --vira-texto: 0.1s;
+  }
+
+  .tira-catalogo {
+    --vira-texto: 0.15s;
+  }
+
+  .tira-catalogo::after {
+    transition: background-color 0.16s 0.15s;
+  }
+
+  .cartao-livro:is(:hover, :focus-visible, [data-lv-toque])::before {
+    clip-path: inset(0 0 0 0);
+  }
+
+  .cartao-livro:is(:hover, :focus-visible, [data-lv-toque]) :is(.nome, .descricao, .tira-catalogo) {
+    color: var(--sobre-pinta);
+  }
+
+  .cartao-livro:is(:hover, :focus-visible, [data-lv-toque]) :is(.descricao, .tira-catalogo) {
+    color: color-mix(in oklab, var(--sobre-pinta) 86%, var(--pinta));
+  }
+
+  /* Na ficha pintada, o fio da tira vira um traço da tinta do livro, para não sumir na cor. */
+  .cartao-livro:is(:hover, :focus-visible, [data-lv-toque]) .tira-catalogo::after {
+    background: color-mix(in oklab, var(--sobre-pinta) 45%, transparent);
+  }
+
+  /*
+   * O palco: o ponto de luz fica no alto e o cone desce até o pé do livro, por trás dele (T8). O painel
+   * escurece por uma camada na cor do livro, que acende por opacidade.
+   */
+  .palco {
+    position: relative;
+    isolation: isolate;
+    /* Linha 18: a luz de quadro tem a peça de latão acima da boca; a boca desce para ela caber no palco. */
+    --ponto-luz-topo: 34px;
+    --ponto-luz-pe: 20px;
+    --lq-luz: 0.85px;
+  }
+
+  .palco::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: color-mix(in oklab, var(--pinta) 78%, black);
+    opacity: 0;
+    transition: opacity 0.35s cubic-bezier(0.65, 0, 0.25, 1);
+  }
+
+  .cartao-livro:is(:hover, :focus-visible, [data-lv-toque]) .palco::before {
+    opacity: 1;
+  }
+
+  .palco > :global(.livro-em-pe) {
+    z-index: 1;
+  }
+
+  /*
+   * Rodada 4 (P16-4, P18-2): no hover, o painel escurece na cor do livro e o abajur acende forte sobre ele
+   * (o cone a 0,85 no claro, onde o painel pintado é escuro; no escuro, inteiro), junto com a pintura.
+   */
+  .palco :global(.ponto-luz) {
+    --ponto-luz-aceso: 0.85;
+  }
+
+  :global(:root[data-theme="dark"]) .palco :global(.ponto-luz) {
+    --ponto-luz-aceso: 1;
   }
 
   @media (hover: hover) {
@@ -131,14 +256,12 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Volume ${String(l.vo
       transform: translateY(-4px);
       box-shadow: var(--sombra-folha-alta);
     }
-
-    .cartao-livro:hover .nome {
-      color: var(--acento);
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .cartao-livro {
+    .cartao-livro,
+    .cartao-livro::before,
+    .palco::before {
       transition: none !important;
     }
 

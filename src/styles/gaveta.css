@@ -1,0 +1,232 @@
+/*
+ * A gaveta (Gaveta.astro, D43; rodada 3, P7): o livro que sai da estante (de lombadas, Estante.astro) ou
+ * da fileira 3D da home (Colecao.astro) e o sumário dele. Separada de estante.css para a home da fileira
+ * não carregar as regras da estante de lombadas (a tábua cinza, a perspectiva da prateleira).
+ */
+
+@import "./livro.css";
+
+/* ---------- gaveta: o livro que sai da estante e o sumário (Gaveta.astro, D43; rodada 3, P7) ---------- */
+
+/* Na estante de lombadas, a gaveta abre dentro da folha da abertura (D26), separada da estante por um fio. */
+.gaveta {
+  margin-top: 28px;
+  padding: 40px 0 12px;
+  border-top: 1px solid var(--rule);
+}
+
+.gaveta[hidden] {
+  display: none;
+}
+
+/*
+ * Na fileira 3D da home (rodada 3, área 10): uma gaveta de papel que sai de baixo da fileira. O tampo é
+ * uma folha com a borda de cima na sombra (ela vem de baixo dos livros); o script o descobre de cima para
+ * baixo (clip-path) enquanto o que vem depois na página desce junto (gaveta-fileira.ts). O livro fica por
+ * cima do tampo, fora do recorte: ele desce da fileira até aqui.
+ */
+.gaveta-fileira {
+  position: relative;
+  margin-top: 34px;
+  padding: clamp(24px, 3vw, 38px) clamp(18px, 3.6vw, 48px);
+  border-top: 0;
+}
+
+.gaveta-tampo {
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--rule);
+  border-radius: var(--raio-folha);
+  background: var(--paper-hi);
+  /* A sombra de dentro, na borda de cima, é sempre escura (a da tinta clareava a borda no tema escuro). */
+  box-shadow:
+    inset 0 16px 16px -18px rgb(28 36 39 / 0.3),
+    var(--sombra-folha);
+  pointer-events: none;
+}
+
+:root[data-theme="dark"] .gaveta-tampo {
+  box-shadow:
+    inset 0 18px 18px -18px rgb(0 0 0 / 0.75),
+    var(--sombra-folha);
+}
+
+.gaveta-fileira .livro-aberto {
+  position: relative;
+  z-index: 1;
+  align-items: center;
+}
+
+.livro-aberto {
+  display: grid;
+  grid-template-columns: var(--cw) minmax(0, 1fr);
+  gap: clamp(32px, 5vw, 64px);
+  align-items: start;
+}
+
+@media (max-width: 760px) {
+  .gaveta {
+    margin-top: 20px;
+    padding: 28px 0 8px;
+  }
+
+  .gaveta-fileira {
+    margin-top: 24px;
+    padding: 24px 18px 22px;
+  }
+
+  .livro-aberto {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 26px;
+  }
+}
+
+/* O livro da gaveta com a lupa no canto (o livro ampliado, D33). É ele que voa da fileira até aqui. */
+.livro-na-gaveta {
+  position: relative;
+  justify-self: center;
+}
+
+/* Na gaveta, o livro é o mesmo de Categorias e da página do livro, só sem a sombra no chão (D57). */
+.livro-na-gaveta .chao {
+  display: none;
+}
+
+/* ---------- o sumário ---------- */
+
+.sumario-livro {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.volume-sumario {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink-2);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.titulo-sumario {
+  width: fit-content;
+  margin: 2px 0 0;
+  font-size: clamp(27px, 2.7vw, 36px);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  scroll-margin-top: var(--folga-ancora);
+}
+
+.titulo-sumario:focus {
+  outline: none;
+}
+
+.titulo-sumario:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+.frase-sumario {
+  max-width: 58ch;
+  margin: 8px 0 0;
+  font-size: 16.5px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.meta-sumario {
+  margin: 10px 0 0;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.conta-sumario {
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* "Os 5 mais recentes": um fio separa o livro (o nome e a frase) do índice dele. */
+.rotulo-indice-livro {
+  margin: 18px 0 2px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.indice-livro {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Com o título inteiro (D33), o item pode quebrar: o pontilhado e a data ficam na última linha. */
+.indice-livro a {
+  display: grid;
+  grid-template-columns: minmax(0, max-content) minmax(18px, 1fr) auto;
+  align-items: last baseline;
+  gap: 10px;
+  padding: 7px 0;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.indice-livro .pontilhado {
+  border-bottom: 1px dotted var(--ink-3);
+  opacity: 0.8;
+  transform: translateY(-0.28em);
+}
+
+.indice-livro .dia {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  color: var(--ink-2);
+  white-space: nowrap;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+/* O sinal do código-fonte (D52, C03): só o ícone, colado ao fim do título, na tinta 2. */
+.indice-livro .sinal-codigo {
+  margin-left: 0.45em;
+  color: var(--ink-2);
+  vertical-align: -0.1em;
+}
+
+.indice-livro a:hover .titulo-item,
+.indice-livro a:focus-visible .titulo-item {
+  color: var(--acento);
+}
+
+/* "Ver o livro" (o caminho principal) e "Fechar livro", no pé do sumário. */
+.acoes-livro {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.sem-artigos {
+  margin: 8px 0 0;
+  color: var(--ink-2);
+}
+
+@media (max-width: 640px) {
+  .indice-livro a {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .indice-livro .pontilhado {
+    display: none;
+  }
+
+  .indice-livro .dia {
+    font-size: 13px;
+  }
+}

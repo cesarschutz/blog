@@ -63,10 +63,8 @@
   </g>
 
   <g class="tom-azul" data-marca="kubernetes" transform="translate(40 50) scale(0.48)"/>
-  <g class="tom-ambar" data-marca="spring" transform="translate(340 52) scale(0.42)"/>
-  <g class="tom-roxo" data-marca="sqs" transform="translate(638 50) scale(0.48)"/>
-  <g class="tom-ambar" data-marca="spring" transform="translate(940 52) scale(0.42)"/>
-  <g class="tom-vermelho" data-marca="sns" transform="translate(56 924) scale(0.46)"/>
+  <g class="tom-roxo" data-marca="fila" transform="translate(638 50) scale(0.48)"/>
+  <g class="tom-vermelho" data-marca="topico" transform="translate(56 924) scale(0.46)"/>
 
   <g class="tom-azul">
     <text x="100" y="72" class="titulo-caixa">CronJob</text>

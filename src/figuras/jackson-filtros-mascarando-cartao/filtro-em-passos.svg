@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700"
+  aria-label="Figura em três passos: o Cartao, com titular Cesar, número 5502 0912 3456 7890 e CVV 123, passa pelo MascaraCartaoFilter, uma propriedade por vez, e o JSON do log se monta da esquerda para a direita. O titular segue igual, o número sai mascarado como 550209******7890 e o CVV é omitido: nada é escrito. O log recebe o número mascarado, sem o CVV.">
+  <g class="tinta">
+    <g class="tom-azul">
+      <rect x="48" y="74" width="1120" height="130" rx="12" class="hachura"/>
+      <rect x="40" y="66" width="1120" height="130" rx="12" class="lavado"/>
+      <rect x="40" y="66" width="1120" height="130" rx="12" class="linha"/>
+      <path d="M413 66 V196 M787 66 V196" class="linha"/>
+    </g>
+    <path d="M227 200 V238 M218 225 L227 239 L236 225 M600 200 V238 M591 225 L600 239 L609 225 M973 200 V238 M964 225 L973 239 L982 225" class="linha"/>
+    <g class="tom-verde">
+      <rect x="40" y="246" width="1120" height="80" rx="10" transform="translate(7 6)" class="cor"/>
+      <rect x="40" y="246" width="1120" height="80" rx="10" class="lavado"/>
+      <rect x="40" y="246" width="1120" height="80" rx="10" class="linha"/>
+    </g>
+    <rect x="48" y="486" width="1120" height="110" rx="8" class="hachura"/>
+    <rect x="40" y="478" width="1120" height="110" rx="8" class="papel"/>
+    <rect x="40" y="478" width="1120" height="110" rx="8" class="linha"/>
+
+    <g data-passo="1">
+      <path d="M227 330 V462 M218 449 L227 463 L236 449" class="linha"/>
+    </g>
+
+    <g data-passo="2" class="tom-verde">
+      <path d="M600 330 V462 M591 449 L600 463 L609 449" class="linha-tom"/>
+    </g>
+
+    <g data-passo="3" class="tom-verde">
+      <path d="M973 330 V370 M964 357 L973 371 L982 357" class="linha-tom"/>
+      <rect x="873" y="384" width="200" height="72" rx="8" class="lavado"/>
+      <rect x="873" y="384" width="200" height="72" rx="8" class="linha"/>
+      <g class="etapa-2">
+        <rect x="620" y="610" width="540" height="70" rx="12" class="lavado"/>
+        <rect x="620" y="610" width="540" height="70" rx="12" class="linha"/>
+        <path d="M644 644 l8 8 l18 -20" class="linha-tom"/>
+      </g>
+    </g>
+  </g>
+
+  <g class="tom-azul">
+    <text x="40" y="48" class="titulo-caixa">Cartao</text>
+    <text x="227" y="112" text-anchor="middle" class="texto-caixa">titular</text>
+    <text x="600" y="112" text-anchor="middle" class="texto-caixa">numero</text>
+    <text x="973" y="112" text-anchor="middle" class="texto-caixa">cvv</text>
+    <text x="227" y="162" text-anchor="middle" class="codigo">Cesar</text>
+    <text x="600" y="162" text-anchor="middle" class="codigo">5502 0912 3456 7890</text>
+    <text x="973" y="162" text-anchor="middle" class="codigo">123</text>
+  </g>
+  <g class="tom-verde">
+    <text x="66" y="296" class="titulo-caixa">MascaraCartaoFilter</text>
+    <text x="1134" y="294" text-anchor="end" class="texto-caixa">decide pelo nome</text>
+  </g>
+  <text x="62" y="516" class="titulo-caixa">JSON do log</text>
+  <text x="62" y="562" class="codigo">{</text>
+  <text x="1124" y="562" class="codigo">}</text>
+
+  <g data-passo="1">
+    <circle cx="190" cy="362" r="19" class="selo"/>
+    <text x="190" y="363" class="selo-texto">1</text>
+    <text x="248" y="370" class="texto-caixa">segue igual</text>
+    <path d="M227 334 V457" pathLength="1" class="trajeto"/>
+    <g class="etapa-2">
+      <text x="78" y="562" class="codigo">"titular":"Cesar",</text>
+    </g>
+  </g>
+
+  <g data-passo="2" class="tom-verde">
+    <circle cx="563" cy="362" r="19" class="selo"/>
+    <text x="563" y="363" class="selo-texto">2</text>
+    <text x="620" y="370" class="texto-caixa texto-tom">mascara</text>
+    <path d="M600 334 V457" pathLength="1" class="trajeto"/>
+    <g class="etapa-2">
+      <text x="600" y="562" text-anchor="middle" class="codigo texto-tom">"numero":"550209******7890"</text>
+    </g>
+  </g>
+
+  <g data-passo="3" class="tom-verde">
+    <circle cx="936" cy="362" r="19" class="selo"/>
+    <text x="936" y="363" class="selo-texto">3</text>
+    <path d="M973 334 V365" pathLength="1" class="trajeto"/>
+    <text x="973" y="414" text-anchor="middle" class="texto-caixa texto-tom">omitido:</text>
+    <text x="973" y="442" text-anchor="middle" class="texto-caixa">nada é escrito</text>
+    <g class="etapa-2">
+      <text x="912" y="652" text-anchor="middle" class="texto-caixa texto-tom">O log recebe o número mascarado, sem o CVV.</text>
+    </g>
+  </g>
+</svg>

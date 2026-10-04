@@ -1,0 +1,195 @@
+---
+/**
+ * A nuvem de Tags (F13-3, G16; do 13): o nome de cada tag em Besley, do tamanho da contagem (18 a 44px, em
+ * escala de log até a tag mais usada, que é o teto), com o ícone antes do nome e a contagem em expoente,
+ * de A a Z. No hover (ou no foco), o ícone inclina 8° e a caneta preta sublinha o nome.
+ *
+ * Rodada 4: saiu da página de Tags para a amostra D3 usar a mesma. Com `aoLado` (o fichário em pé ao lado,
+ * a 1000px ou mais), a nuvem fica um nada mais baixa (16 a 38px) e centra as palavras na altura dele.
+ * H5 (S8): é uma folha lisa de papel (catalogo.css: canto de 2px, sem borda, a sombra curta e o grão), sem
+ * pauta; ao lado do aço do fichário, lê como a ficha que saiu da gaveta.
+ *
+ * O nome de cada link ("AOP, 2 artigos") vem de um texto `.sr`, e não de um aria-label (D73): a palavra e o
+ * expoente da tela ficam fora do nome (aria-hidden). Um aria-label que não contém o texto da tela, como
+ * ele é pintado ("AOP" colado no "2"), falha na auditoria de nome do Lighthouse.
+ */
+import IconeTag from "./IconeTag.astro";
+import { urlTag, type Grupo } from "../lib/posts";
+import { tracoDeCaneta } from "../lib/traco";
+import "../styles/catalogo.css";
+
+interface Props {
+  tags: Grupo[];
+  /** O fichário fica em pé ao lado (P19-2): a nuvem baixa um nada e estica até a altura dele. */
+  aoLado?: boolean;
+  class?: string;
+}
+
+const { tags, aoLado = false, class: classe } = Astro.props;
+const palavra = (n: number) => (n === 1 ? "artigo" : "artigos");
+// De 18 a 44px, em escala de log até a tag mais usada (o teto). Cresce com o blog: a maior é sempre a de
+// 44px, e a de um artigo, a de 18.
+const maior = Math.max(2, ...tags.map((t) => t.posts.length));
+const peso = (n: number) => Math.min(1, Math.log(n) / Math.log(maior));
+const nuvem = [...tags].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+---
+
+<nav class:list={["nuvem-tags folha folha-lisa", { "ao-lado": aoLado }, classe]} aria-label="Nuvem de tags">
+  <ul>
+    {
+      nuvem.map((t) => {
+        const n = t.posts.length;
+        return (
+          <li style={`--peso:${peso(n).toFixed(3)}`}>
+            <a href={urlTag(t.nome)}>
+              <span class="sr">{`${t.nome}, ${n} ${palavra(n)}`}</span>
+              <IconeTag nome={t.nome} class="icone-nuvem" />
+              <span class="palavra" aria-hidden="true">
+                {t.nome}
+                <svg class="traco traco-leve traco-preto" viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                  <path d={tracoDeCaneta(t.nome, 103, 0.9, Math.max(4, Math.round(t.nome.length / 1.6)))} />
+                </svg>
+              </span>
+              <sup aria-hidden="true">{n}</sup>
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</nav>
+
+<style>
+  .nuvem-tags {
+    display: grid;
+    align-content: center;
+    padding: clamp(22px, 3.2vw, 40px) clamp(14px, 3vw, 48px);
+  }
+
+  .nuvem-tags ul {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px clamp(12px, 2vw, 28px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .nuvem-tags li {
+    font-size: calc(18px + var(--peso) * 26px);
+  }
+
+  .nuvem-tags a {
+    display: inline-flex;
+    white-space: nowrap;
+    align-items: center;
+    gap: 0.26em;
+    min-height: 40px;
+    padding: 2px 4px;
+    border-radius: 2px;
+    color: color-mix(in oklab, var(--ink) calc(62% + var(--peso) * 38%), var(--ink-2));
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .palavra {
+    position: relative;
+    font-family: var(--font-titulo);
+    font-weight: calc(520 + var(--peso) * 200);
+    line-height: 1.15;
+    letter-spacing: -0.012em;
+  }
+
+  /* O traço de caneta (traco.css) passa um pouco abaixo da linha de base, sob o nome inteiro. */
+  .palavra .traco {
+    bottom: -0.16em;
+    height: max(7px, 0.2em);
+  }
+
+  .nuvem-tags sup {
+    align-self: flex-start;
+    margin-top: 0.12em;
+    font-family: var(--font-ui);
+    font-size: max(11.5px, 0.34em);
+    font-weight: 500;
+    color: var(--ink-2);
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
+  .nuvem-tags :global(.icone-nuvem) {
+    --traco-tag: calc(0.9px + var(--peso) * 0.55px);
+    --papel-da-tag: var(--paper-hi);
+    flex: none;
+    width: 1.2em;
+    height: 1.2em;
+    color: var(--ink-2);
+    transform-origin: 50% 85%;
+    transition:
+      transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1),
+      color 0.2s;
+  }
+
+  .nuvem-tags a:is(:hover, :focus-visible) {
+    color: var(--ink);
+  }
+
+  .nuvem-tags a:is(:hover, :focus-visible) :global(.icone-nuvem) {
+    color: var(--ink);
+    transform: rotate(-8deg);
+  }
+
+  /* No tablet, a nuvem encolhe um pouco (16 a 34px), para as primeiras fichas aparecerem logo. */
+  @media (max-width: 1000px) {
+    .nuvem-tags li {
+      font-size: calc(16px + var(--peso) * 18px);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .nuvem-tags ul {
+      gap: 0 12px;
+    }
+
+    .nuvem-tags li {
+      font-size: calc(15px + var(--peso) * 10px);
+    }
+
+    .nuvem-tags a {
+      min-height: 36px;
+    }
+  }
+
+  /* Ao lado do fichário em pé (rodada 4, P19-2): um nada mais baixa (16 a 38px), centrada na altura dele. */
+  @media (min-width: 1000px) {
+    .nuvem-tags.ao-lado {
+      padding-block: clamp(18px, 2.2vw, 30px);
+    }
+
+    .nuvem-tags.ao-lado li {
+      font-size: calc(16px + var(--peso) * 22px);
+    }
+  }
+
+  /* De 1000 a 1200px, a nuvem ao lado é estreita: as palavras baixam mais um pouco (15 a 32px). */
+  @media (min-width: 1000px) and (max-width: 1199.98px) {
+    .nuvem-tags.ao-lado ul {
+      gap: 2px 14px;
+    }
+
+    .nuvem-tags.ao-lado li {
+      font-size: calc(15px + var(--peso) * 17px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nuvem-tags :global(.icone-nuvem) {
+      transition: none;
+    }
+
+    .nuvem-tags a:is(:hover, :focus-visible) :global(.icone-nuvem) {
+      transform: none;
+    }
+  }
+</style>

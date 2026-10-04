@@ -20,6 +20,21 @@ Os protótipos mostram aparência e comportamento aprovados. São referência, n
 copiar: reescreva com a arquitetura certa, acessível e performática. Onde este briefing e um
 protótipo divergirem, vale o briefing.
 
+**O redesenho está no ar (D61, 02/10/2026).** Depois de quatro rodadas de protótipos (D55), o Cesar
+mandou publicar a versão final: **papel, tinta, latão e luz**. Ela troca a camada visual das seções 4 e
+5 (as "Folhas claras", o cabeçalho, o rodapé, a abertura, as trocas de página, a fileira da home, Tags
+e a página do livro). Não mudam:
+
+- a estrutura (posts em livros com tags, o filtro por livro na tag, Categorias com os livros grandes);
+- as rotas;
+- os livros;
+- a caneta;
+- os desenhos dos posts.
+
+O que vale para o visual está na seção "Papel e luz (D61)" do `DESIGN.md`, e o detalhe, em
+`docs/redesenho/rodada-4/`. Onde as seções 4 e 5 abaixo divergirem deles, vale a D61. As cores dos dois temas são as de antes (D62). A reescrita
+destas seções está nos próximos passos de `docs/estado.md`.
+
 ---
 
 ## 1. O que é o blog
@@ -81,7 +96,10 @@ protótipo divergirem, vale o briefing.
 
 ## 4. Sistema visual (decidido)
 
-Desde 24/09/2026 vale a variação **"A. Folhas claras"** de `docs/referencias/prototipo-mais-vida.html`
+> **D61 (02/10/2026):** o visual agora é "papel, tinta, latão e luz" (seção "Papel e luz (D61)" do
+> `DESIGN.md`). Esta seção descreve as "Folhas claras" e vale onde não divergir dela.
+
+De 24/09/2026 à D61 valeu a variação **"A. Folhas claras"** de `docs/referencias/prototipo-mais-vida.html`
 (D26): o conteúdo em folhas claras sobre um fundo quente, azul-tinta em tudo que é clicável, uma
 fonte sem serifa na interface e os desenhos em painéis tingidos pela categoria. É uma mudança só da
 camada visual: estrutura, conteúdo, rotas e comportamento seguem as seções 5 a 7.
@@ -151,7 +169,7 @@ camada visual: estrutura, conteúdo, rotas e comportamento seguem as seções 5 
 Categoria nova = livro novo, pela seção "Livros novos" do `CAPAS.md` (desenho, ícone, volume). Todo
 livro aparece na estante e na lateral, mesmo sem artigos; o número de artigos, não.
 
-**A coleção vai passar a 13 livros (D61, decidido em 01/10/2026; entra no site depois do OK do Cesar
+**A coleção vai passar a 13 livros (D78, decidido em 01/10/2026; entra no site depois do OK do Cesar
 na página final):** Arquitetura de Software, Dados, Desenvolvimento de Software, DevOps, Frontend,
 Fundamentos, IA, Integração e Eventos, Pagamentos, Segurança, Sistemas Distribuídos, SRE e Testes,
 com os **volumes em ordem alfabética**. Carreira sai; os livros de hoje mantêm o nome; desenhos,
@@ -457,7 +475,9 @@ Referência: aba "Artigo" do protótipo.
   Comentários (Giscus) e estatísticas (GoatCounter) continuam opcionais e desligados.
 - Imagens do corpo abrem num visor sobre a página escurecida (D33), com fechar, setas e contador na
   apresentação; o print como evidência não abre no visor: o clique leva à página de onde ele veio
-  (D58). Tabelas rolam na horizontal no celular.
+  (D58). Tabelas rolam na horizontal no celular, dentro da moldura: a coluna de texto tem um piso de
+  11em, para não encolher até uma palavra por linha, e a tabela que passa da tela ganha o aviso
+  "Arraste para o lado" (D70).
   Matemática com KaTeX, carregado só em posts que usam.
 
 ### 5.4 SEO e distribuição
@@ -589,15 +609,21 @@ com a rolagem. Use no máximo de vez em quando; o Cesar pode removê-la.
   botão para recomeçar, e o clique na imagem pausa. De 6 a 12 s por volta, 5 s parada no fim. Pouco
   texto trocando: o que foi escrito não some; se mudou, é riscado e o novo vem embaixo. Pouca animação
   também vale (só o ponto principal se mexendo).
-- **Ícones das ferramentas**: os logos das ferramentas de que o post fala (AWS, Kubernetes, Java…),
-  desenhados à mão no traço da casa, reconhecíveis. No texto, antes do nome, na primeira menção e
-  espalhados pelo post (não só no começo), sem poluir; o ícone é um link discreto para a página mais
-  específica da ferramenta. Dentro das figuras e das animações também (a xícara do Java na caixa do
-  app). Não confundir com os ícones das tags, que nunca são logotipo (D52).
+- **Ícones das ferramentas**: os logos das ferramentas de que o post fala, **só como a regra de marca
+  do dono permite** (D64, registro em `src/marcas/regras.json`, conferido na política oficial): o
+  redesenho à mão no traço da casa só onde a política deixa (hoje, o Kubernetes); onde ela pede o
+  arquivo oficial, ele sem alteração; onde não permite, só o nome em texto e, no desenho, um ícone
+  genérico da casa (banco, fila, tópico, aplicação, servidor). No texto, antes do nome, na primeira
+  menção e espalhados pelo post (não só no começo), sem poluir; o ícone é um link discreto para a
+  página mais específica da ferramenta. Não confundir com os ícones das tags, que nunca são logotipo
+  (D52).
 - **Print como evidência**: só quando prova algo que o texto diz e dá para garantir que está certo
   (a documentação oficial dizendo o número citado, um erro, um painel). Tela que pede login (console
   da AWS, painéis internos): o Cesar tira o print. Com borda, uma linha embaixo dizendo o que é e de
-  onde veio, e o clique abre a página de origem em outra aba.
+  onde veio, e o clique abre a página de origem em outra aba. O print largo, de letra miúda (a tela de
+  um terminal), rola de lado no celular em vez de encolher, e pode começar pela parte que importa
+  (D66). Uma tela que o próprio Cesar desenhou, com os textos e os números de uma sessão real, entra
+  como print parado (o quadro final do desenho), com a legenda dizendo que é desenho (D66).
 
 Regras técnicas, classes e tempos: skill `figura`, `docs/estilo-desenho.md` e `docs/movimento.md`.
 
@@ -618,29 +644,56 @@ Regras técnicas, classes e tempos: skill `figura`, `docs/estilo-desenho.md` e `
   render antes de seguir.
 
 ### 8.2 Regras de todo post novo (vão para a skill de post e para uma regra por caminho)
-- **Tamanho**: posts mais curtos que os de hoje. Meta de **1.500 a 2.500 palavras**
-  (8 a 12 min de leitura), teto de ~3.000. Assunto maior vira **série** ou é dividido em
-  partes. Sem enchimento. Os posts existentes não precisam ser encurtados.
+- **Formato** (D63): todo post, novo ou ajustado, começa por uma conversa com o Cesar, que decide
+  com Claude o formato, a estrutura e as fontes:
+  - **detalhado**: de **1.500 a 2.500 palavras** (8 a 12 min de leitura), teto de ~3.000, com o
+    **TL;DR** fechado no alto do texto (o leitor clica para abrir);
+  - **resumo** (um resumo de verdade, não tão curto): de **700 a 1.200 palavras** (4 a 6 min), com um
+    **infográfico** que mostra o assunto inteiro (a ideia dos guias do ByteByteGo, desenhada no estilo
+    da casa, com detalhes e ícones);
+  - a **estrutura** (as seções e o que entra em cada uma) é combinada antes de escrever;
+  - as **fontes**: se o Cesar já estudou o assunto, ele dá os links e o post se baseia neles; se não,
+    Claude busca fontes confiáveis.
+
+  Assunto maior vira **post em partes** (D71): dois posts ligados, parte 1 e parte 2, quando o texto
+  passa do teto e tem dois temas que se sustentam sozinhos (em geral o conceito e a prática). Cada
+  parte é um post inteiro, com título próprio e "(parte N de M)" no fim, o aviso da parte logo depois
+  da abertura, com o link da outra, e a parte 2 com uma recapitulação para quem chega direto. Saem
+  juntas. Três partes ou mais: conversar, pode ser série. Sem enchimento. Os posts existentes não
+  precisam ser encurtados.
+- **Escrita** (D71, pedido do Cesar depois do post dos mods; o detalhe está na skill `post`):
+  - **Título:** "Assunto — complemento". O assunto, sozinho, tem de dizer do que o post trata, porque o
+    título aparece sozinho na busca, em listas e em links: o nome da tecnologia e o tema na frente,
+    sem pergunta, trocadilho, gancho nem nome que só o Cesar conhece. O título é do assunto do post,
+    não do exemplo.
+  - **Descrição:** uma ou duas frases com verbo, com o essencial nos primeiros 160 caracteres.
+  - **TL;DR:** cada ponto é uma conclusão que se entende sozinha, do mais importante para o menos.
+  - **Abertura:** o primeiro parágrafo diz o assunto e por que importa; o segundo, o que o post cobre e
+    para quem. O exemplo, a história e a imagem vêm depois.
+  - **Voz:** nunca a primeira pessoa ("eu criei", "testei", "fiz"). O sujeito é a coisa, ou o
+    infinitivo ("para testar…"), ou "você". O que foi rodado ou medido vira fato com data.
 - **Veracidade**: nenhuma afirmação técnica sem fonte confiável e conferida (documentação
   oficial, especificações, JEPs, RFCs, release notes). Nada inventado: versões, números,
   benchmarks, citações e APIs só se verificados. Se não der para confirmar, diga isso no
   texto ou tire. Código e SQL testados (rodados) antes de publicar, e que façam sentido
   (25/09/2026, D35); exemplo grande linka o código completo.
-  Links conferidos. **`## Fontes`** no fim, sempre.
-- **Estrutura**: introdução com o problema concreto em 2 ou 3 frases; seções `##` claras;
-  avisos só quando ajudam; diff quando mostrar antes e depois.
+  Links conferidos. **`## Fontes`** no fim, sempre, e os links também **ao longo do texto**, onde o
+  assunto da fonte aparece (D63).
+- **Estrutura**: a abertura pelas regras da escrita (D71); seções `##` claras, com título
+  descritivo; avisos só quando ajudam; diff quando mostrar antes e depois.
 - **Desenhos** (D58, §7): uma lousa, uma figura ou uma animação quando houver fluxo, sequência,
   antes e depois ou um sistema funcionando (post simples fica só com a capa). **Nem todo post tem
   todos os tipos**: entra o que o assunto pede e o que fica bom (um post pode ter só a capa e um
   gráfico; outro, uma lousa e uma animação). **Todo desenho é explicado no texto**, que diz o que
   olhar nele. Ícones das ferramentas sempre que couberem, no texto e nos desenhos, sem poluir.
   **Print** só o que prova algo do texto e dá para garantir; tela com login é o Cesar quem tira.
-- **Frontmatter**: `title` (aparece inteiro; o " — " só divide a imagem de compartilhamento),
-  `description` até ~200 caracteres,
+- **Frontmatter**: `title` (o " — " divide o assunto e o complemento, que vira subtítulo; D71),
+  `description` com o essencial nos primeiros 160 caracteres (teto de 200),
   `published`, `updated` opcional, `category` **ou** `series`, `tags` (2 a 4, reaproveitando o
   vocabulário existente, sem repetir nome de categoria), `draft`, `codigo` (D52, C03: URL `https://`
   do repositório de exemplos, opcional; só quando o post tem código publicado numa pasta própria em
-  `cesarschutz/blog-exemplos`).
+  `cesarschutz/blog-exemplos`), `formato` (`detalhado` ou `resumo`, D63) e `tldr` (os pontos do TL;DR,
+  no detalhado).
 - **Categoria**: encaixe numa existente; se nenhuma servir de verdade, pode criar uma nova
   dentro do escopo do blog, com cor distinta, e avise o Cesar.
 - **Fluxo** (vale para post do zero e para texto que o Cesar traz pronto): classificar →

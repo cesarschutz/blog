@@ -1,21 +1,27 @@
 ---
 /**
  * Uma categoria (/categories/<Nome>/, com o nome cru na URL, como no blog atual: D7). Cada categoria
- * é um livro da coleção (D30), e todo livro tem página, mesmo sem artigos. Pedido do Cesar em
- * 24/09/2026 (D29): o painel lateral da home à esquerda, com o livro desta categoria fora da
- * pilha; no topo, o livro em pé numa folha, que chega da pilha por transição de página; embaixo, os
- * artigos da categoria com a alternância Lista / Cards.
+ * é um livro da coleção (D30), e todo livro tem página, mesmo sem artigos.
+ *
+ * Rodada 3, área 4 (a página do livro): no alto, a fileira do 14 com os livros da coleção, sem as séries
+ * (D62; FileiraTopo), que gruda sob o cabeçalho e encolhe ao rolar; embaixo dela, o painel do 15 (TopoLivro:
+ * o texto à esquerda, o livro grande com as tags em volta à direita, os vizinhos como links de texto); e
+ * os artigos com a alternância Lista / Cards. Com poucos artigos (F11-3), nada de vazio: de 1 a 3 cards,
+ * a linha fica centrada, na largura normal de um card; com 1 ou 2, entra "Deste livro também:" com as
+ * três tags mais usadas do livro. Sem artigos, uma folha centrada com o livro em branco.
  */
 import Base from "../../layouts/Base.astro";
 import { paginaDeColecao } from "../../lib/seo";
 import { url } from "../../lib/url";
-import ComPainel from "../../components/ComPainel.astro";
+import FileiraTopo from "../../components/FileiraTopo.astro";
 import TopoLivro from "../../components/TopoLivro.astro";
 import Recentes from "../../components/Recentes.astro";
 import LivroEmBranco from "../../components/LivroEmBranco.astro";
+import IconeTag from "../../components/IconeTag.astro";
 import { montarLivros } from "../../lib/estante";
-import { getCategorias, type Grupo } from "../../lib/posts";
+import { getCategorias, getTags, urlTag, type Grupo } from "../../lib/posts";
 import type { Categoria } from "../../data/taxonomia";
+import "../../styles/catalogo.css";
 
 export async function getStaticPaths() {
   const categorias = await getCategorias();
@@ -28,51 +34,337 @@ interface Props {
 
 const { grupo } = Astro.props;
 const { categoria, posts } = grupo;
-const livro = (await montarLivros()).find((l) => !l.serie && l.nome === categoria.nome)!;
+// A fileira de cima e os vizinhos (anterior e próximo): só os livros da coleção. As séries ficam na página
+// delas (D62).
+const livros = (await montarLivros()).filter((l) => !l.serie);
+const i = livros.findIndex((l) => l.nome === categoria.nome);
+const livro = livros[i];
+const anterior = livros[i - 1];
+const proximo = livros[i + 1];
+
+// Poucos artigos (F11-3): de 1 a 3, os cards ficam centrados; com 1 ou 2, as três tags mais usadas do livro
+// entram embaixo ("Deste livro também:"), cada uma com o total de artigos dela no blog.
+const poucos = posts.length > 0 && posts.length <= 3 ? posts.length : 0;
+const usoNoLivro = new Map<string, number>();
+for (const p of posts) for (const t of p.tags) usoNoLivro.set(t, (usoNoLivro.get(t) ?? 0) + 1);
+const totalNoBlog = new Map((await getTags()).map((g) => [g.nome, g.posts.length]));
+const tambem =
+  posts.length > 0 && posts.length <= 2
+    ? [...usoNoLivro]
+        .sort((a, b) => b[1] - a[1] || (totalNoBlog.get(b[0]) ?? 0) - (totalNoBlog.get(a[0]) ?? 0) || a[0].localeCompare(b[0], "pt-BR"))
+        .slice(0, 3)
+        .map(([nome]) => ({ nome, total: totalNoBlog.get(nome) ?? 0 }))
+    : [];
 ---
 
 <Base
   titulo={categoria.nome}
   descricao={`Artigos de ${categoria.nome}: ${categoria.descricao}`}
   atual="categorias"
+  chegada={{ passo: 0.06 }}
   jsonLd={paginaDeColecao(categoria.nome, `Artigos de ${categoria.nome}: ${categoria.descricao}`, Astro.url.pathname, Astro.site)}
 >
-  <ComPainel tipo="categorias" atual={livro.id}>
-    <TopoLivro livro={livro} />
-    <div class="artigos">
+  <div class="wrap pagina-do-livro">
+    <FileiraTopo livros={livros} atual={livro.id} />
+    <TopoLivro livro={livro} anterior={anterior} proximo={proximo} />
+    <div class:list={["artigos", poucos && `poucos-${poucos}`]} data-gira>
       {
         posts.length > 0 ? (
           <Recentes posts={posts} titulo="Artigos" subtitulo={`${posts.length} ${posts.length === 1 ? "artigo" : "artigos"}`} />
         ) : (
-          <div class="folha vazio">
-            <LivroEmBranco livro={livro} largura={150} />
-            <p>Este livro ainda não tem artigos.</p>
-            <p class="saidas">
-              <a href={url("/categories/")}>Veja os outros livros</a>
-              <a href={url("/rss.xml")}>Assinar via RSS</a>
-            </p>
+          <div class="folha folha-lisa vazio">
+            <LivroEmBranco livro={livro} largura={190} />
+            <div class="vazio-texto">
+              <p class="vazio-titulo">Este volume ainda está em branco.</p>
+              <p>Os primeiros artigos de {livro.nome} entram aqui. Enquanto isso:</p>
+              <p class="saidas">
+                <a href={url("/categories/")}>Veja os outros livros</a>
+                <a href={url("/rss.xml")}>Assinar via RSS</a>
+              </p>
+            </div>
           </div>
         )
       }
+      {
+        tambem.length > 0 && (
+          <aside class="tambem" aria-labelledby="tambem-rotulo" style={`--cor:${livro.cores.cor}`}>
+            <p id="tambem-rotulo" class="tambem-rotulo">
+              Deste livro também:
+            </p>
+            <ul>
+              {tambem.map((t) => (
+                <li>
+                  <a class="ficha-tag" href={urlTag(t.nome)}>
+                    <IconeTag nome={t.nome} class="icone-ficha" />
+                    <span class="ficha-nome">#{t.nome}</span>
+                    <span class="ficha-conta">
+                      {t.total} {t.total === 1 ? "artigo" : "artigos"} no blog
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </aside>
+        )
+      }
     </div>
-  </ComPainel>
+  </div>
 </Base>
 
+<script>
+  /*
+   * G5 (protótipo 14, do 01): os artigos do livro chegam girando, como cartas viradas na mesa, cada um
+   * quando aparece na tela pela primeira vez (os de cima, quando a página chega: com a cortina saindo, depois
+   * da troca de livro ou do caderno da abertura). Só `transform` e `opacity`; com movimento reduzido, nada.
+   */
+  const raiz = document.documentElement;
+  const area = document.querySelector<HTMLElement>("[data-gira]");
+  if (area && !matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+    const itens = () => [...area.querySelectorAll<HTMLElement>(".cartoes-modo > li, .lista-artigos > li, .tambem li")];
+    raiz.classList.add("gira-pronto");
+    let liberado = !raiz.dataset.abertura && !raiz.hasAttribute("data-vai-chegar");
+    let fila: HTMLElement[] = [];
+    let relogio = 0;
+    const girar = () => {
+      relogio = 0;
+      fila.sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top || a.getBoundingClientRect().left - b.getBoundingClientRect().left);
+      fila.forEach((el, i) => {
+        el.classList.add("girou");
+        const atraso = i * 70;
+        el.animate([{ transform: "perspective(900px) rotateX(-72deg) translateY(28px)", transformOrigin: "50% 0" }, { transform: "perspective(900px) rotateX(0deg)", transformOrigin: "50% 0" }], { duration: 820, delay: atraso, easing: "cubic-bezier(0.2, 0.9, 0.25, 1)", fill: "backwards" });
+        el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, delay: atraso, easing: "ease-out", fill: "backwards" });
+      });
+      fila = [];
+    };
+    const observador = new IntersectionObserver((entradas) => {
+      for (const e of entradas) {
+        if (!e.isIntersecting) continue;
+        observador.unobserve(e.target);
+        fila.push(e.target as HTMLElement);
+      }
+      if (liberado && fila.length && !relogio) relogio = requestAnimationFrame(girar);
+    }, { rootMargin: "0px 0px -6% 0px" });
+    const observar = () => itens().forEach((el) => !el.classList.contains("girou") && observador.observe(el));
+    observar();
+    const liberar = () => {
+      if (liberado) return;
+      liberado = true;
+      if (fila.length) girar();
+    };
+    // Pela cortina, os artigos começam a girar quando ela começa a sair (0,62s da troca), e não no fim da
+    // chegada (~1,36s): quando ela descobre a tela, eles já estão chegando. A cortina sai pelo alto e
+    // descobre a tela de baixo para cima; voltando pelo histórico, ela sai para baixo e descobre o alto
+    // primeiro, e os artigos (embaixo do painel) esperam metade da saída.
+    addEventListener(
+      "cs:cortina-saindo",
+      (e) => {
+        const d = (e as CustomEvent<{ volta?: boolean; duracao?: number }>).detail;
+        if (d?.volta) setTimeout(liberar, (d.duracao ?? 360) * 0.5);
+        else liberar();
+      },
+      { once: true },
+    );
+    // A folga dos outros caminhos: a troca de livro e a troca sem cortina (cs:chegou) e a abertura (cs:aberto).
+    addEventListener("cs:chegou", liberar, { once: true });
+    addEventListener("cs:aberto", () => setTimeout(liberar, 150), { once: true });
+    setTimeout(liberar, 2600);
+    new MutationObserver(() => itens().forEach((el) => el.classList.add("girou"))).observe(area, { childList: true, subtree: true });
+  }
+</script>
+
+<style is:global>
+  /* G5: até girar, cada artigo espera escondido (só com JS e sem movimento reduzido: o script põe a classe). */
+  :root.gira-pronto [data-gira] :is(.cartoes-modo > li, .lista-artigos > li, .tambem li):not(.girou) {
+    opacity: 0;
+  }
+</style>
+
 <style>
-  :global(.com-painel) {
-    padding-top: 32px;
+  .pagina-do-livro {
+    padding-top: 12px;
   }
 
   .artigos {
+    container: artigos-livro / inline-size;
     margin-top: 40px;
+    perspective: 1400px;
   }
 
   /*
-   * Livro sem artigos (IA, Carreira): numa folha, com saída para os outros livros e o RSS (D37). Em cima,
-   * pequeno, o livro aberto com as páginas em branco, na cor dele (D57).
+   * Poucos artigos em cards (F11-3): a linha fica centrada e cada card tem a largura que teria na grade
+   * cheia (a de base.css: no mínimo 290px, 26px entre eles; --k é o número de colunas dela nesta largura).
+   */
+  .artigos[class*="poucos-"] :global(.cartoes-modo) {
+    --k: 1;
+    --largura-card: calc((100cqi - (var(--k) - 1) * 26px) / var(--k));
+  }
+
+  @container artigos-livro (min-width: 606px) {
+    .artigos[class*="poucos-"] :global(.cartoes-modo) {
+      --k: 2;
+    }
+  }
+
+  @container artigos-livro (min-width: 922px) {
+    .artigos[class*="poucos-"] :global(.cartoes-modo) {
+      --k: 3;
+    }
+  }
+
+  @container artigos-livro (min-width: 1238px) {
+    .artigos[class*="poucos-"] :global(.cartoes-modo) {
+      --k: 4;
+    }
+  }
+
+  .poucos-1 :global(.cartoes-modo) {
+    grid-template-columns: minmax(0, var(--largura-card));
+    justify-content: center;
+  }
+
+  @container artigos-livro (min-width: 606px) {
+    .poucos-2 :global(.cartoes-modo) {
+      grid-template-columns: repeat(2, minmax(0, var(--largura-card)));
+      justify-content: center;
+    }
+
+    /* Três em duas colunas: o terceiro fica no meio da linha de baixo. */
+    .poucos-3 :global(.cartoes-modo > li:nth-child(3)) {
+      grid-column: 1 / -1;
+      justify-self: center;
+      width: var(--largura-card);
+    }
+  }
+
+  @container artigos-livro (min-width: 922px) {
+    .poucos-3 :global(.cartoes-modo) {
+      grid-template-columns: repeat(3, minmax(0, var(--largura-card)));
+      justify-content: center;
+    }
+
+    .poucos-3 :global(.cartoes-modo > li:nth-child(3)) {
+      grid-column: auto;
+      width: auto;
+    }
+  }
+
+  /* ---------- "Deste livro também:" ---------- */
+
+  .tambem {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 14px 18px;
+    margin-top: 44px;
+  }
+
+  .tambem-rotulo {
+    margin: 0;
+    font-family: var(--font-ui);
+    font-size: 14.5px;
+    color: var(--ink-2);
+  }
+
+  .tambem ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* A ficha pequena: um cartão de fichário, com o fio da cor do livro no alto. */
+  .ficha-tag {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "icone nome"
+      "icone conta";
+    column-gap: 12px;
+    align-items: center;
+    min-width: 196px;
+    padding: 12px 18px 11px 12px;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: var(--paper-hi);
+    box-shadow: var(--sombra-folha);
+    color: var(--ink);
+    text-decoration: none;
+    transition:
+      transform 0.3s cubic-bezier(0.2, 0.75, 0.2, 1),
+      box-shadow 0.3s;
+  }
+
+  .ficha-tag::before {
+    content: "";
+    position: absolute;
+    inset: -1px -1px auto;
+    height: 3px;
+    border-radius: 4px 4px 0 0;
+    background: color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro));
+  }
+
+  .ficha-tag :global(.icone-ficha) {
+    --traco-tag: 1.2px;
+    grid-area: icone;
+    width: 38px;
+    height: 38px;
+    color: var(--ink);
+    transition: transform 0.35s cubic-bezier(0.2, 0.75, 0.2, 1);
+  }
+
+  .ficha-nome {
+    grid-area: nome;
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    font-size: 16.5px;
+    line-height: 1.25;
+    transition: color 0.15s;
+  }
+
+  .ficha-conta {
+    grid-area: conta;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--ink-2);
+    font-variant-numeric: lining-nums;
+  }
+
+  .ficha-tag:is(:hover, :focus-visible) .ficha-nome {
+    color: var(--acento);
+  }
+
+  .ficha-tag:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 3px;
+  }
+
+  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+    .ficha-tag:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--sombra-folha-alta);
+    }
+
+    .ficha-tag:hover :global(.icone-ficha) {
+      transform: translateY(-2px) rotate(-8deg);
+    }
+  }
+
+  /*
+   * Livro sem artigos (IA, Carreira): numa folha, centrado, com o livro aberto em branco na cor dele (D57)
+   * e as saídas para os outros livros e o RSS (D37).
    */
   .vazio {
-    padding: 16px 28px 24px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 12px 36px;
+    padding: 28px clamp(20px, 4vw, 48px) 32px;
     font-family: var(--font-ui);
     font-size: 16px;
     color: var(--ink-2);
@@ -82,15 +374,44 @@ const livro = (await montarLivros()).find((l) => !l.serie && l.nome === categori
     margin: 0;
   }
 
-  .vazio :global(.livro-em-branco) {
-    margin: 0 0 6px -10px;
+  .vazio-texto {
+    display: grid;
+    gap: 6px;
+    max-width: 52ch;
+  }
+
+  .vazio-titulo {
+    font-family: var(--font-titulo);
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 1.2;
+    color: var(--ink);
+    text-wrap: balance;
   }
 
   .vazio .saidas {
     display: flex;
     flex-wrap: wrap;
     gap: 8px 24px;
-    margin-top: 10px;
+    margin-top: 8px;
     font-size: 15px;
+  }
+
+  @media (max-width: 640px) {
+    /* No celular, as fichas uma embaixo da outra, todas da mesma largura. */
+    .tambem ul {
+      display: grid;
+      grid-template-columns: minmax(0, 300px);
+      width: 100%;
+      justify-content: center;
+    }
+
+    .vazio {
+      text-align: center;
+    }
+
+    .vazio .saidas {
+      justify-content: center;
+    }
   }
 </style>

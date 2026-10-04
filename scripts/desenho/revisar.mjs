@@ -60,6 +60,10 @@ function listarDesenhos() {
   if (capa) lista.push({ tipo: "capa", indice: 0, seletor: "[data-desenhar-topo]" });
   document.querySelectorAll(".figura:not(.animacao)").forEach((_, i) => lista.push({ tipo: "figura", indice: i, seletor: ".figura:not(.animacao)" }));
   document.querySelectorAll(".animacao").forEach((_, i) => lista.push({ tipo: "animação", indice: i, seletor: ".animacao" }));
+  // Os cartões dos controles em prova (D65): a animação com play num cartão.
+  document.querySelectorAll('.cartao-proto[data-caso="animacao"]').forEach((_, i) =>
+    lista.push({ tipo: "animação", indice: i, seletor: '.cartao-proto[data-caso="animacao"]' }),
+  );
   document.querySelectorAll(".lousa-nova").forEach((_, i) => lista.push({ tipo: "lousa", indice: i, seletor: ".lousa-nova" }));
   return lista;
 }
@@ -231,8 +235,10 @@ function textosSemTom([seletor, indice]) {
 /** A linha do tempo de uma lousa: fronteiras de passo atravessadas e passos vazios. */
 function tempoDaLousa([indice]) {
   const figura = document.querySelectorAll(".lousa-nova")[indice];
-  const passos = JSON.parse(figura.dataset.passos || "[]");
-  const estados = JSON.parse(figura.dataset.estados || "[]");
+  // Nos cartões dos controles em prova (D65), as marcas vêm em data-marcas, com o caso em data-caso.
+  const doCartao = figura.dataset.marcas ? JSON.parse(figura.dataset.marcas) : null;
+  const passos = doCartao ? (figura.dataset.caso === "passos" ? doCartao : []) : JSON.parse(figura.dataset.passos || "[]");
+  const estados = doCartao ? (figura.dataset.caso === "comparacao" ? doCartao : []) : JSON.parse(figura.dataset.estados || "[]");
   const marcas = (passos.length ? passos : estados).map((p) => p.de);
   const nomes = ["traco", "escrita", "revela", "aparece", "some", "esmaece", "desloca"];
   const partes = [];
@@ -363,12 +369,18 @@ async function conferirCapaViva(pagina, alvo, d) {
 }
 
 async function lousaNoInstante(pagina, d, valor) {
-  await pagina.locator(d.seletor).nth(d.indice).locator("input[type=range]").evaluate((el, v) => {
-    el.value = String(Math.round(v * 1000));
-    el.dispatchEvent(new Event("input", { bubbles: true }));
+  // O cartão dos controles em prova (D65) expõe o relógio; a lousa de sempre, a faixa (input range).
+  await pagina.locator(d.seletor).nth(d.indice).evaluate((el, v) => {
+    if (el.relogio) return el.relogio.ir(v);
+    const faixa = el.querySelector("input[type=range]");
+    faixa.value = String(Math.round(v * 1000));
+    faixa.dispatchEvent(new Event("input", { bubbles: true }));
   }, valor);
   await pagina.waitForTimeout(350);
 }
+
+/** O botão de tocar: o da lousa de sempre (.tocar) ou o dos cartões em prova (o que tem aria-pressed). */
+const botaoDeTocar = (alvo) => alvo.locator(".tocar, button[aria-pressed]").first();
 
 async function rodada(largura, tema) {
   const { contexto, pagina, erros } = await abrir(largura, tema);
@@ -444,7 +456,7 @@ async function rodada(largura, tema) {
       if (completa) {
         // O play inteiro, de 80 em 80 ms: duas canetas no mesmo lugar é bug.
         const duracao = Number(await alvo.getAttribute("data-duracao")) * 1000;
-        await alvo.locator(".tocar").click();
+        await botaoDeTocar(alvo).click();
         let juntas = 0;
         const fotosDoPlay = [0.25, 0.5, 0.75].map((f) => Math.round((f * duracao) / 80));
         for (let k = 0; k * 80 < duracao; k++) {
@@ -453,7 +465,7 @@ async function rodada(largura, tema) {
           if (fotosDoPlay.includes(k)) await foto(pagina, d, `${tag}-play-${Math.round((k * 80) / 100) / 10}s`);
         }
         if (juntas > 1) problema(rotulo(d), `duas canetas no mesmo lugar em ${juntas} quadros do play`);
-        await alvo.locator(".tocar").click();
+        await botaoDeTocar(alvo).click();
         await lousaNoInstante(pagina, d, 1);
       }
     }

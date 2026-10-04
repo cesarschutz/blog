@@ -14,6 +14,8 @@ import "../styles/fontes.css";
 import "../styles/base.css";
 import "../styles/avisos.css";
 import "../styles/desenho.css";
+// Rodada 2 (protótipo 14): a cortina, o rodapé com o nome e o que mais for do protótipo, num arquivo só.
+import "../styles/suave.css";
 // Só as duas fontes do primeiro quadro são pré-carregadas (D5); itálico e código baixam quando usados.
 // A da interface (IBM Plex Sans, D26) não: o CSS vem embutido no HTML, então ela é pedida logo, e a
 // reserva ajustada (fontes.css) evita o deslocamento na troca.
@@ -23,11 +25,14 @@ import { claro, cssDosTokens, escuro } from "../styles/tokens";
 import { url } from "../lib/url";
 import Cabecalho from "../components/Cabecalho.astro";
 import Rodape from "../components/Rodape.astro";
+import AbaTopo from "../components/AbaTopo.astro";
 import Busca from "../components/Busca.astro";
-import VoltarTopo from "../components/VoltarTopo.astro";
 import { ESTATISTICAS, TEXTOS } from "../data/site";
 import DefinicoesDesenho from "../components/DefinicoesDesenho.astro";
 import Abertura from "../components/Abertura.astro";
+// Rodada 2 (protótipo 14): a pasta do Mac (O11) e a luz do mouse com o brilho dos livros (O7, O8).
+import Computador from "../computador/Computador.astro";
+import Luz from "../components/Luz.astro";
 // A troca de página por folhas (D51): embutida no <head>, antes da primeira pintura.
 import trocaJs from "../scripts/troca.js?raw";
 
@@ -58,6 +63,8 @@ interface Props {
   chegada?: { passo?: number; propria?: boolean };
   /** Artigo com sumário: a seção atual pode ocupar o lugar da marca no cabeçalho (C2, D49). */
   sumario?: boolean;
+  /** A cortina da troca de página (protótipo 14, G10): o rótulo pequeno e o nome grande do destino. */
+  cortina?: { rotulo?: string; nome?: string };
 }
 
 const NOME = "Cesar Schutz";
@@ -75,7 +82,13 @@ const {
   abertura = false,
   sumario = false,
   chegada,
+  cortina,
 } = Astro.props;
+const ROTULOS = { artigos: "Artigos", categorias: "Livros", series: "Séries", tags: "Tags" } as const;
+const rotuloDaCortina = cortina?.rotulo ?? (atual ? ROTULOS[atual] : tipo === "article" ? "Artigo" : "Blog");
+const nomeDaCortina = cortina?.nome ?? titulo ?? NOME;
+// Rodada 4 (E2): a maior palavra do nome, para a cortina encolher o nome no celular em vez de partir a palavra.
+const letrasDaCortina = Math.max(...nomeDaCortina.split(/\s+/).map((p) => p.length));
 const tituloDaAba = titulo ? `${titulo} · ${NOME}` : `${NOME} · Arquitetura e engenharia de software`;
 const canonico = new URL(Astro.url.pathname, Astro.site);
 const imagemAbsoluta = new URL(url(imagem), Astro.site).href;
@@ -282,8 +295,22 @@ const preCarregar = {
          aparece sem o papel por cima (D54). -->
     <Abertura modo={abertura ? "estante" : "caderno"} />
     <span id="fim-do-conteudo" hidden></span>
+    <!-- Rodada 4 (R2): a cordinha do rodapé sobe a página; nas páginas longas, a aba de fichário à direita
+         também (AbaTopo), que sai quando a cordinha aparece. -->
     <Rodape />
-    <VoltarTopo />
+    <AbaTopo />
     <Busca />
+    <div class:list={["cortina-painel", { longo: nomeDaCortina.length > 34 }]} style={`--letras:${letrasDaCortina}`} aria-hidden="true">
+      <span class="cortina-rotulo">{rotuloDaCortina}</span>
+      <span class="cortina-nome"><span>{nomeDaCortina}</span></span>
+    </div>
+    <!-- Área 7 (rodada 3, T13): as listas e os cards com data-revelar aparecem ao rolar (revelar.ts). -->
+    <script>
+      import "../scripts/revelar.ts";
+      // Linha 18 (P6): a tira das fichas embaralha ao entrar na tela.
+      import "../scripts/embaralha.ts";
+    </script>
+    <Luz />
+    <Computador />
   </body>
 </html>

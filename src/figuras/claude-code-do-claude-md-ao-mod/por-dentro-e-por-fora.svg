@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 820"
+  aria-label="Onde cada peça do Claude Code age. Do lado de fora: o CLAUDE.md e os arquivos de skill, de agente e de estilo entram como texto no contexto do modelo; o servidor MCP entrega ferramentas a esse contexto; o hook é um script que recebe os eventos fora do programa. A pasta do plugin embala essas peças e o código do mod. Dentro do Claude Code, só o mod: recebe os eventos, guarda estado e desenha o painel e a faixa na tela.">
+  <g class="tinta">
+    <path d="M396 40 H1154 Q1170 40 1170 56 V740 Q1170 756 1154 756 H396 Q380 756 380 740 V56 Q380 40 396 40 Z" class="linha"/>
+    <path d="M380 100 H1170" class="linha"/>
+    <circle cx="406" cy="70" r="6" class="linha"/>
+    <circle cx="428" cy="70" r="6" class="linha"/>
+    <circle cx="450" cy="70" r="6" class="linha"/>
+    <path d="M782 140 H1128 Q1140 140 1140 152 V564 Q1140 576 1128 576 H782 Q770 576 770 564 V152 Q770 140 782 140 Z" class="linha"/>
+    <path d="M792 230 L804 242 L792 254 M818 242 H890 M792 292 H920 M792 326 H896 M792 360 H916 M792 394 H864" class="linha"/>
+    <path d="M792 536 L804 548 L792 560 M820 536 V560" class="linha"/>
+    <g class="tom-roxo">
+      <path d="M40 246 V230 Q40 218 52 218 H138 Q150 218 150 230 V234 H288 Q300 234 300 246 V734 Q300 746 288 746 H52 Q40 746 40 734 Z" class="linha-tom"/>
+    </g>
+    <g class="tom-azul">
+      <path d="M62 120 H250 L272 142 V190 H62 Z" transform="translate(7 7)" class="hachura"/>
+      <path d="M62 120 H250 L272 142 V190 H62 Z" class="lavado"/>
+      <path d="M62 120 H250 L272 142 V190 H62 Z" class="linha"/>
+      <path d="M250 120 V142 H272" class="linha"/>
+      <rect x="69" y="321" width="210" height="46" rx="4" class="hachura"/>
+      <rect x="62" y="314" width="210" height="46" rx="4" class="lavado"/>
+      <rect x="62" y="314" width="210" height="46" rx="4" class="linha"/>
+      <rect x="81" y="359" width="210" height="46" rx="4" class="hachura"/>
+      <rect x="74" y="352" width="210" height="46" rx="4" class="lavado"/>
+      <rect x="74" y="352" width="210" height="46" rx="4" class="linha"/>
+      <rect x="73" y="397" width="210" height="46" rx="4" class="hachura"/>
+      <rect x="66" y="390" width="210" height="46" rx="4" class="lavado"/>
+      <rect x="66" y="390" width="210" height="46" rx="4" class="linha"/>
+      <path d="M284 160 H404 M390 151 L404 160 L390 169" class="linha-tom"/>
+      <path d="M296 375 H404 M390 366 L404 375 L390 384" class="linha-tom"/>
+      <rect x="417" y="147" width="330" height="406" rx="12" class="hachura"/>
+      <rect x="410" y="140" width="330" height="406" rx="12" class="lavado"/>
+      <rect x="410" y="140" width="330" height="406" rx="12" class="linha"/>
+      <g transform="rotate(-3 496 484)">
+        <rect x="462" y="366" width="68" height="148" rx="4" class="papel"/>
+        <rect x="462" y="366" width="68" height="148" rx="4" class="linha"/>
+        <path d="M472 382 H516 M472 398 H498 M472 414 H508 M472 430 H502" class="linha"/>
+      </g>
+      <g transform="rotate(2 580 484)">
+        <rect x="546" y="346" width="68" height="168" rx="4" class="papel"/>
+        <rect x="546" y="346" width="68" height="168" rx="4" class="linha"/>
+        <path d="M556 362 H596 M556 378 H578 M556 394 H600 M556 410 H582" class="linha"/>
+      </g>
+      <g transform="rotate(3 664 484)">
+        <rect x="630" y="380" width="68" height="134" rx="4" class="papel"/>
+        <rect x="630" y="380" width="68" height="134" rx="4" class="linha"/>
+        <path d="M640 396 H676 M640 412 H670 M640 428 H680 M640 444 H662" class="linha"/>
+      </g>
+      <rect x="442" y="484" width="266" height="44" rx="6" class="papel"/>
+      <rect x="442" y="484" width="266" height="44" rx="6" class="linha"/>
+      <path d="M547 506 H603" class="linha"/>
+    </g>
+    <g class="tom-ambar">
+      <rect x="69" y="485" width="210" height="70" rx="8" class="hachura"/>
+      <rect x="62" y="478" width="210" height="70" rx="8" class="lavado"/>
+      <rect x="62" y="478" width="210" height="70" rx="8" class="linha"/>
+      <path d="M126 478 C126 452 208 452 208 478" class="linha"/>
+      <rect x="156" y="471" width="24" height="18" rx="3" class="papel"/>
+      <rect x="156" y="471" width="24" height="18" rx="3" class="linha"/>
+      <path d="M288 513 H404 M390 504 L404 513 L390 522" class="linha-tom"/>
+    </g>
+    <g class="tom-verde">
+      <rect x="69" y="659" width="210" height="70" rx="8" class="hachura"/>
+      <rect x="62" y="652" width="210" height="70" rx="8" class="lavado"/>
+      <rect x="62" y="652" width="210" height="70" rx="8" class="linha"/>
+      <path d="M362 687 H290 M304 678 L290 687 L304 696" class="linha-tom"/>
+    </g>
+    <g class="tom-petroleo">
+      <path d="M62 572 H256 L272 588 V628 H62 Z" transform="translate(7 7)" class="hachura"/>
+      <path d="M62 572 H256 L272 588 V628 H62 Z" class="lavado"/>
+      <path d="M62 572 H256 L272 588 V628 H62 Z" class="linha"/>
+      <path d="M256 572 V588 H272" class="linha"/>
+      <path d="M288 600 H700 V646 H756 M742 637 L756 646 L742 655" class="linha-tom"/>
+      <rect x="777" y="623" width="370" height="110" rx="12" class="hachura"/>
+      <rect x="770" y="616" width="370" height="110" rx="12" class="lavado"/>
+      <rect x="770" y="616" width="370" height="110" rx="12" class="linha"/>
+      <rect x="1000" y="642" width="124" height="58" rx="8" class="papel"/>
+      <rect x="1000" y="642" width="124" height="58" rx="8" class="linha"/>
+      <rect x="950" y="204" width="170" height="286" rx="8" class="lavado"/>
+      <rect x="950" y="204" width="170" height="286" rx="8" class="linha"/>
+      <path d="M968 228 H1056 M968 296 H1034 M1068 296 H1100 M968 318 H1010 M968 362 H1034 M1068 362 H1100 M968 384 H1010 M968 428 H1034 M1068 428 H1100 M968 450 H1010" class="linha"/>
+      <rect x="790" y="502" width="140" height="16" rx="3" class="lavado"/>
+      <rect x="790" y="502" width="140" height="16" rx="3" class="linha"/>
+      <path d="M398 687 H756 M742 678 L756 687 L742 696" class="linha-tom"/>
+      <path d="M1035 610 V498 M1026 512 L1035 498 L1044 512" class="linha-tom"/>
+      <path d="M860 610 V526 M851 540 L860 526 L869 540" class="linha-tom"/>
+    </g>
+    <g class="tom-verde tom-petroleo">
+      <circle cx="380" cy="687" r="16" class="papel"/>
+      <circle cx="380" cy="687" r="16" class="linha"/>
+    </g>
+  </g>
+
+  <g class="tom-azul">
+    <path d="M286 160 H398" pathLength="1" class="pacote etapa-1"/>
+    <path d="M298 375 H398" pathLength="1" class="pacote etapa-1"/>
+  </g>
+  <g class="tom-ambar">
+    <path d="M290 513 H398" pathLength="1" class="pacote etapa-2"/>
+  </g>
+  <g class="tom-verde">
+    <path d="M360 687 H296" pathLength="1" class="pacote etapa-3"/>
+  </g>
+  <g class="tom-petroleo">
+    <path d="M290 600 H700 V646 H750" pathLength="1" class="pacote etapa-4"/>
+    <path d="M400 687 H750" pathLength="1" class="pacote etapa-5"/>
+    <path d="M1035 608 V504" pathLength="1" class="pacote etapa-6"/>
+    <path d="M860 608 V532" pathLength="1" class="pacote etapa-6"/>
+  </g>
+
+  <text x="775" y="79" text-anchor="middle" class="titulo-caixa">Claude Code</text>
+  <text x="790" y="188" class="titulo-caixa">A tela</text>
+
+  <g class="tom-azul">
+    <text x="167" y="164" text-anchor="middle" class="codigo">CLAUDE.md</text>
+    <text x="82" y="342" class="codigo">SKILL.md</text>
+    <text x="94" y="380" class="codigo">critico.md</text>
+    <text x="86" y="418" class="codigo">professor.md</text>
+    <text x="430" y="186" class="titulo-caixa texto-tom">Contexto do modelo</text>
+    <text x="430" y="218" class="texto-caixa">o que ele lê e pode usar</text>
+  </g>
+  <g class="tom-ambar">
+    <text x="82" y="512" class="titulo-caixa texto-tom">MCP</text>
+    <text x="82" y="538" class="nota-pequena">ferramentas</text>
+  </g>
+  <g class="tom-verde">
+    <text x="82" y="686" class="titulo-caixa texto-tom">Hook</text>
+    <text x="82" y="712" class="texto-caixa">script de fora</text>
+  </g>
+  <g class="tom-roxo">
+    <text x="62" y="270" class="titulo-caixa texto-tom">Plugin</text>
+    <text x="62" y="298" class="nota-pequena">a pasta que se instala</text>
+  </g>
+  <g class="tom-petroleo">
+    <text x="76" y="610" class="codigo">register.tsx</text>
+    <text x="560" y="584" text-anchor="middle" class="nota-pequena texto-tom">o código do mod</text>
+    <text x="790" y="662" class="titulo-caixa texto-tom">Mod</text>
+    <text x="790" y="692" class="texto-caixa">código por dentro</text>
+    <text x="1062" y="678" text-anchor="middle" class="codigo">estado</text>
+    <text x="1035" y="194" text-anchor="middle" class="nota-pequena texto-tom">painel</text>
+    <text x="790" y="494" class="nota-pequena texto-tom">faixa</text>
+    <text x="1021" y="546" text-anchor="end" class="nota-pequena texto-tom">desenha</text>
+  </g>
+  <g class="tom-verde tom-petroleo">
+    <text x="398" y="728" class="nota-pequena">eventos</text>
+  </g>
+
+  <g class="legenda tom-azul"><rect x="56" y="782" width="22" height="16" rx="3" class="lavado"/><text x="88" y="796" class="nota-pequena">texto para o modelo</text></g>
+  <g class="legenda tom-ambar"><rect x="315" y="782" width="22" height="16" rx="3" class="lavado"/><text x="347" y="796" class="nota-pequena">ferramentas (MCP)</text></g>
+  <g class="legenda tom-verde"><rect x="572" y="782" width="22" height="16" rx="3" class="lavado"/><text x="604" y="796" class="nota-pequena">script de fora (hook)</text></g>
+  <g class="legenda tom-roxo"><rect x="835" y="782" width="22" height="16" rx="3" class="lavado"/><text x="867" y="796" class="nota-pequena">a pasta (plugin)</text></g>
+  <g class="legenda tom-petroleo"><rect x="1059" y="782" width="22" height="16" rx="3" class="lavado"/><text x="1091" y="796" class="nota-pequena">o mod</text></g>
+</svg>

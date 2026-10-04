@@ -1,0 +1,198 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 970"
+  aria-label="Comparação em quatro passos, em duas metades lado a lado, da mesma falha de rede sem e com a chave de idempotência. Nas duas, o app pede R$ 250, o serviço cobra no adquirente, que aprova, e a resposta 201 se perde no caminho de volta; com a chave, o app manda a chave junto, e o serviço grava a chave na tabela cobranca antes de cobrar e guarda o 201 depois. Sem a chave: o app tenta de novo, e o serviço cobra outra vez; o cliente paga duas vezes. Com a chave: o app tenta de novo com a mesma chave, a restrição UNIQUE da tabela cobranca recusa a chave repetida, e o serviço devolve o 201 guardado; o cliente paga uma vez só.">
+  <path d="M71 122 V868 M223 122 V868 M399 122 V868 M576 122 V868 M728 122 V868 M888 122 V868 M1076 122 V868" class="grade"/>
+
+  <g class="tinta">
+    <g class="tom-azul">
+      <rect x="28" y="69" width="100" height="60" rx="10" class="hachura"/>
+      <rect x="21" y="62" width="100" height="60" rx="10" class="lavado"/>
+      <rect x="21" y="62" width="100" height="60" rx="10" class="linha"/>
+      <rect x="533" y="69" width="100" height="60" rx="10" class="hachura"/>
+      <rect x="526" y="62" width="100" height="60" rx="10" class="lavado"/>
+      <rect x="526" y="62" width="100" height="60" rx="10" class="linha"/>
+    </g>
+    <g class="tom-verde">
+      <rect x="160" y="69" width="140" height="60" rx="10" class="hachura"/>
+      <rect x="153" y="62" width="140" height="60" rx="10" class="lavado"/>
+      <rect x="153" y="62" width="140" height="60" rx="10" class="linha"/>
+      <rect x="665" y="69" width="140" height="60" rx="10" class="hachura"/>
+      <rect x="658" y="62" width="140" height="60" rx="10" class="lavado"/>
+      <rect x="658" y="62" width="140" height="60" rx="10" class="linha"/>
+    </g>
+    <g class="tom-roxo">
+      <rect x="808" y="62" width="160" height="60" rx="10" transform="translate(7 6)" class="cor"/>
+      <rect x="808" y="62" width="160" height="60" rx="10" class="lavado"/>
+      <rect x="808" y="62" width="160" height="60" rx="10" class="linha"/>
+    </g>
+    <g class="tom-ambar">
+      <rect x="309" y="69" width="194" height="60" rx="10" class="hachura"/>
+      <rect x="302" y="62" width="194" height="60" rx="10" class="lavado"/>
+      <rect x="302" y="62" width="194" height="60" rx="10" class="linha"/>
+      <rect x="986" y="69" width="194" height="60" rx="10" class="hachura"/>
+      <rect x="979" y="62" width="194" height="60" rx="10" class="lavado"/>
+      <rect x="979" y="62" width="194" height="60" rx="10" class="linha"/>
+    </g>
+
+    <g class="tom-azul">
+      <path d="M71 172 H209 M195 163 L209 172 L195 181" class="linha-tom"/>
+      <path d="M576 172 H714 M700 163 L714 172 L700 181" class="linha-tom"/>
+    </g>
+    <g class="tom-verde">
+      <path d="M728 246 H874 M860 237 L874 246 L860 255" class="linha-tom"/>
+      <path d="M223 316 H385 M371 307 L385 316 L371 325" class="linha-tom"/>
+      <path d="M728 316 H1062 M1048 307 L1062 316 L1048 325" class="linha-tom"/>
+      <path d="M728 446 H874 M860 437 L874 446 L860 455" class="linha-tom"/>
+      <path d="M223 516 H140" class="linha-tom"/>
+      <path d="M728 516 H645" class="linha-tom"/>
+    </g>
+    <g class="tom-ambar">
+      <path d="M399 376 H238" class="linha-tom"/>
+      <path d="M251 367 L237 376 L251 385" class="linha-tom"/>
+      <path d="M1076 376 H743" class="linha-tom"/>
+      <path d="M756 367 L742 376 L756 385" class="linha-tom"/>
+    </g>
+    <g class="tom-vermelho">
+      <path d="M110 504 l24 24 m0 -24 l-24 24" class="linha-tom"/>
+      <path d="M615 504 l24 24 m0 -24 l-24 24" class="linha-tom"/>
+    </g>
+
+    <g data-passo="1" class="tom-azul">
+      <path d="M71 626 H209 M195 617 L209 626 L195 635" class="linha-tom"/>
+    </g>
+
+    <g data-passo="2">
+      <g class="tom-verde">
+        <path d="M223 706 H385 M371 697 L385 706 L371 715" class="linha-tom"/>
+      </g>
+      <g class="tom-vermelho etapa-2">
+        <rect x="20" y="890" width="476" height="60" rx="12" class="lavado"/>
+        <rect x="20" y="890" width="476" height="60" rx="12" class="linha"/>
+        <path d="M42 909 l22 22 m0 -22 l-22 22" class="linha-tom"/>
+      </g>
+    </g>
+
+    <g data-passo="3" class="tom-azul">
+      <path d="M576 626 H714 M700 617 L714 626 L700 635" class="linha-tom"/>
+    </g>
+
+    <g data-passo="4">
+      <g class="tom-verde">
+        <path d="M728 706 H874 M860 697 L874 706 L860 715" class="linha-tom"/>
+      </g>
+      <g class="tom-vermelho">
+        <rect x="794" y="726" width="188" height="68" rx="8" transform="translate(6 5)" class="cor"/>
+        <rect x="794" y="726" width="188" height="68" rx="8" class="lavado"/>
+        <rect x="794" y="726" width="188" height="68" rx="8" class="linha"/>
+      </g>
+      <g class="tom-verde etapa-2">
+        <path d="M728 842 H591" class="linha-tom"/>
+        <path d="M604 833 L590 842 L604 851" class="linha-tom"/>
+      </g>
+      <g class="tom-verde etapa-3">
+        <rect x="527" y="890" width="646" height="60" rx="12" class="lavado"/>
+        <rect x="527" y="890" width="646" height="60" rx="12" class="linha"/>
+        <path d="M549 920 l11 11 l22 -24" class="linha-tom"/>
+      </g>
+    </g>
+  </g>
+
+  <text x="20" y="40" class="titulo-caixa">Sem a chave</text>
+  <text x="527" y="40" class="titulo-caixa">Com a chave</text>
+
+  <g class="tom-azul">
+    <text x="71" y="101" text-anchor="middle" class="titulo-caixa">App</text>
+    <text x="576" y="101" text-anchor="middle" class="titulo-caixa">App</text>
+  </g>
+  <g class="tom-verde">
+    <text x="223" y="101" text-anchor="middle" class="titulo-caixa">Serviço</text>
+    <text x="728" y="101" text-anchor="middle" class="titulo-caixa">Serviço</text>
+  </g>
+  <g class="tom-roxo">
+    <text x="888" y="101" text-anchor="middle" class="titulo-caixa">cobranca</text>
+  </g>
+  <g class="tom-ambar">
+    <text x="399" y="101" text-anchor="middle" class="titulo-caixa">Adquirente</text>
+    <text x="1076" y="101" text-anchor="middle" class="titulo-caixa">Adquirente</text>
+  </g>
+
+  <g class="tom-azul">
+    <text x="147" y="158" text-anchor="middle" class="codigo">R$ 250</text>
+    <text x="652" y="158" text-anchor="middle" class="codigo">R$ 250</text>
+  </g>
+  <g class="tom-petroleo">
+    <text x="652" y="202" text-anchor="middle" class="texto-caixa texto-tom">chave</text>
+  </g>
+  <g class="tom-verde">
+    <text x="808" y="232" text-anchor="middle" class="texto-caixa texto-tom">grava a chave</text>
+    <text x="311" y="302" text-anchor="middle" class="texto-caixa texto-tom">cobra</text>
+    <text x="982" y="302" text-anchor="middle" class="texto-caixa texto-tom">cobra</text>
+    <text x="808" y="432" text-anchor="middle" class="texto-caixa texto-tom">guarda o 201</text>
+    <text x="182" y="502" text-anchor="middle" class="codigo">201</text>
+    <text x="687" y="502" text-anchor="middle" class="codigo">201</text>
+  </g>
+  <g class="tom-ambar">
+    <text x="311" y="362" text-anchor="middle" class="texto-caixa texto-tom">aprovada</text>
+    <text x="982" y="362" text-anchor="middle" class="texto-caixa texto-tom">aprovada</text>
+  </g>
+  <g class="tom-vermelho">
+    <text x="122" y="556" text-anchor="middle" class="texto-caixa texto-tom">se perde</text>
+    <text x="627" y="556" text-anchor="middle" class="texto-caixa texto-tom">se perde</text>
+  </g>
+
+  <g data-passo="1">
+    <g class="tom-azul">
+      <circle cx="37" cy="626" r="19" class="selo"/>
+      <text x="37" y="627" class="selo-texto">1</text>
+      <text x="147" y="612" text-anchor="middle" class="texto-caixa texto-tom">tenta de novo</text>
+      <path d="M73 626 H203" pathLength="1" class="trajeto"/>
+    </g>
+  </g>
+
+  <g data-passo="2">
+    <g class="tom-vermelho">
+      <circle cx="37" cy="706" r="19" class="selo"/>
+      <text x="37" y="707" class="selo-texto">2</text>
+    </g>
+    <g class="tom-verde">
+      <text x="311" y="692" text-anchor="middle" class="texto-caixa texto-tom">cobra de novo</text>
+      <path d="M225 706 H379" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-vermelho etapa-2">
+      <text x="272" y="927" text-anchor="middle" class="texto-caixa texto-tom">O cliente paga duas vezes.</text>
+    </g>
+  </g>
+
+  <g data-passo="3">
+    <g class="tom-azul">
+      <circle cx="542" cy="626" r="19" class="selo"/>
+      <text x="542" y="627" class="selo-texto">3</text>
+      <text x="652" y="612" text-anchor="middle" class="texto-caixa texto-tom">tenta de novo</text>
+      <path d="M578 626 H708" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-petroleo">
+      <text x="652" y="656" text-anchor="middle" class="texto-caixa texto-tom">mesma chave</text>
+    </g>
+  </g>
+
+  <g data-passo="4">
+    <g class="tom-roxo">
+      <circle cx="542" cy="706" r="19" class="selo"/>
+      <text x="542" y="707" class="selo-texto">4</text>
+    </g>
+    <g class="tom-verde">
+      <text x="808" y="692" text-anchor="middle" class="texto-caixa texto-tom">grava a chave</text>
+      <path d="M730 706 H868" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-vermelho">
+      <text x="888" y="754" text-anchor="middle" class="texto-caixa texto-tom">a chave já existe:</text>
+      <text x="888" y="782" text-anchor="middle" class="texto-caixa texto-tom">a UNIQUE recusa</text>
+    </g>
+    <g class="tom-verde etapa-2">
+      <text x="652" y="828" text-anchor="middle" class="texto-caixa texto-tom">201 guardado</text>
+      <path d="M726 842 H596" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-verde etapa-3">
+      <text x="862" y="927" text-anchor="middle" class="texto-caixa texto-tom">O cliente paga uma vez só.</text>
+    </g>
+  </g>
+</svg>

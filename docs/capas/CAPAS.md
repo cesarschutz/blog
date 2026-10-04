@@ -163,13 +163,13 @@ papel e a cor divididos na capa: cada post é uma edição. De uma série para o
 
 ## Livros novos
 
-**Quando mexer na coleção (D61):** a coleção não muda à toa. Ao planejar cada post, o Claude confere
-se ele cabe bem num livro; quando não cabe (um post de carreira, sem livro desde a D61) ou quando a
+**Quando mexer na coleção (D78):** a coleção não muda à toa. Ao planejar cada post, o Claude confere
+se ele cabe bem num livro; quando não cabe (um post de carreira, sem livro desde a D78) ou quando a
 coleção ficaria melhor com um livro novo, dividido ou renomeado (arquitetura corporativa pediria um
 livro novo ou "Arquitetura" no lugar de "Arquitetura de Software"), ele avisa o Cesar e sugere. Nada
 muda sem o OK dele, e o endereço antigo de um livro renomeado ou que saiu redireciona.
 
-**Volume (D61):** os volumes seguem a **ordem alfabética** dos títulos, e a estante também. Livro novo
+**Volume (D78):** os volumes seguem a **ordem alfabética** dos títulos, e a estante também. Livro novo
 entra na sua posição, e os que vêm depois dele mudam de número.
 
 - **Categoria:** escolha um instrumento de ofício que represente a categoria inteira e desenhe no estilo do projeto, com traço de 1,8, 1,2 e 0,7px, leve tremor, hachura nas sombras e um único elemento fantasma tracejado. Gere o ícone da lombada com só os traços principais. A frase segue o molde do subtítulo, e o volume é a posição do título na ordem alfabética. A ferramenta: `scripts/desenho/livros.mjs` (o desenho em geometria limpa num módulo `scripts/desenho/livros/<slug>.mjs`; ela passa a caneta, faz a hachura e grava o desenho e o ícone; manual em `docs/prototipos/colecoes/manual-desenho.md`). O corpo do título sai de `scripts/livros/titulo-da-capa.mjs`, e a cor passa por `scripts/livros/conferir-cores.mjs` antes de entrar.
@@ -198,15 +198,17 @@ os artigos" e as mais usadas no topo da página do livro).
   (Pagamentos), caixa de correio com a bandeira levantada (Mensageria), rolo de papel com as linhas do
   registro (Logs), leme de navio (Kubernetes), barril (Banco de Dados), mala de viagem (Migração),
   cadeado de segredo (Criptografia), favos de mel com uma célula por fazer (Microsserviços), chave
-  antiga com etiqueta (Idempotência), bigorna e martelo (Gradle), nuvem (AWS), espeto de notas (AOP) e
-  ingresso com canhoto (JWT).
+  antiga com etiqueta (Idempotência), bigorna e martelo (Gradle), nuvem (AWS), espeto de notas (AOP),
+  ingresso com canhoto (JWT) e, desde a D66, terminal de vídeo antigo com o prompt e o cursor (Claude
+  Code) e plugue de tomada de dois pinos com o fio (Plugins).
 
 ### Tags novas
 
 1. Escolha o objeto (a metáfora, no espírito dos de cima) e escreva o desenho em `DESENHOS` de
    `scripts/desenho/tags.mjs`, à mão, em coordenadas (linhas, arcos, curvas e retângulos, na ordem de
    pintura). O script passa a caneta, com o tremor dos ícones e uma semente tirada do nome (sai igual
-   a cada vez).
+   a cada vez). Para um fio, um cabo ou uma fita com volume, o ajudante `fita` faz a faixa ao longo de
+   uma curva (o fio do plugue).
 2. Grave: `node scripts/desenho/tags.mjs <slug>` (com o Node 24: `fnm exec --using=24`).
 3. Confira em `/amostra/tags/` (só no dev): lado a lado com os outros e em cinco tamanhos, da pílula
    à marca d'água, nos dois temas (`?tema=escuro`). O novo tem de ter o mesmo peso dos vizinhos.

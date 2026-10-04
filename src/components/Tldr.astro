@@ -1,0 +1,150 @@
+---
+/**
+ * O TL;DR do post detalhado (D63): os pontos principais no alto do texto, para quem tem pressa. Vem do
+ * campo `tldr` do frontmatter e fica fechado; o leitor clica para abrir. É uma ficha de catálogo dobrada
+ * (a família do papel da D61): fechada, só a tira em mono sobre o fio de 2px na cor do livro; aberta, os
+ * pontos embaixo do fio. É um `<details>` nativo: abre e fecha sem JS, pelo teclado e pelo leitor de tela.
+ */
+import { mdEmLinhaComLinks } from "../lib/formato";
+
+interface Props {
+  /** De 2 a 6 pontos curtos, cada um uma frase (aceitam `código`, **negrito** e links). */
+  pontos: string[];
+}
+
+const { pontos } = Astro.props;
+---
+
+<details class="tldr">
+  <!-- A busca indexa os pontos, não o rótulo ("TL;DR · o artigo em N pontos · abrir"). -->
+  <summary data-pagefind-ignore>
+    <span class="rotulo"><strong>TL;DR</strong> · o artigo em {pontos.length} pontos</span>
+    <span class="acao" aria-hidden="true"><span class="abrir">abrir</span><span class="fechar">fechar</span></span>
+  </summary>
+  <ul>
+    {pontos.map((p) => <li set:html={mdEmLinhaComLinks(p)} />)}
+  </ul>
+</details>
+
+<style>
+  /*
+   * Os seletores daqui vencem os do <details> comum da prosa (prosa.css): a ficha não tem a borda nem o
+   * canto de 10px dele, e a seta fica à direita, junto do "abrir".
+   */
+  .tldr {
+    --fio-ficha: var(--cor, var(--ink-2));
+    margin: 0 0 1.6em;
+    border: 0;
+    border-radius: 6px;
+    background: var(--paper-hi);
+    box-shadow: var(--sombra-folha);
+  }
+
+  :global(:root[data-theme="dark"]) .tldr {
+    --fio-ficha: color-mix(in oklab, var(--cor, var(--ink-2)) 72%, var(--ink));
+    box-shadow:
+      0 0 0 1px color-mix(in oklab, var(--ink) 7%, transparent),
+      var(--sombra-folha);
+  }
+
+  .tldr summary {
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px 9px;
+    border-bottom: 0;
+    font-family: var(--font-codigo);
+    font-size: 12.5px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--ink-2);
+  }
+
+  .tldr summary::before {
+    content: none;
+  }
+
+  /* O fio da tira, na cor do livro: com a ficha fechada, é a borda de baixo dela. */
+  .tldr summary::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    background: var(--fio-ficha);
+  }
+
+  .tldr:not([open]) summary::after {
+    border-radius: 0 0 6px 6px;
+  }
+
+  .tldr strong {
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .tldr summary:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* O que é clicável fica no azul-tinta: o "abrir" (ou "fechar") e a seta. */
+  .acao {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    color: var(--acento);
+  }
+
+  .acao::after {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: translateY(-2px) rotate(45deg);
+    transition: transform 0.2s ease;
+  }
+
+  .tldr[open] .acao::after {
+    transform: translateY(1px) rotate(-135deg);
+  }
+
+  .fechar,
+  .tldr[open] .abrir {
+    display: none;
+  }
+
+  .tldr[open] .fechar {
+    display: inline;
+  }
+
+  @media (hover: hover) {
+    .tldr summary:hover .acao {
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+
+  .tldr ul {
+    margin: 14px 18px 20px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .acao::after {
+      transition: none;
+    }
+  }
+
+  @media print {
+    .tldr {
+      box-shadow: none;
+      break-inside: avoid;
+    }
+  }
+</style>

@@ -26,6 +26,11 @@ export function mdEmLinha(texto: string): string {
     .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
 }
 
+/** Um ponto do TL;DR (D63): o de `mdEmLinha` e mais os [links](https://…), para a fonte do que ele diz. */
+export function mdEmLinhaComLinks(texto: string): string {
+  return mdEmLinha(texto).replace(/\[([^\]]+)\]\(((?:https?:\/\/|\/|#)[^)\s"]+)\)/g, '<a href="$2">$1</a>');
+}
+
 /**
  * Título em HTML com um ponto de quebra (`<wbr>`) depois do ponto de um identificador
  * ("AopUtils.getTargetClass()"): na coluna estreita, quebra ali e não no meio da palavra. O

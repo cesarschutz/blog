@@ -47,7 +47,7 @@ const junto = [...vizinhas]
 
 <Base titulo={`#${grupo.nome}`} descricao={descricao} atual="tags" jsonLd={paginaDeColecao(`#${grupo.nome}`, descricao, Astro.url.pathname, Astro.site)} chegada={{ passo: 0.06 }}>
   <div class="wrap">
-    <ListaFiltrada posts={grupo.posts} titulo={`#${grupo.nome}`} descricao={descricao} trilha={{ nome: "Tags", href: url("/tags/") }}>
+    <ListaFiltrada posts={grupo.posts} titulo={`#${grupo.nome}`} descricao={descricao} trilha={{ nome: "Tags", href: url("/tags/") }} comLivro>
       <IconeTag slot="fundo" nome={grupo.nome} class="marca-tag" />
       {
         junto.length > 0 && (

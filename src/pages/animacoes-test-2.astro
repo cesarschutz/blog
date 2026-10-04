@@ -1,0 +1,457 @@
+---
+/**
+ * Página de teste da figura em passos (D67), para o Cesar ver no celular: /animacoes-test-2/. As mesmas
+ * 9 peças da /animacoes-test/ (que fica no ar como estava), refeitas no formato único, na mesma ordem,
+ * com o que mudou em cada uma, as regras novas e o que a auditoria achou nas peças antigas. Fica fora da
+ * busca, do sitemap e dos menus (noindex). Sai quando ele decidir.
+ */
+import Base from "../layouts/Base.astro";
+import FiguraPassos from "../components/FiguraPassos.astro";
+import { getResumos } from "../lib/posts";
+import { url } from "../lib/url";
+import { mdEmLinha } from "../lib/formato";
+import "../styles/prosa.css";
+
+const resumos = await getResumos();
+const post = (slug: string) => {
+  const r = resumos.find((x) => x.slug === slug);
+  return { titulo: r?.titulo ?? slug, cor: r?.cor, endereco: url(`/posts/${slug}/`) };
+};
+
+interface Peca {
+  titulo: string;
+  slug: string;
+  figura: string;
+  era: string;
+  ancora: string;
+  passos: string[];
+  legenda?: string;
+  mudou: string;
+}
+
+const pecas: Peca[] = [
+  {
+    titulo: "O envelope do KMS",
+    slug: "criptografia-em-repouso-e-em-transito",
+    figura: "criptografia-em-repouso-e-em-transito/envelope-em-passos",
+    era: "lousa de passos da opção 2 (marca-texto)",
+    ancora: "marca-texto",
+    passos: [
+      "O banco cifra `Maria Souza` com a chave de dados e grava no disco.",
+      "O KMS cifra a chave de dados com a chave mestra, que nunca sai dele.",
+      "O banco guarda a chave cifrada no disco, junto dos dados.",
+      "Para ler, o banco pede ao KMS para abrir a chave e decifra na memória.",
+      "Depois, com a chave mestra desativada, o KMS recusa: dados e backups ficam ilegíveis.",
+    ],
+    legenda: "Cada cor é um ator: o KMS (azul), o banco (roxo) e o disco (âmbar); em vermelho, o que falha.",
+    mudou:
+      "a lousa abria no fim, com a falha por cima do fluxo (riscos e ✕). Virou um diagrama de sequência KMS, banco e disco, com uma linha de dados só, setas que seguem o texto (o pedido sai do banco e a chave mestra não sai do KMS) e a chave desativada numa linha nova embaixo, sem riscar nada.",
+  },
+  {
+    titulo: "O TLS com require e com verify-full",
+    slug: "criptografia-em-repouso-e-em-transito",
+    figura: "criptografia-em-repouso-e-em-transito/tls-em-passos",
+    era: "lousa de comparação da opção 2 (marca-texto)",
+    ancora: "marca-texto",
+    passos: [
+      "Com `require`, o cliente aceita o certificado sem conferir quem está do outro lado.",
+      "O intermediário repassa ao banco e lê tudo em claro, sem o cliente perceber.",
+      "Com `verify-full`, o cliente confere a CA e o nome, e recusa o certificado.",
+      "A conexão nem abre, e ninguém lê nada.",
+    ],
+    legenda: "Cada cor é um ator: o cliente (petróleo), o intermediário (âmbar) e o banco (roxo); vermelho é o que falha, e verde, o que dá certo.",
+    mudou:
+      "a parte igual nas duas linhas já vem desenhada, e os passos contam o `require` e depois o `verify-full`, um de cada vez. Saíram o ✓ que queria dizer \"aceitou, o ruim\", o ✕ verde e o intermediário que esmaecia.",
+  },
+  {
+    titulo: "Os dois caminhos até o log",
+    slug: "jackson-filtros-mascarando-cartao",
+    figura: "jackson-filtros-mascarando-cartao/dois-caminhos-em-passos",
+    era: "animação com play da opção 2 (marca-texto)",
+    ancora: "marca-texto",
+    passos: [
+      "Com `log.info(\"{}\", pedido)`, o pedido vai direto ao log pelo `toString()`, sem filtro.",
+      "No log, o número e o CVV chegam inteiros, e isso não pode.",
+      "Com `logJson.toJson(pedido)`, o pedido passa antes pelo `MascaraCartaoFilter`.",
+      "No log, chega o número mascarado, `550209******7890`, e nada do CVV.",
+    ],
+    legenda: "Em vermelho, o caminho que vaza o cartão; em verde, o que passa pelo filtro.",
+    mudou:
+      "sem o cartãozinho que andava e sumia, sem o CVV que caía e sem as linhas riscadas. Os dois caminhos ficam desenhados, com `toString()` escrito na seta vermelha, e as duas linhas do log, uma embaixo da outra, com ✕ e ✓.",
+  },
+  {
+    titulo: "O filtro, uma propriedade por vez",
+    slug: "jackson-filtros-mascarando-cartao",
+    figura: "jackson-filtros-mascarando-cartao/filtro-em-passos",
+    era: "lousa de passos da opção 3 (caderno e caneta)",
+    ancora: "caderno",
+    passos: [
+      "`titular`: segue igual, e `\"titular\":\"Cesar\"` entra no JSON.",
+      "`numero`: o filtro mascara, e `\"numero\":\"550209******7890\"` entra no JSON.",
+      "`cvv`: o filtro omite, e nada é escrito no JSON.",
+    ],
+    legenda: "O cartão (azul) passa pelo filtro (verde); em verde, o que o filtro mudou.",
+    mudou:
+      "a ordem agora é a das propriedades, da esquerda para a direita, a mesma em que o Jackson escreve o JSON, e os passos não citam métodos que não estão no desenho. O `cvv` omitido é o resultado desejado, então fica em verde, sem ✕.",
+  },
+  {
+    titulo: "O deploy no meio do lote",
+    slug: "cronjob-vs-endpoint-sqs",
+    figura: "cronjob-vs-endpoint-sqs/deploy-em-passos",
+    era: "lousa de comparação da opção 3 (caderno e caneta)",
+    ancora: "caderno",
+    passos: [
+      "**A:** o deploy não toca no pod do job, que termina às 04:10 na v1.",
+      "**B:** o lote começa às 03:00 no pod v1; às 03:30, o deploy o cancela.",
+      "**B:** a mensagem fica invisível de 03:00 a 05:00, e o lote fica parado.",
+      "**B:** às 05:00 a mensagem reaparece, e o pod v2 retoma e termina às 05:40.",
+    ],
+    legenda: "A em verde, B e a mensagem em roxo, a API em âmbar; a linha vertical é o deploy das 03:30.",
+    mudou:
+      "as duas linhas não crescem mais juntas: a A é contada inteira primeiro, e depois a B, em três passos. A mensagem ganhou uma linha própria, invisível de 03:00 a 05:00, e o \"1h30 parado\" é uma cota vermelha no vão entre os dois pods.",
+  },
+  {
+    titulo: "A resposta perdida",
+    slug: "cobranca-duplicada-no-retry",
+    figura: "cobranca-duplicada-no-retry/resposta-perdida-em-passos",
+    era: "animação com play da opção 3 (caderno e caneta)",
+    ancora: "caderno",
+    passos: [
+      "O app pede ao serviço a cobrança de R$ 250.",
+      "O serviço cobra no adquirente, que lança R$ 250 na fatura e aprova.",
+      "A resposta se perde no caminho. O app dá `timeout` e não sabe se cobrou.",
+      "Sem saber, o app tenta de novo, e o serviço cobra outra vez.",
+      "A fatura ganha uma segunda linha de R$ 250: o cliente foi cobrado duas vezes.",
+    ],
+    legenda: "Azul é o app, verde o serviço e âmbar o adquirente; a fatura é o papel, e vermelho é o que deu errado.",
+    mudou:
+      "sem envelopes e moedas que andavam e sumiam, sem o relógio girando e sem os rótulos do que ainda ia acontecer. Virou um diagrama de sequência: o timeout é uma nota no app, o reenvio sai do app, a segunda cobrança tem setas próprias e a fatura ganha a segunda linha.",
+  },
+  {
+    titulo: "Os passos da chave",
+    slug: "cobranca-duplicada-no-retry",
+    figura: "cobranca-duplicada-no-retry/chave-em-passos",
+    era: "lousa de passos da opção 4 (post-its e fita)",
+    ancora: "post-it",
+    passos: [
+      "O app pede a cobrança e manda junto a chave de idempotência.",
+      "O serviço grava a chave **antes** de cobrar, com status `PROCESSANDO`.",
+      "Cobra no adquirente e, aprovada, guarda o status e a resposta `201`.",
+      "A resposta se perde no caminho, e o app tenta de novo com a **mesma** chave.",
+      "O `INSERT` bate na restrição `UNIQUE`: a chave já existe.",
+      "O serviço devolve a resposta guardada, sem chamar o adquirente de novo.",
+    ],
+    legenda: "Azul é o app, verde o serviço, roxo a tabela cobranca e âmbar o adquirente; a chave é petróleo, e vermelho é o que deu errado.",
+    mudou:
+      "as duas tentativas não dividem mais as mesmas caixas: virou um diagrama de sequência, com o tempo descendo e um passo por linha, os números na ordem de leitura e a tabela `cobranca` como ator. O estado da tabela é uma nota nova a cada passo, sem riscar nada, e o fim diz o resultado.",
+  },
+  {
+    titulo: "Sem e com a chave",
+    slug: "cobranca-duplicada-no-retry",
+    figura: "cobranca-duplicada-no-retry/sem-e-com-chave-em-passos",
+    era: "lousa de comparação da opção 4 (post-its e fita)",
+    ancora: "post-it",
+    passos: [
+      "Sem a chave: a resposta se perdeu, e o app tenta de novo.",
+      "O serviço cobra outra vez, e o cliente paga duas vezes.",
+      "Com a chave: o app tenta de novo, com a **mesma** chave.",
+      "A `UNIQUE` recusa a chave repetida, e o app recebe o `201` guardado.",
+    ],
+    legenda: "Azul é o app, verde o serviço, roxo a tabela cobranca e âmbar o adquirente; vermelho é o que deu errado.",
+    mudou:
+      "as duas linhas não se desenham mais juntas. São duas metades lado a lado, com a parte igual já desenhada; os passos contam a repetição sem a chave e depois com ela. A tabela `cobranca` ganhou a sua linha de vida, e a recusa da `UNIQUE` fica nela.",
+  },
+  {
+    titulo: "Detectar ou evitar o conflito",
+    slug: "bloqueio-otimista-e-pessimista",
+    figura: "bloqueio-otimista-e-pessimista/detectar-ou-evitar-em-passos",
+    era: "animação com play da opção 4 (post-its e fita)",
+    ancora: "post-it",
+    passos: [
+      "**Otimista:** A e B leem `version 1`; A grava 90, e a versão vira 2.",
+      "B tenta gravar 90 com `version = 1`: `UPDATE 0`, a versão mudou.",
+      "B relê 90 e `version 2`, e grava 80: refez o trabalho.",
+      "**Pessimista:** A trava a linha com `FOR UPDATE`; B pede a mesma linha e espera.",
+      "A grava 90 e faz `COMMIT`: a trava sai.",
+      "B recebe a linha já com 90 e grava 80, sem conflito.",
+    ],
+    legenda: "A em azul, B em âmbar e a linha da conta em roxo; o ✕ vermelho é o conflito.",
+    mudou:
+      "saíram os envelopes que voavam, os cartões que deslizavam, o relógio, os cadeados e os 7 riscos. São dois diagramas de sequência lado a lado, contados um de cada vez; o saldo é um histórico de notas novas (100, 90, 80), as gravações estão escritas nos dois lados e o `UPDATE 0` vem explicado no desenho.",
+  },
+];
+
+// O aviso de que o passo terminou: cinco ideias, na mesma figura, para comparar.
+const passosDaChave = pecas.find((p) => p.figura === "cobranca-duplicada-no-retry/chave-em-passos")!.passos;
+const ideias = [
+  {
+    fim: "botao",
+    titulo: "O Próximo se enche",
+    texto:
+      "Enquanto o passo entra, o botão Próximo fica mais claro e vai se enchendo de azul, da esquerda para a direita. Cheio, o passo acabou, e um anel sai do botão uma vez. O aviso fica onde o dedo e o olho já estão, e funciona igual no celular.",
+  },
+  {
+    fim: "anel",
+    titulo: "O número se fecha",
+    texto:
+      "Ao lado de \"Passo 3 de 6\", um anel se completa enquanto o passo entra e vira um ✓ quando ele acaba. É o mais discreto, e o ✓ fica: dá para ver depois que aquele passo está completo.",
+  },
+  {
+    fim: "selo",
+    titulo: "O selo carimba",
+    texto:
+      "No desenho, o número do passo (o selo) só ganha o halo quando o passo termina, com um pulo, como um carimbo. O aviso fica dentro da figura, junto do que entrou; no celular, o selo pode estar fora do quadro.",
+  },
+  {
+    fim: "grifo",
+    titulo: "O passo da lista se grifa",
+    texto:
+      "Na lista, o marca-texto amarelo passa pela frase do passo enquanto ele entra. Grifada até o fim, o passo acabou. Liga o desenho ao texto, mas fica longe da figura quando a lista é longa.",
+  },
+  {
+    fim: "segmentos",
+    titulo: "Os traços embaixo da figura",
+    texto:
+      "Um traço por passo, logo embaixo do desenho, como os stories: os já vistos ficam cheios, e o da vez se enche enquanto o passo entra. Além de dizer quando acabou, mostra quanto falta.",
+  },
+] as const;
+const cobranca = post("cobranca-duplicada-no-retry");
+---
+
+<Base titulo="Teste das animações 2" descricao="As 9 peças da página de teste refeitas num formato só, a figura em passos: abre inteira, cada passo soma e nada some.">
+  <meta slot="head" name="robots" content="noindex" />
+  <div class="wrap teste">
+    <header class="topo-teste">
+      <h1>Teste das animações 2</h1>
+      <p>
+        Na <a href={url("/animacoes-test/")}>página anterior</a>, eram três tipos de peça (lousa de passos, lousa de comparação e animação com
+        play), cada um com três controles diferentes. Aqui, as mesmas 9 peças viraram <strong>um tipo só</strong>, a <strong>figura em passos</strong>.
+      </p>
+      <p>
+        Ela abre <strong>inteira</strong>, como as figuras paradas. Em <strong>Passo a passo</strong>, ela volta ao começo e você avança com <strong>Próximo</strong>. Cada passo só soma: os anteriores ficam mais claros, um ponto percorre a seta da vez, e no último a figura está
+        inteira de novo. Nada anda sozinho, nada repete e nada some. Também dá para clicar direto num passo da lista.
+      </p>
+      <nav class="indice-teste" aria-label="Partes da página">
+        <a href="#regras">As regras novas</a>
+        <a href="#antes">O que estava difícil</a>
+        <a href="#pecas">As 9 peças</a>
+        <a href="#fim-do-passo">Quando o passo termina</a>
+      </nav>
+    </header>
+
+    <section class="bloco-teste" id="regras">
+      <h2>As regras novas</h2>
+      <ol class="regras-teste">
+        <li><strong>Abre inteira e se explica sozinha,</strong> como uma figura parada. O passo a passo é um guia, para quem quiser.</li>
+        <li><strong>O leitor manda:</strong> nada anda sozinho, nada repete, nada recomeça sem ele pedir.</li>
+        <li><strong>Cada passo só soma:</strong> nada some, nada é riscado, nada muda de lugar. Mudou o estado? Entra uma nota nova ao lado.</li>
+        <li><strong>Um lugar muda por vez,</strong> com no máximo 4 coisas novas e uma frase de até 15 palavras.</li>
+        <li><strong>Comparação lado a lado,</strong> com o que é igual já desenhado: primeiro a diferença de um lado, depois a do outro.</li>
+        <li><strong>Um dicionário só:</strong> ✓ verde é deu certo, ✕ vermelho é falhou ou se perdeu, tracejado é o que não aconteceu.</li>
+        <li><strong>Termina numa frase com o resultado,</strong> numa faixa no pé da figura.</li>
+      </ol>
+      <p class="nota-teste">
+        Elas vêm de uma pesquisa (aprendizagem com imagens, o efeito da informação que some, comparação lado a lado) e de uma revisão às cegas das
+        peças antigas. As duas estão em <code>docs/figura-em-passos/</code>, e as regras, na skill <code>figura</code>.
+      </p>
+    </section>
+
+    <section class="bloco-teste" id="antes">
+      <h2>O que estava difícil nas peças antigas</h2>
+      <p>
+        Uma revisão às cegas olhou as 10 peças animadas do blog: <strong>1 clara, 5 médias e 4 ruins</strong>. A quantidade de texto não era o
+        problema (as figuras paradas têm tanto quanto elas, ou mais). Era a soma de estados sobrepostos no mesmo lugar, duas coisas mudando em
+        lugares diferentes, coisas que somem e passos rápidos demais. Boa parte do "coisa sumindo" vinha do próprio componente: a lousa abria
+        completa, o play apagava tudo e, no fim, apagava de novo, em loop.
+      </p>
+      <ul class="antes-lista">
+        <li><strong>1. Envelope (criptografia)</strong> <span class="ruim">ruim</span><br />Abria no fim, com o fluxo e a falha sobrepostos; setas contrárias ao texto; números em zigue-zague.</li>
+        <li><strong>2. TLS (criptografia)</strong> <span class="media">média</span><br />O ✓ queria dizer "aceitou, o ruim" e o ✕ verde, "recusou, o bom"; as duas linhas mudavam juntas.</li>
+        <li><strong>3. Dois caminhos (Jackson)</strong> <span class="media">média</span><br />Um cartãozinho andava e sumia; o fim aparecia antes da história.</li>
+        <li><strong>4. O filtro (Jackson)</strong> <span class="media">média</span><br />A ordem ia da direita para a esquerda; os passos citavam métodos que não estavam no desenho.</li>
+        <li><strong>5. Deploy no meio do lote (CronJob)</strong> <span class="clara">clara</span><br />O tempo da peça era o do eixo; só as duas linhas mudavam juntas.</li>
+        <li><strong>6. A resposta perdida (cobrança)</strong> <span class="media">média</span><br />Um relógio girava enquanto os envelopes andavam; 8 objetos apareciam e sumiam.</li>
+        <li><strong>7. Os passos da chave (cobrança)</strong> <span class="ruim">ruim</span><br />Duas tentativas nas mesmas caixas: 32 textos e 6 cores, números em zigue-zague.</li>
+        <li><strong>8. Sem e com a chave (cobrança)</strong> <span class="media">média</span><br />As duas linhas eram iguais até o timeout e se desenhavam juntas.</li>
+        <li><strong>9. Detectar ou evitar (bloqueio)</strong> <span class="ruim">ruim</span><br />Duas histórias em seis colunas, envelopes que voavam e sumiam, jargão antes da hora.</li>
+        <li><strong>10. Instalação (Claude Code, fora das 9)</strong> <span class="ruim">ruim</span><br />Três histórias numa peça, até 19 coisas novas num passo.</li>
+      </ul>
+    </section>
+
+    <section class="bloco-teste" id="pecas">
+      <h2>As 9 peças</h2>
+      <p>Na mesma ordem da <a href={url("/animacoes-test/")}>página anterior</a>.</p>
+      {
+        pecas.map((p, i) => {
+          const origem = post(p.slug);
+          return (
+            <article class="peca-teste" id={`peca-${i + 1}`}>
+              <h3>
+                {i + 1}. {p.titulo}
+              </h3>
+              <p class="origem">
+                Do post <a href={origem.endereco}>{origem.titulo}</a>. Era a {p.era} (<a href={url(`/animacoes-test/#${p.ancora}`)}>ver a antiga</a>).
+              </p>
+              <div style={origem.cor ? `--cor:${origem.cor}` : undefined}>
+                <FiguraPassos figura={p.figura} passos={p.passos} legenda={p.legenda} />
+              </div>
+              <p class="mudou">
+                <strong>O que mudou:</strong> <span set:html={mdEmLinha(p.mudou)} />
+              </p>
+            </article>
+          );
+        })
+      }
+    </section>
+
+    <section class="bloco-teste" id="fim-do-passo">
+      <h2>Como saber que o passo terminou: 5 ideias</h2>
+      <p>
+        Ao clicar em <strong>Próximo</strong>, ou num passo da lista, as coisas entram em até três tempos, um por segundo, e nada diz quando
+        acabou. Abaixo, a mesma figura (os passos da chave) com cinco jeitos discretos de mostrar isso. Em cada uma, clique em <strong>Passo a passo</strong> e vá com <strong>Próximo</strong>: o passo 3 é o mais longo (três tempos), bom para comparar.
+      </p>
+      {
+        ideias.map((ideia, i) => (
+          <article class="peca-teste" id={`ideia-${i + 1}`}>
+            <h3>
+              Ideia {i + 1}: {ideia.titulo}
+            </h3>
+            <p class="origem">{ideia.texto}</p>
+            <div style={cobranca.cor ? `--cor:${cobranca.cor}` : undefined}>
+              <FiguraPassos figura="cobranca-duplicada-no-retry/chave-em-passos" passos={[...passosDaChave]} fim={ideia.fim} />
+            </div>
+          </article>
+        ))
+      }
+      <p class="nota-teste sugestao">
+        <strong>Se eu tivesse de escolher uma:</strong> a 1, o Próximo que se enche, porque o aviso fica no botão que você vai apertar. A 5 pode ir
+        junto, se quiser ver também quanto falta. Dá para combinar duas.
+      </p>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .teste {
+    max-width: 820px;
+    padding-block: 32px 120px;
+  }
+
+  .topo-teste h1,
+  .bloco-teste h2 {
+    margin: 0 0 10px;
+    font-family: var(--font-titulo);
+  }
+
+  .topo-teste p,
+  .bloco-teste p,
+  .regras-teste,
+  .origem,
+  .mudou {
+    font-family: var(--font-texto);
+    color: var(--ink-2);
+  }
+
+  .topo-teste strong,
+  .bloco-teste strong,
+  .mudou strong {
+    color: var(--ink);
+  }
+
+  .indice-teste {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    margin-top: 14px;
+    font-family: var(--font-ui);
+    font-size: 15px;
+  }
+
+  .bloco-teste {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .regras-teste {
+    padding-left: 1.3em;
+  }
+
+  .regras-teste li {
+    margin: 6px 0;
+  }
+
+  .nota-teste {
+    font-size: 15px;
+  }
+
+  .antes-lista {
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-ui);
+    font-size: 15px;
+    line-height: 1.45;
+    color: var(--ink-2);
+  }
+
+  .antes-lista li {
+    margin: 0;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .antes-lista li::before {
+    content: none;
+  }
+
+  .antes-lista strong {
+    color: var(--ink);
+  }
+
+  .antes-lista :is(.ruim, .media, .clara) {
+    margin-left: 6px;
+    font-weight: 600;
+  }
+
+  .antes-lista .ruim {
+    color: var(--aviso-cuidado);
+  }
+
+  .antes-lista .media {
+    color: var(--aviso-atencao);
+  }
+
+  .antes-lista .clara {
+    color: var(--aviso-dica);
+  }
+
+  .peca-teste {
+    margin-top: 56px;
+  }
+
+  .peca-teste h3 {
+    margin: 0 0 4px;
+    font-family: var(--font-titulo);
+    font-size: 1.3em;
+  }
+
+  .origem {
+    margin: 0 0 12px;
+    font-size: 15px;
+  }
+
+  .mudou {
+    margin-top: 14px;
+    font-size: 15px;
+  }
+
+  .teste a {
+    color: var(--acento);
+  }
+
+  .sugestao {
+    margin-top: 40px;
+    font-size: 16px;
+  }
+</style>

@@ -1,0 +1,826 @@
+/* O Finder (apps/finder.ts): a barra lateral, a barra de ferramentas, as colunas, os ícones, a lista, a
+   pré-visualização, a barra de caminho e a Olhada Rápida. */
+
+.fd {
+  --fd-lateral: 214px;
+  position: absolute;
+  inset: 0;
+  background: var(--mac-janela);
+}
+
+.fd-lateral {
+  width: calc(var(--fd-lateral) - 14px);
+}
+
+.fd-principal {
+  position: absolute;
+  inset: 0 0 0 var(--fd-lateral);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.fd.sem-lateral .fd-lateral {
+  display: none;
+}
+
+.fd.sem-lateral .fd-principal {
+  left: 0;
+}
+
+.fd.sem-lateral .fd-ferramentas {
+  padding-left: 90px;
+}
+
+.fd-ferramentas {
+  flex: none;
+  padding-left: 10px;
+}
+
+.fd-titulo .mac-pasta {
+  width: 18px;
+  height: auto;
+}
+
+.fd-espaco {
+  flex: 1;
+  min-width: 8px;
+}
+
+.fd-busca {
+  width: 168px;
+  flex: none;
+}
+
+.fd-so-estreito {
+  display: none;
+}
+
+.fd .mac-lateral-rolagem {
+  padding-top: 46px;
+}
+
+.fd-mais .mac-glifo {
+  opacity: 0.8;
+}
+
+/* ---------- o conteúdo ---------- */
+
+.fd-conteudo {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border-top: 1px solid var(--mac-separador);
+}
+
+.fd-vazia {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  margin: 0;
+  padding: 0 24px;
+  color: var(--mac-texto-3);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* As colunas: rolam de lado; a pré-visualização ocupa o resto. */
+.fd-trilho {
+  display: flex;
+  height: 100%;
+  overflow: auto hidden;
+  overscroll-behavior: contain;
+}
+
+.fd-coluna {
+  flex: 0 0 216px;
+  height: 100%;
+  padding: 5px 0 10px;
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+  border-right: 1px solid var(--mac-separador);
+  outline: none;
+}
+
+.fd-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 24px;
+  margin: 0 6px;
+  padding: 0 6px 0 8px;
+  border-radius: 6px;
+  color: var(--mac-texto);
+  white-space: nowrap;
+  cursor: default;
+  outline: none;
+}
+
+.fd-item .fd-nome {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fd-item[aria-selected="true"] {
+  background: var(--mac-selecao-inativa);
+  color: var(--mac-selecao-texto-inativa);
+}
+
+.fd.ativa .fd-coluna.ativa .fd-item[aria-selected="true"] {
+  background: var(--mac-selecao);
+  color: var(--mac-sobre-acento);
+}
+
+.mac .fd-item:focus-visible,
+.mac .fd-linha:focus-visible,
+.mac .fd-icone:focus-visible,
+.mac .fd-olhada:focus-visible {
+  outline: none;
+}
+
+.fd-item:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--mac-acento);
+}
+
+.fd.ativa .fd-coluna.ativa .fd-item[aria-selected="true"]:focus-visible {
+  box-shadow: none;
+}
+
+.fd-seta {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.55;
+}
+
+.fd-item[aria-selected="true"] .fd-seta {
+  opacity: 0.9;
+}
+
+.fd.ativa .fd-coluna.ativa .fd-item[aria-selected="true"] .fd-cor {
+  box-shadow: 0 0 0 1.5px var(--mac-sobre-acento);
+}
+
+.fd-mini-pasta {
+  flex: none;
+  width: 18px;
+  height: 15px;
+}
+
+.fd-icone-arquivo {
+  display: contents;
+}
+
+.mac-arquivo {
+  flex: none;
+  width: 15px;
+  height: 19px;
+}
+
+.mac-arquivo .a-papel {
+  fill: var(--mac-papel);
+  stroke: var(--mac-texto-3);
+  stroke-width: 0.8;
+}
+
+.mac-arquivo .a-dobra {
+  fill: var(--mac-janela-2);
+  stroke: var(--mac-texto-3);
+  stroke-width: 0.8;
+  stroke-linejoin: round;
+}
+
+.mac-arquivo .a-linhas {
+  fill: none;
+  stroke: var(--mac-texto-3);
+  stroke-width: 0.8;
+  stroke-linecap: round;
+}
+
+.mac-arquivo .a-faixa {
+  fill: var(--cor);
+}
+
+.fd-cor {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cor);
+  box-shadow: 0 0 0 1px var(--mac-janela);
+}
+
+/* ---------- a pré-visualização ---------- */
+
+.fd-previa {
+  display: flex;
+  flex: 1 0 300px;
+  justify-content: center;
+  min-width: 300px;
+  height: 100%;
+  padding: 24px 24px 28px;
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+}
+
+.fd-previa-corpo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 380px;
+}
+
+.fd-imagem {
+  position: relative;
+  flex: none;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  overflow: visible;
+  border-radius: 10px;
+  box-shadow: 0 0 0 0.5px var(--mac-separador);
+}
+
+.fd-imagem .ilustracao {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+}
+
+/* O livro, deitado, encostado no canto da imagem do post (o do protótipo 14). */
+.fd-livro-junto {
+  position: absolute;
+  right: -16px;
+  bottom: -22px;
+  width: 25%;
+  pointer-events: none;
+}
+
+.fd-livro-junto img,
+.fd-livro-grande img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.fd-livro-grande {
+  width: min(200px, 62%);
+  margin: 4px 0 2px;
+}
+
+.fd-nome-previa {
+  width: 100%;
+  margin: 28px 0 0;
+  color: var(--mac-texto);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.fd-tipo {
+  margin: 3px 0 0;
+  color: var(--mac-texto-2);
+  font-size: 12px;
+  text-align: center;
+}
+
+.fd-descricao {
+  margin: 10px 0 0;
+  color: var(--mac-texto-2);
+  font-size: 12.5px;
+  line-height: 1.45;
+  text-align: center;
+  text-wrap: pretty;
+}
+
+.fd-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.fd-botao,
+.fd-link {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: default;
+}
+
+.fd-botao {
+  background: var(--mac-acento);
+  color: var(--mac-sobre-acento);
+}
+
+.fd-link {
+  background: var(--mac-capsula);
+  box-shadow:
+    0 0 0 0.5px var(--mac-capsula-borda),
+    0 1px 2px var(--mac-separador);
+  color: var(--mac-texto);
+}
+
+.fd-botao:active {
+  filter: brightness(0.9);
+}
+
+.fd-link:hover {
+  background: var(--mac-capsula-marcada);
+}
+
+.fd-info {
+  width: 100%;
+  margin-top: 20px;
+  padding-top: 12px;
+  border-top: 1px solid var(--mac-separador);
+}
+
+.fd-info-titulo {
+  margin: 0 0 8px;
+  color: var(--mac-texto);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.fd-info dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 5px 12px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.fd-info dt {
+  color: var(--mac-texto-2);
+  text-align: right;
+}
+
+.fd-info dd {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  color: var(--mac-texto);
+  overflow-wrap: anywhere;
+}
+
+.fd-info dd .fd-cor {
+  align-self: center;
+}
+
+/* ---------- os ícones ---------- */
+
+.fd-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  align-content: start;
+  gap: 10px 4px;
+  height: 100%;
+  padding: 14px 14px 20px;
+  overflow: hidden auto;
+}
+
+.fd-icone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  padding: 2px;
+  outline: none;
+  cursor: default;
+}
+
+.fd-icone-figura {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 84px;
+  height: 76px;
+  border-radius: 8px;
+}
+
+.fd-icone[aria-selected="true"] .fd-icone-figura {
+  background: var(--mac-passa);
+}
+
+.fd-icone:focus-visible .fd-icone-figura {
+  box-shadow: 0 0 0 3px var(--mac-foco);
+}
+
+.fd-icone-nome {
+  display: -webkit-box;
+  max-width: 100%;
+  padding: 1px 5px;
+  overflow: hidden;
+  border-radius: 4px;
+  color: var(--mac-texto);
+  font-size: 12px;
+  line-height: 1.25;
+  text-align: center;
+  overflow-wrap: anywhere;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.fd-icone[aria-selected="true"] .fd-icone-nome {
+  background: var(--mac-selecao-inativa);
+  color: var(--mac-selecao-texto-inativa);
+}
+
+.fd.ativa .fd-icone[aria-selected="true"] .fd-icone-nome {
+  background: var(--mac-selecao);
+  color: var(--mac-sobre-acento);
+}
+
+.fd-pasta-grande {
+  width: 72px;
+  height: 58px;
+}
+
+.fd-cor-pasta {
+  position: absolute;
+  right: 12px;
+  bottom: 14px;
+  width: 10px;
+  height: 10px;
+}
+
+/* O PDF em miniatura: a primeira página, com a imagem do post e as linhas do texto. */
+.fd-folha {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 54px;
+  height: 72px;
+  padding: 5px;
+  border-radius: 2px;
+  background: var(--mac-papel);
+  box-shadow:
+    0 0 0 0.5px var(--mac-texto-3),
+    0 2px 4px var(--mac-separador);
+}
+
+.fd-folha-imagem {
+  position: relative;
+  flex: none;
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  border-radius: 2px;
+}
+
+.fd-folha-imagem .ilustracao {
+  position: absolute;
+  inset: 0;
+}
+
+.fd-folha-linhas {
+  flex: 1;
+  background: repeating-linear-gradient(to bottom, var(--mac-semaforo-inativo) 0 1.5px, transparent 1.5px 5px);
+  opacity: 0.8;
+}
+
+/* ---------- a lista ---------- */
+
+.fd-tabela {
+  height: 100%;
+  overflow: auto;
+  font-size: 13px;
+}
+
+.fd-cabeca,
+.fd-linha {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 150px 90px 130px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+}
+
+.fd-cabeca {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  height: 28px;
+  border-bottom: 1px solid var(--mac-separador);
+  background: var(--mac-janela);
+  color: var(--mac-texto-2);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.fd-cabeca [aria-sort="descending"]::after {
+  content: " ⌄" / "";
+  font-size: 11px;
+}
+
+.fd-linha {
+  height: 24px;
+  margin: 0 8px;
+  padding: 0 6px;
+  border-radius: 6px;
+  color: var(--mac-texto);
+  white-space: nowrap;
+  outline: none;
+  cursor: default;
+}
+
+.fd-linha.listra {
+  background: var(--mac-listra);
+}
+
+.fd-linha > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fd-linha > span:not(.fd-l-nome) {
+  color: var(--mac-texto-2);
+}
+
+.fd-linha[aria-selected="true"] {
+  background: var(--mac-selecao-inativa);
+}
+
+.fd.ativa .fd-linha[aria-selected="true"] {
+  background: var(--mac-selecao);
+  color: var(--mac-sobre-acento);
+}
+
+.fd.ativa .fd-linha[aria-selected="true"] > span {
+  color: inherit;
+}
+
+.fd-linha:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--mac-acento);
+}
+
+.fd-l-nome {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.fd-l-nome > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fd-l-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- a barra de caminho e a contagem ---------- */
+
+.fd-rodape {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  height: 26px;
+  padding: 0 12px;
+  border-top: 1px solid var(--mac-separador);
+  color: var(--mac-texto-2);
+  font-size: 11.5px;
+}
+
+.fd-caminho {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+  white-space: nowrap;
+}
+
+.fd-caminho li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.fd-caminho li + li::before {
+  content: "›" / "";
+  margin: 0 2px;
+  color: var(--mac-texto-3);
+}
+
+.fd-caminho li > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fd-caminho .fd-mini-pasta {
+  width: 14px;
+  height: 12px;
+}
+
+.fd-caminho .mac-arquivo {
+  width: 11px;
+  height: 14px;
+}
+
+.fd-conta {
+  flex: none;
+  color: var(--mac-texto-3);
+}
+
+/* ---------- a Olhada Rápida ---------- */
+
+.fd-olhada {
+  position: absolute;
+  inset: 62px 40px 46px calc(var(--fd-lateral) + 30px);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 28px 24px;
+  overflow: auto;
+  border-radius: 16px;
+  background: var(--mac-menu);
+  -webkit-backdrop-filter: blur(30px) saturate(1.6);
+  backdrop-filter: blur(30px) saturate(1.6);
+  box-shadow:
+    0 0 0 0.5px var(--mac-menu-borda),
+    var(--mac-menu-sombra);
+  outline: none;
+}
+
+.fd.sem-lateral .fd-olhada {
+  left: 40px;
+}
+
+.fd-olhada-barra {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  align-self: stretch;
+  height: 44px;
+  margin: 0 -28px 10px;
+  padding: 0 12px;
+  color: var(--mac-texto);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.fd-olhada-barra > span {
+  flex: 1;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fd-olhada-fechar,
+.fd-olhada-abrir {
+  display: grid;
+  place-items: center;
+  height: 26px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--mac-capsula);
+  box-shadow: 0 0 0 0.5px var(--mac-capsula-borda);
+  color: var(--mac-texto);
+  cursor: default;
+}
+
+.fd-olhada-fechar {
+  width: 26px;
+}
+
+.fd-olhada-abrir {
+  padding: 0 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.fd-olhada-imagem {
+  position: relative;
+  width: min(100%, 720px);
+  aspect-ratio: 1100 / 468;
+  flex: none;
+}
+
+.fd-olhada-imagem .ilustracao {
+  position: absolute;
+  inset: 0;
+}
+
+.fd-olhada-titulo {
+  margin: 18px 0 0;
+  color: var(--mac-texto);
+  font-family: var(--font-titulo);
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.fd-olhada-sub {
+  margin: 4px 0 0;
+  color: var(--mac-texto-2);
+  font-family: var(--font-texto);
+  font-size: 15px;
+  font-style: italic;
+  text-align: center;
+}
+
+/* ---------- celular: a barra lateral atrás do botão e uma coluna por vez ---------- */
+
+@media (max-width: 699px), (max-height: 459px) {
+  .fd {
+    --fd-lateral: 0px;
+  }
+
+  .fd-lateral {
+    display: none;
+    width: min(240px, 72%);
+    z-index: 30;
+    box-shadow:
+      0 0 0 0.5px var(--mac-lateral-borda),
+      var(--mac-menu-sombra);
+  }
+
+  .fd.lateral-aberta .fd-lateral {
+    display: flex;
+    background: var(--mac-menu);
+  }
+
+  .fd-so-estreito {
+    display: inline-flex;
+  }
+
+  .fd-ferramentas {
+    gap: 6px;
+    padding-left: 84px;
+    padding-right: 8px;
+  }
+
+  .fd-vistas,
+  .fd-busca {
+    display: none;
+  }
+
+  .fd .mac-capsula > button {
+    min-width: 34px;
+    height: 30px;
+  }
+
+  /* Uma coluna por vez: a de dentro (ou a pré-visualização) ocupa a largura toda (finder.ts marca .atual). */
+  .fd-trilho {
+    overflow: hidden;
+  }
+
+  .fd-coluna,
+  .fd-previa {
+    flex: 0 0 100%;
+    min-width: 0;
+    border-right: 0;
+  }
+
+  .fd-trilho > :not(.atual) {
+    display: none;
+  }
+
+  .fd-item {
+    height: 40px;
+    font-size: 15px;
+  }
+
+  .fd-previa {
+    padding: 18px 18px 24px;
+  }
+
+  .fd-olhada {
+    inset: 56px 10px 36px;
+  }
+}

@@ -1,0 +1,177 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1070"
+  aria-label="Diagrama de sequência em cinco passos, com o app, o serviço de autorização, o adquirente e a fatura do cartão: o app pede ao serviço a cobrança de R$ 250; o serviço cobra no adquirente, que lança R$ 250 na fatura e aprova; a resposta 201 se perde no caminho de volta, e o app dá timeout sem saber se cobrou; sem saber, o app tenta de novo, e o serviço cobra outra vez; o adquirente lança a segunda linha de R$ 250 na fatura. O cliente é cobrado duas vezes pelo mesmo pedido.">
+  <path d="M205 124 V960 M485 124 V960 M765 124 V960 M1045 124 V960" class="grade"/>
+
+  <g class="tinta">
+    <g class="tom-azul">
+      <rect x="97" y="37" width="230" height="88" rx="12" class="hachura"/>
+      <rect x="90" y="30" width="230" height="88" rx="12" class="lavado"/>
+      <rect x="90" y="30" width="230" height="88" rx="12" class="linha"/>
+    </g>
+    <g class="tom-verde">
+      <rect x="377" y="37" width="230" height="88" rx="12" class="hachura"/>
+      <rect x="370" y="30" width="230" height="88" rx="12" class="lavado"/>
+      <rect x="370" y="30" width="230" height="88" rx="12" class="linha"/>
+    </g>
+    <g class="tom-ambar">
+      <rect x="657" y="37" width="230" height="88" rx="12" class="hachura"/>
+      <rect x="650" y="30" width="230" height="88" rx="12" class="lavado"/>
+      <rect x="650" y="30" width="230" height="88" rx="12" class="linha"/>
+    </g>
+    <rect x="937" y="37" width="230" height="88" rx="12" class="hachura"/>
+    <rect x="930" y="30" width="230" height="88" rx="12" class="papel"/>
+    <rect x="930" y="30" width="230" height="88" rx="12" class="linha"/>
+
+    <g data-passo="1" class="tom-azul">
+      <path d="M205 180 H471 M457 171 L471 180 L457 189" class="linha-tom"/>
+    </g>
+
+    <g data-passo="2">
+      <g class="tom-verde">
+        <path d="M485 262 H751 M737 253 L751 262 L737 271" class="linha-tom"/>
+      </g>
+      <g class="tom-ambar etapa-2">
+        <path d="M765 322 H1031 M1017 313 L1031 322 L1017 331" class="linha-tom"/>
+      </g>
+      <g class="etapa-2">
+        <rect x="970" y="342" width="150" height="54" rx="8" class="papel"/>
+        <rect x="970" y="342" width="150" height="54" rx="8" class="linha"/>
+      </g>
+      <g class="tom-ambar etapa-3">
+        <path d="M765 440 H500" class="linha-tom"/>
+        <path d="M513 431 L499 440 L513 449" class="linha-tom"/>
+      </g>
+    </g>
+
+    <g data-passo="3">
+      <g class="tom-verde">
+        <path d="M485 520 H322" class="linha-tom"/>
+      </g>
+      <g class="tom-vermelho">
+        <path d="M292 508 l24 24 m0 -24 l-24 24" class="linha-tom"/>
+      </g>
+      <g class="tom-azul etapa-2">
+        <rect x="110" y="594" width="190" height="68" rx="8" class="lavado"/>
+        <rect x="110" y="594" width="190" height="68" rx="8" class="linha"/>
+      </g>
+    </g>
+
+    <g data-passo="4">
+      <g class="tom-azul">
+        <path d="M205 722 H471 M457 713 L471 722 L457 731" class="linha-tom"/>
+      </g>
+      <g class="tom-verde etapa-2">
+        <path d="M485 808 H751 M737 799 L751 808 L737 817" class="linha-tom"/>
+      </g>
+    </g>
+
+    <g data-passo="5">
+      <g class="tom-ambar">
+        <path d="M765 868 H1031 M1017 859 L1031 868 L1017 877" class="linha-tom"/>
+      </g>
+      <g class="tom-vermelho">
+        <rect x="970" y="888" width="150" height="54" rx="8" transform="translate(6 5)" class="cor"/>
+        <rect x="970" y="888" width="150" height="54" rx="8" class="lavado"/>
+        <rect x="970" y="888" width="150" height="54" rx="8" class="linha"/>
+      </g>
+      <g class="tom-vermelho etapa-2">
+        <rect x="640" y="984" width="520" height="68" rx="12" class="lavado"/>
+        <rect x="640" y="984" width="520" height="68" rx="12" class="linha"/>
+        <path d="M664 1007 l22 22 m0 -22 l-22 22" class="linha-tom"/>
+      </g>
+    </g>
+  </g>
+
+  <g class="tom-azul" data-marca="aplicacao" transform="translate(105 50) scale(0.48)"/>
+  <g class="tom-verde" data-marca="servidor" transform="translate(385 50) scale(0.48)"/>
+
+  <g class="tom-azul">
+    <text x="165" y="72" class="titulo-caixa">App</text>
+    <text x="165" y="102" class="texto-caixa">do cliente</text>
+  </g>
+  <g class="tom-verde">
+    <text x="445" y="72" class="titulo-caixa">Serviço</text>
+    <text x="445" y="102" class="texto-caixa">de autorização</text>
+  </g>
+  <g class="tom-ambar">
+    <text x="765" y="72" text-anchor="middle" class="titulo-caixa">Adquirente</text>
+    <text x="765" y="102" text-anchor="middle" class="texto-caixa">cobra o cartão</text>
+  </g>
+  <text x="1045" y="72" text-anchor="middle" class="titulo-caixa">Fatura</text>
+  <text x="1045" y="102" text-anchor="middle" class="texto-caixa">do cartão</text>
+
+  <g data-passo="1">
+    <g class="tom-azul">
+      <circle cx="42" cy="180" r="19" class="selo"/>
+      <text x="42" y="181" class="selo-texto">1</text>
+      <text x="338" y="166" text-anchor="middle" class="codigo">POST /cobrancas</text>
+      <text x="338" y="210" text-anchor="middle" class="codigo texto-tom">R$ 250</text>
+      <path d="M207 180 H465" pathLength="1" class="trajeto"/>
+    </g>
+  </g>
+
+  <g data-passo="2">
+    <g class="tom-verde">
+      <circle cx="42" cy="262" r="19" class="selo"/>
+      <text x="42" y="263" class="selo-texto">2</text>
+      <text x="625" y="248" text-anchor="middle" class="texto-caixa texto-tom">cobra</text>
+      <path d="M487 262 H745" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-ambar etapa-2">
+      <text x="905" y="308" text-anchor="middle" class="texto-caixa texto-tom">lança</text>
+      <path d="M767 322 H1025" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="etapa-2">
+      <text x="1045" y="378" text-anchor="middle" class="codigo">R$ 250</text>
+    </g>
+    <g class="tom-ambar etapa-3">
+      <text x="625" y="426" text-anchor="middle" class="texto-caixa texto-tom">aprovada</text>
+      <path d="M763 440 H505" pathLength="1" class="trajeto"/>
+    </g>
+  </g>
+
+  <g data-passo="3">
+    <g class="tom-vermelho">
+      <circle cx="42" cy="520" r="19" class="selo"/>
+      <text x="42" y="521" class="selo-texto">3</text>
+      <text x="304" y="564" text-anchor="middle" class="texto-caixa texto-tom">a resposta se perde</text>
+    </g>
+    <g class="tom-verde">
+      <text x="418" y="506" text-anchor="middle" class="codigo">201</text>
+      <path d="M483 520 H326" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="etapa-2">
+      <text x="205" y="622" text-anchor="middle" class="codigo">timeout</text>
+      <text x="205" y="650" text-anchor="middle" class="texto-caixa">cobrou ou não?</text>
+    </g>
+  </g>
+
+  <g data-passo="4">
+    <g class="tom-azul">
+      <circle cx="42" cy="722" r="19" class="selo"/>
+      <text x="42" y="723" class="selo-texto">4</text>
+      <text x="338" y="708" text-anchor="middle" class="texto-caixa texto-tom">tenta de novo</text>
+      <text x="338" y="752" text-anchor="middle" class="codigo texto-tom">R$ 250</text>
+      <path d="M207 722 H465" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-verde etapa-2">
+      <text x="625" y="794" text-anchor="middle" class="texto-caixa texto-tom">cobra de novo</text>
+      <path d="M487 808 H745" pathLength="1" class="trajeto"/>
+    </g>
+  </g>
+
+  <g data-passo="5">
+    <g class="tom-vermelho">
+      <circle cx="42" cy="868" r="19" class="selo"/>
+      <text x="42" y="869" class="selo-texto">5</text>
+      <text x="1045" y="924" text-anchor="middle" class="codigo texto-tom">R$ 250</text>
+    </g>
+    <g class="tom-ambar">
+      <text x="905" y="854" text-anchor="middle" class="texto-caixa texto-tom">lança</text>
+      <path d="M767 868 H1025" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-vermelho etapa-2">
+      <text x="920" y="1027" text-anchor="middle" class="texto-caixa texto-tom">Cobrado duas vezes pelo mesmo pedido.</text>
+    </g>
+  </g>
+</svg>

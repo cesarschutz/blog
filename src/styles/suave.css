@@ -1,0 +1,248 @@
+/*
+ * Rodada 2 do redesenho, protótipo 14 · Grade suave: o atual com o aproveitamento de tela e a tipografia
+ * grande do 01, nas fontes, no papel e no azul-tinta do atual. Aqui ficam as peças globais do protótipo:
+ * a cortina da troca de página (G10) e, na rodada 3 (área 7), os tempos dela (0,38s entra, segura até
+ * 0,62s, sai até 0,98s; troca.js) e a espera das listas e dos cards que aparecem ao rolar (revelar.ts).
+ */
+
+/* A largura útil do conteúdo (a do .wrap), por vw: o nome gigante da home e a coleção se medem por ela. A
+   folga de 16px cobre a barra de rolagem, que o vw inclui. */
+:root {
+  --util: min(100vw - 2 * var(--pad) - 16px, var(--largura));
+}
+
+/* ---------- a cortina (G10) ---------- */
+
+/*
+ * A página nova nasce com a cortina no DOM, escondida. Na troca (troca.js, passarCortina), o <html> ganha
+ * a classe `cortina`: o painel aparece por cima da página (abaixo do cabeçalho) e ganha nome de transição;
+ * na View Transition, só ele anima, entrando de baixo sobre a imagem da página antiga. Quando a troca
+ * acaba, o painel de verdade segura o nome um instante e sai por cima (Web Animations, no mesmo script),
+ * e a página monta embaixo dele.
+ */
+.cortina-painel {
+  position: fixed;
+  inset: 0;
+  z-index: 29;
+  display: grid;
+  align-content: space-between;
+  padding: calc(var(--altura-cabecalho) + clamp(22px, 4vw, 44px)) var(--pad) clamp(28px, 6vh, 64px);
+  background: var(--cortina);
+  color: var(--cortina-tinta);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+:root.cortina .cortina-painel {
+  visibility: visible;
+  view-transition-name: cortina;
+}
+
+/*
+ * Rodada 3 (área 7): a cortina cobre tudo o que é fixo na página (o ícone do computador, a seta de voltar
+ * ao topo, a barra da leitura, todos em 40), menos o cabeçalho, que fica parado por cima dela com o traço
+ * do menu deslizando (A13). Só enquanto ela passa.
+ */
+:root.cortina .cortina-painel {
+  z-index: 45;
+}
+
+:root.cortina .topo-fixo {
+  z-index: 46;
+}
+
+.cortina-rotulo {
+  max-width: var(--largura);
+  width: 100%;
+  margin-inline: auto;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  font-weight: 500;
+  opacity: 0.72;
+}
+
+/*
+ * Rodada 4 (E2, "corta a parte de baixo do texto"): a máscara é a caixa do nome (`overflow: clip` corta na
+ * borda do padding), e com a linha apertada (0,94) a perna do g, do ç e do p passava da borda de baixo, e
+ * um acento em maiúscula, da de cima. A janela agora vai 0,36em abaixo e 0,32em acima das linhas (a medida
+ * da fonte, não só a tinta), e as margens negativas devolvem o lugar: o nome fica onde estava, inteiro.
+ */
+.cortina-nome {
+  display: block;
+  max-width: var(--largura);
+  width: 100%;
+  margin-inline: auto;
+  overflow: clip;
+  padding-block: 0.32em 0.36em;
+  margin-block: -0.32em -0.28em;
+  font-family: var(--font-titulo);
+  /* Nunca maior que o que faz a maior palavra caber na linha (~0,6em por letra na Besley 800; --letras vem
+     do Base.astro): no celular, "Atualizações" encolhe em vez de virar "Atualizaçõe / s". */
+  font-size: min(clamp(54px, 10.5vw, 160px), var(--cabe));
+  font-weight: 800;
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+.cortina-painel {
+  --cabe: calc((100vw - 2 * var(--pad) - 16px) / (var(--letras, 8) * 0.64));
+}
+
+.cortina-painel.longo .cortina-nome {
+  font-size: min(clamp(38px, 6vw, 96px), var(--cabe));
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+
+.cortina-nome > span {
+  display: block;
+}
+
+/*
+ * O nome gigante sobe por uma máscara enquanto a cortina entra (rodada 3, área 7): de 0,04 a 0,6s, mais
+ * devagar que a folha, que cobre a tela em 0,38s (a paralaxe), e assenta durante a pausa. O pequeno, no
+ * alto, está na folha desde o começo. Voltando pelo histórico, a folha desce e o nome cai de cima. Ele
+ * parte de uma altura e mais 0,75em fora do lugar (rodada 4, E2): com a janela maior, só 105% deixava o alto
+ * das letras já à vista no pé dela antes de subir.
+ */
+:root.cortina .cortina-nome > span {
+  animation: cortina-nome 0.56s cubic-bezier(0.2, 0.8, 0.2, 1) 0.04s both;
+}
+
+:root.cortina.cortina-volta .cortina-nome > span {
+  animation-name: cortina-nome-volta;
+}
+
+@keyframes cortina-nome {
+  from {
+    transform: translateY(calc(100% + 0.75em));
+  }
+}
+
+@keyframes cortina-nome-volta {
+  from {
+    transform: translateY(calc(-100% - 0.75em));
+  }
+}
+
+:root:active-view-transition-type(cortina)::view-transition-old(root) {
+  animation: none;
+}
+
+:root:active-view-transition-type(cortina)::view-transition-new(root) {
+  animation: none;
+  opacity: 0;
+}
+
+::view-transition-group(cortina) {
+  z-index: 60;
+  animation: none;
+}
+
+:root:active-view-transition-type(cortina)::view-transition-new(cortina) {
+  animation: cortina-entra 0.38s cubic-bezier(0.7, 0, 0.2, 1) both;
+}
+
+:root.cortina-volta:active-view-transition-type(cortina)::view-transition-new(cortina) {
+  animation-name: cortina-entra-volta;
+}
+
+@keyframes cortina-entra {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes cortina-entra-volta {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* ---------- a troca de livro pela estante do topo (G7) ---------- */
+
+/* O grande volta para o vão dele na estante; o escolhido sai da estante e cresce, um pouco depois. */
+:root:active-view-transition-type(livro)::view-transition-group(.vai) {
+  z-index: 50;
+  animation-duration: 0.6s;
+  animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+:root:active-view-transition-type(livro)::view-transition-group(.vem) {
+  z-index: 51;
+  animation-duration: 0.78s;
+  animation-delay: 0.22s;
+  animation-timing-function: cubic-bezier(0.55, 0, 0.2, 1);
+}
+
+/*
+ * Sem esmaecer de uma imagem na outra (as duas são o mesmo livro, de tamanhos diferentes): no que vai, a
+ * imagem grande (a antiga) faz o voo inteiro, encolhendo; no que vem, a grande (a nova, viva) faz o voo
+ * inteiro, crescendo. A outra imagem só entra no pouso.
+ */
+:root:active-view-transition-type(livro)::view-transition-old(.vai),
+:root:active-view-transition-type(livro)::view-transition-new(.vem) {
+  animation: none;
+  opacity: 1;
+}
+
+:root:active-view-transition-type(livro)::view-transition-new(.vai) {
+  animation: livro-pousa 0.6s steps(1, end) both;
+}
+
+:root:active-view-transition-type(livro)::view-transition-old(.vem) {
+  animation: none;
+  opacity: 0;
+}
+
+@keyframes livro-pousa {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root.cortina .cortina-nome > span {
+    animation: none;
+  }
+}
+
+/* ---------- convivência das peças fixas ---------- */
+
+/* Com o menu do celular aberto (a folha que cobre a tela), a pasta do Finder (O11) sai da frente. */
+:root[data-menu-aberto] .finder-dock {
+  visibility: hidden;
+}
+
+/* A ficha "Do livro" da lateral do artigo termina acima da pasta do Finder, no canto de baixo. */
+@media (min-width: 1300px) {
+  .artigo-grade.com-lateral aside.lateral {
+    max-height: calc(100vh - var(--altura-topo) - 112px);
+  }
+}
+
+/* ---------- as entradas ao rolar (rodada 3, área 7, T13; revelar.ts) ---------- */
+
+/* O card ou o item de lista abaixo da dobra espera aqui até 15% dele entrar na tela (só com JS: o script
+   põe a classe). */
+[data-revelar].revelar-espera {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+@media print {
+  [data-revelar].revelar-espera {
+    opacity: 1;
+    transform: none;
+  }
+}

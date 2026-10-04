@@ -1,0 +1,133 @@
+/*
+ * A ficha "Do livro" do post (rodada 3, área 5 da direção; G28 e P1): a ficha de fichário de hoje (o
+ * título à mão, a foto do livro deitado e os dados na pauta) vira um papel colado na página com um
+ * pedaço de fita no alto. Com o mouse ou o foco do teclado, ela toma a cor do livro, de baixo para cima,
+ * em 0,35s, como os cartões de Livros (GradeLivros): a pauta e a linha do cabeçalho ficam por baixo da
+ * tinta, e o texto passa para a tinta clara do livro no instante em que a cor chega nele (cada
+ * componente acerta os atrasos da sua ficha: Sumario, a da lateral; RodapeArtigo, a do fim do artigo).
+ * As duas cores vêm do livro (pinturaDoLivro, src/lib/ficha-do-livro.ts) e não mudam com o tema (D39).
+ *
+ * O livro da foto gira e brilha pelo comportamento único dos livros do site (luz.ts e luz.css, de outro
+ * construtor): aqui não há hover próprio de livro.
+ *
+ * Ganchos (não renomear): `.ficha-colada` (na `.do-livro` e na `.livro-do-artigo`), `.fita`. O
+ * `::before` da ficha é a pintura; o `::after` fica livre para as linhas (o carimbo da linha 19).
+ * Só clip-path (a pintura) e color (no instante da passagem); com movimento reduzido, a cor vem de uma
+ * vez.
+ */
+
+.ficha-colada {
+  /* A curva da tinta: começa devagar, corre no meio e assenta (os atrasos do texto contam com ela). */
+  --tinta-curva: cubic-bezier(0.65, 0, 0.35, 1);
+  --tinta-tempo: 0.35s;
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
+}
+
+/* A pintura: a cor do livro sobe do pé da ficha até o alto, cobrindo a borda, a pauta e a linha. */
+.ficha-colada::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: -1px;
+  border-radius: inherit;
+  background: var(--pinta);
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path var(--tinta-tempo) var(--tinta-curva);
+  pointer-events: none;
+}
+
+.ficha-colada:is(:hover, :focus-visible, :has(:focus-visible))::before {
+  clip-path: inset(0 0 0 0);
+}
+
+/*
+ * A fita: um pedaço de fita crepe atravessando a borda de cima, um nada torto, com as pontas picotadas
+ * de quem rasgou com a mão. Translúcida (o papel aparece por baixo), com a sombra fina da borda.
+ */
+.ficha-colada > .fita,
+.vizinhos:is([data-forma="papel"], [data-forma="ficha-fita"]) .fita {
+  --cor-fita: color-mix(in oklab, color-mix(in oklab, var(--post-it) 62%, var(--etiqueta-papel)) 78%, transparent);
+  position: absolute;
+  z-index: 3;
+  top: -11px;
+  left: 50%;
+  width: 78px;
+  height: 22px;
+  translate: -50% 0;
+  rotate: -2.4deg;
+  filter: drop-shadow(0 0.6px 0.6px color-mix(in oklab, var(--etiqueta-sombra) 18%, transparent));
+  pointer-events: none;
+}
+
+.ficha-colada > .fita::before,
+.vizinhos:is([data-forma="papel"], [data-forma="ficha-fita"]) .fita::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, color-mix(in oklab, var(--etiqueta-luz) 35%, transparent) 0 1px, transparent 1px calc(100% - 1px), color-mix(in oklab, var(--etiqueta-sombra) 6%, transparent) calc(100% - 1px)),
+    var(--cor-fita);
+  /* As pontas rasgadas: um zigue-zague miúdo e irregular nos dois lados. */
+  clip-path: polygon(
+    2px 0, 98% 0, 100% 14%, 97.5% 28%, 99.5% 43%, 97% 58%, 99.6% 72%, 97.8% 86%, 99% 100%,
+    1.5% 100%, 0 87%, 2.4% 73%, 0.4% 58%, 2.8% 44%, 0.6% 30%, 2.2% 15%
+  );
+}
+
+/* No escuro, a fita é o mesmo papel crepe na meia-luz: bem mais transparente, um véu claro e morno. */
+:root[data-theme="dark"] :is(.ficha-colada > .fita, .vizinhos:is([data-forma="papel"], [data-forma="ficha-fita"]) .fita) {
+  --cor-fita: color-mix(in oklab, color-mix(in oklab, var(--etiqueta) 55%, var(--etiqueta-papel)) 21%, transparent);
+  filter: drop-shadow(0 0.6px 0.4px color-mix(in oklab, var(--etiqueta-sombra) 30%, transparent));
+}
+
+/*
+ * Rodada 4, amostra D6: o papel colado com duas fitas nos cantos de cima (a ficha "Do livro" na forma
+ * "papel", LivroDoArtigo.astro), e a fita do anterior e do próximo (Vizinhos.astro): no papel colado da
+ * amostra e na ficha com fita do protótipo (E8, "o B com a fita do C").
+ */
+.ficha-colada > .fita.canto-esquerdo,
+.ficha-colada > .fita.canto-direito {
+  top: -6px;
+  width: 64px;
+  height: 20px;
+}
+
+.ficha-colada > .fita.canto-esquerdo {
+  left: -14px;
+  translate: 0 0;
+  rotate: -34deg;
+}
+
+.ficha-colada > .fita.canto-direito {
+  right: -14px;
+  left: auto;
+  translate: 0 0;
+  rotate: 31deg;
+}
+
+.vizinhos:is([data-forma="papel"], [data-forma="ficha-fita"]) .fita {
+  width: 70px;
+}
+
+.vizinhos:is([data-forma="papel"], [data-forma="ficha-fita"]) .proximo > .fita {
+  rotate: 2.2deg;
+}
+
+/* A ficha inteira é o link: o anel do foco fica em volta dela, por fora. */
+.ficha-colada:has(:focus-visible),
+.ficha-colada:focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 3px;
+}
+
+.ficha-colada :focus-visible {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ficha-colada::before {
+    transition: none;
+  }
+}

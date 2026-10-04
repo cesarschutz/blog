@@ -5,6 +5,9 @@ description: Monta os diagramas na lousa com o componente Lousa (D58), nos dois 
 
 # Lousa
 
+**Em prova (D67):** a figura em passos (skill `figura`, "Figura em passos") pode substituir a lousa de
+passos, a de comparação e a animação com play. Até o Cesar decidir, a lousa segue as regras abaixo.
+
 Componente `src/components/Lousa.astro` (D58), com o desenho **no estilo das figuras** (D59: o painel
 do livro, o traço da casa, os tons, os selos e os logos de `figura.css`) e uma **canetinha colorida**
 que desenha na cor do que faz. Estilo em `lousa-nova.css` (mais `figura.css` e `desenho.css`); motor em
@@ -64,6 +67,7 @@ import FraseDestaque from "../../components/FraseDestaque.astro";
 | `passos` | a sequência (`{ de, texto }`, `de` de 0 a 1, em ordem): vira a lista numerada embaixo; o texto aceita `código` e `**negrito**` |
 | `estados` | a comparação (`{ de, texto }`): só vão para o leitor de tela (o `aria-valuetext` do controle) |
 | `duracao` | uma volta do play, em segundos (padrão 7) |
+| `controles` | **em prova (D65):** `"marca-texto"`, `"caderno"` ou `"post-it"` troca os controles de baixo por uma das três opções do protótipo (`/prototipos/controles/`), com o desenho e os controles num cartão só. Até o Cesar escolher, cada post fica com a opção que recebeu na prova (lista na D65) e post novo fica sem `controles` |
 
 Use `passos` **ou** `estados`, nunca os dois. `de` é o instante em que o passo (ou o estado) começa;
 o fim de um passo é o `de` do seguinte. No controle, cada `de` vira uma marca (numerada, nos passos).

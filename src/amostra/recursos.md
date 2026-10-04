@@ -1,5 +1,9 @@
 ---
 title: Amostra dos recursos de Markdown
+tldr:
+  - "O cliente manda uma `Idempotency-Key` em cada pedido; a mesma chave quer dizer o mesmo pedido."
+  - "Uma **restrição única** no banco deixa passar só um pedido por chave, mesmo com duas tentativas ao mesmo tempo."
+  - "A resposta da primeira vez fica guardada e volta igual nas repetições ([o rascunho da IETF](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/) descreve o cabeçalho)."
 ---
 
 Esta página só existe no `npm run dev` e junta, num texto só, tudo o que um post pode usar. Um

@@ -34,4 +34,8 @@ O que nunca pode:
 - aceitar o desenho sem passar no validador (`node scripts/desenho/validar.mjs <slug>`; os logos,
   `validar.mjs marcas`) e sem conferir o render ou a foto, claro e escuro;
 - mostrar ao Cesar um desenho sem a revisão (D59): `node scripts/desenho/revisar.mjs <slug>` limpo e
-  as fotos dele olhadas pelo checklist da skill `figura`, depois de terminar e depois de cada ajuste.
+  as fotos dele olhadas pelo checklist da skill `figura`, depois de terminar e depois de cada ajuste;
+- logo de ferramenta (no texto ou num desenho) sem a regra de marca conferida e registrada em
+  `src/marcas/regras.json` (D64), ou de um jeito que a regra não permite (redesenhar o que pede o
+  arquivo oficial, mostrar o que pede só o nome). Marca nova: ler a política oficial do dono e registrar
+  antes; já registrada e permitida, usar direto. Sem permissão, ícone genérico da casa.

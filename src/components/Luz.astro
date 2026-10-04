@@ -1,0 +1,31 @@
+---
+/**
+ * A luz do site (rodada 3 do redesenho, área A; o 02 Noturno), em toda página, no fim do <body>
+ * (Base.astro).
+ *
+ * - **O fundo que acompanha o mouse (T5):** uma mancha âmbar larga, por trás das folhas, que segue o
+ *   mouse com atraso, nos dois temas: no claro, ela aquece o papel em multiply, com um ponto de luz no
+ *   meio; no escuro, ela acende em screen. Só com mouse; some quando o mouse sai da janela.
+ * - **O halo do lustre (T7):** as camadas grandes da lâmpada (brasa, âmbar, branco quente e o cone), que
+ *   a troca de tema acende e apaga a partir do bulbo, por cima do cabeçalho e da página (tema.ts).
+ * - **Os livros vivos (área A):** o script do livro 3D (livro-vivo.ts: o giro com mola, o livro que segue
+ *   o mouse, o brilho realista e a onda de luz da fileira) e o da luz (luz.ts: a mancha do mouse e o
+ *   brilho das lombadas da estante e da pilha).
+ *
+ * Com movimento reduzido ou sem mouse, a mancha não aparece; sem JS, nada disso aparece.
+ */
+import "../styles/luz.css";
+import "../styles/livro-vivo.css";
+---
+
+<div class="luz-mesa" aria-hidden="true"><div class="luz-mesa-disco"></div><div class="luz-mesa-ponto"></div></div>
+<div class="lustre-luz" aria-hidden="true">
+  <span class="ll-brasa"></span><span class="ll-ambar"></span><span class="ll-branco"></span><span class="ll-cone"></span>
+</div>
+
+<script>
+  import "../scripts/luz";
+  import "../scripts/livro-vivo";
+  // Uma montagem por página; cards novos são ligados por cartoes:prontos.
+  import "../scripts/capa-viva";
+</script>

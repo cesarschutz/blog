@@ -1,0 +1,230 @@
+---
+title: "Um mod do Claude Code na prática — instalação, testes e limites (parte 2 de 2)"
+published: 2026-10-02T12:00:00Z
+description: "O csr-cockpit, um mod de exemplo, põe um painel ao lado da conversa do Claude Code, com agentes, contexto e custo. Como instalar, testar e o que ele não faz."
+tags: [Claude Code, Plugins]
+category: IA
+formato: detalhado
+tldr:
+  - "O **csr-cockpit** é um mod do Claude Code (um plugin com código que roda dentro do programa): um painel ao lado da conversa, com cinco abas, e uma linha de resumo acima do prompt. Ele só observa, sem alterar nada."
+  - "Instalar são dois comandos: `claude plugin marketplace add cesarschutz/claude-code-kit` e `claude plugin install csr-cockpit@cesarschutz`. Um **marketplace** é um repositório git com um arquivo `marketplace.json`."
+  - "Atualização não chega sozinha: o Claude Code só vê versão nova quando o `version` do `plugin.json` sobe, e em marketplace de terceiros a atualização automática vem desligada."
+  - "O custo por agente e por turno é uma repartição feita pelo cockpit. O Claude Code informa só o custo da sessão inteira, calculado a preço de tabela."
+  - "Mods pedem o Claude Code 2.1.287 ou mais novo, e o aplicativo de desktop pode trazer uma versão anterior (a 2.1.284, em 02/10/2026). O que é um mod e as peças que vieram antes estão na [parte 1](/posts/claude-code-do-claude-md-ao-mod/)."
+draft: false
+---
+
+import Evidencia from "../../components/Evidencia.astro";
+import Lousa from "../../components/Lousa.astro";
+import cockpit from "../../evidencias/claude-code-csr-cockpit/cockpit.png";
+import linhaDeResumo from "../../evidencias/claude-code-csr-cockpit/linha-de-resumo.png";
+import abaAgentes from "../../evidencias/claude-code-csr-cockpit/aba-agentes.png";
+import abaTurnos from "../../evidencias/claude-code-csr-cockpit/aba-turnos.png";
+
+Um mod do Claude Code é um plugin com código que roda dentro do programa: reage aos eventos da sessão, guarda estado e desenha na interface. Na prática, ele se instala a partir de um marketplace, não se atualiza sozinho, pode ser testado sem abrir uma sessão e tem limites que só aparecem no uso.
+
+Este post mostra um mod de ponta a ponta, para quem quer instalar um ou avaliar o de outra pessoa: o que ele põe na tela, como instalar, como testar e o que ele ainda não faz. O exemplo é o **csr-cockpit**, um painel ao lado da conversa que mostra o que a sessão está fazendo (os subagentes, as edições, o uso do contexto, os arquivos lidos e os turnos), com o custo estimado de cada agente e de cada turno. O código está no [claude-code-kit](https://github.com/cesarschutz/claude-code-kit), um repositório público. Não é um tutorial de como programar um mod.
+
+> [!NOTA] Parte 2 de 2
+> A [parte 1](/posts/claude-code-do-claude-md-ao-mod/) explica o que é um mod e as peças do Claude Code que vieram antes dele (`CLAUDE.md`, hooks, skills, plugins). O resumo, para quem chega direto aqui: plugin é uma pasta de extensões do Claude Code, instalada de uma vez, e mod é um plugin cujo código roda dentro do programa. Os mods são oficiais desde a versão 2.1.287, de 01/10/2026.
+
+<Evidencia
+  imagem={cockpit}
+  larga
+  foco={0.535}
+  alt="A tela do Claude Code com o painel do csr-cockpit aberto ao lado da conversa. A aba Agentes mostra dois subagentes rodando, cada um com o modelo, o tempo, o tamanho do contexto e o custo atribuído até ali, de 2 e de 1 centavo de dólar. Acima do prompt, a linha de resumo mostra o contexto usado e o custo da sessão."
+  fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit"
+  legenda="O csr-cockpit ao lado da conversa: um desenho com os textos e os números de uma sessão real (Claude Code 2.1.287, modelo Haiku 4.5)"
+/>
+
+Alguns termos aparecem o tempo todo. O **modelo** é a IA; o **Claude Code** é o programa do terminal, que conversa com ela. **Agente**, aqui, é o subagente: o ajudante que o Claude Code chama para cuidar de uma parte da tarefa. **Turno** é cada pedido feito na sessão, com tudo o que ele desencadeia. **Contexto** é tudo o que o modelo tem na frente para responder (as instruções, a conversa, os arquivos lidos); tem tamanho máximo e é medido em **tokens**, os pedaços de palavra pelos quais se cobra.
+
+Sem um mod, o [`/usage`](https://code.claude.com/docs/en/costs#track-your-costs) mostra quanto a sessão inteira custou e, nos planos pagos, que fatia do uso foi para subagentes, em percentual. Quanto custou cada agente, ou cada turno, :ondulado[ele não diz].
+
+O cockpit faz essa conta, e ela é uma estimativa dele: a seção [Os limites do csr-cockpit](#os-limites-do-csr-cockpit) explica como o custo é repartido e onde a conta pode errar.
+
+## O que o cockpit mostra
+
+O painel abre e fecha com `/cockpit` e tem cinco abas. Cada uma responde a uma pergunta:
+
+| Aba | A pergunta | O que mostra |
+|---|---|---|
+| Agentes | Quem está trabalhando agora, e em quê? | cada subagente com o modelo, o tempo, o contexto dele, o custo atribuído, as chamadas e a tarefa |
+| Diffs | O que mudou neste turno? | cada edição, com as linhas que saíram e as que entraram |
+| Contexto | Quanto do contexto sobra, e quanto já custou? | o percentual usado, o custo da sessão e do último turno e o limite de uso do plano |
+| Arquivos | O que foi lido e rodado, e por quem? | os arquivos lidos e os comandos Bash, com quem leu ou rodou, o status e a duração |
+| Turnos | O que aconteceu, na ordem? | um registro por pedido, com a duração, o custo, as ferramentas e as falhas |
+
+Na aba Agentes, cada agente aparece com o custo atribuído a ele. Na sessão das imagens, foram US\$ 0,04 para um agente e US\$ 0,02 para o outro:
+
+<Evidencia
+  imagem={abaAgentes}
+  larga
+  alt="A aba Agentes do csr-cockpit com dois subagentes concluídos. O primeiro levou 28 segundos, ficou com 16,4 mil tokens de contexto, teve custo atribuído de 4 centavos de dólar e fez 9 chamadas. O segundo levou 7,5 segundos, ficou com 13,3 mil tokens, teve custo atribuído de 2 centavos e fez 1 chamada."
+  fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit#1-agentes"
+  legenda="A aba Agentes, com dois subagentes concluídos e o custo que o cockpit atribuiu a cada um (desenho do README do csr-cockpit)"
+/>
+
+Na aba Turnos, cada pedido aparece com o que custou e o que desencadeou. O custo do turno também é :nota[conta do cockpit]{texto="o fim menos o começo"}: quanto o custo da sessão subiu do começo ao fim do pedido.
+
+<Evidencia
+  imagem={abaTurnos}
+  larga
+  alt="A aba Turnos do csr-cockpit com três turnos de uma sessão que custou 15 centavos de dólar. O turno 3 levou 7,5 segundos e custou 2 centavos. O turno 2 levou 9,3 segundos e custou 2 centavos. O turno 1, que rodou dois agentes em segundo plano, levou 27 segundos, teve 2 falhas, custou 11 centavos e usou 13 ferramentas."
+  fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit#5-turnos"
+  legenda="A aba Turnos, com a duração, o custo e as ferramentas de cada pedido (desenho do README do csr-cockpit)"
+/>
+
+Clicar no nome de um agente, de um comando Bash ou de um turno abre o detalhe: o pedido, as chamadas e a resposta. E acima do prompt, a caixa onde se digita o pedido, o cockpit desenha uma faixa, a linha de resumo, que fica ali com o painel aberto ou fechado. Ela não é a linha de status do rodapé, que é outra peça do Claude Code:
+
+<Evidencia
+  imagem={linhaDeResumo}
+  larga
+  alt="A linha de resumo do csr-cockpit acima do prompt: contexto em 22%, 44,8 mil tokens com mais 1,1 mil do último turno, custo de 15 centavos de dólar com mais 2 centavos do último turno, limite de uso de 5 horas em 17% e de 7 dias em 64%, e 2 agentes concluídos."
+  fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit#a-linha-de-resumo"
+  legenda="A linha de resumo: entre parênteses, o que o último turno somou (desenho do README do csr-cockpit)"
+/>
+
+:::moldura
+A regra do cockpit é **só observar**. Um mod liga funções aos eventos do Claude Code (uma chamada de ferramenta, o início de um turno), e a documentação chama cada uma de hook. Nenhum hook do cockpit bloqueia ou altera uma chamada de ferramenta ou uma resposta do modelo: o evento passa adiante como chegou, e o resultado volta como veio.
+:::
+
+Ele não faz chamada de rede e não grava arquivo. Do disco, lê uma coisa só: o conteúdo antigo de um arquivo antes de uma escrita, para o diff mostrar o que mudou de verdade. O que ele registra fica no estado da sessão e some com ela.
+
+O mod não chama o modelo, então não gasta token por conta própria. A exceção é o botão ":circulo[Contagem exata]", da aba Contexto: quando ele é apertado, o Claude Code faz requisições a mais para trocar a estimativa local pela contagem de verdade.
+
+## Como instalar: o marketplace
+
+Um mod se instala como qualquer plugin, a partir de um marketplace. Um [marketplace](https://code.claude.com/docs/en/plugins/create-marketplace#create-a-marketplace) é um repositório com um arquivo `.claude-plugin/marketplace.json`, de três campos obrigatórios: `name`, `owner` e `plugins`. Cada entrada de `plugins` é um item instalável, com um `name` e um :caixa[`source`], que é a pasta dele dentro do repositório. Este é um pedaço do catálogo do claude-code-kit, só com os campos de que este post fala e com as descrições encurtadas:
+
+```json title=".claude-plugin/marketplace.json" linhas="14|é este campo que dispensa o plugin.json"
+{
+  "name": "cesarschutz",
+  "owner": { "name": "Cesar Schutz" },
+  "plugins": [
+    {
+      "name": "csr-cockpit",
+      "source": "./plugins/csr-cockpit",
+      "description": "Mod: painel ao lado da conversa..."
+    },
+    {
+      "name": "explicar-erro",
+      "source": "./skills/explicar-erro",
+      "description": "Exemplo de skill: explica um erro ou stack trace...",
+      "skills": ["./"]
+    }
+  ]
+}
+```
+
+A primeira entrada é um plugin completo: a pasta `plugins/csr-cockpit` tem o seu `.claude-plugin/plugin.json`, o manifesto que descreve o plugin. A segunda é uma peça avulsa, isto é, uma extensão sozinha (aqui uma skill, um arquivo de instruções para o modelo): não há `plugin.json`, e a própria entrada [faz o papel de manifesto](https://code.claude.com/docs/en/plugins/marketplace-reference#entry-and-plugin-json), dizendo o que a pasta traz no campo `skills`. Para o Claude Code ela também é um plugin, só que descrito pela entrada do catálogo.
+
+O nome do repositório e o nome do marketplace são coisas diferentes. O repositório se chama `claude-code-kit`, e o marketplace, :caixa[`cesarschutz`]. O primeiro aparece na hora de cadastrar; o segundo, na hora de instalar:
+
+```bash
+claude plugin marketplace add cesarschutz/claude-code-kit
+claude plugin install csr-cockpit@cesarschutz
+```
+
+Instalar e atualizar seguem o caminho da lousa, em cinco passos, do repositório no GitHub à sessão aberta na sua máquina. O play desenha tudo desde o início, e um clique num passo da lista leva a lousa até ele.
+
+<Lousa
+  desenho="claude-code-csr-cockpit/instalacao"
+  rotulo="Lousa: o repositório claude-code-kit, no GitHub, com o marketplace.json e uma pasta por item; o marketplace add clona o catálogo para a sua máquina; o install copia a pasta inteira do csr-cockpit, na versão 0.5.0; commits novos não chegam a quem instalou enquanto o version não sobe; quando ele sobe, o update traz a pasta nova, e a sessão que já estava aberta segue na versão antiga até o /reload-plugins."
+  duracao={16}
+  passos={[
+    { de: 0, texto: "No GitHub, o repositório `claude-code-kit` guarda o catálogo, `.claude-plugin/marketplace.json`, e uma pasta por item: `plugins/csr-cockpit`, com o `version` 0.5.0 no `plugin.json`, e `skills/explicar-erro`, uma peça avulsa." },
+    { de: 0.2, texto: "`claude plugin marketplace add cesarschutz/claude-code-kit` clona o repositório para a sua máquina. Dali em diante o catálogo é conhecido pelo `name` dele: `cesarschutz`." },
+    { de: 0.4, texto: "`claude plugin install csr-cockpit@cesarschutz` copia a pasta inteira do item. A versão instalada é a do `plugin.json`: 0.5.0." },
+    { de: 0.6, texto: "Commits novos no repositório não chegam a quem instalou: enquanto o `version` não sobe, o Claude Code não vê atualização." },
+    { de: 0.8, texto: "Quando o `version` sobe (0.6.0, por exemplo), o `claude plugin update` traz a pasta nova. A sessão que já estava aberta continua na 0.5.0 até um `/reload-plugins`." },
+  ]}
+/>
+
+:::exclamacao
+A regra dos dois últimos passos está na [referência de carregamento dos plugins](https://code.claude.com/docs/en/plugins/loading#versions-and-updates): o Claude Code calcula uma versão para cada plugin instalado e só vê atualização quando ela muda. Com o campo `version` no `plugin.json`, vale esse número, não importa quantos commits o repositório receba. Sem ele, que é o caso das peças avulsas, a versão é o commit.
+:::
+
+:::validade{data="out/2026"}
+Num marketplace de terceiros, como este, a [atualização automática](https://code.claude.com/docs/en/plugins/install#keep-plugins-updated) vem desligada: quem instalou roda o `claude plugin update` quando quiser a versão nova.
+:::
+
+## Os comandos de plugin
+
+Estes são os comandos para instalar, conferir, atualizar e testar um plugin. O resto está na [referência dos comandos de plugin](https://code.claude.com/docs/en/plugins/cli-reference).
+
+No terminal:
+
+| Comando | O que faz |
+|---|---|
+| `claude plugin marketplace add <dono>/<repo>` | cadastra um marketplace a partir de um repositório do GitHub |
+| `claude plugin install <item>@<marketplace>` | instala um item do catálogo |
+| `claude plugin list` | lista o que está instalado, com a versão e o estado |
+| `claude plugin details <item>` | mostra as peças de um plugin e o custo delas em tokens |
+| `claude plugin marketplace update <marketplace>` | renova o catálogo, sem mexer no que está instalado |
+| `claude plugin update <item>@<marketplace>` | atualiza um plugin para a versão mais nova do catálogo |
+| `claude plugin uninstall <item>@<marketplace>` | remove o plugin |
+| `claude plugin validate <pasta>` | confere o manifesto e as peças de uma pasta; com `--strict`, os avisos viram erro |
+| `claude plugin test <pasta>` | roda os testes de um mod |
+| `claude --plugin-dir <pasta>` | abre uma sessão com o plugin de uma pasta local, sem instalar; a cópia local ganha da instalada |
+
+Dentro da sessão:
+
+| Comando | O que faz |
+|---|---|
+| `/plugin` | abre a tela de plugins e marketplaces |
+| `/reload-plugins` | aplica na sessão aberta o que mudou nos plugins |
+| `/cockpit` | abre e fecha o painel do csr-cockpit |
+
+## Como se testa um mod
+
+Um mod se testa em três camadas, da mais barata para a mais cara.
+
+**`claude plugin validate`.** Num mod, além de conferir o manifesto, ele lista os eventos que o mod escuta e as chamadas que ele faz à API dos mods, sem executar nada. Serve também para :grifo[auditar o mod de outra pessoa antes de instalar]. No cockpit, a lista não tem chamada de rede, de gravação de arquivo nem de processo; do disco, só a leitura do arquivo antes de uma escrita, que serve ao diff.
+
+:::carimbo{texto="rodado em 02/10/2026: 15 de 15"}
+**`claude plugin test`.** [Roda os testes](https://code.claude.com/docs/en/plugins/mods/test#write-a-test) do mod contra um Claude Code de mentira, sem login e sem rede: o teste dispara os eventos, monta o painel, aperta os botões e confere o que foi desenhado. O cockpit tem [15 testes](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit/tests), e um deles confere a regra de só observar.
+:::
+
+**Uma sessão de verdade.** O Claude Code aberto num projeto de exemplo, com o mod carregado por `claude --plugin-dir`. Carregada assim, a pasta fica vigiada: o Claude Code [recarrega o mod](https://code.claude.com/docs/en/plugins/mods/create#how-the-example-mod-works) a cada arquivo salvo. É a única das três camadas que mostra o painel desenhado no terminal.
+
+## Os limites do csr-cockpit
+
+Estes são os limites do csr-cockpit na versão 0.5.0, em 02/10/2026.
+
+O mais importante: :marca[o custo por agente não é um número oficial]. O Claude Code informa o custo da sessão inteira, não o de cada agente. O cockpit reparte esse custo: ao fim de cada resposta do modelo, ele vê quanto o custo da sessão subiu e põe essa diferença na conta de quem respondeu, um agente ou a conversa principal. Cada aumento vai para um dono só, então nada é contado duas vezes, e o que não vai para agente nenhum é o gasto da conversa principal: na sessão das imagens, os dois agentes ficaram com US\$ 0,06 dos US\$ 0,15. É uma atribuição feita pelo cockpit e, se duas respostas terminam no mesmo instante, uma fração pode cair no agente vizinho.
+
+O próprio valor em dólar é uma estimativa: o Claude Code [calcula a preço de tabela](https://code.claude.com/docs/en/costs#track-your-costs), a partir dos tokens. Para quem paga assinatura :duplo[ele não é cobrança], e serve para comparar um agente com outro.
+
+Os outros limites:
+
+- **Não há custo por comando Bash.** O cockpit mostra custo por agente e por turno. Um comando Bash aparece com o status e a duração.
+- **O raciocínio interno de um agente não aparece.** O Claude Code não o expõe. O detalhe mostra só o texto que o agente escreveu.
+- **O código de saída do Bash não vem como campo.** Em caso de falha, o cockpit tira o código do texto de erro. Em caso de sucesso, a linha mostra só a marca de concluído e a duração.
+- **A API de mods ainda pode mudar** [de uma versão para outra](https://code.claude.com/docs/en/plugins/mods/create#get-the-types-for-your-build).
+- **No aplicativo de desktop, depende da versão que ele traz.** O aplicativo usa a própria cópia do Claude Code. Em 02/10/2026, a versão 2.16120.0 para macOS trazia o Claude Code 2.1.284, anterior aos mods oficiais: nela o `/cockpit` responde que não é um comando. O `claude --version` do terminal não mostra essa versão. Como o painel aparece na janela do aplicativo, numa versão que já tenha mods, ainda não foi conferido.
+
+## O repositório claude-code-kit
+
+O [claude-code-kit](https://github.com/cesarschutz/claude-code-kit) é público, com licença MIT. Em 02/10/2026 ele tem:
+
+:::chave{nota="cada linha instala sozinha"}
+- o `csr-cockpit`, na versão 0.5.0;
+- o `exemplos`, um plugin com uma skill, um agente, um hook e um estilo de saída;
+- sete peças avulsas: duas skills, dois agentes, um estilo de saída, um tema e um hook.
+:::
+
+:::postit
+Se o `/cockpit` não aparecer depois de instalar, confira a versão: o mod pede o Claude Code 2.1.287 ou mais novo.
+:::
+
+O `README.md` explica o catálogo, e o `CONTRIBUTING.md`, como acrescentar um item. O repositório vai continuar recebendo peças.
+
+## Fontes
+
+- Claude — [Claude Code mods](https://claude.com/blog/claude-code-mods) (o anúncio dos mods, em 01/10/2026)
+- Claude Code — [Mods overview](https://code.claude.com/docs/en/plugins/mods/overview) (o que é um mod e a versão mínima), [Create a mod](https://code.claude.com/docs/en/plugins/mods/create) e [Test a mod](https://code.claude.com/docs/en/plugins/mods/test)
+- Claude Code — [Create a marketplace](https://code.claude.com/docs/en/plugins/create-marketplace) e [Marketplace reference](https://code.claude.com/docs/en/plugins/marketplace-reference) (a entrada que faz o papel de manifesto)
+- Claude Code — [Install and manage plugins](https://code.claude.com/docs/en/plugins/install) (o cadastro do marketplace e as atualizações), [Plugin loading reference](https://code.claude.com/docs/en/plugins/loading#versions-and-updates) (como a versão é calculada e o que acontece com a sessão aberta) e [Plugin commands reference](https://code.claude.com/docs/en/plugins/cli-reference)
+- Claude Code — [Manage costs effectively](https://code.claude.com/docs/en/costs) (o que o `/usage` mostra e como o valor em dólar é calculado)
+- Cesar Schutz — [claude-code-kit](https://github.com/cesarschutz/claude-code-kit) e o [README do csr-cockpit](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit) (as abas, as teclas, os limites e a privacidade)

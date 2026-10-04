@@ -1,6 +1,6 @@
 # A coleção de 13: frase, temas, o que abrange e os posts de cada livro
 
-Etapa 3 do `controle.md` (D61). Para cada um dos 13 livros, em ordem alfabética (= volume): a frase
+Etapa 3 do `controle.md` (D78). Para cada um dos 13 livros, em ordem alfabética (= volume): a frase
 da capa, os temas e o subtítulo completo no formato do site (`livros.json`: `frase`, `temas`,
 `subtituloCompleto`), a lista do que o livro abrange (no formato do site de notícias, 6 a 10 itens, cada
 assunto num livro só), de onde ele vem e os posts que vão para ele. No fim: para onde foi cada uma das
@@ -420,7 +420,7 @@ tag de quatro posts; "Fundamentos" é vago para busca, mas "Fundamentos de Compu
 
 Fica de fora, de propósito: **Green IT** (de Arq. Corporativa) e, de Carreira, **o estudo e o caderno**
 (a liderança técnica, a comunicação técnica): se vier um texto assim, não tem livro, e a regra dos
-posts (D61, item 7) manda avisar o Cesar.
+posts (D78, item 7) manda avisar o Cesar.
 
 ## Os posts: o que muda e os de fronteira
 

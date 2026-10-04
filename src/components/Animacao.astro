@@ -13,23 +13,48 @@
  * move fora do grupo .tinta (o tremor refaria o filtro a cada quadro).
  *
  *   <Animacao animacao="<slug>/<nome>" legenda="…" />
+ *
+ * Em prova (D65): `controles="marca-texto" | "caderno" | "post-it"` troca os botões e a frase de baixo por
+ * uma das três opções do protótipo (/prototipos/controles/), com o desenho e os controles num cartão só.
  */
 import { animacao as lerAnimacao } from "../lib/figuras";
 import "../styles/figura.css";
 import "../styles/lousa-nova.css";
+import "../amostra/controles/base.css";
+import "../amostra/controles/opcao-2.css";
+import "../amostra/controles/opcao-3.css";
+import "../amostra/controles/opcao-4.css";
+import { OPCAO_DOS_CONTROLES, type Controles } from "../amostra/controles/opcoes";
 
 interface Props {
   animacao: string;
   legenda?: string;
+  /** Em prova (D65): os controles de uma das opções do protótipo. */
+  controles?: Controles;
 }
 
-const { animacao, legenda } = Astro.props;
+const { animacao, legenda, controles } = Astro.props;
 const { svg } = lerAnimacao(animacao);
 const rss = Astro.locals.rss;
 ---
 
 {
-  rss ? null : (
+  rss ? null : controles ? (
+    <figure
+      class="cartao-proto"
+      data-opcao={OPCAO_DOS_CONTROLES[controles]}
+      data-caso="animacao"
+      data-animacao={animacao}
+      data-legenda={legenda}
+      data-marcas="[]"
+      data-duracao="8"
+      data-pagefind-ignore
+    >
+      <div class="proto-palco figura-palco painel" set:html={svg} />
+      <div class="proto-controles" />
+      {legenda && <p class="proto-sem-js">{legenda}</p>}
+    </figure>
+  ) : (
     <figure class="figura animacao" data-animacao={animacao} data-pagefind-ignore>
       <div class="figura-palco painel" set:html={svg} />
   <p class="dica-rolar" aria-hidden="true">Arraste para o lado para ver a figura inteira.</p>
@@ -55,6 +80,12 @@ const rss = Astro.locals.rss;
 }
 
 <script>
+  import { montarCartoes } from "../amostra/controles/montar";
+
+  montarCartoes();
+</script>
+
+<script>
   import { carregarGsap, type GSAP } from "../scripts/gsap";
 
   type Montar = (gsap: GSAP, svg: SVGSVGElement) => gsap.core.Timeline;
@@ -64,7 +95,7 @@ const rss = Astro.locals.rss;
   const PAUSA_NO_FIM = 5;
   const reduzido = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  for (const figura of document.querySelectorAll<HTMLElement>("[data-animacao]")) {
+  for (const figura of document.querySelectorAll<HTMLElement>("[data-animacao]:not(.cartao-proto)")) {
     const nome = figura.dataset.animacao!;
     const carregar = modulos[`../animacoes/${nome}.ts`];
     const palco = figura.querySelector<HTMLElement>(".figura-palco")!;

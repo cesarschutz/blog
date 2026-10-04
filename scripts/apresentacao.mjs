@@ -6,12 +6,17 @@
  * atual, sem o infográfico (D12).
  *
  *   npm run apresentacao -- <slug> --pptx <arquivo.pptx> --titulo "…"
+ *   npm run apresentacao -- <slug> --pdf <arquivo.pdf> --titulo "…"
  *
  * Os slides do NotebookLM são imagens inteiras (não há texto no arquivo): viram imagem, e o artigo
  * continua valendo por si só. Confira o texto de cada slide antes (skill apresentacao).
+ *
+ * Com --pdf, as páginas do PDF viram os slides: é o caminho da apresentação feita no estilo do blog
+ * (D74, scripts/slides/), cujo PDF sai do conferir.py. Cada página é desenhada pelo pdftoppm (poppler)
+ * com folga e reduzida aqui para a largura de sempre.
  */
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import sharp from "sharp";
@@ -22,8 +27,8 @@ const opcao = (nome) => {
   const i = args.indexOf(`--${nome}`);
   return i > 0 ? args[i + 1] : undefined;
 };
-if (!slug || !opcao("pptx") || !opcao("titulo")) {
-  console.error('uso: npm run apresentacao -- <slug> --pptx <arquivo.pptx> --titulo "…"');
+if (!slug || !(opcao("pptx") || opcao("pdf")) || !opcao("titulo")) {
+  console.error('uso: npm run apresentacao -- <slug> (--pptx <arquivo.pptx> | --pdf <arquivo.pdf>) --titulo "…"');
   process.exit(1);
 }
 if (!existsSync(`src/content/posts/${slug}.md`) && !existsSync(`src/content/posts/${slug}.mdx`)) {
@@ -50,9 +55,18 @@ function imagensDosSlides(pptx, temporaria) {
   });
 }
 
+/** Páginas do PDF em PNG, na ordem (o pdftoppm numera com zeros à esquerda). */
+function imagensDoPdf(pdf, temporaria) {
+  execFileSync("pdftoppm", ["-png", "-r", "210", pdf, join(temporaria, "slide")]);
+  return readdirSync(temporaria)
+    .filter((n) => n.startsWith("slide") && n.endsWith(".png"))
+    .sort()
+    .map((n) => join(temporaria, n));
+}
+
 const temporaria = mkdtempSync(join(tmpdir(), `apresentacao-${slug}-`));
 try {
-  const imagens = imagensDosSlides(opcao("pptx"), temporaria);
+  const imagens = opcao("pdf") ? imagensDoPdf(opcao("pdf"), temporaria) : imagensDosSlides(opcao("pptx"), temporaria);
   rmSync(pasta, { recursive: true, force: true });
   mkdirSync(pasta, { recursive: true });
   let bytes = 0;

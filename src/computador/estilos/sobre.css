@@ -1,0 +1,131 @@
+/* "Sobre este computador" e "Atalhos do computador" (apps/sobre.ts). */
+
+.mac-sobre {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 26px 18px;
+  background: var(--mac-janela-2);
+  text-align: center;
+}
+
+.mac-sobre-topo {
+  align-self: stretch;
+  height: 40px;
+  flex: none;
+  margin: 0 -26px;
+}
+
+/* O computador desenhado: a tampa com a tela (o papel de parede em miniatura) e a base. */
+.mac-sobre-maquina {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 6px 0 18px;
+}
+
+.mac-sobre-tampa {
+  display: block;
+  width: 132px;
+  height: 86px;
+  padding: 5px;
+  border-radius: 8px 8px 3px 3px;
+  background: var(--mac-moldura);
+  box-shadow: 0 0 0 1px var(--mac-separador);
+}
+
+.mac-sobre-visor {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 4px 4px 1px 1px;
+  background: linear-gradient(135deg, var(--mac-parede-alto), var(--mac-parede-meio) 55%, var(--mac-parede-baixo));
+}
+
+.mac-sobre-base {
+  display: block;
+  width: 160px;
+  height: 6px;
+  margin-top: -1px;
+  border-radius: 1px 1px 6px 6px;
+  background: linear-gradient(180deg, var(--mac-semaforo-inativo), var(--mac-texto-3));
+}
+
+.mac-sobre-nome {
+  margin: 0;
+  color: var(--mac-texto);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.mac-sobre-modelo {
+  margin: 2px 0 16px;
+  color: var(--mac-texto-2);
+  font-size: 12px;
+}
+
+.mac-sobre-dados {
+  display: grid;
+  gap: 5px;
+  width: 100%;
+  margin: 0;
+  font-size: 12px;
+}
+
+.mac-sobre-dados > div {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 10px;
+  text-align: left;
+}
+
+.mac-sobre-dados dt {
+  color: var(--mac-texto-2);
+  text-align: right;
+}
+
+.mac-sobre-dados dd {
+  margin: 0;
+  color: var(--mac-texto);
+}
+
+.mac-sobre-rodape {
+  margin: auto 0 0;
+  padding-top: 14px;
+  color: var(--mac-texto-2);
+  font-size: 11px;
+}
+
+.mac-atalhos .mac-sobre-nome {
+  margin: 4px 0 16px;
+  font-size: 17px;
+}
+
+.mac-atalhos-lista > div {
+  grid-template-columns: 112px 1fr;
+  align-items: center;
+}
+
+.mac-sobre kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  margin-left: 3px;
+  padding: 0 5px;
+  border-radius: 5px;
+  background: var(--mac-janela);
+  box-shadow:
+    0 0 0 0.5px var(--mac-separador),
+    0 1px 0 var(--mac-separador);
+  color: var(--mac-texto);
+  font: 500 11px/1 var(--mac-fonte);
+}
+
+.mac-sobre-rodape kbd {
+  height: 17px;
+  min-width: 0;
+}

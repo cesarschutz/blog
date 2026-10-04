@@ -1,0 +1,149 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620"
+  aria-label="Linha do tempo de 03:00 a 06:00 com um deploy da API às 03:30, em quatro passos. Na A, o CronJob, o pod do job roda num pod próprio, segue na v1 depois do deploy e termina às 04:10. Na B, a fila, o lote roda no pod v1 da API desde as 03:00 e é cancelado pelo deploy às 03:30; a mensagem fica invisível na fila por 2 horas, até as 05:00, e o lote fica 1h30 parado; às 05:00 a mensagem reaparece, o pod v2 retoma o lote e termina às 05:40. A termina às 04:10, numa versão só; B para 1h30 e termina em duas versões.">
+  <g class="tinta">
+    <g class="tom-ambar">
+      <rect x="326" y="68" width="834" height="48" rx="6" class="hachura"/>
+      <rect x="320" y="62" width="140" height="48" rx="6" class="lavado"/>
+      <rect x="320" y="62" width="140" height="48" rx="6" class="linha"/>
+      <rect x="460" y="62" width="700" height="48" rx="6" class="lavado"/>
+      <rect x="460" y="62" width="700" height="48" rx="6" class="linha"/>
+    </g>
+    <path d="M320 470 H1178 M1166 462 L1180 470 L1166 478" class="eixo"/>
+    <path d="M320 462 V478 M460 462 V478 M600 462 V478 M740 462 V478 M880 462 V478 M1020 462 V478 M1160 462 V478" class="eixo"/>
+
+    <g data-passo="1">
+      <g class="tom-verde">
+        <rect x="320" y="150" width="327" height="52" rx="6" transform="translate(6 5)" class="cor"/>
+        <rect x="320" y="150" width="327" height="52" rx="6" class="lavado"/>
+        <rect x="320" y="150" width="327" height="52" rx="6" class="linha"/>
+      </g>
+      <g class="tom-verde etapa-2">
+        <rect x="140" y="534" width="480" height="62" rx="12" class="lavado"/>
+        <rect x="140" y="534" width="480" height="62" rx="12" class="linha"/>
+        <path d="M164 566 l10 10 l20 -22" class="linha-tom"/>
+      </g>
+    </g>
+
+    <g data-passo="2">
+      <g class="tom-ambar">
+        <rect x="320" y="252" width="140" height="52" rx="6" class="lavado"/>
+        <rect x="320" y="252" width="140" height="52" rx="6" class="linha"/>
+      </g>
+      <g class="tom-vermelho etapa-2">
+        <path d="M448 266 l24 24 m0 -24 l-24 24" class="linha-tom"/>
+      </g>
+    </g>
+
+    <g data-passo="3">
+      <g class="tom-roxo">
+        <rect x="320" y="384" width="560" height="40" rx="6" transform="translate(6 5)" class="cor"/>
+        <rect x="320" y="384" width="560" height="40" rx="6" class="lavado"/>
+        <rect x="320" y="384" width="560" height="40" rx="6" class="linha"/>
+      </g>
+      <g class="tom-vermelho etapa-2">
+        <path d="M464 291 V305 M464 298 H876 M876 291 V305" class="linha-tom"/>
+      </g>
+    </g>
+
+    <g data-passo="4">
+      <g class="tom-roxo">
+        <path d="M920 382 V312 M911 326 L920 312 L929 326" class="linha-tom"/>
+      </g>
+      <g class="tom-ambar etapa-2">
+        <rect x="880" y="252" width="187" height="52" rx="6" class="lavado"/>
+        <rect x="880" y="252" width="187" height="52" rx="6" class="linha"/>
+      </g>
+      <g class="tom-vermelho etapa-3">
+        <rect x="660" y="534" width="500" height="62" rx="12" class="lavado"/>
+        <rect x="660" y="534" width="500" height="62" rx="12" class="linha"/>
+        <path d="M684 555 l20 20 m0 -20 l-20 20" class="linha-tom"/>
+      </g>
+    </g>
+
+    <path d="M460 46 V470" class="linha"/>
+  </g>
+
+  <g class="tom-ambar" data-marca="servidor" transform="translate(142 62) scale(0.48)"/>
+  <g class="tom-azul" data-marca="kubernetes" transform="translate(32 140) scale(0.42)"/>
+  <g class="tom-roxo" data-marca="fila" transform="translate(112 242) scale(0.42)"/>
+
+  <text x="460" y="34" text-anchor="middle" class="titulo-caixa">deploy da API</text>
+
+  <g class="tom-ambar">
+    <text x="254" y="96" text-anchor="end" class="titulo-caixa texto-tom">API</text>
+  </g>
+  <text x="336" y="95" class="codigo">v1</text>
+  <text x="476" y="95" class="codigo">v2</text>
+
+  <g class="tom-verde">
+    <text x="254" y="172" text-anchor="end" class="titulo-caixa texto-tom">A · CronJob</text>
+  </g>
+  <text x="254" y="200" text-anchor="end" class="nota-pequena">pod próprio</text>
+
+  <g class="tom-roxo">
+    <text x="254" y="274" text-anchor="end" class="titulo-caixa texto-tom">B · fila</text>
+  </g>
+  <text x="254" y="302" text-anchor="end" class="nota-pequena">nos pods da API</text>
+  <g class="tom-roxo">
+    <text x="254" y="411" text-anchor="end" class="texto-caixa texto-tom">mensagem</text>
+  </g>
+
+  <text x="320" y="504" text-anchor="middle" class="valor-eixo">03:00</text>
+  <text x="460" y="504" text-anchor="middle" class="valor-eixo">03:30</text>
+  <text x="600" y="504" text-anchor="middle" class="valor-eixo">04:00</text>
+  <text x="740" y="504" text-anchor="middle" class="valor-eixo">04:30</text>
+  <text x="880" y="504" text-anchor="middle" class="valor-eixo">05:00</text>
+  <text x="1020" y="504" text-anchor="middle" class="valor-eixo">05:30</text>
+  <text x="1160" y="504" text-anchor="middle" class="valor-eixo">06:00</text>
+
+  <g data-passo="1">
+    <g class="tom-verde">
+      <circle cx="290" cy="176" r="19" class="selo"/>
+      <text x="290" y="177" class="selo-texto">1</text>
+    </g>
+    <text x="390" y="183" text-anchor="middle" class="texto-caixa">pod do job</text>
+    <text x="553" y="183" text-anchor="middle" class="texto-caixa">segue na v1</text>
+    <text x="661" y="183" class="valor-eixo">04:10</text>
+    <g class="tom-verde etapa-2">
+      <text x="210" y="572" class="texto-caixa texto-tom">A termina às 04:10, numa versão só.</text>
+    </g>
+  </g>
+
+  <g data-passo="2">
+    <g class="tom-vermelho">
+      <circle cx="290" cy="278" r="19" class="selo"/>
+      <text x="290" y="279" class="selo-texto">2</text>
+    </g>
+    <text x="390" y="285" text-anchor="middle" class="texto-caixa">pod v1</text>
+    <g class="tom-vermelho etapa-2">
+      <text x="482" y="283" class="texto-caixa texto-tom">cancelado</text>
+    </g>
+  </g>
+
+  <g data-passo="3">
+    <g class="tom-roxo">
+      <circle cx="290" cy="404" r="19" class="selo"/>
+      <text x="290" y="405" class="selo-texto">3</text>
+    </g>
+    <text x="670" y="411" text-anchor="middle" class="texto-caixa">invisível por 2 h (visibility timeout)</text>
+    <g class="tom-vermelho etapa-2">
+      <text x="670" y="283" text-anchor="middle" class="texto-caixa texto-tom">1h30 parado</text>
+    </g>
+  </g>
+
+  <g data-passo="4">
+    <g class="tom-roxo">
+      <circle cx="878" cy="344" r="19" class="selo"/>
+      <text x="878" y="345" class="selo-texto">4</text>
+      <text x="936" y="354" class="texto-caixa texto-tom">reaparece</text>
+      <path d="M920 378 V318" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="etapa-2">
+      <text x="973" y="285" text-anchor="middle" class="texto-caixa">pod v2 retoma</text>
+      <text x="1080" y="283" class="valor-eixo">05:40</text>
+    </g>
+    <g class="tom-vermelho etapa-3">
+      <text x="726" y="572" class="texto-caixa texto-tom">B para 1h30 e termina em duas versões.</text>
+    </g>
+  </g>
+</svg>

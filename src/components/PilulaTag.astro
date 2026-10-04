@@ -9,12 +9,15 @@ import { urlTag } from "../lib/posts";
 interface Props {
   nome: string;
   contagem?: number;
+  /** Rodada 3, área 4 (página do livro): a tag já filtrada por um livro (`?livro=<chave>`), com o nome dele no título. */
+  livro?: { chave: string; nome: string };
 }
 
-const { nome, contagem } = Astro.props;
+const { nome, contagem, livro } = Astro.props;
+const href = livro ? `${urlTag(nome)}?livro=${encodeURIComponent(livro.chave)}` : urlTag(nome);
 ---
 
-<a class="pilula pilula-tag" href={urlTag(nome)}>
+<a class="pilula pilula-tag" href={href} title={livro ? `#${nome} só em ${livro.nome}` : undefined}>
   <IconeTag nome={nome} class="icone-pilula" />
   <span>#{nome}</span>
   {contagem !== undefined && <small>{contagem}</small>}

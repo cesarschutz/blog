@@ -1,0 +1,47 @@
+---
+/**
+ * A luz em cima de um livro (rodada 3 do redesenho, área A, T8; o modelo é o ponto de luz do 02 Noturno).
+ * Linha 18 (estante moderna): a luz de quadro de galeria. Uma plaquinha de latão presa na parede, um
+ * braço curto em pescoço de cisne que vem para a frente e a cúpula pequena na ponta, com a boca acesa; o
+ * cone de luz desce dela sobre o livro e lava a parede atrás dele. Em repouso, o cone é fraco; com o mouse
+ * ou o foco no elemento com `data-luz` em volta, ele acende (a boca 60ms antes). Com `data-luz-acesa` num
+ * ancestral, fica aceso. O estilo está em luz.css.
+ *
+ * Três camadas acendem com a curva da lâmpada incandescente (estante-moderna.ts, lampada.ts): a brasa
+ * (`.ponto-luz-brasa`), a boca branca (`.ponto-luz-lampada`) e o feixe (`.ponto-luz-feixe`, que envolve o
+ * cone). Só a opacidade delas anima; a peça de latão não acende nem apaga.
+ *
+ * Como usar: dentro de um lugar com `position: relative` (o palco do livro), antes do livro, que fica por
+ * cima (`position: relative; z-index: 1`). O cone ocupa a altura do lugar, a partir da boca da cúpula; a
+ * peça de latão fica acima dela, fora do lugar. Para encurtar, `--ponto-luz-topo` (onde fica a boca) e
+ * `--ponto-luz-pe` (quanto falta até o chão); o tamanho da peça é `--lq` (px por unidade, 1px na home).
+ * Decorativo (aria-hidden).
+ *
+ * Rodada 4 (a versão final): nas fileiras do nicho (Colecao, Estante; nicho.css), o abajur fica no teto, mais
+ * longe dos livros, e o cone tem o ângulo de `--cone-angulo` (44° na home), com a poça de luz no chão
+ * (`.ponto-luz-feixe::after`, que acende com o feixe). As forças vêm de `--cone-repouso`, `--cone-aceso`,
+ * `--poca-repouso` e `--poca-acesa`, e o lugar aceso (hover, foco, lugar vazio) é `--luz-acesa: 1`.
+ */
+interface Props {
+  class?: string;
+  style?: string;
+}
+
+const { class: classe, style } = Astro.props;
+---
+
+<span class:list={["ponto-luz", classe]} style={style} aria-hidden="true">
+  <span class="ponto-luz-feixe"><span class="ponto-luz-cone"></span></span>
+  <span class="ponto-luz-peca">
+    <svg class="ponto-luz-braco" viewBox="-21 -34 42 36" focusable="false">
+      <path class="lq-braco" d="M-11 -19C-11 -32.5 0 -33 0 -15" />
+      <path class="lq-braco-luz" d="M-11.8 -20C-11.8 -31.2 -1 -31.6 -0.9 -17" />
+      <rect class="lq-placa" x="-14.5" y="-25" width="7" height="14" rx="3.2" />
+      <rect class="lq-placa-luz" x="-13.4" y="-24" width="1.6" height="12" rx="0.8" />
+      <circle class="lq-junta" cx="0" cy="-14.5" r="2.2" />
+    </svg>
+    <span class="ponto-luz-cupula"></span>
+    <span class="ponto-luz-brasa"></span>
+    <span class="ponto-luz-lampada"></span>
+  </span>
+</span>
