@@ -3396,5 +3396,10 @@ nada muda.
   de desktop 2.19675.0 já roda o cockpit; `updated` em 04/10/2026. Os títulos de seção, o título e a
   descrição ficaram; a figura dos passos da instalação (0.5.0 e 0.6.0, só como exemplo de versão) e as
   marcações da caneta também.
+- **Ajuste do Cesar no mesmo dia:** "faltou colocar print de todas telas, faltou diff, contexto,
+  arvore e inventario, e falar de cada uma no post". A seção "O que o cockpit mostra" ganhou uma
+  subseção por aba (Agentes, Diffs, Contexto, Turnos, Árvore, Inventário), cada uma com a tela e a lista
+  do que cada bolinha numerada aponta, mais o detalhe do agente, o do turno, a linha de resumo e "Só
+  observa". O post passou do teto do detalhado (~3.000 palavras), a pedido dele.
 - **Pendente:** a capa ilustrada ainda mostra US\$ 0,04 e US\$ 0,02 (os números da sessão antiga).
 
