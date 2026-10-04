@@ -1072,7 +1072,7 @@
  * O livro aberto da gaveta e o do topo da página do livro abrem grandes (LivroAmpliado): o livro
  * inteiro responde ao clique, e a lupa no canto de baixo serve ao teclado e mostra que dá para ampliar.
  */
-[data-ampliar-livro]:not([data-virado]) .livro-3d-caixa {
+[data-ampliar-livro] .livro-3d-caixa {
   cursor: zoom-in;
 }
 
@@ -1123,128 +1123,6 @@
 
   [data-ampliar-livro]:has(.livro-3d-caixa:hover) .lupa,
   .lupa:hover {
-    transform: none;
-  }
-}
-
-/*
- * ---------- a contracapa (D78) ----------
- * O livro grande da página do livro vira e mostra o verso (Contracapa, LivroEmPe): o botão "Virar o livro"
- * fica em cima da lupa, no mesmo desenho dela. Virado, o livro fica a 163° (o verso quase de frente e a
- * lombada à direita, como um livro de verdade virado na mão), parado (sem o livro vivo), e a lupa sai: com o
- * verso à vista, o livro não abre. Sem JS, o botão não aparece.
- */
-.livro-em-pe[data-virado] .livro-3d {
-  --giro: 163deg;
-}
-
-/* Virado, a vista desce um pouco (o verso fica mais de frente, para ler): metade do caminho até a vista
-   reta do livro aberto, pelo mesmo --aberto do livro ampliado. */
-.livro-em-pe:has(> .virar) .livro-3d-vista {
-  transition: --aberto 0.9s cubic-bezier(0.45, 0.05, 0.2, 1);
-}
-
-.livro-em-pe[data-virado] .livro-3d-vista {
-  --aberto: 0.55;
-}
-
-/* Assentado de costas, o alto do miolo (visto quase de lado) vazava em dois fios brancos sobre a contracapa
-   (a ordem do 3D no Chrome): some enquanto o livro está parado de costas, e volta quando ele começa a desvirar. */
-.livro-em-pe[data-verso-assentado] .livro-3d .miolo-topo {
-  visibility: hidden;
-}
-
-/* O clique é só do verso: as outras faces (a capa, de costas, ainda pega o ponteiro no Chrome) não. */
-.livro-em-pe[data-virado] .livro-3d > .f:not(.contra) {
-  pointer-events: none;
-}
-
-.virar {
-  position: absolute;
-  z-index: 5;
-  right: -10px;
-  bottom: 32px;
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  border: 1px solid var(--rule);
-  border-radius: 50%;
-  background: var(--paper-hi);
-  color: var(--ink-2);
-  box-shadow: var(--sombra-folha);
-  cursor: pointer;
-  transition:
-    color 0.15s,
-    border-color 0.15s,
-    transform 0.2s;
-}
-
-:root:not([data-js]) .virar {
-  display: none;
-}
-
-.virar svg {
-  width: 17px;
-  height: 17px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  transition: rotate 0.5s cubic-bezier(0.3, 0.7, 0.2, 1);
-}
-
-.virar:hover,
-.virar:focus-visible,
-.virar[aria-pressed="true"] {
-  border-color: var(--acento);
-  color: var(--acento);
-}
-
-.virar:hover,
-.virar:focus-visible {
-  transform: scale(1.08);
-}
-
-.virar:focus-visible {
-  outline: 2px solid var(--acento);
-  outline-offset: 2px;
-}
-
-/* Virado, a seta aponta para o outro lado: o mesmo botão desvira. */
-.virar[aria-pressed="true"] svg {
-  rotate: y 180deg;
-}
-
-.livro-em-pe .lupa {
-  transition:
-    color 0.15s,
-    border-color 0.15s,
-    transform 0.2s,
-    opacity 0.25s,
-    visibility 0s linear 0s;
-}
-
-.livro-em-pe[data-virado] .lupa {
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity 0.2s,
-    visibility 0s linear 0.2s;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .virar,
-  .virar svg,
-  .livro-em-pe:has(> .virar) .livro-3d-vista,
-  .livro-em-pe .lupa,
-  .livro-em-pe[data-virado] .lupa {
-    transition: none;
-  }
-
-  .virar:hover {
     transform: none;
   }
 }

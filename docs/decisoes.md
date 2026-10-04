@@ -3366,17 +3366,28 @@ nada muda.
     mudou.
   - A contracapa (04/10/2026). O Cesar perguntou onde pôr os textos de cada livro (o que abrange, o desenho,
     a cor e o link) e escolheu, entre três ideias (a contracapa no livro; uma ficha "Sobre este livro" na
-    página; as primeiras páginas do livro ampliado), a contracapa: na página do livro, o botão "Virar o livro"
-    (o ícone da caneta preta, `virarDeCaneta`), em cima da lupa, gira o livro grande de 38° a 163° (Web
-    Animations, 1s), e ele cresce enquanto gira (`--virado` no anel do `TopoLivro`, de `--kc-base` a
-    `--kc-virado`; no celular, quase a largura da ficha). O verso (`Contracapa.astro`, no slot da face
-    `.contra` do `Livro3D`) tem a frase, "Este livro abrange" com a lista e "Sobre a capa" com o texto curto e
-    "Ler mais"; o outro lado tem o texto completo, a cor e o link, com "Voltar". Virado: o livro fica parado,
-    as tags do anel saem, a lupa some e o clique não abre o livro ampliado; Esc desvira. O texto entra pelo
-    teclado (o botão vem antes do livro; o verso é `inert` de frente). Os textos foram para
-    `src/livros/livros.json` (`contracapa`), e o tamanho da letra de cada lado sai de uma conta das linhas no
-    build (as larguras médias das fontes medidas no Chrome). A série não tem contracapa. Alternativas: a
-    ficha na página (a mais fácil de achar) e as páginas do livro ampliado (escondidas até abrir).
+    página; as primeiras páginas do livro ampliado), a contracapa. A primeira versão, no livro grande da
+    página do livro (um botão em cima da lupa, o livro crescendo no lugar e o texto num papel claro dentro
+    da moldura), saiu no mesmo dia: o Cesar achou "horrível de feio" e pediu o giro no livro ampliado, com a
+    cor do livro no fundo, "algo bem realista". Ficou assim:
+    - **No livro ampliado** (`LivroAmpliado.astro`): fechado, o botão "Virar o livro" da legenda (o ícone da
+      caneta preta, `virarDeCaneta`) gira o livro até o verso (167°, a lombada à direita), erguendo-o um
+      nada no meio da volta e descendo um pouco a vista (GSAP, 1,15s). A legenda diz "Contracapa" (com o
+      texto do verso para o leitor de tela), e o botão vira "Desvirar o livro". Virado, arrastar e clicar no
+      livro não folheiam; "Abrir o livro" ou a seta para a direita desviram e abrem; a seta para a esquerda
+      desvira; fechar o visor desvira antes de o livro voltar ao lugar. A série não tem verso.
+    - **O verso impresso** (`paginas.css`, "o verso"): na cor do livro, com a tinta da capa e a mesma
+      tipografia (a linha do alto "EDIÇÃO DE ESTUDO · VOLUME 09", a frase grande em Newsreader itálico, um
+      fio, "NESTE VOLUME" com a lista, e embaixo "A CAPA" com o texto curto do desenho e "Saiba mais em
+      <site> ↗", que abre numa aba nova; no pé, a marca "cs" como carimbo e o endereço). Por cima da tinta,
+      o grão, e a luz da contracapa espelhada da capa: o vinco da dobradiça à direita, a quina da frente
+      mais escura e o fio de luz no alto. A letra diminui só o que precisar para caber (medido no
+      navegador, `caber`).
+    - **O colofão:** o texto completo da capa, a cor (o nome e o motivo) e o link ficam na última página do
+      livro aberto, embaixo de "FIM DO VOLUME", como "Sobre a capa" num livro de verdade.
+    - Os textos ficam em `src/livros/livros.json` (`contracapa`) e chegam pelo `/livros/<slug>.json`.
+    Alternativas: a ficha na página (a mais fácil de achar) e as páginas do livro ampliado (escondidas até
+    abrir).
   - O número desta decisão: a main usou D61 para o redesenho no ar; a coleção, que era D61 na branch,
     passou a D78 quando a main entrou nela.
 

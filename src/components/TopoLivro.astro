@@ -116,9 +116,9 @@ const filtro = { chave: livro.id.replace(/^(livro|serie)-/, ""), nome: livro.nom
     <slot />
   </div>
 
-  <div class:list={["anel", { "sem-tags": tags.length === 0 }]} data-palco-virar>
+  <div class:list={["anel", { "sem-tags": tags.length === 0 }]}>
     <div class="livro-centro" data-livro-gira>
-      <LivroEmPe livro={livro} altura={450} ampliavel fluido contracapa />
+      <LivroEmPe livro={livro} altura={450} ampliavel fluido />
     </div>
     {
       tags.length > 0 && (
@@ -261,15 +261,6 @@ const filtro = { chave: livro.id.replace(/^(livro|serie)-/, ""), nome: livro.nom
     });
   }
 </script>
-
-<style is:global>
-  /* A contracapa (D78): 0 de frente e 1 virado; animada, faz o livro do anel crescer enquanto gira. */
-  @property --virado {
-    syntax: "<number>";
-    inherits: true;
-    initial-value: 0;
-  }
-</style>
 
 <style>
   /* ---------- o painel ---------- */
@@ -476,56 +467,21 @@ const filtro = { chave: livro.id.replace(/^(livro|serie)-/, ""), nome: livro.nom
    * O anel: a caixa do livro com espaço em volta para as tags. --rx e --ry são as distâncias, a partir do
    * centro do livro, onde as tags se apoiam (a de cada lado encosta pela ponta de dentro). --kc é a
    * escala do livro (LivroEmPe fluido): 1 a 1280px (a capa com 300px), menos nas telas menores.
-   *
-   * A contracapa (D78): virado (`data-virado`, LivroEmPe), o livro cresce de --kc-base a --kc-virado
-   * enquanto gira, para o texto do verso ficar legível (no celular, quase a largura da ficha), e as tags
-   * saem. O anel guarda a largura de sempre (--rx e --ry ficam na escala de base); só a altura cresce.
    */
   .anel {
-    --kc-base: 1;
-    --kc-virado: 1.2;
-    --kc: calc(var(--kc-base) + (var(--kc-virado) - var(--kc-base)) * var(--virado));
-    --rx: calc(186px * var(--kc-base));
-    --ry: calc(176px * var(--kc-base));
+    --kc: 1;
+    --rx: calc(186px * var(--kc));
+    --ry: calc(176px * var(--kc));
     --lado-tag: 176px;
     grid-area: anel;
     position: relative;
     z-index: 1;
     display: grid;
     place-items: center;
-    /* A coluna fica no meio mesmo quando passa da largura (o livro virado no celular usa a folga da ficha). */
-    justify-content: center;
     width: calc(2 * var(--rx) + 2 * var(--lado-tag));
     max-width: 100%;
     min-height: calc(450px * var(--kc) + 84px);
     padding: 4px 0 44px;
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .anel {
-      transition: --virado 0.9s cubic-bezier(0.45, 0.05, 0.2, 1);
-    }
-  }
-
-  .anel[data-virado] {
-    --virado: 1;
-  }
-
-  /* Virado, as tags saem (no anel; no celular, elas ficam na fileira de baixo). */
-  .tags-anel {
-    transition:
-      opacity 0.3s,
-      visibility 0s linear 0s;
-  }
-
-  @media (min-width: 641px) {
-    .anel[data-virado] .tags-anel {
-      opacity: 0;
-      visibility: hidden;
-      transition:
-        opacity 0.25s,
-        visibility 0s linear 0.25s;
-    }
   }
 
   .anel.sem-tags {
@@ -557,17 +513,6 @@ const filtro = { chave: livro.id.replace(/^(livro|serie)-/, ""), nome: livro.nom
     place-items: center;
     padding: 18px 19px 30px 29px;
     border-radius: 12px;
-  }
-
-  /* Virado, a lombada passa para a direita (o verso de frente): a folga troca de lado junto com o giro. */
-  .anel[data-virado] .livro-centro {
-    padding: 18px 29px 30px 19px;
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .livro-centro {
-      transition: padding 0.9s cubic-bezier(0.45, 0.05, 0.2, 1);
-    }
   }
 
   .livro-centro:focus-visible {
@@ -738,8 +683,7 @@ const filtro = { chave: livro.id.replace(/^(livro|serie)-/, ""), nome: livro.nom
   /* Entre 1100 e 1400px, o livro um pouco menor: o texto ao lado não fica estreito demais. */
   @media (max-width: 1399px) {
     .anel {
-      --kc-base: 0.86;
-      --kc-virado: 1.12;
+      --kc: 0.86;
       --lado-tag: 168px;
     }
   }
@@ -762,8 +706,7 @@ const filtro = { chave: livro.id.replace(/^(livro|serie)-/, ""), nome: livro.nom
     }
 
     .anel {
-      --kc-base: 0.9;
-      --kc-virado: 1.15;
+      --kc: 0.9;
       justify-self: center;
       margin-top: 8px;
     }
@@ -776,8 +719,7 @@ const filtro = { chave: livro.id.replace(/^(livro|serie)-/, ""), nome: livro.nom
 
   @media (max-width: 760px) {
     .anel {
-      --kc-base: 0.8;
-      --kc-virado: min(1.12, tan(atan2(100vw - 120px, 300px)));
+      --kc: 0.8;
       --lado-tag: 132px;
     }
 
@@ -795,16 +737,10 @@ const filtro = { chave: livro.id.replace(/^(livro|serie)-/, ""), nome: livro.nom
     }
 
     .anel {
-      --kc-base: 0.66;
-      --kc-virado: min(1.1, tan(atan2(100vw - 98px, 300px)));
+      --kc: 0.66;
       width: 100%;
       min-height: 0;
       padding: 4px 0 6px;
-    }
-
-    /* Virado, o livro usa quase a largura da ficha: a folga em volta dele diminui. */
-    .anel[data-virado] .livro-centro {
-      padding: 14px 30px 26px 14px;
     }
 
     .tags-anel {

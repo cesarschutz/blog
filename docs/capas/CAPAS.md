@@ -117,13 +117,14 @@ um livro de capa dura de verdade, com as mesmas artes de capa e de lombada (`Liv
 - **Os movimentos continuam:** girar no mouse (38° → 24°), a capa que abre no livro ampliado (com o verso e
   as folhas), o voo da estante para a gaveta e da pilha para o topo, e as trocas de página. Só o `rotateY`
   do livro se mexe; nada de `filter` nas peças (achataria o 3D).
-- **A contracapa (D78):** no livro grande da página do livro (categorias), o botão "Virar o livro", em cima da
-  lupa, gira o livro até 163° (o verso quase de frente e a lombada à direita) e ele cresce um pouco para o texto
-  ficar legível. No verso (`Contracapa.astro`, na face `.contra`), a moldura na cor do livro e, dentro, o papel
-  dele: a frase, "Este livro abrange" com a lista, e "Sobre a capa" com o texto curto do desenho e "Ler mais",
-  que troca para o texto completo, a cor (o nome e o motivo) e o link sobre a máquina; no pé, o volume e o
-  autor. Os textos ficam em `src/livros/livros.json` (`contracapa`); o tamanho da letra de cada lado sai da
-  conta das linhas no build, para caber sem cortar.
+- **A contracapa (D78):** no livro ampliado (categorias), o botão "Virar o livro" da legenda gira o livro até
+  167° (o verso quase de frente e a lombada à direita). O verso é impresso na cor do livro, como a capa, com a
+  tinta dela e a mesma tipografia: no alto, "EDIÇÃO DE ESTUDO" e "VOLUME 0N" (como "VOLUME 0N" e "CESAR
+  SCHUTZ" na capa); a frase grande em Newsreader itálico; um fio; "NESTE VOLUME" com o que o livro abrange;
+  embaixo, "A CAPA", com o texto curto do desenho e "Saiba mais em <site> ↗"; no pé, a marca "cs" como carimbo
+  e o endereço. Por cima, o grão e a luz da capa espelhada (o vinco da dobradiça a 22 da lombada, agora à
+  direita). O texto completo da capa, a cor e o link ficam no colofão (o fim do volume). Os textos ficam em
+  `src/livros/livros.json` (`contracapa`); a letra diminui só o que precisar para caber.
 - **O livro ampliado aberto:** enquanto a capa abre, a vista se endireita (`--aberto`, `livro.css`) e o
   livro fica de frente, um livro só: a capa aberta à esquerda e, atrás das folhas da direita, a guarda da
   contracapa (`.guarda-de-tras`, `paginas.css`), as duas na cor do livro (na série, no papel) e passando o

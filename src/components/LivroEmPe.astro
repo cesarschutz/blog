@@ -12,7 +12,6 @@
  * `data-livro-gira`; `parado` (ou `data-livro-parado` num ancestral) desliga.
  */
 import Livro3D from "./Livro3D.astro";
-import Contracapa from "./Contracapa.astro";
 import { ICONES } from "../lib/icones";
 import { coresDoLivroCss, dadosDoLivro, paginasDoLivro, type Livro } from "../lib/estante";
 import { medidasDoLivro3D } from "../lib/livro-3d";
@@ -44,16 +43,9 @@ interface Props {
    * que `data-livro-parado` num ancestral.
    */
   parado?: boolean;
-  /**
-   * D78: o livro tem contracapa (o livro grande da página do livro). O botão "Virar o livro", ao lado da
-   * lupa, gira o livro até o verso, com o que ele abrange e a história da capa (Contracapa). Só nos livros
-   * com os textos (as categorias); sem JS, o botão não aparece.
-   */
-  contracapa?: boolean;
 }
 
 const { livro, altura = 300, transicao = "fixa", ampliavel = false, fluido = false, desenho = "inline", folhas = 3, parado = false } = Astro.props;
-const comContracapa = !!Astro.props.contracapa && !!livro.contracapa;
 const m = medidasDoLivro3D(livro.emPe.largura, altura);
 const px = (v: number) => (fluido ? `calc(${Math.round(v * 100) / 100}px * var(--kc, 1))` : `${Math.round(v * 100) / 100}px`);
 const estilo = [
@@ -82,24 +74,7 @@ const estilo = [
   data-paginas={ampliavel ? paginasDoLivro(livro) : undefined}
   data-livro-parado={parado ? "" : undefined}
 >
-  {/* O botão vem antes do livro: virado, o Tab segue dele para o verso (o que se lê depois de virar). */}
-  {
-    comContracapa && (
-      <button type="button" class="virar" data-virar aria-pressed="false" title="Virar o livro">
-        <span class="sr">Virar o livro</span>
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.virar} />
-      </button>
-    )
-  }
-  {
-    comContracapa ? (
-      <Livro3D livro={livro} desenho={desenho} folhas={folhas}>
-        <Contracapa slot="contracapa" livro={livro} />
-      </Livro3D>
-    ) : (
-      <Livro3D livro={livro} desenho={desenho} folhas={folhas} />
-    )
-  }
+  <Livro3D livro={livro} desenho={desenho} folhas={folhas} />
   {
     ampliavel && (
       <button type="button" class="lupa" data-ampliar aria-label={`Ampliar o livro ${livro.nome}`} title="Ampliar">
@@ -108,80 +83,6 @@ const estilo = [
     )
   }
 </div>
-
-<script>
-  /*
-   * A contracapa (D78): o botão "Virar o livro" gira o livro grande até o verso e de volta. O giro é o do
-   * `.livro-3d` (o `--giro` do CSS: 38° de frente, 163° virado), animado pela Web Animations API, do giro de
-   * antes ao de depois (passando pela lombada, a 90°); clicar de novo no meio da volta a desfaz de onde ela
-   * está. Virado: o livro fica parado (sem o livro vivo), a contracapa deixa de ser `inert`, e o palco em volta
-   * (`data-palco-virar`, o anel do TopoLivro) recebe `data-virado` (o livro cresce e as tags saem). Esc desvira.
-   * "Ler mais" e "Voltar" trocam o lado do verso (o que o livro abrange e a história da capa). Com movimento
-   * reduzido, troca na hora.
-   */
-  const reduzido = matchMedia("(prefers-reduced-motion: reduce)");
-  const VOLTA = { duracao: 1000, curva: "cubic-bezier(0.45, 0.05, 0.2, 1)" };
-
-  for (const botao of document.querySelectorAll<HTMLButtonElement>("[data-virar]")) {
-    const pe = botao.closest<HTMLElement>(".livro-em-pe");
-    const livro = pe?.querySelector<HTMLElement>(".livro-3d");
-    const verso = pe?.querySelector<HTMLElement>("[data-contracapa]");
-    if (!pe || !livro || !verso || pe.dataset.virarLigado) continue;
-    pe.dataset.virarLigado = "";
-    const palco = pe.closest<HTMLElement>("[data-palco-virar]");
-    const paradoDeSempre = pe.hasAttribute("data-livro-parado");
-    let volta: Animation | null = null;
-
-    const lado = (qual: string, focar = false) => {
-      for (const s of verso.querySelectorAll<HTMLElement>("[data-cc-lado]")) s.hidden = s.dataset.ccLado !== qual;
-      if (focar) verso.querySelector<HTMLElement>(`[data-cc-lado="${qual}"] [tabindex="-1"]`)?.focus({ preventScroll: true });
-    };
-
-    const virar = (virado: boolean) => {
-      if (pe.hasAttribute("data-virado") === virado) return;
-      const antes = getComputedStyle(livro).getPropertyValue("--giro").trim();
-      // O livro vivo solta o livro na hora (o hover e o seguir o mouse), antes de girar.
-      (window as unknown as { csLivroVivo?: { soltar: (c: HTMLElement) => void } }).csLivroVivo?.soltar(pe.querySelector<HTMLElement>(".livro-3d-caixa")!);
-      pe.toggleAttribute("data-virado", virado);
-      pe.removeAttribute("data-verso-assentado");
-      palco?.toggleAttribute("data-virado", virado);
-      if (!paradoDeSempre) pe.toggleAttribute("data-livro-parado", virado);
-      botao.setAttribute("aria-pressed", String(virado));
-      botao.title = virado ? "Desvirar o livro" : "Virar o livro";
-      if (!virado && verso.contains(document.activeElement)) botao.focus({ preventScroll: true });
-      verso.inert = !virado;
-      if (reduzido.matches) {
-        if (virado) pe.setAttribute("data-verso-assentado", "");
-        else lado("livro");
-        return;
-      }
-      if (volta && volta.playState === "running") {
-        // No meio da volta: ela volta de onde está.
-        volta.reverse();
-      } else {
-        const depois = getComputedStyle(livro).getPropertyValue("--giro").trim();
-        volta = livro.animate([{ transform: `rotateY(${antes})` }, { transform: `rotateY(${depois})` }], { duration: VOLTA.duracao, easing: VOLTA.curva });
-      }
-      const esta = volta;
-      esta.onfinish = () => {
-        if (volta === esta) volta = null;
-        if (pe.hasAttribute("data-virado")) pe.setAttribute("data-verso-assentado", "");
-        else lado("livro");
-      };
-    };
-
-    botao.addEventListener("click", () => virar(!pe.hasAttribute("data-virado")));
-    verso.addEventListener("click", (e) => {
-      const ir = (e.target as HTMLElement).closest<HTMLElement>("[data-cc-ir]");
-      if (ir) lado(ir.dataset.ccIr!, true);
-    });
-    document.addEventListener("keydown", (e) => {
-      if (e.key !== "Escape" || !pe.hasAttribute("data-virado") || document.querySelector("dialog[open]")) return;
-      virar(false);
-      botao.focus({ preventScroll: true });
-    });
-  }
-</script>
 
 <style>
   .livro-em-pe {

@@ -88,7 +88,7 @@ Ler este arquivo; continuar da primeira etapa que não está feita. O dev:
 5. A tag Pagamentos vira Cobrança nos três posts de cobrança (`cobranca.svg` com o ícone de hoje); o
    ledger perde a tag.
 6. O texto do desenho (`textoDesenho` e `textoDesenhoCurto`) vai para `livros.json`: feito em 04/10/2026,
-   na contracapa do livro grande da página de cada livro (`contracapa`, com o que abrange, a cor e o link).
+   na contracapa do livro ampliado e no colofão (`contracapa`, com o que abrange, a cor e o link).
 7. A marca, se o Cesar decidir que acompanha a Arquitetura (`DESIGN.md`, `tokens.ts`, `scripts/marca.mjs`).
 8. `CAPAS.md` (a tabela dos livros e o princípio dos desenhos "O mesmo problema, um século antes"),
    `briefing.md`, `DESIGN.md` (as cores dos livros), `docs/estilo-desenho.md`.

@@ -26,6 +26,14 @@
  * /livros/<slug>.json (src/pages/livros/[slug].json.ts), buscadas ao abrir (e antes, ao passar o
  * mouse na lupa). O livro é desenho (aria-hidden): a legenda diz a página da vez, e o livro inteiro
  * está em "Ver o livro".
+ *
+ * A contracapa (D78, a pedido do Cesar): fechado, o botão "Virar o livro" da legenda gira o livro até o
+ * verso, quase de frente (VERSO, com a lombada à direita), erguendo-o um nada no meio da volta e endireitando
+ * um pouco a vista. O verso é impresso na cor do livro, como a capa: no alto, a linha da coleção; a frase; "Neste
+ * volume", com o que o livro abrange; e embaixo "A capa", com o texto curto do desenho e o link sobre a máquina;
+ * no pé, a marca e o endereço (paginas.css, "o verso"). O texto completo da capa, a cor e o link ficam no
+ * colofão do fim do volume, como num livro de verdade. Virado, o arrasto e o clique no livro não folheiam;
+ * "Abrir o livro" (ou a seta) desvira e abre, e fechar o visor desvira antes de o livro voltar.
  */
 import { ICONES } from "../lib/icones";
 import "../styles/visor.css";
@@ -37,6 +45,9 @@ import "../styles/paginas.css";
   <div class="legenda-livro">
     <p><strong data-nome></strong> <span data-dados></span></p>
     <div class="folhear">
+      <button type="button" class="passo virar-livro" data-virar aria-pressed="false" hidden
+        ><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.virar} /><span data-virar-texto>Virar o livro</span></button
+      >
       <button type="button" class="passo" data-anterior disabled>Voltar a página</button>
       <span class="onde" data-onde aria-live="polite">Fechado</span>
       <button type="button" class="passo primario" data-proxima>Abrir o livro</button>
@@ -52,11 +63,19 @@ import "../styles/paginas.css";
 
 <script>
   import { GIRO } from "../lib/livro-3d";
+  import { MARCA_SVG, MARCA_VIEWBOX } from "../lib/marca";
   import { adiantar, carregarArrastar, carregarGsap, movimentoReduzido, type GSAP } from "../scripts/gsap";
 
   type Post = { titulo: string; subtitulo: string; descricao: string; dia: string; data: string; url: string; codigo?: string };
+  type Contracapa = {
+    abrange: string[];
+    capa: { curto: string; completo: string; link: { titulo: string; url: string } };
+    cor: { nome: string; motivo: string };
+  };
   type Paginas = {
     nome: string;
+    frase: string | null;
+    contracapa: Contracapa | null;
     serie: boolean;
     volume: string | null;
     href: string;
@@ -76,6 +95,10 @@ import "../styles/paginas.css";
     const onde = dialogo.querySelector<HTMLElement>("[data-onde]")!;
     const btAnterior = dialogo.querySelector<HTMLButtonElement>("[data-anterior]")!;
     const btProxima = dialogo.querySelector<HTMLButtonElement>("[data-proxima]")!;
+    const btVirar = dialogo.querySelector<HTMLButtonElement>("[data-virar]")!;
+    const textoDoVirar = btVirar.querySelector<HTMLElement>("[data-virar-texto]")!;
+    /** O giro do livro virado: o verso quase de frente, com a lombada à direita (D78). */
+    const VERSO = 167;
     const celular = matchMedia("(max-width: 640px)");
     let origem: HTMLElement | null = null;
     // O livro de origem e a cópia no palco: a cópia sai dele e volta para ele (D47).
@@ -161,14 +184,22 @@ import "../styles/paginas.css";
         paginas.push({ html: `<div class="pg pg-dir notas"><p class="cab">NOTAS</p><div class="pauta"></div></div>`, rotulo: "notas" });
       }
       const n = d.posts.length;
+      const cc = d.contracapa;
+      // O colofão (D78): no fim do volume, como num livro de verdade, "Sobre a capa" com o texto completo do
+      // desenho, a cor e o link sobre a máquina.
+      const sobreACapa = cc
+        ? `<div class="sobre-capa"><p class="cab">SOBRE A CAPA</p><p class="sobre-texto">${esc(cc.capa.completo)}</p><p class="sobre-cor"><span class="amostra" aria-hidden="true"></span><span><b>${esc(
+            cc.cor.nome.charAt(0).toUpperCase() + cc.cor.nome.slice(1),
+          )}.</b> ${esc(cc.cor.motivo)}</span></p><p class="sobre-link">${link(cc.capa.link.url, `${esc(cc.capa.link.titulo)} ↗`)}</p></div>`
+        : "";
       paginas.push({
-        html: `<div class="pg pg-esq colofao"><p class="fim">FIM ${d.volume ? `DO VOLUME ${d.volume}` : "DA SÉRIE"}</p><p>${
+        html: `<div class="pg pg-esq colofao${cc ? " com-capa" : ""}"><div class="fim-do-volume"><p class="fim">FIM ${d.volume ? `DO VOLUME ${d.volume}` : "DA SÉRIE"}</p><p>${
           d.serie
             ? `${n} ${n === 1 ? "artigo" : "artigos"} até aqui. Os próximos entram nesta mesma série.`
             : n === 0
               ? "Nenhum artigo ainda. Os primeiros entram neste mesmo livro."
               : `${n} ${n === 1 ? "artigo" : "artigos"} até aqui. Os próximos entram neste mesmo livro.`
-        }</p><p>${link(d.href, d.serie ? "Ver a série inteira" : "Ver o livro inteiro")}</p></div>`,
+        }</p><p>${link(d.href, d.serie ? "Ver a série inteira" : "Ver o livro inteiro")}</p></div>${sobreACapa}</div>`,
         rotulo: "fim",
       });
       const px = d.proximo;
@@ -177,7 +208,21 @@ import "../styles/paginas.css";
       }</p><h3>${esc(px.nome)}</h3><p>${esc(px.frase)}</p><p>${link(px.href, "Abrir o próximo livro →")}</p></div>`;
       const folhas: { frente: Pagina; costas: Pagina }[] = [];
       for (let i = 0; i < paginas.length; i += 2) folhas.push({ frente: paginas[i], costas: paginas[i + 1] });
-      return { guarda, folhas, proximo, serie: d.serie, nomeDoProximo: px.nome };
+      // O verso (D78): impresso na cor do livro, como a capa (paginas.css, "o verso").
+      const dominio = cc ? new URL(cc.capa.link.url).hostname.replace(/^www\./, "") : "";
+      const verso = cc
+        ? `<div class="verso-impresso"><div class="vi-dentro"><p class="vi-topo"><span>EDIÇÃO DE ESTUDO</span><span>${
+            d.volume ? `VOLUME ${d.volume}` : "SÉRIE"
+          }</span></p><div class="vi-corpo">${d.frase ? `<p class="vi-frase">${esc(d.frase)}</p><span class="vi-fio"></span>` : ""}<p class="vi-rotulo">NESTE VOLUME</p><ul class="vi-temas">${cc.abrange
+            .map((t) => `<li>${esc(t)}</li>`)
+            .join("")}</ul><div class="vi-capa"><p class="vi-rotulo">A CAPA</p><p class="vi-sobre">${esc(cc.capa.curto)}</p><a class="vi-link" href="${esc(
+            cc.capa.link.url,
+          )}" tabindex="-1">Saiba mais em ${esc(dominio)} ↗</a></div></div><p class="vi-pe"><svg class="vi-marca" viewBox="${MARCA_VIEWBOX}" aria-hidden="true" focusable="false">${MARCA_SVG}</svg><span>BLOG.CESARSCHUTZ.COM.BR</span></p></div><span class="vi-luz"></span></div>`
+        : "";
+      const descricaoDoVerso = cc
+        ? `${d.frase ? `${d.frase} ` : ""}Neste volume: ${cc.abrange.join("; ")}. A capa: ${cc.capa.curto}`
+        : "";
+      return { guarda, folhas, proximo, serie: d.serie, nomeDoProximo: px.nome, verso, descricaoDoVerso };
     }
 
     // ---------- o estado: p = a capa (0 fechada, 1 aberta), q[k] = cada folha (0 à direita, 1 virada) ----------
@@ -187,7 +232,8 @@ import "../styles/paginas.css";
     let capa: HTMLElement | null = null;
     let pagina: HTMLElement | null = null;
     let guardaDeTras: HTMLElement | null = null;
-    const estado = { p: 0, q: [] as number[] };
+    // v: o livro virado (0 de frente, 1 com o verso à vista, D78).
+    const estado = { p: 0, q: [] as number[], v: 0 };
     // No celular, a página que está à vista (o livro aberto é mais largo que a tela) e o quanto a vista correu.
     let lado: "dir" | "esq" = "dir";
     const vista = { x: 0 };
@@ -204,8 +250,9 @@ import "../styles/paginas.css";
     let escrita: {
       livroGiro: Escrever;
       livroX: Escrever;
+      livroY: Escrever;
       capa: Escrever;
-      aberto: Escrever;
+      aberto: (p: number, v: number) => void;
       folhas: { z: Escrever; s1: Escrever; s2: Escrever }[];
     } | null = null;
     function prepararEscrita() {
@@ -219,14 +266,16 @@ import "../styles/paginas.css";
       escrita = {
         livroGiro: qs(livro, "rotationY", "deg"),
         livroX: qs(livro, "x", "px"),
+        livroY: qs(livro, "y", "px"),
         capa: qs(capa, "rotationY", "deg"),
         /*
          * Abrindo, a vista de um pouco acima (D57, livro.css) se endireita: aberto, o livro fica de frente,
          * sem o alto à mostra (a lombada vista de cima parecia um colchete solto no meio). A sombra no
          * chão, que é a do livro fechado, sai; a guarda da contracapa chega no fim da abertura.
          */
-        aberto: (p) => {
-          vistaDoLivro.style.setProperty("--aberto", p.toFixed(4));
+        // Virado (D78), a vista também desce um pouco: o verso fica mais de frente, para ler.
+        aberto: (p, v) => {
+          vistaDoLivro.style.setProperty("--aberto", Math.max(p, 0.6 * v).toFixed(4));
           if (chao) chao.style.opacity = (1 - p).toFixed(3);
           if (tras) tras.style.opacity = Math.min(1, Math.max(0, (p - 0.8) / 0.2)).toFixed(3);
         },
@@ -238,16 +287,19 @@ import "../styles/paginas.css";
       if (!escrita) return;
       const p = estado.p;
       // Rodada 3 (área A): só o livro fechado responde ao mouse (o livro vivo); abrindo, ele volta ao lugar.
-      const repouso = p < 0.001 && !fechando;
+      const v = estado.v;
+      const repouso = p < 0.001 && v < 0.001 && !fechando;
       if (repouso !== "lvRepouso" in palco.dataset) {
         if (repouso) palco.dataset.lvRepouso = "";
         else delete palco.dataset.lvRepouso;
       }
       // Abrindo, o livro vira de frente, e a lombada vai para o meio (a capa abre para a esquerda).
-      escrita.livroGiro(GIRO * (1 - p));
+      // Virando (D78), o livro gira até o verso e se ergue um nada no meio da volta, como na mão.
+      escrita.livroGiro(GIRO * (1 - p) + (VERSO - GIRO) * v);
       escrita.livroX((m.cw / 2) * p + vista.x);
+      escrita.livroY(-m.bh * 0.05 * Math.sin(Math.PI * v));
       escrita.capa(-180 * p);
-      escrita.aberto(p);
+      escrita.aberto(p, v);
       folhas.forEach((f, k) => {
         const q = estado.q[k];
         const e = escrita!.folhas[k];
@@ -267,6 +319,7 @@ import "../styles/paginas.css";
     /** O nome da página da vez e, para quem usa leitor de tela, o que está escrito nela. */
     function descrever(): { curto: string; extra?: string } {
       const s = passo();
+      if (conteudo && estado.v >= 0.5) return { curto: "Contracapa", extra: conteudo.descricaoDoVerso };
       if (!conteudo || s === 0) return { curto: "Fechado" };
       if (s === 1) return { curto: "Guarda e sumário" };
       const k = s - 1;
@@ -290,6 +343,13 @@ import "../styles/paginas.css";
       btProxima.disabled = s === ultimo && !(celular.matches && lado === "esq");
       btProxima.textContent = s === 0 ? "Abrir o livro" : "Virar a página";
       btAnterior.textContent = s === 1 && !(celular.matches && lado === "dir") ? "Fechar o livro" : "Voltar a página";
+      // A contracapa (D78): só com o livro fechado; virado, "Voltar a página" não tem para onde ir.
+      const virado = estado.v >= 0.5;
+      btVirar.hidden = !conteudo?.verso;
+      btVirar.disabled = s !== 0;
+      btVirar.setAttribute("aria-pressed", String(virado));
+      textoDoVirar.textContent = virado ? "Desvirar o livro" : "Virar o livro";
+      if (virado) btAnterior.disabled = true;
     }
 
     // ---------- o movimento ----------
@@ -362,10 +422,43 @@ import "../styles/paginas.css";
       atualizarBarra();
     }
 
+    /** Vira o livro fechado até o verso (1) ou de volta (0), D78. */
+    function virar(para: number): Promise<void> {
+      if (!gsap || !conteudo?.verso || aberto() || estado.p > 0) return Promise.resolve();
+      andando?.kill();
+      marcarHover(null);
+      palco.toggleAttribute("data-virado", para === 1);
+      if (movimentoReduzido.matches) {
+        estado.v = para;
+        desenhar();
+        atualizarBarra();
+        return Promise.resolve();
+      }
+      const g = gsap;
+      return new Promise((fim) => {
+        andando = g.timeline({
+          onComplete: () => {
+            andando = null;
+            atualizarBarra();
+            fim();
+          },
+        });
+        andando.to(estado, { v: para, duration: 1.15, ease: "power2.inOut", onUpdate: desenhar });
+        // O rótulo troca no meio da volta, quando o verso aparece.
+        andando.call(atualizarBarra, [], 0.55);
+      });
+    }
+
     let pronto: Promise<void> = Promise.resolve();
     async function proxima() {
       await pronto;
       if (andando || !conteudo) return;
+      // Virado (D78): desvira e abre.
+      if (estado.v > 0) {
+        await virar(0);
+        lado = "dir";
+        return mover(-1, 1);
+      }
       if (celular.matches && aberto() && lado === "esq") return enquadrar("dir");
       if (!aberto()) {
         lado = "dir";
@@ -380,6 +473,7 @@ import "../styles/paginas.css";
     async function anterior() {
       await pronto;
       if (andando || !conteudo) return;
+      if (estado.v > 0) return void virar(0);
       if (celular.matches && aberto() && lado === "dir") return enquadrar("esq");
       const k = viradas();
       if (aberto() && k > 0) {
@@ -440,6 +534,12 @@ import "../styles/paginas.css";
       for (const camada of livro.querySelectorAll(".folha-livro")) camada.remove();
       livro.querySelector<HTMLElement>(".capa-verso")!.innerHTML = conteudo.guarda;
       pagina!.innerHTML = conteudo.proximo;
+      // O verso (D78) na face da contracapa, com a letra do tamanho que cabe.
+      const contra = livro.querySelector<HTMLElement>(".contra");
+      if (contra) {
+        contra.innerHTML = conteudo.verso;
+        caber(contra.querySelector<HTMLElement>(".vi-corpo"), "--f");
+      }
       // A guarda da contracapa (paginas.css): aberto, a capa de trás passa o miolo como a da frente.
       guardaDeTras = document.createElement("div");
       guardaDeTras.className = "f guarda-de-tras";
@@ -461,8 +561,20 @@ import "../styles/paginas.css";
       lado = "dir";
       prepararEscrita();
       medirPagina();
+      for (const c of livro.querySelectorAll<HTMLElement>(".colofao.com-capa")) caber(c, "--fc");
       desenhar();
       atualizarBarra();
+    }
+
+    /** Diminui a letra (a variável `prop`, de 1 para baixo) até o conteúdo caber na caixa, sem cortar. */
+    function caber(caixa: HTMLElement | null, prop: string) {
+      if (!caixa) return;
+      let f = 1;
+      caixa.style.setProperty(prop, "1");
+      while (caixa.scrollHeight > caixa.clientHeight + 1 && f > 0.6) {
+        f -= 0.04;
+        caixa.style.setProperty(prop, f.toFixed(2));
+      }
     }
 
     /**
@@ -517,7 +629,7 @@ import "../styles/paginas.css";
           arrastando = true;
           marcarHover(null);
           alvo = null;
-          if (andando || !conteudo) return;
+          if (andando || !conteudo || estado.v > 0) return;
           const esq = this.getDirection("start") === "left";
           // No celular, o gesto inteiro vira (ou volta) a página, sem seguir o dedo.
           if (celular.matches) return void (alvo = esq ? "prox" : "ant");
@@ -566,9 +678,6 @@ import "../styles/paginas.css";
 
       const nova = caixa.cloneNode(true) as HTMLElement;
       nova.removeAttribute("style");
-      // A contracapa (D78) fica no livro da página: a cópia é desenho, sem o texto do verso.
-      nova.querySelector("[data-contracapa]")?.remove();
-      nova.setAttribute("aria-hidden", "true");
       nova.classList.add("livro-que-abre");
       livro = nova.querySelector<HTMLElement>(".livro-3d");
       // O giro da origem (o GSAP da gaveta o deixa no style) não vem junto.
@@ -594,6 +703,8 @@ import "../styles/paginas.css";
       linkSobOMouse = null;
       estado.p = 0;
       estado.q = [];
+      estado.v = 0;
+      palco.removeAttribute("data-virado");
       vista.x = 0;
       lado = "dir";
       atualizarBarra();
@@ -651,6 +762,13 @@ import "../styles/paginas.css";
       arrasto?.kill();
       arrasto = null;
       g.to(legenda, { opacity: 0, duration: 0.2 });
+      // Virado (D78), o livro desvira antes de voltar ao lugar dele.
+      if (estado.v > 0) {
+        andando?.kill();
+        andando = null;
+        await new Promise<void>((fim) => g.to(estado, { v: 0, duration: 0.7, ease: "power2.inOut", onUpdate: desenhar, onComplete: fim }));
+        palco.removeAttribute("data-virado");
+      }
       await fecharLivro();
       dialogo!.classList.add("fechando");
       g.killTweensOf(nova);
@@ -682,6 +800,8 @@ import "../styles/paginas.css";
       folhas = [];
       conteudo = null;
       escrita = null;
+      estado.v = 0;
+      palco.removeAttribute("data-virado");
       origem?.querySelector<HTMLElement>("[data-ampliar]")?.focus({ preventScroll: true });
       origem = livro = capa = pagina = guardaDeTras = null;
     });
@@ -692,6 +812,11 @@ import "../styles/paginas.css";
       fechar();
     });
     btProxima.addEventListener("click", () => proxima());
+    btVirar.addEventListener("click", async () => {
+      await pronto;
+      if (andando) return;
+      virar(estado.v > 0 ? 0 : 1);
+    });
     btAnterior.addEventListener("click", () => anterior());
     dialogo.addEventListener("keydown", (e) => {
       if (e.key === "ArrowRight") proxima();
@@ -769,15 +894,22 @@ import "../styles/paginas.css";
     // esquerda, volta. Fora do livro e da legenda, fecha (mas não o clique que termina um arraste).
     dialogo.addEventListener("click", (e) => {
       const alvo = e.target as HTMLElement;
+      // O clique no livro nunca segue o link sozinho (quem segue é linkNoPonto), nem o que termina um arraste.
+      const noLivro = alvo.closest(".livro-3d-caixa");
+      if (noLivro) e.preventDefault();
       if (arrastou) {
         arrastou = false;
         return;
       }
-      const noLivro = alvo.closest(".livro-3d-caixa");
-      if (noLivro) e.preventDefault();
       const link = noLivro ? linkNoPonto(e.clientX, e.clientY) : null;
       if (link) return void seguir(link, e);
       if (noLivro && copia) {
+        // Virado (D78): o clique é do verso; só o link sobre a máquina sai, numa aba nova.
+        if (estado.v > 0) {
+          const a = alvo.closest<HTMLAnchorElement>(".verso-impresso a[href]");
+          if (a && !andando) open(a.href, "_blank", "noopener");
+          return;
+        }
         if (!aberto()) return void proxima();
         if (celular.matches) return void (e.clientX > innerWidth / 2 ? proxima() : anterior());
         // Aberto, a lombada fica no meio do palco.
@@ -794,6 +926,10 @@ import "../styles/paginas.css";
       larguraDaTela = innerWidth;
       medir(Number(origem.dataset.largura));
       medirPagina();
+      if (livro) {
+        caber(livro.querySelector<HTMLElement>(".vi-corpo"), "--f");
+        for (const c of livro.querySelectorAll<HTMLElement>(".colofao.com-capa")) caber(c, "--fc");
+      }
       vista.x = 0;
       if (!celular.matches) lado = "dir";
       enquadrar();
@@ -811,8 +947,7 @@ import "../styles/paginas.css";
     document.addEventListener("click", (e) => {
       const alvo = e.target as HTMLElement;
       const raiz = alvo.closest<HTMLElement>("[data-ampliar-livro]");
-      // Virado (a contracapa, D78), o livro não abre: o clique é do verso (os links, Ler mais).
-      if (!raiz || dialogo.open || raiz.hasAttribute("data-virado")) return;
+      if (!raiz || dialogo.open) return;
       if (alvo.closest("[data-ampliar]") || alvo.closest(".livro-3d-caixa")) {
         e.preventDefault();
         abrir(raiz);
@@ -967,6 +1102,32 @@ import "../styles/paginas.css";
     outline-offset: 3px;
   }
 
+  /* "Virar o livro" (D78): o ícone da caneta preta antes do texto. */
+  .virar-livro {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .virar-livro[hidden] {
+    display: none;
+  }
+
+  .virar-livro svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: rotate 0.5s cubic-bezier(0.3, 0.7, 0.2, 1);
+  }
+
+  .virar-livro[aria-pressed="true"] svg {
+    rotate: y 180deg;
+  }
+
   .onde {
     min-width: 13ch;
     font-size: 14px;
@@ -1008,7 +1169,8 @@ import "../styles/paginas.css";
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .passo {
+    .passo,
+    .virar-livro svg {
       transition: none;
     }
 

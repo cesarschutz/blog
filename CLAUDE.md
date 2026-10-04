@@ -270,8 +270,7 @@ src/components/          peças das páginas (estante, gaveta, sumário, avisos,
                          Figura, Animacao, Ferramenta, Evidencia; LousaTempo e LousaLoop só nos antigos);
                          da D61: Colecao (a fileira da home), FileiraTopo (o alto da página do livro),
                          PontoDeLuz e Luz (abajures e luz), Fichario, NuvemTags e FichasTags (Tags),
-                         Vizinhos e LivroDoArtigo (o fim do post), AbaTopo (voltar ao topo) e TracoTitulo;
-                         da D78: Contracapa (o verso do livro grande da página do livro)
+                         Vizinhos e LivroDoArtigo (o fim do post), AbaTopo (voltar ao topo) e TracoTitulo
 src/computador/          o computador (D61): o ícone no canto, o macOS de mentira (sistema, janelas,
                          dock, menus) e os apps (Finder, editor, Terminal, Pré-Visualização, Sobre); os
                          dados vêm das rotas src/pages/mac/

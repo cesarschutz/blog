@@ -1,7 +1,8 @@
 /**
  * As páginas de dentro de cada livro (D49, protótipo D2), servidas à parte, como o desenho da capa
  * ([slug].svg.ts): o livro ampliado (LivroAmpliado.astro) só busca quando o leitor abre o livro, e
- * monta a guarda, o sumário, uma página por artigo, o fim do volume e o próximo livro da coleção.
+ * monta a guarda, o sumário, uma página por artigo, o fim do volume e o próximo livro da coleção, e o verso
+ * (a contracapa, D78).
  * Categoria: /livros/<slug>.json; série: /livros/serie-<chave>.json.
  */
 import type { APIRoute, GetStaticPaths } from "astro";
@@ -28,6 +29,10 @@ export const GET: APIRoute = ({ props }) => {
     serie: l.serie,
     volume: volume(l),
     href: l.href,
+    frase: l.frase ?? null,
+    // A contracapa (D78): o verso do livro ampliado (o que o livro abrange e a capa, em curto) e, no colofão
+    // do fim do volume, o texto completo da capa, a cor e o link. A série não tem.
+    contracapa: l.contracapa ?? null,
     // O ícone do livro (o emblema, na série), em pé, para o ex-libris da guarda.
     icone: iconeDoLivro(l.revista?.emblema ?? l.slug!),
     posts: l.posts.map((post) => ({

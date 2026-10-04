@@ -191,9 +191,10 @@ os 14 ficam quase de frente (giro de 26°), numa fileira só que vai até onde v
 deles que muda com a largura; abaixo de ~1100px de tela, param de encolher e giram até a lombada, como
 antes, e no celular ficam de lombada. A fileira do alto da página do livro não mudou. Com o mouse, o
 livro sob ele cresce como no Dock do Mac, e todos os abajures da fileira ficam sempre acesos. **A
-contracapa** (a ideia 1 do Cesar, 04/10/2026): na página de cada livro, o botão "Virar o livro" gira o livro
-grande e mostra o verso, com a frase, o que o livro abrange e a história da capa (o texto curto e, em "Ler
-mais", o completo, a cor e o link sobre a máquina).
+contracapa** (a ideia 1 do Cesar, 04/10/2026): no livro ampliado (a lupa do livro grande), o botão "Virar o
+livro" gira o livro e mostra o verso, impresso na cor do livro como uma contracapa de verdade: a frase, o que
+o livro abrange e a capa em poucas linhas, com o link sobre a máquina. O texto completo da capa e a cor ficam
+no colofão, a última página do livro aberto.
 
 - **Capa de categoria** (D32): em cima, o bloco na cor do livro com "VOLUME 0N", "CESAR SCHUTZ" e o
   título grande; embaixo, o papel claro só com a frase do livro e o desenho grande, no destaque.
