@@ -3332,5 +3332,16 @@ nada muda.
     para os livros irem até onde os textos vão também pros lados"): na home, o giro dos livros passa a ser
     o exato que enche a largura útil (`Colecao.astro`); na tela larga aparece mais da capa. A fileira do
     alto da página do livro não mudou.
+  - A fileira da home mostra a capa (04/10/2026). O Cesar achou os livros "muito de lado" e pediu a capa
+    mais à vista, um ao lado do outro; viu três opções em foto a 1280px (1: uma fileira só, de capa, com
+    os livros encolhendo; 2: duas prateleiras de 7; 3: uma fileira grande que rola para o lado; um leque,
+    um livro cobrindo a ponta do outro, foi tentado e descartado porque cortava os títulos) e escolheu a
+    1. Em `Colecao.astro`, na home: giro de capa de 26° (`GIRO_MIN`), e o tamanho (`--kc`) faz a fileira
+    ir até onde vai o texto; quando o tamanho chega a 0,42 (~1100px de tela), os livros param de encolher
+    e giram até a lombada pelo giro exato (agora com o tamanho na conta); abaixo das lombadas, encolhem
+    de novo. O vão vai de 18px (de capa) a 5px (de lombada). Os nomes embaixo dos livros não cabem em
+    largura nenhuma (o lugar de cada volume fica abaixo dos 100px), mas os títulos estão na capa.
+    Alternativas: as opções 2 e 3 (no celular, a 2 deixava os livros com ~58px de altura e a 3 escondia
+    metade da coleção).
   - O número desta decisão: a main usou D61 para o redesenho no ar; a coleção, que era D61 na branch,
     passou a D78 quando a main entrou nela.

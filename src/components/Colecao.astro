@@ -68,7 +68,8 @@ interface Props {
 
 const { livros, modo, atual, chao = "vidro" } = Astro.props;
 const ALTURA = modo === "home" ? 214 : 132;
-const GIRO_MIN = modo === "home" ? 30 : 34;
+// Na home, o giro de capa (D78, a opção 1 do Cesar): os livros de quase frente, com a capa à vista.
+const GIRO_MIN = modo === "home" ? 26 : 34;
 const VAO_MIN = modo === "home" ? 5 : 4;
 const VAO_MAX = modo === "home" ? 18 : 12;
 // O vão antes da série (rodada 3, F14-1: no lugar do aparador cinza).
@@ -102,20 +103,22 @@ for (let p = 1; p <= 6; p += 0.05) {
     break;
   }
 }
+// A home (D78, a opção 1 do Cesar: "os livros estão muito de lado"; ele queria a capa mais à vista, um ao lado
+// do outro). Na tela larga, os livros ficam no giro de capa (GIRO_MIN) e é o tamanho deles que faz a fileira ir
+// até onde vai o texto: L_CAPA é a largura da fileira de capa no tamanho cheio. Quando eles chegam a KC_CAPA (a
+// ~1100px de tela), param de encolher e passam a girar até a lombada; L_LOMBADA é a largura das lombadas no
+// tamanho cheio, e abaixo dela (o celular) eles voltam a encolher, de lombada. O vão vai de VAO_MAX (de capa)
+// a VAO_MIN (de lombada), e o da série, a 24px no total.
+const KC_CAPA = 0.42;
+const L_CAPA = F(GIRO_MIN) * FOLGA + (N - 1) * VAO_MAX + (temSerie ? VAO_SERIE - VAO_MAX : 0);
+const L_LOMBADA = S * FOLGA + (N - 1) * VAO_MIN + (temSerie ? VAO_SERIE - VAO_MIN : 0);
 // Os nomes embaixo (rodada 3): só quando o lugar de cada volume, com o vão, comporta "Desenvolvimento" (uns
-// 100px em 13px); antes disso eles se encostavam (a 1024px, no 14). A série, na ponta, não conta.
+// 100px em 13px); antes disso eles se encostavam (a 1024px, no 14). A série, na ponta, não conta. Na home de
+// capa, o lugar cresce com o tamanho dos livros (--kc): eles aparecem a partir da largura NOMES.
 const LUGAR_DO_NOME = 100;
 const swsDosVolumes = sws.filter((_, i) => !livros[i].serie);
-let NOMES = WMAX;
-for (let i = 0; i <= 400; i++) {
-  const t = i / 400;
-  const g = 90 - DELTA * Math.pow(t, P);
-  const lugar = Math.min(...(swsDosVolumes.length ? swsDosVolumes : sws).map((sw) => (cw * Math.cos(rad(g)) + sw * Math.sin(rad(g))) * FOLGA));
-  if (lugar + VAO_MIN + (VAO_MAX - VAO_MIN) * t >= LUGAR_DO_NOME) {
-    NOMES = Math.round(WMIN + t * (WMAX - WMIN));
-    break;
-  }
-}
+const lugarDeCapa = Math.min(...(swsDosVolumes.length ? swsDosVolumes : sws).map((sw) => (cw * Math.cos(rad(GIRO_MIN)) + sw * Math.sin(rad(GIRO_MIN))) * FOLGA));
+const NOMES = Math.ceil(Math.max((LUGAR_DO_NOME * L_CAPA) / (lugarDeCapa + VAO_MAX), KC_CAPA * L_CAPA));
 const id = `colecao-${modo}`;
 // Os pares de luz abaixo de 700px (uma luz a cada dois livros, sem juntar volume com série).
 const pares = livros.map(() => "so" as "so" | "inicio" | "fim");
@@ -161,20 +164,28 @@ const UTIL_MAX = 1320;
 const nomesCabem = NOMES <= UTIL_MAX - RESPIRO;
 const semNomes = `.${id} .nome-livro{display:none}.${id}.colecao-home{padding-bottom:calc(14px + 18px * var(--kc))}`;
 // O giro dos livros. No "topo", a curva t^P de sempre (fica um pouco aquém da largura, e a fileira encolhe com
-// a rolagem). Na home (D78), o giro exato que faz a fileira ir até onde vai o texto, dos dois lados: a largura
-// dos livros no giro θ é FOLGA·(N·cw·cos θ + S·sin θ) = FOLGA·R·cos(θ − φ), com R = √((N·cw)² + S²) e
-// φ = atan2(S, N·cw); então θ = φ + acos(X / R), com X a largura útil menos os vãos, dividida pela FOLGA. Com
-// 13 livros e a série, a curva t^P deixava ~180px vazios de cada lado a 1280px.
+// a rolagem). Na home, o giro exato que faz a fileira ir até onde vai o texto, dos dois lados, no tamanho da vez
+// (--kc): a largura dos livros no giro θ é FOLGA·kc·(N·cw·cos θ + S·sin θ) = FOLGA·kc·R·cos(θ − φ), com
+// R = √((N·cw)² + S²) e φ = atan2(S, N·cw); então θ = φ + acos(X / (kc·R)), com X a largura útil menos os vãos,
+// dividida pela FOLGA. Na tela larga, o tamanho já faz caber no giro de capa, e o clamp o segura em GIRO_MIN.
 const R = Math.hypot(N * cw, S);
 const PHI = (Math.atan2(S, N * cw) * 180) / Math.PI;
 const vaos = `(${N - 1} * var(--vao) + ${extra ? `max(0px, 24px * var(--kc) - var(--vao))` : "0px"})`;
 const giro =
   modo === "home"
-    ? `clamp(${GIRO_MIN}deg, calc(${PHI.toFixed(3)}deg + acos(clamp(-1, tan(atan2((${W} - ${vaos}) / ${FOLGA}, ${R.toFixed(2)}px)), 1))), 90deg)`
+    ? `clamp(${GIRO_MIN}deg, calc(${PHI.toFixed(3)}deg + acos(clamp(-1, tan(atan2((${W} - ${vaos}) / ${FOLGA}, ${R.toFixed(2)}px * var(--kc))), 1))), 90deg)`
     : `calc(90deg - ${DELTA}deg * pow(var(--tc),${P}))`;
+// O tamanho (--kc) e a fração do caminho entre as lombadas e a capa (--tc, que leva o vão). No "topo", como
+// sempre; na home, a conta de L_CAPA, KC_CAPA e L_LOMBADA acima.
+const W_LOMBADA = Math.round(KC_CAPA * L_LOMBADA);
+const W_CAPA = Math.round(KC_CAPA * L_CAPA);
+const tamanho =
+  modo === "home"
+    ? `--kc:clamp(0.3,max(tan(atan2(${W},${Math.round(L_CAPA)}px)),min(${KC_CAPA},tan(atan2(${W},${Math.round(L_LOMBADA)}px)))),1);` +
+      `--tc:clamp(0,tan(atan2(${W} - ${W_LOMBADA}px,${W_CAPA - W_LOMBADA}px)),1);`
+    : `--kc:clamp(0.42,tan(atan2(${W},${WMIN}px)),1);--tc:clamp(0,tan(atan2(${W} - ${WMIN}px,${WMAX - WMIN}px)),1);`;
 const css =
-  `.${id}{--kc:clamp(0.42,tan(atan2(${W},${WMIN}px)),1);--tc:clamp(0,tan(atan2(${W} - ${WMIN}px,${WMAX - WMIN}px)),1);` +
-  `--vao:calc((${VAO_MIN}px + ${VAO_MAX - VAO_MIN}px * var(--tc)) * var(--kc));--gc:${giro};--folga:${FOLGA}}` +
+  `.${id}{${tamanho}--vao:calc((${VAO_MIN}px + ${VAO_MAX - VAO_MIN}px * var(--tc)) * var(--kc));--gc:${giro};--folga:${FOLGA}}` +
   (nomesCabem ? `@media (max-width:${telaDe(NOMES)}px){${semNomes}}` : semNomes) +
   luzesCss +
   `@media (hover:hover){${luzesHover}}` +

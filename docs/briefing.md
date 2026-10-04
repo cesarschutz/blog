@@ -185,7 +185,11 @@ no mesmo ponto de vista e com um único fantasma tracejado, que é a máquina no
 (regra em `CAPAS.md`; o motivo de cada objeto e de cada cor, em `docs/prototipos/colecoes/final/`).
 A tag Pagamentos virou **Cobrança**, porque Pagamentos virou livro (`/tags/Pagamentos/` redireciona
 para `/tags/Cobrança/`). Ao planejar um post, o Claude confere se a coleção ainda serve e avisa o
-Cesar quando valer criar, dividir ou renomear um livro (skill `post`).
+Cesar quando valer criar, dividir ou renomear um livro (skill `post`). **A fileira da home mostra a
+capa** (04/10/2026, a opção 1 das três que o Cesar viu: "os livros estão muito de lado"): na tela larga,
+os 14 ficam quase de frente (giro de 26°), numa fileira só que vai até onde vai o texto, e é o tamanho
+deles que muda com a largura; abaixo de ~1100px de tela, param de encolher e giram até a lombada, como
+antes, e no celular ficam de lombada. A fileira do alto da página do livro não mudou.
 
 - **Capa de categoria** (D32): em cima, o bloco na cor do livro com "VOLUME 0N", "CESAR SCHUTZ" e o
   título grande; embaixo, o papel claro só com a frase do livro e o desenho grande, no destaque.

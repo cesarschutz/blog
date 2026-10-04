@@ -144,6 +144,9 @@ redirecionamentos, de 320 a 1920px nos dois temas: sem erro de console, sem 404,
 `check`, `links` e `contraste` passam. Corrigido no caminho: os nomes embaixo dos livros da home, que se
 atropelavam a partir de ~1890px. **Para o Cesar decidir:** no celular, os 14 livros da fileira da home
 ficam com ~20px de lombada (o título vira enfeite; o projeto pede todos à vista, sem rolagem lateral).
+Depois, no mesmo dia, a fileira da home passou a mostrar a capa (a opção 1 das três que o Cesar viu em
+foto): na tela larga, os livros quase de frente, encolhendo para caber; abaixo de ~1100px, giram até a
+lombada, como antes (D78, `docs/decisoes.md`).
 
 Protótipo dos controles dos desenhos (01/10/2026, no ar em `/prototipos/controles/`, com noindex e fora
 do sitemap e da busca): cinco opções (régua e lápis, marca-texto, caderno e caneta, post-its e fita,
@@ -343,6 +346,7 @@ movimento e com movimento reduzido, com trace de CPU 4× sem tarefas longas dura
     "Volume · artigos" corta com reticências (1280px no índice, 390px no topo do livro); vizinhos trocados
     entre dois posts da mesma data (sns × w3c); a busca indexa a tira do topo do artigo; o contador
     "Livros" da home conta a série (14); no Chromium 141, os abajures da home somem acima de 1100px.
+
 0. **D54:** as perguntas do fim de `docs/ajustes-d54/controle.md` (chegada da folha longa no celular
    lento, voltar sem bfcache, trava de rolagem do menu, desfile de Categorias no celular,
    redirecionamentos em inglês, busca que volta aberta, textos dos slides e das tags, comportamentos
