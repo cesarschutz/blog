@@ -598,7 +598,8 @@ pequeno da série. Hoje isso vale para as lombadas, em pé e deitadas (`corTexto
 - **Quebras (D39):** títulos com `text-wrap: balance`, o travessão preso à palavra seguinte e, no
   celular, o h1 do artigo encolhe com a tela (até 24px) para o pedaço mais longo caber sem quebrar
   no meio. Código em linha (texto, tabelas, sumário) quebra depois dos pontos (`<wbr>`), nunca no
-  meio do nome; nas tabelas, o que não couber faz a tabela rolar.
+  meio do nome; nas tabelas, o que não couber faz a tabela rolar (no celular, a coluna de texto tem um
+  piso: Components, Tabelas).
 - **Livros:** Bitter (600, 700 e 800) e Newsreader itálico, só nas capas, nas lombadas e nos
   títulos da lateral. A caixa alta com espaçamento largo ("VOLUME 01", "CESAR SCHUTZ",
   "BLOG.CESARSCHUTZ.COM.BR") existe só aqui, como tipografia de livro.
@@ -683,6 +684,20 @@ têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm can
 - **Infográfico (D63):** a figura grande do post resumo, logo depois da introdução: de 3 a 6 quadros (o
   que é, quem participa, como funciona, as variações, o que levar), com ícones, selos e os tons dos
   atores, no estilo dos desenhos do corpo (skill `figura`).
+- **Tabelas (D70):** moldura de 10px com o fio `rule`, cabeçalho no poço (`well`) e sem quebra, letra de
+  15,5px e respiro de 9 × 14px nas células. **No celular (até 700px, o corte das figuras):**
+  - **o piso:** a coluna de texto (alguma célula com 30 letras ou mais; quem marca é o
+    `rehype-tabela`) nunca fica com menos de **11em (171px)**. O texto não encolhe até uma palavra por
+    linha; o que não couber faz a tabela rolar de lado, dentro da moldura (a página nunca rola);
+  - **a largura:** o respiro lateral das células cai para 10px, e a tabela de dentro de um `<details>`
+    vai de borda a borda da caixa (sem a moldura própria: a da caixa basta);
+  - **o aviso:** a tabela que passa da moldura (mais de 12px, ou seja, com letra de fora) ganha embaixo
+    "Arraste para o lado para ver a tabela inteira.", na letra do aviso das figuras (IBM Plex Sans 13px,
+    tinta 2). Diferente das figuras, que no celular sempre rolam, aqui o aviso só existe enquanto a
+    tabela passa (o script do artigo mede; sem JS, ela rola igual, sem o aviso).
+
+  Rótulo, número, versão e sim/não não têm piso. No papel, nada disso vale: a tabela encolhe para caber
+  na folha. Célula é para frase curta: parágrafo dentro de célula continua alto em qualquer largura.
 - **Caneta preta da interface** (D52, C04): a caneta preta desenha, a azul marca. Os ícones de
   calendário, relógio, código-fonte, lupa, lua e sol saem de `src/lib/traco.ts`, na tinta a 78%, traço
   1,7, **parados** (aparecem dezenas de vezes por tela: identidade no desenho, sem movimento); GitHub
@@ -917,7 +932,7 @@ caso de dúvida, vale este arquivo.
 | **Caneta da leitura** | `BarraLeitura.astro` | Rolagem (sem animação própria) e CSS | D45; D58 (cor do livro) |
 | **A busca nasce do campo** | `Busca.astro` | GSAP (Flip) e `@starting-style` | D44, D49; D52 (B06) |
 | **Filtro por livro** | `ListaFiltrada.astro`, `contador.ts` | GSAP e CSS (o contador) | D47, D49 |
-| **Troca Lista / Cards** | `SeletorModo.astro` | Web Animations API | D42, D49 |
+| **Troca Lista / Cards** | `SeletorModo.astro` | Web Animations API e CSS (a tinta) | D42, D49; D61 e D72 (a tinta) |
 | **A caneta que marca** | `traco.css` | CSS | D49; D52 (C04) |
 | **O ícone de tag inclina** | `IconeTag.astro`, `PilulaTag.astro` | CSS | D52 (B11) |
 | **A caneca** | classe `fumaca` (`desenho.css`) | CSS | D52 (C04) |

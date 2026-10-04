@@ -51,6 +51,10 @@ outras portas) sai.
 - **Figura em passos (D67, em prova):** um formato só no lugar da lousa de passos, da de comparação e da
   animação com play (`FiguraPassos`, regras na skill `figura`), na página `/animacoes-test-2/`. Até o
   Cesar decidir, post novo segue as regras de hoje.
+- **Apresentação de um post (D74):** quando o Cesar pedir a apresentação (PPT, slides, deck) de um post,
+  ela sai em `.pptx` no estilo do blog, com os desenhos, os prints e as marcações da caneta do próprio
+  post e as notas do apresentador: skill **`apresentacao`**, modo Criar, com as ferramentas de
+  `scripts/slides/`.
 - **Nunca** instalar skill, MCP ou pacote de terceiros sem ler o código antes e reportar ao Cesar o que
   for suspeito (rede, variáveis de ambiente, credenciais, comandos destrutivos).
 
@@ -169,6 +173,10 @@ npm run escrita -- <slug>   # as regras de escrita do post (D71): título, descr
                      # primeira pessoa e os avisos de post em partes; sem slug, o levantamento de todos
 npm run setup        # confere o ambiente (Node, dependências, skills, Chrome, motor do Impeccable)
 npm run apresentacao -- <slug> --pptx <arquivo> --titulo "…"   # slides do NotebookLM
+node scripts/slides/capturar.mjs <slug> [--base URL]   # as fotos do post para a apresentação (D74)
+python3 scripts/slides/posts/<slug>.py                 # gera a apresentação do post em saida/slides/<slug>/
+python3 scripts/slides/conferir.py <slug>              # PDF, imagens, folha de contato e checagens
+python3 scripts/slides/fontes.py [--instalar]          # as fontes do site em TTF (instalar = download, com OK)
 node scripts/desenho/validar.mjs [slug]   # regras da capa, das lousas, das figuras e das animações
 node scripts/desenho/validar.mjs marcas   # os logos das ferramentas (src/marcas/) e a regra de marca (D64)
 node scripts/desenho/revisar.mjs <slug> --base <dev>   # revisão dos desenhos do post (D59): bugs + fotos
@@ -207,6 +215,7 @@ PRODUCT.md               registro de produto do Impeccable (leitor, propósito, 
                          briefing vence em caso de divergência
 .impeccable/config.json  ajustes do Impeccable ("buildPath": "code")
 entrada/                 posts trazidos para adaptar (fora do git)
+saida/                   o que os scripts geram para entregar (fora do git): slides/<slug>/ (D74)
 docs/briefing.md         decisões de produto e design (fonte da verdade)
 docs/estado.md           painel: fase, pronto, próximos passos, perguntas
 docs/decisoes.md         registro de decisões (data, decisão, motivo, alternativas)
@@ -267,7 +276,8 @@ src/lib/                 posts, formatos, busca (Pagefind), código (Expressive 
                          colchete, círculo, rasura, ondinha, ícones de data, tempo, código, lupa, lua,
                          sol, contornos dos botões e a assinatura, D52, C04), figuras (lê figuras,
                          animações e logos, e troca `data-marca` pelo logo, D58)
-src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, apresentação)
+src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, apresentação) e o aviso das
+                         tabelas que passam da tela no celular (D70)
 src/scripts/tema.ts      tema: a lâmpada do cabeçalho alterna claro e escuro, acendendo e apagando
                          (D39, D61; a lâmpada em lampada.ts)
 src/scripts/             também: troca.js (a cortina e as chegadas), luz, estante-moderna, fichas-caem,
@@ -275,7 +285,9 @@ src/scripts/             também: troca.js (a cortina e as chegadas), luz, estan
 scripts/                 contraste, links, escrita (as regras de escrita do post, D71), apresentacao, og,
                          copiar-katex, desenho/, bench-busca/, marca, caveat-titulos (subconjunto da Caveat, C05), verificar-ambiente
                          (npm run setup e hook do início da sessão), livros/ (as fotos dos livros, D57),
-                         foto.mjs (foto de uma página ou peça, sem MCP, D58)
+                         foto.mjs (foto de uma página ou peça, sem MCP, D58), slides/ (as apresentações
+                         no estilo do blog, D74: estilo.py, capturar.mjs, conferir.py, fontes.py e o
+                         roteiro de cada post em posts/<slug>.py)
 public/posts/<slug>/     diagramas antigos e slides das apresentações (deck/)
 public/livros/fotos/     as fotos dos livros (D57): o deitado de cada livro e o aberto em branco
 src/ilustracoes/         uma ilustração SVG por post (<slug>.svg), com os recortes na raiz (D11)
@@ -304,7 +316,8 @@ src/evidencias/<slug>/   prints que provam algo do texto (PNG)
   `LousaLoop` só nos posts antigos
 - `caneta`: a passada de caneta num post (a última etapa da skill `post`, ou sozinha: "passa a caneta
   no post X"), pelo guia `docs/marcacoes.md`
-- `apresentacao`: PowerPoint do NotebookLM → slides WebP e PDF
+- `apresentacao`: a apresentação de um post; Criar (D74): o `.pptx` no estilo do blog, com os desenhos e
+  a caneta do post; NotebookLM: o `.pptx` de lá vira os slides WebP e o PDF do post
 - `redesenho`: os modelos de visual novo (D55): direção, construção por agente, conferência e entrega
   da URL ao Cesar; a versão final virou o site na D61
 - `serie-java`: série "Atualizações do Java" (só LTS)
@@ -318,7 +331,9 @@ src/evidencias/<slug>/   prints que provam algo do texto (PNG)
 ## Em outro computador
 
 - **Instalar à mão:** Node 22.12 ou mais novo (o Astro 7 exige; o projeto usa o 24, `.node-version`),
-  o Google Chrome e o Claude Code. O `pdftocairo` (poppler) só para regerar a marca.
+  o Google Chrome e o Claude Code. O `pdftocairo` (poppler) só para regerar a marca. Para as
+  apresentações (D74): Python 3 com python-pptx, o LibreOffice, o poppler e as fontes do site em TTF
+  (`python3 scripts/slides/fontes.py`).
 - **Depois do clone:** `npm run setup` (`scripts/verificar-ambiente.mjs`). Ele roda o `npm install`
   se faltar `node_modules`, confere as skills em `.claude/skills`, o Chrome e o **motor do
   Impeccable**, que não fica no git: é baixado para `~/.impeccable/bin/<versão>/` no primeiro uso
@@ -354,6 +369,12 @@ src/evidencias/<slug>/   prints que provam algo do texto (PNG)
   O dev tem o mesmo problema, e reiniciar não basta: pare o dev, apague `.astro/data-store.json` e
   suba de novo (o sintoma é o código sem moldura, com título e linguagem grudados, "Sem AOPJava",
   porque o HTML guardado aponta para um `ec.*.css` que não existe mais).
+- Mudou o HTML que um plugin de Markdown gera (`src/plugins/`)? O mesmo cache guarda o HTML dos posts
+  `.md` e não percebe a mudança no código do plugin: no build e no deploy, os posts que não mudaram saem
+  com o HTML antigo (os `.mdx` são refeitos). As opções do plugin no `astro.config.mjs` contam: o
+  `rehype-tabela` tem a opção `saida` (D70); suba o número dela e o cache se refaz sozinho, aqui e no
+  deploy. Plugin sem essa opção: `npm run build -- --force` e, depois do push, apagar os caches
+  `astro-cache-*`.
 - Suba o dev com `npm run dev -- --host 127.0.0.1`. Sem isso ele escuta só em `localhost` (IPv6), e o
   endereço <http://127.0.0.1:4322> que o Cesar usa não abre.
 - No bash do Claude, `node -e '…'` quebra com apóstrofo no texto ("d'água"): escreva o script num

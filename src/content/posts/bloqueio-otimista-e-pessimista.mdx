@@ -8,7 +8,7 @@ category: Dados
 draft: false
 ---
 
-import Animacao from "../../components/Animacao.astro";
+import FiguraPassos from "../../components/FiguraPassos.astro";
 
 Quando duas requisições leem a mesma linha, calculam um valor novo e gravam, uma delas pode apagar o trabalho da outra sem erro nenhum. Este post mostra as duas formas clássicas de impedir isso, o **bloqueio otimista** (detectar o conflito) e o **bloqueio pessimista** (evitar o conflito), com SQL testado no PostgreSQL e o equivalente em Spring Data JPA. Depois, o terceiro caminho que muitas vezes dispensa ambos (o UPDATE condicional), o papel dos níveis de isolamento, um critério de escolha e as perguntas que eu faço antes de decidir.
 
@@ -24,9 +24,21 @@ Dois clientes leem a mesma linha, cada um calcula um valor novo a partir do que 
 
 A diferença entre os dois bloqueios cabe numa frase, e é assim que o catálogo de padrões do Martin Fowler os descreve: **bloqueio otimista é detecção de conflito; bloqueio pessimista é prevenção de conflito.**
 
-A animação mostra as duas com as transações A (azul) e B (âmbar) debitando 10 da mesma conta (em roxo): em cima, o otimista; embaixo, o pessimista. Repare onde B paga em cada uma: no otimista, o UPDATE dela atinge zero linhas e ela refaz o trabalho; no pessimista, ela fica parada no relógio vermelho até o COMMIT de A.
+A figura mostra as duas com as transações A (azul) e B (âmbar) debitando 10 da mesma conta (em roxo): à esquerda, o otimista; à direita, o pessimista. Repare onde B paga em cada uma: no otimista, o UPDATE dela atinge zero linhas e ela refaz o trabalho; no pessimista, ela espera a trava até o COMMIT de A. Em **Passo a passo**, o otimista aparece inteiro primeiro, e depois o pessimista.
 
-<Animacao animacao="bloqueio-otimista-e-pessimista/detectar-ou-evitar" controles="post-it" legenda="A em azul, B em âmbar e a linha da conta em roxo; vermelho é conflito ou espera, verde é o que deu certo. Em cima, B refaz o trabalho; embaixo, B espera." />
+<FiguraPassos
+  figura="bloqueio-otimista-e-pessimista/detectar-ou-evitar-em-passos"
+  passos={[
+    "**Otimista:** A e B leem `version 1`; A grava 90, e a versão vira 2.",
+    "B tenta gravar 90 com `version = 1`: `UPDATE 0`, a versão mudou.",
+    "B relê 90 e `version 2`, e grava 80: refez o trabalho.",
+    "**Pessimista:** A trava a linha com `FOR UPDATE`; B pede a mesma linha e espera.",
+    "A grava 90 e faz `COMMIT`: a trava sai.",
+    "B recebe a linha já com 90 e grava 80, sem conflito.",
+  ]}
+  legenda="A em azul, B em âmbar e a linha da conta em roxo; o ✕ vermelho é o conflito."
+  fim="segmentos"
+/>
 
 **Uma boa analogia é o controle de versão**, que você usa todo dia. Duas pessoas precisam mexer no mesmo arquivo.
 

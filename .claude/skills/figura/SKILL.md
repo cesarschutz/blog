@@ -230,6 +230,10 @@ Arquivo em `src/figuras/<slug>/<nome>.svg`, com as regras das figuras (acima) e 
 - **Um objeto que passa por etapas** (um JSON montado campo a campo): o objeto na base, e cada passo
   soma a seta, o resultado e o selo.
 
+**Aviso de que o passo terminou (em prova):** cinco ideias pela prop `fim=` do `FiguraPassos`, que são
+`botao`, `anel`, `selo`, `grifo` e `segmentos`, no fim da `/animacoes-test-2/`. O motor marca a entrada
+(`data-entrando`, `--duracao-passo`) e o fim (`.passo-terminou`). A escolhida vira o padrão, sem prop.
+
 Conferir: `node scripts/desenho/validar.mjs <slug>` (aceita `data-passo` e `trajeto` e confere o
 trajeto) e as fotos de cada passo, a figura inteira primeiro, em 1280 e 390, no claro e no escuro. O
 componente quebra o build se o número de passos do desenho não bater com o da lista.

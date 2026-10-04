@@ -1,7 +1,7 @@
 # Estado do projeto
 
 Painel, não diário: fase atual, próximos passos, perguntas abertas e riscos. O detalhe de cada rodada
-fica em `docs/decisoes.md` (D1 a D71) e no histórico do git; controles de rodadas fechadas, em
+fica em `docs/decisoes.md` (D1 a D75) e no histórico do git; controles de rodadas fechadas, em
 `docs/historico/`.
 
 ## Fase atual
@@ -174,8 +174,64 @@ animadas (1 clara, 5 médias, 4 ruins) e uma pesquisa (Mayer, informação que s
 estão em `docs/figura-em-passos/`. A proposta é um formato só no lugar dos três: uma figura parada que
 o leitor pode montar passo a passo, em que cada passo soma, nada some e nada anda sozinho (regras na
 skill `figura`, componente `FiguraPassos`). As 9 peças da `/animacoes-test/` (que segue no ar como
-estava) foram refeitas nele. Também ficou a regra da D68: todo pedido dele num post termina na pergunta
+estava) foram refeitas nele e, a pedido dele, já estão nos cinco posts, com o aviso dos traços embaixo
+da figura (`fim="segmentos"`). Também ficou a regra da D68: todo pedido dele num post termina na pergunta
 "vira regra para os próximos posts?".
+
+Botão da busca do cabeçalho (D69, 02/10/2026, **publicado**): o Lighthouse apontava, no desktop, que o
+`aria-label` "Buscar" não continha o texto da tela ("Buscar ⌘K"). O nome passou a vir do texto: saiu o
+`aria-label`, a tecla desenhada ganhou `aria-hidden` e, até 1100px, o "Buscar" sai só da vista em vez de
+`display: none` (sem isso, a lupa ficaria sem nome). A auditoria passa no desktop e no celular, no dev e
+no build, e o cabeçalho ficou idêntico pixel a pixel nos dois temas, de 320 a 1600px. Feito na worktree
+`.claude/worktrees/kind-shaw-14748f` (branch `claude/kind-shaw-14748f`) e publicado a pedido do Cesar.
+
+Tabelas no celular (D70, 02/10/2026, **publicado** em 03/10/2026): a pergunta que o post dos mods
+deixou (as colunas encolhiam até uma palavra por linha antes de a tabela rolar) foi medida nas 69 tabelas
+dos posts e resolvida com as escolhas do Cesar. Até 700px, a coluna de texto tem piso de 11em, o respiro
+das células cai para 10px, a tabela do `<details>` vai de borda a borda da caixa, e a tabela que passa da
+tela ganha o aviso "Arraste para o lado" (o script do artigo mede). Em 390px, das 59 tabelas de três
+colunas ou mais, as com texto a duas palavras por linha caem de 42 para 14, e as que rolam ficam em 35
+(antes 36). Feito na worktree `.claude/worktrees/lucid-khayyam-cc18a1`; o estudo e as fotos estão em
+`.astro/depuracao/tabelas/` de lá (fora do git), até a pergunta 16 fechar.
+
+Tinta do seletor Lista / Cards (D72, 02/10/2026, **publicada**): o Lighthouse dava 96 de acessibilidade
+na home, no arquivo, na página de um livro e na de uma tag, por um falso positivo de contraste no botão
+solto do seletor. A caixa azul da tinta cobria a tira inteira, recortada por `clip-path`, e o axe não
+enxerga o recorte. Agora a caixa fica só em volta do botão ativo e salta na troca (cresce no clique e
+encolhe quando a tinta chegou); a cada quadro, quem anima continua sendo só o recorte. A nota voltou a 100
+nas quatro páginas, no desktop e no celular, no dev e no build, e o seletor ficou igual, parado e em
+movimento, nos dois temas. Era o segundo item da pergunta 14, que saiu de lá. Falta olhar a troca no
+Safari do iPhone.
+
+Nome acessível dos livros, dos vizinhos, das tags e de Séries (D73, 02/10/2026, **publicado**): o resto
+do achado do Lighthouse da D69 (`label-content-name-mismatch`). Nos 9 livros da home, nos vizinhos da
+página de um livro, nas 22 tags da nuvem e no livro de Séries, o `aria-label` saiu e o mesmo texto entrou
+num `.sr` dentro do link: o leitor de tela ouve o mesmo nome. Na home, o `content-visibility` dos dois
+primeiros quadros desceu do link para o livro (senão o link ficava sem nome até o script chegar) e o link
+ganhou `position: relative` (sem ele, o `.sr` mexia na suavização de um livro). Os quatro lugares saem da
+auditoria no dev e no build, a `link-name` passa, os nomes na árvore de acessibilidade são os mesmos e
+nenhuma das 104 fotos (seis peças, de 320 a 1600px, dois temas, mouse e foco) muda. A regra nova está em
+`.claude/rules/interface.md`. Feito na worktree `.claude/worktrees/wonderful-pike-800bfd` (branch
+`claude/wonderful-pike-800bfd`) e publicado a pedido do Cesar; o primeiro item da pergunta 14 saiu.
+
+Apresentação de um post (D74, 02/10/2026, **publicado**): o Cesar gostou da apresentação do post dos mods,
+feita no estilo do blog, e pediu que toda apresentação saia assim. Ela sai em `.pptx` (e PDF), com os
+desenhos, os prints e as marcações da caneta do próprio post e as notas do apresentador: skill
+`apresentacao` (modo Criar) e as ferramentas de `scripts/slides/` (a biblioteca do estilo, as fotos do
+post, a conferência, as fontes em TTF e o roteiro de cada post, a começar pelo dos mods). O que sai fica
+em `saida/`, fora do git.
+
+Post de Parquet e snapshots (D75, 03/10/2026): `parquet-snapshot-banco-de-dados`, no livro Dados,
+formato resumo, com infográfico de quatro quadros, capa viva, sete marcações da caneta e fontes
+conferidas. Distingue formato colunar, consistência da extração e recuperação por backup.
+A seção de pronúncia e as fontes de dicionários foram removidas a pedido do Cesar em 04/10/2026.
+Revisado antes da publicação na `main`, solicitada expressamente pelo Cesar.
+`check`, `build`, `links`, contraste, validação dos SVGs e conferência nas dez combinações de
+largura/tema passaram; movimento reduzido também. A foto do livro Dados agora registra três artigos.
+Relógio da capa corrigido em 03/10/2026 a pedido do Cesar: eixo fixo no centro, ponteiros separados
+e avanço proporcional de cinco minutos no hover, com retorno suave. `check`, `build`, `links`,
+validador e revisão dos desenhos passaram; eixo e proporção conferidos no navegador durante o
+movimento e com movimento reduzido, com trace de CPU 4× sem tarefas longas durante o giro.
 
 ## Como ver
 
@@ -216,7 +272,12 @@ estava) foram refeitas nele. Também ficou a regra da D68: todo pedido dele num 
 | D66 | o post dos mods ("Quanto custou cada agente?"), o primeiro do livro IA: prints parados do cockpit, tags Claude Code e Plugins, e o print largo que rola de lado no celular |
 | D67 | figura em passos (em prova): um formato só no lugar da lousa de passos, da de comparação e da animação com play |
 | D68 | pedido do Cesar num post termina na pergunta "vira regra para os próximos posts?" |
+| D69 | o botão da busca do cabeçalho com o nome vindo do texto "Buscar" (sem `aria-label`), para a auditoria de nome do Lighthouse passar sem mudar a aparência |
+| D70 | tabelas no celular: piso de 11em na coluna de texto, respiro menor, a tabela do `<details>` de borda a borda e o aviso "Arraste para o lado" |
 | D71 | as regras de escrita do post (título, descrição, TL;DR, abertura, sem primeira pessoa), o post em partes e o post dos mods dividido em parte 1 e parte 2 |
+| D72 | a tinta do seletor Lista / Cards com a caixa só em volta do botão ativo, para o falso positivo de contraste do Lighthouse sumir (nota 100) sem mudar a aparência nem o movimento |
+| D73 | o nome dos livros da home, dos vizinhos, das tags e do livro de Séries vindo de um texto `.sr`, sem `aria-label`, com o `content-visibility` da home no livro, e não no link |
+| D74 | a apresentação de um post no estilo do blog: `.pptx` com os desenhos e a caneta do próprio post e as notas do apresentador (skill `apresentacao`, `scripts/slides/`) |
 
 ## Próximos passos
 
@@ -231,12 +292,17 @@ estava) foram refeitas nele. Também ficou a regra da D68: todo pedido dele num 
    aprovada, a revisão troca `LousaTempo` e `LousaLoop` pela `Lousa` ou pela animação com play.
 3. **Blog antigo (D34):** os dois têm os mesmos artigos. Decidir entre `noindex` no novo até a
    virada, o antigo redirecionando para o novo ou a virada do domínio (`docs/virada.md`).
-4. **Medir no site publicado:** busca (regra 4 da D2) e Lighthouse (não medido desde a D26).
+4. **Medir no site publicado:** busca (regra 4 da D2) e Lighthouse (o desempenho não é medido desde a
+   D26; acessibilidade, boas práticas e SEO foram medidos no build na D69, em dez tipos de página, e na
+   D73, nas 73 páginas, no desktop e no celular; os achados que sobraram estão na pergunta 14).
 5. **Peso das páginas (B14):** 160 a 440 KB abertos, pelos SVGs embutidos; merece um item próprio.
 6. **Página Sobre:** o Cesar escreve (D33). Até lá, `/about/` leva à home.
 7. **`scripts/desenho/render.mjs` fotografa a abertura do site (D51)** em vez da folha de conferência:
    falta `reducedMotion: "reduce"` na página que ele abre (achado em 29/09/2026; contornado com uma
    cópia local).
+8. **Tabelas no celular (D70, publicado):** olhar uma tabela larga no iPhone (o Safari não foi
+   testado; a do "O cockpit", no post dos mods, serve). Quando a pergunta 16 fechar, apagar
+   `.astro/depuracao/tabelas/` e a worktree `lucid-khayyam-cc18a1`.
 
 ## Perguntas abertas para o Cesar
 
@@ -281,18 +347,45 @@ Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
     - os posts antigos fora das regras novas de escrita (as descrições acima de 160 caracteres, o título
       do Java 25 e o de criptografia acima do teto, a abertura de criptografia e a de data lake): ficam
       para a revisão em lote ou não se mexe?
-    - as tabelas largas no celular: hoje as colunas encolhem até uma palavra por linha antes de a
-      tabela rolar de lado (a linha do tempo foi resolvida no conteúdo, em duas colunas). Vale uma
-      largura mínima no CSS das tabelas, para todos os posts?
     - o campo `codigo` do post apontando para o `claude-code-kit` (hoje ele é só do `blog-exemplos`)?
-    - o botão da busca do cabeçalho: o `aria-label` "Buscar" não contém o texto visível ("Buscar ⌘K"),
-      o que o Lighthouse aponta no desktop. Troco pelo texto visível?
     - a branch local `post-claude-code-mod` (vazia, criada na pasta do projeto antes da worktree) e a
       worktree `.claude/worktrees/post-do-claude-md-ao-mod` podem ser apagadas depois da publicação.
 13. **Figura em passos (D67):** aprova o formato (`/animacoes-test-2/`)? Se sim, ele vira a `Figura` com
     `passos`, as lousas e animações dos posts são refeitas nele pela revisão dos posts e as páginas de
     teste e a dos controles (D65) saem do ar. A lousa da instalação do post dos mods, que a auditoria
-    julgou ruim (três histórias numa peça), não está entre as 9: refaço também?
+    julgou ruim (três histórias numa peça), não está entre as 9: refaço também? E qual aviso de "o
+    passo terminou" fica, das cinco ideias no fim da página (a sugestão é a 1, o Próximo que se enche,
+    ou ela com a 5, os traços embaixo da figura)?
+14. **Lighthouse fora do cabeçalho (achados da D69, que já estão no ar):**
+    - o Lighthouse mede o contraste no meio das animações de entrada (home, arquivo e Tags) e acusa
+      valores que somem com a página assentada. Fica como está?
+    - a worktree `.claude/worktrees/kind-shaw-14748f` (a da D69) pode ser apagada: a D69 já está na `main`.
+15. **Nome acessível (D73), o que ficou para decidir:**
+    - o link do nome embaixo de cada livro da home leva ao mesmo lugar que o livro (dois links por livro
+      para o teclado e o leitor de tela, desde que a gaveta saiu da home) e o Chrome calcula o nome dele
+      com um espaço antes da vírgula ("Vol. 01: Arquitetura de Software , página do livro"). Tiro o nome
+      do caminho do teclado e do leitor de tela (`tabindex="-1"` e `aria-hidden`, como o ícone das fichas
+      de Tags), ou fica como está?
+    - o MCP `chrome-devtools` usa um perfil de Chrome só para todas as sessões: com várias abertas, só a
+      primeira abre o navegador (em 02/10/2026, a da D69 prendeu o perfil e duas sessões contornaram).
+      Ponho `--isolated` no `.mcp.json`, para cada sessão abrir o seu?
+    - você confirma a origem do repositório no app (Ajuda → Troubleshooting → Review Pinned Git Origins)?
+      Sem isso, a ferramenta que traz a `main` para as worktrees recusa sempre que a `main` mexe em
+      `.claude/skills`.
+    - a worktree `.claude/worktrees/wonderful-pike-800bfd` (a da D73) pode ser apagada: a D73 já está na
+      `main`.
+16. **Tabelas no celular (D70), o que ficou para decidir:**
+    - a coluna de lista curta: o piso do texto tira largura da coluna vizinha. Na tabela do JWT, em 430
+      e 480px, a coluna `alg` (`HS256 / HS384 / HS512`) fica com um item por linha, e a tabela sobe de
+      580 para 674px. Um degrau menor (6,5em) para a coluna com menos de 30 letras e 4 palavras ou mais
+      leva essa tabela a 534px, mas mexe em 21 colunas e faz 3 tabelas a mais rolarem em 360px. Entra?
+    - o tablet: em 768px, quatro tabelas largas (duas de quatro colunas, a de cinco e a de sete)
+      continuam rolando com coluna de texto abaixo de 160px, porque o piso só vale até 700px (ele
+      melhoraria três delas). Estendo o piso para qualquer largura?
+    - o conteúdo: duas tabelas do `java-29` têm célula com parágrafo (219 e 463 letras), e a linha
+      continua com 253 e 417px. Viram texto ou lista na revisão do post?
+    - a regra para os próximos posts (D68): "célula de tabela é para frase curta, e cabeçalho curto"
+      entra na skill `post`, em Recursos de Markdown?
 
 ## Riscos a acompanhar
 

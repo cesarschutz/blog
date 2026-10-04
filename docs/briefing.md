@@ -467,7 +467,9 @@ Referência: aba "Artigo" do protótipo.
   Comentários (Giscus) e estatísticas (GoatCounter) continuam opcionais e desligados.
 - Imagens do corpo abrem num visor sobre a página escurecida (D33), com fechar, setas e contador na
   apresentação; o print como evidência não abre no visor: o clique leva à página de onde ele veio
-  (D58). Tabelas rolam na horizontal no celular.
+  (D58). Tabelas rolam na horizontal no celular, dentro da moldura: a coluna de texto tem um piso de
+  11em, para não encolher até uma palavra por linha, e a tabela que passa da tela ganha o aviso
+  "Arraste para o lado" (D70).
   Matemática com KaTeX, carregado só em posts que usam.
 
 ### 5.4 SEO e distribuição

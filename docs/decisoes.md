@@ -79,7 +79,12 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D66 | O post dos mods ("Quanto custou cada agente?"): publicado direto, com as telas do cockpit em print parado, as tags Claude Code e Plugins e o print largo que rola de lado no celular | decidido e publicado; o Cesar revê no ar |
 | D67 | Figura em passos: um formato só no lugar da lousa de passos, da lousa de comparação e da animação com play (abre inteira, cada passo soma, nada some, o leitor manda) | em prova em `/animacoes-test-2/` |
 | D68 | Pedido do Cesar num post termina na pergunta "vira regra para os próximos posts?" | decidido |
+| D69 | O botão da busca do cabeçalho: o nome vem do texto "Buscar", sem `aria-label`, e a tecla desenhada fica fora do nome | decidido e publicado |
+| D70 | Tabelas no celular: piso de 11em na coluna de texto, respiro menor nas células, a tabela do `<details>` de borda a borda e o aviso "Arraste para o lado" | decidido e publicado; falta conferir no iPhone |
 | D71 | Regras de escrita do post (título que faz sentido sozinho, descrição, TL;DR, abertura pelo assunto, sem primeira pessoa), o post em partes e o post dos mods dividido em parte 1 e parte 2 | decidido e publicado |
+| D72 | A tinta do seletor Lista / Cards: a caixa azul fica só em volta do botão ativo e salta na troca, para o Lighthouse não tomar o azul pelo fundo do botão solto | decidido e publicado |
+| D73 | O nome dos livros da home, dos vizinhos do livro, das tags da nuvem e do livro de Séries vem de um texto `.sr`, sem `aria-label`; na home, o `content-visibility` no livro, e não no link | decidido e publicado |
+| D74 | A apresentação de um post (PPT) no estilo do blog, com os desenhos, os prints e a caneta do próprio post e as notas do apresentador (skill `apresentacao`, `scripts/slides/`) | decidido e publicado |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -2646,6 +2651,24 @@ nada muda.
   símbolos para o blog todo e uma faixa de desfecho. O componente é `FiguraPassos` (motor
   `src/scripts/figura-passos.ts`, estilo `figura-passos.css`), e o `validar.mjs` aceita `data-passo` e
   `trajeto`.
+- **O aviso de que o passo terminou** (pedido do Cesar, 02/10/2026: ao clicar em Próximo, as coisas
+  entram e não dá para saber quando acabou). O motor marca a entrada do passo (`data-entrando`, com a
+  duração em `--duracao-passo`) e o fim (`.passo-terminou`), e há cinco ideias em prova, no fim da
+  `/animacoes-test-2/`, pela prop `fim=` do `FiguraPassos`:
+  1. o Próximo se enche (a sugestão);
+  2. um anel ao lado de "Passo 3 de 6" que vira ✓;
+  3. o selo do desenho que carimba;
+  4. o passo da lista que se grifa;
+  5. um traço por passo embaixo da figura, como os stories.
+
+  O Cesar escolhe uma, ou uma combinação de duas.
+- **Nos posts (02/10/2026, pedido do Cesar):** as 9 peças da `/animacoes-test-2/` substituíram as
+  antigas nos cinco posts (criptografia: envelope e TLS; Jackson: o filtro e os dois caminhos; CronJob:
+  o deploy no meio do lote; cobrança: a resposta perdida, os passos da chave e o sem e com a chave;
+  bloqueio: detectar ou evitar), todas com o aviso 5, os traços embaixo da figura (`fim="segmentos"`).
+  Os parágrafos que apresentavam as peças (play, arrastar, caneta) foram reescritos, e a lista da
+  cobrança ganhou o sexto passo, como a figura. As lousas e animações antigas continuam só na
+  `/animacoes-test/`. O desenho dos controles (fita, lápis, marca-texto) o Cesar decide depois.
 - **Se aprovar:** a figura em passos vira a `Figura` com `passos`. A `Lousa` e a `Animacao` saem dos
   posts, peça por peça, pela revisão dos posts, e as duas páginas de teste e a dos controles saem do ar.
   A D65 (a escolha dos controles) deixa de ter objeto: o formato novo tem um controle só.
@@ -2665,6 +2688,175 @@ nada muda.
   vezes, vira regra" continua.
 - **Onde:** CLAUDE.md ("Regras que valem sempre") e a skill `post` ("Regra de aprendizado" e o relatório
   final).
+
+## D69 · O botão da busca do cabeçalho: o nome vem do texto
+- **Data:** 02/10/2026 · **Status:** decidido e publicado (commit e push a pedido do Cesar).
+- **O achado** (Lighthouse 13.4.1 com axe-core 4.12.1, no desktop, auditoria
+  `label-content-name-mismatch`; visto no post dos mods, D66, e presente em toda página, por ser do
+  cabeçalho): o botão tinha `aria-label="Buscar"` e, na tela, "Buscar ⌘K". O nome não continha o texto
+  visível. O peso da auditoria é 0, e por isso a nota de acessibilidade seguia em 100.
+- **O que o botão mostra:** acima de 1100px, "Buscar ⌘K" no macOS e no iOS e "Buscar Ctrl K" fora deles
+  (o `data-ctrl-k` do script do `<head>`); em tela de toque larga (`hover: none`), só "Buscar"; até
+  1100px, só a lupa.
+- **Como a auditoria confere** (lido no axe-core que o Lighthouse embute): ela junta os textos pintados
+  dentro do botão, sem separador ("Buscar" + "⌘K"), tira símbolos como o ⌘ e exige que o resultado
+  ("buscark") esteja contido no nome ("buscar"). Texto com `aria-hidden` conta, porque está na tela. E a
+  regra só vale para quem tem `aria-label` ou `aria-labelledby`.
+- **Decidido** (o Cesar escolheu entre três opções): o nome vem do texto.
+  - sai o `aria-label`, e o nome do botão passa a ser o texto do `<span>Buscar</span>`;
+  - o `<kbd>` do atalho ganha `aria-hidden="true"`: é a tecla desenhada, e o atalho de verdade já vai no
+    `aria-keyshortcuts`;
+  - até 1100px, o "Buscar" sai só da vista (as seis declarações da `.sr` do `base.css`), no lugar do
+    `display: none`, que deixaria a lupa sem nome.
+- **Motivo:** o nome fica "Buscar" em toda largura e plataforma, o mesmo de antes para o leitor de tela,
+  sem JavaScript novo. Acima de 1100px nenhum CSS muda, e nenhum CSS do projeto seleciona por
+  `aria-label` ou `aria-hidden`.
+- **Alternativas, testadas no DOM antes de mexer no código:**
+  - manter o `aria-label` e só pôr `aria-hidden` no atalho: continua falhando;
+  - tirar o `aria-label` sem mexer no CSS: passa no desktop, mas até 1100px o botão fica sem nome
+    (`button-name`, peso 10, e a nota cai para 95);
+  - `aria-label="Buscar ⌘K"`: falha com o HTML de hoje, passa com um espaço entre o texto e o atalho e
+    volta a falhar com "Ctrl K". Pediria um script trocando o rótulo por plataforma, o leitor de tela
+    ouviria o atalho duas vezes e, no celular, o nome citaria um atalho que não está na tela;
+  - deixar como estava: a auditoria tem peso 0.
+- **Conferido** (pelo MCP `chrome-devtools`, numa aba de contexto isolado, no dev e no build):
+  - `check`: 0 erros e 0 avisos (5 dicas, de outros arquivos);
+  - Lighthouse em modo `navigation` no post, no dev e no build: 62 de 62 no desktop e 61 de 61 no
+    celular. A auditoria passa no desktop e não se aplica no celular (lá não há texto na tela); a
+    `button-name` passa nos dois. No build, o botão não aparece em nenhuma falha dos dez tipos de página
+    auditados (home, arquivo, Livros, um livro, Tags, uma tag, Séries, a série Java, a 404 e o post);
+  - prova de mutação: com o `display: none` de volta, a auditoria de celular cai para 95 e a de desktop
+    segue em 100. O modo `navigation` desenha mesmo a tela estreita;
+  - nome na árvore de acessibilidade do Chrome, em 1350 e em 412px: `button "Buscar"`, com o atalho em
+    `keyshortcuts`;
+  - aparência: 28 fotos da peça `.topo-fixo` (`scripts/foto.mjs`; 320, 390, 412, 768, 860, 861, 1100,
+    1101, 1280, 1350 e 1600px, nos dois temas, mais o mouse em cima em 860, 1100 e 1350px), antes ×
+    depois no dev e antes × build: 0 pixel diferente em todas. Pelo MCP, 18 fotos (1350, 1101, 1100,
+    860, 412 e 320px, nos dois temas, mais o "Ctrl K" e o foco do teclado): 0 pixel diferente na faixa
+    do cabeçalho;
+  - comportamento no build: em 1350px, o clique abre a busca, o Esc devolve o foco ao botão e os atalhos
+    ⌘K e Ctrl K abrem e fecham; em 412px, o toque na lupa abre e o Esc devolve o foco;
+  - `conferir` no build: ok nas 10 combinações e no movimento reduzido.
+- **A `main` andou no meio do trabalho:** outra sessão publicou a D67 e a D68 (commit `04f2ded`), sem
+  tocar no cabeçalho. A worktree foi trazida para a `main` nova e a decisão virou D69. Refeitos nela, com
+  os mesmos resultados: o `check`, o build, o Lighthouse do post (dev e build, desktop e celular), o nome
+  na árvore de acessibilidade, o clique, o toque e os atalhos, o `conferir` e as 28 fotos (antes × depois
+  no dev e antes × build). As 18 fotos pelo MCP, a prova de mutação e o levantamento dos dez tipos de
+  página são de antes de a `main` andar.
+- **Armadilha do Lighthouse no MCP:** em modo `snapshot` ele audita a tela como está, sem emular o
+  aparelho pedido. Para testar uma ideia no DOM sem recarregar, ponha a largura antes, com `emulate`. Em
+  modo `navigation` ele emula.
+- **Achados fora do pedido** (vêm de código que já está no ar, e na home publicada foram conferidos;
+  viraram a pergunta 14 do painel):
+  - a mesma auditoria falha por outros elementos, com o mesmo peso 0: os 9 livros da fileira da home
+    (`a.tomba`), os 2 vizinhos da página de um livro (`a.vizinho-livro`), as 22 tags da página Tags e o
+    livro da página Séries (`a.palco`). Em todos, o `aria-label` não contém o texto que está na tela;
+  - `color-contrast` (peso 7) acusa 1,18 no "Lista" do seletor de modo, e é falso positivo: a tinta azul
+    (`.tinta`) ocupa o seletor inteiro e é recortada por `clip-path`, que o axe não considera; o texto
+    está sobre o papel, com 6,48:1. Custa 4 pontos (nota 96) na home, no arquivo, na página de um livro e
+    na de uma tag;
+  - contrastes baixos que somem com a página assentada, medidos no meio das animações de entrada (o
+    valor muda de uma medição para outra): os nomes dos livros na home (4,39 numa vez, 3,44 em outra), os
+    cartões do arquivo (4,44) e as fichas de Tags (1,21 e 1,31).
+- **Mudado:** `src/components/Cabecalho.astro` (a marcação do botão, a regra da faixa até 1100px e o
+  comentário do campo). Feito na worktree `.claude/worktrees/kind-shaw-14748f`, com o dev na porta 4390 e
+  o preview na 4391.
+
+## D70 · Tabelas no celular: o piso da coluna de texto, a largura e o aviso
+- **Data:** 02/10/2026 · **Status:** decidido e publicado (03/10/2026, a pedido do Cesar); falta
+  conferir no iPhone.
+- **Pedido do Cesar:** medir o problema visto na D66 (no celular, as colunas encolhem até a palavra mais
+  longa antes de a tabela rolar de lado), propor uma ou duas regras de CSS com fotos de antes e depois
+  e, com o OK dele, aplicar.
+- **A medição** (dev, Chrome pelo `playwright-core`, celular emulado, nos 29 posts):
+  - 69 tabelas em 23 posts; 59 com três colunas ou mais (45 de três, 12 de quatro, 1 de cinco, 1 de
+    sete). 21 das 59 são as tabelas de JEPs da série Java, dentro de um `<details>`.
+  - Em 390px, **47 das 59** tinham alguma coluna de texto abaixo de 160px (em 320px, 48). Em 42, a pior
+    célula tinha duas palavras por linha ou menos. 23 tinham linha de 150px ou mais (6 de 200px ou mais;
+    a pior, 300px).
+  - 35 das 47 têm três colunas: o problema não é só das tabelas de quatro colunas ou mais.
+  - Em 320px, as 59 já rolavam, todas com as colunas no mínimo. De 1024px para cima, nenhuma linha passa
+    de 150px: é problema de celular.
+  - "Coluna de texto", na medição: alguma célula com 5 palavras ou mais, ou mediana de 3 ou mais.
+- **Decidido** (as três escolhas do Cesar, pelas fotos de antes e depois):
+  1. **O piso.** Até 700px (o corte das figuras), a coluna de texto nunca fica com menos de **11em
+     (171px)**. Coluna de texto, para a regra: alguma célula do corpo com 30 letras ou mais; o
+     `rehype-tabela` marca a célula do cabeçalho com `data-texto`. Rótulo, número, versão e sim/não
+     ficam sem piso. O que não couber faz a tabela rolar dentro da moldura (a página nunca rola).
+  2. **A largura.** Até 700px, o respiro lateral das células cai de 14 para 10px, e a tabela de dentro
+     de um `<details>` vai de borda a borda da caixa, sem a moldura própria.
+  3. **O aviso, com JS.** A tabela que passa da moldura mais de 12px (mais que o respiro da última
+     célula: alguma letra de fora) ganha embaixo "Arraste para o lado para ver a tabela inteira.", na
+     letra do aviso das figuras. Um observador no `artigo.ts` mede e põe o aviso; o CSS o mostra até
+     700px. Sem JS, a tabela rola igual, sem o aviso. Como o aviso não está no HTML, não vai para o RSS
+     nem para a busca.
+- **Resultado** (as 59 tabelas, em 390px):
+  - texto a duas palavras por linha ou menos: de 42 para 14 tabelas;
+  - linha de 150px ou mais: de 23 para 9 (de 200px ou mais, de 6 para 2); a altura somada das tabelas cai
+    de 60.864 para 51.606px;
+  - cabem na tela 24 (antes 23) e rolam mais de 12px 35 (antes 36). Quatro que cabiam passam a rolar
+    (cockpit, bloqueio, W3C e JWT: três colunas, duas de texto), com as linhas caindo de 182–228px para
+    112–158px; cinco deixam de rolar (tabelas de JEPs);
+  - em 320px: texto picado de 42 para 18, linha de 150px ou mais de 24 para 10;
+  - acima de 700px nada muda (768, 1024 e 1280px: 207 medidas iguais às de antes).
+- **Alternativas medidas e descartadas** (390px, as 59):
+  - largura mínima da tabela só com quatro colunas ou mais (a ideia do pedido): de 47 para 43 apertadas;
+  - largura mínima da tabela pelo número de colunas (30, 40 e 50em): resolve o texto, mas as 59 passam a
+    rolar, inclusive a que não tem texto (a do ledger);
+  - só o piso: 54 das 59 rolam (as de JEPs passam uns 34px e cortam a última coluna);
+  - só a largura: nenhuma tabela nova rola, mas 29 continuam com o texto picado;
+  - piso de 13em: 10 com texto picado, mas só 15 cabem e 44 rolam;
+  - piso que acompanha a tela (`min()` com `vw`): não faz nada em 320px, onde o problema é maior.
+- **Efeito colateral medido:** o piso tira largura da coluna vizinha que não é de texto. Em 10 das 621
+  medidas (69 tabelas × 9 larguras, de 320 a 700px), a tabela ou a linha mais alta cresceu, quase sempre
+  uma linha (23px). O caso que pesa é a tabela do JWT em 430 e 480px: a coluna `alg`
+  (`HS256 / HS384 / HS512`) cai de 85 para 67px e fica com um item por linha, e a tabela sobe de 580 para
+  674px em 430px e de 511 para 651px em 480px (de 360 a 412px ela melhora: de 743–812 para 674px). Um
+  degrau menor para a coluna de "lista
+  curta" (menos de 30 letras e 4 palavras ou mais, 21 colunas no blog), de 6,5em, levaria essa tabela a
+  534px em todas as larguras, mas no conjunto quase não muda (altura somada −0,04% em 390px) e faz 3
+  tabelas a mais rolarem em 360px. **Não aplicado:** fica para o Cesar decidir.
+- **O que a regra não resolve:**
+  - célula com parágrafo: duas tabelas do `java-29` têm célula de 219 e de 463 letras, e a linha continua
+    com 253 e 417px. É do conteúdo, e vai para a revisão em lote;
+  - o cabeçalho não quebra e segura a coluna larga ("Para quem vem do" ocupa 161px para "Java 7"):
+    cabeçalho curto ajuda;
+  - em tablet (768px), quatro tabelas largas (duas de quatro colunas, a de cinco e a de sete) continuam
+    rolando com coluna de texto abaixo de 160px: o piso só vale até 700px, e melhoraria três delas.
+    Fica para o Cesar decidir se estende.
+- **Só na tela:** no papel, a tabela continua encolhendo para caber na folha, sem piso e sem aviso.
+- **Achado ao aplicar, o cache de conteúdo:** o Astro guarda o HTML dos posts `.md` e só o refaz quando
+  a configuração muda; o código de um plugin não conta. Testado: com o plugin alterado, o build comum
+  manteve o HTML antigo do `java-25` (o `.mdx` foi refeito). No deploy, que reaproveita o cache, os 17
+  posts `.md` com tabela sairiam sem a marca das colunas. Solução: o `rehype-tabela` ganhou a opção
+  `saida` no `astro.config.mjs` (as opções entram na comparação). Com ela, o build comum registrou
+  "Astro config changed" e refez tudo sozinho, sem `--force` e sem apagar cache à mão. Mudou o HTML que
+  o plugin gera? Sobe o número.
+- **Conferido:** `check` (0 erros), `build`, `links` (nenhum quebrado) e `conferir` nos 23 posts com
+  tabela, contra o site gerado (320 a 1600px, dois temas e movimento reduzido: tudo ok, sem rolagem
+  lateral da página). A implementação bate com o protótipo aprovado (621 medidas iguais, de 320 a 700px).
+  O aviso aparece e some com o `<details>` que abre e com a janela que muda de largura, não sai na
+  impressão e não desloca a página ao carregar (CLS zero, com rede rápida e lenta: as tabelas ficam a
+  mais de 2.600px do topo).
+- **Não conferido:** o Safari do iPhone (aqui só há Chrome). O piso é `min-width` em célula, com valor
+  fixo; vale olhar no aparelho depois de publicar.
+- **Número e base:** enquanto esta era feita, entraram na `main` a D67, a D68, a D69 (o botão da busca,
+  de outra sessão), a D72, a D73, a D74 e a D75 (a D71 está reservada por outra worktree): por isso esta
+  é a D70. A worktree foi trazida para a `main` de 02/10/2026 (`04f2ded`) antes da conferência, e o envio
+  juntou o commit com a `main` de 03/10/2026 (`0a893de`, já com o post de Parquet, a D72 e a D73).
+- **Publicação:** o app recusou trazer a `main` para a worktree (ela mexeu em skills, arquivos protegidos,
+  e a origem do repositório ainda não estava confirmada no app). O commit foi montado em cima da
+  `origin/main` sem escrever nada protegido na worktree (`git merge-tree`, com o conflito do registro e do
+  painel resolvido à mão, e `git commit-tree`), conferido na árvore extraída e enviado com
+  `git push origin <commit>:refs/heads/main`. A branch da worktree ficou com o commit de antes da junção.
+- **Trabalho numa worktree** (`.claude/worktrees/lucid-khayyam-cc18a1`, dev na 4380 e preview na 4381),
+  porque havia outras sessões na pasta do projeto. O estudo (scripts de medição, as regras testadas, as
+  medidas e as fotos) ficou em `.astro/depuracao/tabelas/` dessa worktree, fora do git, e sai quando a
+  pergunta 16 do painel (as quatro perguntas que ficaram) fechar.
+- **Mudado:** `src/plugins/rehype-tabela.mjs` (marca as colunas de texto), `src/styles/prosa.css` (o
+  piso, a largura e o aviso), `src/scripts/artigo.ts` (o observador do aviso), `astro.config.mjs` (a
+  opção `saida`), o `DESIGN.md` (Components, Tabelas), o `docs/briefing.md` (§5.3), a regra de interface
+  (a lista do que tem JS), o `CLAUDE.md` (armadilhas) e o painel.
 
 ## D71 · Escrita do post: título que faz sentido sozinho, abertura pelo assunto, sem primeira pessoa, e o post em partes
 - **Data:** 02/10/2026 · **Status:** decidido e publicado em 03/10/2026 (o Cesar leu as duas partes,
@@ -2754,3 +2946,263 @@ nada muda.
   foi escrito para o post único. Depois da divisão, os prints, a lousa e a capa antiga estão no slug da
   parte 2 (`claude-code-csr-cockpit`): para gerar a apresentação de novo, o roteiro precisa ler os prints
   de `src/evidencias/claude-code-csr-cockpit/` e fotografar as duas páginas.
+
+## D72 · A tinta do seletor Lista / Cards: a caixa só em volta do botão ativo
+- **Data:** 02/10/2026 · **Status:** decidido; publicado em 03/10/2026. A D70 (as tabelas no celular), a
+  D71 (a escrita dos posts) e a D73 (o nome acessível dos livros e das tags) são de outras sessões e, quando
+  esta foi publicada, ainda estavam nas worktrees delas, sem commit.
+- **O achado** (visto na D69, segundo item da pergunta 14 do painel dela; Lighthouse 13.4.1 com axe-core
+  4.12.1): a auditoria `color-contrast` (peso 7) reprovava o "Lista" do seletor de modo, com "contraste 1,18,
+  #57605e sobre #2549b8", e a nota de acessibilidade ficava em 96 na home, no arquivo, na página de um livro
+  e na de uma tag, no desktop e no celular, já no site publicado. Com o leitor em Lista, a falha passava
+  para o "Cards".
+- **Era falso positivo.** O texto do botão solto fica sobre o papel (6,47:1 pelo axe). A `.tinta` era um
+  `<span>` com o azul de fundo cobrindo a tira inteira, recortado por `clip-path` no lugar do botão ativo. O
+  axe monta a pilha de fundos pelas caixas dos elementos e não considera o `clip-path`: achava o azul
+  embaixo do botão solto. Da D49 à D54 a tinta era uma caixa justa, com `left` e `right` animados; a tira
+  inteira com recorte veio no redesenho (D61), pela régua dele ("só `transform`, `opacity` e `clip-path`,
+  nada de refazer o layout a cada quadro").
+- **Decidido** (o Cesar escolheu entre quatro opções): **a caixa que só salta.**
+  - parada, a caixa da tinta fica só em volta do botão ativo, por duas propriedades registradas a mais
+    (`--caixa-l` e `--caixa-r`), que o script escreve junto com as bordas do recorte. O recorte desconta a
+    caixa (`calc(var(--tinta-l) - var(--caixa-l))`), e o azul fica no mesmo lugar de antes;
+  - na troca, a caixa cresce na hora para o lado aonde a tinta vai e só encolhe do outro lado 0,48s depois,
+    quando a tinta chegou (`--caixa-l 0s 0.48s` ou `--caixa-r 0s 0.48s` na transição do `data-rumo`). São
+    dois saltos por troca; a cada quadro, quem anima continua sendo só o `clip-path`;
+  - a caixa fica em pixels inteiros, com 1px de folga em volta do recorte (`Math.floor(l) - 1`).
+- **Motivo:** tira a causa (a caixa azul deixa de cobrir texto que ela não pinta), os dois botões passam a
+  ser conferidos de verdade, a aparência e o movimento não mudam e nenhum layout é animado.
+- **Alternativas, todas testadas no DOM antes de mexer no código** (CSS injetado por cima do componente,
+  medido com o axe, com o Lighthouse em modo `snapshot` e pixel a pixel contra o código de então):
+  - deixar como estava: é falso positivo, mas a nota fica em 96 e todo relatório repete a falha;
+  - a caixa justa que anda (como da D49 à D54): passa, mas refaz o layout a cada quadro (34 layouts por
+    troca, contra 6 de antes e 8 da escolhida) e a tinta sai do lugar (em "Lista" fica 0,58px mais larga);
+  - o azul como pseudo-elemento (`.modo::before`): idêntico e nota 100, mas o axe desiste de medir quando há
+    pseudo-elemento com fundo e deixa os dois botões como "incompleto". Uma queda real de contraste no
+    seletor deixaria de ser pega;
+  - só `transform`: com uma peça (`translate` e `scale`), as pontas redondas deformam; com três (duas pontas
+    e o corpo), mudam pixels e o botão apertado fica "incompleto";
+  - duas metades paradas, uma por botão, com `visibility` na que está sem tinta: passa, mas o movimento não
+    fica idêntico;
+  - a caixa rente ao recorte, ou em pixels inteiros sem a folga: a ponta da gota muda (item seguinte).
+- **Dois achados do caminho:**
+  - o Chrome pinta o fundo de uma caixa em pixels inteiros, e o `clip-path` não. Uma caixa com fração de
+    pixel, rente ao recorte, come ou desloca a ponta da tinta em até 0,3px. Daí a caixa em pixels inteiros e
+    com folga;
+  - o minificador do build (Lightning CSS) escreve o `initial-value: 0px` de um `@property` como `0`, sem
+    unidade. As propriedades novas nascem com 3px, o valor inicial das bordas do recorte.
+- **Conferido:**
+  - `check`: 0 erros e 0 avisos (5 dicas, de outros arquivos);
+  - Lighthouse pelo MCP `chrome-devtools`, numa aba de contexto isolado, em modo `navigation`, em `/`,
+    `/archive/`, `/categories/IA/` e `/tags/Claude Code/`, no desktop e no celular, no dev e no build: 100
+    nas 16 medições, com a `color-contrast` passando. Antes era 96: pelo MCP, no build do código de então,
+    em `/archive/`; pela bancada, no dev, nas quatro páginas. Em modo `snapshot` no build, com a página
+    assentada, o Lista apertado (desktop e celular) e o tema escuro (os dois estados): 100. A única
+    auditoria que ainda falhava era a de nome (`label-content-name-mismatch`, peso 0), a do botão da busca
+    (D69) e a dos livros, dos vizinhos e das tags (D73);
+  - axe direto (o 4.12.1 que o Lighthouse embute): os dois botões passam nos dois estados, 6,47:1 sobre o
+    papel e 7,7:1 sobre a tinta;
+  - parado, com `scripts/foto.mjs` e `sharp`: 84 fotos do seletor por rodada (as quatro páginas em 320, 390,
+    768, 1280 e 1600px, nos dois temas, com Cards e com Lista apertado, mais o movimento reduzido), duas
+    rodadas antes e duas depois, no dev e no build. Com par idêntico, 0 pixel diferente: 78 de 84 no dev e
+    75 de 84 no build. Nas outras 15, de 2 a 37 pixels com 1 nível de diferença em 255, quase todos na
+    borda do papel e nenhum na borda da tinta; a exceção são duas fotos da home (a fita, até 15 níveis), que
+    variam o mesmo tanto entre duas rodadas do código de antes;
+  - em movimento, quadro a quadro (as transições pausadas e levadas a 18 instantes de cada sentido, mais o
+    seletor parado), com rasterização por software, antes × depois: 623 de 624 fotos idênticas, em quatro
+    combinações de página, largura, densidade e tema, no dev e no build; a outra tem 1 pixel com 1 nível de
+    diferença. Com a placa de vídeo, a diferença fica dentro do ruído entre duas passagens do mesmo código;
+  - em tempo real no build: a tinta no lugar pedido em todos os quadros, a caixa mudando duas vezes por
+    troca, com folga mínima de 1,06px, também nas trocas interrompidas no meio (aos 120 e aos 300ms);
+  - movimento reduzido: a tinta e a caixa pulam juntas, em até três quadros (a regra geral do `base.css`);
+  - `conferir` no build, nas quatro páginas: ok nas 10 combinações e no movimento reduzido. Console limpo;
+  - o CSS minificado do build mantém a regra (`--caixa-l 0s .48s`).
+- **Não conferido:** Safari e Firefox (não há esses navegadores na bancada). A regra só usa o que o
+  componente já usava (`@property` e transição de propriedade registrada), mas vale olhar a troca no iPhone.
+- **Achado fora do pedido:** na página de uma tag, no desktop, o axe deixa o "Lista" como "incompleto" (não
+  como falha) por outro motivo: a caixa da marca d'água do topo (`svg.marca-tag`), que a folha recorta,
+  passa por baixo do seletor. Não reprova, e a nota é 100.
+- **O MCP e as outras sessões:** o perfil do Chrome do MCP `chrome-devtools` é um só para todas as sessões,
+  e no começo estava preso por outra. As ideias foram testadas por uma bancada própria (o `puppeteer`, o
+  Lighthouse e o axe do pacote do próprio MCP, com os parâmetros da ferramenta `lighthouse_audit`, num
+  Chrome de perfil temporário); a conferência final foi pelo MCP, que ficou livre depois.
+- **Mudado:** `src/components/SeletorModo.astro` (as duas propriedades registradas, a regra `.tinta`, um item
+  em cada transição, duas linhas no script e os comentários), `docs/movimento.md`, a tabela de movimento do
+  `DESIGN.md` e as armadilhas de `.claude/rules/interface.md`. Feito na worktree
+  `.claude/worktrees/focused-rubin-6690ad`, com o dev na porta 4350 e o preview na 4351.
+
+## D73 · O nome dos livros da home, dos vizinhos, das tags e do livro de Séries vem de um texto `.sr`
+- **Data:** 02/10/2026 · **Status:** decidido e publicado (commit e push a pedido do Cesar, 03/10/2026).
+- **O número:** a D70 (tabelas no celular) e a D71 (escrita dos posts) estavam reservadas por outras
+  sessões, cada uma na sua worktree e sem commit; a D72, a D74 e a D75 entraram na `main` antes desta.
+  Esta continua a D69 (o botão da busca): resolve o primeiro item da pergunta 14 do painel, que saiu.
+- **O achado** (Lighthouse 13.4.1 com axe-core 4.12.1, auditoria `label-content-name-mismatch`, peso 0;
+  medido no build das 73 páginas, no desktop e no celular): fora o botão da busca, a auditoria falhava em
+  quatro lugares, todos com um `aria-label` que não continha o texto pintado dentro do link:
+  - os 9 livros da fileira da home (`a.tomba`, `Colecao.astro`): o nome era "Vol. 01: Arquitetura de
+    Software, 6 artigos · o último em 2026", e o texto na tela, o do livro inteiro (capa, lombada e verso);
+  - os vizinhos da página de um livro (`a.vizinho-livro`, `TopoLivro.astro`; dois por página, um no
+    primeiro e no último volume): "Livro anterior: Volume 03, Dados" contra "Vol. 03" e "Dados";
+  - as 22 tags da nuvem (`NuvemTags.astro`): "AOP, 2 artigos" contra "AOP" e "2", que a auditoria junta
+    em "AOP2";
+  - o livro da página Séries (`a.palco`, `series/index.astro`): "Abrir a série Atualizações do Java"
+    contra o texto da capa.
+- **Decidido** (o Cesar escolheu entre quatro opções, e respondeu mais três perguntas): o nome de hoje,
+  vindo de um texto `.sr`.
+  - nos quatro, sai o `aria-label` e o mesmo texto entra num `<span class="sr">`, primeiro filho do link.
+    O que é pintado fica fora do nome, com `aria-hidden="true"` (o livro 3D, o abajur, a seta e os dois
+    textos do vizinho já tinham; a palavra da tag ganhou). Sem `aria-label`, a auditoria não se aplica, e
+    o leitor de tela ouve o mesmo nome de antes;
+  - na home, o `content-visibility: hidden` dos dois primeiros quadros desceu do link para o livro dentro
+    dele (`.livro-em-pe`), e o `contain-intrinsic-size` saiu: o livro tem largura e altura próprias, as
+    mesmas que eram reservadas. Texto dentro de `content-visibility: hidden` não entra no nome: com ele no
+    link, os 9 livros ficariam sem nome até o script da coleção rodar e, se ele não chegasse, para sempre;
+  - na home, o link ganhou `position: relative` (achado na conferência, abaixo);
+  - uma regra nova em `.claude/rules/interface.md` ("Nome acessível") e uma armadilha (o `.sr` dentro de
+    `perspective`).
+- **Motivo:** o modo "topo" da própria `Colecao`, o menu do cabeçalho e o rodapé já davam o nome por um
+  texto `.sr`; o nome sai igual em qualquer navegador, porque é um texto só; e a correção não depende de
+  como o axe junta os textos da tela.
+- **Alternativas, testadas no DOM antes de mexer no código:**
+  - o texto da tela como nome (vizinhos e tags), com o `.sr` só para o que falta: passa, mas o nome muda
+    para "Livro anterior: Vol. 03 Dados" e, nas tags, o Chrome calcula "AOP , 2 artigos", com um espaço
+    antes da vírgula (ele separa os textos de caixas diferentes; o link do nome do livro na home já sai
+    assim: "Vol. 01: Arquitetura de Software , página do livro");
+  - manter o `aria-label` nas tags e nos vizinhos, com um espaço no HTML entre os dois textos e "Vol. 03"
+    no rótulo: passa, mas depende de como o axe junta os textos e do espaço em branco do `.astro`;
+  - na home, só o nome, sem mexer no `content-visibility`: sem a classe `colecao-pronta`, a `link-name`
+    (peso 7) falha nos 9 livros e a nota cai para 92;
+  - não mexer: a auditoria tem peso 0.
+- **Conferido** (pelo servidor do MCP `chrome-devtools` 1.10.1, numa aba de contexto isolado; veja a nota
+  sobre o perfil, abaixo):
+  - `check`: 0 erros e 0 avisos (5 dicas, de outros arquivos); `build` e `links` (94 páginas, 5.762 links
+    internos e 22 redirecionamentos) passam;
+  - o HTML gerado, build de antes × de depois: mudam a home, `/2/` e `/3/`, as 8 páginas de livro,
+    `/series/`, `/series/java/` e `/tags/`, e só no esperado (o `aria-label` que sai, o `.sr` que entra, o
+    `aria-hidden` da palavra da tag e as duas regras de CSS da `Colecao`, que vai embutida também nas
+    páginas sem a fileira da home). Fora delas, só os arquivos do Pagefind, que trocam de nome a cada build;
+  - Lighthouse em modo `navigation`, no desktop e no celular, nas 14 páginas, no dev e no build: os quatro
+    lugares saem da auditoria (no celular ela passa ou não se aplica; no desktop sobra só o botão da busca,
+    que é da D69); `link-name` e `button-name` passam em todas; boas práticas e SEO seguem em 100. Com a
+    D69 simulada no DOM (o botão sem `aria-label` e a tecla com `aria-hidden`), a auditoria fica sem
+    nenhum nó nas quatro páginas, no desktop;
+  - árvore de acessibilidade do Chrome, antes × depois, em seis páginas (a home, três livros, Tags e
+    Séries), no desktop e no celular, no dev e no build: 0 linha diferente em tudo o que tem papel e nome;
+    a mais, só os textos novos;
+  - home sem a classe `colecao-pronta` (o estado dos dois primeiros quadros): o link continua com nome, a
+    `link-name` passa e as caixas são as mesmas (o link com 115,61 × 214 px e o livro com 143 × 214 px em
+    1350px; 37,89 × 170 e 113,59 × 170 em 412px);
+  - os primeiros quadros da home com a CPU 4× (7 rodadas por aparelho, intercalando o build de antes e o
+    de depois): a primeira pintura (de 236 a 264 ms), a entrada dos livros (de 291 a 320 ms) e o quadro
+    mais longo (de 183 a 199 ms) ficam na mesma faixa antes e depois, com as mesmas diferenças de uma
+    rodada para outra;
+  - aparência: as seis peças (a fileira da home, o alto da página do livro, os vizinhos com um só, a nuvem
+    de tags e a ficha de Séries) em 320, 390, 768, 1024, 1280 e 1600px, nos dois temas, mais o mouse em
+    cima e o foco do teclado: 104 fotos por conjunto (`scripts/foto.mjs`, com movimento reduzido, e o foco
+    por um script à parte). No build, quatro conjuntos de antes e quatro de depois, intercalados, no mesmo
+    servidor: 86 fotos idênticas nos oito e nenhum pixel que separe antes de depois (os que mudam oscilam
+    dentro do mesmo grupo, até 11 pixels por 1 nível de cor, nos livros 3D e nas luzes). No dev, dois
+    conjuntos de antes e quatro de depois: 87 idênticas em todos e 103 sem pixel que separe antes de
+    depois; o único grupo que sobra (8 pixels numa linha da home em 768px) é o mesmo que oscila entre duas
+    fotos da mesma página sem mudança nenhuma, no teste feito na própria página;
+  - comportamento, no dev e no build: o clique, o toque e o Enter nos quatro levam à página certa; a home
+    sem JavaScript mostra os 9 livros, cada link com o nome; console limpo; `conferir` ok nas 10
+    combinações e no movimento reduzido das quatro páginas.
+- **Achados no caminho:**
+  - **o `.sr` dentro de `perspective`:** com o texto no link e o link sem `position: relative`, a caixa do
+    `.sr` se prende ao lugar do livro, que tem `perspective`, e o Chrome muda a suavização da quina de um
+    livro em 3 a 10 pixels (por 1 nível de cor, em 390 e em 1280px). Testado na mesma página: sem o
+    `perspective` a diferença some, sem o reflexo do vidro ela fica, e com o `position: relative` no link
+    ela some em todas as larguras e nos dois temas. Virou armadilha na regra de interface;
+  - **as fotos dos livros 3D e das luzes têm ruído:** duas fotos da mesma página, sem mudança nenhuma,
+    diferem em até ~12 pixels por 1 nível de cor (e, de vez em quando, num pico de até 2.000 pixels por 1 ou
+    2 níveis). Por isso a comparação foi por conjuntos: só conta o pixel que separa todos os de antes de
+    todos os de depois;
+  - **o dev e o build não desenham os livros 3D iguais**, pixel a pixel (de 20 mil a 87 mil pixels, por até
+    3 níveis, já antes da mudança): antes e depois se comparam sempre no mesmo servidor;
+  - **o perfil do Chrome do MCP `chrome-devtools` é um só para todas as sessões:** com o navegador aberto
+    por outra sessão, o MCP desta não abre. O contorno foi rodar o mesmo servidor, do cache do `npx`, com
+    `--isolated --headless`, por um cliente JSON-RPC próprio;
+  - no `/2/` e no `/3/`, no desktop, a nota de acessibilidade oscila entre 92 e 96 no mesmo build (contraste
+    e tamanho do alvo dos chips de categoria, medidos no meio da entrada): igual antes e depois.
+- **Publicação:** a worktree partiu do `04f2ded`, e a `main` andou vários commits no meio (entre eles a
+  D69, a D72, a D74 e a D75). A ferramenta do app recusou trazer a `main` para a worktree, porque esses
+  commits mexem em `.claude/skills` (protegido) e a origem do repositório ainda não estava confirmada no
+  app. O commit foi montado direto em cima da `origin/main` (os docs e a regra de interface juntados por
+  um roteiro, num índice temporário, e `git commit-tree`), conferido na árvore extraída antes do push
+  (`check`, `build`, `links`, o Lighthouse e o comportamento) e enviado à `main`. Nessa árvore, já com a
+  D69 e a D72, a auditoria de nome passa ou não se aplica em todas as páginas medidas, no desktop e no
+  celular.
+- **Mudado:** `src/components/Colecao.astro` (o `.sr` no link, o `content-visibility` no livro e o
+  `position: relative` no link), `src/components/TopoLivro.astro` (os dois vizinhos),
+  `src/components/NuvemTags.astro` (o `.sr` e o `aria-hidden` da palavra), `src/pages/series/index.astro`
+  (o palco) e `.claude/rules/interface.md`. Feito na worktree `.claude/worktrees/wonderful-pike-800bfd`,
+  com o dev na porta 4395 e o preview na 4396.
+
+## D74 · A apresentação de um post no estilo do blog
+- **Data:** 02/10/2026 · **Status:** decidido e publicado (commit e push a pedido do Cesar).
+- **Pedido do Cesar**, depois de ver a apresentação do post dos mods: "ficou muito elegante e gostei
+  muito usando o estilo do blog, desenhos do post [...] quando eu pedir para fazer o ppt já saber e fazer
+  no estilo que você fez agora".
+- **Decisão:** a apresentação de um post (PPT, slides, deck) sai em `.pptx` no estilo do blog, com os
+  desenhos, os prints e as marcações da caneta do próprio post e as notas do apresentador em todos os
+  slides. O modelo é a do post dos mods (19 slides), aprovada. Não precisa combinar antes: fazer e
+  entregar o `.pptx` e o PDF.
+- **O estilo:** o quadro 16:9 com fundo de papel e as peças em folhas com a sombra curta e quente; a
+  ficha de catálogo (a tira em mono sobre o fio na cor do livro), a fita, o post-it, a ficha pautada, o
+  bloco de código e a tabela do site; as fontes do site (Besley, Literata, IBM Plex Sans, JetBrains Mono e
+  a Caveat das notas à mão); as cores só dos tokens; a capa do post colada com fita na abertura e a ficha
+  "Do livro" no fecho; as marcações do post nos mesmos trechos; um ou dois slides escuros para as
+  frases-chave; o título de cada slide no espaço reservado e as seções do PowerPoint por bloco.
+- **As ferramentas** (`scripts/slides/`): `estilo.py`, a biblioteca (lê as cores de `tokens.ts` e de
+  `livros.json`, mede e quebra o texto com as fontes para cada marcação cair no trecho, e tem as peças e
+  as marcas da caneta); `capturar.mjs`, as fotos do post e a tira da ficha; `conferir.py`, o PDF, uma
+  imagem por slide, a folha de contato e as checagens (título, notas, forma fora do quadro, fonte que não
+  é do site, ordem do XML); `fontes.py`, as fontes do site em TTF; e `posts/<slug>.py`, o roteiro de cada
+  post, a começar pelo dos mods. O que sai vai para `saida/` (fora do git).
+- **Medido:** com o espaçamento exato, o LibreOffice põe a linha de base a 0,205 em do pé da linha, em
+  todas as fontes do site (na Caveat, 0,114). As marcações usam essa conta; no PowerPoint e no Keynote
+  podem andar um pouco.
+- **As fontes:** o site usa as do `@fontsource` (WOFF2 variável), que o PowerPoint não usa. As TTF
+  estáticas foram instaladas em `~/Library/Fonts` com o OK do Cesar (Google Fonts, 2,7 MB); em outra
+  máquina, `python3 scripts/slides/fontes.py --instalar`, também com o OK dele.
+- **Motivo:** a apresentação reaproveita os desenhos e as marcações que o post já tem, então sai com a
+  identidade do blog sem desenho novo; a biblioteca deixa todas iguais e a próxima rápida; e, com as
+  cores lidas dos tokens, ela acompanha o site se o visual mudar.
+- **Alternativas:** a skill `pptx` genérica (pptxgenjs, com paleta e fontes próprias), que não tem a
+  identidade do site e pediria instalar o pptxgenjs; e o NotebookLM, o caminho de hoje para a seção
+  "Apresentação" do post, que dá slides em imagem, sem os desenhos nem a caneta do post, e já errou texto.
+  Ele continua valendo para a seção do post (o modo NotebookLM da skill).
+- **Conferido:** a apresentação refeita pela biblioteca ficou igual à aprovada, slide a slide (diferença
+  média de um nível de cinza, ruído de compressão), passou no validador da skill `pptx` e no
+  `conferir.py` (19 slides com título e notas, só as fontes do site, nada fora do quadro).
+- **Número:** a D70 à D73 estão em outras worktrees, sem commit; esta ficou D74 para não colidir.
+- **Onde:** a skill `apresentacao` (o modo Criar; o do NotebookLM continua igual), o `CLAUDE.md` (Posts,
+  Comandos, Mapa das pastas, Skills e Em outro computador), o `.gitignore` (`saida/` e `__pycache__/`) e
+  `scripts/slides/`.
+
+
+## D75 — Post sobre Parquet e snapshots (03/10/2026)
+
+- **Pedido do Cesar:** transformar a explicação de Parquet e snapshots em post do blog, ler as
+  instruções do projeto, revisar antes de publicar e publicar na `main`. A autorização vale para
+  este post; não muda o fluxo de aprovação dos próximos.
+- **Entrega:** `parquet-snapshot-banco-de-dados`, no livro Dados, formato resumo, com as tags
+  existentes Banco de Dados e Trade-offs. Fontes oficiais de Parquet, PostgreSQL, DuckDB e Iceberg.
+  Exemplo conceitual, sem código executável.
+- **Visual:** capa viva (câmera, colunas e relógio), infográfico estático em quatro quadros e sete
+  marcações da caneta (caixa, duplo, ondulado, exclamação, grifo, marca-texto e post-it). Foto do
+  livro Dados atualizada para três artigos. Nenhuma marca ou categoria nova.
+- **Revisão antes da publicação:** `check` sem erros nem warnings (cinco hints já existentes),
+  `build` com imagens OG e Pagefind, `links` sem links ou âncoras quebradas, contraste sem falhas
+  obrigatórias, validador dos dois SVGs e revisão automática dos desenhos sem problemas.
+  Conferência em 320, 390, 768, 1280 e 1600px nos dois temas e com movimento reduzido; imagens
+  olhadas. Detector Impeccable sem achados.
+- **Ambiente:** sem MCP Chrome DevTools nesta sessão; os scripts do projeto rodaram via
+  Playwright com Chrome Headless Shell, sem alteração dos scripts versionados.
+- **Correção (04/10/2026):** removidas a seção de pronúncia e as referências aos dicionários.
+  Cesar esclareceu que a pronúncia era para a conversa, não para o post.
+- **Relógio da capa (03/10/2026):** Cesar reprovou o movimento dos ponteiros. Corrigido o eixo
+  (antes era o centro da caixa do par de traços, fora do centro do relógio), separados os ponteiros
+  e aplicado avanço discreto de cinco minutos, na proporção 12:1, com retorno suave e respeito a
+  movimento reduzido. Detalhe técnico em `docs/movimento.md`.

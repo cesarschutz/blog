@@ -99,13 +99,13 @@ const ITENS = [
       </a>
     </div>
   </nav>
-  <button type="button" class="campo-busca" data-busca-abrir aria-label="Buscar" aria-keyshortcuts="Meta+K Control+K">
+  <button type="button" class="campo-busca" data-busca-abrir aria-keyshortcuts="Meta+K Control+K">
     <svg class="contorno contorno-pilula" viewBox="0 0 210 40" aria-hidden="true" focusable="false"><path d={pilulaDeCaneta(210, 40, "Buscar")} /></svg>
     <svg class="contorno contorno-roda" viewBox="0 0 40 40" aria-hidden="true" focusable="false"><path d={contornoDeCaneta("Buscar")} /></svg>
     <svg class="circulo" viewBox="0 0 48 48" aria-hidden="true" focusable="false"><path pathLength="1" d={circuloDeCaneta("Buscar")} /></svg>
     <svg class="lupa-busca" viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.busca} />
     <span>Buscar</span>
-    <kbd data-atalho><span class="tecla-mac">⌘K</span><span class="tecla-ctrl">Ctrl K</span></kbd>
+    <kbd data-atalho aria-hidden="true"><span class="tecla-mac">⌘K</span><span class="tecla-ctrl">Ctrl K</span></kbd>
   </button>
   <div class="perfis">
     <a href={AUTOR.github} aria-label="GitHub de Cesar Schutz" title="GitHub" rel="me">
@@ -450,6 +450,10 @@ const ITENS = [
    * a lápis (a tinta do botão, fraca), numa volta só que passa um nada do começo; no hover, a caneta
    * passa por cima (o contorno escurece). A lupa é da caneta preta. O tamanho é fixo (210 × 40), o
    * mesmo da caixa do desenho, para o traço não esticar.
+   *
+   * O nome do botão é o texto "Buscar", sem aria-label (D69): com ele, o nome deixava de fora o atalho
+   * que está na tela ao lado, e a auditoria do Lighthouse (label-content-name-mismatch) falhava. A tecla
+   * desenhada fica fora do nome (aria-hidden); o atalho de verdade vai no aria-keyshortcuts.
    */
   .campo-busca {
     position: relative;
@@ -640,10 +644,20 @@ const ITENS = [
       border-radius: 50%;
     }
 
-    .campo-busca span,
     .campo-busca kbd,
     .contorno-pilula {
       display: none;
+    }
+
+    /* O "Buscar" sai só da vista (como a .sr do base.css): ele é o nome do botão, e com display: none
+       a lupa ficaria sem nome (D69). */
+    .campo-busca > span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
     }
 
     .contorno-roda,

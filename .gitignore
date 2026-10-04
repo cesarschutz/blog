@@ -34,6 +34,10 @@ bench/
 # posts trazidos pelo Cesar para adaptar (skill post, D35)
 entrada/
 
+# o que os scripts geram para entregar ao Cesar, como as apresentações (scripts/slides, D74)
+saida/
+__pycache__/
+
 # Impeccable: o motor fica em ~/.impeccable (D35). Da pasta .impeccable/ só vão para o git os
 # registros do projeto: config.json (buildPath), design.json (anexo do DESIGN.md), surfaces/ (briefs)
 # e live/config.json. Fica fora o resto: cache e pendências do hook, config.local.json (de cada

@@ -51,7 +51,11 @@ const lugar = `Série ${String(unica?.revista?.numero ?? 1).padStart(2, "0")}`;
             </span>
             <span>{quando}</span>
           </p>
-          <a class="palco painel" href={unica.href} style={`--cor:${unica.cores.cor}`} aria-label={`Abrir a série ${unica.nome}`} data-livro-gira data-luz>
+          {/* O nome do link vem do texto `.sr`, e não de um aria-label (D73): o livro e o abajur são enfeite
+              (aria-hidden), e um aria-label que não contém o texto pintado na capa falha na auditoria de nome
+              do Lighthouse. */}
+          <a class="palco painel" href={unica.href} style={`--cor:${unica.cores.cor}`} data-livro-gira data-luz>
+            <span class="sr">{`Abrir a série ${unica.nome}`}</span>
             <PontoDeLuz />
             <LivroEmPe livro={unica} altura={330} transicao="ao-clicar" />
           </a>

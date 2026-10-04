@@ -8,7 +8,7 @@ codigo: https://github.com/cesarschutz/blog-exemplos/tree/main/criptografia-em-r
 draft: false
 ---
 
-import Lousa from "../../components/Lousa.astro";
+import FiguraPassos from "../../components/FiguraPassos.astro";
 import Figura from "../../components/Figura.astro";
 import Evidencia from "../../components/Evidencia.astro";
 import FraseDestaque from "../../components/FraseDestaque.astro";
@@ -46,19 +46,19 @@ Na maioria das implementações ela é **transparente**: o banco (ou o storage p
 
 A frase do começo fala em KMS. O KMS (*Key Management Service*) é o cofre de chaves, e :grifo[o esquema usado quase sempre é o de **envelope encryption**].
 
-Na lousa, o banco fica à esquerda, a chave de dados no meio e o KMS, com a chave mestra, no canto. O que a caneta risca deixou de valer, e o que ela escreve embaixo é o novo estado. O play monta tudo desde o início, e um clique num passo da lista leva a lousa até ele.
+Na figura, o KMS, o banco e o disco ficam lado a lado, e os números seguem a ordem do que acontece: a chave de dados cifra o dado, a chave mestra cifra a chave de dados e, para ler, o banco pede ao KMS para abrir a chave. Em **Passo a passo**, a figura se monta um passo por vez, e o traço embaixo dela mostra quando cada passo terminou.
 
-<Lousa
-  desenho="criptografia-em-repouso-e-em-transito/envelope"
-  controles="marca-texto"
-  rotulo="Diagrama do envelope encryption: os dados no disco, cifrados com a chave de dados; a chave de dados guardada cifrada pela chave mestra, que fica no KMS; o banco pedindo ao KMS para abrir a chave de dados; e, com a chave mestra desativada, o KMS recusando o pedido e os dados e os backups ficando ilegíveis."
-  duracao={10}
+<FiguraPassos
+  figura="criptografia-em-repouso-e-em-transito/envelope-em-passos"
   passos={[
-    { de: 0, texto: "Os dados são cifrados com uma chave de dados (data key), que fica perto do banco." },
-    { de: 0.25, texto: "A chave de dados, por sua vez, é cifrada com uma chave mestra que nunca sai do KMS." },
-    { de: 0.5, texto: "Para usar a chave de dados, o banco pede ao KMS que a decifre, e o KMS só atende quem tem permissão." },
-    { de: 0.75, texto: "Com a chave desativada, os dados e os backups ficam ilegíveis." },
+    "O banco cifra `Maria Souza` com a chave de dados e grava no disco.",
+    "O KMS cifra a chave de dados com a chave mestra, que nunca sai dele.",
+    "O banco guarda a chave cifrada no disco, junto dos dados.",
+    "Para ler, o banco pede ao KMS para abrir a chave e decifra na memória.",
+    "Depois, com a chave mestra desativada, o KMS recusa: dados e backups ficam ilegíveis.",
   ]}
+  legenda="Cada cor é um ator: o KMS (azul), o banco (roxo) e o disco (âmbar); em vermelho, o que falha."
+  fim="segmentos"
 />
 
 O ganho é que o acesso ao dado passa a depender também de quem pode usar a chave. Se a chave for desativada ou apagada, os dados ficam ilegíveis, inclusive os backups. Tirar a permissão de um usuário :ondulado[não basta]: no RDS, o banco guarda uma autorização própria na chave (um *grant*), criada junto com a instância.
@@ -96,18 +96,18 @@ Aqui o dado está saindo da aplicação e indo para o banco, voltando, ou indo d
 O segundo ponto é o que mais se perde na prática. Muita configuração liga o TLS mas não valida o certificado. O tráfego fica cifrado, mas nada impede um ataque *man-in-the-middle*. No Postgres, essa é a diferença entre `sslmode=require`, que cifra mas não confere quem está do outro lado, e `sslmode=verify-full`, que confere a CA e o nome do servidor.
 :::
 
-Na lousa, as duas linhas mostram a mesma conexão, com alguém no meio do caminho: em cima, com `require`; embaixo, com `verify-full`. Arraste sobre o desenho para andar no tempo.
+Na figura, as duas linhas mostram a mesma conexão, com alguém no meio do caminho: em cima, com `require`; embaixo, com `verify-full`. Em **Passo a passo**, primeiro se vê o que acontece com `require` e depois com `verify-full`.
 
-<Lousa
-  desenho="criptografia-em-repouso-e-em-transito/tls"
-  controles="marca-texto"
-  rotulo="Linha do tempo comparando sslmode=require e sslmode=verify-full: um intermediário se passa pelo banco com um certificado próprio; com require, o cliente aceita e o intermediário lê o tráfego; com verify-full, o cliente confere a CA e o nome do servidor e recusa a conexão."
-  estados={[
-    { de: 0, texto: "O cliente abre a conexão" },
-    { de: 0.25, texto: "Alguém no meio do caminho responde com um certificado próprio" },
-    { de: 0.5, texto: "O require aceita; o verify-full confere a CA e o nome e recusa" },
-    { de: 0.75, texto: "Resultado: com require, o intermediário lê tudo; com verify-full, a conexão nem abre" },
+<FiguraPassos
+  figura="criptografia-em-repouso-e-em-transito/tls-em-passos"
+  passos={[
+    "Com `require`, o cliente aceita o certificado sem conferir quem está do outro lado.",
+    "O intermediário repassa ao banco e lê tudo em claro, sem o cliente perceber.",
+    "Com `verify-full`, o cliente confere a CA e o nome, e recusa o certificado.",
+    "A conexão nem abre, e ninguém lê nada.",
   ]}
+  legenda="Cada cor é um ator: o cliente (petróleo), o intermediário (âmbar) e o banco (roxo); vermelho é o que falha, e verde, o que dá certo."
+  fim="segmentos"
 />
 
 A própria documentação do PostgreSQL resume isso numa tabela: com `require`, a coluna de proteção contra *man-in-the-middle* diz "No"; só com `verify-full` ela diz "Yes".

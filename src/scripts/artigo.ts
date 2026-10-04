@@ -4,7 +4,7 @@
  * D52), os vistos e, sem a lateral, a seção no cabeçalho com a folha do sumário), notas laterais que abrem no
  * lugar nas telas menores, visor de imagens e a apresentação (setas, contador e tela cheia). Sem JS o artigo continua inteiro: as
  * notas abrem por âncora, a apresentação rola de lado e o PDF baixa. O Copiar do código faz o gesto de
- * copiar do site (E3, D49).
+ * copiar do site (E3, D49). A tabela que passa da tela no celular ganha o aviso "Arraste para o lado" (D70).
  */
 import { ICONES } from "../lib/icones";
 import { tracoDeCaneta } from "../lib/traco";
@@ -720,6 +720,43 @@ if (corpoDoArtigo?.querySelector(".expressive-code .copy")) {
         if (botao) mostrarCopiado(botao, "Copiado", "");
       }
   }).observe(corpoDoArtigo, { childList: true, subtree: true });
+}
+
+// ---------- o aviso das tabelas que rolam de lado (D70) ----------
+
+// No celular, a tabela que não cabe rola dentro da moldura (prosa.css). O aviso "Arraste para o lado"
+// existe só enquanto ela passa mesmo da caixa: mais que o respiro da última célula (10px), ou seja,
+// quando alguma letra fica de fora. Aqui só se mede; quem mostra o aviso é o CSS, até 700px.
+const SOBRA_DA_TABELA = 12;
+const tabelas = [...document.querySelectorAll<HTMLElement>(".prose .tabela")];
+if (tabelas.length && "ResizeObserver" in window) {
+  const avisar = (caixa: HTMLElement) => {
+    const rola = caixa.scrollWidth - caixa.clientWidth > SOBRA_DA_TABELA;
+    if (rola === caixa.hasAttribute("data-rola")) return;
+    caixa.toggleAttribute("data-rola", rola);
+    const vizinho = caixa.nextElementSibling;
+    if (!rola) {
+      if (vizinho?.classList.contains("dica-rolar")) vizinho.remove();
+      return;
+    }
+    const aviso = document.createElement("p");
+    aviso.className = "dica-rolar";
+    aviso.setAttribute("aria-hidden", "true");
+    aviso.textContent = "Arraste para o lado para ver a tabela inteira.";
+    caixa.after(aviso);
+  };
+  // A caixa muda com a janela; a tabela, com as fontes e com o <details> que abre.
+  const observador = new ResizeObserver((entradas) => {
+    for (const { target } of entradas) {
+      const caixa = target.closest<HTMLElement>(".tabela");
+      if (caixa) avisar(caixa);
+    }
+  });
+  for (const caixa of tabelas) {
+    observador.observe(caixa);
+    const tabela = caixa.querySelector("table");
+    if (tabela) observador.observe(tabela);
+  }
 }
 
 // ---------- impressão (D54) ----------

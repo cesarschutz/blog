@@ -8,7 +8,7 @@ draft: false
 ---
 
 import Figura from "../../components/Figura.astro";
-import Lousa from "../../components/Lousa.astro";
+import FiguraPassos from "../../components/FiguraPassos.astro";
 import Ferramenta from "../../components/Ferramenta.astro";
 
 Um cenário comum: um microsserviço Spring Boot roda no <Ferramenta nome="kubernetes" href="https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/">Kubernetes</Ferramenta> como API e passa a precisar de uma rotina periódica, por exemplo ler uma lista de registros do banco, aplicar validações e publicar parte deles num tópico SNS. A lógica de negócio já está no serviço, então a pergunta não é *se* o código será reaproveitado, e sim :marca[*onde* essa rotina vai rodar].
@@ -75,20 +75,18 @@ Na abordagem B, um deploy da API feito durante a janela do batch acontece no mei
 - como não foi concluída, a mensagem não foi apagada da fila: reaparece depois do visibility timeout (o prazo em que a mensagem recebida fica invisível para os outros consumidores), e um pod da versão nova a recebe e segue de onde o anterior parou, pelo status no banco. Se o registro que estava em andamento já tinha sido publicado no SNS, mas ainda não tinha sido marcado, :nota[ele é enviado de novo]{texto="duplicado no SNS"};
 - o lote termina :duplo[em duas versões do código]: parte processada pela antiga, parte pela nova.
 
-A lousa põe as duas abordagens no mesmo relógio: um lote que leva 1h10, um deploy da API às 03:30 e, na B, um visibility timeout de 2 horas. Em cima, na A, o deploy troca a API de versão, e o pod do job segue até o fim. Embaixo, na B, o deploy cancela o lote no meio, e a mensagem fica invisível na fila até as 05:00. O play mostra o tempo correndo, e arrastar sobre o desenho leva a qualquer instante.
+A figura põe as duas abordagens no mesmo relógio: um lote que leva 1h10, um deploy da API às 03:30 e, na B, um visibility timeout de 2 horas. Em cima, na A, o deploy troca a API de versão, e o pod do job segue até o fim. Embaixo, na B, o deploy cancela o lote no meio, e a mensagem fica invisível na fila até as 05:00. Em **Passo a passo**, a A aparece inteira primeiro, e depois a B, um trecho por vez.
 
-<Lousa
-  desenho="cronjob-vs-endpoint-sqs/deploy-no-meio-do-lote"
-  controles="caderno"
-  rotulo="Lousa comparando um deploy da API às 03:30 nas duas abordagens: na A, a API passa da v1 para a v2, e o pod do job segue e termina às 04:10 na v1; na B, o pod v1 é cancelado no meio do lote, a mensagem fica invisível até as 05:00, e só então o pod v2 a recebe e retoma de onde a v1 parou, com o lote parado 1h30 e terminado em duas versões."
-  duracao={12}
-  estados={[
-    { de: 0, texto: "03:00: nas duas abordagens, o lote começa na v1" },
-    { de: 0.19, texto: "03:30: o deploy troca a API da v1 para a v2; na A, o pod do job segue; na B, o lote é cancelado no meio, e a mensagem não é apagada" },
-    { de: 0.45, texto: "04:10: na A, o job termina na versão com que começou; na B, a v2 está no ar, mas a mensagem continua invisível" },
-    { de: 0.65, texto: "05:00: na B, a mensagem reaparece, e a v2 retoma de onde a v1 parou, pelo status no banco, depois de 1h30 parado" },
-    { de: 0.94, texto: "05:40: na B, o lote termina na v2, com parte processada por cada versão" },
+<FiguraPassos
+  figura="cronjob-vs-endpoint-sqs/deploy-em-passos"
+  passos={[
+    "**A:** o deploy não toca no pod do job, que termina às 04:10 na v1.",
+    "**B:** o lote começa às 03:00 no pod v1; às 03:30, o deploy o cancela.",
+    "**B:** a mensagem fica invisível de 03:00 a 05:00, e o lote fica parado.",
+    "**B:** às 05:00 a mensagem reaparece, e o pod v2 retoma e termina às 05:40.",
   ]}
+  legenda="A em verde, B e a mensagem em roxo, a API em âmbar; a linha vertical é o deploy das 03:30."
+  fim="segmentos"
 />
 
 :::colchete

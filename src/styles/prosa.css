@@ -239,6 +239,69 @@
   margin-inline: 16px;
 }
 
+/*
+ * Tabelas no celular (D70), até 700px, o corte das figuras. Com `width: 100%` e layout automático, a
+ * tabela só começava a rolar depois de todas as colunas encolherem até a palavra mais longa: o texto
+ * ficava a uma palavra por linha, em linhas de mais de 200px, e ainda passava da tela.
+ * - O piso: a coluna de texto (alguma célula com 30 letras ou mais; o rehype-tabela marca a célula do
+ *   cabeçalho com `data-texto`) nunca fica com menos de 11em (171px). O que não couber rola dentro da
+ *   moldura.
+ * - A largura: o respiro lateral das células cai de 14 para 10px, e a tabela de dentro de um <details>
+ *   vai de borda a borda da caixa (a moldura passa a ser a da caixa). Sobra largura para o texto, e
+ *   menos tabelas precisam rolar.
+ * - O aviso: a tabela que passa da caixa ganha "Arraste para o lado", como as figuras. Quem o põe é o
+ *   script do artigo (artigo.ts), só enquanto alguma letra fica de fora (`data-rola`); sem JS, ela rola
+ *   do mesmo jeito, sem o aviso.
+ * Só na tela: no papel, a tabela continua encolhendo para caber na folha.
+ */
+.prose .tabela + .dica-rolar {
+  display: none;
+}
+
+@media screen and (max-width: 700px) {
+  .prose th,
+  .prose td {
+    padding-inline: 10px;
+  }
+
+  .prose :is(th, td)[data-texto] {
+    min-width: 11em;
+  }
+
+  .prose details > .tabela {
+    margin-inline: 0;
+    border-inline: 0;
+    border-radius: 0;
+  }
+
+  .prose details > summary + .tabela {
+    margin-top: 0;
+    border-top: 0;
+  }
+
+  .prose details > .tabela:last-child {
+    margin-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .prose .tabela[data-rola] {
+    margin-bottom: 0;
+  }
+
+  /* A mesma letra do aviso das figuras; embaixo, o respiro que a tabela teria (1,4em do texto). */
+  .prose .tabela[data-rola] + .dica-rolar {
+    display: block;
+    margin-block: 8px 26px;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+
+  .prose details > .tabela[data-rola] + .dica-rolar:last-child {
+    margin-block-end: 16px;
+  }
+}
+
 /* Fórmulas em bloco rolam, em vez de estourar a coluna. */
 .prose .katex-display {
   overflow-x: auto;
