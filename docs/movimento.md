@@ -81,6 +81,13 @@ o foco do teclado igual ao mouse, Esc fecha, movimento reduzido): `DESIGN.md`, M
   perto, sem mola (24% do caminho a cada 1/60 s, pelo tempo do quadro), e volta ao repouso no mesmo
   ritmo ao sair; no clique, volta na hora (a viagem até a página do livro parte do repouso). O hover do
   livro vivo (a mola, o seguir o mouse) continua por dentro.
+- **A contracapa** (D78, 04/10/2026, `LivroEmPe.astro`): o botão "Virar o livro" gira o livro grande da
+  página do livro de 38° a 163° (só o `rotateY` do `.livro-3d`, pela Web Animations API, 1s,
+  `cubic-bezier(0.45, 0.05, 0.2, 1)`), passando pela lombada; no mesmo tempo e na mesma curva, o livro cresce
+  (`--virado`, de 0 a 1, no anel do `TopoLivro`), a vista desce até a metade (`--aberto` 0,55) e a folga em
+  volta troca de lado. Clicar de novo no meio da volta a desfaz de onde ela está. As tags do anel e a lupa
+  somem em 0,25s. "Ler mais" e "Voltar" trocam o lado do verso na hora. Com movimento reduzido, tudo troca
+  na hora.
 - **A estante de verdade (D49, `estante-gesto.ts`):** **nada flutua**: o livro ou está apoiado na
   prateleira, ou está na mão. A prateleira tem perspectiva (o olho a 45% da altura, 1400 de
   distância na estante cheia, proporcional nas menores), e cada lombada tem a **cabeça** (o topo das

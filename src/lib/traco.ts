@@ -184,6 +184,26 @@ export function lupaDeCaneta() {
 }
 
 /**
+ * Virar o livro (D78, a contracapa da página do livro): a seta que dá a volta, como quem gira o livro na mão.
+ * O arco sai da direita, passa por baixo e pela esquerda e termina no alto, com a ponta virada para a direita.
+ */
+export function virarDeCaneta() {
+  const [cx, cy, rx, ry] = [12, 12.8, 7.7, 7.3];
+  const inicio = -Math.PI * 0.06;
+  const voltas = 0.8;
+  const arco = volta("virar", cx, cy, rx, ry, { inicio, voltas, tremor: 0.05, abre: 0 });
+  const fim = inicio + voltas * 2 * Math.PI;
+  const ponta: Ponto = [cx + Math.cos(fim) * rx, cy + Math.sin(fim) * ry];
+  // A tangente no fim (o arco corre no sentido do relógio) e as duas abas da ponta, a 34° dela.
+  const [tx, ty] = [-Math.sin(fim), Math.cos(fim)];
+  const aba = (lado: number): Ponto => {
+    const a = Math.atan2(ty, tx) + Math.PI + lado * ((34 * Math.PI) / 180);
+    return [ponta[0] + Math.cos(a) * 4, ponta[1] + Math.sin(a) * 4];
+  };
+  return [arco, quebrada(tremer([aba(1), ponta, aba(-1)], "ponta da volta", 0.15), "ponta da volta", 0.3)];
+}
+
+/**
  * O calendário da data: um bloquinho de mesa. A folha numa volta só (começa no alto, à esquerda, e passa
  * um nada do começo), a linha do cabeçalho, as duas argolas e o dia marcado com um visto.
  */

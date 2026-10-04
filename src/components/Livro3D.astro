@@ -20,7 +20,8 @@
  *
  * As medidas vêm de src/lib/livro-3d.ts: --cw (largura da capa), --bh (altura), --sw (espessura, a
  * largura da lombada na mesma escala) e --u (px por unidade da referência). As cores, do elemento pai
- * (coresDoLivroCss). O slot "pagina" é o que aparece dentro quando a capa abre.
+ * (coresDoLivroCss). O slot "pagina" é o que aparece dentro quando a capa abre; o "contracapa", o que vai
+ * no verso (D78: o livro grande da página do livro vira e mostra o que o livro abrange e a história da capa).
  *
  * Rodada 3 do redesenho (área A, o livro vivo): entre a vista e o livro há o `.livro-vivo`, o envoltório
  * que dá o giro do hover com mola (transform) e acompanha o mouse (rotate); e a capa e a lombada têm a
@@ -140,14 +141,17 @@ const noMiolo = trecho(paraDentro(4.5), 8, T - 8).map(([x, y]) => `calc(${n3(x -
 const recorteMiolo = `polygon(${noMiolo.join(", ")}, 100% 100%, 100% 0)`;
 ---
 
-<div class="livro-3d-caixa" aria-hidden={Astro.slots.has("pagina") ? undefined : "true"}>
+<div class="livro-3d-caixa" aria-hidden={Astro.slots.has("pagina") || Astro.slots.has("contracapa") ? undefined : "true"}>
   <div class="livro-3d-vista">
     {/* Rodada 3 (área A): o livro vivo (livro-vivo.css e .ts) mexe só neste envoltório: o giro do hover com
         mola (transform) e o livro que acompanha o mouse (rotate). O `.livro-3d` continua livre para o GSAP. */}
     <div class="livro-vivo">
       <div class:list={["livro-3d", { "livro-serie": livro.serie }]} style={`--t:${T};--cabeca-w:${n3(LARGURA_CABECA)}`}>
         <div class="f chao"></div>
-        <div class="f contra"></div>
+        {/* A contracapa (D78): o verso do livro grande da página do livro (Contracapa, LivroEmPe). */}
+        <div class="f contra">
+          <slot name="contracapa" />
+        </div>
         <div class="f contra-dentro"></div>
         <div class="f contra-topo"></div>
         <div class="f miolo-dir"></div>

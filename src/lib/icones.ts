@@ -5,7 +5,7 @@
  * Os da caneta preta (C04 da D52: o calendário, o relógio, o código-fonte, a lupa, a lua e o sol)
  * não são desenhados aqui: saem de src/lib/traco.ts, à mão, com a mesma semente em toda visita.
  */
-import { calendarioDeCaneta, codigoDeCaneta, luaDeCaneta, lupaDeCaneta, relogioDeCaneta, solDeCaneta } from "./traco";
+import { calendarioDeCaneta, codigoDeCaneta, luaDeCaneta, lupaDeCaneta, relogioDeCaneta, solDeCaneta, virarDeCaneta } from "./traco";
 
 const caminhos = (lista: string[]) => lista.map((d) => `<path d="${d}"/>`).join("");
 
@@ -36,6 +36,8 @@ export const ICONES = {
   fechar: '<path d="M18 6 6 18M6 6l12 12"/>',
   externo: '<path d="M7 17 17 7M8 7h9v9"/>',
   ampliar: '<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>',
+  /** Virar o livro e ver a contracapa (D78), da caneta preta. */
+  virar: caminhos(virarDeCaneta()),
   // O código-fonte do artigo (D52): os dois sinais de maior e menor e a barra, à caneta (C04).
   codigo: caminhos(codigoDeCaneta()),
   teclado: '<rect width="20" height="14" x="2" y="5" rx="2"/><path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M6 12.5h.01M10 12.5h.01M14 12.5h.01M18 12.5h.01M8 16h8"/>',

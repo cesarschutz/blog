@@ -6,7 +6,7 @@
  * artigos, contado pelos posts; sem artigos, ele não aparece.
  */
 import { PAPEL, TINTA_PAPEL } from "../livros/cores.js";
-import { CATEGORIAS, type CoresDoLivro } from "../data/taxonomia";
+import { CATEGORIAS, type Contracapa, type CoresDoLivro } from "../data/taxonomia";
 import { SERIES } from "../data/series";
 import { getPostsDaSerie, getResumos, urlCategoria, urlSerie, type Resumo } from "./posts";
 import { url } from "./url";
@@ -31,6 +31,8 @@ export interface Livro {
   /** Subtítulo completo, usado nas páginas. */
   descricao: string;
   cores: CoresDoLivro;
+  /** O verso do livro grande da página dele (só categorias, D78). */
+  contracapa?: Contracapa;
   /** A revista (só séries): título dividido, número de capa, edições, tarja e emblema. */
   revista?: {
     numero: number;
@@ -84,6 +86,7 @@ export function montarLivros(): Promise<Livro[]> {
           frase: c.frase,
           descricao: c.descricao,
           cores: c.cores,
+          contracapa: c.contracapa,
           emPe: c.emPe,
           deitada: c.deitada,
           posts,

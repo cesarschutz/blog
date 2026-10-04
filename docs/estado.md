@@ -147,7 +147,9 @@ ficam com ~20px de lombada (o título vira enfeite; o projeto pede todos à vist
 Depois, no mesmo dia, a fileira da home passou a mostrar a capa (a opção 1 das três que o Cesar viu em
 foto): na tela larga, os livros quase de frente, encolhendo para caber; abaixo de ~1100px, giram até a
 lombada, como antes (D78, `docs/decisoes.md`). E, a pedido dele, a doca: com o mouse, o livro sob ele
-cresce como os ícones do Dock do Mac, e os vizinhos menos (`src/scripts/doca.ts`).
+cresce como os ícones do Dock do Mac, e os vizinhos menos (`src/scripts/doca.ts`). Depois, também a pedido
+dele: os abajures da home sempre acesos e a contracapa (o botão "Virar o livro" na página de cada livro
+mostra o verso com o que o livro abrange e a história da capa, `Contracapa.astro`; D78).
 
 Protótipo dos controles dos desenhos (01/10/2026, no ar em `/prototipos/controles/`, com noindex e fora
 do sitemap e da busca): cinco opções (régua e lápis, marca-texto, caderno e caneta, post-its e fita,
@@ -341,7 +343,8 @@ movimento e com movimento reduzido, com trace de CPU 4× sem tarefas longas dura
 ## Perguntas abertas para o Cesar
 
 00. **Coleções (D78, aplicada em 04/10/2026):** (1) a marca "cs" acompanha a Arquitetura no azul
-    (`#2d4f77`) ou fica no verde `#2D4B46`? (2) o texto do desenho vai para um hover nos livros? (3) no
+    (`#2d4f77`) ou fica no verde `#2D4B46`? (2) o texto do desenho: resolvido, foi para a contracapa do
+    livro grande da página de cada livro (04/10/2026); (3) no
     celular, a fileira da home com 14 livros fica com lombadas de ~20px: manter, duas fileiras abaixo de
     700px, ou rolagem lateral só na fileira? (4) achados dos testes que já existiam antes: a tira
     "Volume · artigos" corta com reticências (1280px no índice, 390px no topo do livro); vizinhos trocados

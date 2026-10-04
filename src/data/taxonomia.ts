@@ -30,6 +30,17 @@ export interface CoresDoLivro {
   destaqueTexto?: string;
 }
 
+/**
+ * A contracapa do livro (D78, a ideia 1 do Cesar): o verso do livro grande da página dele, que o botão
+ * "Virar o livro" mostra. O que o livro abrange, o texto do desenho da capa (o curto, à vista, e o completo,
+ * em "Ler mais"), um link sobre a máquina do desenho e a cor, com o motivo.
+ */
+export interface Contracapa {
+  abrange: string[];
+  capa: { curto: string; completo: string; link: { titulo: string; url: string } };
+  cor: { nome: string; motivo: string };
+}
+
 export interface Categoria {
   /** Igual ao frontmatter e à URL, que usa o nome cru: `/categories/<nome>/`. */
   nome: string;
@@ -51,6 +62,7 @@ export interface Categoria {
   cor: string;
   cores: CoresDoLivro;
   instrumento: string;
+  contracapa?: Contracapa;
   /** Lombada na estante, em unidades da referência (CAPAS.md). */
   emPe: { altura: number; largura: number };
   /** Lombada deitada na lateral, em px no tamanho real. */
@@ -70,6 +82,7 @@ export const CATEGORIAS: Categoria[] = dados.livros.map((l) => ({
   cor: l.cor,
   cores: { ...coresDoLivro(l.cor), papel: PAPEL, tintaPapel: TINTA_PAPEL, corTexto: (l as { corTexto?: string }).corTexto },
   instrumento: l.instrumento,
+  contracapa: (l as { contracapa?: Contracapa }).contracapa,
   emPe: l.lombadaEmPe,
   deitada: l.lombadaDeitada,
 }));

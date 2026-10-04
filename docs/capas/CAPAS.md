@@ -117,6 +117,13 @@ um livro de capa dura de verdade, com as mesmas artes de capa e de lombada (`Liv
 - **Os movimentos continuam:** girar no mouse (38° → 24°), a capa que abre no livro ampliado (com o verso e
   as folhas), o voo da estante para a gaveta e da pilha para o topo, e as trocas de página. Só o `rotateY`
   do livro se mexe; nada de `filter` nas peças (achataria o 3D).
+- **A contracapa (D78):** no livro grande da página do livro (categorias), o botão "Virar o livro", em cima da
+  lupa, gira o livro até 163° (o verso quase de frente e a lombada à direita) e ele cresce um pouco para o texto
+  ficar legível. No verso (`Contracapa.astro`, na face `.contra`), a moldura na cor do livro e, dentro, o papel
+  dele: a frase, "Este livro abrange" com a lista, e "Sobre a capa" com o texto curto do desenho e "Ler mais",
+  que troca para o texto completo, a cor (o nome e o motivo) e o link sobre a máquina; no pé, o volume e o
+  autor. Os textos ficam em `src/livros/livros.json` (`contracapa`); o tamanho da letra de cada lado sai da
+  conta das linhas no build, para caber sem cortar.
 - **O livro ampliado aberto:** enquanto a capa abre, a vista se endireita (`--aberto`, `livro.css`) e o
   livro fica de frente, um livro só: a capa aberta à esquerda e, atrás das folhas da direita, a guarda da
   contracapa (`.guarda-de-tras`, `paginas.css`), as duas na cor do livro (na série, no papel) e passando o
@@ -194,7 +201,7 @@ entra na sua posição, e os que vêm depois dele mudam de número.
   - **Traço:** 1,8, 1,2 e 0,7px, com leve tremor, hachura só nas sombras e no chão, poucos pontos cheios (pinos, eixos, furos).
   - **Fantasma:** um único elemento tracejado, que é sempre a máquina no instante em que faz o trabalho (a gaveta que salta, o cartão que cai, a cápsula que voa, a alavanca que sobe); nunca uma seta, uma onda ou uma legenda.
   - **Ícone da lombada:** a mesma geometria reduzida, sem a hachura e sem o fantasma, que tem de ler como silhueta (de duas a quatro partes grandes, nada de grade densa).
-  - **Textos:** a frase segue o molde do subtítulo, e o volume é a posição do título na ordem alfabética. Como os 13, o livro ganha o texto do desenho (o que é, de quando e a ligação com o assunto, só com o que for verdade), em `docs/prototipos/colecoes/final/dados.json` (`textoDesenho`, `textoDesenhoCurto`, `link`).
+  - **Textos:** a frase segue o molde do subtítulo, e o volume é a posição do título na ordem alfabética. Como os 13, o livro ganha a contracapa (D78): o que ele abrange e o texto do desenho (o que é, de quando e a ligação com o assunto, só com o que for verdade), curto e completo, com um link sobre a máquina e a cor com o motivo, em `src/livros/livros.json` (`contracapa`; a proposta de cada um fica em `docs/prototipos/colecoes/final/dados.json`).
   - **O conjunto e o motivo de cada objeto:** `docs/prototipos/colecoes/final/direcao-de-arte.md` (seção 1, "As regras do mundo"), com as trocas da `critica.md`.
   - **A ferramenta:** `scripts/desenho/livros.mjs` (o desenho em geometria limpa num módulo `scripts/desenho/livros/<slug>.mjs`; ela passa a caneta, faz a hachura e grava o desenho e o ícone; manual em `docs/prototipos/colecoes/manual-desenho.md`). O corpo do título sai de `scripts/livros/titulo-da-capa.mjs`, e a cor passa por `scripts/livros/conferir-cores.mjs` antes de entrar.
 - **Série:** um livro de capa dura com a capa de revista. Defina a cor de destaque, o título (palavra principal e complemento em itálico), o emblema no mesmo traço, o número de capa, a lista de edições e, se houver material especial, a tarja.

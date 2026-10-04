@@ -52,6 +52,8 @@ Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
       `embaralha.ts`);
     - a cordinha do rodapé, a aba "topo" e o voo do livro da home até a página dele;
     - a doca da fileira da home: com o mouse, o livro sob ele cresce, e os vizinhos menos (`doca.ts`, D78);
+    - a contracapa: o botão "Virar o livro" da página do livro gira o livro grande até o verso e troca o
+      lado do verso (`LivroEmPe.astro`, `Contracapa.astro`, D78);
     - o computador (`src/computador/`, carregado sob demanda a partir do primeiro hover, foco ou
       toque no ícone).
 
@@ -74,8 +76,8 @@ Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
 - Os componentes são `Capa`, `MioloLombada` (a lombada, em pé e, girada, deitada no `PainelHome`),
   `Estante` (também no modo "filtro" do arquivo e das tags), `Gaveta`, `Livro3D`, `LivroEmPe`,
   `TopoLivro` e `GradeLivros`, e, da D61, `Colecao` (a fileira da home), `FileiraTopo` (o alto da
-  página do livro), `PontoDeLuz` e `Luz` (abajures e luz): altere esses, sem criar outros em
-  paralelo. As peças paradas da D57 são imagens: `FotoDoLivro` (o livro deitado da ficha "Do livro", com as etiquetas em SVG por cima)
+  página do livro), `PontoDeLuz` e `Luz` (abajures e luz), e, da D78, `Contracapa` (o verso do livro
+  grande da página do livro): altere esses, sem criar outros em paralelo. As peças paradas da D57 são imagens: `FotoDoLivro` (o livro deitado da ficha "Do livro", com as etiquetas em SVG por cima)
   e `LivroEmBranco` (o livro aberto do livro sem artigos e da busca sem resultado), de
   `node scripts/livros/fotos.mjs` (`src/lib/fotos.ts`). `LivroAmpliado` copia o
   livro 3D para o visor e monta nele as páginas de dentro, de `/livros/<slug>.json` (D49).

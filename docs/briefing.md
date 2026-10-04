@@ -189,7 +189,11 @@ Cesar quando valer criar, dividir ou renomear um livro (skill `post`). **A filei
 capa** (04/10/2026, a opção 1 das três que o Cesar viu: "os livros estão muito de lado"): na tela larga,
 os 14 ficam quase de frente (giro de 26°), numa fileira só que vai até onde vai o texto, e é o tamanho
 deles que muda com a largura; abaixo de ~1100px de tela, param de encolher e giram até a lombada, como
-antes, e no celular ficam de lombada. A fileira do alto da página do livro não mudou.
+antes, e no celular ficam de lombada. A fileira do alto da página do livro não mudou. Com o mouse, o
+livro sob ele cresce como no Dock do Mac, e todos os abajures da fileira ficam sempre acesos. **A
+contracapa** (a ideia 1 do Cesar, 04/10/2026): na página de cada livro, o botão "Virar o livro" gira o livro
+grande e mostra o verso, com a frase, o que o livro abrange e a história da capa (o texto curto e, em "Ler
+mais", o completo, a cor e o link sobre a máquina).
 
 - **Capa de categoria** (D32): em cima, o bloco na cor do livro com "VOLUME 0N", "CESAR SCHUTZ" e o
   título grande; embaixo, o papel claro só com a frase do livro e o desenho grande, no destaque.

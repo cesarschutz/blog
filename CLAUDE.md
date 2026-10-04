@@ -270,7 +270,8 @@ src/components/          peças das páginas (estante, gaveta, sumário, avisos,
                          Figura, Animacao, Ferramenta, Evidencia; LousaTempo e LousaLoop só nos antigos);
                          da D61: Colecao (a fileira da home), FileiraTopo (o alto da página do livro),
                          PontoDeLuz e Luz (abajures e luz), Fichario, NuvemTags e FichasTags (Tags),
-                         Vizinhos e LivroDoArtigo (o fim do post), AbaTopo (voltar ao topo) e TracoTitulo
+                         Vizinhos e LivroDoArtigo (o fim do post), AbaTopo (voltar ao topo) e TracoTitulo;
+                         da D78: Contracapa (o verso do livro grande da página do livro)
 src/computador/          o computador (D61): o ícone no canto, o macOS de mentira (sistema, janelas,
                          dock, menus) e os apps (Finder, editor, Terminal, Pré-Visualização, Sobre); os
                          dados vêm das rotas src/pages/mac/
@@ -285,14 +286,14 @@ src/lib/                 posts, formatos, busca (Pagefind), código (Expressive 
                          tags-svg (ícones das tags, D52), fotos (as fotos paradas dos livros e o lugar
                          das etiquetas, D57), traco (traços e ícones à caneta: menu,
                          colchete, círculo, rasura, ondinha, ícones de data, tempo, código, lupa, lua,
-                         sol, contornos dos botões e a assinatura, D52, C04), figuras (lê figuras,
+                         sol, virar, contornos dos botões e a assinatura, D52, C04), figuras (lê figuras,
                          animações e logos, e troca `data-marca` pelo logo, D58)
 src/scripts/artigo.ts    interações do artigo (barra, sumário, notas, visor, apresentação) e o aviso das
                          tabelas que passam da tela no celular (D70)
 src/scripts/tema.ts      tema: a lâmpada do cabeçalho alterna claro e escuro, acendendo e apagando
                          (D39, D61; a lâmpada em lampada.ts)
 src/scripts/             também: troca.js (a cortina e as chegadas), luz, estante-moderna, fichas-caem,
-                         fichario, revelar e embaralha (D61)
+                         fichario, revelar e embaralha (D61); doca (a doca da fileira da home, D78)
 scripts/                 contraste, links, escrita (as regras de escrita do post, D71), apresentacao, og,
                          copiar-katex, desenho/, bench-busca/, marca, caveat-titulos (subconjunto da Caveat, C05), verificar-ambiente
                          (npm run setup e hook do início da sessão), livros/ (as fotos dos livros, D57; o

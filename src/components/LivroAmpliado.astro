@@ -566,6 +566,9 @@ import "../styles/paginas.css";
 
       const nova = caixa.cloneNode(true) as HTMLElement;
       nova.removeAttribute("style");
+      // A contracapa (D78) fica no livro da página: a cópia é desenho, sem o texto do verso.
+      nova.querySelector("[data-contracapa]")?.remove();
+      nova.setAttribute("aria-hidden", "true");
       nova.classList.add("livro-que-abre");
       livro = nova.querySelector<HTMLElement>(".livro-3d");
       // O giro da origem (o GSAP da gaveta o deixa no style) não vem junto.
@@ -808,7 +811,8 @@ import "../styles/paginas.css";
     document.addEventListener("click", (e) => {
       const alvo = e.target as HTMLElement;
       const raiz = alvo.closest<HTMLElement>("[data-ampliar-livro]");
-      if (!raiz || dialogo.open) return;
+      // Virado (a contracapa, D78), o livro não abre: o clique é do verso (os links, Ler mais).
+      if (!raiz || dialogo.open || raiz.hasAttribute("data-virado")) return;
       if (alvo.closest("[data-ampliar]") || alvo.closest(".livro-3d-caixa")) {
         e.preventDefault();
         abrir(raiz);

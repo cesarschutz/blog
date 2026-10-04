@@ -3359,5 +3359,22 @@ nada muda.
     a fileira abre espaço sem passar de onde vai o texto (`src/scripts/doca.ts`; o detalhe em
     `docs/movimento.md`, "Estante e gaveta"). Só com mouse; sem movimento reduzido, nada cresce. O
     tamanho, o alcance e a velocidade são constantes no topo do script.
+  - Os abajures da fileira da home ficam sempre acesos (04/10/2026, pedido do Cesar: "quero que todos sempre
+    estejam ligados"), e não só no hover: `--luz-acesa: 1` em todos os lugares de luz da home
+    (`Colecao.astro`). Na chegada, eles continuam acendendo um a um; a fileira do alto da página do livro não
+    mudou.
+  - A contracapa (04/10/2026). O Cesar perguntou onde pôr os textos de cada livro (o que abrange, o desenho,
+    a cor e o link) e escolheu, entre três ideias (a contracapa no livro; uma ficha "Sobre este livro" na
+    página; as primeiras páginas do livro ampliado), a contracapa: na página do livro, o botão "Virar o livro"
+    (o ícone da caneta preta, `virarDeCaneta`), em cima da lupa, gira o livro grande de 38° a 163° (Web
+    Animations, 1s), e ele cresce enquanto gira (`--virado` no anel do `TopoLivro`, de `--kc-base` a
+    `--kc-virado`; no celular, quase a largura da ficha). O verso (`Contracapa.astro`, no slot da face
+    `.contra` do `Livro3D`) tem a frase, "Este livro abrange" com a lista e "Sobre a capa" com o texto curto e
+    "Ler mais"; o outro lado tem o texto completo, a cor e o link, com "Voltar". Virado: o livro fica parado,
+    as tags do anel saem, a lupa some e o clique não abre o livro ampliado; Esc desvira. O texto entra pelo
+    teclado (o botão vem antes do livro; o verso é `inert` de frente). Os textos foram para
+    `src/livros/livros.json` (`contracapa`), e o tamanho da letra de cada lado sai de uma conta das linhas no
+    build (as larguras médias das fontes medidas no Chrome). A série não tem contracapa. Alternativas: a
+    ficha na página (a mais fácil de achar) e as páginas do livro ampliado (escondidas até abrir).
   - O número desta decisão: a main usou D61 para o redesenho no ar; a coleção, que era D61 na branch,
     passou a D78 quando a main entrou nela.
