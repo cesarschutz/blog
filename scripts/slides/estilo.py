@@ -873,6 +873,10 @@ class Deck:
         self.secoes, self._numeros = [], []
         self.pasta = SAIDA / slug
         self.img = self.pasta / "img"
+        self.post = ler_post(slug)
+        self.livro = livro(self.post.get("category", ""))
+        dados = self.pasta / "dados.json"
+        self.tira = json.loads(dados.read_text()).get("tira") if dados.exists() else None
 
     def imagem(self, nome):
         """Uma foto do post (saida/slides/<slug>/img/, de capturar.mjs) ou um caminho do projeto."""
@@ -909,6 +913,68 @@ class Deck:
                       alinhar="r", nome="Número do slide")
         self._numeros.append((n, dn.shape))
         return d
+
+    def capa(self, titulo, subtitulo, alt, secao="Abertura", rot=-0.6):
+        """A abertura: a marca e as tags no alto, a tira da ficha, o título e o subtítulo do post, a data e
+        o livro, e a capa do post colada com fita (as fotos de capturar.mjs)."""
+        s = self.slide(secao)
+        imagem(s, self.imagem("marca.png"), ML, 0.5, w=2.3, alt="Cesar Schutz, blog")
+        x_tag, th = W - MR, 0.3
+        for n in range(len(self.post["tags"]), 0, -1):
+            arq = self.imagem(f"tag-{n}.png")
+            if not arq.exists():
+                continue
+            pw, ph = Image.open(arq).size
+            x_tag -= th * pw / ph
+            imagem(s, arq, x_tag, 0.5, h=th, raio_px=31, alt=f"Tag {self.post['tags'][n - 1]}")
+            x_tag -= 0.12
+        tira = f"{self.tira['chamada']} · {self.tira['tombo']}" if self.tira else f"Vol. {self.livro['volume']:02d}"
+        escrever(s, ML, 1.22, 6, [tira], dict(f=MONO, s=10.5, c=INK2), pitch=13, nome="Tira da ficha")
+        data = "/".join(reversed(self.post["published"][:10].split("-")))
+        escrever(s, W - MR - 5, 1.22, 5, [f"{data} · {self.livro['titulo']}"], dict(f=MONO, s=10.5, c=INK2),
+                 pitch=13, alinhar="r")
+        tam = 46
+        while larg(titulo, TITULO, tam, True) > LARG * 0.95 and tam > 36:
+            tam -= 1
+        d = diagramar(ML, 1.55, LARG, [titulo], dict(f=TITULO, s=tam, c=INK, b=True), pitch=round(tam * 1.17, 1))
+        colocar(s, d, shape=s.shapes.title, nome="Título")
+        ds = escrever(s, ML, d.fim + 0.06, LARG, [subtitulo], dict(f=TEXTO, s=22, c=INK2, i=True), pitch=28,
+                      nome="Subtítulo")
+        arq = self.imagem("capa.png")
+        if arq.exists():
+            pw, ph = Image.open(arq).size
+            topo, pe = ds.fim + 0.5, H - 0.4
+            iw = min(10.9, (pe - topo) * (pw - 32) / (ph - 32))
+            _, iw, ih = imagem(s, arq, (W - iw) / 2, topo, w=iw, raio_px=22, recorte=(16, 16, 16, 16), rot=rot,
+                               sombra=SOMBRA_FOTO, alt=alt)
+            fita(s, (W - iw) / 2 + 1.25, topo + 0.02, rot=-6)
+            fita(s, (W + iw) / 2 - 1.25, topo - 0.04, rot=5)
+        return s
+
+    def fecho(self, titulo, notas, recomendacao=None, enderecos=(), fontes=(), secao_post="Fontes"):
+        """O último slide: a recomendação final do post (com o visto), os endereços, as fontes resumidas, a
+        ficha "Do livro" e a marca."""
+        s = self.slide(self.secoes[-1][0] if self.secoes else "Fecho")
+        self.cabeca(s, secao_post, titulo)
+        y = 1.95
+        if recomendacao:
+            d = escrever(s, ML + 0.55, y, 7.3, [recomendacao], dict(f=TEXTO, s=19, c=INK), pitch=27)
+            visto(s, ML, y + 0.05)
+            y = d.fim + 0.25
+        if enderecos:
+            d = escrever(s, ML + 0.55, y, 7.3, list(enderecos), dict(f=MONO, s=12, c=ACENTO), pitch=18, depois=4)
+            y = d.fim
+        if fontes:
+            escrever(s, ML, y + 0.55, 7.8, ["As fontes do post"], dict(f=UI, s=13, c=INK, b=True), pitch=16)
+            escrever(s, ML, y + 0.9, 7.8, list(fontes), dict(f=UI, s=12, c=INK2), pitch=15.5, depois=5)
+        livro_ = self.imagem("do-livro.png")
+        if livro_.exists():
+            imagem(s, livro_, W - MR - 2.75, 1.7, w=2.75,
+                   alt=f"A ficha Do livro: o livro {self.livro['titulo']}, Volume {self.livro['volume']:02d}.")
+        escrever(s, W - MR - 3.6, 6.12, 3.6, [SITE], dict(f=MONO, s=12, c=INK2), pitch=15, alinhar="r")
+        imagem(s, self.imagem("marca.png"), W - MR - 2.3, 6.5, w=2.3, alt="Cesar Schutz, blog")
+        self.notas(s, notas)
+        return s
 
     @staticmethod
     def notas(s, texto):

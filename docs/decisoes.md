@@ -85,6 +85,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D72 | A tinta do seletor Lista / Cards: a caixa azul fica só em volta do botão ativo e salta na troca, para o Lighthouse não tomar o azul pelo fundo do botão solto | decidido e publicado |
 | D73 | O nome dos livros da home, dos vizinhos do livro, das tags da nuvem e do livro de Séries vem de um texto `.sr`, sem `aria-label`; na home, o `content-visibility` no livro, e não no link | decidido e publicado |
 | D74 | A apresentação de um post (PPT) no estilo do blog, com os desenhos, os prints e a caneta do próprio post e as notas do apresentador (skill `apresentacao`, `scripts/slides/`) | decidido e publicado |
+| D77 | As apresentações no estilo do blog também entram no post (seção "Apresentação"), pelo `npm run apresentacao -- … --pdf`; as três primeiras: as duas partes dos mods e Parquet | decidido e publicado |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -3239,3 +3240,27 @@ nada muda.
   fotos da tabela de comparação, da frase e de um SVG, antes e depois. O relatório da revisão está em
   `docs/revisao-frontend-2026-10-03.md`.
 - **Alternativas:** manter o `--ink-3` na frase (o efeito fica mais marcado, mas falha no celular).
+
+## D77 · A apresentação no estilo do blog também vai para o post
+- **Data:** 03/10/2026 · **Status:** decidido e publicado (commit e push a pedido do Cesar).
+- **Pedido do Cesar:** "garanta que as regras estão publicadas, [...] e utilizando as regras crie para os
+  últimos 3 posts o ppt e coloque no final do post para eu ver como fica".
+- **As regras:** a D74 já estava inteira na `main` (a skill, os scripts e o `CLAUDE.md`, sem diferença desde
+  o commit `9938819`); nada faltava publicar.
+- **Decisão:** a apresentação feita no estilo do blog também entra no post, na seção "Apresentação" de
+  sempre (antes de `## Fontes`, com o carrossel, a tela cheia e o "Baixar PDF"). O `scripts/apresentacao.mjs`
+  ganhou o `--pdf`: as páginas do PDF que o `conferir.py` gera viram os slides WebP (1376px) e a entrada no
+  `src/data/decks.json`, como as do NotebookLM.
+- **As três primeiras**, nos três últimos posts:
+  - parte 1 dos mods (`claude-code-do-claude-md-ao-mod`), 11 slides: o roteiro de 02/10/2026 refeito para o
+    post dividido (D71), com a capa nova, sem o cockpit e sem primeira pessoa;
+  - parte 2 (`claude-code-csr-cockpit`), 13 slides: o cockpit, o marketplace, os comandos, os testes e os
+    limites, com os prints e a lousa do slug novo;
+  - Parquet (`parquet-snapshot-banco-de-dados`), 10 slides: cada quadro do infográfico, recortado da
+    figura, abre o slide da sua seção.
+- **Na biblioteca:** `Deck.capa()` e `Deck.fecho()`, a abertura e o fecho prontos, e a tabela aceita uma
+  célula com estilos misturados.
+- **Conferido:** o `conferir.py` nos três (título e notas em todos, só as fontes do site, nada fora do
+  quadro), cada slide olhado, e a seção no dev: os três posts com a apresentação e o PDF (200).
+- **Pergunta em aberto (D68):** toda apresentação nova entra no post sem perguntar, ou só quando o Cesar
+  pedir?

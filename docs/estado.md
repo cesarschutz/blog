@@ -286,6 +286,7 @@ movimento e com movimento reduzido, com trace de CPU 4× sem tarefas longas dura
 | D73 | o nome dos livros da home, dos vizinhos, das tags e do livro de Séries vindo de um texto `.sr`, sem `aria-label`, com o `content-visibility` da home no livro, e não no link |
 | D74 | a apresentação de um post no estilo do blog: `.pptx` com os desenhos e a caneta do próprio post e as notas do apresentador (skill `apresentacao`, `scripts/slides/`) |
 | D76 | a revisão técnica do frontend (PR #3): animações que cancelam a anterior, movimento reduzido na hora, a capa viva uma vez por página, medidas dos SVGs, cabeçalhos de linha nas tabelas e os testes `frontend-*` |
+| D77 | as apresentações no estilo do blog também no post (seção "Apresentação", pelo `--pdf`): as duas partes dos mods e Parquet |
 
 ## Próximos passos
 

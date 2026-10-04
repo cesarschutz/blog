@@ -173,6 +173,7 @@ npm run escrita -- <slug>   # as regras de escrita do post (D71): título, descr
                      # primeira pessoa e os avisos de post em partes; sem slug, o levantamento de todos
 npm run setup        # confere o ambiente (Node, dependências, skills, Chrome, motor do Impeccable)
 npm run apresentacao -- <slug> --pptx <arquivo> --titulo "…"   # slides do NotebookLM
+npm run apresentacao -- <slug> --pdf <arquivo> --titulo "…"    # os slides no post a partir do PDF (D77)
 node scripts/slides/capturar.mjs <slug> [--base URL]   # as fotos do post para a apresentação (D74)
 python3 scripts/slides/posts/<slug>.py                 # gera a apresentação do post em saida/slides/<slug>/
 python3 scripts/slides/conferir.py <slug>              # PDF, imagens, folha de contato e checagens

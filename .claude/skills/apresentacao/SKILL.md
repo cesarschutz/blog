@@ -75,7 +75,12 @@ Não precisa combinar antes: fazer e entregar. Perguntar só se não estiver cla
    cortada. Corrigir no roteiro e gerar de novo até ficar limpo.
 5. **Entregar:** copiar o `.pptx` e o `.pdf` para `~/Downloads/` (sem sobrescrever) e mandar os dois ao Cesar.
    O PDF leva as fontes embutidas; o `.pptx` precisa delas instaladas na máquina onde for aberto.
-6. O roteiro vai para o git quando o Cesar pedir o commit; a pasta `saida/` fica fora.
+6. **No post (D77):** a apresentação entra na seção "Apresentação", antes de `## Fontes`, com o PDF que o
+   `conferir.py` gerou: `fnm exec --using=24 npm run apresentacao -- <slug> --pdf
+   saida/slides/<slug>/<slug>.pdf --titulo "<título curto>"`. As páginas viram os slides WebP do post e a
+   entrada em `src/data/decks.json`, como as do NotebookLM. Conferir a seção no dev antes do commit.
+7. O roteiro, os slides WebP e o `decks.json` vão para o git quando o Cesar pedir o commit; a pasta `saida/`
+   fica fora.
 
 ### Requisitos
 
@@ -95,8 +100,8 @@ Não precisa combinar antes: fazer e entregar. Perguntar só se não estiver cla
 - Imagem com fundo próprio (print escuro, figura no painel): cortar os cantos com `raio_px`, como no site.
 - O validador da skill `pptx` pede Python 3.10 ou mais novo; o `conferir.py` cobre o essencial com o 3.9
   daqui.
-- Pôr esta apresentação no post (a seção "Apresentação") é outro pedido: o script de hoje lê slides em
-  imagem (o caminho do NotebookLM, abaixo), e seria preciso exportar cada slide em imagem antes.
+- Refez o roteiro depois de mudar o post? Rode de novo o `conferir.py` e o `npm run apresentacao -- … --pdf`,
+  senão o post fica com os slides antigos.
 
 ## NotebookLM: os slides no post
 
