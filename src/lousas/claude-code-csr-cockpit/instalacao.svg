@@ -89,18 +89,18 @@
   <g class="tom-petroleo">
     <text x="76" y="296" class="codigo" data-escrita="0.504 0.602">plugins/csr-cockpit</text>
     <text x="76" y="333" class="nota-pequena" data-escrita="0.602 0.643">version</text>
-    <text x="218" y="334" text-anchor="middle" class="codigo" data-escrita="0.694 0.741">0.5.0</text>
-    <text x="218" y="368" text-anchor="middle" class="codigo" data-escrita="4.199 4.256">0.6.0</text>
+    <text x="218" y="334" text-anchor="middle" class="codigo" data-escrita="0.694 0.741">1.0.0</text>
+    <text x="218" y="368" text-anchor="middle" class="codigo" data-escrita="4.199 4.256">1.1.0</text>
     <text x="486" y="282" text-anchor="middle" class="nota-pequena texto-tom" data-escrita="2.277 2.372">copia</text>
     <text x="566" y="296" class="codigo" data-escrita="2.637 2.763">csr-cockpit</text>
     <text x="566" y="333" class="nota-pequena" data-escrita="2.763 2.827">version</text>
-    <text x="698" y="334" text-anchor="middle" class="codigo" data-escrita="2.906 2.985">0.5.0</text>
+    <text x="698" y="334" text-anchor="middle" class="codigo" data-escrita="2.906 2.985">1.0.0</text>
     <circle cx="550" cy="248" r="17" class="selo" data-aparece="2 2.048"/>
     <text x="550" y="249" class="selo-texto" data-aparece="2 2.048">3</text>
-    <text x="200" y="642" text-anchor="middle" class="nota-pequena texto-tom" data-escrita="3.387 3.435">0.5.0</text>
-    <text x="698" y="642" text-anchor="middle" class="nota-pequena texto-tom" data-escrita="4.085 4.131">0.6.0</text>
+    <text x="200" y="642" text-anchor="middle" class="nota-pequena texto-tom" data-escrita="3.387 3.435">1.0.0</text>
+    <text x="698" y="642" text-anchor="middle" class="nota-pequena texto-tom" data-escrita="4.085 4.131">1.1.0</text>
     <text x="714" y="438" class="nota-pequena texto-tom" data-escrita="4.42 4.489">atualiza</text>
-    <text x="698" y="368" text-anchor="middle" class="codigo" data-escrita="4.557 4.614">0.6.0</text>
+    <text x="698" y="368" text-anchor="middle" class="codigo" data-escrita="4.557 4.614">1.1.0</text>
     <circle cx="734" cy="568" r="17" class="selo" data-aparece="4 4.034"/>
     <text x="734" y="569" class="selo-texto" data-aparece="4 4.034">5</text>
   </g>
@@ -120,7 +120,7 @@
   <text x="76" y="582" class="nota-pequena" data-escrita="3.036 3.145">commits no repositório</text>
   <text x="420" y="642" text-anchor="middle" class="nota-pequena" data-escrita="3.489 3.574">mais commits</text>
   <text x="842" y="296" class="nota-pequena" data-escrita="4.716 4.795">sessão aberta</text>
-  <text x="890" y="334" text-anchor="middle" class="codigo" data-escrita="4.835 4.875">0.5.0</text>
+  <text x="890" y="334" text-anchor="middle" class="codigo" data-escrita="4.835 4.875">1.0.0</text>
   <text x="842" y="368" class="nota-pequena" data-escrita="4.875 5">até /reload-plugins</text>
 
   <path d="M175 328 L261 323" class="risco" data-traco="4.131 4.199"/>

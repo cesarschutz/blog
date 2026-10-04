@@ -166,7 +166,7 @@ A aba Inventário lista o que está instalado e o que está ligado nesta sessão
 
 <Evidencia
   imagem={abaInventario}
-  alt="A aba Inventário do csr-cockpit: as seções Plugins, Skills, Comandos, Agentes, Hooks, MCP, Outros e Para instalar, cada uma com a contagem; o filtro; e dois plugins, o csr-cockpit na versão 0.16.0, ativo, e o warp, inativo, cada um com a descrição e o que traz."
+  alt="A aba Inventário do csr-cockpit: as seções Plugins, Skills, Comandos, Agentes, Hooks, MCP, Outros e Para instalar, cada uma com a contagem; o filtro; e dois plugins, o csr-cockpit na versão 1.0.0, ativo, e o warp, inativo, cada um com a descrição e o que traz."
   fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit#6-inventário"
   legenda="A aba Inventário, com cada peça marcada como ativa ou inativa (tela do README do csr-cockpit)"
 />
@@ -234,12 +234,12 @@ A instalação e a atualização seguem seis passos, do repositório no GitHub �
 <FiguraPassos
   figura="claude-code-csr-cockpit/instalacao-em-passos"
   passos={[
-    "O repositório no GitHub guarda o catálogo e a pasta do plugin, na `version` 0.5.0.",
+    "O repositório no GitHub guarda o catálogo e a pasta do plugin, na `version` 1.0.0.",
     "O `marketplace add` clona o catálogo para a sua máquina, com o nome `cesarschutz`.",
-    "O `install` copia a pasta do plugin na versão do catálogo: 0.5.0.",
+    "O `install` copia a pasta do plugin na versão do catálogo: 1.0.0.",
     "Commits novos chegam ao repositório, mas o `version` não sobe: na máquina, nada muda.",
-    "O `version` sobe para 0.6.0, e o `update` renova o catálogo e copia a pasta nova.",
-    "A sessão aberta segue na 0.5.0 até o `/reload-plugins` carregar a 0.6.0.",
+    "O `version` sobe para 1.1.0, e o `update` renova o catálogo e copia a pasta nova.",
+    "A sessão aberta segue na 1.0.0 até o `/reload-plugins` carregar a 1.1.0.",
   ]}
   legenda="Cada cor é um lugar: o repositório (roxo), o catálogo (azul), o plugin instalado (petróleo) e a sessão aberta (âmbar)."
   fim="segmentos"
@@ -287,15 +287,15 @@ Um mod se testa em três camadas, da mais barata para a mais cara.
 
 **`claude plugin validate`.** Num mod, além de conferir o manifesto, ele lista os eventos que o mod escuta e as chamadas que ele faz à API dos mods, sem executar nada. Serve também para :grifo[auditar o mod de outra pessoa antes de instalar]. No cockpit, a lista não tem chamada de rede; os processos são só os comandos de leitura do git, e as gravações, só os dois arquivos de registro.
 
-:::carimbo{texto="rodado em 04/10/2026: 28 de 28"}
-**`claude plugin test`.** [Roda os testes](https://code.claude.com/docs/en/plugins/mods/test#write-a-test) do mod contra um Claude Code de mentira, sem login e sem rede: o teste dispara os eventos, monta o painel, aperta os botões e confere o que foi desenhado. O cockpit tem [28 testes](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit/tests): um deles confere a regra de só observar, e outro desenha cada aba de uma sessão longa e bagunçada.
+:::carimbo{texto="rodado em 04/10/2026: 35 de 35"}
+**`claude plugin test`.** [Roda os testes](https://code.claude.com/docs/en/plugins/mods/test#write-a-test) do mod contra um Claude Code de mentira, sem login e sem rede: o teste dispara os eventos, monta o painel, aperta os botões e confere o que foi desenhado. O cockpit tem [35 testes](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit/tests): um deles confere a regra de só observar, e outro desenha cada aba de uma sessão longa e bagunçada.
 :::
 
 **Uma sessão de verdade.** O Claude Code aberto num projeto de exemplo, com o mod carregado por `claude --plugin-dir`. Carregada assim, a pasta fica vigiada: o Claude Code [recarrega o mod](https://code.claude.com/docs/en/plugins/mods/create#how-the-example-mod-works) a cada arquivo salvo. É a única das três camadas que mostra o painel desenhado no terminal.
 
 ## Os limites do csr-cockpit
 
-Estes são os limites do csr-cockpit na versão 0.16.0, em 04/10/2026.
+Estes são os limites do csr-cockpit na versão 1.0.0, em 04/10/2026.
 
 O mais importante: :marca[o custo por agente não é um número oficial]. O Claude Code informa o custo da sessão inteira, não o de cada agente. O cockpit reparte esse custo: ao fim de cada resposta do modelo, ele vê quanto o custo da sessão subiu e põe essa diferença na conta de quem respondeu, um agente ou a conversa principal. Cada aumento vai para um dono só, então nada é contado duas vezes, e o que não vai para agente nenhum é o gasto da conversa principal: na sessão das imagens, os quatro agentes ficaram com US\$ 0,37 dos US\$ 2,21. É uma atribuição feita pelo cockpit e, se duas respostas terminam no mesmo instante, uma fração pode cair no agente vizinho.
 
@@ -314,7 +314,7 @@ Os outros limites:
 O [claude-code-kit](https://github.com/cesarschutz/claude-code-kit) é público, com licença MIT. Em 04/10/2026 ele tem:
 
 :::chave{nota="cada linha instala sozinha"}
-- o `csr-cockpit`, na versão 0.16.0;
+- o `csr-cockpit`, na versão 1.0.0;
 - o `exemplos`, um plugin com uma skill, um agente, um hook e um estilo de saída;
 - sete peças avulsas: duas skills, dois agentes, um estilo de saída, um tema e um hook.
 :::

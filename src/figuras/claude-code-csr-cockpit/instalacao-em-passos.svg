@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1370"
-  aria-label="Diagrama de sequência em seis passos, do repositório no GitHub à sessão aberta na sua máquina: o repositório claude-code-kit guarda o catálogo, marketplace.json, e a pasta csr-cockpit com version 0.5.0; o marketplace add clona o catálogo para a máquina, onde ele se chama cesarschutz; o install copia a pasta do plugin, na 0.5.0; commits novos chegam ao repositório, mas o version fica parado, e nada muda na máquina; o version sobe para 0.6.0, o update renova o catálogo e copia a pasta nova; e a sessão que já estava aberta segue na 0.5.0 até o /reload-plugins, que carrega a 0.6.0. Só o version novo chega, e a sessão aberta precisa de /reload-plugins.">
+  aria-label="Diagrama de sequência em seis passos, do repositório no GitHub à sessão aberta na sua máquina: o repositório claude-code-kit guarda o catálogo, marketplace.json, e a pasta csr-cockpit com version 1.0.0; o marketplace add clona o catálogo para a máquina, onde ele se chama cesarschutz; o install copia a pasta do plugin, na 1.0.0; commits novos chegam ao repositório, mas o version fica parado, e nada muda na máquina; o version sobe para 1.1.0, o update renova o catálogo e copia a pasta nova; e a sessão que já estava aberta segue na 1.0.0 até o /reload-plugins, que carrega a 1.1.0. Só o version novo chega, e a sessão aberta precisa de /reload-plugins.">
   <path d="M205 150 V1250 M485 150 V1250 M765 150 V1250 M1045 150 V1250" class="grade"/>
 
   <g class="tinta">
@@ -128,7 +128,7 @@
     <text x="205" y="210" text-anchor="middle" class="codigo">marketplace.json</text>
     <text x="205" y="236" text-anchor="middle" class="nota-pequena">o catálogo</text>
     <text x="205" y="296" text-anchor="middle" class="codigo">csr-cockpit/</text>
-    <text x="205" y="326" text-anchor="middle" class="codigo">version 0.5.0</text>
+    <text x="205" y="326" text-anchor="middle" class="codigo">version 1.0.0</text>
   </g>
 
   <g data-passo="2">
@@ -150,7 +150,7 @@
       <path d="M487 550 H745" pathLength="1" class="trajeto"/>
     </g>
     <text x="765" y="602" text-anchor="middle" class="codigo">csr-cockpit/</text>
-    <text x="765" y="632" text-anchor="middle" class="codigo">version 0.5.0</text>
+    <text x="765" y="632" text-anchor="middle" class="codigo">version 1.0.0</text>
   </g>
 
   <g data-passo="4">
@@ -169,7 +169,7 @@
       <circle cx="42" cy="828" r="19" class="selo"/>
       <text x="42" y="829" class="selo-texto">5</text>
     </g>
-    <text x="205" y="836" text-anchor="middle" class="codigo">version 0.6.0</text>
+    <text x="205" y="836" text-anchor="middle" class="codigo">version 1.1.0</text>
     <g class="tom-roxo etapa-2">
       <text x="338" y="886" text-anchor="middle" class="codigo">update</text>
       <path d="M207 900 H465" pathLength="1" class="trajeto"/>
@@ -179,7 +179,7 @@
       <path d="M487 960 H745" pathLength="1" class="trajeto"/>
     </g>
     <g class="etapa-3">
-      <text x="765" y="1012" text-anchor="middle" class="codigo">version 0.6.0</text>
+      <text x="765" y="1012" text-anchor="middle" class="codigo">version 1.1.0</text>
       <text x="765" y="1038" text-anchor="middle" class="nota-pequena">a pasta nova</text>
     </g>
   </g>
@@ -189,13 +189,13 @@
       <circle cx="42" cy="1112" r="19" class="selo"/>
       <text x="42" y="1113" class="selo-texto">6</text>
     </g>
-    <text x="1045" y="1119" text-anchor="middle" class="texto-caixa">ainda na 0.5.0</text>
+    <text x="1045" y="1119" text-anchor="middle" class="texto-caixa">ainda na 1.0.0</text>
     <g class="tom-petroleo etapa-2">
       <text x="898" y="1166" text-anchor="middle" class="codigo">/reload-plugins</text>
       <path d="M767 1180 H1025" pathLength="1" class="trajeto"/>
     </g>
     <g class="etapa-3">
-      <text x="1045" y="1233" text-anchor="middle" class="texto-caixa">agora na 0.6.0</text>
+      <text x="1045" y="1233" text-anchor="middle" class="texto-caixa">agora na 1.1.0</text>
     </g>
     <g class="tom-petroleo etapa-3">
       <text x="625" y="1326" text-anchor="middle" class="texto-caixa texto-tom">Só o version novo chega; a sessão aberta precisa de /reload-plugins.</text>

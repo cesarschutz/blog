@@ -1,6 +1,6 @@
 """A apresentação da parte 2 do post dos mods (D74): "Um mod do Claude Code na prática — instalação, testes e
 limites (parte 2 de 2)". Os slides do marketplace, dos comandos e dos testes vieram da primeira versão, aprovada
-pelo Cesar em 02/10/2026; os do cockpit foram refeitos em 04/10/2026 (D79), com as telas do cockpit 0.16.0 e um
+pelo Cesar em 02/10/2026; os do cockpit foram refeitos em 04/10/2026 (D79), com as telas do cockpit e um
 slide por aba, como no post.
 
     node scripts/slides/capturar.mjs claude-code-csr-cockpit
@@ -386,13 +386,13 @@ deck.cabeca(s, "Como instalar: o marketplace", "Instalar e atualizar, em seis pa
 pic, iw, ih = imagem(s, img("passos-1.png"), ML, 1.82, h=4.95, raio_px=20,
                      alt="A figura em passos da instalação, no quadro final: o repositório no GitHub com o catálogo e a "
                          "pasta do plugin, o catálogo clonado na máquina com o nome cesarschutz, o plugin instalado e "
-                         "a sessão aberta, e o caminho de cada versão, da 0.5.0 à 0.6.0.")
-PASSOS = [(ROXO, "O repositório no GitHub guarda o catálogo e a pasta do plugin, na `version` 0.5.0."),
+                         "a sessão aberta, e o caminho de cada versão, da 1.0.0 à 1.1.0.")
+PASSOS = [(ROXO, "O repositório no GitHub guarda o catálogo e a pasta do plugin, na `version` 1.0.0."),
           (AZUL, "O `marketplace add` clona o catálogo para a sua máquina, com o nome `cesarschutz`."),
-          (PETROLEO, "O `install` copia a pasta do plugin na versão do catálogo: 0.5.0."),
+          (PETROLEO, "O `install` copia a pasta do plugin na versão do catálogo: 1.0.0."),
           (ROXO, "Commits novos chegam ao repositório, mas o `version` não sobe: na máquina, nada muda."),
-          (PETROLEO, "O `version` sobe para 0.6.0, e o `update` renova o catálogo e copia a pasta nova."),
-          (AMBAR, "A sessão aberta segue na 0.5.0 até o `/reload-plugins` carregar a 0.6.0.")]
+          (PETROLEO, "O `version` sobe para 1.1.0, e o `update` renova o catálogo e copia a pasta nova."),
+          (AMBAR, "A sessão aberta segue na 1.0.0 até o `/reload-plugins` carregar a 1.1.0.")]
 px = ML + iw + 0.45
 y = 1.86
 for i, (cor, txt) in enumerate(PASSOS):
@@ -469,7 +469,7 @@ CAMADAS = [("camada 1", "sem executar nada", "claude plugin validate",
            ("camada 2", "sem login e sem rede", "claude plugin test",
             ["Roda os testes contra um Claude Code de mentira: dispara os eventos, monta o painel, aperta os botões e "
              "confere o que foi desenhado.",
-             "O cockpit tem 28 testes; um deles confere a regra de só observar."], {}),
+             "O cockpit tem 35 testes; um deles confere a regra de só observar."], {}),
            ("camada 3", "a mais cara", "uma sessão de verdade",
             ["O Claude Code num projeto de exemplo, com o mod carregado por `claude --plugin-dir`.",
              "A pasta fica vigiada: o mod recarrega a cada arquivo salvo.",
@@ -483,16 +483,16 @@ for i, (esq, dir_, cmd, pars, mk) in enumerate(CAMADAS):
     d = escrever(s, kx + 0.25, ty + 0.25, kw - 0.5, [cmd], est_cmd, pitch=18)
     escrever(s, kx + 0.25, d.fim + 0.22, kw - 0.5, pars, dict(f=TEXTO, s=14, c=INK2, codigo=dict(c=INK)), pitch=19.5,
              depois=9, marcas=mk)
-carimbo(s, ML + (kw + 0.32) + 0.25, 1.9 + KH - 0.95, kw - 0.5, "rodado em 04/10/2026: 28 de 28")
+carimbo(s, ML + (kw + 0.32) + 0.25, 1.9 + KH - 0.95, kw - 0.5, "rodado em 04/10/2026: 35 de 35")
 deck.notas(s, "Um mod se testa em três camadas, da mais barata para a mais cara. O validate lista os eventos que o mod "
               "escuta e as chamadas que ele faz, sem executar nada, e serve para auditar o mod de outra pessoa antes "
               "de instalar. O test roda os testes contra um Claude Code de mentira, sem login e sem rede: o cockpit "
-              "tem 28 testes, e os 28 passaram em 04/10/2026. A sessão de verdade, com o --plugin-dir, é a única que "
+              "tem 35 testes, e os 35 passaram em 04/10/2026. A sessão de verdade, com o --plugin-dir, é a única que "
               "mostra o painel desenhado no terminal.")
 
 # 18 --------------------------------------------------------------- os limites
 s = deck.slide("Testes e limites")
-deck.cabeca(s, "Os limites do csr-cockpit", "Os limites da versão 0.16.0")
+deck.cabeca(s, "Os limites do csr-cockpit", "Os limites da versão 1.0.0")
 lw17 = 6.35
 d = escrever(s, ML, 1.95, lw17, ["{mk:O custo por agente não é um número oficial.}"],
              dict(f=TITULO, s=25, c=INK, b=True), pitch=31, marcas={"mk": "marca"})
@@ -519,7 +519,7 @@ for k, (a, b) in enumerate(LIMITES):
     ry = topo3 + k * lh3
     escrever(s, fx + 0.26, ry + 0.14, fw17 - 0.45, [a], dict(f=UI, s=13, c=INK, b=True), pitch=16)
     escrever(s, fx + 0.26, ry + 0.44, fw17 - 0.45, [b], dict(f=TEXTO, s=12.5, c=INK2), pitch=16)
-deck.notas(s, "Os limites são da versão 0.16.0, em 04/10/2026. O mais importante: o custo por agente não é um número "
+deck.notas(s, "Os limites são da versão 1.0.0, em 04/10/2026. O mais importante: o custo por agente não é um número "
               "oficial. O Claude Code informa o custo da sessão inteira, e o cockpit reparte: na sessão das imagens, "
               "os quatro agentes ficaram com US$ 0,37 dos US$ 2,21. O valor em dólar é uma estimativa a preço de "
               "tabela, que não é cobrança para quem paga assinatura. No aplicativo de desktop, depende da versão "
@@ -534,7 +534,7 @@ escrever(s, ML, 1.47, LARG, ["github.com/cesarschutz/claude-code-kit"], dict(f=M
 escrever(s, ML, 2.15, 6.5, ["Em 04/10/2026, ele tem:"], dict(f=TEXTO, s=17, c=INK2), pitch=22)
 y0_ = 2.7
 d = escrever(s, ML + 0.3, y0_, 6.6,
-             ["o `csr-cockpit`, na versão 0.16.0;",
+             ["o `csr-cockpit`, na versão 1.0.0;",
               "o `exemplos`, um plugin com uma skill, um agente, um hook e um estilo de saída;",
               "sete peças avulsas: duas skills, dois agentes, um estilo de saída, um tema e um hook."],
              dict(f=TEXTO, s=19, c=INK, codigo=dict(c=INK)), pitch=26, depois=10)
@@ -547,7 +547,7 @@ nota(s, ML + 0.3 + 6.65 + 0.26, (y0_ + d.fim) / 2 - 0.2, 2.6, "cada linha instal
 escrever(s, ML, d.fim + 0.5, LARG,
          ["O `README.md` explica o catálogo, e o `CONTRIBUTING.md`, como acrescentar um item. O repositório vai "
           "continuar recebendo peças."], dict(f=TEXTO, s=15, c=INK2, codigo=dict(c=INK)), pitch=21)
-deck.notas(s, "O claude-code-kit é público, com licença MIT. Em 04/10/2026, tem o csr-cockpit, na versão 0.16.0, o "
+deck.notas(s, "O claude-code-kit é público, com licença MIT. Em 04/10/2026, tem o csr-cockpit, na versão 1.0.0, o "
               "plugin exemplos, com uma skill, um agente, um hook e um estilo de saída, e sete peças avulsas; cada "
               "uma se instala sozinha. O README explica o catálogo, e o CONTRIBUTING, como acrescentar um item.")
 

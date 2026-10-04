@@ -270,6 +270,9 @@ e avanço proporcional de cinco minutos no hover, com retorno suave. `check`, `b
 validador e revisão dos desenhos passaram; eixo e proporção conferidos no navegador durante o
 movimento e com movimento reduzido, com trace de CPU 4× sem tarefas longas durante o giro.
 
+**O claude-code-kit na 1.0 (D80, 04/10/2026):** o kit recomeçou o histórico na versão 1.0, com o
+csr-cockpit 1.0.0 e a release `v1.0.0`; o post da parte 2 e a apresentação citam a 1.0.0.
+
 **O post do csr-cockpit em dia (D79, 04/10/2026):** a parte 2 do post dos mods foi atualizada para o
 cockpit 0.16.0: uma subseção por aba, cada uma com a tela gerada pelo próprio mod e o que ela mostra, e os fatos de hoje. A capa ainda
 mostra os custos da sessão antiga.

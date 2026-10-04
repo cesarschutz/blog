@@ -3436,3 +3436,16 @@ nada muda.
   de arquivo nem processo; hoje tem o git de leitura e os dois registros.
 - **Pendente:** a capa ilustrada ainda mostra US\$ 0,04 e US\$ 0,02 (os números da sessão antiga).
 
+## D80 · O claude-code-kit na versão 1.0
+
+- **Data:** 04/10/2026 · **Status:** decidido e publicado.
+- **Pedido do Cesar:** limpar o `claude-code-kit` e deixar o cockpit "como versão 1.0, apenas com essa e
+  nenhuma outra", sem branches nem worktrees, só com o cockpit e os exemplos, e criar a release v1.0;
+  depois, ver no blog o que precisava mudar por causa da versão.
+- **No kit:** o histórico recomeçou num commit só ("claude-code-kit 1.0"), o `csr-cockpit` foi para a
+  versão 1.0.0, saíram as branches antigas e os prints que sobravam, e foi criada a release `v1.0.0`.
+- **No post da parte 2 e na apresentação:** a versão citada passou de 0.16.0 para 1.0.0; o exemplo da
+  figura em passos (e da lousa da instalação) passou de 0.5.0 e 0.6.0 para 1.0.0 e 1.1.0, com o mesmo
+  número de caracteres; a tela do Inventário, que mostra a versão, foi trocada pela da 1.0.0; os testes
+  passaram de 28 para 35. As outras telas do post continuam as da D79.
+
