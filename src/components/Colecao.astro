@@ -154,10 +154,16 @@ const RESPIRO = modo === "topo" ? 36 : 24;
 const W = `(var(--util) - ${RESPIRO}px)`;
 // A media query aproximada da largura útil (a página tem margem de ~2,4vw de cada lado e a barra de rolagem).
 const telaDe = (util: number) => Math.round((util + 16 + RESPIRO) / 0.952);
+// A largura útil para em `--largura` (1320px, base.css). Se os nomes só coubessem numa fileira mais larga que
+// isso, eles não aparecem em largura nenhuma (D78: com os 13 livros e a série, o lugar de cada volume fica
+// abaixo dos 100px mesmo na tela larga, e sem isto os nomes se atropelavam a partir de ~1890px).
+const UTIL_MAX = 1320;
+const nomesCabem = NOMES <= UTIL_MAX - RESPIRO;
+const semNomes = `.${id} .nome-livro{display:none}.${id}.colecao-home{padding-bottom:calc(14px + 18px * var(--kc))}`;
 const css =
   `.${id}{--kc:clamp(0.42,tan(atan2(${W},${WMIN}px)),1);--tc:clamp(0,tan(atan2(${W} - ${WMIN}px,${WMAX - WMIN}px)),1);` +
   `--gc:calc(90deg - ${DELTA}deg * pow(var(--tc),${P}));--vao:calc((${VAO_MIN}px + ${VAO_MAX - VAO_MIN}px * var(--tc)) * var(--kc));--folga:${FOLGA}}` +
-  `@media (max-width:${telaDe(NOMES)}px){.${id} .nome-livro{display:none}.${id}.colecao-home{padding-bottom:calc(14px + 18px * var(--kc))}}` +
+  (nomesCabem ? `@media (max-width:${telaDe(NOMES)}px){${semNomes}}` : semNomes) +
   luzesCss +
   `@media (hover:hover){${luzesHover}}` +
   `@media (max-width:699px){${luzesPar}@media (hover:hover){${luzesParHover}}}`;
