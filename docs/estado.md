@@ -188,6 +188,10 @@ A seção de pronúncia e as fontes de dicionários foram removidas a pedido do 
 Revisado antes da publicação na `main`, solicitada expressamente pelo Cesar.
 `check`, `build`, `links`, contraste, validação dos SVGs e conferência nas dez combinações de
 largura/tema passaram; movimento reduzido também. A foto do livro Dados agora registra três artigos.
+Relógio da capa corrigido em 03/10/2026 a pedido do Cesar: eixo fixo no centro, ponteiros separados
+e avanço proporcional de cinco minutos no hover, com retorno suave. `check`, `build`, `links`,
+validador e revisão dos desenhos passaram; eixo e proporção conferidos no navegador durante o
+movimento e com movimento reduzido, com trace de CPU 4× sem tarefas longas durante o giro.
 
 ## Como ver
 

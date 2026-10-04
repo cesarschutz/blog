@@ -320,3 +320,11 @@ o foco do teclado igual ao mouse, Esc fecha, movimento reduzido): `DESIGN.md`, M
 
 - **A 404** (D49): a folha da abertura da home, com o erro e a estante; a caneta rasura o endereço
   (0,35s e 0,25s, 0,3s depois de abrir) e, quando dá, a sugestão chega depois (0,3s).
+
+### Relógio da capa de Parquet e snapshots (03/10/2026)
+
+Correção do giro que o Cesar reprovou: os ponteiros não giram juntos pelo centro da caixa dos
+traços. O grupo `mexe-gira` com `data-relogio` contém dois paths: `data-ponteiro="minutos"`, vertical
+para cima, e `data-ponteiro="horas"`, horizontal para a direita. A origem de cada giro é a base do
+ponteiro, no centro do mostrador. No hover avançam cinco minutos: 30° e 2,5°, na mesma curva e em
+1,3 s; voltam suavemente em 0,75 s. Com movimento reduzido ficam parados. O mostrador não gira.

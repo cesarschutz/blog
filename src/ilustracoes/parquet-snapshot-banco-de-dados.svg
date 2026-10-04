@@ -18,7 +18,10 @@
     <path d="M655 388 L695 368 M655 430 L695 454" class="fantasma"/>
     <circle cx="750" cy="546" r="43" class="papel"/>
     <circle cx="750" cy="546" r="43" class="linha"/>
-    <g class="mexe-gira"><path d="M750 546 V518 M750 546 L770 555" class="linha"/></g>
+    <g class="mexe-gira" data-relogio="">
+      <path d="M750 546 V518" class="linha" data-ponteiro="minutos"/>
+      <path d="M750 546 H772" class="linha" data-ponteiro="horas"/>
+    </g>
   </g>
   <text x="860" y="566" text-anchor="middle" class="codigo">.parquet</text>
   <g class="anotacao">

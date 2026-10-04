@@ -2821,3 +2821,7 @@ nada muda.
   Playwright com Chrome Headless Shell, sem alteração dos scripts versionados.
 - **Correção (04/10/2026):** removidas a seção de pronúncia e as referências aos dicionários.
   Cesar esclareceu que a pronúncia era para a conversa, não para o post.
+- **Relógio da capa (03/10/2026):** Cesar reprovou o movimento dos ponteiros. Corrigido o eixo
+  (antes era o centro da caixa do par de traços, fora do centro do relógio), separados os ponteiros
+  e aplicado avanço discreto de cinco minutos, na proporção 12:1, com retorno suave e respeito a
+  movimento reduzido. Detalhe técnico em `docs/movimento.md`.
