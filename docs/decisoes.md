@@ -86,6 +86,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D73 | O nome dos livros da home, dos vizinhos do livro, das tags da nuvem e do livro de Séries vem de um texto `.sr`, sem `aria-label`; na home, o `content-visibility` no livro, e não no link | decidido e publicado |
 | D74 | A apresentação de um post (PPT) no estilo do blog, com os desenhos, os prints e a caneta do próprio post e as notas do apresentador (skill `apresentacao`, `scripts/slides/`) | decidido e publicado |
 | D77 | As apresentações no estilo do blog também entram no post (seção "Apresentação"), pelo `npm run apresentacao -- … --pdf`; as três primeiras: as duas partes dos mods e Parquet | decidido e publicado |
+| D79 | A parte 2 do post dos mods (`claude-code-csr-cockpit`) só atualizada para o cockpit 0.16.0, sem post novo: seis abas, as telas novas como print e os fatos em dia | decidido e publicado |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -3361,3 +3362,22 @@ nada muda.
     tamanho, o alcance e a velocidade são constantes no topo do script.
   - O número desta decisão: a main usou D61 para o redesenho no ar; a coleção, que era D61 na branch,
     passou a D78 quando a main entrou nela.
+
+## D79 · A parte 2 do post dos mods atualizada para o cockpit 0.16.0
+
+- **Data:** 04/10/2026 · **Status:** decidido e publicado.
+- **Pedido do Cesar:** arrumar o README do csr-cockpit (no `claude-code-kit`) e o post dele no blog,
+  "explicando as funcionalidades que tem e com imagem mostrando e explicando o que tem nele".
+- **Decidido (na conversa da D63):** **só atualizar a parte 2**, no formato detalhado, em vez de uma
+  parte 3 com o tour das abas ou do tour dentro da parte 2 (o post já estava no teto, com ~3.100
+  palavras). O tour completo, aba por aba, fica no README do csr-cockpit, e o post aponta para ele.
+- **O que mudou no post:** seis abas (sai Arquivos, entram Árvore e Inventário; Agentes com o grafo de
+  quem chamou quem); as quatro imagens trocadas pelas telas que o próprio mod desenha numa sessão de
+  exemplo (`scripts/telas/telas.py` do `claude-code-kit`, PNG 2x no tema escuro, com bolinhas numeradas
+  do README), como `Evidencia` sem `larga`; o detalhe do agente no lugar da segunda imagem da aba
+  Agentes; o que o mod lê e grava (os dois arquivos de log); 28 testes; a versão 0.16.0; o aplicativo
+  de desktop 2.19675.0 já roda o cockpit; `updated` em 04/10/2026. Os títulos de seção, o título e a
+  descrição ficaram; a figura dos passos da instalação (0.5.0 e 0.6.0, só como exemplo de versão) e as
+  marcações da caneta também.
+- **Pendente:** a capa ilustrada ainda mostra US\$ 0,04 e US\$ 0,02 (os números da sessão antiga).
+

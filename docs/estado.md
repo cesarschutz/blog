@@ -265,6 +265,10 @@ e avanço proporcional de cinco minutos no hover, com retorno suave. `check`, `b
 validador e revisão dos desenhos passaram; eixo e proporção conferidos no navegador durante o
 movimento e com movimento reduzido, com trace de CPU 4× sem tarefas longas durante o giro.
 
+**O post do csr-cockpit em dia (D79, 04/10/2026):** a parte 2 do post dos mods foi atualizada para o
+cockpit 0.16.0 (seis abas, as telas novas geradas pelo próprio mod, os fatos de hoje). A capa ainda
+mostra os custos da sessão antiga.
+
 ## Como ver
 
 - Dev: `fnm exec --using=24 npm run dev -- --host 127.0.0.1` (<http://127.0.0.1:4322>); parar com
