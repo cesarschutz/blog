@@ -55,6 +55,12 @@ Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
   Artigo sem esses componentes funciona sem JS (as marcações da caneta são estáticas). Peça nova com
   JS entra nesta lista.
 - GSAP só carregado sob demanda (`src/scripts/gsap.ts`), nunca no layout.
+- **Nome acessível (D69, D73):** link ou botão com texto na tela não leva `aria-label` que não contenha
+  esse texto. O nome vem do conteúdo: o enfeite fica com `aria-hidden="true"` e o que falta na tela
+  entra num `<span class="sr">` (`base.css`). O texto que dá o nome nunca fica em `display: none` nem
+  dentro de `content-visibility: hidden`: nos dois casos ele sai do nome. É o que a auditoria
+  `label-content-name-mismatch` do Lighthouse confere (texto com `aria-hidden` conta, porque está na
+  tela).
 
 ## Livros
 
@@ -124,6 +130,9 @@ Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
   foi o próprio GSAP quem pôs ali (cores e medidas em variáveis CSS escritas no HTML): passe a lista
   das propriedades que a animação mexeu, nunca `"all"` num elemento com estilo próprio (D52, revisão
   10b).
+- O `.sr` (`base.css`) é `position: absolute`. Dentro de um lugar com `perspective` (os livros 3D), ele
+  se prende a esse lugar e o Chrome muda a suavização do livro em alguns pixels: o elemento que leva o
+  `.sr` precisa de `position: relative` (o `a.tomba` da `Colecao`, D73).
 
 ## Conferir
 

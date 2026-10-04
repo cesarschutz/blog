@@ -1,7 +1,7 @@
 # Estado do projeto
 
 Painel, não diário: fase atual, próximos passos, perguntas abertas e riscos. O detalhe de cada rodada
-fica em `docs/decisoes.md` (D1 a D69, D72 e D74; a D70, a D71 e a D73 estão em outras worktrees, sem commit) e no histórico do git; controles de rodadas fechadas, em
+fica em `docs/decisoes.md` (D1 a D69 e D72 a D75; a D70 e a D71 estão em outras worktrees, sem commit) e no histórico do git; controles de rodadas fechadas, em
 `docs/historico/`.
 
 ## Fase atual
@@ -183,6 +183,17 @@ nas quatro páginas, no desktop e no celular, no dev e no build, e o seletor fic
 movimento, nos dois temas. Era o segundo item da pergunta 14, que saiu de lá. Falta olhar a troca no
 Safari do iPhone.
 
+Nome acessível dos livros, dos vizinhos, das tags e de Séries (D73, 02/10/2026, **publicado**): o resto
+do achado do Lighthouse da D69 (`label-content-name-mismatch`). Nos 9 livros da home, nos vizinhos da
+página de um livro, nas 22 tags da nuvem e no livro de Séries, o `aria-label` saiu e o mesmo texto entrou
+num `.sr` dentro do link: o leitor de tela ouve o mesmo nome. Na home, o `content-visibility` dos dois
+primeiros quadros desceu do link para o livro (senão o link ficava sem nome até o script chegar) e o link
+ganhou `position: relative` (sem ele, o `.sr` mexia na suavização de um livro). Os quatro lugares saem da
+auditoria no dev e no build, a `link-name` passa, os nomes na árvore de acessibilidade são os mesmos e
+nenhuma das 104 fotos (seis peças, de 320 a 1600px, dois temas, mouse e foco) muda. A regra nova está em
+`.claude/rules/interface.md`. Feito na worktree `.claude/worktrees/wonderful-pike-800bfd` (branch
+`claude/wonderful-pike-800bfd`) e publicado a pedido do Cesar; o primeiro item da pergunta 14 saiu.
+
 Apresentação de um post (D74, 02/10/2026, **publicado**): o Cesar gostou da apresentação do post dos mods,
 feita no estilo do blog, e pediu que toda apresentação saia assim. Ela sai em `.pptx` (e PDF), com os
 desenhos, os prints e as marcações da caneta do próprio post e as notas do apresentador: skill
@@ -243,6 +254,7 @@ movimento e com movimento reduzido, com trace de CPU 4× sem tarefas longas dura
 | D68 | pedido do Cesar num post termina na pergunta "vira regra para os próximos posts?" |
 | D69 | o botão da busca do cabeçalho com o nome vindo do texto "Buscar" (sem `aria-label`), para a auditoria de nome do Lighthouse passar sem mudar a aparência |
 | D72 | a tinta do seletor Lista / Cards com a caixa só em volta do botão ativo, para o falso positivo de contraste do Lighthouse sumir (nota 100) sem mudar a aparência nem o movimento |
+| D73 | o nome dos livros da home, dos vizinhos, das tags e do livro de Séries vindo de um texto `.sr`, sem `aria-label`, com o `content-visibility` da home no livro, e não no link |
 | D74 | a apresentação de um post no estilo do blog: `.pptx` com os desenhos e a caneta do próprio post e as notas do apresentador (skill `apresentacao`, `scripts/slides/`) |
 
 ## Próximos passos
@@ -261,8 +273,8 @@ movimento e com movimento reduzido, com trace de CPU 4× sem tarefas longas dura
 3. **Blog antigo (D34):** os dois têm os mesmos artigos. Decidir entre `noindex` no novo até a
    virada, o antigo redirecionando para o novo ou a virada do domínio (`docs/virada.md`).
 4. **Medir no site publicado:** busca (regra 4 da D2) e Lighthouse (o desempenho não é medido desde a
-   D26; acessibilidade, boas práticas e SEO foram medidos no build na D69, em dez tipos de página, e os
-   achados estão na pergunta 14).
+   D26; acessibilidade, boas práticas e SEO foram medidos no build na D69, em dez tipos de página, e na
+   D73, nas 73 páginas, no desktop e no celular; os achados que sobraram estão na pergunta 14).
 5. **Peso das páginas (B14):** 160 a 440 KB abertos, pelos SVGs embutidos; merece um item próprio.
 6. **Página Sobre:** o Cesar escreve (D33). Até lá, `/about/` leva à home.
 7. **`scripts/desenho/render.mjs` fotografa a abertura do site (D51)** em vez da folha de conferência:
@@ -324,12 +336,23 @@ Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
     passo terminou" fica, das cinco ideias no fim da página (a sugestão é a 1, o Próximo que se enche,
     ou ela com a 5, os traços embaixo da figura)?
 14. **Lighthouse fora do cabeçalho (achados da D69, que já estão no ar):**
-    - a mesma auditoria de nome (`label-content-name-mismatch`, peso 0) falha por outros elementos: os 9
-      livros da fileira da home, os 2 vizinhos da página de um livro, as 22 tags de Tags e o livro de
-      Séries. Corrijo do mesmo jeito (o nome vindo do texto, com o enfeite fora do nome)?
     - o Lighthouse mede o contraste no meio das animações de entrada (home, arquivo e Tags) e acusa
       valores que somem com a página assentada. Fica como está?
     - a worktree `.claude/worktrees/kind-shaw-14748f` (a da D69) pode ser apagada: a D69 já está na `main`.
+15. **Nome acessível (D73), o que ficou para decidir:**
+    - o link do nome embaixo de cada livro da home leva ao mesmo lugar que o livro (dois links por livro
+      para o teclado e o leitor de tela, desde que a gaveta saiu da home) e o Chrome calcula o nome dele
+      com um espaço antes da vírgula ("Vol. 01: Arquitetura de Software , página do livro"). Tiro o nome
+      do caminho do teclado e do leitor de tela (`tabindex="-1"` e `aria-hidden`, como o ícone das fichas
+      de Tags), ou fica como está?
+    - o MCP `chrome-devtools` usa um perfil de Chrome só para todas as sessões: com várias abertas, só a
+      primeira abre o navegador (em 02/10/2026, a da D69 prendeu o perfil e duas sessões contornaram).
+      Ponho `--isolated` no `.mcp.json`, para cada sessão abrir o seu?
+    - você confirma a origem do repositório no app (Ajuda → Troubleshooting → Review Pinned Git Origins)?
+      Sem isso, a ferramenta que traz a `main` para as worktrees recusa sempre que a `main` mexe em
+      `.claude/skills`.
+    - a worktree `.claude/worktrees/wonderful-pike-800bfd` (a da D73) pode ser apagada: a D73 já está na
+      `main`.
 
 ## Riscos a acompanhar
 

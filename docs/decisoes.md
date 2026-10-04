@@ -81,6 +81,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D68 | Pedido do Cesar num post termina na pergunta "vira regra para os próximos posts?" | decidido |
 | D69 | O botão da busca do cabeçalho: o nome vem do texto "Buscar", sem `aria-label`, e a tecla desenhada fica fora do nome | decidido e publicado |
 | D72 | A tinta do seletor Lista / Cards: a caixa azul fica só em volta do botão ativo e salta na troca, para o Lighthouse não tomar o azul pelo fundo do botão solto | decidido e publicado |
+| D73 | O nome dos livros da home, dos vizinhos do livro, das tags da nuvem e do livro de Séries vem de um texto `.sr`, sem `aria-label`; na home, o `content-visibility` no livro, e não no link | decidido e publicado |
 | D74 | A apresentação de um post (PPT) no estilo do blog, com os desenhos, os prints e a caneta do próprio post e as notas do apresentador (skill `apresentacao`, `scripts/slides/`) | decidido e publicado |
 
 ## D1 · Framework: continuar no Astro 7
@@ -2842,6 +2843,114 @@ nada muda.
   em cada transição, duas linhas no script e os comentários), `docs/movimento.md`, a tabela de movimento do
   `DESIGN.md` e as armadilhas de `.claude/rules/interface.md`. Feito na worktree
   `.claude/worktrees/focused-rubin-6690ad`, com o dev na porta 4350 e o preview na 4351.
+
+## D73 · O nome dos livros da home, dos vizinhos, das tags e do livro de Séries vem de um texto `.sr`
+- **Data:** 02/10/2026 · **Status:** decidido e publicado (commit e push a pedido do Cesar, 03/10/2026).
+- **O número:** a D70 (tabelas no celular) e a D71 (escrita dos posts) estavam reservadas por outras
+  sessões, cada uma na sua worktree e sem commit; a D72, a D74 e a D75 entraram na `main` antes desta.
+  Esta continua a D69 (o botão da busca): resolve o primeiro item da pergunta 14 do painel, que saiu.
+- **O achado** (Lighthouse 13.4.1 com axe-core 4.12.1, auditoria `label-content-name-mismatch`, peso 0;
+  medido no build das 73 páginas, no desktop e no celular): fora o botão da busca, a auditoria falhava em
+  quatro lugares, todos com um `aria-label` que não continha o texto pintado dentro do link:
+  - os 9 livros da fileira da home (`a.tomba`, `Colecao.astro`): o nome era "Vol. 01: Arquitetura de
+    Software, 6 artigos · o último em 2026", e o texto na tela, o do livro inteiro (capa, lombada e verso);
+  - os vizinhos da página de um livro (`a.vizinho-livro`, `TopoLivro.astro`; dois por página, um no
+    primeiro e no último volume): "Livro anterior: Volume 03, Dados" contra "Vol. 03" e "Dados";
+  - as 22 tags da nuvem (`NuvemTags.astro`): "AOP, 2 artigos" contra "AOP" e "2", que a auditoria junta
+    em "AOP2";
+  - o livro da página Séries (`a.palco`, `series/index.astro`): "Abrir a série Atualizações do Java"
+    contra o texto da capa.
+- **Decidido** (o Cesar escolheu entre quatro opções, e respondeu mais três perguntas): o nome de hoje,
+  vindo de um texto `.sr`.
+  - nos quatro, sai o `aria-label` e o mesmo texto entra num `<span class="sr">`, primeiro filho do link.
+    O que é pintado fica fora do nome, com `aria-hidden="true"` (o livro 3D, o abajur, a seta e os dois
+    textos do vizinho já tinham; a palavra da tag ganhou). Sem `aria-label`, a auditoria não se aplica, e
+    o leitor de tela ouve o mesmo nome de antes;
+  - na home, o `content-visibility: hidden` dos dois primeiros quadros desceu do link para o livro dentro
+    dele (`.livro-em-pe`), e o `contain-intrinsic-size` saiu: o livro tem largura e altura próprias, as
+    mesmas que eram reservadas. Texto dentro de `content-visibility: hidden` não entra no nome: com ele no
+    link, os 9 livros ficariam sem nome até o script da coleção rodar e, se ele não chegasse, para sempre;
+  - na home, o link ganhou `position: relative` (achado na conferência, abaixo);
+  - uma regra nova em `.claude/rules/interface.md` ("Nome acessível") e uma armadilha (o `.sr` dentro de
+    `perspective`).
+- **Motivo:** o modo "topo" da própria `Colecao`, o menu do cabeçalho e o rodapé já davam o nome por um
+  texto `.sr`; o nome sai igual em qualquer navegador, porque é um texto só; e a correção não depende de
+  como o axe junta os textos da tela.
+- **Alternativas, testadas no DOM antes de mexer no código:**
+  - o texto da tela como nome (vizinhos e tags), com o `.sr` só para o que falta: passa, mas o nome muda
+    para "Livro anterior: Vol. 03 Dados" e, nas tags, o Chrome calcula "AOP , 2 artigos", com um espaço
+    antes da vírgula (ele separa os textos de caixas diferentes; o link do nome do livro na home já sai
+    assim: "Vol. 01: Arquitetura de Software , página do livro");
+  - manter o `aria-label` nas tags e nos vizinhos, com um espaço no HTML entre os dois textos e "Vol. 03"
+    no rótulo: passa, mas depende de como o axe junta os textos e do espaço em branco do `.astro`;
+  - na home, só o nome, sem mexer no `content-visibility`: sem a classe `colecao-pronta`, a `link-name`
+    (peso 7) falha nos 9 livros e a nota cai para 92;
+  - não mexer: a auditoria tem peso 0.
+- **Conferido** (pelo servidor do MCP `chrome-devtools` 1.10.1, numa aba de contexto isolado; veja a nota
+  sobre o perfil, abaixo):
+  - `check`: 0 erros e 0 avisos (5 dicas, de outros arquivos); `build` e `links` (94 páginas, 5.762 links
+    internos e 22 redirecionamentos) passam;
+  - o HTML gerado, build de antes × de depois: mudam a home, `/2/` e `/3/`, as 8 páginas de livro,
+    `/series/`, `/series/java/` e `/tags/`, e só no esperado (o `aria-label` que sai, o `.sr` que entra, o
+    `aria-hidden` da palavra da tag e as duas regras de CSS da `Colecao`, que vai embutida também nas
+    páginas sem a fileira da home). Fora delas, só os arquivos do Pagefind, que trocam de nome a cada build;
+  - Lighthouse em modo `navigation`, no desktop e no celular, nas 14 páginas, no dev e no build: os quatro
+    lugares saem da auditoria (no celular ela passa ou não se aplica; no desktop sobra só o botão da busca,
+    que é da D69); `link-name` e `button-name` passam em todas; boas práticas e SEO seguem em 100. Com a
+    D69 simulada no DOM (o botão sem `aria-label` e a tecla com `aria-hidden`), a auditoria fica sem
+    nenhum nó nas quatro páginas, no desktop;
+  - árvore de acessibilidade do Chrome, antes × depois, em seis páginas (a home, três livros, Tags e
+    Séries), no desktop e no celular, no dev e no build: 0 linha diferente em tudo o que tem papel e nome;
+    a mais, só os textos novos;
+  - home sem a classe `colecao-pronta` (o estado dos dois primeiros quadros): o link continua com nome, a
+    `link-name` passa e as caixas são as mesmas (o link com 115,61 × 214 px e o livro com 143 × 214 px em
+    1350px; 37,89 × 170 e 113,59 × 170 em 412px);
+  - os primeiros quadros da home com a CPU 4× (7 rodadas por aparelho, intercalando o build de antes e o
+    de depois): a primeira pintura (de 236 a 264 ms), a entrada dos livros (de 291 a 320 ms) e o quadro
+    mais longo (de 183 a 199 ms) ficam na mesma faixa antes e depois, com as mesmas diferenças de uma
+    rodada para outra;
+  - aparência: as seis peças (a fileira da home, o alto da página do livro, os vizinhos com um só, a nuvem
+    de tags e a ficha de Séries) em 320, 390, 768, 1024, 1280 e 1600px, nos dois temas, mais o mouse em
+    cima e o foco do teclado: 104 fotos por conjunto (`scripts/foto.mjs`, com movimento reduzido, e o foco
+    por um script à parte). No build, quatro conjuntos de antes e quatro de depois, intercalados, no mesmo
+    servidor: 86 fotos idênticas nos oito e nenhum pixel que separe antes de depois (os que mudam oscilam
+    dentro do mesmo grupo, até 11 pixels por 1 nível de cor, nos livros 3D e nas luzes). No dev, dois
+    conjuntos de antes e quatro de depois: 87 idênticas em todos e 103 sem pixel que separe antes de
+    depois; o único grupo que sobra (8 pixels numa linha da home em 768px) é o mesmo que oscila entre duas
+    fotos da mesma página sem mudança nenhuma, no teste feito na própria página;
+  - comportamento, no dev e no build: o clique, o toque e o Enter nos quatro levam à página certa; a home
+    sem JavaScript mostra os 9 livros, cada link com o nome; console limpo; `conferir` ok nas 10
+    combinações e no movimento reduzido das quatro páginas.
+- **Achados no caminho:**
+  - **o `.sr` dentro de `perspective`:** com o texto no link e o link sem `position: relative`, a caixa do
+    `.sr` se prende ao lugar do livro, que tem `perspective`, e o Chrome muda a suavização da quina de um
+    livro em 3 a 10 pixels (por 1 nível de cor, em 390 e em 1280px). Testado na mesma página: sem o
+    `perspective` a diferença some, sem o reflexo do vidro ela fica, e com o `position: relative` no link
+    ela some em todas as larguras e nos dois temas. Virou armadilha na regra de interface;
+  - **as fotos dos livros 3D e das luzes têm ruído:** duas fotos da mesma página, sem mudança nenhuma,
+    diferem em até ~12 pixels por 1 nível de cor (e, de vez em quando, num pico de até 2.000 pixels por 1 ou
+    2 níveis). Por isso a comparação foi por conjuntos: só conta o pixel que separa todos os de antes de
+    todos os de depois;
+  - **o dev e o build não desenham os livros 3D iguais**, pixel a pixel (de 20 mil a 87 mil pixels, por até
+    3 níveis, já antes da mudança): antes e depois se comparam sempre no mesmo servidor;
+  - **o perfil do Chrome do MCP `chrome-devtools` é um só para todas as sessões:** com o navegador aberto
+    por outra sessão, o MCP desta não abre. O contorno foi rodar o mesmo servidor, do cache do `npx`, com
+    `--isolated --headless`, por um cliente JSON-RPC próprio;
+  - no `/2/` e no `/3/`, no desktop, a nota de acessibilidade oscila entre 92 e 96 no mesmo build (contraste
+    e tamanho do alvo dos chips de categoria, medidos no meio da entrada): igual antes e depois.
+- **Publicação:** a worktree partiu do `04f2ded`, e a `main` andou vários commits no meio (entre eles a
+  D69, a D72, a D74 e a D75). A ferramenta do app recusou trazer a `main` para a worktree, porque esses
+  commits mexem em `.claude/skills` (protegido) e a origem do repositório ainda não estava confirmada no
+  app. O commit foi montado direto em cima da `origin/main` (os docs e a regra de interface juntados por
+  um roteiro, num índice temporário, e `git commit-tree`), conferido na árvore extraída antes do push
+  (`check`, `build`, `links`, o Lighthouse e o comportamento) e enviado à `main`. Nessa árvore, já com a
+  D69 e a D72, a auditoria de nome passa ou não se aplica em todas as páginas medidas, no desktop e no
+  celular.
+- **Mudado:** `src/components/Colecao.astro` (o `.sr` no link, o `content-visibility` no livro e o
+  `position: relative` no link), `src/components/TopoLivro.astro` (os dois vizinhos),
+  `src/components/NuvemTags.astro` (o `.sr` e o `aria-hidden` da palavra), `src/pages/series/index.astro`
+  (o palco) e `.claude/rules/interface.md`. Feito na worktree `.claude/worktrees/wonderful-pike-800bfd`,
+  com o dev na porta 4395 e o preview na 4396.
 
 ## D74 · A apresentação de um post no estilo do blog
 - **Data:** 02/10/2026 · **Status:** decidido e publicado (commit e push a pedido do Cesar).
