@@ -2799,3 +2799,23 @@ nada muda.
 - **Onde:** a skill `apresentacao` (o modo Criar; o do NotebookLM continua igual), o `CLAUDE.md` (Posts,
   Comandos, Mapa das pastas, Skills e Em outro computador), o `.gitignore` (`saida/` e `__pycache__/`) e
   `scripts/slides/`.
+
+
+## D75 — Post sobre Parquet e snapshots (03/10/2026)
+
+- **Pedido do Cesar:** transformar a explicação de Parquet e snapshots em post do blog, ler as
+  instruções do projeto, revisar antes de publicar e publicar na `main`. A autorização vale para
+  este post; não muda o fluxo de aprovação dos próximos.
+- **Entrega:** `parquet-snapshot-banco-de-dados`, no livro Dados, formato resumo, com as tags
+  existentes Banco de Dados e Trade-offs. Fontes oficiais de Parquet, PostgreSQL, DuckDB e Iceberg;
+  Collins e Cambridge para pronúncia. Exemplo conceitual, sem código executável.
+- **Visual:** capa viva (câmera, colunas e relógio), infográfico estático em quatro quadros e sete
+  marcações da caneta (caixa, duplo, ondulado, exclamação, grifo, marca-texto e post-it). Foto do
+  livro Dados atualizada para três artigos. Nenhuma marca ou categoria nova.
+- **Revisão antes da publicação:** `check` sem erros nem warnings (cinco hints já existentes),
+  `build` com imagens OG e Pagefind, `links` sem links ou âncoras quebradas, contraste sem falhas
+  obrigatórias, validador dos dois SVGs e revisão automática dos desenhos sem problemas.
+  Conferência em 320, 390, 768, 1280 e 1600px nos dois temas e com movimento reduzido; imagens
+  olhadas. Detector Impeccable sem achados.
+- **Ambiente:** sem MCP Chrome DevTools nesta sessão; os scripts do projeto rodaram via
+  Playwright com Chrome Headless Shell, sem alteração dos scripts versionados.

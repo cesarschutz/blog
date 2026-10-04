@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -40 1200 900"
+  aria-label="Uma câmera registra uma folha organizada em colunas; o relógio ao lado lembra que o instante da captura precisa ser consistente."
+  data-largo="80 175 1100 468" data-medio="396 188 660 440" data-quadrado="428 111 596 596"
+  data-og="356 -33 740 883" data-segura="458 228 536 361">
+  <g class="tinta">
+    <path d="M687 228 H924 L980 284 V532 H687 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M687 228 H924 L980 284 V532 H687 Z" class="papel"/>
+    <path d="M924 228 V284 H980" class="linha"/>
+    <path d="M717 298 H769 V500 H717 Z M791 298 H843 V500 H791 Z M865 298 H917 V500 H865 Z" transform="translate(7 6)" class="cor"/>
+    <path d="M717 298 H769 V500 H717 Z M791 298 H843 V500 H791 Z M865 298 H917 V500 H865 Z" class="linha"/>
+    <path d="M726 330 H758 M726 369 H758 M726 408 H758 M726 447 H758 M800 330 H832 M800 369 H832 M800 408 H832 M800 447 H832 M874 330 H906 M874 369 H906 M874 408 H906 M874 447 H906" class="linha"/>
+    <path d="M476 324 H510 L531 294 H583 L604 324 H662 Q680 324 680 342 V469 Q680 487 662 487 H476 Q458 487 458 469 V342 Q458 324 476 324 Z" transform="translate(14 14)" class="hachura"/>
+    <path d="M476 324 H510 L531 294 H583 L604 324 H662 Q680 324 680 342 V469 Q680 487 662 487 H476 Q458 487 458 469 V342 Q458 324 476 324 Z" class="papel"/>
+    <circle cx="566" cy="405" r="57" class="cor"/>
+    <circle cx="566" cy="405" r="57" class="linha"/>
+    <circle cx="566" cy="405" r="35" class="linha"/>
+    <path d="M482 347 H507 M632 347 H650" class="linha"/>
+    <path d="M655 388 L695 368 M655 430 L695 454" class="fantasma"/>
+    <circle cx="750" cy="546" r="43" class="papel"/>
+    <circle cx="750" cy="546" r="43" class="linha"/>
+    <g class="mexe-gira"><path d="M750 546 V518 M750 546 L770 555" class="linha"/></g>
+  </g>
+  <text x="860" y="566" text-anchor="middle" class="codigo">.parquet</text>
+  <g class="anotacao">
+    <text x="110" y="333" class="nota">o arquivo guarda colunas</text>
+    <path d="M330 342 L425 366" class="chamada"/>
+    <text x="110" y="475" class="nota">a leitura define o instante</text>
+    <path d="M350 486 L430 468" class="chamada"/>
+  </g>
+</svg>

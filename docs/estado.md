@@ -181,6 +181,13 @@ desenhos, os prints e as marcações da caneta do próprio post e as notas do ap
 post, a conferência, as fontes em TTF e o roteiro de cada post, a começar pelo dos mods). O que sai fica
 em `saida/`, fora do git.
 
+Post de Parquet e snapshots (D75, 03/10/2026): `parquet-snapshot-banco-de-dados`, no livro Dados,
+formato resumo, com infográfico de quatro quadros, capa viva, sete marcações da caneta e fontes
+conferidas. Distingue formato colunar, consistência da extração e recuperação por backup; inclui
+pronúncia. Revisado antes da publicação na `main`, solicitada expressamente pelo Cesar.
+`check`, `build`, `links`, contraste, validação dos SVGs e conferência nas dez combinações de
+largura/tema passaram; movimento reduzido também. A foto do livro Dados agora registra três artigos.
+
 ## Como ver
 
 - Dev: `fnm exec --using=24 npm run dev -- --host 127.0.0.1` (<http://127.0.0.1:4322>); parar com
