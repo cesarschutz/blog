@@ -490,6 +490,13 @@ const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Vol. ${String(l.volu
     width: var(--w-luz);
   }
 
+  /* Na home, todos os abajures ficam acesos, sempre (D78, pedido do Cesar): o cone, a boca, a poça e a luz
+     embaixo do vidro no aceso; o hover não acende mais nada (o livro sob o mouse cresce, doca.ts). Na
+     chegada, eles continuam acendendo um a um (estante-moderna.ts), e o clarão de cada um assenta no aceso. */
+  .colecao-home .lugar-luz {
+    --luz-acesa: 1;
+  }
+
   .lugar-luz :global(.ponto-luz) {
     --ponto-luz-topo: var(--boca);
     --ponto-luz-pe: calc(var(--k-abaixo) + var(--k-friso) + var(--k-chao-alto) / 2);
