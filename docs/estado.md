@@ -1,7 +1,7 @@
 # Estado do projeto
 
 Painel, não diário: fase atual, próximos passos, perguntas abertas e riscos. O detalhe de cada rodada
-fica em `docs/decisoes.md` (D1 a D69 e D74; a D70 à D73 estão em outras worktrees, sem commit) e no histórico do git; controles de rodadas fechadas, em
+fica em `docs/decisoes.md` (D1 a D69, D72 e D74; a D70, a D71 e a D73 estão em outras worktrees, sem commit) e no histórico do git; controles de rodadas fechadas, em
 `docs/historico/`.
 
 ## Fase atual
@@ -174,6 +174,15 @@ Botão da busca do cabeçalho (D69, 02/10/2026, **publicado**): o Lighthouse apo
 no build, e o cabeçalho ficou idêntico pixel a pixel nos dois temas, de 320 a 1600px. Feito na worktree
 `.claude/worktrees/kind-shaw-14748f` (branch `claude/kind-shaw-14748f`) e publicado a pedido do Cesar.
 
+Tinta do seletor Lista / Cards (D72, 02/10/2026, **publicada**): o Lighthouse dava 96 de acessibilidade
+na home, no arquivo, na página de um livro e na de uma tag, por um falso positivo de contraste no botão
+solto do seletor. A caixa azul da tinta cobria a tira inteira, recortada por `clip-path`, e o axe não
+enxerga o recorte. Agora a caixa fica só em volta do botão ativo e salta na troca (cresce no clique e
+encolhe quando a tinta chegou); a cada quadro, quem anima continua sendo só o recorte. A nota voltou a 100
+nas quatro páginas, no desktop e no celular, no dev e no build, e o seletor ficou igual, parado e em
+movimento, nos dois temas. Era o segundo item da pergunta 14, que saiu de lá. Falta olhar a troca no
+Safari do iPhone.
+
 Apresentação de um post (D74, 02/10/2026, **publicado**): o Cesar gostou da apresentação do post dos mods,
 feita no estilo do blog, e pediu que toda apresentação saia assim. Ela sai em `.pptx` (e PDF), com os
 desenhos, os prints e as marcações da caneta do próprio post e as notas do apresentador: skill
@@ -233,6 +242,7 @@ movimento e com movimento reduzido, com trace de CPU 4× sem tarefas longas dura
 | D67 | figura em passos (em prova): um formato só no lugar da lousa de passos, da de comparação e da animação com play |
 | D68 | pedido do Cesar num post termina na pergunta "vira regra para os próximos posts?" |
 | D69 | o botão da busca do cabeçalho com o nome vindo do texto "Buscar" (sem `aria-label`), para a auditoria de nome do Lighthouse passar sem mudar a aparência |
+| D72 | a tinta do seletor Lista / Cards com a caixa só em volta do botão ativo, para o falso positivo de contraste do Lighthouse sumir (nota 100) sem mudar a aparência nem o movimento |
 | D74 | a apresentação de um post no estilo do blog: `.pptx` com os desenhos e a caneta do próprio post e as notas do apresentador (skill `apresentacao`, `scripts/slides/`) |
 
 ## Próximos passos
@@ -317,10 +327,6 @@ Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
     - a mesma auditoria de nome (`label-content-name-mismatch`, peso 0) falha por outros elementos: os 9
       livros da fileira da home, os 2 vizinhos da página de um livro, as 22 tags de Tags e o livro de
       Séries. Corrijo do mesmo jeito (o nome vindo do texto, com o enfeite fora do nome)?
-    - o "Lista" do seletor de modo dá contraste 1,18 no Lighthouse. É falso positivo (a tinta azul é
-      recortada por `clip-path`, e o texto está sobre o papel, com 6,48:1), mas custa 4 pontos: nota 96
-      na home, no arquivo, na página de um livro e na de uma tag. Vale mexer na tinta para a nota voltar
-      a 100 (o jeito ainda precisa ser estudado, sem perder o movimento dela), ou fica como está?
     - o Lighthouse mede o contraste no meio das animações de entrada (home, arquivo e Tags) e acusa
       valores que somem com a página assentada. Fica como está?
     - a worktree `.claude/worktrees/kind-shaw-14748f` (a da D69) pode ser apagada: a D69 já está na `main`.

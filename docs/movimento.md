@@ -234,7 +234,11 @@ o foco do teclado igual ao mouse, Esc fecha, movimento reduzido): `DESIGN.md`, M
 - **Troca Lista / Cards** (D42): a forma atual esmaece (0,12s) e a nova aparece subindo 8px (0,22s),
   com a Web Animations API (`SeletorModo`). Sem Flip e sem cascata nos cards. O azul do botão ativo
   é uma tinta só que escorre de um botão para o outro (D49): a borda da frente corre (0,2s,
-  `power2.in`) e a de trás alcança (0,28s, `power3.out`); o texto troca de cor no meio (0,16s).
+  `power2.in`) e a de trás alcança (0,28s, `power3.out`); o texto troca de cor no meio (0,16s). Quem
+  anima é o recorte (`clip-path`, pelas bordas `--tinta-l` e `--tinta-r`, D61). A caixa da tinta não
+  anima: parada, fica só em volta do botão ativo; no clique, cresce para cobrir os dois botões e, 0,48s
+  depois, encolhe para o botão novo (dois saltos por troca, `--caixa-l` e `--caixa-r`, D72). Cobrindo a
+  tira inteira, ela fazia o Lighthouse acusar contraste baixo no botão solto.
 - **A caneta que marca** (D49, com mouse ou foco; `traco.css`): no hover de um artigo da lista, um
   colchete **preto** (D52, C04) na margem esquerda se escreve de cima para baixo (0,34s) e, ao sair,
   some por baixo (0,2s); nos números da paginação e no GitHub e no LinkedIn do cabeçalho, um círculo

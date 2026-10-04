@@ -80,6 +80,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D67 | Figura em passos: um formato só no lugar da lousa de passos, da lousa de comparação e da animação com play (abre inteira, cada passo soma, nada some, o leitor manda) | em prova em `/animacoes-test-2/` |
 | D68 | Pedido do Cesar num post termina na pergunta "vira regra para os próximos posts?" | decidido |
 | D69 | O botão da busca do cabeçalho: o nome vem do texto "Buscar", sem `aria-label`, e a tecla desenhada fica fora do nome | decidido e publicado |
+| D72 | A tinta do seletor Lista / Cards: a caixa azul fica só em volta do botão ativo e salta na troca, para o Lighthouse não tomar o azul pelo fundo do botão solto | decidido e publicado |
 | D74 | A apresentação de um post (PPT) no estilo do blog, com os desenhos, os prints e a caneta do próprio post e as notas do apresentador (skill `apresentacao`, `scripts/slides/`) | decidido e publicado |
 
 ## D1 · Framework: continuar no Astro 7
@@ -2757,6 +2758,90 @@ nada muda.
 - **Mudado:** `src/components/Cabecalho.astro` (a marcação do botão, a regra da faixa até 1100px e o
   comentário do campo). Feito na worktree `.claude/worktrees/kind-shaw-14748f`, com o dev na porta 4390 e
   o preview na 4391.
+
+## D72 · A tinta do seletor Lista / Cards: a caixa só em volta do botão ativo
+- **Data:** 02/10/2026 · **Status:** decidido; publicado em 03/10/2026. A D70 (as tabelas no celular), a
+  D71 (a escrita dos posts) e a D73 (o nome acessível dos livros e das tags) são de outras sessões e, quando
+  esta foi publicada, ainda estavam nas worktrees delas, sem commit.
+- **O achado** (visto na D69, segundo item da pergunta 14 do painel dela; Lighthouse 13.4.1 com axe-core
+  4.12.1): a auditoria `color-contrast` (peso 7) reprovava o "Lista" do seletor de modo, com "contraste 1,18,
+  #57605e sobre #2549b8", e a nota de acessibilidade ficava em 96 na home, no arquivo, na página de um livro
+  e na de uma tag, no desktop e no celular, já no site publicado. Com o leitor em Lista, a falha passava
+  para o "Cards".
+- **Era falso positivo.** O texto do botão solto fica sobre o papel (6,47:1 pelo axe). A `.tinta` era um
+  `<span>` com o azul de fundo cobrindo a tira inteira, recortado por `clip-path` no lugar do botão ativo. O
+  axe monta a pilha de fundos pelas caixas dos elementos e não considera o `clip-path`: achava o azul
+  embaixo do botão solto. Da D49 à D54 a tinta era uma caixa justa, com `left` e `right` animados; a tira
+  inteira com recorte veio no redesenho (D61), pela régua dele ("só `transform`, `opacity` e `clip-path`,
+  nada de refazer o layout a cada quadro").
+- **Decidido** (o Cesar escolheu entre quatro opções): **a caixa que só salta.**
+  - parada, a caixa da tinta fica só em volta do botão ativo, por duas propriedades registradas a mais
+    (`--caixa-l` e `--caixa-r`), que o script escreve junto com as bordas do recorte. O recorte desconta a
+    caixa (`calc(var(--tinta-l) - var(--caixa-l))`), e o azul fica no mesmo lugar de antes;
+  - na troca, a caixa cresce na hora para o lado aonde a tinta vai e só encolhe do outro lado 0,48s depois,
+    quando a tinta chegou (`--caixa-l 0s 0.48s` ou `--caixa-r 0s 0.48s` na transição do `data-rumo`). São
+    dois saltos por troca; a cada quadro, quem anima continua sendo só o `clip-path`;
+  - a caixa fica em pixels inteiros, com 1px de folga em volta do recorte (`Math.floor(l) - 1`).
+- **Motivo:** tira a causa (a caixa azul deixa de cobrir texto que ela não pinta), os dois botões passam a
+  ser conferidos de verdade, a aparência e o movimento não mudam e nenhum layout é animado.
+- **Alternativas, todas testadas no DOM antes de mexer no código** (CSS injetado por cima do componente,
+  medido com o axe, com o Lighthouse em modo `snapshot` e pixel a pixel contra o código de então):
+  - deixar como estava: é falso positivo, mas a nota fica em 96 e todo relatório repete a falha;
+  - a caixa justa que anda (como da D49 à D54): passa, mas refaz o layout a cada quadro (34 layouts por
+    troca, contra 6 de antes e 8 da escolhida) e a tinta sai do lugar (em "Lista" fica 0,58px mais larga);
+  - o azul como pseudo-elemento (`.modo::before`): idêntico e nota 100, mas o axe desiste de medir quando há
+    pseudo-elemento com fundo e deixa os dois botões como "incompleto". Uma queda real de contraste no
+    seletor deixaria de ser pega;
+  - só `transform`: com uma peça (`translate` e `scale`), as pontas redondas deformam; com três (duas pontas
+    e o corpo), mudam pixels e o botão apertado fica "incompleto";
+  - duas metades paradas, uma por botão, com `visibility` na que está sem tinta: passa, mas o movimento não
+    fica idêntico;
+  - a caixa rente ao recorte, ou em pixels inteiros sem a folga: a ponta da gota muda (item seguinte).
+- **Dois achados do caminho:**
+  - o Chrome pinta o fundo de uma caixa em pixels inteiros, e o `clip-path` não. Uma caixa com fração de
+    pixel, rente ao recorte, come ou desloca a ponta da tinta em até 0,3px. Daí a caixa em pixels inteiros e
+    com folga;
+  - o minificador do build (Lightning CSS) escreve o `initial-value: 0px` de um `@property` como `0`, sem
+    unidade. As propriedades novas nascem com 3px, o valor inicial das bordas do recorte.
+- **Conferido:**
+  - `check`: 0 erros e 0 avisos (5 dicas, de outros arquivos);
+  - Lighthouse pelo MCP `chrome-devtools`, numa aba de contexto isolado, em modo `navigation`, em `/`,
+    `/archive/`, `/categories/IA/` e `/tags/Claude Code/`, no desktop e no celular, no dev e no build: 100
+    nas 16 medições, com a `color-contrast` passando. Antes era 96: pelo MCP, no build do código de então,
+    em `/archive/`; pela bancada, no dev, nas quatro páginas. Em modo `snapshot` no build, com a página
+    assentada, o Lista apertado (desktop e celular) e o tema escuro (os dois estados): 100. A única
+    auditoria que ainda falhava era a de nome (`label-content-name-mismatch`, peso 0), a do botão da busca
+    (D69) e a dos livros, dos vizinhos e das tags (D73);
+  - axe direto (o 4.12.1 que o Lighthouse embute): os dois botões passam nos dois estados, 6,47:1 sobre o
+    papel e 7,7:1 sobre a tinta;
+  - parado, com `scripts/foto.mjs` e `sharp`: 84 fotos do seletor por rodada (as quatro páginas em 320, 390,
+    768, 1280 e 1600px, nos dois temas, com Cards e com Lista apertado, mais o movimento reduzido), duas
+    rodadas antes e duas depois, no dev e no build. Com par idêntico, 0 pixel diferente: 78 de 84 no dev e
+    75 de 84 no build. Nas outras 15, de 2 a 37 pixels com 1 nível de diferença em 255, quase todos na
+    borda do papel e nenhum na borda da tinta; a exceção são duas fotos da home (a fita, até 15 níveis), que
+    variam o mesmo tanto entre duas rodadas do código de antes;
+  - em movimento, quadro a quadro (as transições pausadas e levadas a 18 instantes de cada sentido, mais o
+    seletor parado), com rasterização por software, antes × depois: 623 de 624 fotos idênticas, em quatro
+    combinações de página, largura, densidade e tema, no dev e no build; a outra tem 1 pixel com 1 nível de
+    diferença. Com a placa de vídeo, a diferença fica dentro do ruído entre duas passagens do mesmo código;
+  - em tempo real no build: a tinta no lugar pedido em todos os quadros, a caixa mudando duas vezes por
+    troca, com folga mínima de 1,06px, também nas trocas interrompidas no meio (aos 120 e aos 300ms);
+  - movimento reduzido: a tinta e a caixa pulam juntas, em até três quadros (a regra geral do `base.css`);
+  - `conferir` no build, nas quatro páginas: ok nas 10 combinações e no movimento reduzido. Console limpo;
+  - o CSS minificado do build mantém a regra (`--caixa-l 0s .48s`).
+- **Não conferido:** Safari e Firefox (não há esses navegadores na bancada). A regra só usa o que o
+  componente já usava (`@property` e transição de propriedade registrada), mas vale olhar a troca no iPhone.
+- **Achado fora do pedido:** na página de uma tag, no desktop, o axe deixa o "Lista" como "incompleto" (não
+  como falha) por outro motivo: a caixa da marca d'água do topo (`svg.marca-tag`), que a folha recorta,
+  passa por baixo do seletor. Não reprova, e a nota é 100.
+- **O MCP e as outras sessões:** o perfil do Chrome do MCP `chrome-devtools` é um só para todas as sessões,
+  e no começo estava preso por outra. As ideias foram testadas por uma bancada própria (o `puppeteer`, o
+  Lighthouse e o axe do pacote do próprio MCP, com os parâmetros da ferramenta `lighthouse_audit`, num
+  Chrome de perfil temporário); a conferência final foi pelo MCP, que ficou livre depois.
+- **Mudado:** `src/components/SeletorModo.astro` (as duas propriedades registradas, a regra `.tinta`, um item
+  em cada transição, duas linhas no script e os comentários), `docs/movimento.md`, a tabela de movimento do
+  `DESIGN.md` e as armadilhas de `.claude/rules/interface.md`. Feito na worktree
+  `.claude/worktrees/focused-rubin-6690ad`, com o dev na porta 4350 e o preview na 4351.
 
 ## D74 · A apresentação de um post no estilo do blog
 - **Data:** 02/10/2026 · **Status:** decidido e publicado (commit e push a pedido do Cesar).

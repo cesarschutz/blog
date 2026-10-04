@@ -114,6 +114,12 @@ Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
   `animation-range`), nunca o atalho `animation` com a timeline depois. O minificador do build (Lightning
   CSS) junta os dois num atalho só, com a timeline dentro, e o Chrome descarta a declaração: funciona no
   dev e some no site publicado (D62).
+- **Fundo recortado por `clip-path` engana o medidor de contraste** (D72): o axe (Lighthouse) monta os
+  fundos pelas caixas dos elementos e não enxerga o recorte. Uma caixa com fundo de cor só pode cobrir o
+  texto que ela pinta de verdade; se o recorte esconde o fundo sobre outro texto, a `color-contrast`
+  reprova esse texto (o "Lista" do seletor de modo, nota 96). Pseudo-elemento não resolve: o axe desiste
+  de medir e deixa o texto sem conferência. E a caixa recortada fica em pixels inteiros, com folga em
+  volta do recorte: o Chrome pinta a caixa em pixels inteiros, e uma caixa com fração come a borda dele.
 - O `clearProps: "all"` do GSAP apaga o `style` inline **inteiro** do elemento, inclusive o que não
   foi o próprio GSAP quem pôs ali (cores e medidas em variáveis CSS escritas no HTML): passe a lista
   das propriedades que a animação mexeu, nunca `"all"` num elemento com estilo próprio (D52, revisão

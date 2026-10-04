@@ -917,7 +917,7 @@ caso de dúvida, vale este arquivo.
 | **Caneta da leitura** | `BarraLeitura.astro` | Rolagem (sem animação própria) e CSS | D45; D58 (cor do livro) |
 | **A busca nasce do campo** | `Busca.astro` | GSAP (Flip) e `@starting-style` | D44, D49; D52 (B06) |
 | **Filtro por livro** | `ListaFiltrada.astro`, `contador.ts` | GSAP e CSS (o contador) | D47, D49 |
-| **Troca Lista / Cards** | `SeletorModo.astro` | Web Animations API | D42, D49 |
+| **Troca Lista / Cards** | `SeletorModo.astro` | Web Animations API e CSS (a tinta) | D42, D49; D61 e D72 (a tinta) |
 | **A caneta que marca** | `traco.css` | CSS | D49; D52 (C04) |
 | **O ícone de tag inclina** | `IconeTag.astro`, `PilulaTag.astro` | CSS | D52 (B11) |
 | **A caneca** | classe `fumaca` (`desenho.css`) | CSS | D52 (C04) |
