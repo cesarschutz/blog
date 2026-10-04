@@ -28,5 +28,11 @@
     "slides": 10,
     "largura": 1376,
     "altura": 774
+  },
+  "dns-tipos-de-registro": {
+    "titulo": "Registros de DNS",
+    "slides": 20,
+    "largura": 1376,
+    "altura": 774
   }
 }

@@ -270,6 +270,12 @@ e avanço proporcional de cinco minutos no hover, com retorno suave. `check`, `b
 validador e revisão dos desenhos passaram; eixo e proporção conferidos no navegador durante o
 movimento e com movimento reduzido, com trace de CPU 4× sem tarefas longas durante o giro.
 
+**Post de DNS (D81, 04/10/2026, publicado):** `dns-tipos-de-registro`, "Registros de DNS — A, AAAA,
+CNAME, MX, TXT e o domínio no GitHub Pages", no livro DevOps, detalhado, com as tags novas DNS e Redes
+(ícones novos), exemplos em `example.com` testados no Unbound, capa viva, duas figuras paradas, duas
+figuras em passos, 26 marcações da caneta e a apresentação no estilo do blog. Pendente fora do post: o
+contraste do resumo "Neste artigo" no celular (Lighthouse 97).
+
 **O claude-code-kit na 1.0 (D80, 04/10/2026):** o kit recomeçou o histórico na versão 1.0, com o
 csr-cockpit 1.0.0 e a release `v1.0.0`; o post da parte 2 e a apresentação citam a 1.0.0.
 

@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1100"
+  aria-label="Diagrama de sequência em cinco passos, com o navegador, o resolvedor com o cache e o servidor autoritativo de example.com: o resolvedor pergunta ao autoritativo, recebe o IP antigo, 192.0.2.10, com TTL 3600, e guarda no cache por uma hora; o dono troca o registro A no autoritativo para 198.51.100.20; o navegador pergunta e recebe 192.0.2.10, do cache, sem o resolvedor consultar o autoritativo; uma hora depois, o TTL chega a zero, o cache fica vazio e o navegador pergunta de novo; o resolvedor pergunta ao autoritativo, recebe 198.51.100.20 e entrega ao navegador. Da troca ao fim do TTL, o resolvedor entrega o IP antigo.">
+  <path d="M320 124 V990 M600 124 V990 M880 124 V990" class="grade"/>
+
+  <g class="tinta">
+    <g class="tom-azul">
+      <rect x="217" y="37" width="220" height="88" rx="12" class="hachura"/>
+      <rect x="210" y="30" width="220" height="88" rx="12" class="lavado"/>
+      <rect x="210" y="30" width="220" height="88" rx="12" class="linha"/>
+    </g>
+    <g class="tom-petroleo">
+      <rect x="497" y="37" width="220" height="88" rx="12" class="hachura"/>
+      <rect x="490" y="30" width="220" height="88" rx="12" class="lavado"/>
+      <rect x="490" y="30" width="220" height="88" rx="12" class="linha"/>
+    </g>
+    <g class="tom-verde">
+      <rect x="777" y="37" width="220" height="88" rx="12" class="hachura"/>
+      <rect x="770" y="30" width="220" height="88" rx="12" class="lavado"/>
+      <rect x="770" y="30" width="220" height="88" rx="12" class="linha"/>
+    </g>
+
+    <g data-passo="1">
+      <g class="tom-petroleo">
+        <path d="M600 190 H866 M852 181 L866 190 L852 199" class="linha-tom"/>
+      </g>
+      <g class="tom-verde etapa-2">
+        <path d="M880 250 H615" class="linha-tom"/>
+        <path d="M628 241 L614 250 L628 259" class="linha-tom"/>
+      </g>
+      <g class="tom-petroleo etapa-3">
+        <rect x="480" y="312" width="240" height="68" rx="8" class="lavado"/>
+        <rect x="480" y="312" width="240" height="68" rx="8" class="linha"/>
+      </g>
+    </g>
+
+    <g data-passo="2" class="tom-verde">
+      <rect x="760" y="420" width="240" height="68" rx="8" class="lavado"/>
+      <rect x="760" y="420" width="240" height="68" rx="8" class="linha"/>
+    </g>
+
+    <g data-passo="3">
+      <g class="tom-azul">
+        <path d="M320 540 H586 M572 531 L586 540 L572 549" class="linha-tom"/>
+      </g>
+      <g class="tom-petroleo etapa-2">
+        <path d="M600 600 H335" class="linha-tom"/>
+        <path d="M348 591 L334 600 L348 609" class="linha-tom"/>
+      </g>
+    </g>
+
+    <g data-passo="4">
+      <g class="tom-petroleo">
+        <rect x="480" y="662" width="240" height="68" rx="8" class="lavado"/>
+        <rect x="480" y="662" width="240" height="68" rx="8" class="linha"/>
+      </g>
+      <g class="tom-azul etapa-2">
+        <path d="M320 790 H586 M572 781 L586 790 L572 799" class="linha-tom"/>
+      </g>
+    </g>
+
+    <g data-passo="5">
+      <g class="tom-petroleo">
+        <path d="M600 860 H866 M852 851 L866 860 L852 869" class="linha-tom"/>
+      </g>
+      <g class="tom-verde etapa-2">
+        <path d="M880 920 H615" class="linha-tom"/>
+        <path d="M628 911 L614 920 L628 929" class="linha-tom"/>
+      </g>
+      <g class="tom-petroleo etapa-3">
+        <path d="M600 970 H335" class="linha-tom"/>
+        <path d="M348 961 L334 970 L348 979" class="linha-tom"/>
+      </g>
+      <g class="tom-ambar etapa-3">
+        <rect x="210" y="1012" width="780" height="70" rx="12" class="lavado"/>
+        <rect x="210" y="1012" width="780" height="70" rx="12" class="linha"/>
+      </g>
+    </g>
+  </g>
+
+  <g class="tom-azul">
+    <text x="320" y="72" text-anchor="middle" class="titulo-caixa">Navegador</text>
+    <text x="320" y="102" text-anchor="middle" class="texto-caixa">abre o site</text>
+  </g>
+  <g class="tom-petroleo">
+    <text x="600" y="72" text-anchor="middle" class="titulo-caixa">Resolvedor</text>
+    <text x="600" y="102" text-anchor="middle" class="texto-caixa">com o cache</text>
+  </g>
+  <g class="tom-verde">
+    <text x="880" y="72" text-anchor="middle" class="titulo-caixa">Autoritativo</text>
+    <text x="880" y="102" text-anchor="middle" class="texto-caixa">de example.com</text>
+  </g>
+
+  <g data-passo="1">
+    <g class="tom-petroleo">
+      <circle cx="42" cy="190" r="19" class="selo"/>
+      <text x="42" y="191" class="selo-texto">1</text>
+      <text x="740" y="176" text-anchor="middle" class="texto-caixa texto-tom">pergunta</text>
+      <path d="M602 190 H860" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-ambar etapa-2">
+      <text x="740" y="236" text-anchor="middle" class="codigo texto-tom">192.0.2.10</text>
+    </g>
+    <g class="tom-verde etapa-2">
+      <text x="780" y="282" text-anchor="middle" class="texto-caixa texto-tom">TTL 3600</text>
+      <path d="M878 250 H620" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="etapa-3">
+      <g class="tom-ambar">
+        <text x="600" y="340" text-anchor="middle" class="codigo texto-tom">192.0.2.10</text>
+      </g>
+      <text x="600" y="368" text-anchor="middle" class="texto-caixa">no cache, por 1 hora</text>
+    </g>
+  </g>
+
+  <g data-passo="2">
+    <g class="tom-verde">
+      <circle cx="42" cy="454" r="19" class="selo"/>
+      <text x="42" y="455" class="selo-texto">2</text>
+    </g>
+    <text x="880" y="448" text-anchor="middle" class="texto-caixa">o dono troca o A:</text>
+    <text x="880" y="476" text-anchor="middle" class="codigo">198.51.100.20</text>
+  </g>
+
+  <g data-passo="3">
+    <g class="tom-azul">
+      <circle cx="42" cy="540" r="19" class="selo"/>
+      <text x="42" y="541" class="selo-texto">3</text>
+      <text x="460" y="526" text-anchor="middle" class="texto-caixa texto-tom">pergunta</text>
+      <path d="M322 540 H580" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-ambar etapa-2">
+      <text x="460" y="586" text-anchor="middle" class="codigo texto-tom">192.0.2.10</text>
+    </g>
+    <g class="tom-petroleo etapa-2">
+      <text x="460" y="632" text-anchor="middle" class="texto-caixa texto-tom">do cache</text>
+      <path d="M598 600 H340" pathLength="1" class="trajeto"/>
+    </g>
+  </g>
+
+  <g data-passo="4">
+    <g class="tom-petroleo">
+      <circle cx="42" cy="696" r="19" class="selo"/>
+      <text x="42" y="697" class="selo-texto">4</text>
+    </g>
+    <text x="600" y="690" text-anchor="middle" class="texto-caixa">1 hora depois:</text>
+    <text x="600" y="718" text-anchor="middle" class="texto-caixa">TTL 0, cache vazio</text>
+    <g class="tom-azul etapa-2">
+      <text x="460" y="776" text-anchor="middle" class="texto-caixa texto-tom">pergunta de novo</text>
+      <path d="M322 790 H580" pathLength="1" class="trajeto"/>
+    </g>
+  </g>
+
+  <g data-passo="5">
+    <g class="tom-petroleo">
+      <circle cx="42" cy="860" r="19" class="selo"/>
+      <text x="42" y="861" class="selo-texto">5</text>
+      <text x="740" y="846" text-anchor="middle" class="texto-caixa texto-tom">pergunta</text>
+      <path d="M602 860 H860" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-verde etapa-2">
+      <text x="740" y="906" text-anchor="middle" class="codigo">198.51.100.20</text>
+      <path d="M878 920 H620" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-petroleo etapa-3">
+      <text x="460" y="956" text-anchor="middle" class="codigo">198.51.100.20</text>
+      <path d="M598 970 H340" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-ambar etapa-3">
+      <text x="600" y="1056" text-anchor="middle" class="texto-caixa texto-tom">Da troca ao fim do TTL, o resolvedor entrega o IP antigo.</text>
+    </g>
+  </g>
+</svg>

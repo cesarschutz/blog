@@ -698,6 +698,68 @@ export const DESENHOS = {
       for (const x of [52, 57.5, 63]) t(R(linha([x, 47.5], [x, 72.5])), { w: 3 });
     },
   },
+
+  /** DNS: a lista telefônica antiga, aberta (o catálogo de nomes e números), grossa, com as abas do índice. */
+  DNS: {
+    o: "lista telefônica antiga aberta",
+    d({ t, curva, linha, retangulo, mover }) {
+      // uma página: a borda de cima e a de baixo afundam na lombada; `e` = 1 (esquerda) ou −1 (direita)
+      const pagina = (e) => {
+        const x = (v) => (e === 1 ? v : 120 - v);
+        const P = (pts) => pts.map(([a, b]) => [x(a), b]);
+        return {
+          pts: [
+            ...curva(P([[19, 31], [32, 27.5], [47, 28.5], [59.5, 35]])).pts,
+            ...linha(P([[59.5, 35]])[0], P([[59.5, 89]])[0]).pts.slice(1),
+            ...curva(P([[59.5, 89], [47, 82.5], [32, 81.5], [19, 85]])).pts.slice(1),
+            ...linha(P([[19, 85]])[0], P([[19, 31]])[0]).pts.slice(1, -1),
+          ],
+          fechada: true,
+        };
+      };
+      // o miolo grosso embaixo de cada página, com as folhas aparecendo na borda
+      for (const e of [1, -1]) {
+        t(mover(pagina(e), { dx: -3 * e, dy: 9.5 }), { papel: true });
+        for (const k of [2.4, 4.8, 7.2]) t(mover(curva([[19, 85], [32, 81.5], [47, 82.5], [59.5, 89]].map(([a, b]) => [e === 1 ? a : 120 - a, b])), { dx: -k * 0.35 * e, dy: k }), { w: 3 });
+      }
+      // as abas do índice alfabético, saindo da borda da página da direita
+      for (const y of [37, 49, 61]) t(retangulo(96.5, y, 9, 8, 1.8), { papel: true, w: 2 });
+      // as páginas abertas
+      t(pagina(1), { papel: true });
+      t(pagina(-1), { papel: true });
+      // as linhas do catálogo: o nome (mais grosso) e o número, alinhado à direita
+      const nomes = [15, 10, 13, 8, 14, 11];
+      nomes.forEach((n, i) => {
+        const y = 41 + i * 6.6;
+        t(linha([25, y], [25 + n, y]), { w: 2 });
+        t(linha([45, y], [54, y]), { w: 3 });
+        const m = nomes[(i + 3) % nomes.length];
+        t(linha([66, y], [66 + m, y]), { w: 2 });
+        t(linha([84.5, y], [93.5, y]), { w: 3 });
+      });
+    },
+  },
+
+  /** Redes: o conector do cabo de rede, de pé, com os oito contatos, a trava e o cabo saindo pela capa. */
+  Redes: {
+    o: "conector de cabo de rede com o cabo",
+    d({ t, curva, retangulo, poli, linha }) {
+      const X = 6;
+      // o cabo, em fita: começa dentro da capa e sai por baixo, curvando para a esquerda
+      const eixo = curva([[54 + X, 74], [54 + X, 84], [52.5 + X, 91.5], [46 + X, 97.5], [36 + X, 101], [26 + X, 102]]).pts;
+      t(fita(eixo, 3), { papel: true });
+      // a capa de borracha, afunilando até o cabo, com dois frisos
+      t(poli([[41 + X, 60], [67 + X, 60], [61.5 + X, 80], [46.5 + X, 80]], true), { papel: true });
+      t(linha([43.4 + X, 67], [64.6 + X, 67]), { w: 3 });
+      t(linha([45.2 + X, 73], [62.8 + X, 73]), { w: 3 });
+      // a trava: a lingueta presa perto da ponta, que desce em diagonal até a aba de apertar
+      t(poli([[69 + X, 26], [84 + X, 53], [84 + X, 60.5], [80 + X, 60.5], [69 + X, 39]], true), { papel: true });
+      // o corpo, com os oito contatos na ponta e a borda do bloco deles
+      t(retangulo(37 + X, 22, 34, 40, 3), { papel: true });
+      for (let i = 0; i < 8; i++) t(linha([41.2 + X + i * 3.65, 24.8], [41.2 + X + i * 3.65, 35]), { w: 3 });
+      t(linha([38 + X, 38.5], [70 + X, 38.5]), { w: 2 });
+    },
+  },
 };
 
 // ---------- gravar ----------

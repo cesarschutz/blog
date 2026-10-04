@@ -87,6 +87,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D74 | A apresentação de um post (PPT) no estilo do blog, com os desenhos, os prints e a caneta do próprio post e as notas do apresentador (skill `apresentacao`, `scripts/slides/`) | decidido e publicado |
 | D77 | As apresentações no estilo do blog também entram no post (seção "Apresentação"), pelo `npm run apresentacao -- … --pdf`; as três primeiras: as duas partes dos mods e Parquet | decidido e publicado |
 | D79 | A parte 2 do post dos mods (`claude-code-csr-cockpit`) só atualizada para o cockpit 0.16.0, sem post novo: seis abas, as telas novas como print e os fatos em dia | decidido e publicado |
+| D81 | Post de DNS (`dns-tipos-de-registro`): detalhado, no livro DevOps, com as tags novas DNS e Redes, exemplos em `example.com` e a apresentação no estilo do blog | decidido e publicado |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -3448,4 +3449,30 @@ nada muda.
   figura em passos (e da lousa da instalação) passou de 0.5.0 e 0.6.0 para 1.0.0 e 1.1.0, com o mesmo
   número de caracteres; a tela do Inventário, que mostra a versão, foi trocada pela da 1.0.0; os testes
   passaram de 28 para 35. As outras telas do post continuam as da D79.
+
+## D81 · Post de DNS: registros, espaço de nomes e o domínio no GitHub Pages (04/10/2026)
+
+- **Pedido do Cesar:** um post sobre DNS: o espaço de nomes, os tipos de registro (TXT, MX e os
+  outros) e para que serve cada um, com exemplos de publicar no GitHub Pages. Depois, a apresentação
+  e a publicação ("após acabar crie o ppt e publique").
+- **Combinado na conversa (D63):** formato **detalhado** (com TL;DR), livro **DevOps** (a coleção
+  serve), tags **novas DNS e Redes** (ícones: a lista telefônica antiga aberta e o conector do cabo de
+  rede), **domínio fictício** (`example.com`, reservado pela RFC 2606, e o usuário `usuario` do GitHub;
+  o Cesar recusou os registros reais do domínio dele), título "Registros de DNS — A, AAAA, CNAME, MX,
+  TXT e o domínio no GitHub Pages", um post só (cerca de 2.800 palavras de prosa) e sem print.
+- **Fontes:** as RFCs (1034, 1035, 2181, 2308, 2606, 3596, 5321, 6376, 7208, 7766, 8659, 2782, 9460 e
+  a 9989, o DMARC que substituiu a 7489 em maio de 2026), a documentação do GitHub Pages (conferida no
+  código-fonte do github/docs), a IANA, o root-servers.org e o Google Public DNS.
+- **Testado em 04/10/2026:** a zona do post carregada no Unbound 1.24.2 e consultada com `dig`; o cache
+  negativo voltou com TTL 300 (o menor entre o `minimum` e o TTL do `SOA`); um nome sem ponto final
+  virou `usuario.github.io.example.com.`; o Unbound aceitou, sem aviso, `CNAME` e `TXT` no mesmo nome;
+  e o `dig +trace` real de `www.example.com`.
+- **Visual:** a capa (um móbile de plaquinhas, da raiz ao `www`, que balança no hover), duas figuras
+  paradas (a árvore de nomes; o GitHub Pages) e duas figuras em passos (a consulta; o TTL), no formato
+  da D67 com marca-texto e traços. A lousa e a animação com play do plano viraram figura em passos,
+  porque nenhum post usa mais a `Lousa` nem a `Animacao`. Logo do GitHub não entrou (sem registro em
+  `src/marcas/regras.json`): os servidores usam o ícone genérico. 26 marcações da caneta, aprovadas.
+- **Conferência:** `conferir` ok em 320 a 1600px nos dois temas e com movimento reduzido; `check`,
+  `build`, `links` e `contraste` sem falhas; detector do Impeccable sem achados; Lighthouse 100 no
+  desktop e 97 no celular, pelo contraste do resumo "Neste artigo" (componente do site, não do post).
 

@@ -234,7 +234,9 @@ os artigos" e as mais usadas no topo da página do livro).
   cadeado de segredo (Criptografia), favos de mel com uma célula por fazer (Microsserviços), chave
   antiga com etiqueta (Idempotência), bigorna e martelo (Gradle), nuvem (AWS), espeto de notas (AOP),
   ingresso com canhoto (JWT) e, desde a D66, terminal de vídeo antigo com o prompt e o cursor (Claude
-  Code) e plugue de tomada de dois pinos com o fio (Plugins).
+  Code) e plugue de tomada de dois pinos com o fio (Plugins); no post de DNS, lista telefônica antiga
+  aberta, grossa e com as abas do índice (DNS), e conector de cabo de rede com a trava e o cabo saindo
+  pela capa (Redes).
 
 ### Tags novas
 

@@ -34,10 +34,13 @@ mkdirSync(join(PASTA, "img"), { recursive: true });
 
 // O computador do canto e a aba "topo" ficam fora das fotos.
 const ESCONDER = ".computador, .aba-topo, [class*=aba-topo] { display: none !important; }";
+// Nas fotos das peças, o cabeçalho fixo também sai: numa figura mais alta que a janela, ele ficava por cima
+// do alto da figura (a do TTL, no post do DNS, 04/10/2026).
+const SEM_TOPO = ".topo-fixo, .barra-leitura { visibility: hidden !important; }";
 const dados = { slug, base: BASE, quando: new Date().toISOString(), tira: null, fotos: [] };
 const navegador = await chromium.launch({ channel: "chrome", headless: true });
 
-async function abrir(tema, escala, caminho) {
+async function abrir(tema, escala, caminho, estilo = "") {
   const ctx = await navegador.newContext({
     viewport: { width: 1440, height: 900 },
     deviceScaleFactor: escala,
@@ -57,7 +60,7 @@ async function abrir(tema, escala, caminho) {
     throw new Error(`${BASE}${caminho} respondeu ${r ? r.status() : "nada"}; post novo: use --base com o endereço do dev`);
   }
   await p.waitForTimeout(3000);
-  await p.addStyleTag({ content: ESCONDER });
+  await p.addStyleTag({ content: ESCONDER + estilo });
   return { ctx, p };
 }
 
@@ -75,7 +78,7 @@ try {
   for (const tema of TEMAS) {
     const sufixo = tema === "dark" ? "-escuro" : "";
     // As peças do post, em densidade 2.
-    let { ctx, p } = await abrir(tema, 2, `/posts/${slug}/`);
+    let { ctx, p } = await abrir(tema, 2, `/posts/${slug}/`, SEM_TOPO);
     const capa = p.locator(".foto-colada").first();
     if (await capa.count()) await foto(p, capa, "capa", sufixo, 2);
     const figuras = p.locator("figure.figura");

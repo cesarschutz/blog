@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 950"
+  aria-label="Diagrama de sequência em cinco passos, com o navegador, o resolvedor, a raiz, o TLD com e o servidor autoritativo de example.com: o navegador pergunta ao resolvedor o endereço de www.example.com; o resolvedor pergunta à raiz, que não sabe o endereço e indica os servidores (NS) do com; pergunta ao servidor do com, que indica os servidores de example.com; pergunta ao autoritativo de example.com, que responde com o endereço e um TTL de 300 segundos; e o resolvedor guarda 172.66.147.243 no cache por 300 segundos e entrega o endereço ao navegador.">
+  <path d="M185 124 V840 M430 124 V840 M625 124 V840 M780 124 V840 M980 124 V840" class="grade"/>
+
+  <g class="tinta">
+    <g class="tom-azul">
+      <rect x="102" y="37" width="180" height="88" rx="12" class="hachura"/>
+      <rect x="95" y="30" width="180" height="88" rx="12" class="lavado"/>
+      <rect x="95" y="30" width="180" height="88" rx="12" class="linha"/>
+    </g>
+    <g class="tom-petroleo">
+      <rect x="337" y="37" width="200" height="88" rx="12" class="hachura"/>
+      <rect x="330" y="30" width="200" height="88" rx="12" class="lavado"/>
+      <rect x="330" y="30" width="200" height="88" rx="12" class="linha"/>
+    </g>
+    <g class="tom-roxo">
+      <rect x="572" y="37" width="120" height="88" rx="12" class="hachura"/>
+      <rect x="565" y="30" width="120" height="88" rx="12" class="lavado"/>
+      <rect x="565" y="30" width="120" height="88" rx="12" class="linha"/>
+      <rect x="727" y="37" width="120" height="88" rx="12" class="hachura"/>
+      <rect x="720" y="30" width="120" height="88" rx="12" class="lavado"/>
+      <rect x="720" y="30" width="120" height="88" rx="12" class="linha"/>
+    </g>
+    <g class="tom-verde">
+      <rect x="882" y="37" width="210" height="88" rx="12" class="hachura"/>
+      <rect x="875" y="30" width="210" height="88" rx="12" class="lavado"/>
+      <rect x="875" y="30" width="210" height="88" rx="12" class="linha"/>
+    </g>
+
+    <g data-passo="1" class="tom-azul">
+      <path d="M185 190 H416 M402 181 L416 190 L402 199" class="linha-tom"/>
+    </g>
+
+    <g data-passo="2">
+      <g class="tom-petroleo">
+        <path d="M430 290 H611 M597 281 L611 290 L597 299" class="linha-tom"/>
+      </g>
+      <g class="tom-roxo etapa-2">
+        <path d="M625 350 H445" class="linha-tom"/>
+        <path d="M458 341 L444 350 L458 359" class="linha-tom"/>
+      </g>
+    </g>
+
+    <g data-passo="3">
+      <g class="tom-petroleo">
+        <path d="M430 430 H766 M752 421 L766 430 L752 439" class="linha-tom"/>
+      </g>
+      <g class="tom-roxo etapa-2">
+        <path d="M780 490 H445" class="linha-tom"/>
+        <path d="M458 481 L444 490 L458 499" class="linha-tom"/>
+      </g>
+    </g>
+
+    <g data-passo="4">
+      <g class="tom-petroleo">
+        <path d="M430 570 H966 M952 561 L966 570 L952 579" class="linha-tom"/>
+      </g>
+      <g class="tom-verde etapa-2">
+        <path d="M980 640 H445" class="linha-tom"/>
+        <path d="M458 631 L444 640 L458 649" class="linha-tom"/>
+      </g>
+    </g>
+
+    <g data-passo="5">
+      <g class="tom-petroleo">
+        <rect x="310" y="700" width="240" height="68" rx="8" class="lavado"/>
+        <rect x="310" y="700" width="240" height="68" rx="8" class="linha"/>
+      </g>
+      <g class="tom-petroleo etapa-2">
+        <path d="M430 810 H200" class="linha-tom"/>
+        <path d="M213 801 L199 810 L213 819" class="linha-tom"/>
+      </g>
+      <g class="tom-verde etapa-3">
+        <rect x="195" y="860" width="605" height="70" rx="12" class="lavado"/>
+        <rect x="195" y="860" width="605" height="70" rx="12" class="linha"/>
+        <path d="M215 894 l11 11 l22 -24" class="linha-tom"/>
+      </g>
+    </g>
+  </g>
+
+  <g class="tom-azul">
+    <text x="185" y="72" text-anchor="middle" class="titulo-caixa">Navegador</text>
+    <text x="185" y="102" text-anchor="middle" class="texto-caixa">abre o site</text>
+  </g>
+  <g class="tom-petroleo">
+    <text x="430" y="72" text-anchor="middle" class="titulo-caixa">Resolvedor</text>
+    <text x="430" y="102" text-anchor="middle" class="texto-caixa">com o cache</text>
+  </g>
+  <g class="tom-roxo">
+    <text x="625" y="72" text-anchor="middle" class="titulo-caixa">Raiz</text>
+    <text x="625" y="102" text-anchor="middle" class="texto-caixa">o topo</text>
+    <text x="780" y="72" text-anchor="middle" class="titulo-caixa">TLD</text>
+    <text x="780" y="102" text-anchor="middle" class="texto-caixa">o com</text>
+  </g>
+  <g class="tom-verde">
+    <text x="980" y="72" text-anchor="middle" class="titulo-caixa">Autoritativo</text>
+    <text x="980" y="102" text-anchor="middle" class="texto-caixa">de example.com</text>
+  </g>
+
+  <g data-passo="1">
+    <g class="tom-azul">
+      <circle cx="42" cy="190" r="19" class="selo"/>
+      <text x="42" y="191" class="selo-texto">1</text>
+      <text x="307" y="176" text-anchor="middle" class="codigo">www.example.com</text>
+      <text x="307" y="222" text-anchor="middle" class="texto-caixa texto-tom">qual o endereço?</text>
+      <path d="M187 190 H410" pathLength="1" class="trajeto"/>
+    </g>
+  </g>
+
+  <g data-passo="2">
+    <g class="tom-roxo">
+      <circle cx="42" cy="290" r="19" class="selo"/>
+      <text x="42" y="291" class="selo-texto">2</text>
+    </g>
+    <g class="tom-petroleo">
+      <text x="527" y="276" text-anchor="middle" class="texto-caixa texto-tom">pergunta</text>
+      <path d="M432 290 H605" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-roxo etapa-2">
+      <text x="527" y="336" text-anchor="middle" class="texto-caixa texto-tom">NS do com</text>
+      <path d="M623 350 H450" pathLength="1" class="trajeto"/>
+    </g>
+  </g>
+
+  <g data-passo="3">
+    <g class="tom-roxo">
+      <circle cx="42" cy="430" r="19" class="selo"/>
+      <text x="42" y="431" class="selo-texto">3</text>
+    </g>
+    <g class="tom-petroleo">
+      <text x="527" y="416" text-anchor="middle" class="texto-caixa texto-tom">pergunta</text>
+      <path d="M432 430 H760" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-roxo etapa-2">
+      <text x="527" y="476" text-anchor="middle" class="texto-caixa texto-tom">NS de example.com</text>
+      <path d="M778 490 H450" pathLength="1" class="trajeto"/>
+    </g>
+  </g>
+
+  <g data-passo="4">
+    <g class="tom-verde">
+      <circle cx="42" cy="570" r="19" class="selo"/>
+      <text x="42" y="571" class="selo-texto">4</text>
+    </g>
+    <g class="tom-petroleo">
+      <text x="527" y="556" text-anchor="middle" class="texto-caixa texto-tom">pergunta</text>
+      <path d="M432 570 H960" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-verde etapa-2">
+      <text x="880" y="626" text-anchor="middle" class="texto-caixa texto-tom">o endereço</text>
+      <text x="880" y="672" text-anchor="middle" class="texto-caixa texto-tom">TTL 300 s</text>
+      <path d="M978 640 H450" pathLength="1" class="trajeto"/>
+    </g>
+  </g>
+
+  <g data-passo="5">
+    <g class="tom-petroleo">
+      <circle cx="42" cy="734" r="19" class="selo"/>
+      <text x="42" y="735" class="selo-texto">5</text>
+    </g>
+    <text x="430" y="728" text-anchor="middle" class="codigo">172.66.147.243</text>
+    <text x="430" y="756" text-anchor="middle" class="texto-caixa">no cache, por 300 s</text>
+    <g class="tom-petroleo etapa-2">
+      <text x="307" y="796" text-anchor="middle" class="codigo">172.66.147.243</text>
+      <path d="M428 810 H205" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-verde etapa-3">
+      <text x="522" y="904" text-anchor="middle" class="texto-caixa texto-tom">O endereço chega ao navegador e fica no cache por 300 s.</text>
+    </g>
+  </g>
+</svg>

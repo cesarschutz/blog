@@ -1,0 +1,291 @@
+---
+title: "Registros de DNS — A, AAAA, CNAME, MX, TXT e o domínio no GitHub Pages"
+description: "Como o DNS organiza os nomes, como uma consulta chega à resposta e para que serve cada tipo de registro, com o GitHub Pages e o e-mail como exemplos."
+published: 2026-10-04
+category: DevOps
+tags: [DNS, Redes]
+formato: detalhado
+tldr:
+  - "O DNS é uma base de dados distribuída em forma de árvore: cada **zona** responde pelos próprios nomes, e o registro `NS` delega um pedaço da árvore para outros servidores."
+  - "Uma consulta passa pelo resolvedor, pela raiz, pelo TLD e pelo servidor autoritativo, e a resposta fica em cache pelo **TTL**. O que se chama de propagação é esse cache expirando."
+  - "`A` e `AAAA` dão o endereço, `CNAME` aponta um nome para outro e não convive com nenhum outro registro, `MX` diz quem recebe o e-mail e `TXT` guarda SPF, DKIM, DMARC e as verificações de domínio."
+  - "No GitHub Pages, o domínio principal recebe os quatro `A` e os quatro `AAAA` do GitHub, o `www` recebe um `CNAME` para `usuario.github.io`, e um `TXT` de verificação impede que outra conta use o domínio."
+  - "`dig +trace` mostra a consulta inteira, da raiz até a resposta, e é o primeiro comando a rodar quando um domínio não abre."
+draft: false
+---
+
+import Figura from "../../components/Figura.astro";
+import FiguraPassos from "../../components/FiguraPassos.astro";
+
+O DNS (*Domain Name System*) é o sistema que traduz um nome como `www.example.com` no endereço IP de que o navegador precisa para abrir a conexão. Toda configuração de domínio é feita nele, na forma de **registros**: o site, o e-mail, a prova de que o domínio é seu e quem pode emitir certificado para ele. Quando um site novo não abre ou o e-mail do domínio cai no spam, a causa costuma estar num desses registros.
+
+Este post explica como os nomes se organizam (o espaço de nomes), como uma consulta chega à resposta e para que serve cada tipo de registro: `A`, `AAAA`, `CNAME`, `MX`, `TXT`, `NS`, `SOA` e os menos comuns. Depois os registros viram prática: apontar um domínio para o GitHub Pages, configurar o e-mail do domínio e conferir tudo com `dig`. Os exemplos usam `example.com`, um dos [domínios reservados para documentação](https://www.rfc-editor.org/rfc/rfc2606.html#section-3), e `usuario`, no lugar do nome de uma conta do GitHub.
+
+## O que o DNS resolve
+
+Os computadores se encontram pelo endereço IP; os nomes existem para as pessoas. Antes do DNS, a tradução de um para o outro ficava num arquivo só, o `HOSTS.TXT`, mantido por uma central e copiado por FTP por todas as máquinas da rede. A [RFC 1034 conta essa história](https://www.rfc-editor.org/rfc/rfc1034.html#section-2.1): a cada máquina nova, o arquivo crescia, todo mundo precisava baixar de novo, e quem quisesse mudar um nome dependia da central.
+
+O DNS trocou o arquivo único por uma **base de dados distribuída**. Nenhum servidor conhece todos os nomes. Cada :grifo[parte da base é mantida por quem é dono dela], e um servidor sabe apontar para o servidor que conhece a parte seguinte. As consultas usam a porta 53, por [UDP e por TCP](https://www.rfc-editor.org/rfc/rfc1035.html#section-4.2); o [suporte aos dois é obrigatório](https://www.rfc-editor.org/rfc/rfc7766.html#section-5) em toda implementação de uso geral.
+
+## O espaço de nomes: uma árvore lida da direita para a esquerda
+
+Os nomes do DNS formam uma árvore, o **espaço de nomes** (*name space*). Cada nó tem um rótulo (*label*) de até 63 bytes, e o nome completo, somando os rótulos, tem até 255 bytes ([RFC 1035, §2.3.4](https://www.rfc-editor.org/rfc/rfc1035.html#section-2.3.4)). A raiz da árvore tem o rótulo vazio. Por isso um nome escrito por inteiro :nota[termina em ponto]{texto="o ponto é a raiz"}: `www.example.com.` é o caminho do nó `www` até a raiz, lido da direita para a esquerda ([RFC 1034, §3.1](https://www.rfc-editor.org/rfc/rfc1034.html#section-3.1)).
+
+- **A raiz** (`.`) é o topo, e a zona dela lista os domínios de primeiro nível.
+- **Os domínios de primeiro nível** (TLDs, *top-level domains*) ficam logo abaixo: `com`, `org`, `br`, `io`. A [lista da IANA](https://data.iana.org/TLD/tlds-alpha-by-domain.txt) tinha 1.437 deles em 04/10/2026.
+- **O domínio registrado**, como `example.com` ou `exemplo.com.br`, fica embaixo do TLD (ou de uma categoria dele, como o `com.br`).
+- **Os subdomínios**, como `www.example.com` ou `blog.example.com`, são criados pelo dono do domínio, sem pedir nada a ninguém.
+
+:::colchete
+Domínio e zona são coisas diferentes. Um **domínio** é um galho da árvore, com tudo o que está embaixo dele. Uma **zona** é o pedaço da árvore que um mesmo conjunto de servidores responde, com autoridade ([RFC 1034, §4.2](https://www.rfc-editor.org/rfc/rfc1034.html#section-4.2)). A zona `com` não guarda os endereços de `example.com`. Ela guarda só um recado: quem responde por `example.com` são tais servidores. Esse recado é a **delegação**, feita com registros `NS`.
+:::
+
+<Figura figura="dns-tipos-de-registro/arvore-de-nomes" legenda="Cada contorno é uma zona, com o próprio dono: em roxo, a raiz e os TLDs, que só delegam; em verde, o domínio registrado. As setas são as delegações por NS, e os números em azul leem www.example.com de baixo para cima, até a raiz." />
+
+É isso que acontece ao comprar um domínio. O registro do TLD (o Registro.br, no `.br`, que a [IANA delega ao Comitê Gestor da Internet no Brasil](https://www.iana.org/domains/root/db/br.html)) grava na zona dele os `NS` que você indicou: os servidores do provedor de DNS que você escolheu. Daí em diante, quem responde pelos nomes do domínio é esse provedor, e cada registro novo, de site ou de e-mail, é criado lá.
+
+## Como uma consulta chega à resposta
+
+Ao abrir `www.example.com`, o sistema operacional não sai perguntando para a árvore. Ele pergunta a um **resolvedor recursivo**: o do provedor de internet, o da empresa ou um público, como o do Google ou o da Cloudflare. O resolvedor faz o trabalho de descer a árvore e guarda o que aprendeu ([RFC 1034, §5](https://www.rfc-editor.org/rfc/rfc1034.html#section-5)).
+
+O resolvedor sempre sabe por onde começar: os servidores raiz. São :nota[13 identidades]{texto="não 13 máquinas"}, de `a.root-servers.net` a `m.root-servers.net`, operadas por 12 organizações independentes; cada identidade é um endereço servido por muitas máquinas espalhadas pelo mundo, e o [root-servers.org](https://root-servers.org/) contava mais de 2.000 instâncias em 04/10/2026.
+
+<FiguraPassos
+  figura="dns-tipos-de-registro/consulta-em-passos"
+  passos={[
+    "O navegador pergunta ao resolvedor o endereço de www.example.com.",
+    "A raiz não sabe o endereço, mas indica os servidores do com.",
+    "O servidor do com indica os servidores de example.com.",
+    "O servidor autoritativo de example.com responde com o endereço.",
+    "O resolvedor guarda a resposta pelo TTL e entrega ao navegador.",
+  ]}
+  legenda="Azul é o navegador, petróleo o resolvedor, roxo os servidores que só indicam o caminho e verde o autoritativo, que tem a resposta."
+  fim="segmentos"
+  estilo="marca-texto"
+/>
+
+Cada servidor do caminho :duplo[responde só o que sabe]. A raiz e o servidor do `com` não têm o endereço, e respondem com uma **indicação** (*referral*): os `NS` do nível de baixo. Só o servidor **autoritativo** da zona `example.com` tem a resposta final. O resolvedor guarda cada resposta pelo tempo que ela traz, o **TTL** (*time to live*), em segundos. A próxima pergunta por `www.example.com`, de qualquer pessoa que use o mesmo resolvedor, sai do cache sem passar pela árvore.
+
+O comando [`dig +trace`](https://bind9.readthedocs.io/en/latest/manpages.html#cmdoption-dig-arg-trace) faz esse caminho na sua frente, a partir da raiz. Esta é a saída real de 04/10/2026, resumida:
+
+```text title="dig +trace www.example.com" anotar="300|5 min em cache"
+.                 600     IN  NS  a.root-servers.net.
+.                 600     IN  NS  m.root-servers.net.
+;; Received 811 bytes from fe80::1%14#53(fe80::1%14)
+
+com.              172800  IN  NS  a.gtld-servers.net.
+com.              172800  IN  NS  m.gtld-servers.net.
+;; Received 840 bytes from 192.112.36.4#53(g.root-servers.net)
+
+example.com.      172800  IN  NS  hera.ns.cloudflare.com.
+example.com.      172800  IN  NS  elliott.ns.cloudflare.com.
+;; Received 363 bytes from 192.12.94.30#53(e.gtld-servers.net)
+
+www.example.com.  300     IN  A   172.66.147.243
+www.example.com.  300     IN  A   104.20.23.154
+;; Received 76 bytes from 162.159.44.228#53(elliott.ns.cloudflare.com)
+```
+
+Cada bloco é um degrau: o resolvedor local deu a lista da raiz, a raiz (`g.root-servers.net`) indicou os servidores do `com`, um deles (`e.gtld-servers.net`) indicou os da Cloudflare, e um servidor da Cloudflare deu o endereço, com TTL de 300 segundos.
+
+## Os tipos de registro e para que serve cada um
+
+Cada registro tem cinco partes: o **nome**, o **TTL**, a **classe** (na prática, sempre `IN`, de internet), o **tipo** e o **dado**. A zona de um domínio é a lista dos registros dele, e o formato de texto dessa lista, o arquivo de zona, vem da [RFC 1035](https://www.rfc-editor.org/rfc/rfc1035.html#section-5). O painel do provedor de DNS mostra os mesmos campos numa tabela. Esta é a zona inteira de `example.com`, configurada para o site no GitHub Pages e para o e-mail:
+
+```text title="example.com.zone" linhas="23|com ponto: nome absoluto"
+$ORIGIN example.com.
+$TTL 3600
+
+; a zona: quem responde por ela e os tempos
+@        IN  SOA   ns1.example.net. hostmaster.example.com. (
+                   2026100401 ; serial
+                   7200       ; refresh
+                   900        ; retry
+                   1209600    ; expire
+                   300 )      ; minimum (cache negativo)
+@        IN  NS    ns1.example.net.
+@        IN  NS    ns2.example.net.
+
+; o site no GitHub Pages: o domínio principal e o www
+@        IN  A     185.199.108.153
+@        IN  A     185.199.109.153
+@        IN  A     185.199.110.153
+@        IN  A     185.199.111.153
+@        IN  AAAA  2606:50c0:8000::153
+@        IN  AAAA  2606:50c0:8001::153
+@        IN  AAAA  2606:50c0:8002::153
+@        IN  AAAA  2606:50c0:8003::153
+www      IN  CNAME usuario.github.io.
+_github-pages-challenge-usuario IN TXT "a1b2c3d4e5f6"
+
+; o e-mail
+@        IN  MX    10 mx1.example.net.
+@        IN  MX    20 mx2.example.net.
+@        IN  TXT   "v=spf1 include:_spf.example.net -all"
+s1._domainkey IN TXT "v=DKIM1; k=rsa; p=MIIBIjANBgkqh...IDAQAB"
+_dmarc   IN  TXT   "v=DMARC1; p=quarantine; rua=mailto:dmarc@example.com"
+
+; quem pode emitir certificado para o domínio
+@        IN  CAA   0 issue "letsencrypt.org"
+```
+
+:::carimbo{texto="zona testada no Unbound 1.24.2"}
+O `@` é o próprio domínio (o *apex*, ou raiz do domínio), e um nome sem ponto final, como `www`, ganha o domínio no fim: vira `www.example.com.`. Em 04/10/2026, essa zona foi carregada no Unbound 1.24.2 e cada registro do post foi consultado com `dig`.
+:::
+
+| Tipo | O que guarda | Uso típico |
+|---|---|---|
+| `A` | um endereço IPv4 | o site, a API |
+| `AAAA` | um endereço IPv6 | o mesmo, em IPv6 |
+| `CNAME` | outro nome, do qual este é apelido | `www` apontando para um serviço de hospedagem |
+| `MX` | o servidor que recebe e-mail, com prioridade | o e-mail do domínio |
+| `TXT` | texto livre | SPF, DKIM, DMARC, verificação de domínio |
+| `NS` | os servidores que respondem pela zona | a delegação |
+| `SOA` | os dados da zona: dono, serial e tempos | um por zona, no apex |
+| `CAA` | quem pode emitir certificado | proteger o HTTPS |
+| `SRV` | servidor e porta de um serviço | protocolos como SIP e IMAP |
+| `PTR` | o nome de um endereço | DNS reverso |
+
+### A e AAAA: o endereço
+
+O [`A`](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.4.1) guarda um endereço IPv4, de 32 bits, e o [`AAAA`](https://www.rfc-editor.org/rfc/rfc3596.html#section-2.2), um IPv6, de 128 bits. Um nome pode ter vários de cada: o cliente recebe todos e escolhe um, o que já reparte a carga e dá alternativa se um endereço falhar. O `example.com` acima tem quatro de cada, os do GitHub Pages.
+
+### CNAME: um nome que aponta para outro
+
+O [`CNAME`](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.1) diz que um nome é apelido de outro, o nome canônico. Ao perguntar o endereço de `www.example.com`, o resolvedor recebe "`www.example.com` é `usuario.github.io`" e repete a pergunta para o nome novo. A vantagem é que quem cuida do nome canônico pode trocar os endereços sem você mexer na sua zona.
+
+A regra que mais pega: **um nome com `CNAME` não pode ter nenhum outro registro** ([RFC 1034, §3.6.2](https://www.rfc-editor.org/rfc/rfc1034.html#section-3.6.2), reforçada pela [RFC 2181, §10.1](https://www.rfc-editor.org/rfc/rfc2181.html#section-10.1)). Como o apex sempre tem `SOA` e `NS`, segue dessa regra que :marca[o domínio principal não pode ser um `CNAME`]. É por isso que, no GitHub Pages, o `www` usa `CNAME` e o `example.com` usa `A` e `AAAA`.
+
+### MX: quem recebe o e-mail
+
+O [`MX`](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.9) diz quais servidores recebem o e-mail endereçado ao domínio, cada um com uma preferência: **o menor número é tentado primeiro** ([RFC 5321, §5.1](https://www.rfc-editor.org/rfc/rfc5321.html#section-5.1)). Com `10 mx1` e `20 mx2`, o servidor que envia procura o `mx1` e só cai no `mx2` se o primeiro não responder. O alvo de um `MX` precisa ser um nome com endereço próprio, :ondulado[nunca um `CNAME`] ([RFC 2181, §10.3](https://www.rfc-editor.org/rfc/rfc2181.html#section-10.3)).
+
+### TXT: texto que outros sistemas leem
+
+O [`TXT`](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.14) guarda texto livre, e por isso virou o lugar de tudo o que um sistema de fora precisa ler no seu domínio. As regras do e-mail (SPF, DKIM e DMARC, numa seção adiante) moram nele, e as **verificações de domínio** também: o GitHub, o Google e os serviços de e-mail pedem que você publique um texto com um código, num nome combinado, para provar que o domínio é seu. :duplo[Só o dono da zona] consegue criar o registro.
+
+### NS e SOA: a zona e a delegação
+
+O [`NS`](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.11) lista os servidores que respondem por uma zona. Ele aparece em dois lugares: na zona de cima (o `com` dizendo quem responde por `example.com`, a delegação) e na própria zona, que repete a lista.
+
+O [`SOA`](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.3.13) (*start of authority*) abre a zona, e há um só. Ele traz o servidor principal, o e-mail do responsável (com o primeiro ponto no lugar da arroba: `hostmaster.example.com.`), um número de série, que os servidores secundários comparam para saber se a zona mudou, e quatro tempos. O último, o `minimum`, ganhou outro papel com a [RFC 2308](https://www.rfc-editor.org/rfc/rfc2308.html#section-4): é o TTL do **cache negativo**, o tempo que um resolvedor guarda a resposta "esse nome não existe". Na zona de exemplo, a consulta por `nao-existe.example.com` voltou com o `SOA` e :explica[TTL de 300]{nota="o menor entre 300 e 3600"}, o menor entre o `minimum` e o TTL do próprio `SOA` ([RFC 2308, §5](https://www.rfc-editor.org/rfc/rfc2308.html#section-5)).
+
+### Os menos comuns: CAA, SRV, PTR, HTTPS e ALIAS
+
+- **`CAA`** diz quais autoridades certificadoras podem emitir certificado para o domínio ([RFC 8659](https://www.rfc-editor.org/rfc/rfc8659.html#section-4.2)). Com `0 issue "letsencrypt.org"`, só a Let's Encrypt pode; `issuewild` vale para certificados curinga. Sem `CAA`, :ondulado[qualquer uma pode].
+- **`SRV`** anuncia o servidor e a porta de um serviço, num nome no formato `_servico._protocolo.dominio`, com prioridade e peso ([RFC 2782](https://www.rfc-editor.org/rfc/rfc2782.html)). É como clientes de SIP, XMPP e e-mail descobrem onde se conectar.
+- **`PTR`** faz o caminho inverso, do endereço para o nome: o IP `192.0.2.10` vira o nome `10.2.0.192.in-addr.arpa`, com os números invertidos ([RFC 1035, §3.5](https://www.rfc-editor.org/rfc/rfc1035.html#section-3.5); no IPv6, `ip6.arpa`). Quem cria o `PTR` é o dono do bloco de IPs (o provedor), não o dono do domínio.
+- **`HTTPS`** (e o irmão `SVCB`) entrega ao navegador, na mesma consulta, os parâmetros da conexão, como o suporte a HTTP/3, e aceita apelido no apex, o que o `CNAME` não faz ([RFC 9460](https://www.rfc-editor.org/rfc/rfc9460.html)).
+- **`ALIAS`** e **`ANAME`** :ondulado[não são tipos do padrão]: o [rascunho do ANAME](https://datatracker.ietf.org/doc/draft-ietf-dnsop-aname/) expirou em 2021. São recursos de cada provedor, que resolvem o nome de destino e publicam os endereços no apex, como o [*CNAME flattening* da Cloudflare](https://developers.cloudflare.com/dns/cname-flattening/). O nome e o comportamento mudam de um provedor para outro.
+
+## Domínio próprio no GitHub Pages
+
+O GitHub Pages publica um site em `usuario.github.io` e aceita um domínio seu no lugar. A [documentação do domínio personalizado](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site) separa dois casos, e a zona de exemplo tem os dois:
+
+- **O domínio principal** (`example.com`): quatro `A` e quatro `AAAA`, com os [endereços do GitHub Pages](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site#configuring-an-apex-domain). Se o provedor tiver `ALIAS` ou `ANAME`, ele pode apontar para `usuario.github.io` no lugar dos oito registros.
+- **Um subdomínio** (`www.example.com`, `blog.example.com`): um [`CNAME` para `usuario.github.io`](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site#configuring-a-subdomain), :ondulado[sem o nome do repositório], mesmo que o site seja de um repositório de projeto.
+
+<Figura figura="dns-tipos-de-registro/github-pages" legenda="Dois caminhos para os mesmos servidores do GitHub Pages: o domínio principal com A e AAAA, o www pelo CNAME, que passa por usuario.github.io. Verde é a sua zona e âmbar o GitHub; o TXT de verificação fica embaixo, sem seta, e não leva tráfego a lugar nenhum." />
+
+O GitHub [recomenda configurar o domínio principal e o `www` juntos](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site#configuring-an-apex-domain-and-the-www-subdomain-variant): com os registros dos dois no lugar, o GitHub redireciona sozinho o que não foi configurado para o que foi (de `www.example.com` para `example.com`, ou o contrário). O endereço que o site deve usar é informado em **Settings → Pages → Custom domain**, no repositório. Quem publica a partir de uma branch ganha um arquivo `CNAME` na raiz dela, com o domínio dentro; quem publica por um workflow do GitHub Actions não precisa do arquivo, e :ressalva[um que exista é ignorado]{texto="o caso deste blog (Actions)"}.
+
+Depois vêm dois cuidados:
+
+- **Verificar o domínio.** Em **Settings → Pages** da conta (não do repositório), o GitHub dá um código para publicar num `TXT` em [`_github-pages-challenge-usuario.example.com`](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/verifying-your-custom-domain-for-github-pages). :marca[Com o domínio verificado, outra conta não consegue publicar um site nele.] Sem a verificação, um site seu desativado com o domínio ainda apontando para o GitHub [pode ser tomado](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages#securing-the-custom-domain-for-your-github-pages-site) por quem criar um repositório com o mesmo domínio.
+- **Ligar o HTTPS.** O GitHub pede o certificado à Let's Encrypt sozinho, e a opção [Enforce HTTPS](https://docs.github.com/en/pages/getting-started-with-github-pages/securing-your-github-pages-site-with-https) faz todo acesso por HTTP ir para o HTTPS. Registros `A` ou `AAAA` a mais no apex, apontando para outro lugar, atrapalham a emissão, e um `CAA` precisa incluir :caixa[`letsencrypt.org`].
+
+> [!CUIDADO]
+> Não use um registro curinga (`*.example.com`) apontando para o GitHub Pages. A documentação avisa que ele abre espaço para alguém tomar subdomínios seus, mesmo com o domínio verificado.
+
+## E-mail do domínio: MX, SPF, DKIM e DMARC
+
+Receber e-mail em `contato@example.com` pede só o `MX`. Enviar e-mail que chegue na caixa de entrada pede mais três registros `TXT`, que dizem aos outros servidores como reconhecer uma mensagem legítima do seu domínio:
+
+- **SPF** lista quem pode enviar e-mail em nome do domínio. É um `TXT` no apex, começando por `v=spf1` ([RFC 7208](https://www.rfc-editor.org/rfc/rfc7208.html#section-3.1)): `include:_spf.example.net` aceita os servidores do provedor de e-mail, e o `-all` no fim diz que o resto falha (o `~all` marca o resto como suspeito, sem recusar). A avaliação para depois de [10 consultas ao DNS](https://www.rfc-editor.org/rfc/rfc7208.html#section-4.6.4), e :nota[cada `include` conta]{texto="fácil de estourar"}.
+- **DKIM** publica a chave pública que confere a assinatura das mensagens, num `TXT` em :caixa[`seletor._domainkey.example.com`] ([RFC 6376, §3.6.2.1](https://www.rfc-editor.org/rfc/rfc6376.html#section-3.6.2.1)). O seletor (`s1`, no exemplo) permite ter mais de uma chave, uma por serviço que envia.
+- **DMARC** diz o que fazer com a mensagem que falha: `p=none` (só observar), `p=quarantine` (mandar para o spam) ou `p=reject` (recusar), e para onde enviar os relatórios (`rua`). Fica num `TXT` em `_dmarc.example.com`. O DMARC virou padrão da IETF em maio de 2026, com a [RFC 9989](https://www.rfc-editor.org/rfc/rfc9989.html#section-4.7), que substituiu a :riscado[RFC 7489].
+
+:::visto
+O caminho comum é começar o DMARC com `p=none`, ler os relatórios por algumas semanas para descobrir quem mais envia em nome do domínio (o sistema de cobrança, a ferramenta de newsletter) e só então subir para `quarantine` e `reject`.
+:::
+
+## TTL e a tal propagação
+
+Depois de trocar um registro, é comum ouvir que é preciso esperar a propagação. A [própria documentação do GitHub](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site#about-custom-domain-configuration) fala em até 24 horas. Mas nada é empurrado para os servidores do mundo: o servidor autoritativo passa a responder o valor novo na hora, e :marca[cada resolvedor continua entregando o valor antigo, do cache, até o TTL dele acabar].
+
+<FiguraPassos
+  figura="dns-tipos-de-registro/ttl-em-passos"
+  passos={[
+    "O resolvedor busca o IP antigo e guarda por uma hora (TTL 3600).",
+    "O dono troca o registro A no servidor autoritativo.",
+    "O navegador pergunta e recebe o IP antigo, do cache.",
+    "O TTL acaba, o resolvedor esquece a resposta, e o navegador pergunta de novo.",
+    "Com o cache vazio, o resolvedor busca o IP novo e entrega ao navegador.",
+  ]}
+  legenda="Azul é o navegador, petróleo o resolvedor com o cache e verde o servidor autoritativo; âmbar marca o valor antigo, que ainda vale até o TTL acabar."
+  fim="segmentos"
+  estilo="marca-texto"
+/>
+
+Daí saem três hábitos:
+
+- **Baixe o TTL antes da troca.** Um dia antes, mude o TTL do registro para 300 segundos. Na hora da troca, os caches seguram o valor antigo por no máximo cinco minutos. Depois, volte o TTL para o valor de antes.
+- **Limpe o cache de um resolvedor público.** O Google Public DNS tem uma [página para limpar o cache de um nome](https://developers.google.com/speed/public-dns/cache) e, segundo o [FAQ dele](https://developers.google.com/speed/public-dns/faq#update_cache), costuma limitar o cache a seis horas, mesmo com TTL maior.
+- **Lembre do cache negativo.** Consultar um nome antes de criá-lo faz o resolvedor guardar o "não existe" pelo `minimum` do `SOA`. O nome novo só aparece para aquele resolvedor quando esse tempo acaba.
+
+## Conferir os registros com dig
+
+O `dig` vem no macOS e na maioria das distribuições Linux (no Windows, o `nslookup` faz o básico). A forma mais útil é com [`+short`](https://bind9.readthedocs.io/en/latest/manpages.html#cmdoption-dig-arg-short), que mostra só a resposta:
+
+```bash
+dig example.com A +short
+dig www.example.com CNAME +short
+dig example.com MX +short
+dig _dmarc.example.com TXT +short
+dig @8.8.8.8 example.com A +short
+```
+
+A última pergunta direto ao resolvedor do Google, sem passar pelo da sua rede. Comparar a resposta do servidor autoritativo (`dig @ns1.example.net …`) com a de um resolvedor mostra se a diferença é :duplo[cache ou erro na zona]. Na zona de exemplo, as consultas responderam assim:
+
+```text
+$ dig example.com MX +short
+10 mx1.example.net.
+20 mx2.example.net.
+
+$ dig www.example.com CNAME +short
+usuario.github.io.
+
+$ dig _dmarc.example.com TXT +short
+"v=DMARC1; p=quarantine; rua=mailto:dmarc@example.com"
+```
+
+Quando o site não abre, `dig +trace` mostra em que degrau a resposta muda: se a delegação do TLD aponta para os servidores certos, e se o autoritativo responde o que você espera.
+
+## Erros comuns na configuração de DNS
+
+- **Esquecer o ponto final.** Num arquivo de zona, `www IN CNAME usuario.github.io`, sem o ponto, vira `usuario.github.io.example.com.`, que não existe. Foi o que o Unbound respondeu no teste. Painéis de provedor costumam completar o nome sozinhos, e cada um à sua maneira: confira a resposta com `dig`.
+- **`CNAME` junto de outro registro.** O servidor :ondulado[nem sempre recusa]: o Unbound 1.24.2 carregou, sem aviso, uma zona com `CNAME` e `TXT` no mesmo nome. O comportamento dos resolvedores com esse nome fica imprevisível.
+- **Dois registros SPF.** Com dois `TXT` começando por `v=spf1` no mesmo nome, o resultado é erro permanente ([RFC 7208, §4.5](https://www.rfc-editor.org/rfc/rfc7208.html#section-4.5)), e :grifo[a verificação falha para todo e-mail]. Um serviço novo de envio entra como mais um `include` no registro que já existe.
+- **`MX` apontando para `CNAME`.** O padrão proíbe, e alguns servidores de e-mail recusam a entrega.
+- **Registros esquecidos.** Um `A` antigo no apex, ao lado dos quatro do GitHub, faz parte das visitas cair no servidor velho e trava o certificado. Um subdomínio apontando para um serviço que você desligou pode ser tomado por quem criar o serviço com o mesmo nome.
+
+## Fontes
+
+- [RFC 1034 — Domain names: concepts and facilities](https://www.rfc-editor.org/rfc/rfc1034.html): espaço de nomes, zonas, delegação, resolvedores e a regra do `CNAME`.
+- [RFC 1035 — Domain names: implementation and specification](https://www.rfc-editor.org/rfc/rfc1035.html): formato dos registros, tipos `A`, `CNAME`, `MX`, `NS`, `SOA`, `TXT`, `PTR`, o arquivo de zona e o transporte.
+- [RFC 2181 — Clarifications to the DNS specification](https://www.rfc-editor.org/rfc/rfc2181.html): TTL, `CNAME` exclusivo e o alvo de `MX` e `NS`.
+- [RFC 2308 — Negative caching of DNS queries](https://www.rfc-editor.org/rfc/rfc2308.html): o cache negativo e o `minimum` do `SOA`.
+- [RFC 2606 — Reserved top level DNS names](https://www.rfc-editor.org/rfc/rfc2606.html): os domínios de exemplo.
+- [RFC 3596 — DNS extensions to support IPv6](https://www.rfc-editor.org/rfc/rfc3596.html): o `AAAA` e o `ip6.arpa`.
+- [RFC 5321 — Simple Mail Transfer Protocol](https://www.rfc-editor.org/rfc/rfc5321.html#section-5.1): a ordem dos `MX`.
+- [RFC 7208 — Sender Policy Framework (SPF)](https://www.rfc-editor.org/rfc/rfc7208.html).
+- [RFC 6376 — DomainKeys Identified Mail (DKIM) Signatures](https://www.rfc-editor.org/rfc/rfc6376.html).
+- [RFC 9989 — Domain-based Message Authentication, Reporting, and Conformance (DMARC)](https://www.rfc-editor.org/rfc/rfc9989.html), de maio de 2026.
+- [RFC 7766 — DNS transport over TCP](https://www.rfc-editor.org/rfc/rfc7766.html).
+- [RFC 8659 — DNS Certification Authority Authorization (CAA)](https://www.rfc-editor.org/rfc/rfc8659.html), [RFC 2782 — SRV](https://www.rfc-editor.org/rfc/rfc2782.html) e [RFC 9460 — SVCB e HTTPS](https://www.rfc-editor.org/rfc/rfc9460.html).
+- [IANA — lista dos domínios de primeiro nível](https://data.iana.org/TLD/tlds-alpha-by-domain.txt) e [o registro do `.br`](https://www.iana.org/domains/root/db/br.html).
+- [root-servers.org](https://root-servers.org/): os servidores raiz e as instâncias.
+- GitHub Docs: [gerenciar um domínio personalizado](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site), [verificar o domínio](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/verifying-your-custom-domain-for-github-pages), [sobre domínios personalizados](https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/about-custom-domains-and-github-pages) e [HTTPS no GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/securing-your-github-pages-site-with-https).
+- [Google Public DNS — FAQ](https://developers.google.com/speed/public-dns/faq#update_cache) e [limpar o cache](https://developers.google.com/speed/public-dns/cache).
+- [BIND 9 — manual do `dig`](https://bind9.readthedocs.io/en/latest/manpages.html#dig-dns-lookup-utility).
+- Apoio: [draft-ietf-dnsop-aname](https://datatracker.ietf.org/doc/draft-ietf-dnsop-aname/) e [Cloudflare — CNAME flattening](https://developers.cloudflare.com/dns/cname-flattening/).

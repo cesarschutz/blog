@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720"
+  aria-label="Dois caminhos para os mesmos servidores do GitHub Pages. À esquerda, em verde, a sua zona example.com, no seu provedor de DNS, com três registros. O domínio principal, example.com, tem quatro registros A, de 185.199.108.153 a 185.199.111.153, e quatro AAAA, de 2606:50c0:8000::153 a 2606:50c0:8003::153, e aponta direto para os servidores do GitHub Pages. O www.example.com tem um CNAME para usuario.github.io., o nome do site no GitHub, que, com os A e AAAA do GitHub, chega aos mesmos servidores. O TXT em _github-pages-challenge-usuario fica embaixo, sem seta: prova que o domínio é seu e nenhum acesso passa por ele. À direita, em âmbar, o GitHub Pages: os servidores e o nome usuario.github.io.">
+  <g class="tinta">
+    <g class="tom-verde">
+      <rect x="30" y="60" width="650" height="634" rx="18" class="lavado"/>
+      <rect x="30" y="60" width="650" height="634" rx="18" class="linha-tom"/>
+    </g>
+    <g class="tom-ambar">
+      <rect x="760" y="60" width="410" height="444" rx="18" class="lavado"/>
+      <rect x="760" y="60" width="410" height="444" rx="18" class="linha-tom"/>
+      <path d="M965 378 V328 M956 342 L965 328 L974 342" class="linha-tom"/>
+    </g>
+    <g class="tom-verde">
+      <path d="M656 230 H776 M762 221 L776 230 L762 239" class="linha-tom"/>
+      <path d="M656 430 H776 M762 421 L776 430 L762 439" class="linha-tom"/>
+    </g>
+    <rect x="61" y="147" width="602" height="180" rx="12" class="hachura"/>
+    <rect x="54" y="140" width="602" height="180" rx="12" class="papel"/>
+    <rect x="54" y="140" width="602" height="180" rx="12" class="linha"/>
+    <rect x="61" y="387" width="602" height="100" rx="12" class="hachura"/>
+    <rect x="54" y="380" width="602" height="100" rx="12" class="papel"/>
+    <rect x="54" y="380" width="602" height="100" rx="12" class="linha"/>
+    <rect x="61" y="537" width="602" height="134" rx="12" class="hachura"/>
+    <rect x="54" y="530" width="602" height="134" rx="12" class="papel"/>
+    <rect x="54" y="530" width="602" height="134" rx="12" class="linha"/>
+    <rect x="791" y="147" width="355" height="180" rx="12" class="hachura"/>
+    <rect x="784" y="140" width="355" height="180" rx="12" class="papel"/>
+    <rect x="784" y="140" width="355" height="180" rx="12" class="linha"/>
+    <rect x="791" y="387" width="355" height="100" rx="12" class="hachura"/>
+    <rect x="784" y="380" width="355" height="100" rx="12" class="papel"/>
+    <rect x="784" y="380" width="355" height="100" rx="12" class="linha"/>
+  </g>
+
+  <g class="tom-verde">
+    <path d="M658 230 H770" pathLength="1" class="pacote etapa-1"/>
+    <path d="M658 430 H770" pathLength="1" class="pacote etapa-1"/>
+  </g>
+  <g class="tom-ambar">
+    <path d="M965 376 V334" pathLength="1" class="pacote etapa-2"/>
+  </g>
+
+  <g class="tom-ambar" data-marca="servidor" transform="translate(804 152) scale(0.7)"/>
+  <g class="tom-ambar" data-marca="servidor" transform="translate(884 152) scale(0.7)"/>
+  <g class="tom-ambar" data-marca="servidor" transform="translate(964 152) scale(0.7)"/>
+
+  <g class="tom-verde">
+    <text x="54" y="110" class="titulo-caixa texto-tom">Sua zona</text>
+    <text x="196" y="110" class="texto-caixa">example.com, no seu provedor de DNS</text>
+
+    <text x="78" y="184" class="codigo">example.com</text>
+    <text x="262" y="184" class="nota-pequena">o domínio principal</text>
+    <text x="78" y="232" class="codigo texto-tom">A</text>
+    <text x="168" y="232" class="codigo">185.199.108.153 … 111.153</text>
+    <text x="78" y="270" class="codigo texto-tom">AAAA</text>
+    <text x="168" y="270" class="codigo">2606:50c0:8000::153 … 8003::153</text>
+    <text x="78" y="304" class="nota-pequena">quatro de cada, os endereços do GitHub Pages</text>
+
+    <text x="78" y="418" class="codigo">www.example.com</text>
+    <text x="322" y="418" class="nota-pequena">um subdomínio</text>
+    <text x="78" y="458" class="codigo texto-tom">CNAME</text>
+    <text x="168" y="458" class="codigo">usuario.github.io.</text>
+
+    <text x="78" y="570" class="codigo">_github-pages-challenge-usuario</text>
+    <text x="78" y="610" class="codigo texto-tom">TXT</text>
+    <text x="168" y="610" class="codigo">"a1b2c3d4e5f6"</text>
+    <text x="400" y="610" class="nota-pequena">prova que o domínio é seu</text>
+    <text x="78" y="644" class="nota-pequena">a verificação: nenhum acesso passa por aqui</text>
+  </g>
+
+  <g class="tom-ambar">
+    <text x="784" y="110" class="titulo-caixa texto-tom">GitHub Pages</text>
+    <text x="804" y="264" class="texto-caixa">os servidores do site</text>
+    <text x="804" y="298" class="nota-pequena">os mesmos para os dois caminhos</text>
+    <text x="980" y="360" class="nota-pequena">A e AAAA</text>
+    <text x="804" y="420" class="codigo">usuario.github.io</text>
+    <text x="804" y="458" class="nota-pequena">o nome do site no GitHub</text>
+  </g>
+</svg>
