@@ -1,0 +1,83 @@
+---
+/**
+ * Página de teste do desenho dos controles da figura em passos (em prova, D67): /animacoes-test-3/. A
+ * mesma figura, com o mesmo comportamento e os traços de progresso (fim="segmentos"), em três estilos de
+ * papelaria: marca-texto, lápis e fita. Fora da busca, do sitemap e dos menus (noindex).
+ */
+import Base from "../layouts/Base.astro";
+import FiguraPassos from "../components/FiguraPassos.astro";
+import { getResumos } from "../lib/posts";
+import { url } from "../lib/url";
+import "../styles/prosa.css";
+
+const cobranca = (await getResumos()).find((r) => r.slug === "cobranca-duplicada-no-retry");
+const passos = [
+  "O app pede a cobrança e manda junto a chave de idempotência.",
+  "O serviço grava a chave **antes** de cobrar, com status `PROCESSANDO`.",
+  "Cobra no adquirente e, aprovada, guarda o status e a resposta `201`.",
+  "A resposta se perde no caminho, e o app tenta de novo com a **mesma** chave.",
+  "O `INSERT` bate na restrição `UNIQUE`: a chave já existe.",
+  "O serviço devolve a resposta guardada, sem chamar o adquirente de novo.",
+];
+const estilos = [
+  { estilo: "marca-texto", titulo: "Marca-texto", texto: "Uma passada de marca-texto amarelo num caderno: cada passo pinta o seu risco, o passo da vez fica grifado na lista e o Próximo vem sublinhado." },
+  { estilo: "lapis", titulo: "Lápis", texto: "Um caderno pautado a lápis: cada passo é riscado em grafite, com o lapisinho na ponta; o feito ganha um visto na margem, e o da vez, uma seta e o número circulado." },
+  { estilo: "fita", titulo: "Fita", texto: "Fita-crepe e papel colado: os traços de progresso são pedaços de fita, o passo da vez vira um post-it e os botões são etiquetas presas com fita." },
+] as const;
+---
+
+<Base titulo="Teste das animações 3" descricao="Três desenhos para os controles da figura em passos: marca-texto, lápis e fita.">
+  <meta slot="head" name="robots" content="noindex" />
+  <div class="wrap teste">
+    <h1>Teste das animações 3</h1>
+    <p>
+      Três desenhos para os controles da figura em passos, todos com o mesmo comportamento dos posts: a figura abre inteira, <strong>Passo a passo</strong> volta ao começo, <strong>Próximo</strong> soma um passo, e os traços embaixo da figura mostram quando cada passo terminou e quanto falta. Muda só o desenho dos controles. A figura é a dos passos da chave, do post <a href={url("/posts/cobranca-duplicada-no-retry/")}>{cobranca?.titulo}</a>.
+    </p>
+    {
+      estilos.map((e, i) => (
+        <section class="estilo-teste" id={e.estilo}>
+          <h2>
+            {i + 1}. {e.titulo}
+          </h2>
+          <p class="sobre">{e.texto}</p>
+          <div style={cobranca?.cor ? `--cor:${cobranca.cor}` : undefined}>
+            <FiguraPassos figura="cobranca-duplicada-no-retry/chave-em-passos" passos={passos} fim="segmentos" estilo={e.estilo} />
+          </div>
+        </section>
+      ))
+    }
+  </div>
+</Base>
+
+<style>
+  .teste {
+    max-width: 820px;
+    padding-block: 32px 120px;
+  }
+
+  .teste h1,
+  .estilo-teste h2 {
+    margin: 0 0 10px;
+    font-family: var(--font-titulo);
+  }
+
+  .teste > p,
+  .sobre {
+    font-family: var(--font-texto);
+    color: var(--ink-2);
+  }
+
+  .teste strong {
+    color: var(--ink);
+  }
+
+  .teste a {
+    color: var(--acento);
+  }
+
+  .estilo-teste {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+  }
+</style>

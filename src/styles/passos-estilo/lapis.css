@@ -1,0 +1,445 @@
+/* Controles da figura em passos, estilo "lapis" (em prova). Tudo em [data-estilo="lapis"].
+ *
+ * Um caderno pautado escrito a lápis:
+ * - os traços de progresso são riscos de grafite, tremidos e mais finos na ponta; o da vez é riscado da
+ *   esquerda para a direita enquanto o passo entra, com um lapisinho na ponta do risco;
+ * - a lista fica nas linhas da pauta, com a margem vermelha do caderno: o passo feito ganha um visto a
+ *   lápis na margem, e o da vez, uma seta na margem e o número circulado;
+ * - os botões são palavras a lápis contornadas à mão; o Próximo leva duas passadas, mais escuras.
+ *
+ * As formas (risco, contorno, círculo, visto, seta, lapisinho e o grão do grafite) são máscaras em SVG; a
+ * cor vem sempre dos tokens, por `background-color`.
+ */
+
+/* A volta do círculo do número da vez (a máscara cônica que o lápis "desenha"). Sem animação, fica inteira. */
+@property --lapis-volta {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 360deg;
+}
+
+.figura-passos[data-estilo="lapis"] {
+  /* O grafite: a tinta misturada ao papel, que no escuro vira um lápis claro sobre a folha escura. */
+  --lapis-leve: color-mix(in oklab, var(--ink) 46%, var(--paper-hi));
+  --lapis: color-mix(in oklab, var(--ink) 66%, var(--paper-hi));
+  --lapis-forte: color-mix(in oklab, var(--ink) 86%, var(--paper-hi));
+  /* A pauta: a altura de cada linha escrita e o respiro do botão acima e abaixo dela (26 + 2 × 7 = 40). */
+  --lapis-linha: 26px;
+  --lapis-respiro: 7px;
+  /* A margem do caderno: a seta ou o visto, o número e a linha vermelha. */
+  --lapis-margem: 50px;
+
+  /* O grão do grafite: furinhos irregulares que deixam o traço com falhas, como no papel. */
+  --lapis-grao: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 6'%3E%3Cpath fill-rule='evenodd' d='M0 0h9v6H0z M1.2 1.1h.8v.7h-.8z M5.6 3.6h.9v.8h-.9z M3.4.3h.6v.5h-.6z M7.4 1.9h.7v.6h-.7z M2.3 4.4h.7v.7h-.7z'/%3E%3C/svg%3E");
+
+  /* Três riscos, para os traços vizinhos não saírem iguais: começam mais grossos e afinam na ponta. */
+  --lapis-risco-a: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 10' preserveAspectRatio='none'%3E%3Cpath d='M1.5 3.6 C 0.4 4.2, 0.5 6.4, 2 6.8 C 40 6.9, 80 6.3, 118 6 C 150 5.8, 178 5.9, 199.5 5.4 L 199.5 4.9 C 176 4.6, 152 5.1, 120 4.5 C 84 3.9, 44 4.2, 1.5 3.6 Z'/%3E%3C/svg%3E");
+  --lapis-risco-b: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 10' preserveAspectRatio='none'%3E%3Cpath d='M1.8 4.4 C 0.5 5, 0.6 7, 2.2 7.2 C 36 6.6, 70 6.9, 104 6.2 C 140 5.5, 170 6, 199.5 5.6 L 199.4 5.1 C 168 5.3, 138 4.6, 102 4.9 C 68 5.2, 36 4.5, 1.8 4.4 Z'/%3E%3C/svg%3E");
+  --lapis-risco-c: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 10' preserveAspectRatio='none'%3E%3Cpath d='M1.4 4 C 0.3 4.7, 0.6 6.7, 2 6.9 C 30 6.5, 64 7, 96 6.6 C 132 6.1, 166 5.7, 199.6 6 L 199.5 5.5 C 164 4.9, 130 5.3, 94 4.8 C 60 4.4, 30 4.6, 1.4 4 Z'/%3E%3C/svg%3E");
+
+  /* O lapisinho, de lado: a ponta de grafite, o cone apontado, o corpo sextavado, a virola e a borracha. */
+  --lapis-lapisinho: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 14'%3E%3Cpath d='M0.4 7 L4.6 5 L4.6 9 Z'/%3E%3Cg fill='none' stroke='black' stroke-width='2' stroke-linejoin='round' stroke-linecap='round'%3E%3Cpath d='M0.6 7 L12 1.6 H52 V12.4 H12 Z M12 7 H46.5 M46.5 1.6 V12.4 M49.4 1.6 V12.4 M52 2.3 H56 C 58.6 2.3, 59 4.4, 59 7 C 59 9.6, 58.6 11.7, 56 11.7 H52'/%3E%3C/g%3E%3C/svg%3E");
+
+  /* O contorno à mão dos botões: uma volta que passa um pouco do começo. O traço não estica com o botão. */
+  --lapis-caixa: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 40' preserveAspectRatio='none'%3E%3Cpath fill='none' stroke='black' stroke-width='1.25' stroke-linecap='round' vector-effect='non-scaling-stroke' d='M7 4.4 C 32 3.3, 68 3.9, 94.6 4.7 C 97.4 5, 98.1 8.4, 97.9 14 C 97.7 22.4, 98.3 29.6, 97.1 35 C 95.8 36.9, 91 36.3, 70 36.7 C 46 37.1, 20 36.2, 4.8 35.8 C 2.5 35.4, 2 31.8, 2.2 24 C 2.4 15.4, 1.9 8.6, 3.3 5.8 C 4.5 3.7, 9.6 3.9, 16 3.3'/%3E%3C/svg%3E");
+  /* O do Próximo: a mesma volta e uma segunda passada, um pouco fora do lugar. */
+  --lapis-caixa-forte: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 40' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='black' stroke-linecap='round' vector-effect='non-scaling-stroke'%3E%3Cpath stroke-width='1.5' vector-effect='non-scaling-stroke' d='M7 4.4 C 32 3.3, 68 3.9, 94.6 4.7 C 97.4 5, 98.1 8.4, 97.9 14 C 97.7 22.4, 98.3 29.6, 97.1 35 C 95.8 36.9, 91 36.3, 70 36.7 C 46 37.1, 20 36.2, 4.8 35.8 C 2.5 35.4, 2 31.8, 2.2 24 C 2.4 15.4, 1.9 8.6, 3.3 5.8 C 4.5 3.7, 9.6 3.9, 16 3.3'/%3E%3Cpath stroke-width='1.1' vector-effect='non-scaling-stroke' d='M3.6 7.2 C 4.6 4.6, 30 5.4, 60 4.2 C 80 3.5, 93 3.4, 96.3 5.6 C 98.9 8, 98.6 20, 98.4 30 C 98.2 34.6, 96.4 37.4, 88 37.2 C 62 36.4, 34 37.6, 9 37 C 3.4 36.9, 3 34.4, 3.2 28'/%3E%3C/g%3E%3C/svg%3E");
+  /* O do botão redondo (Anterior): um círculo à mão, que fecha passando do ponto de partida. */
+  --lapis-roda: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath fill='none' stroke='black' stroke-width='1.25' stroke-linecap='round' d='M21.4 3.6 C 31.2 3.6, 36.9 10.6, 36.5 20.4 C 36.1 30.1, 29 36.7, 19.6 36.4 C 10 36.1, 3.5 29.4, 3.7 19.8 C 3.9 10.5, 10.8 4.3, 19.2 4.5 C 23.2 4.6, 26.3 5.7, 28 7.1'/%3E%3C/svg%3E");
+
+  /* O número da vez, circulado: uma volta torta, mais larga que alta. */
+  --lapis-circulo: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 34' preserveAspectRatio='none'%3E%3Cpath fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' vector-effect='non-scaling-stroke' d='M24 3.2 C 33.4 3.6, 38.4 9.6, 37.6 17.4 C 36.8 25.6, 29.4 31.2, 19.4 30.8 C 9.6 30.4, 2.6 25, 2.8 17 C 3 9.4, 10 3.6, 18.6 3.8 C 23.6 3.9, 28 5.6, 30.6 8.4'/%3E%3C/svg%3E");
+  /* A seta da margem, que aponta o passo da vez. */
+  --lapis-seta: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 14'%3E%3Cpath fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' d='M1.6 7.8 C 7 7.1, 13 7.5, 20.6 6.9 M15.2 2.4 C 17.2 4.2, 19.4 5.6, 21.4 6.9 C 19.2 8.4, 17.4 9.8, 15.6 11.8'/%3E%3C/svg%3E");
+  /* O visto do passo feito: a perninha curta e a longa, numa passada só. */
+  --lapis-visto: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='none' stroke='black' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round' d='M2.8 10.6 C 4.6 11.8, 6 13.6, 7.4 16.2 C 9.8 10.6, 13.2 6.4, 18.2 2.8'/%3E%3C/svg%3E");
+}
+
+/* ---------- os traços de progresso: riscos de grafite ---------- */
+
+.figura-passos[data-estilo="lapis"] .passos-segmentos {
+  gap: 10px;
+  margin-top: 14px;
+  padding-inline: 2px;
+}
+
+/* O que falta é um pontilhado leve, a guia do risco que ainda vai passar. */
+.figura-passos[data-estilo="lapis"] .passos-segmentos > span {
+  height: 10px;
+  overflow: visible;
+  border-radius: 0;
+  background: radial-gradient(circle, var(--lapis-leve) 0.6px, transparent 1px) 1px 50% / 6px 10px repeat-x;
+}
+
+.figura-passos[data-estilo="lapis"] .passos-segmentos > span.feito,
+.figura-passos[data-estilo="lapis"]:not([data-entrando]) .passos-segmentos > span.atual {
+  background: none;
+}
+
+.figura-passos[data-estilo="lapis"] .passos-segmentos > span::after {
+  inset: 0;
+  background-color: var(--lapis);
+  transform: none;
+  clip-path: inset(0 100% 0 0);
+  -webkit-mask:
+    var(--lapis-risco-a) 0 0 / 100% 100% no-repeat,
+    var(--lapis-grao) 0 0 / 9px 6px repeat;
+  -webkit-mask-composite: source-in;
+  mask:
+    var(--lapis-risco-a) 0 0 / 100% 100% no-repeat,
+    var(--lapis-grao) 0 0 / 9px 6px repeat;
+  mask-composite: intersect;
+}
+
+.figura-passos[data-estilo="lapis"] .passos-segmentos > span:nth-child(3n + 2)::after {
+  -webkit-mask-image: var(--lapis-risco-b), var(--lapis-grao);
+  mask-image: var(--lapis-risco-b), var(--lapis-grao);
+}
+
+.figura-passos[data-estilo="lapis"] .passos-segmentos > span:nth-child(3n)::after {
+  -webkit-mask-image: var(--lapis-risco-c), var(--lapis-grao);
+  mask-image: var(--lapis-risco-c), var(--lapis-grao);
+}
+
+.figura-passos[data-estilo="lapis"] .passos-segmentos > span:is(.feito, .atual)::after {
+  transform: none;
+  clip-path: inset(0 0 0 0);
+}
+
+/* O da vez, com o lápis mais apertado. */
+.figura-passos[data-estilo="lapis"] .passos-segmentos > span.atual::after {
+  background-color: var(--lapis-forte);
+}
+
+/* ---------- a barra: palavras a lápis, contornadas à mão ---------- */
+
+.figura-passos[data-estilo="lapis"] .passos-barra {
+  gap: 10px 12px;
+  margin-top: 14px;
+}
+
+.figura-passos[data-estilo="lapis"] .passos-barra button {
+  position: relative;
+  padding: 0 17px;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+.figura-passos[data-estilo="lapis"] .passos-barra button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: var(--lapis-leve);
+  pointer-events: none;
+  -webkit-mask:
+    var(--lapis-caixa) 0 0 / 100% 100% no-repeat,
+    var(--lapis-grao) 0 0 / 9px 6px repeat;
+  -webkit-mask-composite: source-in;
+  mask:
+    var(--lapis-caixa) 0 0 / 100% 100% no-repeat,
+    var(--lapis-grao) 0 0 / 9px 6px repeat;
+  mask-composite: intersect;
+}
+
+.figura-passos[data-estilo="lapis"] .passos-barra button svg {
+  stroke-width: 1.9;
+}
+
+.figura-passos[data-estilo="lapis"] .passos-barra .passos-anterior {
+  width: 42px;
+  min-height: 42px;
+  padding: 0;
+}
+
+.figura-passos[data-estilo="lapis"] .passos-barra .passos-anterior::before {
+  -webkit-mask-image: var(--lapis-roda), var(--lapis-grao);
+  mask-image: var(--lapis-roda), var(--lapis-grao);
+}
+
+/* O Próximo (e o "Passo a passo", que abre o modo) é o mais forte: tinta cheia e duas passadas. */
+.figura-passos[data-estilo="lapis"] .passos-barra :is(.passos-proximo, .passos-comecar) {
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.figura-passos[data-estilo="lapis"] .passos-barra :is(.passos-proximo, .passos-comecar)::before {
+  background-color: var(--lapis-forte);
+  -webkit-mask-image: var(--lapis-caixa-forte), var(--lapis-grao);
+  mask-image: var(--lapis-caixa-forte), var(--lapis-grao);
+}
+
+.figura-passos[data-estilo="lapis"] .passos-barra .passos-comecar svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linejoin: round;
+}
+
+/* No fim, "Do início" volta a ser um botão comum. */
+.figura-passos[data-estilo="lapis"] .passos-barra .passos-proximo.recomecar {
+  border: 0;
+  background: none;
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+.figura-passos[data-estilo="lapis"] .passos-barra .passos-proximo.recomecar::before {
+  background-color: var(--lapis-leve);
+  -webkit-mask-image: var(--lapis-caixa), var(--lapis-grao);
+  mask-image: var(--lapis-caixa), var(--lapis-grao);
+}
+
+.figura-passos[data-estilo="lapis"] .passos-barra button:disabled {
+  color: var(--ink-3);
+}
+
+.figura-passos[data-estilo="lapis"] .passos-barra button:disabled::before {
+  background-color: color-mix(in oklab, var(--ink) 20%, var(--paper-hi));
+}
+
+.figura-passos[data-estilo="lapis"] .passos-contador {
+  color: var(--ink-2);
+}
+
+@media (hover: hover) {
+  .figura-passos[data-estilo="lapis"] .passos-barra button:not(:disabled):hover {
+    border: 0;
+    background: none;
+    color: var(--ink);
+  }
+
+  .figura-passos[data-estilo="lapis"] .passos-barra button:not(:disabled):hover::before {
+    background-color: var(--ink);
+  }
+}
+
+/* ---------- a lista: as linhas da pauta e a margem do caderno ---------- */
+
+.figura-passos[data-estilo="lapis"] .passos-lista {
+  position: relative;
+  margin-top: 16px;
+  border-top: 1px solid var(--pauta);
+  line-height: var(--lapis-linha);
+}
+
+/* A linha vermelha da margem. */
+.figura-passos[data-estilo="lapis"] .passos-lista::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  bottom: 0;
+  left: var(--lapis-margem);
+  width: 1px;
+  background: var(--pauta-cabeca);
+  pointer-events: none;
+}
+
+.figura-passos[data-estilo="lapis"] .passos-lista > li {
+  position: relative;
+  isolation: isolate;
+}
+
+/* As linhas da pauta: uma embaixo de cada linha escrita, de margem a margem. */
+.figura-passos[data-estilo="lapis"] .passos-lista > li::after {
+  content: "";
+  position: absolute;
+  inset: var(--lapis-respiro) 0;
+  z-index: -1;
+  background: linear-gradient(transparent calc(var(--lapis-linha) - 1px), var(--pauta) 0) 0 0 / 100% var(--lapis-linha);
+  pointer-events: none;
+}
+
+.figura-passos[data-estilo="lapis"] .passos-lista > li:not(:has(button)) {
+  padding: var(--lapis-respiro) 0;
+}
+
+.figura-passos[data-estilo="lapis"] .passos-botao {
+  gap: 0;
+  padding: var(--lapis-respiro) 4px var(--lapis-respiro) 0;
+  border-radius: 0;
+  background: none;
+}
+
+/* O número fica na margem, escrito a lápis, sem a bolinha. */
+.figura-passos[data-estilo="lapis"] .passos-num {
+  position: relative;
+  width: 20px;
+  height: var(--lapis-linha);
+  margin: 0 calc(var(--lapis-margem) - 44px + 12px) 0 24px;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  color: var(--ink-2);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.figura-passos[data-estilo="lapis"] .passos-lista > li.feito .passos-botao {
+  color: var(--ink-2);
+}
+
+.figura-passos[data-estilo="lapis"] .passos-lista > li.adiante .passos-num {
+  background: none;
+  box-shadow: none;
+  color: var(--ink-3);
+}
+
+/* O da vez: tinta cheia, o número circulado e a seta na margem. */
+.figura-passos[data-estilo="lapis"] .passos-lista > li.atual .passos-botao {
+  background: none;
+  color: var(--ink);
+}
+
+.figura-passos[data-estilo="lapis"] .passos-lista > li.atual .passos-num {
+  background: none;
+  color: var(--ink);
+}
+
+.figura-passos[data-estilo="lapis"] .passos-lista > li.atual .passos-num::after {
+  content: "";
+  position: absolute;
+  inset: 0 -5px 0 -6px;
+  background-color: var(--lapis-forte);
+  pointer-events: none;
+  -webkit-mask:
+    var(--lapis-circulo) 0 0 / 100% 100% no-repeat,
+    conic-gradient(from 40deg, currentColor var(--lapis-volta), transparent 0);
+  -webkit-mask-composite: source-in;
+  mask:
+    var(--lapis-circulo) 0 0 / 100% 100% no-repeat,
+    conic-gradient(from 40deg, currentColor var(--lapis-volta), transparent 0);
+  mask-composite: intersect;
+}
+
+/* A seta (o da vez) e o visto (os feitos) moram no mesmo canto da margem. */
+.figura-passos[data-estilo="lapis"] .passos-lista > li:is(.atual, .feito)::before {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.figura-passos[data-estilo="lapis"] .passos-lista > li.atual::before {
+  top: calc(var(--lapis-respiro) + var(--lapis-linha) / 2 - 7px);
+  left: 0;
+  width: 21px;
+  height: 13px;
+  background-color: var(--lapis-forte);
+  -webkit-mask: var(--lapis-seta) center / 100% 100% no-repeat;
+  mask: var(--lapis-seta) center / 100% 100% no-repeat;
+}
+
+.figura-passos[data-estilo="lapis"] .passos-lista > li.feito::before {
+  top: calc(var(--lapis-respiro) + var(--lapis-linha) / 2 - 9px);
+  left: 2px;
+  width: 17px;
+  height: 17px;
+  background-color: var(--lapis);
+  -webkit-mask: var(--lapis-visto) center / 100% 100% no-repeat;
+  mask: var(--lapis-visto) center / 100% 100% no-repeat;
+}
+
+@media (hover: hover) {
+  .figura-passos[data-estilo="lapis"] .passos-lista > li:not(.atual) .passos-botao:hover {
+    background: none;
+    color: var(--ink);
+  }
+
+  .figura-passos[data-estilo="lapis"] .passos-lista > li:not(.atual) .passos-botao:hover .passos-num {
+    color: var(--ink);
+  }
+}
+
+/* ---------- o movimento: só a entrada do passo ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* O risco da vez sai da esquerda para a direita enquanto o passo entra. */
+  .figura-passos[data-estilo="lapis"][data-entrando] .passos-segmentos > span.atual::after {
+    animation: lapis-riscar var(--duracao-passo, 1s) cubic-bezier(0.3, 0.05, 0.55, 1) both;
+  }
+
+  /* E o lapisinho vai junto, com a ponta no risco, e sai quando o passo termina. */
+  .figura-passos[data-estilo="lapis"][data-entrando] .passos-segmentos > span.atual::before {
+    content: "";
+    position: absolute;
+    top: calc(50% - 3.5px);
+    left: 0;
+    z-index: 1;
+    width: 30px;
+    height: 7px;
+    background-color: var(--lapis-forte);
+    transform: rotate(-34deg);
+    transform-origin: 0 50%;
+    pointer-events: none;
+    -webkit-mask: var(--lapis-lapisinho) center / 100% 100% no-repeat;
+    mask: var(--lapis-lapisinho) center / 100% 100% no-repeat;
+    animation: lapis-andar var(--duracao-passo, 1s) cubic-bezier(0.3, 0.05, 0.55, 1) both;
+  }
+
+  /* O número da vez é circulado numa volta, e a seta chega na margem. */
+  .figura-passos[data-estilo="lapis"] .passos-lista > li.atual .passos-num::after {
+    animation: lapis-circular 0.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) 0.05s both;
+  }
+
+  .figura-passos[data-estilo="lapis"] .passos-lista > li.atual::before {
+    animation: lapis-seta 0.3s ease-out both;
+  }
+
+  .figura-passos[data-estilo="lapis"] .passos-lista > li.feito::before {
+    animation: lapis-seta 0.22s ease-out both;
+  }
+
+  .figura-passos[data-estilo="lapis"] .passos-barra button::before {
+    transition: background-color 0.18s;
+  }
+}
+
+@keyframes lapis-riscar {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes lapis-andar {
+  from {
+    left: 0;
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  to {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes lapis-circular {
+  from {
+    --lapis-volta: 0deg;
+  }
+
+  to {
+    --lapis-volta: 360deg;
+  }
+}
+
+@keyframes lapis-seta {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
