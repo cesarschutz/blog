@@ -3328,5 +3328,9 @@ nada muda.
   - As fotos dos livros refeitas (`scripts/livros/fotos.mjs`, que passou a aceitar o Chromium por
     `CHROME_EXECUTABLE_PATH`); a do livro aberto da busca sem resultado fica na cor da marca, e não mais
     na do Volume 01.
+  - A fileira da home vai até onde vai o texto, dos dois lados (pedido do Cesar depois de ver no ar: "arrume
+    para os livros irem até onde os textos vão também pros lados"): na home, o giro dos livros passa a ser
+    o exato que enche a largura útil (`Colecao.astro`); na tela larga aparece mais da capa. A fileira do
+    alto da página do livro não mudou.
   - O número desta decisão: a main usou D61 para o redesenho no ar; a coleção, que era D61 na branch,
     passou a D78 quando a main entrou nela.
