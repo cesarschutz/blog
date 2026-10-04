@@ -1,0 +1,204 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1370"
+  aria-label="Diagrama de sequência em seis passos, do repositório no GitHub à sessão aberta na sua máquina: o repositório claude-code-kit guarda o catálogo, marketplace.json, e a pasta csr-cockpit com version 0.5.0; o marketplace add clona o catálogo para a máquina, onde ele se chama cesarschutz; o install copia a pasta do plugin, na 0.5.0; commits novos chegam ao repositório, mas o version fica parado, e nada muda na máquina; o version sobe para 0.6.0, o update renova o catálogo e copia a pasta nova; e a sessão que já estava aberta segue na 0.5.0 até o /reload-plugins, que carrega a 0.6.0. Só o version novo chega, e a sessão aberta precisa de /reload-plugins.">
+  <path d="M205 150 V1250 M485 150 V1250 M765 150 V1250 M1045 150 V1250" class="grade"/>
+
+  <g class="tinta">
+    <path d="M370 52 V40 H1160 V52" class="linha"/>
+
+    <g class="tom-roxo">
+      <rect x="97" y="69" width="230" height="88" rx="12" class="hachura"/>
+      <rect x="90" y="62" width="230" height="88" rx="12" class="lavado"/>
+      <rect x="90" y="62" width="230" height="88" rx="12" class="linha"/>
+    </g>
+    <g class="tom-azul">
+      <rect x="377" y="69" width="230" height="88" rx="12" class="hachura"/>
+      <rect x="370" y="62" width="230" height="88" rx="12" class="lavado"/>
+      <rect x="370" y="62" width="230" height="88" rx="12" class="linha"/>
+    </g>
+    <g class="tom-petroleo">
+      <rect x="657" y="69" width="230" height="88" rx="12" class="hachura"/>
+      <rect x="650" y="62" width="230" height="88" rx="12" class="lavado"/>
+      <rect x="650" y="62" width="230" height="88" rx="12" class="linha"/>
+    </g>
+    <g class="tom-ambar">
+      <rect x="937" y="69" width="230" height="88" rx="12" class="hachura"/>
+      <rect x="930" y="62" width="230" height="88" rx="12" class="lavado"/>
+      <rect x="930" y="62" width="230" height="88" rx="12" class="linha"/>
+    </g>
+
+    <g data-passo="1" class="tom-roxo">
+      <rect x="68" y="180" width="274" height="68" rx="8" class="lavado"/>
+      <rect x="68" y="180" width="274" height="68" rx="8" class="linha"/>
+      <rect x="90" y="266" width="230" height="74" rx="8" class="lavado"/>
+      <rect x="90" y="266" width="230" height="74" rx="8" class="linha"/>
+    </g>
+
+    <g data-passo="2">
+      <g class="tom-roxo">
+        <path d="M205 400 H471 M457 391 L471 400 L457 409" class="linha-tom"/>
+      </g>
+      <g class="tom-azul">
+        <rect x="348" y="422" width="274" height="68" rx="8" class="lavado"/>
+        <rect x="348" y="422" width="274" height="68" rx="8" class="linha"/>
+      </g>
+    </g>
+
+    <g data-passo="3">
+      <g class="tom-azul">
+        <path d="M485 550 H751 M737 541 L751 550 L737 559" class="linha-tom"/>
+      </g>
+      <g class="tom-petroleo">
+        <rect x="650" y="572" width="230" height="74" rx="8" class="lavado"/>
+        <rect x="650" y="572" width="230" height="74" rx="8" class="linha"/>
+      </g>
+    </g>
+
+    <g data-passo="4">
+      <g class="tom-roxo">
+        <rect x="90" y="694" width="230" height="68" rx="8" class="lavado"/>
+        <rect x="90" y="694" width="230" height="68" rx="8" class="linha"/>
+      </g>
+      <g class="tom-petroleo">
+        <rect x="660" y="694" width="210" height="68" rx="8" class="lavado"/>
+        <rect x="660" y="694" width="210" height="68" rx="8" class="linha"/>
+      </g>
+    </g>
+
+    <g data-passo="5">
+      <g class="tom-roxo">
+        <rect x="90" y="802" width="230" height="52" rx="8" class="lavado"/>
+        <rect x="90" y="802" width="230" height="52" rx="8" class="linha"/>
+      </g>
+      <g class="tom-roxo etapa-2">
+        <path d="M205 900 H471 M457 891 L471 900 L457 909" class="linha-tom"/>
+      </g>
+      <g class="tom-azul etapa-3">
+        <path d="M485 960 H751 M737 951 L751 960 L737 969" class="linha-tom"/>
+      </g>
+      <g class="tom-petroleo etapa-3">
+        <rect x="650" y="982" width="230" height="68" rx="8" class="lavado"/>
+        <rect x="650" y="982" width="230" height="68" rx="8" class="linha"/>
+      </g>
+    </g>
+
+    <g data-passo="6">
+      <g class="tom-ambar">
+        <rect x="940" y="1086" width="210" height="52" rx="8" class="lavado"/>
+        <rect x="940" y="1086" width="210" height="52" rx="8" class="linha"/>
+      </g>
+      <g class="tom-petroleo etapa-2">
+        <path d="M765 1180 H1031 M1017 1171 L1031 1180 L1017 1189" class="linha-tom"/>
+      </g>
+      <g class="tom-ambar etapa-3">
+        <rect x="940" y="1200" width="210" height="52" rx="8" class="lavado"/>
+        <rect x="940" y="1200" width="210" height="52" rx="8" class="linha"/>
+      </g>
+      <g class="tom-petroleo etapa-3">
+        <rect x="90" y="1284" width="1070" height="70" rx="12" class="lavado"/>
+        <rect x="90" y="1284" width="1070" height="70" rx="12" class="linha"/>
+      </g>
+    </g>
+  </g>
+
+  <g class="tom-roxo" data-marca="servidor" transform="translate(105 82) scale(0.48)"/>
+  <g class="tom-ambar" data-marca="aplicacao" transform="translate(945 82) scale(0.48)"/>
+
+  <text x="765" y="28" text-anchor="middle" class="nota-pequena">na sua máquina</text>
+
+  <g class="tom-roxo">
+    <text x="165" y="104" class="titulo-caixa">GitHub</text>
+    <text x="165" y="134" class="texto-caixa">claude-code-kit</text>
+  </g>
+  <g class="tom-azul">
+    <text x="485" y="104" text-anchor="middle" class="titulo-caixa">Catálogo</text>
+    <text x="485" y="134" text-anchor="middle" class="texto-caixa">cesarschutz</text>
+  </g>
+  <g class="tom-petroleo">
+    <text x="765" y="104" text-anchor="middle" class="titulo-caixa">Plugin</text>
+    <text x="765" y="134" text-anchor="middle" class="texto-caixa">csr-cockpit</text>
+  </g>
+  <g class="tom-ambar">
+    <text x="1005" y="104" class="titulo-caixa">Sessão</text>
+    <text x="1005" y="134" class="texto-caixa">aberta</text>
+  </g>
+
+  <g data-passo="1" class="tom-roxo">
+    <circle cx="42" cy="214" r="19" class="selo"/>
+    <text x="42" y="215" class="selo-texto">1</text>
+    <text x="205" y="210" text-anchor="middle" class="codigo">marketplace.json</text>
+    <text x="205" y="236" text-anchor="middle" class="nota-pequena">o catálogo</text>
+    <text x="205" y="296" text-anchor="middle" class="codigo">csr-cockpit/</text>
+    <text x="205" y="326" text-anchor="middle" class="codigo">version 0.5.0</text>
+  </g>
+
+  <g data-passo="2">
+    <g class="tom-roxo">
+      <circle cx="42" cy="400" r="19" class="selo"/>
+      <text x="42" y="401" class="selo-texto">2</text>
+      <text x="338" y="386" text-anchor="middle" class="codigo">marketplace add</text>
+      <path d="M207 400 H465" pathLength="1" class="trajeto"/>
+    </g>
+    <text x="485" y="452" text-anchor="middle" class="codigo">marketplace.json</text>
+    <text x="485" y="478" text-anchor="middle" class="nota-pequena">clonado</text>
+  </g>
+
+  <g data-passo="3">
+    <g class="tom-azul">
+      <circle cx="42" cy="550" r="19" class="selo"/>
+      <text x="42" y="551" class="selo-texto">3</text>
+      <text x="618" y="536" text-anchor="middle" class="codigo">install</text>
+      <path d="M487 550 H745" pathLength="1" class="trajeto"/>
+    </g>
+    <text x="765" y="602" text-anchor="middle" class="codigo">csr-cockpit/</text>
+    <text x="765" y="632" text-anchor="middle" class="codigo">version 0.5.0</text>
+  </g>
+
+  <g data-passo="4">
+    <g class="tom-roxo">
+      <circle cx="42" cy="728" r="19" class="selo"/>
+      <text x="42" y="729" class="selo-texto">4</text>
+    </g>
+    <text x="205" y="722" text-anchor="middle" class="texto-caixa">commits novos</text>
+    <text x="205" y="748" text-anchor="middle" class="nota-pequena">version parado</text>
+    <text x="765" y="722" text-anchor="middle" class="texto-caixa">nada muda</text>
+    <text x="765" y="748" text-anchor="middle" class="nota-pequena">não há versão nova</text>
+  </g>
+
+  <g data-passo="5">
+    <g class="tom-roxo">
+      <circle cx="42" cy="828" r="19" class="selo"/>
+      <text x="42" y="829" class="selo-texto">5</text>
+    </g>
+    <text x="205" y="836" text-anchor="middle" class="codigo">version 0.6.0</text>
+    <g class="tom-roxo etapa-2">
+      <text x="338" y="886" text-anchor="middle" class="codigo">update</text>
+      <path d="M207 900 H465" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-azul etapa-3">
+      <text x="618" y="946" text-anchor="middle" class="nota-pequena texto-tom">copia a pasta</text>
+      <path d="M487 960 H745" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="etapa-3">
+      <text x="765" y="1012" text-anchor="middle" class="codigo">version 0.6.0</text>
+      <text x="765" y="1038" text-anchor="middle" class="nota-pequena">a pasta nova</text>
+    </g>
+  </g>
+
+  <g data-passo="6">
+    <g class="tom-ambar">
+      <circle cx="42" cy="1112" r="19" class="selo"/>
+      <text x="42" y="1113" class="selo-texto">6</text>
+    </g>
+    <text x="1045" y="1119" text-anchor="middle" class="texto-caixa">ainda na 0.5.0</text>
+    <g class="tom-petroleo etapa-2">
+      <text x="898" y="1166" text-anchor="middle" class="codigo">/reload-plugins</text>
+      <path d="M767 1180 H1025" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="etapa-3">
+      <text x="1045" y="1233" text-anchor="middle" class="texto-caixa">agora na 0.6.0</text>
+    </g>
+    <g class="tom-petroleo etapa-3">
+      <text x="625" y="1326" text-anchor="middle" class="texto-caixa texto-tom">Só o version novo chega; a sessão aberta precisa de /reload-plugins.</text>
+    </g>
+  </g>
+</svg>

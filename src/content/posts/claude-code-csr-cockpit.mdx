@@ -15,7 +15,7 @@ draft: false
 ---
 
 import Evidencia from "../../components/Evidencia.astro";
-import Lousa from "../../components/Lousa.astro";
+import FiguraPassos from "../../components/FiguraPassos.astro";
 import cockpit from "../../evidencias/claude-code-csr-cockpit/cockpit.png";
 import linhaDeResumo from "../../evidencias/claude-code-csr-cockpit/linha-de-resumo.png";
 import abaAgentes from "../../evidencias/claude-code-csr-cockpit/aba-agentes.png";
@@ -126,19 +126,21 @@ claude plugin marketplace add cesarschutz/claude-code-kit
 claude plugin install csr-cockpit@cesarschutz
 ```
 
-Instalar e atualizar seguem o caminho da lousa, em cinco passos, do repositório no GitHub à sessão aberta na sua máquina. O play desenha tudo desde o início, e um clique num passo da lista leva a lousa até ele.
+A instalação e a atualização seguem seis passos, do repositório no GitHub à sessão aberta na sua máquina: o que chega a cada lugar e em que versão. Em **Passo a passo**, a figura se monta um passo por vez.
 
-<Lousa
-  desenho="claude-code-csr-cockpit/instalacao"
-  rotulo="Lousa: o repositório claude-code-kit, no GitHub, com o marketplace.json e uma pasta por item; o marketplace add clona o catálogo para a sua máquina; o install copia a pasta inteira do csr-cockpit, na versão 0.5.0; commits novos não chegam a quem instalou enquanto o version não sobe; quando ele sobe, o update traz a pasta nova, e a sessão que já estava aberta segue na versão antiga até o /reload-plugins."
-  duracao={16}
+<FiguraPassos
+  figura="claude-code-csr-cockpit/instalacao-em-passos"
   passos={[
-    { de: 0, texto: "No GitHub, o repositório `claude-code-kit` guarda o catálogo, `.claude-plugin/marketplace.json`, e uma pasta por item: `plugins/csr-cockpit`, com o `version` 0.5.0 no `plugin.json`, e `skills/explicar-erro`, uma peça avulsa." },
-    { de: 0.2, texto: "`claude plugin marketplace add cesarschutz/claude-code-kit` clona o repositório para a sua máquina. Dali em diante o catálogo é conhecido pelo `name` dele: `cesarschutz`." },
-    { de: 0.4, texto: "`claude plugin install csr-cockpit@cesarschutz` copia a pasta inteira do item. A versão instalada é a do `plugin.json`: 0.5.0." },
-    { de: 0.6, texto: "Commits novos no repositório não chegam a quem instalou: enquanto o `version` não sobe, o Claude Code não vê atualização." },
-    { de: 0.8, texto: "Quando o `version` sobe (0.6.0, por exemplo), o `claude plugin update` traz a pasta nova. A sessão que já estava aberta continua na 0.5.0 até um `/reload-plugins`." },
+    "O repositório no GitHub guarda o catálogo e a pasta do plugin, na `version` 0.5.0.",
+    "O `marketplace add` clona o catálogo para a sua máquina, com o nome `cesarschutz`.",
+    "O `install` copia a pasta do plugin na versão do catálogo: 0.5.0.",
+    "Commits novos chegam ao repositório, mas o `version` não sobe: na máquina, nada muda.",
+    "O `version` sobe para 0.6.0, e o `update` renova o catálogo e copia a pasta nova.",
+    "A sessão aberta segue na 0.5.0 até o `/reload-plugins` carregar a 0.6.0.",
   ]}
+  legenda="Cada cor é um lugar: o repositório (roxo), o catálogo (azul), o plugin instalado (petróleo) e a sessão aberta (âmbar)."
+  fim="segmentos"
+  estilo="marca-texto"
 />
 
 :::exclamacao
