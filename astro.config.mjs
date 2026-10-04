@@ -12,6 +12,7 @@ import rehypeKatex from "rehype-katex";
 import remarkDirective from "remark-directive";
 import { remarkTemMatematica } from "./src/plugins/remark-tem-matematica.mjs";
 import { remarkMarcacoes } from "./src/plugins/marcacoes.mjs";
+import { rehypeImagens } from "./src/plugins/rehype-imagens.mjs";
 import { rehypeTabela } from "./src/plugins/rehype-tabela.mjs";
 import { rehypeAvisos } from "./src/plugins/rehype-avisos.mjs";
 import { rehypeNotasLaterais } from "./src/plugins/rehype-notas-laterais.mjs";
@@ -131,7 +132,7 @@ export default defineConfig({
       // `saida` (D70): o Astro guarda o HTML dos posts .md e só o refaz quando esta configuração muda;
       // o código do plugin não conta, as opções contam. Mudou o HTML que o rehype-tabela gera? Suba o
       // número: o cache de conteúdo é refeito aqui e no deploy, sem `--force` nem apagar cache à mão.
-      rehypePlugins: [rehypeKatex, [rehypeTabela, { saida: 2 }], rehypeAvisos, rehypeNotasLaterais, [rehypeApresentacao, { base: comBase("/") }]],
+      rehypePlugins: [rehypeKatex, rehypeImagens, [rehypeTabela, { saida: 3 }], rehypeAvisos, rehypeNotasLaterais, [rehypeApresentacao, { base: comBase("/") }]],
     }),
   },
 });

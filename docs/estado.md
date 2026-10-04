@@ -1,7 +1,7 @@
 # Estado do projeto
 
 Painel, não diário: fase atual, próximos passos, perguntas abertas e riscos. O detalhe de cada rodada
-fica em `docs/decisoes.md` (D1 a D75) e no histórico do git; controles de rodadas fechadas, em
+fica em `docs/decisoes.md` (D1 a D76) e no histórico do git; controles de rodadas fechadas, em
 `docs/historico/`.
 
 ## Fase atual
@@ -203,6 +203,13 @@ nas quatro páginas, no desktop e no celular, no dev e no build, e o seletor fic
 movimento, nos dois temas. Era o segundo item da pergunta 14, que saiu de lá. Falta olhar a troca no
 Safari do iPhone.
 
+Revisão técnica do frontend (D76, 03/10/2026, **aprovada no PR #3**): as animações cancelam a
+anterior a cada troca (nada preso invisível), o movimento reduzido ligado com a página aberta vale na
+hora, a capa viva liga o hover uma vez por página (eram 13 cópias do script na home), os SVGs dos posts
+ganham medidas e as tabelas de comparação, cabeçalhos de linha. Só a palavra apagada da frase em destaque
+muda (`--ink-2`). Vem com os testes `scripts/frontend-*.mjs` e o workflow que os roda em cada PR.
+Relatório em `docs/revisao-frontend-2026-10-03.md`.
+
 Nome acessível dos livros, dos vizinhos, das tags e de Séries (D73, 02/10/2026, **publicado**): o resto
 do achado do Lighthouse da D69 (`label-content-name-mismatch`). Nos 9 livros da home, nos vizinhos da
 página de um livro, nas 22 tags da nuvem e no livro de Séries, o `aria-label` saiu e o mesmo texto entrou
@@ -278,6 +285,7 @@ movimento e com movimento reduzido, com trace de CPU 4× sem tarefas longas dura
 | D72 | a tinta do seletor Lista / Cards com a caixa só em volta do botão ativo, para o falso positivo de contraste do Lighthouse sumir (nota 100) sem mudar a aparência nem o movimento |
 | D73 | o nome dos livros da home, dos vizinhos, das tags e do livro de Séries vindo de um texto `.sr`, sem `aria-label`, com o `content-visibility` da home no livro, e não no link |
 | D74 | a apresentação de um post no estilo do blog: `.pptx` com os desenhos e a caneta do próprio post e as notas do apresentador (skill `apresentacao`, `scripts/slides/`) |
+| D76 | a revisão técnica do frontend (PR #3): animações que cancelam a anterior, movimento reduzido na hora, a capa viva uma vez por página, medidas dos SVGs, cabeçalhos de linha nas tabelas e os testes `frontend-*` |
 
 ## Próximos passos
 

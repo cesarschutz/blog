@@ -10,6 +10,7 @@ import { createServer } from "node:http";
 import { existsSync, readdirSync, readFileSync, rmSync, statSync } from "node:fs";
 import { extname, join, normalize } from "node:path";
 import { chromium } from "playwright-core";
+import { opcoesDoChrome } from "./chrome.mjs";
 import sharp from "sharp";
 
 const dist = process.argv[2] ?? "dist";
@@ -37,7 +38,7 @@ const base = `http://127.0.0.1:${servidor.address().port}`;
 
 let navegador;
 try {
-  navegador = await chromium.launch({ channel: "chrome", headless: true });
+  navegador = await chromium.launch(opcoesDoChrome);
 } catch (erro) {
   console.error("og: não achei o Chrome para gerar as imagens de compartilhamento.", erro.message);
   servidor.close();

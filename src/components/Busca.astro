@@ -820,6 +820,11 @@ const recentes = (await getResumos()).slice(0, 6);
     outline: none;
   }
 
+  input:focus-visible {
+    outline: 2px solid var(--acento);
+    outline-offset: 6px;
+  }
+
   /* O cinza padrão do navegador dava 3,5:1 no tema escuro (D54). */
   input::placeholder {
     color: var(--ink-2);

@@ -110,6 +110,14 @@ const { papel = true } = Astro.props;
       f.animate([{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], { duration: 220, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)" });
   };
 
+  reduzir.addEventListener("change", () => {
+    if (!reduzir.matches) return;
+    ++vez;
+    formas().forEach((f) => f.getAnimations().forEach((a) => a.cancel()));
+    raiz.dataset.postView = alvo;
+    marcar(false);
+  });
+
   const montarCartoes = () => {
     const moldes = document.querySelectorAll<HTMLTemplateElement>("template[data-cartoes]");
     moldes.forEach((t) => t.replaceWith(t.content));

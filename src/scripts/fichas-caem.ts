@@ -30,6 +30,23 @@ const ASSENTA = 2;
 const GIRO = 1.4;
 
 const reduzido = matchMedia("(prefers-reduced-motion: reduce)");
+const quedas = new Map<HTMLElement, Set<Animation>>();
+function cancelarQueda(el: HTMLElement) {
+  quedas.get(el)?.forEach((a) => a.cancel());
+  quedas.delete(el);
+}
+function guardarQueda(el: HTMLElement, animacao: Animation) {
+  const ativas = quedas.get(el) ?? new Set<Animation>();
+  quedas.set(el, ativas);
+  ativas.add(animacao);
+  void animacao.finished.then(() => {
+    ativas.delete(animacao);
+    if (!ativas.size && quedas.get(el) === ativas) quedas.delete(el);
+  }, () => {});
+}
+reduzido.addEventListener("change", () => {
+  if (reduzido.matches) [...quedas.keys()].forEach(cancelarQueda);
+});
 
 /** O fim do cabeçalho fixo: o que está embaixo dele não está à vista. */
 function topoVisivel() {
@@ -46,21 +63,22 @@ function naOrdem(fichas: HTMLElement[]) {
 }
 
 function cair(el: HTMLElement, atraso: number, lado: number) {
+  cancelarQueda(el);
   el.dataset.caiu = "";
   // O instante em que a ficha toca a mesa (72% da queda): a cortiça do 16 (amostra D3) prega o alfinete nele.
   el.style.setProperty("--pousa", `${Math.round(atraso + DURACAO * 0.72)}ms`);
   if (reduzido.matches || !el.animate) return;
   const giro = lado * GIRO;
   // A queda desacelera como papel no ar (não como pedra), passa 2px do lugar e assenta.
-  el.animate(
+  guardarQueda(el, el.animate(
     [
       { transform: `translateY(${-QUEDA}px) rotate(${giro}deg)`, easing: "cubic-bezier(0.25, 0.1, 0.25, 1)" },
       { transform: `translateY(${ASSENTA}px) rotate(${(-giro * 0.12).toFixed(2)}deg)`, offset: 0.72, easing: "cubic-bezier(0.33, 0, 0.3, 1)" },
       { transform: "none" },
     ],
     { duration: DURACAO, delay: atraso, fill: "backwards" },
-  );
-  el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 190, delay: atraso, easing: "linear", fill: "backwards" });
+  ));
+  guardarQueda(el, el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 190, delay: atraso, easing: "linear", fill: "backwards" }));
 }
 
 /** Faz cair, agora, as fichas dadas (na ordem da tela, 40ms entre elas). */

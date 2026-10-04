@@ -3206,3 +3206,36 @@ nada muda.
   (antes era o centro da caixa do par de traços, fora do centro do relógio), separados os ponteiros
   e aplicado avanço discreto de cinco minutos, na proporção 12:1, com retorno suave e respeito a
   movimento reduzido. Detalhe técnico em `docs/movimento.md`.
+
+## D76 · Revisão técnica do frontend: animações que não se atropelam, movimento reduzido na hora e semântica
+- **Data:** 03/10/2026 · **Status:** decidido; entra pelo PR cesarschutz/blog#3 (branch
+  `improve/frontend-performance-ux`), aprovado pelo Cesar depois da revisão.
+- **O que entra, sem mudar o visual:**
+  - as animações guardam o que está rodando e cancelam o anterior a cada troca nova (figura em passos,
+    fichário e queda das fichas de Tags, revelar, Lista / Cards): nada fica preso em `opacity: 0`;
+  - o movimento reduzido ligado com a página aberta encerra na hora as timelines do GSAP (desenho da
+    capa) e os efeitos, que vão ao estado final;
+  - a capa viva (`capa-viva.ts`) sai do `Ilustracao.astro`, onde o Astro embutia o script uma vez por
+    ilustração (13 cópias na home, cada uma ligando o hover de novo), e vai para o `Luz.astro`, uma vez
+    por página, com os cards novos ligados por `cartoes:prontos`;
+  - o foco do teclado não se perde quando um botão da figura em passos é desabilitado ou some; a busca
+    ganha foco visível; o `aria-current` do fichário vai como `"true"` (o vazio valia como falso);
+  - `rehype-imagens.mjs`: os SVGs de `public/` no corpo dos posts ganham `width` e `height` do
+    `viewBox`, com `loading="lazy"` (todos só tinham `viewBox`; a imagem na tela fica igual);
+  - o `rehype-tabela` põe `scope="col"` no cabeçalho e, na tabela de canto vazio (comparação), a
+    primeira célula de cada linha vira `th scope="row"`, com a mesma aparência; o `saida` dele subiu
+    para 3, para o deploy refazer o HTML guardado;
+  - os scripts `scripts/frontend-*.mjs` (plugins, regressão, interações, tema e a matriz de 39 páginas
+    em 9 larguras e nos dois temas) e o workflow `frontend-review.yml`, que roda a conferência em cada
+    PR para a `main` e guarda as capturas, sem publicar.
+- **A única mudança visível:** na frase em destaque, a palavra ainda apagada passa de `--ink-3` para
+  `--ink-2`. No celular a frase fica menor que "texto grande", e o `--ink-3` não passava; a nota de
+  acessibilidade do post de criptografia no celular foi de 97 para 100. Com movimento reduzido, a frase
+  fica inteira na tinta normal.
+- **No merge com a `main`:** o nome dos livros da home ficou como na D73 (texto `.sr`); a prop
+  `decorativo` do `LivroEmPe` que o PR trazia saiu, porque o `Livro3D` já é `aria-hidden`. A D70
+  (colunas de texto) convive com os cabeçalhos de linha: ela marca só a linha do cabeçalho.
+- **Conferido no merge:** `check` (0 erros), `build`, `links`, `contraste`, os cinco testes do PR e
+  fotos da tabela de comparação, da frase e de um SVG, antes e depois. O relatório da revisão está em
+  `docs/revisao-frontend-2026-10-03.md`.
+- **Alternativas:** manter o `--ink-3` na frase (o efeito fica mais marcado, mas falha no celular).

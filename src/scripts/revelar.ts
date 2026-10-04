@@ -37,6 +37,7 @@ const reduzido = matchMedia("(prefers-reduced-motion: reduce)");
 /** Os já decididos (esperando, revelados ou que já estavam à vista): ninguém é decidido duas vezes. */
 const vistos = new WeakSet<Element>();
 const esperando = new Set<HTMLElement>();
+const animacoes = new Set<Animation>();
 
 function candidatos(): HTMLElement[] {
   return [...document.querySelectorAll<HTMLElement>(SELETOR)].filter((el) => !vistos.has(el) && !el.closest("[data-gira]"));
@@ -44,6 +45,11 @@ function candidatos(): HTMLElement[] {
 
 /** Mostra tudo o que espera, sem animar (movimento reduzido ligado no meio, ou impressão). */
 function soltarTodos() {
+  cancelAnimationFrame(quadro);
+  quadro = 0;
+  fila = [];
+  for (const animacao of animacoes) animacao.cancel();
+  animacoes.clear();
   for (const el of esperando) {
     el.classList.remove(ESPERA);
     revela.unobserve(el);
@@ -74,13 +80,15 @@ function revelarFila() {
     esperando.delete(el);
     el.classList.remove(ESPERA);
     if (reduzido.matches) continue;
-    el.animate(
+    const animacao = el.animate(
       [
         { opacity: 0, transform: `translateY(${SUBIDA}px)` },
         { opacity: 1, transform: "none" },
       ],
       { duration: DURACAO, delay: atraso, easing: CURVA, fill: "backwards" },
     );
+    animacoes.add(animacao);
+    animacao.addEventListener("finish", () => animacoes.delete(animacao), { once: true });
   }
 }
 
