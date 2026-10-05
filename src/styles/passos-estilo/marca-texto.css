@@ -234,9 +234,10 @@
   color: var(--ink-2);
 }
 
+/* O contador e os números em --ink-2: em --ink-3 (que é para texto grande), davam 3:1 a 3,4:1 no claro (D84). */
 .figura-passos[data-estilo="marca-texto"] .passos-contador {
   min-width: 6.5em;
-  color: var(--ink-3);
+  color: var(--ink-2);
   font-size: 14px;
 }
 
@@ -308,7 +309,7 @@
   border-radius: 0;
   background: none;
   box-shadow: none;
-  color: var(--ink-3);
+  color: var(--ink-2);
   font-size: 13px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;

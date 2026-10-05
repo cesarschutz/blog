@@ -337,9 +337,15 @@
       guardar(dados);
       return;
     }
-    // A troca geral: cada unidade à vista vira uma imagem que cai.
+    // A troca geral: cada unidade à vista vira uma imagem que cai. O rodapé do site, se estiver à vista,
+    // esmaece (sem nome, sumia de uma vez com a raiz, D84), como na troca de lado.
     var us = unidades();
     dados.tipo = "folhas";
+    var rodapeAVista = document.querySelector("body > .rodape");
+    if (rodapeAVista && rodapeAVista.getBoundingClientRect().top < innerHeight) {
+      nomear(rodapeAVista, "rodape-velho");
+      dados.rodape = true;
+    }
     dados.sai = us.map(function (u, i) {
       nomear(u.el, "sai-" + i, "sai");
       return { n: "sai-" + i, texto: u.texto, oy: u.oy };
@@ -555,6 +561,7 @@
    */
   function cair(d, comPar, curta) {
     var H = innerHeight, fim = 0, giro = {};
+    if (d.rodape) animarPseudo("::view-transition-old(rodape-velho)", [{ opacity: 1 }, { opacity: 0 }], { duration: 160, easing: CUBIC_IN });
     if (curta) {
       // A saída curta (a página demorou, B14): as folhas antigas só somem.
       d.sai.forEach(function (s) { animarPseudo("::view-transition-old(" + s.n + ")", [{ opacity: 1 }, { opacity: 0 }], { duration: 140, easing: CUBIC_IN }); });

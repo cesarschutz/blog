@@ -88,7 +88,10 @@ const ROTULOS = { artigos: "Artigos", categorias: "Livros", series: "Séries", t
 const rotuloDaCortina = cortina?.rotulo ?? (atual ? ROTULOS[atual] : tipo === "article" ? "Artigo" : "Blog");
 const nomeDaCortina = cortina?.nome ?? titulo ?? NOME;
 // Rodada 4 (E2): a maior palavra do nome, para a cortina encolher o nome no celular em vez de partir a palavra.
-const letrasDaCortina = Math.max(...nomeDaCortina.split(/\s+/).map((p) => p.length));
+// A largura da maior palavra, em "letras médias" da Besley 800: as largas (m, w, as maiúsculas, # e _) pesam mais.
+// Contando só as letras, "Fundamentos", "#Linguagem" e "CLOSE_WAIT" passavam da cortina no celular e partiam (D84).
+const pesoDaLetra = (c: string) => (/[mwMW@#%_]/.test(c) ? 1.4 : /[A-ZÀ-Ý]/.test(c) ? 1.2 : 1);
+const letrasDaCortina = Math.max(...nomeDaCortina.split(/\s+/).map((p) => [...p].reduce((n, c) => n + pesoDaLetra(c), 0)));
 const tituloDaAba = titulo ? `${titulo} · ${NOME}` : `${NOME} · Arquitetura e engenharia de software`;
 const canonico = new URL(Astro.url.pathname, Astro.site);
 const imagemAbsoluta = new URL(url(imagem), Astro.site).href;
@@ -300,7 +303,7 @@ const preCarregar = {
     <Rodape />
     <AbaTopo />
     <Busca />
-    <div class:list={["cortina-painel", { longo: nomeDaCortina.length > 34 }]} style={`--letras:${letrasDaCortina}`} aria-hidden="true">
+    <div class:list={["cortina-painel", { longo: nomeDaCortina.length > 34 }]} style={`--letras:${Math.round(letrasDaCortina * 10) / 10}`} aria-hidden="true">
       <span class="cortina-rotulo">{rotuloDaCortina}</span>
       <span class="cortina-nome"><span>{nomeDaCortina}</span></span>
     </div>

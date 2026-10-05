@@ -275,6 +275,12 @@ const letras = (nome: string) => [...nome].map((c, k) => ({ c, k }));
     /** Sobe a página (ou, na amostra, até o alto dela), com o foco no título, para o teclado recomeçar dali. */
     const subir = () => {
       const comportamento: ScrollBehavior = reduzido.matches ? "auto" : "smooth";
+      // Durante a subida, a aba "topo" não entra (AbaTopo.astro): o leitor já pediu para subir (D84).
+      const raiz = document.documentElement;
+      raiz.dataset.subindoTopo = "";
+      const acabou = () => delete raiz.dataset.subindoTopo;
+      addEventListener("scrollend", acabou, { once: true });
+      setTimeout(acabou, 2500);
       const naAmostra = rodape.hasAttribute("data-amostra") ? rodape.closest<HTMLElement>("[data-amostra-alvo]") : null;
       if (naAmostra) {
         naAmostra.scrollIntoView({ behavior: comportamento, block: "start" });

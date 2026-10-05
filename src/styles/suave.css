@@ -83,11 +83,12 @@
   line-height: 0.94;
   letter-spacing: -0.035em;
   text-wrap: balance;
-  overflow-wrap: anywhere;
+  /* A palavra nunca parte: o tamanho (--cabe) já a faz caber (D84; com "anywhere", "Fundamento/s"). */
+  overflow-wrap: normal;
 }
 
 .cortina-painel {
-  --cabe: calc((100vw - 2 * var(--pad) - 16px) / (var(--letras, 8) * 0.64));
+  --cabe: calc((100vw - 2 * var(--pad) - 16px) / (var(--letras, 8) * 0.66));
 }
 
 .cortina-painel.longo .cortina-nome {

@@ -71,7 +71,9 @@
 
     const mostrar = () => {
       const fundo = scrollY > innerHeight * 1.5;
-      const pode = longa() && fundo && !cordaNaTela && (!estreito.matches || subindo);
+      // Na subida pedida pela cordinha (ou pela própria aba), ela não entra nem fica (D84).
+      const pedida = document.documentElement.hasAttribute("data-subindo-topo");
+      const pode = longa() && fundo && !cordaNaTela && !pedida && (!estreito.matches || subindo);
       aba.classList.toggle("visivel", pode);
       aba.tabIndex = pode ? 0 : -1;
       aba.setAttribute("aria-hidden", pode ? "false" : "true");
@@ -107,6 +109,14 @@
         aba.classList.add("puxada");
       }
       subindo = false;
+      const raiz = document.documentElement;
+      raiz.dataset.subindoTopo = "";
+      const acabou = () => {
+        delete raiz.dataset.subindoTopo;
+        mostrar();
+      };
+      addEventListener("scrollend", acabou, { once: true });
+      setTimeout(acabou, 2500);
       scrollTo({ top: 0, behavior: reduzido.matches ? "auto" : "smooth" });
       const alvo = document.querySelector<HTMLElement>("main h1") ?? document.querySelector<HTMLElement>("main");
       if (alvo) {

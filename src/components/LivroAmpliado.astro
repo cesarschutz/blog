@@ -1048,8 +1048,11 @@ import "../styles/paginas.css";
     font-size: 20px;
   }
 
+  /* Os dados descem inteiros quando não cabem ao lado do nome ("Volume 01 ·" não fica sozinho, D84). */
   [data-dados] {
+    display: inline-block;
     margin-left: 8px;
+    white-space: nowrap;
     font-size: 14.5px;
     color: color-mix(in oklab, var(--veu-tinta) 72%, transparent);
   }

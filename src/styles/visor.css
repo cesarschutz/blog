@@ -42,6 +42,12 @@
   animation: visor-entra 0.3s ease-out 0.15s both;
 }
 
+/* O véu cobre a janela, mas não a faixa da barra de rolagem (12px, reservada pelo html): com o visor aberto,
+   o fundo da página (que a faixa mostra) fica no tom do véu, e não sobra uma tira clara na borda (D84). */
+:root:has(dialog.visor:modal) {
+  background: color-mix(in oklab, var(--paper), var(--veu) 88%);
+}
+
 .visor::backdrop {
   background: color-mix(in oklab, var(--veu) 88%, transparent);
   -webkit-backdrop-filter: blur(3px);

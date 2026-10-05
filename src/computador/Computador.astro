@@ -23,7 +23,7 @@ const tela =
   `--cp-parede-1e:${escuro["parede-alto"]};--cp-parede-2e:${escuro["parede-meio"]};--cp-parede-3e:${escuro["parede-baixo"]}`;
 ---
 
-<button type="button" id="computador" class="computador" aria-label="Abrir o computador" aria-haspopup="dialog" aria-keyshortcuts="Control+Alt+Q" hidden data-computador>
+<button type="button" id="computador" class="computador" aria-label="Abrir o computador" aria-haspopup="dialog" hidden data-computador>
   <span class="cp-desenho" aria-hidden="true">
     <svg class="cp-chao" viewBox="0 0 80 80" focusable="false">
       <ellipse class="cp-sombra" cx="39" cy="74.2" rx="35" ry="3.1"></ellipse>
@@ -98,8 +98,8 @@ const tela =
     display: none !important;
   }
 
-  /* Com o menu do celular aberto (a folha que cobre a tela), o computador sai da frente. */
-  :global(:root[data-menu-aberto]) .computador {
+  /* Com o menu do celular aberto (a folha que cobre a tela) ou a folha do sumário (D84), o computador sai da frente. */
+  :global(:root:is([data-menu-aberto], [data-sumario-aberto])) .computador {
     visibility: hidden;
   }
 

@@ -757,6 +757,7 @@ a:hover > .titulo-sub,
 }
 
 :root:active-view-transition-type(folhas)::view-transition-old(.sai),
+:root:active-view-transition-type(folhas)::view-transition-old(rodape-velho),
 :root:active-view-transition-type(folhas)::view-transition-old(.livro):only-child,
 :root:active-view-transition-type(lado)::view-transition-old(artigo-velho),
 :root:active-view-transition-type(lado)::view-transition-new(artigo-novo),

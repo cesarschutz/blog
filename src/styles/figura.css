@@ -165,6 +165,13 @@
   fill: var(--tom, var(--cor-desenho));
 }
 
+/* Dentro da caixa lavada do mesmo tom, o texto no tom puxa para a tinta: o par "texto-tom sobre lavado"
+   dava de 3,7 a 4,2:1 nos dois temas (D84). No claro escurece, no escuro clareia. */
+.diagrama text.texto-caixa.texto-tom,
+.diagrama .texto-tom text.texto-caixa {
+  fill: color-mix(in oklab, var(--tom, var(--cor-desenho)), var(--ink) 32%);
+}
+
 .diagrama .selo {
   fill: var(--tom, var(--ink));
   stroke: none;
