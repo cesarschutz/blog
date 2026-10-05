@@ -47,7 +47,7 @@ escrever(s, ML, y + 0.08, 4.45,
          marcas={"nd": "ondulado"})
 # A aba Agentes, do alto até a legenda do grafo (os cartões ficam para o slide 4).
 pic, iw, ih = imagem(s, img(f"{EVID}/aba-agentes.png"), 5.55, 1.9, w=LARG - (5.55 - ML), raio_px=24,
-                     recorte=(0, 0, 0, 2224 - 990),
+                     recorte=(0, 0, 0, 2038 - 805),
                      alt="O painel do csr-cockpit na aba Agentes, com uma sessão de exemplo: no alto, 2 agentes "
                          "rodando e 2 concluídos; embaixo, o grafo de quem chamou quem, com a conversa principal no "
                          "centro, um Explore e um Plan criados por ela, e um revisor e outro Explore criados pelo "
@@ -104,7 +104,7 @@ def legenda(s, x, y, w, texto):
 # 4 ---------------------------------------------------------------- agentes
 s = deck.slide("As abas")
 deck.cabeca(s, "Agentes", "Quem chamou quem, e quem está rodando")
-pa, wa, ha = imagem(s, img(f"{EVID}/aba-agentes.png"), ML, 1.82, h=4.75, raio_px=24, recorte=(0, 990, 0, 0),
+pa, wa, ha = imagem(s, img(f"{EVID}/aba-agentes.png"), ML, 1.82, h=4.75, raio_px=24, recorte=(0, 805, 0, 0),
                     alt="A parte de baixo da aba Agentes: a linha do tempo dos quatro agentes, uma barra por agente na "
                         "mesma régua, e os cartões dos dois que estão rodando e dos dois concluídos, cada um com o "
                         "modelo, o contexto, o custo atribuído e as chamadas, e o link Ver detalhes.")
@@ -119,42 +119,44 @@ lista(s, lx, d.fim + 0.3, lw,
       [(3, "**A linha do tempo:** uma barra por agente, na mesma régua; mostra quem rodou em paralelo e quem demorou."),
        (4, "**Os cartões:** a tarefa, o modelo, o contexto do agente, o custo atribuído e a ferramenta de agora."),
        (5, "**Ver detalhes** abre o detalhe. Clicar no agente do grafo ou no nome na linha do tempo faz o mesmo.")])
-deck.notas(s, "Na aba Agentes, o grafo mostra quem chamou quem: a conversa principal no centro e os agentes em volta; "
-              "quando um agente cria outro, o novo fica num anel de fora, e quando dois conversam pelo SendMessage, a "
-              "mensagem aparece com a contagem. A linha do tempo mostra quem rodou em paralelo. Os cartões trazem o "
+deck.notas(s, "Na aba Agentes, o grafo mostra quem chamou quem: a conversa principal, desenhada como um cérebro, "
+              "e os agentes, como robozinhos; quando um agente cria outro, o grafo vira uma árvore, e quando dois "
+              "conversam pelo SendMessage, a mensagem aparece com a contagem. Os agentes de um workflow aparecem com o "
+              "nome que o script lhes deu. A linha do tempo mostra quem rodou em paralelo. Os cartões trazem o "
               "custo atribuído a cada agente, e Ver detalhes abre o detalhe dele.")
 
 # 5 ---------------------------------------------------------------- quanto custou
 s = deck.slide("As abas")
 deck.cabeca(s, "Agentes e Turnos", "Quanto custou cada agente, e cada turno")
 wa = 5.6
-pa, wa, ha = imagem(s, img(f"{EVID}/detalhe-do-agente.png"), ML, 1.82, w=wa, raio_px=24,
-                    alt="O detalhe do agente Plan no csr-cockpit: concluído em 41 segundos, com 3 chamadas, contexto de "
-                        "25 mil tokens e custo atribuído de 18 centavos de dólar; embaixo, o pedido, as chamadas e a "
-                        "resposta final.")
+# O detalhe do agente, do alto até o pedido (as chamadas e a resposta ficam de fora).
+pa, wa, ha = imagem(s, img(f"{EVID}/detalhe-do-agente.png"), ML, 1.82, w=wa, raio_px=24, recorte=(0, 0, 0, 1470 - 1058),
+                    alt="O detalhe do agente Plan no csr-cockpit: concluído em 41 segundos, com 5 chamadas, contexto de "
+                        "25 mil tokens e custo atribuído de 18 centavos de dólar; embaixo, as ferramentas que ele chamou, "
+                        "em barras, os dois comandos Bash dele e o pedido que recebeu.")
 bx_ = ML + wa + 0.3
 wt = W - MR - bx_
-CT = 900  # o recorte da aba Turnos: do "Do mais recente" ao turno 3
-pt_, wt, ht = imagem(s, img(f"{EVID}/aba-turnos.png"), bx_, 1.82, w=wt, raio_px=24, recorte=(0, CT, 0, 1954 - 1520),
+CT = 910  # o recorte da aba Turnos: do "Do mais recente" ao fim do turno 4
+pt_, wt, ht = imagem(s, img(f"{EVID}/aba-turnos.png"), bx_, 1.82, w=wt, raio_px=24, recorte=(0, CT, 0, 2226 - 1528),
                      alt="A lista da aba Turnos: o turno 5 em andamento, com o comando npm test rodando, e o turno 4, "
-                         "que levou 52 segundos, custou 1 dólar e 23 centavos, usou 14 ferramentas e rodou 4 comandos "
+                         "que levou 52 segundos, custou 1 dólar e 23 centavos, usou 16 ferramentas e rodou 6 comandos "
                          "Bash, um deles com falha.")
 # A caneta sobre as telas escuras usa a cor da caneta do tema escuro; as posições são pixels de cada tela.
 ka = wa / 1736
-circulo(s, cx=ML + (391 + 574) / 2 * ka, cy=1.82 + (520 + 552) / 2 * ka, rx=(574 - 391) / 2 * ka + 0.09,
-        ry=(552 - 520) / 2 * ka + 0.07, cor=E_CANETA, lw=1.7, seed=21)
+circulo(s, cx=ML + (255 + 371) / 2 * ka, cy=1.82 + (483 + 512) / 2 * ka, rx=(371 - 255) / 2 * ka + 0.09,
+        ry=(512 - 483) / 2 * ka + 0.07, cor=E_CANETA, lw=1.7, seed=21)
 kt = wt / 1736
-c11 = (bx_ + (369 + 478) / 2 * kt, 1.82 + ((1244 + 1276) / 2 - CT) * kt)
-circulo(s, cx=c11[0], cy=c11[1], rx=(478 - 369) / 2 * kt + 0.09, ry=(1276 - 1244) / 2 * kt + 0.07, cor=E_CANETA,
+c11 = (bx_ + (345 + 457) / 2 * kt, 1.82 + ((1299 + 1329) / 2 - CT) * kt)
+circulo(s, cx=c11[0], cy=c11[1], rx=(457 - 345) / 2 * kt + 0.09, ry=(1329 - 1299) / 2 * kt + 0.07, cor=E_CANETA,
         lw=1.7, seed=24)
 # A nota embaixo da tela, à direita do círculo, e a seta subindo até ele.
-ry11 = (1276 - 1244) / 2 * kt + 0.07
+ry11 = (1329 - 1299) / 2 * kt + 0.07
 ny = 1.82 + ht + 0.2
 nota(s, c11[0] + 0.3, ny, W - MR - c11[0] - 0.3, "o custo do turno: o fim menos o começo", tam=18)
 seta(s, curva((c11[0] + 0.24, ny + 0.16), (c11[0] + 0.02, ny + 0.1), (c11[0], c11[1] + ry11 + 0.04)), ponta=0.07)
 sy = 1.82 + max(ha, ht + 0.7) + 0.4
 cw3 = (LARG - 2 * 0.3) / 3
-for i, (valor, rotulo) in enumerate((("US$ 0,18", "o Plan: 41 s, 3 chamadas, 25 mil tokens de contexto"),
+for i, (valor, rotulo) in enumerate((("US$ 0,18", "o Plan: 41 s, 5 chamadas, 25 mil tokens de contexto"),
                                      ("US$ 0,37", "os quatro agentes juntos"),
                                      ("US$ 2,21", "a sessão inteira; US$ 1,84 ficaram com a conversa principal"))):
     numero_grande(s, ML + i * (cw3 + 0.3), sy, cw3, valor, rotulo, cor=LIVRO if i < 2 else INK)
@@ -189,27 +191,30 @@ deck.cabeca(s, "Contexto", "Quanto do contexto sobra, e quanto custou")
 pa, wa, ha = imagem(s, img(f"{EVID}/aba-contexto.png"), ML, 1.82, h=4.75, raio_px=24,
                     alt="A aba Contexto do csr-cockpit: um anel com 71% do contexto usado e mais 8,3 mil tokens no "
                         "último turno; o custo da sessão, de 2 dólares e 21 centavos; os limites de uso de 5 horas e de "
-                        "7 dias; o contexto repartido por categoria; e o botão Contagem exata.")
+                        "7 dias; o total geral da sessão, da conversa e dos subagentes, em tokens, em dólar e em reais; "
+                        "o contexto repartido por categoria; e o botão Contagem exata.")
 kc = wa / 1736
-circulo(s, cx=ML + (96 + 280) / 2 * kc, cy=1.82 + (1344 + 1374) / 2 * kc, rx=(280 - 96) / 2 * kc + 0.1,
-        ry=(1374 - 1344) / 2 * kc + 0.07, cor=E_CANETA, lw=1.7, seed=31)
+circulo(s, cx=ML + (96 + 280) / 2 * kc, cy=1.82 + (1575 + 1605) / 2 * kc, rx=(280 - 96) / 2 * kc + 0.1,
+        ry=(1605 - 1575) / 2 * kc + 0.07, cor=E_CANETA, lw=1.7, seed=31)
 legenda(s, ML, 1.82 + ha + 0.1, wa, "A aba Contexto (tela do README do csr-cockpit).")
 lx = ML + wa + 0.42
 lista(s, lx, 1.9, W - MR - lx,
       [(1, "**O uso do contexto:** o percentual, os tokens e quanto o último turno somou."),
        (2, "**O custo** da sessão e do último turno."),
        (3, "**O limite de uso** do plano, cada janela com o percentual e quando renova."),
-       (4, "**O contexto por categoria:** uma estimativa local, atualizada a cada turno."),
-       (5, "**Contagem exata** troca a estimativa pela contagem de verdade, com requisições a mais.")])
+       (4, "**O total geral:** a conversa e os subagentes, em tokens e em dólar e reais, desde o início."),
+       (5, "**O contexto por categoria:** uma estimativa local, atualizada a cada turno."),
+       (6, "**Contagem exata** troca a estimativa pela contagem de verdade, com requisições a mais.")])
 deck.notas(s, "A aba Contexto responde quanto do contexto sobra e quanto a sessão já custou: o percentual, os tokens, o "
-              "custo da sessão e do último turno, o limite de uso do plano e o contexto repartido por categoria, uma "
-              "estimativa local. O botão Contagem exata troca a estimativa pela contagem de verdade; apertado, o "
+              "custo da sessão e do último turno, o limite de uso do plano, o total geral da conversa com os "
+              "subagentes, em tokens e em dinheiro, que uma compactação não zera, e o contexto repartido por "
+              "categoria, uma estimativa local. O botão Contagem exata troca a estimativa pela contagem de verdade; apertado, o "
               "Claude Code faz requisições a mais.")
 
 # 8 ---------------------------------------------------------------- turnos
 s = deck.slide("As abas")
 deck.cabeca(s, "Turnos", "O que aconteceu, na ordem")
-pa, wa, ha = imagem(s, img(f"{EVID}/aba-turnos.png"), ML, 1.82, h=4.75, raio_px=24, recorte=(0, 0, 0, 1954 - 1440),
+pa, wa, ha = imagem(s, img(f"{EVID}/aba-turnos.png"), ML, 1.82, h=4.75, raio_px=24, recorte=(0, 0, 0, 2226 - 1528),
                     alt="A aba Turnos do csr-cockpit: um gráfico com a duração de cada turno, o quarto em vermelho por "
                         "ter tido uma falha; as ferramentas mais chamadas; o turno 5 em andamento, num cartão, com o "
                         "comando npm test rodando; e o turno 4, com os comandos Bash dele.")
@@ -240,8 +245,9 @@ lista(s, lx, 1.9, W - MR - lx,
        (3, "**Agora mesmo:** o arquivo que uma ferramenta está lendo ou escrevendo, e quem."),
        (4, "**Na árvore**, o mesmo arquivo acende com o selo `editando…` e fica destacado por 8 segundos.")])
 deck.notas(s, "A aba Árvore mostra onde o Claude está mexendo agora: os arquivos que a sessão leu ou editou, do loop "
-              "principal e dos subagentes, e os que o git vê alterados. Enquanto uma leitura ou uma escrita roda, o "
-              "arquivo aparece no alto e acende na árvore; uma escrita esperando permissão fica acesa até a resposta.")
+              "principal e de todos os subagentes, inclusive o que eles leem e escrevem pelo Bash, e os que o git vê "
+              "alterados. Enquanto uma leitura ou uma escrita roda, o arquivo aparece no alto e acende na árvore; uma "
+              "escrita esperando permissão fica acesa até a resposta.")
 
 # 10 --------------------------------------------------------------- inventário
 s = deck.slide("As abas")
@@ -264,7 +270,8 @@ s = deck.slide("As abas")
 deck.cabeca(s, "A linha de resumo", "Uma faixa acima do prompt")
 pic, iw, ih = imagem(s, img(f"{EVID}/linha-de-resumo.png"), ML, 2.05, w=9.2, raio_px=18,
                      alt="A linha de resumo do csr-cockpit no aplicativo de desktop, em duas fileiras de pílulas: a "
-                         "marca CSR, a conversa principal trabalhando, 2 agentes em paralelo, o repositório proj no ramo "
+                         "marca CSR, o cérebro da conversa principal trabalhando, o robô dos 2 agentes em paralelo, o "
+                         "repositório proj no ramo "
                          "main, o contexto em 71%, o custo de 2 dólares e 21 centavos, os limites de 5 horas e de 7 "
                          "dias, o modelo Opus 5.5 e o cache em 99%.")
 legenda(s, ML, 2.05 + ih + 0.1, 9.2, "A linha de resumo no aplicativo de desktop (tela do README do csr-cockpit).")
@@ -469,7 +476,7 @@ CAMADAS = [("camada 1", "sem executar nada", "claude plugin validate",
            ("camada 2", "sem login e sem rede", "claude plugin test",
             ["Roda os testes contra um Claude Code de mentira: dispara os eventos, monta o painel, aperta os botões e "
              "confere o que foi desenhado.",
-             "O cockpit tem 35 testes; um deles confere a regra de só observar."], {}),
+             "O cockpit tem 52 testes; um deles confere a regra de só observar."], {}),
            ("camada 3", "a mais cara", "uma sessão de verdade",
             ["O Claude Code num projeto de exemplo, com o mod carregado por `claude --plugin-dir`.",
              "A pasta fica vigiada: o mod recarrega a cada arquivo salvo.",
@@ -483,11 +490,11 @@ for i, (esq, dir_, cmd, pars, mk) in enumerate(CAMADAS):
     d = escrever(s, kx + 0.25, ty + 0.25, kw - 0.5, [cmd], est_cmd, pitch=18)
     escrever(s, kx + 0.25, d.fim + 0.22, kw - 0.5, pars, dict(f=TEXTO, s=14, c=INK2, codigo=dict(c=INK)), pitch=19.5,
              depois=9, marcas=mk)
-carimbo(s, ML + (kw + 0.32) + 0.25, 1.9 + KH - 0.95, kw - 0.5, "rodado em 04/10/2026: 35 de 35")
+carimbo(s, ML + (kw + 0.32) + 0.25, 1.9 + KH - 0.95, kw - 0.5, "rodado em 04/10/2026: 52 de 52")
 deck.notas(s, "Um mod se testa em três camadas, da mais barata para a mais cara. O validate lista os eventos que o mod "
               "escuta e as chamadas que ele faz, sem executar nada, e serve para auditar o mod de outra pessoa antes "
               "de instalar. O test roda os testes contra um Claude Code de mentira, sem login e sem rede: o cockpit "
-              "tem 35 testes, e os 35 passaram em 04/10/2026. A sessão de verdade, com o --plugin-dir, é a única que "
+              "tem 52 testes, e os 52 passaram em 04/10/2026. A sessão de verdade, com o --plugin-dir, é a única que "
               "mostra o painel desenhado no terminal.")
 
 # 18 --------------------------------------------------------------- os limites

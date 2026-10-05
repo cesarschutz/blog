@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1230"
+  aria-label="Diagrama de sequência em três raias, com o tempo descendo: você (verde), o agente principal, o Claude que trabalha no seu pedido (azul), e o agente lateral do mod You should know (petróleo); a nota é âmbar. Na ordem dos números: 1, você envia o pedido, e o agente principal começa o turno e faz várias requisições ao modelo. 2, a cada seis requisições do mesmo turno, o mod faz uma pergunta sobre a conversa, em segundo plano e sem ferramentas, e o agente principal não para. 3, quase sempre a resposta é nada a dizer, e nada aparece na tela. 4, se algo passa da barra, o mod põe uma nota acima do seu prompt, com a etiqueta You should know ou Heads up. 5, você escolhe uma opção, 1: Learn more, 2: Knew this already ou 0: Dismiss, e o agente principal segue o trabalho. Embaixo, o desfecho: o padrão é não dizer nada.">
+  <path d="M200 130 V614 M200 666 V724 M200 850 V880 M200 994 V1040 M590 130 V1040 M980 130 V466 M980 583 V1040" class="grade"/>
+
+  <g class="tinta">
+    <g class="tom-verde">
+      <rect x="77" y="37" width="246" height="96" rx="12" class="hachura"/>
+      <rect x="70" y="30" width="246" height="96" rx="12" class="lavado"/>
+      <rect x="70" y="30" width="246" height="96" rx="12" class="linha"/>
+      <circle cx="108" cy="62" r="12" class="papel"/>
+      <circle cx="108" cy="62" r="12" class="linha"/>
+      <path d="M86 106 Q86 82 108 82 Q130 82 130 106" class="linha"/>
+      <path d="M200 190 H576 M562 181 L576 190 L562 199" class="linha-tom"/>
+      <path d="M410 935 H966 M952 926 L966 935 L952 944" class="linha-tom"/>
+    </g>
+    <g class="tom-azul">
+      <rect x="420" y="30" width="340" height="96" rx="12" transform="translate(7 6)" class="cor"/>
+      <rect x="420" y="30" width="340" height="96" rx="12" class="lavado"/>
+      <rect x="420" y="30" width="340" height="96" rx="12" class="linha"/>
+      <rect x="434" y="52" width="52" height="40" rx="5" class="papel"/>
+      <rect x="434" y="52" width="52" height="40" rx="5" class="linha"/>
+      <path d="M444 64 L452 71 L444 78 M458 80 H472" class="linha"/>
+      <rect x="578" y="190" width="24" height="820" rx="4" class="lavado"/>
+      <rect x="578" y="190" width="24" height="820" rx="4" class="linha"/>
+      <path d="M602 232 H628 M602 258 H628 M602 284 H628 M602 310 H628 M602 336 H628 M602 362 H628" class="linha-tom"/>
+      <path d="M642 226 Q654 226 654 238 V286 Q654 296 664 296 Q654 296 654 306 V356 Q654 368 642 368" class="linha-tom"/>
+      <path d="M590 1010 V1048 M581 1034 L590 1048 L599 1034" class="linha-tom"/>
+    </g>
+    <g class="tom-petroleo">
+      <rect x="817" y="37" width="340" height="96" rx="12" class="hachura"/>
+      <rect x="810" y="30" width="340" height="96" rx="12" class="lavado"/>
+      <rect x="810" y="30" width="340" height="96" rx="12" class="linha"/>
+      <circle cx="842" cy="68" r="15" class="papel"/>
+      <circle cx="842" cy="68" r="15" class="linha"/>
+      <path d="M853 79 L868 94" class="linha"/>
+      <path d="M602 420 H966 M952 411 L966 420 L952 429" class="linha-tom"/>
+      <rect x="857" y="473" width="260" height="110" rx="8" class="hachura"/>
+      <rect x="850" y="466" width="260" height="110" rx="8" class="lavado"/>
+      <rect x="850" y="466" width="260" height="110" rx="8" class="linha"/>
+      <path d="M966 640 H326" class="fantasma"/>
+      <rect x="76" y="614" width="250" height="52" rx="8" class="fantasma"/>
+      <path d="M980 760 H339 M353 751 L339 760 L353 769" class="linha-tom"/>
+      <rect x="70" y="880" width="340" height="114" rx="8" class="lavado"/>
+      <rect x="70" y="880" width="340" height="114" rx="8" class="linha"/>
+      <rect x="25" y="1080" width="1150" height="74" rx="12" class="lavado"/>
+      <rect x="25" y="1080" width="1150" height="74" rx="12" class="linha"/>
+    </g>
+    <g class="tom-ambar">
+      <rect x="75" y="724" width="264" height="120" rx="8" transform="translate(7 6)" class="cor"/>
+      <rect x="75" y="724" width="264" height="120" rx="8" class="papel"/>
+      <rect x="75" y="724" width="264" height="120" rx="8" class="linha"/>
+    </g>
+  </g>
+
+  <g class="tom-verde">
+    <path d="M202 190 H570" pathLength="1" class="pacote etapa-1"/>
+    <path d="M412 935 H960" pathLength="1" class="pacote etapa-5"/>
+  </g>
+  <g class="tom-petroleo">
+    <path d="M604 420 H960" pathLength="1" class="pacote etapa-2"/>
+    <path d="M978 760 H345" pathLength="1" class="pacote etapa-4"/>
+  </g>
+
+  <g class="tom-verde">
+    <text x="146" y="72" class="titulo-caixa">Você</text>
+    <text x="146" y="104" class="texto-caixa">a pessoa</text>
+    <circle cx="42" cy="190" r="19" class="selo"/>
+    <text x="42" y="191" class="selo-texto">1</text>
+    <text x="388" y="176" text-anchor="middle" class="texto-caixa texto-tom">envia o pedido</text>
+    <circle cx="42" cy="935" r="19" class="selo"/>
+    <text x="42" y="936" class="selo-texto">5</text>
+    <text x="784" y="921" text-anchor="middle" class="texto-caixa texto-tom">você escolhe uma opção</text>
+  </g>
+  <g class="tom-azul">
+    <text x="500" y="72" class="titulo-caixa">Agente principal</text>
+    <text x="500" y="104" class="texto-caixa">o Claude que trabalha</text>
+    <text x="560" y="240" text-anchor="end" class="texto-caixa texto-tom">começa o turno</text>
+    <text x="678" y="290" class="texto-caixa">requisições</text>
+    <text x="678" y="316" class="texto-caixa">ao modelo</text>
+    <text x="560" y="482" text-anchor="end" class="texto-caixa texto-tom">não para:</text>
+    <text x="560" y="510" text-anchor="end" class="texto-caixa texto-tom">segue trabalhando</text>
+    <text x="616" y="1004" class="texto-caixa texto-tom">segue o trabalho</text>
+  </g>
+  <g class="tom-petroleo">
+    <text x="880" y="72" class="titulo-caixa">Agente lateral</text>
+    <text x="880" y="104" class="texto-caixa">do mod You should know</text>
+    <circle cx="42" cy="420" r="19" class="selo"/>
+    <text x="42" y="421" class="selo-texto">2</text>
+    <text x="784" y="406" text-anchor="middle" class="texto-caixa texto-tom">a cada seis requisições</text>
+    <text x="980" y="502" text-anchor="middle" class="texto-caixa">uma pergunta sobre</text>
+    <text x="980" y="530" text-anchor="middle" class="texto-caixa">a conversa, em segundo</text>
+    <text x="980" y="558" text-anchor="middle" class="texto-caixa">plano, sem ferramentas</text>
+    <circle cx="42" cy="640" r="19" class="selo"/>
+    <text x="42" y="641" class="selo-texto">3</text>
+    <text x="784" y="626" text-anchor="middle" class="texto-caixa texto-tom">quase sempre: nada a dizer</text>
+    <text x="201" y="647" text-anchor="middle" class="nota-pequena">nada aparece</text>
+    <circle cx="42" cy="760" r="19" class="selo"/>
+    <text x="42" y="761" class="selo-texto">4</text>
+    <text x="784" y="746" text-anchor="middle" class="texto-caixa texto-tom">passou da barra: uma nota</text>
+    <text x="90" y="915" class="codigo">1: Learn more</text>
+    <text x="90" y="947" class="codigo">2: Knew this already</text>
+    <text x="90" y="979" class="codigo">0: Dismiss</text>
+    <text x="600" y="1112" text-anchor="middle" class="texto-caixa texto-tom">O padrão é não dizer nada.</text>
+    <text x="600" y="1140" text-anchor="middle" class="nota-pequena">A nota só aparece quando algo passa da barra, e o agente principal não é interrompido.</text>
+  </g>
+  <g class="tom-ambar">
+    <text x="95" y="762" class="codigo texto-tom">You should know</text>
+    <text x="95" y="794" class="texto-caixa">ou</text>
+    <text x="126" y="794" class="codigo texto-tom">Heads up</text>
+    <text x="95" y="826" class="nota-pequena">acima do seu prompt</text>
+  </g>
+
+  <g class="legenda tom-verde"><rect x="200" y="1186" width="22" height="16" rx="3" class="lavado"/><text x="232" y="1200" class="nota-pequena">você</text></g>
+  <g class="legenda tom-azul"><rect x="340" y="1186" width="22" height="16" rx="3" class="lavado"/><text x="372" y="1200" class="nota-pequena">agente principal (o Claude)</text></g>
+  <g class="legenda tom-petroleo"><rect x="640" y="1186" width="22" height="16" rx="3" class="lavado"/><text x="672" y="1200" class="nota-pequena">agente lateral do mod</text></g>
+  <g class="legenda tom-ambar"><rect x="920" y="1186" width="22" height="16" rx="3" class="lavado"/><text x="952" y="1200" class="nota-pequena">a nota</text></g>
+</svg>
