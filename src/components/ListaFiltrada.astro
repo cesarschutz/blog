@@ -393,6 +393,19 @@ const temIndices = Astro.slots.has("default") || indiceDosAnos.length > 0;
     list-style: none;
   }
 
+  /*
+   * A linha de base da pílula de tag é a do texto dela, e não o pé do ícone (o primeiro item do flex, um SVG,
+   * que não tem linha de base): sem isto, o rótulo "Por assunto" e o "Todas as tags" ficavam ~6px abaixo do
+   * texto das pílulas (D82). O ícone continua no meio.
+   */
+  .indices :global(.pilula-tag) {
+    align-items: baseline;
+  }
+
+  .indices :global(.pilula-tag .icone-pilula) {
+    align-self: center;
+  }
+
   .trilha {
     /* Acima do h1 logo abaixo: a caixa do texto grande (line-height 1,05) sobe e pegava o clique (D54). */
     position: relative;
@@ -552,6 +565,7 @@ const temIndices = Astro.slots.has("default") || indiceDosAnos.length > 0;
     background: var(--paper-hi);
     color: var(--ink-2);
     font: inherit;
+    white-space: nowrap;
     cursor: pointer;
   }
 
@@ -710,9 +724,12 @@ const temIndices = Astro.slots.has("default") || indiceDosAnos.length > 0;
       padding-bottom: 0;
     }
 
+    /* A largura do pé é a do texto dele, e não a da estante (com um ou dois livros, ela tem de 25 a 70px e o
+       rótulo quebrava palavra por palavra, D82), até a largura da folha. */
     .lado-estante :global(.pe-estante) {
       position: static;
-      width: auto;
+      width: max-content;
+      max-width: calc(100vw - 2 * var(--pad) - 40px);
       min-width: 0;
     }
 

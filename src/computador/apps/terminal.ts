@@ -11,7 +11,7 @@
  *   quando o foco vai para outro lugar (o clique fora, o Tab para fora, o `open` de um arquivo), como os
  *   terminais suspensos de verdade, e o foco volta para onde estava.
  * - O sistema de arquivos: ~/blog/livros/<livro>/<post>.md (ou .mdx) e ~/blog/series/<série>/…, mais o
- *   leia-me.md, e o .zshrc e o .zsh_history escondidos em ~. Os dados vêm de s.dados(); o texto de cada
+ *   Leia-me.md, e o .zshrc e o .zsh_history escondidos em ~. Os dados vêm de s.dados(); o texto de cada
  *   post é o .md cru do repositório (textoDoPost), lido só quando o `cat`, o `ls -l` ou o `open` pedem.
  * - Os comandos: help, ls (-1aAFhlrt), cd (com o cdpath: `cd dados` de qualquer lugar), pwd, tree
  *   (-a -d -L), cat (-n), open (-a, -R), code, clear, history, echo, date, whoami, which, man e exit;
@@ -211,7 +211,8 @@ class Disco {
       }
     }
     const leia = leiaMe(d);
-    arquivo("leia-me.md", this.blog, () => Promise.resolve(leia), new Date(2026, 8, 30, 21, 7, 42));
+    // O mesmo nome do Código (editor.ts, LEIA_ME): "cat Leia-me.md" dava erro no Terminal (D82).
+    arquivo("Leia-me.md", this.blog, () => Promise.resolve(leia), new Date(2026, 8, 30, 21, 7, 42));
     arquivo(".zshrc", this.casa, () => Promise.resolve(ZSHRC), new Date(2026, 8, 30, 21, 12, 5));
     arquivo(".zsh_history", this.casa, () => Promise.resolve(historico.map((l) => `${l}\n`).join("")), agora);
     // A data de cada pasta é a do arquivo mais novo dentro dela (a vazia fica com a do primeiro artigo).
@@ -1875,8 +1876,10 @@ const COMANDOS_DO_SHELL: Record<string, Comando> = {
   },
 
   history(ses, _d, args) {
-    const de = args[0] && /^-?\d+$/.test(args[0]) ? Number(args[0]) : historico.length - 15;
-    const inicio = de < 0 ? Math.max(1, historico.length + de) : Math.max(1, de);
+    // Sem argumento, os últimos 16, como o zsh; "-N", os últimos N; "N", do N em diante. (Antes, com menos de 15
+    // comandos, o padrão caía no ramo do "-N" e sumiam os primeiros, D82.)
+    const arg = args[0] && /^-?\d+$/.test(args[0]) ? Number(args[0]) : null;
+    const inicio = arg === null ? Math.max(1, historico.length - 15) : arg < 0 ? Math.max(1, historico.length + arg + 1) : Math.max(1, arg);
     const linhas: string[] = [];
     for (let i = inicio; i <= historico.length; i++) linhas.push(`${String(i).padStart(5)}  ${historico[i - 1]}`);
     if (linhas.length) ses.texto(linhas.join("\n"));

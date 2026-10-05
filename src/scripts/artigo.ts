@@ -724,9 +724,9 @@ if (corpoDoArtigo?.querySelector(".expressive-code .copy")) {
 
 // ---------- o aviso das tabelas que rolam de lado (D70) ----------
 
-// No celular, a tabela que não cabe rola dentro da moldura (prosa.css). O aviso "Arraste para o lado"
-// existe só enquanto ela passa mesmo da caixa: mais que o respiro da última célula (10px), ou seja,
-// quando alguma letra fica de fora. Aqui só se mede; quem mostra o aviso é o CSS, até 700px.
+// A tabela que não cabe rola dentro da moldura (prosa.css). O aviso "Arraste para o lado" existe só
+// enquanto ela passa mesmo da caixa: mais que o respiro da última célula (10px), ou seja, quando alguma
+// letra fica de fora. Aqui só se mede; quem mostra o aviso é o CSS, em qualquer largura (D82).
 const SOBRA_DA_TABELA = 12;
 const tabelas = [...document.querySelectorAll<HTMLElement>(".prose .tabela")];
 if (tabelas.length && "ResizeObserver" in window) {

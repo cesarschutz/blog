@@ -60,7 +60,7 @@ const { chamada, tombo } = await chamadaDe(post);
 <div class="folha topo-folha" style={`--cor:${post.cor}`}>
   {
     chamada && (
-      <p class="tira-ficha" aria-hidden="true">
+      <p class="tira-ficha" aria-hidden="true" data-pagefind-ignore>
         <span>{chamada}</span>
         <span>{tombo}</span>
       </p>
@@ -89,8 +89,8 @@ const { chamada, tombo } = await chamadaDe(post);
     {livro && <MarcaDagua livro={livro} />}
     <nav class="trilha" aria-label="Trilha" data-pagefind-ignore>
       <a href={raiz.href}>{raiz.nome}</a>
-      <span aria-hidden="true">›</span>
-      <Chip cor={post.cor} nome={post.rotulo} href={post.urlRotulo} />
+      {/* A seta presa ao livro: num livro de nome longo em 320px, o chip descia e a seta sobrava sozinha (D82). */}
+      <span class="trilha-livro"><span aria-hidden="true">›</span><Chip cor={post.cor} nome={post.rotulo} href={post.urlRotulo} /></span>
     </nav>
     <h1 data-pagefind-meta="title" tabindex="-1" set:html={tituloEmPartes(post.tituloCompleto)} />
     <p class="lede" set:html={mdEmLinha(post.descricao)} />
@@ -467,6 +467,13 @@ const { chamada, tombo } = await chamadaDe(post);
     font-family: var(--font-ui);
     font-size: 14.5px;
     color: var(--ink-2);
+  }
+
+  .trilha-livro {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
   }
 
   /* Só o link da raiz: o chip é de outro componente e tem a própria cor. */

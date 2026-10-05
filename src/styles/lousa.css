@@ -378,7 +378,10 @@
 
 /* ---------- frase em destaque (FraseDestaque) ---------- */
 
-.frase-destaque {
+/* Com `.prose` na frente: a regra do blockquote da prosa (o fio, o recuo e o cinza, prosa.css) é mais forte que
+   a classe sozinha, e a frase saía cinza com movimento reduzido e sem JS (D82). */
+.frase-destaque,
+.prose .frase-destaque {
   margin: 1.8em 0;
   padding: 0;
   border: 0;
@@ -390,7 +393,8 @@
   text-wrap: balance;
 }
 
-.frase-destaque p {
+.frase-destaque p,
+.prose .frase-destaque p {
   margin: 0;
 }
 

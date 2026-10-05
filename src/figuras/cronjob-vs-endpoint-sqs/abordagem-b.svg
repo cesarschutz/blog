@@ -70,7 +70,7 @@
     <circle cx="268" cy="118" r="16" class="selo"/>
     <text x="268" y="119" class="selo-texto">1</text>
     <text x="292" y="125" class="nota-pequena">curl</text>
-    <text x="356" y="192" text-anchor="middle" class="codigo">POST /processar</text>
+    <text x="356" y="192" text-anchor="middle" class="codigo" textLength="206" lengthAdjust="spacingAndGlyphs">POST /processar</text>
   </g>
   <g class="tom-ambar">
     <text x="539" y="84" class="titulo-caixa">Pods da API</text>

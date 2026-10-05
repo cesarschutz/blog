@@ -32,13 +32,15 @@ export function mdEmLinhaComLinks(texto: string): string {
 }
 
 /**
- * Título em HTML com um ponto de quebra (`<wbr>`) depois do ponto de um identificador
- * ("AopUtils.getTargetClass()"): na coluna estreita, quebra ali e não no meio da palavra. O
- * travessão fica preso à palavra seguinte (D39), para nunca sobrar sozinho numa linha.
+ * Título em HTML com pontos de quebra (`<wbr>`) depois do ponto de um identificador
+ * ("AopUtils.getTargetClass()") e entre as palavras de um nome em camelCase ("Message|Attributes", D82):
+ * na coluna estreita, quebra ali e não no meio da palavra. O travessão fica preso à palavra seguinte
+ * (D39), para nunca sobrar sozinho numa linha.
  */
 export function tituloComQuebras(texto: string): string {
   return escapar(texto)
     .replace(/(?<=\.)(?=[A-Za-z])/g, "<wbr>")
+    .replace(/(?<=[a-z])(?=[A-Z][a-z])/g, "<wbr>")
     .replace(/ — /g, " —&nbsp;");
 }
 

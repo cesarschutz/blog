@@ -188,6 +188,11 @@ const enderecos = [
     max-width: 62ch;
   }
 
+  /* Sem JS, a busca não abre: o botão some, como o do cabeçalho. */
+  :global(:root:not([data-js])) .caminhos [data-busca-abrir] {
+    display: none;
+  }
+
   .cena {
     max-width: 100%;
     min-width: 0;
@@ -381,8 +386,12 @@ const enderecos = [
     }
   }
 
-  /* Tablet e celular: a estante desce para baixo do erro, no centro (como na home). */
-  @media (max-width: 1100px) {
+  /*
+   * Até 1480px, a estante desce para baixo do erro, no centro. Com a coleção de 14 livros (D78), a estante pede
+   * ~1000px de largura: lado a lado, abaixo disso, a coluna do erro encolhia até o título quebrar letra por letra
+   * (D82).
+   */
+  @media (max-width: 1480px) {
     .caixa {
       grid-template-columns: minmax(0, 1fr);
       gap: 30px;

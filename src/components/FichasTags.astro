@@ -192,6 +192,12 @@ const fichas = (ordem === "uso" ? [...tags] : [...tags].sort((a, b) => a.nome.lo
     color: var(--ink);
   }
 
+  /* A orelha fica fora da ficha (à esquerda): onde a margem da página é menor que ela, a lista abre espaço, e
+     ela não é cortada pela borda da janela (de 641 a ~1000px, D82). */
+  .fichas-tags {
+    padding-left: max(0px, calc(30px - var(--pad)));
+  }
+
   @media (max-width: 640px) {
     .fichas-tags {
       padding-left: 14px;

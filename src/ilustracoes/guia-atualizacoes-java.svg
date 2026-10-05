@@ -19,7 +19,7 @@
     <circle cx="918" cy="600" r="9" class="papel"/>
     <circle cx="1030" cy="600" r="9" class="fantasma"/>
   </g>
-  <g transform="translate(590 290)"><text x="120" y="110" text-anchor="middle" class="codigo">JAVA</text></g>
+  <g transform="translate(590 290)"><text x="120" y="110" text-anchor="middle" class="codigo sobre-cor">JAVA</text></g>
   <text x="470" y="578" text-anchor="middle" class="codigo">8</text>
   <text x="582" y="578" text-anchor="middle" class="codigo">11</text>
   <text x="694" y="578" text-anchor="middle" class="codigo">17</text>

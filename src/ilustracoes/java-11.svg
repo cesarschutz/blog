@@ -12,8 +12,8 @@
     </g>
     <g transform="rotate(-12 930 585)"><rect x="868" y="558" width="124" height="54" rx="6" class="carimbo"/></g>
   </g>
-  <g transform="translate(590 330)"><text x="120" y="58" text-anchor="middle" class="codigo">JAVA</text>
-      <text x="120" y="150" text-anchor="middle" class="numero">11</text></g>
+  <g transform="translate(590 330)"><text x="120" y="58" text-anchor="middle" class="codigo sobre-cor">JAVA</text>
+      <text x="120" y="150" text-anchor="middle" class="numero sobre-cor">11</text></g>
   <g transform="rotate(-12 930 585)"><text x="930" y="596" text-anchor="middle" class="carimbo-texto">LTS</text></g>
   <g class="anotacao">
       <text x="110" y="386" class="nota">desde o Java 8</text>

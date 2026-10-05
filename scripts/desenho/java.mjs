@@ -95,10 +95,13 @@ const ordenadas = [...JAVA_LTS].sort((a, b) => a.version - b.version);
 for (const [i, lts] of ordenadas.entries()) {
   const anterior = ordenadas[i - 1]?.version;
   const futura = Boolean(lts.upcoming);
+  // Na caneca cheia, o texto fica em cima da cor (`sobre-cor`, desenho.css: o papel no escuro, D82); na próxima
+  // LTS, em linha tracejada, sobre o papel.
+  const sobreCor = futura ? "" : " sobre-cor";
   const c = caneca(590, 330, {
     futura,
-    texto: `<text x="120" y="58" text-anchor="middle" class="codigo">JAVA</text>
-      <text x="120" y="150" text-anchor="middle" class="numero">${lts.version}</text>`,
+    texto: `<text x="120" y="58" text-anchor="middle" class="codigo${sobreCor}">JAVA</text>
+      <text x="120" y="150" text-anchor="middle" class="numero${sobreCor}">${lts.version}</text>`,
   });
   // Girado, o canto de baixo desce: o carimbo longo fica mais alto para não sair do recorte largo.
   const selo = futura ? carimbo(905, 565, "PRÓXIMA LTS", true) : carimbo(930, 585, "LTS", false);
@@ -110,7 +113,7 @@ for (const [i, lts] of ordenadas.entries()) {
 }
 
 // Guia: a caneca e a linha das LTS por baixo, com a próxima em linha fantasma.
-const c = caneca(590, 290, { texto: `<text x="120" y="110" text-anchor="middle" class="codigo">JAVA</text>` });
+const c = caneca(590, 290, { texto: `<text x="120" y="110" text-anchor="middle" class="codigo sobre-cor">JAVA</text>` });
 const [x0, x1, y] = [470, 1030, 600];
 const passo = (x1 - x0) / (ordenadas.length - 1);
 const ultimaLancada = x0 + passo * (ordenadas.filter((l) => !l.upcoming).length - 1);

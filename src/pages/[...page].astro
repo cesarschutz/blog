@@ -142,9 +142,10 @@ const jsonLd = {
     border-top: 1px solid var(--rule);
   }
 
-  /* O traço de caneta embaixo do título (P17-1) desce 0,42em: a coleção começa depois dele. */
+  /* O traço de caneta embaixo do título (P17-1) desce 0,42em: a coleção começa depois dele, com um respiro
+     para o primeiro abajur não encostar no traço. */
   .topo-colecao {
-    margin-bottom: 4px;
+    margin-bottom: clamp(6px, 1.3vw, 18px);
   }
 
   .topo-colecao .titulo-secao {

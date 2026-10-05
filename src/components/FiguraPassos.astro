@@ -42,39 +42,57 @@ const maiorPasso = Math.max(0, ...[...svg.matchAll(/\sdata-passo="(\d+)"/g)].map
 if (maiorPasso !== passos.length) {
   throw new Error(`A figura em passos src/figuras/${figura}.svg tem ${maiorPasso} passos no desenho e ${passos.length} na lista: precisam bater.`);
 }
+// No RSS: a legenda, o link para a figura no site e a lista dos passos (sem o desenho, que sai em blocos pretos
+// sem o CSS do site, e sem o número repetido do selo), como a Lousa (D82).
+const rss = Astro.locals.rss;
 ---
 
-<figure class="figura figura-passos" data-pagefind-ignore data-total={passos.length} data-fim={fim} data-estilo={estilo}>
-  <div class="figura-palco painel" set:html={svg} />
-  {fim === "segmentos" && <div class="passos-segmentos" aria-hidden="true">{passos.map(() => <span />)}</div>}
-  <p class="dica-rolar" aria-hidden="true">Arraste para o lado para ver a figura inteira.</p>
-  <div class="passos-barra" hidden>
-    <button type="button" class="passos-comecar">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5 L18 12 L8 18.5 Z" /></svg>
-      <span>Passo a passo</span>
-    </button>
-    <button type="button" class="passos-anterior" aria-label="Passo anterior">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 L8 12 L15 19" /></svg>
-    </button>
-    <p class="passos-contador" aria-live="polite">
-      <svg class="passos-anel" viewBox="0 0 24 24" aria-hidden="true"><circle class="trilho" cx="12" cy="12" r="9.5" /><circle class="progresso" cx="12" cy="12" r="9.5" pathLength="1" /><path class="visto" d="M7.6 12.4 L10.7 15.4 L16.6 9" pathLength="1" /></svg><span class="passos-rotulo">Passo</span> <b>1</b> de {passos.length}
-    </p>
-    <button type="button" class="passos-proximo">
-      <span>Próximo</span>
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5 L16 12 L9 19" /></svg>
-    </button>
-    <button type="button" class="passos-tudo">Ver tudo</button>
-  </div>
-  <ol class="passos-lista">
-    {passos.map((texto, i) => (
-      <li data-passo-item={i + 1}>
-        <span class="passos-num" aria-hidden="true">{i + 1}</span>
-        <span class="passos-texto" set:html={mdEmLinha(texto)} />
-      </li>
-    ))}
-  </ol>
-  {legenda && <figcaption>{legenda}</figcaption>}
-</figure>
+{
+  rss ? (
+    <>
+      <p>
+        {legenda && <em>{legenda}</em>} <a href={rss.endereco}>A figura em passos está no site.</a>
+      </p>
+      <ol>
+        {passos.map((texto) => (
+          <li set:html={mdEmLinha(texto)} />
+        ))}
+      </ol>
+    </>
+  ) : (
+    <figure class="figura figura-passos" data-pagefind-ignore data-total={passos.length} data-fim={fim} data-estilo={estilo}>
+      <div class="figura-palco painel" set:html={svg} />
+      {fim === "segmentos" && <div class="passos-segmentos" aria-hidden="true">{passos.map(() => <span />)}</div>}
+      <p class="dica-rolar" aria-hidden="true">Arraste para o lado para ver a figura inteira.</p>
+      <div class="passos-barra" hidden>
+        <button type="button" class="passos-comecar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5 L18 12 L8 18.5 Z" /></svg>
+          <span>Passo a passo</span>
+        </button>
+        <button type="button" class="passos-anterior" aria-label="Passo anterior">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 L8 12 L15 19" /></svg>
+        </button>
+        <p class="passos-contador" aria-live="polite">
+          <svg class="passos-anel" viewBox="0 0 24 24" aria-hidden="true"><circle class="trilho" cx="12" cy="12" r="9.5" /><circle class="progresso" cx="12" cy="12" r="9.5" pathLength="1" /><path class="visto" d="M7.6 12.4 L10.7 15.4 L16.6 9" pathLength="1" /></svg><span class="passos-rotulo">Passo</span> <b>1</b> de {passos.length}
+        </p>
+        <button type="button" class="passos-proximo">
+          <span>Próximo</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5 L16 12 L9 19" /></svg>
+        </button>
+        <button type="button" class="passos-tudo">Ver tudo</button>
+      </div>
+      <ol class="passos-lista">
+        {passos.map((texto, i) => (
+          <li data-passo-item={i + 1}>
+            <span class="passos-num" aria-hidden="true">{i + 1}</span>
+            <span class="passos-texto" set:html={mdEmLinha(texto)} />
+          </li>
+        ))}
+      </ol>
+      {legenda && <figcaption>{legenda}</figcaption>}
+    </figure>
+  )
+}
 
 <script>
   import { montarFigurasEmPassos } from "../scripts/figura-passos";

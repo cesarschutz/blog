@@ -58,13 +58,15 @@ let cache: Post[] | undefined;
 
 /**
  * Posts publicados, do mais novo para o mais antigo. Rascunhos só aparecem no dev.
- * Empate de data: ordem alfabética do slug, como o blog atual fazia de fato.
+ * Empate de data: o slug em ordem alfabética inversa (D82), para a lista ser exatamente o inverso da ordem de
+ * chegada que numera as fichas e os tombos (ficha.ts, slug em ordem alfabética). Antes, os dois desempates
+ * iam no mesmo sentido: num dia com dois posts, a lista, o arquivo e os vizinhos saíam trocados.
  */
 export async function getPosts(): Promise<Post[]> {
   if (!cache) {
     const todos = await getCollection("posts", ({ data }) => (import.meta.env.PROD ? !data.draft : true));
     cache = todos.sort(
-      (a, b) => b.data.published.getTime() - a.data.published.getTime() || a.id.localeCompare(b.id),
+      (a, b) => b.data.published.getTime() - a.data.published.getTime() || b.id.localeCompare(a.id),
     );
   }
   return cache;

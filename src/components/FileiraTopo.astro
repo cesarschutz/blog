@@ -114,12 +114,14 @@ const { livros, atual, chao = "vidro" } = Astro.props;
         animation-range: 0 360px;
       }
 
+      /* A folha de trás fica opaca logo que a fileira começa a passar por cima do painel (~30px de rolagem):
+         antes (de 160 a 340px), o texto e o livro de baixo apareciam entre os livros e em fantasma (D82). */
       .chapa::before {
         animation-name: fileira-folha;
         animation-timing-function: linear;
         animation-fill-mode: both;
         animation-timeline: scroll(root);
-        animation-range: 160px 340px;
+        animation-range: 16px 72px;
       }
     }
   }

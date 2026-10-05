@@ -258,6 +258,25 @@
   display: none;
 }
 
+/*
+ * O aviso vale em qualquer largura em que a tabela passe da caixa (D82): só até 700px, entre 701 e ~1280px as
+ * tabelas largas (as da série Java) rolavam escondendo colunas inteiras, sem nenhum sinal.
+ */
+@media screen {
+  .prose .tabela[data-rola] {
+    margin-bottom: 0;
+  }
+
+  /* A mesma letra do aviso das figuras; embaixo, o respiro que a tabela teria (1,4em do texto). */
+  .prose .tabela[data-rola] + .dica-rolar {
+    display: block;
+    margin-block: 8px 26px;
+    font-family: var(--font-ui);
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+}
+
 @media screen and (max-width: 700px) {
   .prose th,
   .prose td {
@@ -284,19 +303,6 @@
     border-bottom: 0;
   }
 
-  .prose .tabela[data-rola] {
-    margin-bottom: 0;
-  }
-
-  /* A mesma letra do aviso das figuras; embaixo, o respiro que a tabela teria (1,4em do texto). */
-  .prose .tabela[data-rola] + .dica-rolar {
-    display: block;
-    margin-block: 8px 26px;
-    font-family: var(--font-ui);
-    font-size: 13px;
-    color: var(--ink-2);
-  }
-
   .prose details > .tabela[data-rola] + .dica-rolar:last-child {
     margin-block-end: 16px;
   }
@@ -314,6 +320,15 @@
   margin: 0 0 1.4em;
 }
 
+/* No toque, o Copiar fica sempre à vista (D49): no bloco sem título, ele ganha uma faixa própria no alto, em vez
+   de sentar em cima da primeira linha do código (D82). Aqui, e não no tema do Expressive Code (codigo.ts),
+   para não mudar o CSS gerado por ele. */
+@media (hover: none) {
+  .prose .expressive-code .frame:not(.has-title, .is-terminal) pre {
+    padding-top: 36px;
+  }
+}
+
 /* O Copiar do Expressive Code usa o foco do site (o dele era o anel padrão do navegador). */
 .expressive-code .copy button:focus-visible {
   outline: 2px solid var(--acento);
@@ -323,11 +338,17 @@
 /*
  * Bloco de código fora da tela não é desenhado (D37): o java-25 tem 36 blocos e quase 8 mil elementos.
  * A altura enquanto isso vem do número de linhas (--linhas, do plugin em src/lib/codigo.ts: 14px com
- * entrelinha 1,65 e ~72px de barra e respiro); depois de desenhado, o navegador lembra a real (auto).
+ * entrelinha 1,65) e da moldura: ~68px de barra e respiro com título (ou no terminal), ~34px sem título;
+ * depois de desenhado, o navegador lembra a real (auto). Com a estimativa única de 72px, o bloco sem
+ * título encolhia 38px ao ser desenhado, e quem chegava por um #link via o título pular (D82).
  */
 .prose .expressive-code .frame {
   content-visibility: auto;
-  contain-intrinsic-size: auto calc(var(--linhas, 10) * 23.1px + 72px);
+  contain-intrinsic-size: auto calc(var(--linhas, 10) * 23.1px + 68px);
+}
+
+.prose .expressive-code .frame:not(.has-title, .is-terminal) {
+  contain-intrinsic-size: auto calc(var(--linhas, 10) * 23.1px + 34px);
 }
 
 /* Cabeçalhos de linha mantêm a aparência das células que já nomeavam os itens. */

@@ -186,8 +186,11 @@ const lados = await Promise.all(
     height: 100%;
   }
 
+  /* A coluna na largura do card: sem ela, o título com uma palavra longa ("MessageAttributes") alargava a
+     coluna e saía cortado pela borda em 320px (D82). */
   .vizinho-texto {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     align-content: center;
     gap: 5px;
     min-width: 0;

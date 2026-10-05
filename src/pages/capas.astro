@@ -154,12 +154,14 @@ const descricao =
     text-decoration: none;
   }
 
+  /* A cor do livro, clareada no escuro como no resto do site (desenho.css): crua, as cores escuras (Frontend,
+     Sistemas Distribuídos, Testes) sumiam no papel escuro (D82). */
   .indice-icone {
     display: grid;
     place-items: center;
     width: 30px;
     height: 30px;
-    color: var(--cor);
+    color: color-mix(in oklab, var(--cor), #fff var(--branco-no-escuro));
   }
 
   .indice-icone :global(svg) {
@@ -345,7 +347,11 @@ const descricao =
     flex: none;
     width: 30px;
     margin-top: 0.85em;
-    border-top: 2px dashed var(--traco);
+    border-top: 2px dashed color-mix(in oklab, var(--traco), #fff var(--branco-no-escuro));
+  }
+
+  .tira-peca::after {
+    background: color-mix(in oklab, var(--fio-ficha), #fff var(--branco-no-escuro));
   }
 
   .rotulo-desenho {
@@ -368,16 +374,17 @@ const descricao =
     line-height: 1.4;
   }
 
+  /* Em linha, e não flex: num link que quebra em duas linhas, a seta fica colada à última palavra (no flex, ela
+     ia para a ponta direita da coluna, D82). */
   .acoes a {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 6px;
+    display: inline;
     color: var(--acento);
   }
 
   .acoes svg {
-    flex: none;
-    align-self: center;
+    display: inline-block;
+    margin-left: 5px;
+    vertical-align: -0.12em;
     width: 14px;
     height: 14px;
     fill: none;

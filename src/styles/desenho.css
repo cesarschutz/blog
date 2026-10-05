@@ -26,6 +26,9 @@
 .ilustracao {
   --traco: 3;
   --cor-desenho: color-mix(in oklab, var(--cor, var(--ink-2)), #fff var(--branco-no-escuro));
+  /* O carimbo (traço e texto) na cor do livro puxada para a tinta: com a cor crua, os livros claros davam
+     2,3:1 no claro ("Forbid" e "SIGKILL" no DevOps, D82); no escuro, a mistura clareia ainda mais. */
+  --cor-carimbo: color-mix(in oklab, var(--cor-desenho) 66%, var(--ink));
   --superficie: var(--fig-bg, var(--paper));
   display: block;
   width: 100%;
@@ -138,7 +141,7 @@
 
 .ilustracao .tinta .carimbo {
   fill: none;
-  stroke: var(--cor-desenho);
+  stroke: var(--cor-carimbo);
 }
 
 .ilustracao .rotulo {
@@ -175,7 +178,16 @@
   font-weight: 800;
   font-size: 30px;
   letter-spacing: 0.06em;
-  fill: var(--cor-desenho);
+  fill: var(--cor-carimbo);
+}
+
+/*
+ * O texto escrito em cima da cor do livro (o "30s" do cronômetro, a etiqueta do traceparent, "JAVA" e a versão
+ * na caneca): a tinta no claro e o papel no escuro, onde a cor fica clara. Com a tinta quase branca, no escuro
+ * dava de 2:1 a 2,7:1 (D82). A troca sai de `--branco-no-escuro` (0% no claro, 42% no escuro).
+ */
+.ilustracao .sobre-cor {
+  fill: color-mix(in oklab, var(--ink), var(--superficie) min(100%, calc(var(--branco-no-escuro) * 2.381)));
 }
 
 /* Anotações: só nos recortes grandes (o componente liga com a classe com-anotacoes). */

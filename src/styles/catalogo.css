@@ -68,17 +68,21 @@
   letter-spacing: 0;
   color: var(--ink-2);
   font-variant-numeric: lining-nums tabular-nums;
-  white-space: nowrap;
 }
 
-.tira-catalogo > span:first-child {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/*
+ * Quando a tira não cabe numa linha (a ficha estreita, o celular), ela quebra em vez de cortar com reticências
+ * (D82): a parte da direita desce para a linha de baixo, encostada à direita, e a da esquerda (o volume e o
+ * número de artigos, a informação) fica inteira.
+ */
+.tira-catalogo {
+  flex-wrap: wrap;
+  row-gap: 1px;
 }
 
 .tira-catalogo > span:last-child:not(:first-child) {
-  flex: none;
+  margin-left: auto;
+  white-space: nowrap;
 }
 
 .tira-catalogo::after {

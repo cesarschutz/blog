@@ -35,7 +35,7 @@ const CLASSES_DA_LOUSA = new Set(["traco", "fino", "guia", "destaque", "fantasma
 const TEMPO = { traco: 2, escrita: 2, revela: 2, aparece: 2, some: 2, esmaece: 3, desloca: 4 };
 const CLASSES = new Set([
   "tinta", "linha", "fumaca", "papel", "cor", "hachura", "fantasma", "carimbo",
-  "rotulo", "valor", "numero", "codigo", "carimbo-texto", "anotacao", "nota", "nota-pequena", "chamada",
+  "rotulo", "valor", "numero", "codigo", "carimbo-texto", "sobre-cor", "anotacao", "nota", "nota-pequena", "chamada",
   // A capa viva (D58, src/styles/capa-viva.css): o detalhe que se mexe no hover.
   "mexe-balanca", "mexe-gira", "mexe-pulsa", "mexe-pisca", "mexe-sobe", "mexe-desliza", "mexe-treme", "mexe-escreve", "mexe-enche",
 ]);

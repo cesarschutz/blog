@@ -16,8 +16,8 @@
     <path d="M612 248 H852 V312 H612 L592 280 Z" class="linha"/>
     <path d="M614 280 A6 6 0 1 1 602 280 A6 6 0 1 1 614 280 Z" class="linha"/>
   </g>
-  <text x="736" y="274" text-anchor="middle" class="codigo">traceparent</text>
-  <text x="736" y="302" text-anchor="middle" class="codigo">00-4bf92f35…-01</text>
+  <text x="736" y="274" text-anchor="middle" class="codigo sobre-cor">traceparent</text>
+  <text x="736" y="302" text-anchor="middle" class="codigo sobre-cor">00-4bf92f35…-01</text>
   <text x="505" y="438" text-anchor="middle" class="rotulo">api</text>
   <text x="725" y="438" text-anchor="middle" class="rotulo">fila</text>
   <text x="945" y="438" text-anchor="middle" class="rotulo">worker</text>

@@ -1029,9 +1029,12 @@ const letras = (nome: string) => [...nome].map((c, k) => ({ c, k }));
     outline: none;
   }
 
+  /* Sobre o feltro escuro, o azul-tinta quase não se via (1,2:1 no claro): o anel é da cor do papel, com o azul
+     por fora (D82). */
   .cordinha:focus-visible .cordinha-pingente {
-    outline: 2px solid var(--acento);
+    outline: 2px solid var(--paper-hi);
     outline-offset: 3px;
+    box-shadow: 0 0 0 7px var(--acento);
   }
 
   /* O pêndulo que perde força (14°, −7°, 3°, −1°, em 1,2s), no hover e no foco do teclado. */

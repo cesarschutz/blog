@@ -349,6 +349,11 @@ const ITENS = [
     outline-offset: -2px;
   }
 
+  /* No foco, o conteúdo sai de baixo do anel (ele passava por cima do "1" de "12 de 12", D82). */
+  .secao-atual:focus-visible .vaga {
+    padding-inline: 6px;
+  }
+
   /* Com a lateral (≥ 1300px), o sumário já está à vista: a marca fica sempre. */
   @media (min-width: 1300px) {
     .secao-atual {
@@ -784,6 +789,16 @@ const ITENS = [
       transition: clip-path 0.5s cubic-bezier(0.7, 0, 0.2, 1);
     }
 
+    /* Com a folha aberta, a página de baixo não rola: o gesto sobre a folha rolava o artigo escondido, e ao
+       fechar o leitor estava em outro ponto (D82). O `scrollbar-gutter` da raiz evita o salto. */
+    :global(:root[data-menu-aberto]) {
+      overflow: hidden;
+    }
+
+    .menu {
+      overscroll-behavior: contain;
+    }
+
     /* Na troca de página, a folha sai de uma vez, antes de o navegador fotografar o cabeçalho (troca.js, D54). */
     :global(:root[data-troca-sem-menu]) .menu {
       visibility: hidden;
@@ -935,13 +950,18 @@ const ITENS = [
       display: none;
     }
 
+    /* (A folha do menu tem a altura da tela e vai em coluna: aqui, uma linha só, na altura dos links.) */
     :global(:root:not([data-js])) .menu {
       position: static;
       display: flex;
+      flex-direction: row;
       flex-wrap: wrap;
+      align-items: baseline;
       gap: 4px 18px;
       order: 1;
       width: 100%;
+      height: auto;
+      overflow: visible;
       padding: 0;
       border: 0;
       background: none;

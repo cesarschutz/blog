@@ -16,7 +16,7 @@
     <path d="M850 222 L945 282 M934 281.3 L945 282 L939.7 272.4" class="linha"/>
     <g transform="rotate(-12 935 545)"><rect x="847" y="518" width="176" height="54" rx="6" class="carimbo"/></g>
   </g>
-  <text x="700" y="506" text-anchor="middle" class="valor">30s</text>
+  <text x="700" y="506" text-anchor="middle" class="valor sobre-cor">30s</text>
   <text x="735" y="222" class="codigo">SIGTERM</text>
   <text x="975" y="334" text-anchor="middle" class="rotulo">pod</text>
   <g transform="rotate(-12 935 545)"><text x="935" y="556" text-anchor="middle" class="carimbo-texto">SIGKILL</text></g>
