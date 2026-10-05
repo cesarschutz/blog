@@ -286,6 +286,16 @@ e avanço proporcional de cinco minutos no hover, com retorno suave. `check`, `b
 validador e revisão dos desenhos passaram; eixo e proporção conferidos no navegador durante o
 movimento e com movimento reduzido, com trace de CPU 4× sem tarefas longas durante o giro.
 
+**A home em prateleiras, a revisão geral e a faxina (D84, 04/10/2026):** a pedido do Cesar ("a home não
+está valorizando os livros"), a coleção da home virou uma estante de prateleiras de capas
+(`ColecaoHome.astro`): 7 livros por prateleira a partir de 900px (até 214px de altura), 5 de 600 a 899px e 4
+abaixo de 600px, sempre de capa, sem lombada nem rolagem lateral, cada livro com o seu abajur e uma lâmina
+por prateleira; a abertura risca uma lâmina de cada vez. Saiu a linha entre o nome e os livros (frase,
+números, último artigo); o nome ficou menor, com o "blog" carimbado e inclinado sobre o Z; o nome do rodapé
+fica numa linha só no celular. Depois, a revisão geral das telas por agentes (78 achados no site publicado,
+75 confirmados, 74 corrigidos; mais 13 na home nova), com a lista em `docs/ajustes-d84/controle.md`. A
+faxina do código e dos documentos vem em seguida, na mesma rodada.
+
 **Post de DNS (D81, 04/10/2026, publicado):** `dns-tipos-de-registro`, "Registros de DNS — A, AAAA,
 CNAME, MX, TXT e o domínio no GitHub Pages", no livro DevOps, detalhado, com as tags novas DNS e Redes
 (ícones novos), exemplos em `example.com` testados no Unbound, capa viva, duas figuras paradas, duas
@@ -350,6 +360,7 @@ mostra os custos da sessão antiga.
 | D74 | a apresentação de um post no estilo do blog: `.pptx` com os desenhos e a caneta do próprio post e as notas do apresentador (skill `apresentacao`, `scripts/slides/`) |
 | D76 | a revisão técnica do frontend (PR #3): animações que cancelam a anterior, movimento reduzido na hora, a capa viva uma vez por página, medidas dos SVGs, cabeçalhos de linha nas tabelas e os testes `frontend-*` |
 | D77 | as apresentações no estilo do blog também no post (seção "Apresentação", pelo `--pdf`): as duas partes dos mods e Parquet |
+| D84 | a home em prateleiras de capas (7, 5 ou 4 por prateleira), o nome com o "blog" carimbado, o rodapé numa linha no celular, a revisão geral das telas e a faxina |
 
 ## Próximos passos
 
@@ -380,12 +391,18 @@ mostra os custos da sessão antiga.
 
 00. **Coleções (D78, aplicada em 04/10/2026):** (1) a marca "cs" acompanha a Arquitetura no azul
     (`#2d4f77`) ou fica no verde `#2D4B46`? (2) o texto do desenho: resolvido, foi para a contracapa do
-    livro ampliado e para a página As capas (04/10/2026); (3) no
-    celular, a fileira da home com 14 livros fica com lombadas de ~20px: manter, duas fileiras abaixo de
-    700px, ou rolagem lateral só na fileira? (4) achados dos testes que já existiam antes: a tira
-    "Volume · artigos" corta com reticências (1280px no índice, 390px no topo do livro); vizinhos trocados
-    entre dois posts da mesma data (sns × w3c); a busca indexa a tira do topo do artigo; o contador
-    "Livros" da home conta a série (14); no Chromium 141, os abajures da home somem acima de 1100px.
+    livro ampliado e para a página As capas (04/10/2026); (3) e (4) resolvidos na D84 (a estante em
+    prateleiras; a tira, os vizinhos e a busca corrigidos; o contador saiu com a linha; os abajures não
+    somem no Chrome 154).
+
+000. **A home da D84** (o Cesar revê no ar): (1) o ícone do computador, fixo no canto, cobre a lombada do
+    primeiro livro da prateleira de baixo em notebooks de 900 a 1280px (a regra C2 o quer inteiro no canto,
+    mesmo sobre uma lasca do conteúdo): fica, ele afunda quando estiver sobre um livro, ou a estante abre
+    espaço (os livros ficam ~8% menores nessas telas)? (2) os saltos de tamanho nas viradas de forma
+    (599/600px e 899/900px) e o do nome gigante em 700/701px (de duas linhas para uma): ficam? (3) de
+    acessibilidade: as regiões de código sem nome, os avisos do mesmo tipo com o mesmo nome e a célula de
+    canto vazia das tabelas de comparação pedem mexer no Expressive Code e nos plugins de Markdown (com o
+    build sem cache e os caches do deploy apagados): faço?
 
 0. **D54:** as perguntas do fim de `docs/ajustes-d54/controle.md` (chegada da folha longa no celular
    lento, voltar sem bfcache, trava de rolagem do menu, desfile de Categorias no celular,
@@ -441,12 +458,7 @@ Escolhas feitas para não parar; todas voltam atrás com pouco trabalho.
     - o Lighthouse mede o contraste no meio das animações de entrada (home, arquivo e Tags) e acusa
       valores que somem com a página assentada. Fica como está?
     - a worktree `.claude/worktrees/kind-shaw-14748f` (a da D69) pode ser apagada: a D69 já está na `main`.
-15. **Nome acessível (D73), o que ficou para decidir:**
-    - o link do nome embaixo de cada livro da home leva ao mesmo lugar que o livro (dois links por livro
-      para o teclado e o leitor de tela, desde que a gaveta saiu da home) e o Chrome calcula o nome dele
-      com um espaço antes da vírgula ("Vol. 01: Arquitetura de Software , página do livro"). Tiro o nome
-      do caminho do teclado e do leitor de tela (`tabindex="-1"` e `aria-hidden`, como o ícone das fichas
-      de Tags), ou fica como está?
+15. **Nome acessível (D73), o que ficou para decidir** (o nome embaixo dos livros da home saiu na D84):
     - o MCP `chrome-devtools` usa um perfil de Chrome só para todas as sessões: com várias abertas, só a
       primeira abre o navegador (em 02/10/2026, a da D69 prendeu o perfil e duas sessões contornaram).
       Ponho `--isolated` no `.mcp.json`, para cada sessão abrir o seu?

@@ -3605,4 +3605,20 @@ nada muda.
   carimba depois da assinatura (desce grande e girado, passa um nada do tamanho e assenta, 0,42s).
 - **O rodapé no celular:** "Cesar Schutz" numa linha só, quase de borda a borda, cortado pelo feltro
   com 58% das maiúsculas à vista, como na tela larga (antes, abaixo de 900px, ia em duas linhas).
+- **A revisão geral das telas:** sete agentes varreram o site publicado por grupo (a home e a moldura, os
+  livros e As capas, as listas, as tags, a busca e a 404, os posts `.md`, os posts `.mdx` e os desenhos, as
+  animações e transições quadro a quadro, a acessibilidade, o console e a rede), cada lote conferido por um
+  segundo agente que tentava derrubar os achados; depois, dois agentes revisaram a home nova no dev. A varredura
+  levantou 78 achados (alguns repetidos entre os grupos, como o menu do celular sem JS e a busca); 75 se
+  confirmaram, e 74 foram corrigidos e conferidos no navegador (o que sobrou está abaixo). A revisão da home
+  nova levantou mais 13, corrigidos menos dois que dependem do Cesar. A lista, arquivo por arquivo, está em
+  `docs/ajustes-d84/controle.md`. Os três derrubados: "Série · 7 edições" no livro ampliado (proposital: a
+  série é uma revista), a tarefa longa só com a CPU a 4× e a fonte maior do navegador (o site é em px de
+  propósito).
+- **Ficaram para o Cesar decidir** (perguntas do `docs/estado.md`): o ícone do computador cobre a lombada do
+  primeiro livro da prateleira de baixo em notebooks de 900 a 1280px (a regra C2 manda o ícone ficar inteiro
+  no canto, mesmo sobre uma lasca do conteúdo); os saltos de tamanho nas viradas de forma (599/600 e 899/900)
+  e o do nome gigante em 700/701px; e, de acessibilidade, as regiões de código sem nome, o aviso repetido com o
+  mesmo nome e a célula de canto vazia das tabelas de comparação (mexem no Expressive Code e nos plugins de
+  Markdown, que pedem o build sem cache).
 
