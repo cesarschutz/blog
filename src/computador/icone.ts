@@ -273,6 +273,9 @@ if (botao) {
     clearTimeout(conferir);
     const vez = ++rodada;
     conferir = window.setTimeout(async () => {
+      // No celular, enquanto a estante da home acende (as luzes, a onda e o brilho, `data-acendendo`), o hit test
+      // do canto espera: ele pesava justo no clímax da chegada (D84).
+      if (!largo.matches && document.querySelector("[data-acendendo]")) return conferirDepois(400);
       let e = escolher();
       if (!largo.matches && NIVEL[e] < NIVEL[atual()]) {
         const a = andando();

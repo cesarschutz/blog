@@ -52,8 +52,11 @@ interface Doca {
 }
 
 function parado(doca: Doca) {
-  return reduzido.matches || !!raiz.dataset.abertura || raiz.hasAttribute("data-abre-livro") || !!doca.prat.closest("[data-livro-parado]");
+  return reduzido.matches || !!raiz.dataset.abertura || !!doca.prat.closest("[data-livro-parado]");
 }
+
+/** O livro clicado está indo para a página dele: a doca para onde está (o voo parte do tamanho que se vê). */
+const indo = () => raiz.hasAttribute("data-abre-livro");
 
 function soltar(l: Lugar) {
   l.s = 1;
@@ -104,6 +107,10 @@ function quadro(doca: Doca, agora: number) {
   doca.antes = agora;
   const segue = 1 - Math.pow(1 - SEGUE, passou / (1000 / 60));
   const { prat, lugares } = doca;
+  if (indo()) {
+    doca.antes = 0;
+    return;
+  }
   if (parado(doca)) {
     soltarJa(doca);
     return;
@@ -174,7 +181,7 @@ function ligar(colecao: HTMLElement) {
   const doca: Doca = { prat, lugares, mouse: null, pedido: 0, antes: 0 };
 
   const seguir = (e: PointerEvent) => {
-    if (e.pointerType !== "mouse" || !comMouse.matches || parado(doca)) return;
+    if (e.pointerType !== "mouse" || !comMouse.matches || parado(doca) || indo()) return;
     doca.mouse = { x: e.clientX, y: e.clientY };
     pedir(doca);
   };
@@ -186,10 +193,16 @@ function ligar(colecao: HTMLElement) {
   });
   // A página rola sob o mouse parado: a prateleira passa por ele e a doca acompanha (ou solta, quando sai).
   addEventListener("scroll", () => doca.mouse !== null && pedir(doca), { passive: true });
-  // O clique leva o livro à página dele, e a viagem começa da pose de repouso (como o livro vivo, ColecaoHome).
+  // O clique leva o livro à página dele: a doca para onde está, e o voo parte do tamanho que o leitor vê (soltar
+  // tudo no clique fazia o livro encolher 14% e os vizinhos pularem de volta antes do voo, D84). Voltando pelo
+  // histórico (bfcache), ela volta ao repouso.
   prat.addEventListener("click", (e) => {
-    if ((e.target as HTMLElement).closest("a.tomba")) soltarJa(doca);
+    if (!(e.target as HTMLElement).closest("a.tomba") || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if (doca.pedido) cancelAnimationFrame(doca.pedido);
+    doca.pedido = 0;
+    doca.mouse = null;
   });
+  addEventListener("pageshow", (e) => e.persisted && soltarJa(doca));
   reduzido.addEventListener("change", () => reduzido.matches && soltarJa(doca));
 }
 

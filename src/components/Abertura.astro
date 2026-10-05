@@ -135,7 +135,8 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     // A tecla que pula também não rola a página (Espaço, PageDown, End, setas), D54.
     const ROLAM = new Set([" ", "PageDown", "PageUp", "End", "Home", "ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight"]);
     const tecla = (e: KeyboardEvent) => {
-      if (e.metaKey || e.ctrlKey || e.key === "Tab") return;
+      // O Tab também pula (sem impedir o foco de andar): o foco ia para baixo do papel da cena (D84).
+      if (e.metaKey || e.ctrlKey) return;
       if (ROLAM.has(e.key)) e.preventDefault();
       pular();
     };
@@ -202,7 +203,8 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
 
   /**
    * O fio em várias linhas (D84: uma por prateleira da home), riscadas uma depois da outra pela mesma caneta,
-   * que levanta no fim de uma e desce no começo da outra (um caminho só, com um trecho por linha).
+   * que levanta no fim de uma e desce no começo da outra. Um caminho por linha: num caminho só com vários
+   * trechos, o tracejado do DrawSVG recomeça em cada um, e as linhas cresciam todas juntas.
    */
   function montarFios(gsap: GSAP, cena: HTMLElement, linhas: { x: number; y: number; w: number }[]) {
     const fio = cena.querySelector<HTMLElement>(".abertura-fio")!;
@@ -218,14 +220,33 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
       const a = x - x0, b = y - y0;
       return `M${a + 1} ${b + 0.3}C${a + w * 0.17} ${b - 0.5} ${a + w * 0.35} ${b + 0.9} ${a + w * 0.5} ${b + 0.1}S${a + w * 0.82} ${b - 0.4} ${a + w - 1} ${b + 0.3}`;
     };
-    tinta.setAttribute("d", linhas.map(trecho).join(""));
+    svg.querySelectorAll(".fio-tinta-mais").forEach((t) => t.remove());
+    const tintas = linhas.map((l, i) => {
+      const t = i === 0 ? tinta : (tinta.cloneNode() as SVGPathElement);
+      if (i > 0) {
+        t.classList.add("fio-tinta-mais");
+        svg.append(t);
+      }
+      t.setAttribute("d", trecho(l));
+      return t;
+    });
     gsap.set(fio, { left: x0, top: y0, width: largura, height: altura });
-    gsap.set(tinta, { drawSVG: "0%" });
-    const L = tinta.getTotalLength();
+    gsap.set(tintas, { drawSVG: "0%" });
+    const comprimentos = tintas.map((t) => t.getTotalLength());
+    const L = comprimentos.reduce((a, b) => a + b, 0);
     return (v: number) => {
-      gsap.set(tinta, { drawSVG: `0% ${v * 100}%` });
-      const p = tinta.getPointAtLength(v * L);
-      gsap.set(caneta, { x: p.x, y: p.y - 4 });
+      // A distância percorrida, linha por linha: as de trás cheias, a da vez até a caneta, as da frente vazias.
+      const d = v * L;
+      let inicio = 0;
+      let ponto: DOMPoint | null = null;
+      tintas.forEach((t, i) => {
+        const parte = Math.max(0, Math.min(1, (d - inicio) / comprimentos[i]));
+        gsap.set(t, { drawSVG: `0% ${parte * 100}%` });
+        if (!ponto && d <= inicio + comprimentos[i]) ponto = t.getPointAtLength(parte * comprimentos[i]);
+        inicio += comprimentos[i];
+      });
+      const fim = ponto ?? tintas[tintas.length - 1].getPointAtLength(comprimentos[comprimentos.length - 1]);
+      gsap.set(caneta, { x: fim.x, y: fim.y - 4 });
     };
   }
 
@@ -266,10 +287,11 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
       carimbo.classList.remove("a-carimbar");
       if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       carimbando = carimbo.animate(
+        // Termina no ângulo do CSS (Marca.astro, -13°): sem isso, o carimbo dava um tique de 4° ao acabar.
         [
-          { opacity: 0, scale: 1.6, rotate: "3deg" },
-          { opacity: 1, scale: 0.95, rotate: "-10deg", offset: 0.68 },
-          { opacity: 1, scale: 1, rotate: "-9deg" },
+          { opacity: 0, scale: 1.6, rotate: "-1deg" },
+          { opacity: 1, scale: 0.95, rotate: "-14deg", offset: 0.68 },
+          { opacity: 1, scale: 1, rotate: "-13deg" },
         ],
         { duration: 420, easing: "cubic-bezier(0.3, 0.6, 0.3, 1)" },
       );

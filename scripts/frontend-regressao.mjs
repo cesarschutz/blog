@@ -122,9 +122,11 @@ try {
     /passos-proximo/,
     "Chegar ao último passo não pode deixar foco em Ver tudo escondido",
   );
+  // Comparado com a versão da main: não pode piorar. (Era "<": com o arquivo igual ao da main, ou com uma
+  // mudança que não mexe nas leituras, o teste falhava sem haver regressão, D84.)
   if (resultados.antes)
     assert.ok(
-      r.leituras < resultados.antes.leituras,
+      r.leituras <= resultados.antes.leituras,
       "As trocas imediatas precisam agrupar as leituras de layout",
     );
   assert.deepEqual(r.erros, []);

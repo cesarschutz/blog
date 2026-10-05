@@ -56,9 +56,11 @@ const temSerie = livros.some((l) => l.serie) && livros.some((l) => !l.serie);
  * celular a estante passa da margem da página e vai de borda a borda, `sangra`).
  */
 const FORMAS = [
-  { n: 7, de: 900, vao: 18, serie: 32, respiro: 24, sangra: 0 },
-  { n: 5, de: 600, vao: 16, serie: 30, respiro: 16, sangra: 0 },
-  { n: 4, de: 0, vao: 10, serie: 20, respiro: 0, sangra: 1 },
+  { n: 7, de: 900, vao: 18, serie: 32, respiro: 24, sangra: 0, teto: 1 },
+  // Nas de 5 e 4, um teto no tamanho (`teto`, o --kc máximo): na virada para menos livros por prateleira, eles
+  // não crescem tanto, e a estante cabe melhor na tela do tablet e do celular grande (D84).
+  { n: 5, de: 600, vao: 16, serie: 30, respiro: 16, sangra: 0, teto: 0.82 },
+  { n: 4, de: 0, vao: 10, serie: 20, respiro: 0, sangra: 1, teto: 0.82 },
 ];
 
 /** As prateleiras de uma forma: o menor número delas, as mais cheias primeiro (14 em 4 = 4 + 4 + 3 + 3). */
@@ -97,29 +99,44 @@ const media = (f: (typeof formas)[number]) =>
 let css = "";
 for (const f of formas) {
   // O tamanho (--kc): a prateleira mais larga na largura útil, no máximo o tamanho cheio.
-  let regras = `.colecao-home{--kc:clamp(0.3,tan(atan2(${util(f)},${f.maior}px)),1);--vao-cheio:${f.vao}px;--serie-cheio:${f.serie}px}`;
+  let regras = `.colecao-home{--kc:clamp(0.3,tan(atan2(${util(f)},${f.maior}px)),${f.teto});--vao-cheio:${f.vao}px;--serie-cheio:${f.serie}px}`;
   if (f.sangra) regras += `.colecao-home{margin-inline:calc(8px - var(--pad))}`;
   // As quebras desta forma e o primeiro lugar de cada prateleira (a lâmina dela).
   // (Seletores mais fortes que os do componente, que é quem esconde a quebra e a lâmina.)
   regras += `.colecao-home .prateleira-livros>.quebra.q${f.n}{display:block}`;
   regras += `.colecao-home .p${f.n}{--fila:var(--f${f.n});--fila-serie:var(--s${f.n},0)}`;
   regras += `.colecao-home.colecao-home .prateleira-livros>.livro-colecao.p${f.n}>.tabua{display:block}`;
+  regras += `.colecao-home .prateleira-livros>.livro-colecao.fecha${f.n}{margin-right:calc((var(--serie-cheio) - var(--vao-cheio)) * var(--kc))}`;
   // A série que abre uma prateleira não leva o vão a mais.
   if (indiceDaSerie >= 0 && f.inicios.includes(indiceDaSerie)) regras += `.colecao-home .prateleira-livros>.livro-colecao.abre-serie{margin-left:0}`;
   css += `@media ${media(f) || "all"}{${regras}}`;
 }
 
 const rotuloDoVolume = (l: Livro) => (l.serie ? "Série" : `Vol. ${String(l.volume).padStart(2, "0")}`);
-/** As classes e as variáveis de cada lugar: em que formas ele abre uma prateleira, e o tamanho dela. */
+/**
+ * As prateleiras que levam (ou acompanham) o vão a mais da série: a da série e as do mesmo tamanho que ela. Nas
+ * outras do mesmo tamanho, o vão vai no fim (`.fecha7`, `.fecha5`, `.fecha4`), para todas terem a mesma largura e as colunas e as
+ * pontas das lâminas baterem (na de 7, as duas prateleiras desencontravam 7px, D84).
+ */
+const comVaoDaSerie = (f: (typeof formas)[number], k: number) => {
+  const daSerie = f.inicios.findIndex((de, j) => indiceDaSerie > de && indiceDaSerie < de + f.tamanhos[j]);
+  return daSerie >= 0 && f.tamanhos[k] === f.tamanhos[daSerie];
+};
+/** As classes e as variáveis de cada lugar: em que formas ele abre ou fecha uma prateleira, e o tamanho dela. */
 const lugarDe = (i: number) => {
   const classes: string[] = [];
   const vars = [`--sw0:${sws[i]}px`, `--i:${i}`];
   for (const f of formas) {
     const k = f.inicios.indexOf(i);
-    if (k < 0) continue;
-    classes.push(`p${f.n}`);
-    vars.push(`--f${f.n}:${f.tamanhos[k]}`);
-    if (indiceDaSerie > i && indiceDaSerie < i + f.tamanhos[k]) vars.push(`--s${f.n}:1`);
+    if (k >= 0) {
+      classes.push(`p${f.n}`);
+      vars.push(`--f${f.n}:${f.tamanhos[k]}`);
+      if (comVaoDaSerie(f, k)) vars.push(`--s${f.n}:1`);
+    }
+    // O último lugar de uma prateleira sem a série, do tamanho da da série: o vão a mais no fim.
+    const fim = f.inicios.findIndex((de, j) => de + f.tamanhos[j] - 1 === i);
+    const temASerie = fim >= 0 && indiceDaSerie > f.inicios[fim] && indiceDaSerie < f.inicios[fim] + f.tamanhos[fim];
+    if (fim >= 0 && !temASerie && comVaoDaSerie(f, fim)) classes.push(`fecha${f.n}`);
   }
   return { classes, estilo: vars.join(";") };
 };
@@ -342,11 +359,16 @@ const quebrasDepois = (i: number) => formas.filter((f) => f.inicios.includes(i +
     text-decoration: none;
     border-radius: 4px;
     outline-offset: 6px;
+    /* A rolagem do Tab deixa à vista a lâmina embaixo do livro e o canto do computador livre (D84). */
+    scroll-margin-bottom: calc(var(--k-chao) + var(--k-abaixo) + 72px);
     perspective: calc(900px * var(--kc));
     -webkit-tap-highlight-color: transparent;
   }
 
+  /* O livro com o foco fica por cima dos vizinhos (em 320px, o vão é menor que o anel, e o livro seguinte o
+     cobria, D84). */
   .tomba:focus-visible {
+    z-index: 3;
     outline: 2px solid var(--acento);
   }
 
@@ -382,6 +404,21 @@ const quebrasDepois = (i: number) => formas.filter((f) => f.inicios.includes(i +
    */
   :global(:root[data-js]:not(.colecao-pronta)) .colecao-home .tomba :global(.livro-em-pe) {
     content-visibility: hidden;
+  }
+
+  /* As lâminas e os abajures esperam com os livros: sem isso, com movimento reduzido, a estante aparecia vazia e
+     acesa por um ou dois quadros, e os livros entravam de uma vez depois (D84). */
+  :global(:root[data-js]:not(.colecao-pronta)) .colecao-home :is(.tabua, .lugar-luz) {
+    visibility: hidden;
+  }
+
+  /* Com movimento reduzido, nada da estante tem transição (a base dá 0,01ms a tudo, e na virada de forma a largura
+     dos lugares levava um quadro: as prateleiras saíam quebradas por um instante). */
+  @media (prefers-reduced-motion: reduce) {
+    .colecao-home,
+    .colecao-home * {
+      transition-property: none !important;
+    }
   }
 
   /* No celular, o abajur mais perto do livro e as prateleiras mais juntas. */
