@@ -1,0 +1,167 @@
+---
+title: "You should know do Claude Code — como funciona, como ligar e limites"
+published: 2026-10-04
+description: "Como o mod embutido You should know lê a conversa em tarefas longas e avisa, numa nota acima do prompt, o que passaria despercebido. Como ligar e os limites."
+tags: [Claude Code, Plugins]
+category: IA
+formato: detalhado
+tldr:
+  - "O **You should know** é um mod embutido do Claude Code desde a 2.1.287 (01/10/2026): um agente lateral lê a conversa enquanto o Claude trabalha e põe uma nota acima do prompt sobre o que você pode deixar passar."
+  - "O mod vem desligado e só aparece se estiver disponível para a sua organização (o changelog pede sessão first-party, direto na Anthropic, com a telemetria ligada). `/plugin enable cc-plugin-you-should-know@builtin` liga, e o `/plugin` desliga."
+  - "Pelo código da 2.1.289, a cada seis requisições ao modelo ele faz uma pergunta sobre a conversa, sem ferramentas. O padrão da resposta é não dizer nada."
+  - "Pelo código da 2.1.289, a nota oferece `Learn more`, `Knew this already` e `Dismiss`, sempre em inglês. Depois do `Learn more`, o `Chat in main session` só preenche o seu prompt no terminal, sem enviar."
+  - "Cada checagem é uma chamada extra ao modelo na sua conta, e a Anthropic não publicou quanto custa. O mod só lê a conversa: não é revisor de código."
+draft: false
+---
+
+import Figura from "../../components/Figura.astro";
+
+O **You should know** é um mod que vem dentro do Claude Code desde a versão 2.1.287, de 01/10/2026; mod é um plugin com código que roda dentro do programa e pode mudar o que ele faz e o que ele mostra na tela, como explica [o post sobre os mods e as peças que vieram antes](/posts/claude-code-do-claude-md-ao-mod/). Ele roda um agente lateral: enquanto o Claude trabalha numa tarefa longa, ele lê a conversa e, quando acha :marca[algo que você ou o Claude poderiam deixar passar], mostra uma nota acima do prompt. Importa porque, numa tarefa longa, o Claude toma decisões e deixa de explicar coisas que você só veria no fim.
+
+Este post explica o que o You should know é, como ligar e desligar, o que acontece a cada checagem, o que aparece na tela e o que ele consome. Serve para quem já usa o Claude Code e quer decidir se liga o mod. :grifo[Ele não é um revisor de código nem um guarda de segurança], e não é o subagente que o Claude cria para uma tarefa. O post também não traz o print de uma nota real: o mod não foi ligado numa sessão de teste, e os exemplos de nota são ilustrativos.
+
+## O que é o You should know
+
+Algumas funções do próprio Claude Code são mods, e a documentação as lista na tabela dos [mods embutidos](https://code.claude.com/docs/en/plugins/mods/overview#mods-built-into-claude-code). O You should know está lá com o nome `cc-plugin-you-should-know`. Embutido quer dizer que ele vem com o programa: :grifo[não se instala, não se atualiza e não se desinstala à parte]. Para vê-lo, rode `/plugin` e abra a aba **Installed**, onde os embutidos ficam sob **Built-in**; como ele vem desligado, só aparece depois de **Show disabled**, e só se estiver disponível para a sua organização.
+
+O identificador diz "plugin" porque mod é um plugin com código. O id completo é `cc-plugin-you-should-know@builtin`, com `builtin` no lugar do marketplace, o catálogo de onde vêm os plugins instalados.
+
+Dois termos parecidos merecem separação:
+
+- **Subagente** é o ajudante que o Claude cria para uma tarefa: recebe um pedido, trabalha numa conversa à parte, com as ferramentas dele, e devolve um resumo ao Claude.
+- **Agente lateral** é o que o You should know usa: uma pergunta extra feita sobre a mesma conversa, :ondulado[só para avisar você]. Não executa nada e não devolve nada ao Claude.
+
+A linha do tempo é curta. O mod entrou na [2.1.287](https://code.claude.com/docs/en/changelog#2-1-287), de 01/10/2026, a mesma versão que lançou os mods. Na [2.1.288](https://code.claude.com/docs/en/changelog#2-1-288), de 02/10/2026, as notas passaram a dizer "we", "the main agent" ou "you" conforme quem tomou a decisão. A 2.1.289, de 03/10/2026 e a mais nova em 04/10/2026, não traz nenhuma linha sobre ele no changelog; pelo código, a única mudança em relação à 2.1.288 foi um `0: Dismiss` a mais na pergunta de retorno, que aparece depois de dispensar a nota.
+
+O código dele não é público. A documentação diz que o código de alguns embutidos está na [pasta `mods` do repositório do Claude Code](https://github.com/anthropics/claude-code/tree/main/mods), e lá há quatro em 04/10/2026: `agents-md`, `diff`, `sec-default` e `telemetry`. O funcionamento interno descrito aqui vem da documentação da API de mods e do código do programa instalado.
+
+## Como ligar e desligar
+
+Os mods em geral [vêm ligados por padrão](https://code.claude.com/docs/en/plugins/mods/overview#turn-mods-on-or-off) e pedem o Claude Code 2.1.287 ou mais novo. O You should know é :ondulado[a exceção]: **vem desligado**. E nem toda conta o vê. A documentação diz que ele aparece "if available for your org", e o changelog da 2.1.287 diz que ele vale para sessões first-party (ou seja, direto na Anthropic) com a telemetria ligada. Nenhuma das duas fontes lista o critério completo.
+
+Se ele estiver disponível para você, há dois caminhos para ligar dentro de uma sessão:
+
+```text title="no prompt do Claude Code"
+/plugin enable cc-plugin-you-should-know@builtin
+```
+
+O [`/plugin enable`](https://code.claude.com/docs/en/plugins/cli-reference#plugin-in-a-session) abre a aba **Installed** já no plugin e o liga. O outro caminho é à mão: `/plugin`, aba **Installed**, **Show disabled**, e ligar o You should know na lista.
+
+Para desligar, o mesmo `/plugin`, ou `/plugin disable cc-plugin-you-should-know@builtin`. Pelo código da 2.1.289, esse segundo comando é o que o próprio mod escreve no seu prompt quando você pede para desligar pela nota (a seção sobre a tela mostra onde). O ligado e o desligado ficam gravados na chave [`enabledPlugins`](https://code.claude.com/docs/en/settings-reference#enabledplugins) do arquivo de configuração (`settings.json`), que o Claude Code escreve sozinho quando você usa o `/plugin`. :grifo[Sem entrada ali, vale o padrão do plugin], que neste caso é desligado.
+
+:::exclamacao
+Uma armadilha: `disableAllHooks`, `--bare` e `--safe-mode` param os mods instalados, mas **não param os embutidos**, diz a documentação.
+:::
+
+Há também uma dica no início da sessão que oferece ligar o mod, com o comando pronto. Pelo código da 2.1.289, em 04/10/2026, ela aparece no máximo três vezes na vida, com pelo menos dez sessões entre uma e outra.
+
+> [!ATENCAO]
+> A [issue #99071](https://github.com/anthropics/claude-code/issues/99071), aberta na 2.1.287, relata que o comando da dica falhou com "Plugin is not installed in this project". Nos comentários, uma pessoa achou o mod em `/plugin` → **Installed** → **Show disabled**, e outra viu que ele não carregava com `ANTHROPIC_BASE_URL` apontando para um proxy local junto com `_CLAUDE_CODE_ASSUME_FIRST_PARTY_BASE_URL=1`, e voltava a carregar sem as duas variáveis. Em 04/10/2026, a issue segue aberta, sem causa confirmada pela Anthropic. Se o comando falhar, procure o mod em **Show disabled** antes de concluir que ele não está disponível para a sua conta.
+
+## O que acontece durante a sessão
+
+A figura mostra uma checagem do começo ao fim, em três raias, com o tempo descendo: você, o agente principal, que é o Claude trabalhando no seu pedido, e o agente lateral do mod, a pergunta que ele faz sobre a conversa. Leia na ordem dos números.
+
+<Figura
+  figura="claude-code-you-should-know/ciclo-da-checagem"
+  legenda="Cada cor é um papel: você (verde), o agente principal (azul), o agente lateral do mod (petróleo) e a nota (âmbar). O seis é o número do código da 2.1.289."
+/>
+
+No **1**, você envia o pedido, e o agente principal começa o turno: o trabalho de responder a esse pedido, que numa tarefa longa passa por :nota[várias requisições ao modelo]{texto="a conta de seis é por requisição"}. Cada requisição dispara o evento [`turn.step`](https://code.claude.com/docs/en/plugins/mods/reference#turns), que a documentação descreve como o momento em que uma requisição está para ir ao modelo.
+
+:::asterisco
+No **2**, a cada seis requisições do mesmo turno, o mod faz a pergunta dele. Pelo código da 2.1.289, em 04/10/2026, a conta é essa e vale só para o agente principal: os subagentes são ignorados, um turno curto nunca chega à checagem, sai no máximo uma oferta por turno, nada acontece se já há uma nota na tela ou uma pergunta em curso, e, se três ou mais ofertas seguidas somem sem resposta (você envia dois pedidos por cima delas), ele pula as checagens seguintes, cada vez mais, até dezesseis. A pergunta corre em segundo plano, e o agente principal não para.
+:::
+
+A pergunta é um `model.fork`. A [documentação da API de mods](https://code.claude.com/docs/en/plugins/mods/api#call-a-model) explica que essa chamada faz uma pergunta sobre a conversa atual, com o mesmo modelo e o mesmo prompt de sistema da sessão, e por isso a API serve a maior parte dela pelo cache de prompt, que reaproveita a parte da conversa já enviada antes. Pelo código, o fork não tem ferramentas (não lê arquivo, não roda comando, não busca na web), faz :nota[no máximo duas idas ao modelo]{texto="limita as idas, não o preço"} e não grava nada na conversa.
+
+No **3**, o caso comum: a resposta é "nada a dizer", e nada aparece. O pedido que o mod faz ao modelo diz que :duplo[o padrão é não sugerir nada], que a barra para mostrar uma nota é muito alta e que interessante não é o mesmo que importante. O mesmo pedido manda não repetir o que já foi oferecido, não voltar a um tema que você marcou como conhecido e nunca reproduzir segredos, credenciais, tokens ou dados pessoais da conversa.
+
+No **4**, algo passou da barra, e o mod põe a nota acima do seu prompt, com uma de duas etiquetas, pelo código da 2.1.289:
+
+- **`You should know`**: algo que você deveria entender;
+- **`Heads up`**: sobre o trabalho desta sessão (uma decisão que o Claude tomou, algo que ele não destacou ou um resultado que pode estar errado), quando deixar passar :nota[tem um custo imediato]{texto="esta pede atenção na hora"}.
+
+No **5**, você escolhe uma opção da nota, e o agente principal segue o trabalho, sem ter sido interrompido.
+
+> [!NOTA]
+> A conta de seis, o fork sem ferramentas, o texto do pedido e tudo o que a nota mostra e faz (os rótulos, as teclas, os tempos e o efeito de cada opção) são detalhes de implementação, lidos no código da 2.1.289. A documentação não os promete, e eles podem mudar em qualquer versão.
+
+## A nota na tela e as respostas
+
+A segunda figura mostra a nota em três quadros, num terminal desenhado no papel. No primeiro quadro, as chamadas de 1 a 4 apontam a faixa, a etiqueta, a frase e as opções. A documentação diz só que a nota aparece acima do prompt; os limites, as opções e o que cada uma faz vêm do código da 2.1.289, em 04/10/2026, e podem mudar.
+
+<Figura
+  figura="claude-code-you-should-know/a-nota-na-tela"
+  legenda="A nota (âmbar), o que é do mod (petróleo) e o que é seu (verde), em três momentos: a oferta, a explicação e a pergunta depois do Dismiss. As frases da nota são exemplos inventados."
+/>
+
+**A oferta.** A nota fica numa faixa logo acima da caixa do prompt (1), o lugar que a referência dos mods chama de [`AbovePrompt`](https://code.claude.com/docs/en/plugins/mods/reference#render-sites). Ela abre com a etiqueta (2) e uma frase curta, de até 240 caracteres (3). Embaixo vêm as opções, cada uma com a sua tecla (4): `1: Learn more`, `2: Knew this already` e `0: Dismiss`. Se você enviar dois pedidos sem responder, a oferta some.
+
+**A explicação.** O `Learn more` abre o texto completo: um título em negrito e uma explicação curta. Se a checagem não trouxe a explicação, o mod pede uma ao modelo nessa hora (aparece "One moment…"), o que é :sobe[mais uma chamada] na sua conta. As opções mudam para `1: Understood`, que marca o tema como conhecido, `2: Chat in main session` e `0: Dismiss`. No terminal, o `Chat in main session` **não envia nada**: ele preenche o seu prompt com um rascunho que começa por "Here is a note offered by a side agent:", seguido da nota citada, e você decide se envia. Se o prompt já tiver texto, o mod pede que você envie ou limpe antes.
+
+**Depois do Dismiss.** Quando você fecha a oferta com `0: Dismiss`, aparece "Dismissed." e, por 20 segundos, uma pergunta de retorno: `1: That was helpful`, `2: Not relevant`, `3: Couldn’t understand`, só no terminal `4: Turn off suggestions`, e `0: Dismiss`. Se você fechar a nota na tela da explicação, a pergunta é mais curta: `1: That was helpful`, `2: Didn’t understand` e `0: Dismiss`. O `4: Turn off suggestions` escreve no prompt o comando `/plugin disable cc-plugin-you-should-know@builtin`, e você confirma com Enter.
+
+Dois relatos abertos no repositório oficial completam o quadro. A [issue #99232](https://github.com/anthropics/claude-code/issues/99232) registra que :ondulado[as notas vêm sempre em inglês], mesmo com a configuração `language`; o pedido ao modelo, no código, diz para explicar em inglês simples. A [issue #99421](https://github.com/anthropics/claude-code/issues/99421) pede um botão simples de "obrigado" na própria oferta: hoje, quem achou a nota útil e não sabia do assunto só tem ali o `Dismiss`, que leva à pergunta de retorno. Pelo código da 2.1.289, o outro caminho é abrir o `Learn more` e fechar com `1: Understood`, sem pergunta.
+
+## O que o mod consome e o que ele vê
+
+Cada checagem é uma chamada extra ao modelo, e as chamadas de modelo dos mods [usam o plano ou a chave de API do usuário](https://code.claude.com/docs/en/plugins/mods/api#call-a-model). Ou seja: o You should know gasta da sua conta a cada checagem, :marca[inclusive quando a resposta é "nada a dizer"].
+
+> [!NOTA]
+> Em 04/10/2026, a Anthropic não publicou quanto o You should know custa, nem em tokens nem em dinheiro, e nenhuma medição foi feita para este post.
+
+O que vai ao modelo é a conversa principal mais o pedido do mod. Como o fork não tem ferramentas, :marca[ele só enxerga o que já passou pela conversa]. As chamadas que o mod declara, pelo código da 2.1.289, não incluem acesso a arquivos, à rede nem a processos. Por conta própria, só duas coisas saem dele: as chamadas ao modelo (a checagem e, às vezes, a explicação do `Learn more`) e os registros de telemetria, que o mod grava pela API de telemetria e outro embutido, o `cc-plugin-telemetry`, envia. A nota só chega à conversa principal pelo `Chat in main session`, quando você escolhe essa opção.
+
+O [anúncio dos mods](https://claude.com/blog/claude-code-mods) lembra que eles rodam com o mesmo acesso à máquina que o próprio Claude Code, sem sandbox. Num embutido isso pesa menos, porque o código é da Anthropic.
+
+## Onde o mod desenha e quais são os limites
+
+Os hooks de um mod, as funções dele que reagem aos eventos da sessão, rodam em qualquer sessão que carregue o plugin, mas desenhar é mais restrito. A tabela resume [onde os mods rodam](https://code.claude.com/docs/en/plugins/mods/overview#where-mods-run), pela documentação:
+
+| Onde o Claude Code roda | O que um mod desenha aparece |
+|---|---|
+| `claude` no terminal, inclusive o terminal integrado do editor e o plugin da JetBrains | sim |
+| Aba Code do aplicativo de desktop, fora de sessão WSL | sim, menos os elementos que a referência marca como só de terminal, e só se a cópia do Claude Code que vem no aplicativo for 2.1.287 ou mais nova |
+| Sessão WSL no aplicativo de desktop | não, porque plugins não existem nela |
+| Painel de chat da extensão do VS Code | não: os hooks rodam, mas nada aparece |
+| `claude -p` e Agent SDK | não: os hooks rodam, mas nada aparece |
+| Remote Control, pelo claude.ai ou pelo app do celular | no terminal da sua máquina |
+| Sessão na nuvem | não: nada aparece |
+
+Pelo código da 2.1.289, o You should know só faz a checagem onde há uma tela que desenha a faixa: :liga[sem faixa, sem chamada] ao modelo. O aplicativo de desktop traz uma cópia própria do Claude Code, que pode estar atrás da do terminal, como mostra o [post do csr-cockpit](/posts/claude-code-csr-cockpit/), um mod instalado por marketplace. No aplicativo de desktop, o You should know não foi conferido.
+
+:::validade{data="out/2026"}
+Os limites, em 04/10/2026, na versão 2.1.289:
+:::
+
+- **Só em tarefas longas.** Um turno curto, de poucas requisições ao modelo, nunca chega à checagem.
+- **Quase nunca fala.** A barra é alta de propósito.
+- **Só lê a conversa.** O que não passou por ela (um arquivo que o Claude não abriu, um teste que não rodou) ele não vê.
+- **Não é revisor de código nem guarda de segurança.** Ele aponta o que leu na conversa; não confere o código nem bloqueia nada.
+- **Depende da conta.** Ele só aparece se estiver disponível para a sua organização, em sessão first-party com a telemetria ligada.
+
+## O que foi conferido
+
+:::carimbo{texto="conferido na doc e no código da 2.1.289"}
+Em 04/10/2026, foram lidos a documentação oficial, o changelog do site, o anúncio dos mods, as três issues citadas e o código instalado das versões 2.1.287, 2.1.288 e 2.1.289. O que vem do código está marcado como "pelo código da 2.1.289" e é detalhe de implementação. O mod não foi ligado numa sessão de teste.
+:::
+
+As datas vêm do changelog do site, que traz o mesmo texto da [release v2.1.287 no GitHub](https://github.com/anthropics/claude-code/releases/tag/v2.1.287); o changelog que vem dentro do binário 2.1.287 vai só até a 2.1.286.
+
+## Fontes
+
+- Claude Code — [Mods overview, "Mods built into Claude Code"](https://code.claude.com/docs/en/plugins/mods/overview#mods-built-into-claude-code) (o que o You should know faz, desligado por padrão, Show disabled, o comando de ligar, como desligar e os embutidos que não param com `disableAllHooks`, `--bare` e `--safe-mode`)
+- Claude Code — [Changelog, 2.1.287](https://code.claude.com/docs/en/changelog#2-1-287) (o lançamento em 01/10/2026, junto com os mods, e a condição de sessão first-party com telemetria ligada)
+- Claude Code — [Changelog, 2.1.288](https://code.claude.com/docs/en/changelog#2-1-288) (as notas com "we", "the main agent" ou "you")
+- Claude Code — [Mods overview, "Turn mods on or off"](https://code.claude.com/docs/en/plugins/mods/overview#turn-mods-on-or-off) (mods pedem a 2.1.287 e vêm ligados por padrão)
+- Claude Code — [Mods overview, "Where mods run"](https://code.claude.com/docs/en/plugins/mods/overview#where-mods-run) (onde o que o mod desenha aparece)
+- Claude Code — [Use the mods API, "Call a model"](https://code.claude.com/docs/en/plugins/mods/api#call-a-model) (o `model.fork`, com o mesmo modelo, o mesmo prompt de sistema e o cache de prompt, na conta do usuário)
+- Claude Code — [Mods reference](https://code.claude.com/docs/en/plugins/mods/reference#render-sites) (a faixa `AbovePrompt` e o evento `turn.step`)
+- Claude Code — [Plugin commands reference, "/plugin in a session"](https://code.claude.com/docs/en/plugins/cli-reference#plugin-in-a-session) (o `/plugin enable` e o `/plugin disable`)
+- Claude Code — [All settings, `enabledPlugins`](https://code.claude.com/docs/en/settings-reference#enabledplugins) (onde fica o ligado e o desligado, e o padrão do plugin)
+- Claude — [Customize Claude Code with mods in TypeScript](https://claude.com/blog/claude-code-mods) (o anúncio de 01/10/2026; mods sem sandbox)
+- Anthropic no GitHub — [Release v2.1.287](https://github.com/anthropics/claude-code/releases/tag/v2.1.287) (o mesmo texto do changelog) e a [pasta `mods` do repositório](https://github.com/anthropics/claude-code/tree/main/mods) (o código público dos embutidos, sem o You should know)
+- Leitura do binário 2.1.289 (e do 2.1.287 e do 2.1.288), em 04/10/2026 (a diferença entre a 2.1.288 e a 2.1.289, a checagem a cada seis requisições, o fork sem ferramentas, o pedido ao modelo, as opções da nota, a pergunta de retorno e a dica de início; detalhe de implementação, que pode mudar)
+- Relatos no GitHub — [issue #99071](https://github.com/anthropics/claude-code/issues/99071) (o comando da dica que falha), [issue #99232](https://github.com/anthropics/claude-code/issues/99232) (notas sempre em inglês) e [issue #99421](https://github.com/anthropics/claude-code/issues/99421) (sem botão de "obrigado")
+- Cesar Schutz — [Mods do Claude Code — o que são e as peças que vieram antes (parte 1 de 2)](/posts/claude-code-do-claude-md-ao-mod/) (o que é um mod) e [Um mod do Claude Code na prática — instalação, testes e limites (parte 2 de 2)](/posts/claude-code-csr-cockpit/) (um mod instalado por marketplace e o aplicativo de desktop com cópia própria)

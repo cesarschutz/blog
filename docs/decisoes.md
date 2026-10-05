@@ -88,6 +88,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D77 | As apresentações no estilo do blog também entram no post (seção "Apresentação"), pelo `npm run apresentacao -- … --pdf`; as três primeiras: as duas partes dos mods e Parquet | decidido e publicado |
 | D79 | A parte 2 do post dos mods (`claude-code-csr-cockpit`) só atualizada para o cockpit 0.16.0, sem post novo: seis abas, as telas novas como print e os fatos em dia | decidido e publicado |
 | D81 | Post de DNS (`dns-tipos-de-registro`): detalhado, no livro DevOps, com as tags novas DNS e Redes, exemplos em `example.com` e a apresentação no estilo do blog | decidido e publicado |
+| D82 | Post do You should know (`claude-code-you-should-know`): o mod embutido do Claude Code, detalhado, no livro IA, com 19 marcações da caneta e a apresentação no estilo do blog | decidido e publicado |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -3475,4 +3476,69 @@ nada muda.
 - **Conferência:** `conferir` ok em 320 a 1600px nos dois temas e com movimento reduzido; `check`,
   `build`, `links` e `contraste` sem falhas; detector do Impeccable sem achados; Lighthouse 100 no
   desktop e 97 no celular, pelo contraste do resumo "Neste artigo" (componente do site, não do post).
+
+## D82 · Post do You should know, o mod embutido do Claude Code
+
+- **Data:** 04/10/2026 (feito das 18:17 às ~20:25; publicado às ~21:00) · **Status:** decidido e
+  publicado. Foi feito em rascunho na branch `post-you-should-know` (worktree
+  `.claude/worktrees/post-you-should-know`, a partir da `origin/main` da D80, avançada até a D81 sem
+  commit) e, a pedido do Cesar ("manda pra main publique"), saiu do rascunho e foi enviado direto para a
+  `main`.
+- **Pedido do Cesar:** um post sobre o You should know (`cc-plugin-you-should-know`), "um mod que já vem
+  dentro do Claude Code desde a versão 2.1.287", "um agente lateral que acompanha o Claude enquanto ele
+  trabalha e avisa, numa nota acima do prompt, quando acha algo que você ou o Claude poderiam deixar
+  passar"; pesquisar bem no site da Anthropic para não pôr nada errado, revisar bem no fim, criar também o
+  PPT e marcar a hora de início e de fim. No meio do trabalho: "quando acabar a proposta de caneta, não
+  precisa perguntar, pode aprovar direto".
+- **Escolhas feitas para não parar** (o Cesar não estava na conversa; voltam atrás com pouco trabalho):
+  formato **detalhado** (com TL;DR), livro **IA** (a coleção serve), tags Claude Code e Plugins (sem tag
+  nova), slug `claude-code-you-should-know`, título "You should know do Claude Code — como funciona, como
+  ligar e limites", **um post só** (cerca de 2.500 palavras de prosa; 15 min no contador do site), sem
+  print de nota real e sem logo (não há marca da Anthropic em `src/marcas/regras.json`).
+- **O que a pesquisa corrigiu no pedido:** (1) o mod **vem desligado** (`defaultEnabled: false`) e só
+  aparece "se disponível para a organização" (o changelog pede sessão first-party com a telemetria
+  ligada); (2) o changelog que vem **dentro do binário** 2.1.287 não traz a entrada da própria 2.1.287 (o
+  do site traz): as datas vêm do site; (3) o "agente lateral" não é um subagente, é um *fork* da conversa,
+  sem ferramentas; (4) a nota é para a pessoa e só em tarefas longas (uma checagem a cada seis requisições
+  ao modelo, pelo código da 2.1.289).
+- **Fontes:** a documentação oficial (Mods overview, Mods API, Mods reference, comandos de plugin, settings),
+  o changelog das versões 2.1.287 e 2.1.288, o anúncio de 01/10/2026, o repositório
+  `anthropics/claude-code` (a pasta `mods/` e as issues #99071, #99232 e #99421) e a leitura dos binários
+  2.1.287, 2.1.288 e 2.1.289. O que vem do binário é detalhe de implementação e está marcado "pelo código
+  da 2.1.289" no texto.
+- **Processo:** cinco pesquisadores em paralelo (docs, changelog, binário, posts do blog, terceiros) e um
+  cruzamento (`FATOS.md`: tese frase por frase, contradições, o que não afirmar); texto, capa e duas
+  figuras em paralelo; quatro rodadas de revisão às cegas (fatos, regras do projeto, imagem e ligação com
+  o texto), cada uma com um corretor; proposta de caneta; apresentação.
+- **Visual:** a capa (janela de terminal com a nota presa acima do prompt e a lupa do agente lateral; a
+  estrela pulsa no hover) e duas figuras paradas: o ciclo da checagem (diagrama de sequência, cinco selos) e
+  a nota na tela (três quadros, com frases inventadas e rotuladas como exemplo). Sem lousa nem animação.
+- **Caneta:** 19 marcações (marca-texto 3, grifo 3, ondulado 3, nota 3, duplo, sobe, liga, exclamação,
+  asterisco, validade e carimbo), aprovadas pelo Cesar ("pode aprovar direto"). Três marca-textos
+  compridos foram encurtados antes de aplicar, e duas marcas (a seta que sobe e a que liga), depois de o
+  `conferir` apontar corte em 320px.
+- **Apresentação:** 20 slides no estilo do blog (D74), com as 19 marcações do post e as figuras, notas do
+  apresentador em todos, `.pptx` e `.pdf` em `~/Downloads/`, slides WebP em
+  `public/posts/claude-code-you-should-know/deck/` e a entrada em `src/data/decks.json` (D77). Roteiro:
+  `scripts/slides/posts/claude-code-you-should-know.py`.
+- **Conferência:** `check` 0 erros, `escrita` ok, `contraste` 0 falhas, detector do Impeccable sem
+  achados, `conferir` ok em 320 a 1600px nos dois temas e com movimento reduzido, e a conferência da
+  apresentação (`conferir.py`) sem problemas. Na publicação, depois de tirar `draft: true` (o rascunho
+  deixa o post fora do build, e o app bloqueou desligá-lo antes de o Cesar pedir a publicação): fotos dos
+  livros de novo (`node scripts/livros/fotos.mjs`: só o livro IA mudou, de 2 para 3 artigos; as outras
+  fotos só variavam nos bytes e foram desfeitas), `build --force` sem aviso, `links` (109 páginas, 6.699
+  links internos e 24 redirecionamentos, nenhum quebrado), `contraste` (0 falhas), `check` (0 erros),
+  `conferir` no preview (ok nas 10 combinações e com movimento reduzido) e Lighthouse no preview do build
+  (acessibilidade, boas práticas, SEO e navegação por agentes: 100 no desktop e no celular; o desempenho
+  não foi medido).
+- **Pendente (o Cesar decide):** (1) ler o post no ar e a apresentação; (2) conferir o deploy no GitHub
+  Actions e a página em <https://blog.cesarschutz.com.br/posts/claude-code-you-should-know/>; (3) o mod
+  não foi ligado numa sessão de teste: se o Cesar ligar
+  (`/plugin enable cc-plugin-you-should-know@builtin`) e a conta tiver o mod, um print real da nota pode
+  entrar como `Evidencia`; (4) o app Desktop não foi conferido; (5) as partes 1 e 2 dizem que os mods vêm
+  "ligados por padrão", certo para mods em geral (a exceção é este), e podem ganhar um link para este
+  post; (6) o ciclo da checagem é uma figura parada com sequência: pode virar figura em passos (D67), como
+  as do post de DNS, se o Cesar preferir.
+- **Regra de aprendizado (D68):** o OK direto da proposta de caneta ("pode aprovar direto") vale só para
+  este post ou vira regra para os próximos? Aguardando a resposta do Cesar.
 

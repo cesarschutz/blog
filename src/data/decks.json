@@ -34,5 +34,11 @@
     "slides": 20,
     "largura": 1376,
     "altura": 774
+  },
+  "claude-code-you-should-know": {
+    "titulo": "You should know do Claude Code",
+    "slides": 20,
+    "largura": 1376,
+    "altura": 774
   }
 }

@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -95 1200 963"
+  aria-label="Janela de terminal com uma nota colada acima da linha do prompt, com uma estrela e o texto You should know, e, à parte, um papel com uma lupa, ligado à janela por um fio, observando a conversa."
+  data-largo="80 147 1100 468" data-medio="157 57 973 649" data-quadrado="179 -84 930 930"
+  data-og="184 -60 920 883" data-segura="225 150 837 462">
+  <g class="tinta">
+    <rect x="290" y="150" width="540" height="448" rx="16" transform="translate(14 14)" class="hachura"/>
+    <rect x="290" y="150" width="540" height="448" rx="16" class="papel"/>
+    <rect x="290" y="150" width="540" height="448" rx="16" class="linha"/>
+    <path d="M290 194 H830" class="linha"/>
+    <circle cx="320" cy="172" r="8" class="linha"/>
+    <circle cx="348" cy="172" r="8" class="linha"/>
+    <circle cx="376" cy="172" r="8" class="linha"/>
+    <path d="M321 226 L331 234 L321 242 M346 234 H520 M346 280 H720 M346 306 H660 M346 332 H700 M346 378 H690 M346 404 H610" class="linha"/>
+    <circle cx="330" cy="280" r="5" class="linha"/>
+    <circle cx="330" cy="378" r="5" class="linha"/>
+    <rect x="316" y="534" width="488" height="46" rx="10" class="linha"/>
+    <path d="M336 549 L346 557 L336 565" class="linha"/>
+    <rect x="360" y="545" width="12" height="24" class="papel"/>
+    <rect x="360" y="545" width="12" height="24" class="linha"/>
+
+    <path d="M830 300 C 846 300 856 316 872 320" class="linha"/>
+    <circle cx="830" cy="300" r="5" class="papel"/>
+    <circle cx="830" cy="300" r="5" class="linha"/>
+    <g transform="translate(-30 0) rotate(5 985 330)">
+      <rect x="900" y="232" width="170" height="196" transform="translate(14 14)" class="hachura"/>
+      <rect x="900" y="232" width="170" height="196" class="papel"/>
+      <rect x="900" y="232" width="170" height="196" class="linha"/>
+      <circle cx="970" cy="306" r="44" transform="translate(7 6)" class="cor"/>
+      <circle cx="970" cy="306" r="44" class="papel"/>
+      <circle cx="970" cy="306" r="44" class="linha"/>
+      <path d="M946 288 C 952 278 962 273 972 272" class="linha"/>
+      <path d="M1001 337 L1008 344" class="linha"/>
+      <g transform="rotate(45 1028 364)">
+        <rect x="1000" y="352" width="58" height="24" rx="10" class="papel"/>
+        <rect x="1000" y="352" width="58" height="24" rx="10" class="linha"/>
+      </g>
+      <path d="M922 392 H1000 M922 408 H970" class="linha"/>
+    </g>
+
+    <g transform="rotate(-2 466 484)">
+      <rect x="262" y="442" width="408" height="84" rx="4" transform="translate(7 7)" class="hachura"/>
+      <rect x="262" y="442" width="408" height="84" rx="4" class="papel"/>
+      <path d="M262 442 H670 V526 H262 Z M278 456 H654 V512 H278 Z" transform="translate(7 6)" fill-rule="evenodd" class="cor"/>
+      <rect x="262" y="442" width="408" height="84" rx="4" class="linha"/>
+      <g class="mexe-pulsa">
+        <path d="M304 462 Q308 480 326 484 Q308 488 304 506 Q300 488 282 484 Q300 480 304 462 Z" transform="translate(4 3)" class="cor"/>
+        <path d="M304 462 Q308 480 326 484 Q308 488 304 506 Q300 488 282 484 Q300 480 304 462 Z" class="linha"/>
+      </g>
+      <rect x="584" y="474" width="22" height="16" rx="8" class="linha"/>
+      <rect x="614" y="474" width="22" height="16" rx="8" class="linha"/>
+      <path d="M344 504 H560" class="linha"/>
+    </g>
+    <g transform="rotate(-34 262 446)">
+      <rect x="226" y="434" width="78" height="26" class="papel"/>
+      <rect x="226" y="434" width="78" height="26" class="linha"/>
+    </g>
+    <g transform="rotate(30 672 446)">
+      <rect x="634" y="434" width="78" height="26" class="papel"/>
+      <rect x="634" y="434" width="78" height="26" class="linha"/>
+    </g>
+  </g>
+  <g transform="rotate(-2 466 484)"><text x="344" y="490" class="codigo">You should know</text></g>
+  <g class="anotacao">
+    <path d="M214 404 C 228 420 240 440 252 452" class="chamada"/>
+    <text x="96" y="370" class="nota">a nota aparece</text>
+    <text x="96" y="396" class="nota-pequena">acima do prompt</text>
+    <path d="M970 468 C 966 486 954 500 936 510" class="chamada"/>
+    <text x="870" y="536" class="nota">o agente lateral</text>
+    <text x="870" y="562" class="nota-pequena">só lê a conversa</text>
+  </g>
+</svg>

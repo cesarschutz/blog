@@ -187,6 +187,22 @@ aprovação prévia, a pedido dele: **o Cesar revê o post no ar** (o texto, a c
 longo do texto, que é o lembrete da D63). Feito numa worktree
 (`.claude/worktrees/post-do-claude-md-ao-mod`), porque havia outras sessões na pasta do projeto.
 
+Post novo de 04/10/2026 (D82, **publicado**): `claude-code-you-should-know`, "You should know
+do Claude Code — como funciona, como ligar e limites", livro IA, tags Claude Code e Plugins. É o mod
+embutido do Claude Code (`cc-plugin-you-should-know`, desde a 2.1.287): um agente lateral que lê a conversa
+em tarefas longas e põe uma nota acima do prompt. Detalhado, com TL;DR, cerca de 2.500 palavras de prosa.
+A pesquisa corrigiu o pedido em dois pontos: o mod **vem desligado** e só existe para contas em que foi
+liberado, e o changelog que vem dentro do binário 2.1.287 não traz a entrada da própria 2.1.287 (vale o do
+site). Os detalhes de funcionamento vêm do código da 2.1.289 e estão marcados assim no texto. Visuais: a
+capa, o ciclo da checagem (diagrama de sequência) e a nota na tela (três quadros, com frases inventadas e
+rotuladas), sem logo (não há marca registrada da Anthropic). A caneta entrou com 19 marcações, aprovadas
+pelo Cesar no meio do trabalho, e a apresentação tem 20 slides (`.pptx` e `.pdf` em `~/Downloads/`, slides
+WebP no post). Feito na branch `post-you-should-know` (worktree `.claude/worktrees/post-you-should-know`,
+que pode ser apagada) e publicado a pedido do Cesar, direto na `main`, com `build`, `links`, `contraste`,
+`check`, `conferir` e Lighthouse (100 em acessibilidade, boas práticas, SEO e navegação por agentes, no
+desktop e no celular) sem falhas. O Cesar ainda lê o post no ar. O mod não foi ligado numa sessão de teste
+(sem print real de nota) e o Desktop não foi conferido.
+
 Escrita dos posts e post em partes (D71, 02/10/2026, **publicado em 03/10/2026**): o Cesar leu o post dos mods no ar e não gostou do título (não dizia do que o post
 trata), da abertura (já saía falando do cockpit, que é o exemplo) e da primeira pessoa. Entraram na
 skill `post` as regras de escrita (o título que faz sentido sozinho, a descrição com o essencial em 160

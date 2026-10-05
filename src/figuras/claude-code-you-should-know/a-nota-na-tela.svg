@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1766"
+  aria-label="Três quadros da nota do You should know no terminal, acima da caixa do prompt. A oferta: a faixa do mod com a estrela, a etiqueta You should know, uma frase de exemplo inventada em inglês e as opções 1: Learn more, 2: Knew this already e 0: Dismiss, com quatro chamadas numeradas (a faixa, a etiqueta, a frase de até 240 caracteres e as opções). A explicação, depois da tecla 1: a mesma nota, um título em negrito, um texto curto e as opções 1: Understood, 2: Chat in main session, que põe a nota no seu prompt sem enviar, e 0: Dismiss. Depois do 0: Dismiss na oferta: Dismissed. e, por 20 segundos, 1: That was helpful, 2: Not relevant, 3: Couldn’t understand, 4: Turn off suggestions, só no terminal, e 0: Dismiss.">
+  <g data-parte="oferta">
+    <g class="tinta">
+      <rect x="67" y="83" width="930" height="400" rx="14" class="hachura"/>
+      <rect x="60" y="76" width="930" height="400" rx="14" class="papel"/>
+      <rect x="60" y="76" width="930" height="400" rx="14" class="linha"/>
+      <path d="M60 110 H990" class="linha"/>
+      <circle cx="84" cy="93" r="6" class="linha"/>
+      <circle cx="106" cy="93" r="6" class="linha"/>
+      <circle cx="128" cy="93" r="6" class="linha"/>
+      <path d="M96 136 H520 M96 160 H380" class="linha"/>
+      <g class="tom-petroleo"><rect x="76" y="178" width="898" height="200" rx="10" class="linha-tom"/></g>
+      <g class="tom-ambar"><rect x="86" y="232" width="800" height="88" rx="6" transform="translate(7 6)" class="cor"/><rect x="86" y="232" width="800" height="88" rx="6" class="papel"/><rect x="86" y="232" width="800" height="88" rx="6" class="linha-tom"/></g>
+      <g class="tom-verde"><rect x="76" y="408" width="898" height="52" rx="8" class="linha-tom"/><rect x="126" y="422" width="13" height="26" rx="2" class="cheio-tom"/></g>
+      <circle cx="110" cy="205" r="17" class="selo"/><circle cx="238" cy="205" r="17" class="selo"/><circle cx="943" cy="276" r="17" class="selo"/><circle cx="943" cy="348" r="17" class="selo"/>
+    </g>
+    <path d="M898 246 H910 V310 H898 M850 348 H924 M238 222 V248" class="chamada"/>
+    <text x="60" y="52" class="titulo-caixa">A oferta</text>
+    <text x="200" y="52" class="nota-pequena">exemplo ilustrativo: a frase é inventada</text>
+    <g class="tom-ambar">
+      <text x="96" y="268" class="codigo texto-tom">✦</text>
+      <text x="126" y="268" class="codigo texto-tom">You should know ·</text>
+      <text x="396" y="268" class="codigo">The tests freeze the clock at</text>
+      <text x="126" y="302" class="codigo">noon, so no test runs the job past midnight.</text>
+    </g>
+    <g class="tom-petroleo">
+      <text x="126" y="356" class="codigo texto-tom">1: Learn more  2: Knew this already  0: Dismiss</text>
+    </g>
+    <g class="tom-verde"><text x="96" y="443" class="codigo texto-tom">&gt;</text></g>
+    <text x="110" y="206" class="selo-texto">1</text><text x="238" y="206" class="selo-texto">2</text><text x="943" y="277" class="selo-texto">3</text><text x="943" y="349" class="selo-texto">4</text>
+    <g class="tinta"><circle cx="77" cy="522" r="17" class="selo"/><circle cx="557" cy="522" r="17" class="selo"/><circle cx="77" cy="566" r="17" class="selo"/><circle cx="557" cy="566" r="17" class="selo"/></g>
+    <text x="77" y="523" class="selo-texto">1</text><text x="104" y="529" class="texto-caixa">a faixa acima do prompt, do mod</text><text x="557" y="523" class="selo-texto">2</text><text x="584" y="529" class="texto-caixa">a etiqueta: You should know ou Heads up</text><text x="77" y="567" class="selo-texto">3</text><text x="104" y="573" class="texto-caixa">a frase, com até 240 caracteres</text><text x="557" y="567" class="selo-texto">4</text><text x="584" y="573" class="texto-caixa">as opções, pelas teclas 1, 2 e 0</text>
+  </g>
+  <g data-parte="explicacao">
+    <g class="tinta">
+      <rect x="67" y="693" width="930" height="438" rx="14" class="hachura"/> <rect x="60" y="686" width="930" height="438" rx="14" class="papel"/> <rect x="60" y="686" width="930" height="438" rx="14" class="linha"/> <path d="M60 720 H990" class="linha"/> <circle cx="84" cy="703" r="6" class="linha"/> <circle cx="106" cy="703" r="6" class="linha"/> <circle cx="128" cy="703" r="6" class="linha"/>
+      <path d="M96 748 H460" class="linha"/>
+      <g class="tom-petroleo"><rect x="76" y="760" width="898" height="266" rx="10" class="linha-tom"/></g>
+      <g class="tom-ambar"><rect x="86" y="774" width="800" height="198" rx="6" transform="translate(7 6)" class="cor"/><rect x="86" y="774" width="800" height="198" rx="6" class="papel"/><rect x="86" y="774" width="800" height="198" rx="6" class="linha-tom"/></g>
+      <g class="tom-verde"><rect x="76" y="1056" width="898" height="52" rx="8" class="linha-tom"/><rect x="126" y="1070" width="13" height="26" rx="2" class="cheio-tom"/><path d="M523 1016 V1050 M514 1036 L523 1050 L532 1036" class="linha-tom"/></g>
+    </g>
+    <text x="60" y="662" class="titulo-caixa">A explicação</text>
+    <text x="262" y="662" class="nota-pequena">o texto também é inventado</text>
+    <g class="tom-ambar">
+      <text x="96" y="800" class="codigo texto-tom">✦</text>
+      <text x="126" y="800" class="codigo texto-tom">You should know ·</text>
+      <text x="396" y="800" class="codigo">The tests freeze the clock at</text>
+      <text x="126" y="834" class="codigo">noon, so no test runs the job past midnight.</text>
+      <text x="126" y="884" class="titulo-caixa">The job breaks after midnight</text>
+      <text x="126" y="920" class="codigo">The tests stop time at 12:00, so none of</text>
+      <text x="126" y="954" class="codigo">them reaches the hour when the date changes.</text>
+    </g>
+    <g class="tom-petroleo">
+      <text x="126" y="1004" class="codigo texto-tom">1: Understood  2: Chat in main session  0: Dismiss</text>
+    </g>
+    <g class="tom-verde"><text x="96" y="1091" class="codigo texto-tom">&gt;</text></g>
+    <text x="60" y="1170" class="texto-caixa">1: Understood marca o tema como conhecido.</text>
+    <text x="60" y="1204" class="texto-caixa">2: Chat in main session põe a nota no seu prompt e não envia: você decide.</text>
+  </g>
+  <g data-parte="dispensa">
+    <g class="tinta">
+      <rect x="67" y="1321" width="930" height="302" rx="14" class="hachura"/> <rect x="60" y="1314" width="930" height="302" rx="14" class="papel"/> <rect x="60" y="1314" width="930" height="302" rx="14" class="linha"/> <path d="M60 1348 H990" class="linha"/> <circle cx="84" cy="1331" r="6" class="linha"/> <circle cx="106" cy="1331" r="6" class="linha"/> <circle cx="128" cy="1331" r="6" class="linha"/>
+      <path d="M96 1376 H460" class="linha"/>
+      <g class="tom-petroleo"><rect x="76" y="1388" width="898" height="130" rx="10" class="linha-tom"/></g>
+      <g class="tom-verde"><rect x="76" y="1548" width="898" height="52" rx="8" class="linha-tom"/><rect x="126" y="1562" width="13" height="26" rx="2" class="cheio-tom"/><path d="M658 1474 V1542 M649 1528 L658 1542 L667 1528" class="linha-tom"/></g>
+    </g>
+    <text x="60" y="1290" class="titulo-caixa">Depois do Dismiss</text>
+    <text x="338" y="1290" class="nota-pequena">depois do 0: Dismiss na oferta</text>
+    <g class="tom-ambar"><text x="96" y="1428" class="codigo texto-tom">✦</text></g>
+    <g class="tom-petroleo">
+      <text x="126" y="1428" class="codigo">Dismissed.</text>
+      <text x="306" y="1428" class="codigo texto-tom">1: That was helpful  2: Not relevant</text>
+      <text x="126" y="1462" class="codigo texto-tom">3: Couldn’t understand  4: Turn off suggestions</text>
+      <text x="126" y="1496" class="codigo texto-tom">0: Dismiss</text>
+    </g>
+    <g class="tom-verde"><text x="96" y="1583" class="codigo texto-tom">&gt;</text></g>
+    <text x="60" y="1662" class="texto-caixa">A pergunta fica 20 segundos na tela e some.</text>
+    <text x="60" y="1696" class="texto-caixa">4 só aparece no terminal: escreve no seu prompt o comando que desliga o mod, e o Enter é seu.</text>
+  </g>
+  <g class="tom-verde">
+    <g class="tinta">
+      <path d="M990 348 H1142 V1216 M1142 1268 V1420 H996 M1010 1411 L996 1420 L1010 1429" class="linha-tom"/>
+      <path d="M1062 348 V589 M1062 641 V792 H996 M1010 783 L996 792 L1010 801" class="linha-tom"/>
+      <rect x="1040" y="593" width="44" height="44" rx="8" class="lavado"/><rect x="1040" y="593" width="44" height="44" rx="8" class="linha"/><rect x="1120" y="1220" width="44" height="44" rx="8" class="lavado"/><rect x="1120" y="1220" width="44" height="44" rx="8" class="linha"/>
+    </g>
+    <text x="1062" y="624" text-anchor="middle" class="codigo">1</text><text x="1142" y="1251" text-anchor="middle" class="codigo">0</text>
+  </g>
+  <text x="60" y="1744" class="texto-caixa">As frases da nota são exemplos inventados, em inglês como na tela; rótulos e teclas são os da 2.1.289.</text>
+</svg>
