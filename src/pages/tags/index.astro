@@ -41,14 +41,12 @@ const tags = await getTags();
 </Base>
 
 <script>
-  // Rodada 4 (P19-2): o fichário (as gavetas por letra) e as fichas que caem (fichas-caem.ts).
+  // Rodada 4 (P19-2): o fichário (as gavetas por letra), que liga também as fichas que caem (fichas-caem.ts).
   import { fichario } from "../../scripts/fichario";
-  import { fichasCaem } from "../../scripts/fichas-caem";
 
   const lista = document.querySelector<HTMLElement>("[data-fichas-caem]");
   const movel = document.querySelector<HTMLElement>("[data-fichario]");
   if (lista && movel) fichario(movel, lista);
-  else if (lista) fichasCaem(lista);
 </script>
 
 <style>

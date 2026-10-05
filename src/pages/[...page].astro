@@ -1,8 +1,7 @@
 ---
 /**
- * Home (briefing §5.1): abertura com a estante, a gaveta do livro aberto e os artigos recentes (Lista /
- * Cards), na largura toda: o painel lateral da D28 saiu da home na D44 (continua na página de
- * categoria e na da série). O destaque (o post mais recente) é o primeiro deles (D52, C02): nos cards,
+ * Home (briefing §5.1): a abertura, o nome gigante, a coleção (ColecaoHome) e os artigos recentes (Lista /
+ * Cards), na largura toda. O destaque (o post mais recente) é o primeiro deles (D52, C02): nos cards,
  * ocupa o lugar de dois; na lista e com uma coluna só, é o primeiro, maior (Cartao e ItemLista).
  * Paginada como no blog atual (D27), em /, /2/, /3/…: cada página tem 12 lugares na grade. Na primeira,
  * o destaque ocupa dois, e ela mostra 11 artigos (a grade fecha certinho com 1, 2, 3 ou 4 colunas); da
@@ -23,7 +22,6 @@ import Base from "../layouts/Base.astro";
 import ColecaoHome from "../components/ColecaoHome.astro";
 import Recentes from "../components/Recentes.astro";
 import TracoTitulo from "../components/TracoTitulo.astro";
-import { LIVRO_NA_LISTA } from "../lib/lista";
 import Marca from "../components/Marca.astro";
 import { TEXTOS } from "../data/site";
 import { montarLivros } from "../lib/estante";
@@ -94,7 +92,7 @@ const jsonLd = {
       destaque={primeira}
       etiqueta
       tracoNoTitulo={primeira}
-      livroAoLado={LIVRO_NA_LISTA}
+      livroAoLado
       pagina={{
         atual,
         ultima,

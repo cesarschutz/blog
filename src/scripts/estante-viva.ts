@@ -1,26 +1,31 @@
 /**
  * A estante viva (D40, D49), com GSAP sob demanda:
  *
- * - o toque na cabeça (home e estante de filtro; D49, protótipo D1): o livro sob o mouse tomba um nada
- *   para a frente, 5°, pela borda de baixo, ainda apoiado na prateleira, e mostra a cabeça (o topo das
- *   páginas). Os vizinhos não se mexem e nada flutua (antes, D47, o livro subia 16px e os vizinhos,
- *   2px). Ao sair, ele cai de volta em pé. Embaixo, a legenda mostra o nome e a contagem. O foco do
- *   teclado faz o mesmo. Só com mouse; no toque, a lombada abre o livro direto (Gaveta.astro, que faz o
- *   gesto de tirar e guardar, estante-gesto.ts).
+ * - o toque na cabeça (D49, protótipo D1): o livro sob o mouse tomba um nada para a frente, 5°, pela
+ *   borda de baixo, ainda apoiado na prateleira, e mostra a cabeça (o topo das páginas). Os vizinhos não
+ *   se mexem e nada flutua (antes, D47, o livro subia 16px e os vizinhos, 2px). Ao sair, ele cai de volta
+ *   em pé. Embaixo, a legenda mostra o nome e a contagem. O foco do teclado faz o mesmo. Só com mouse; no
+ *   toque, a lombada é só o link (ou o botão do filtro).
  *
  * - em repouso: nada (rodada 4, H11). A estante não se mexe sozinha com a página parada; antes, depois de 3s
  *   sem gesto, um livro sorteado era tocado na cabeça a cada 4 a 7s. Só o mouse, o foco e o toque a mexem.
  *
- * O livro fora da prateleira (na mão ou na gaveta) é da gaveta, e o vizinho tombado não espia: a
- * estante viva não mexe neles. O repouso de cada lombada (a inclinada da home, 6°; a escolhida no
- * filtro, 10px acima) fica com o GSAP, que escreve o `transform`, e o CSS não manda mais. Só
- * transformações. Com movimento reduzido, nada se move (a legenda continua).
+ * O repouso de cada lombada (em pé; a escolhida no filtro, 10px acima) fica com o GSAP, que escreve o
+ * `transform`, e o CSS não manda mais. Só transformações. Com movimento reduzido, nada se move (a legenda
+ * continua).
  *
  * Durante a abertura da home (D51, `data-abertura` no <html>), a estante é a cena: não responde ao mouse
  * nem ao foco (sem tombar e sem a legenda, B12 da D52).
  */
-import { descanso, foraDaPrateleira } from "./estante-gesto";
 import { adiantar, carregarGsap, movimentoReduzido, temMouse, type GSAP } from "./gsap";
+
+/**
+ * Onde a lombada descansa: em pé, girando pela borda de baixo. Sempre com uma transformação 3D, como no
+ * CSS (`rotateX(0deg)`, estante.css), também parada: o GSAP, por padrão, volta ao 2D no fim de cada
+ * movimento, e no celular (Safari) a lombada girada só em 2D, dentro da prateleira em 3D, perdia o
+ * desenho (D54). O `force3D` fica guardado no GSAP de cada lombada: vale para os movimentos seguintes dela.
+ */
+const REPOUSO = { rotation: 0, transformOrigin: "50% 100%", force3D: true } as const;
 
 /** Quanto o livro tocado na cabeça tomba para a frente. */
 const TOQUE = -5;
@@ -30,17 +35,14 @@ const naAbertura = () => document.documentElement.hasAttribute("data-abertura");
 
 const prontas = new WeakSet<HTMLElement>();
 /**
- * Passa as lombadas da prateleira para o GSAP, uma vez (a gaveta chama também, antes do gesto): o CSS
- * deixa de animar o transform (`.viva`), e cada lombada fica no repouso dela.
+ * Passa as lombadas da prateleira para o GSAP, uma vez: o CSS deixa de animar o transform (`.viva`), e
+ * cada lombada fica no repouso dela.
  */
-export function prepararPrateleira(gsap: GSAP, prateleira: HTMLElement) {
+function prepararPrateleira(gsap: GSAP, prateleira: HTMLElement) {
   if (prontas.has(prateleira)) return;
   prontas.add(prateleira);
   prateleira.classList.add("viva");
-  for (const el of prateleira.querySelectorAll<HTMLElement>(".lombada")) {
-    if (el.dataset.tombado !== undefined || foraDaPrateleira(el)) continue;
-    gsap.set(el, { ...descanso(el), y: escolhida(el) });
-  }
+  for (const el of prateleira.querySelectorAll<HTMLElement>(".lombada")) gsap.set(el, { ...REPOUSO, y: escolhida(el) });
 }
 
 export function estanteViva(raiz: HTMLElement) {
@@ -77,15 +79,14 @@ export function estanteViva(raiz: HTMLElement) {
     sob = el;
     mostrarLegenda(el);
     if (!gsap || movimentoReduzido.matches) return;
-    if (antes && !foraDaPrateleira(antes)) gsap.to(antes, { rotationX: 0, duration: 0.3, ease: "power2.in", overwrite: "auto" });
-    if (el && !foraDaPrateleira(el)) gsap.to(el, { rotationX: TOQUE, duration: 0.3, ease: "power2.out", overwrite: "auto" });
+    if (antes) gsap.to(antes, { rotationX: 0, duration: 0.3, ease: "power2.in", overwrite: "auto" });
+    if (el) gsap.to(el, { rotationX: TOQUE, duration: 0.3, ease: "power2.out", overwrite: "auto" });
   }
 
   /** A lombada sob o mouse, pela coluna dela (com 3px de folga, para o vão entre dois livros não piscar). */
   function naColuna(x: number) {
     return (
       lombadas.find((el) => {
-        if (el.classList.contains("segurando")) return false;
         const caixa = el.getBoundingClientRect();
         return x >= caixa.left - 3 && x <= caixa.right + 3;
       }) ?? null

@@ -10,20 +10,21 @@
  * edições contado pelos posts), o número de capa, a lista de edições, a tarja do guia e, no pé, o
  * emblema, o subtítulo e a assinatura.
  *
- * `desenho`: "inline" põe o desenho (ou o emblema da revista) no HTML (a página do livro, que já abre
- * com ele); "adiado" deixa só o endereço, e a gaveta busca quando o livro abre (Gaveta.astro).
+ * O desenho (ou o emblema da revista) vai sempre inline, no HTML. O modo "adiado" (só o endereço, para a
+ * gaveta da home buscar ao abrir o livro) saiu na faxina da D84, junto com a gaveta, que não estava em
+ * página nenhuma desde a D61; a prop `desenho` continua aceita só porque a /amostra/colecoes/ ainda passa
+ * `desenho="inline"`.
  */
 import { desenhoDaCapa, iconeDoLivro } from "../lib/livros-svg";
 import { ICONES } from "../lib/icones";
 import type { Livro } from "../lib/estante";
-import { url } from "../lib/url";
 
 interface Props {
   livro: Livro;
-  desenho: "inline" | "adiado";
+  desenho?: "inline";
 }
 
-const { livro: l, desenho } = Astro.props;
+const { livro: l } = Astro.props;
 const volume = l.volume ? String(l.volume).padStart(2, "0") : "";
 const r = l.revista;
 const edicoes = l.posts.length;
@@ -66,11 +67,7 @@ const edicoes = l.posts.length;
             </span>
           </div>
         )}
-        {desenho === "inline" ? (
-          <span class="revista-emblema" set:html={iconeDoLivro(r.emblema)} />
-        ) : (
-          <span class="revista-emblema" data-desenho={url(`/livros/${l.id}.svg`)} />
-        )}
+        <span class="revista-emblema" set:html={iconeDoLivro(r.emblema)} />
         <p class="revista-subtitulo">{l.descricao}</p>
         <p class="capa-assinatura">BLOG.CESARSCHUTZ.COM.BR</p>
       </div>
@@ -84,11 +81,7 @@ const edicoes = l.posts.length;
         </p>
         <p class="capa-titulo">{l.linhas.map((linha, i) => (i === 0 ? linha : [<br />, linha]))}</p>
         <p class="capa-frase">{l.frase}</p>
-        {desenho === "inline" ? (
-          <div class="capa-desenho" set:html={desenhoDaCapa(l.slug!)} />
-        ) : (
-          <div class="capa-desenho" data-desenho={url(`/livros/${l.slug}.svg`)} />
-        )}
+        <div class="capa-desenho" set:html={desenhoDaCapa(l.slug!)} />
         <p class="capa-assinatura">BLOG.CESARSCHUTZ.COM.BR</p>
       </div>
     </div>

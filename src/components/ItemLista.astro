@@ -28,13 +28,11 @@
  * à direita.
  *
  * `livroAoLado` (rodada 4, H7): nas outras listas (Todos os artigos e a home em Lista), em tela grande, o
- * livro do artigo também vai à direita, no espaço que sobrava, de uma de duas formas:
- * - "espelhado": o mesmo livro 3D da tag, mas virado para o outro lado, com a capa olhando para o texto
- *   (o giro de −38°, que mostra a capa e o corte das folhas, e não a lombada);
- * - "foto": a foto do livro deitado da ficha "Do livro" do post (FotoDoLivro), com a etiqueta deste
- *   artigo em amarelo, saindo das folhas.
- * A ficha inteira dispara o hover do livro (`data-livro-gira` e `data-foto-gira`). O destaque da home não
- * leva livro (ele já tem a ilustração grande e o carimbo). Abaixo de 1100px, o livro sai.
+ * livro do artigo também vai à direita, no espaço que sobrava, espelhado: o mesmo livro 3D da tag, mas
+ * virado para o outro lado, com a capa olhando para o texto (o giro de −38°, que mostra a capa e o corte das
+ * folhas, e não a lombada). A outra forma da H7, a foto do livro deitado, ficou nas amostras do redesenho e
+ * volta do git, se o Cesar quiser. A ficha inteira dispara o hover do livro (`data-livro-gira`). O destaque da
+ * home não leva livro (ele já tem a ilustração grande e o carimbo). Abaixo de 1100px, o livro sai.
  *
  * Fora das listas desta base (Recentes e ListaFiltrada, que já não põem a folha em volta), qualquer
  * `.lista-artigos` com estas fichas vira só a pilha delas (a regra global no fim).
@@ -42,7 +40,6 @@
 import IconeTag from "./IconeTag.astro";
 import Ilustracao from "./Ilustracao.astro";
 import LivroEmPe from "./LivroEmPe.astro";
-import FotoDoLivro from "./FotoDoLivro.astro";
 import MaisRecente from "./MaisRecente.astro";
 import MetaItem from "./MetaItem.astro";
 import { montarLivros } from "../lib/estante";
@@ -56,19 +53,17 @@ interface Props {
   post: Resumo;
   /** Nível do título, para a lista respeitar a hierarquia da página. */
   nivel?: "h2" | "h3";
-  /** O mais recente, na primeira página da home (D52). */
+  /** O mais recente, na primeira página da home (D52), com o carimbo "Novo" (E9, MaisRecente). */
   destaque?: boolean;
   /** Protótipo 14 (G8): o livro do artigo à direita, em tela grande. */
   comLivro?: boolean;
-  /** Rodada 4 (E9): o carimbo "Novo" ao lado de "Mais recente" (só no destaque da home; MaisRecente). */
-  carimbo?: boolean;
-  /** Rodada 4 (H7): o livro do artigo à direita, em tela grande, nas listas que não são a da tag. */
-  livroAoLado?: "espelhado" | "foto";
+  /** Rodada 4 (H7): o livro do artigo à direita, espelhado, em tela grande, nas listas que não são a da tag. */
+  livroAoLado?: boolean;
 }
 
-const { post, nivel = "h3", destaque = false, comLivro = false, carimbo = false, livroAoLado } = Astro.props;
-// A forma do livro à direita: a da tag (como está), ou a das outras listas (nunca no destaque).
-const formaDoLivro = comLivro ? "tag" : destaque ? undefined : livroAoLado;
+const { post, nivel = "h3", destaque = false, comLivro = false, livroAoLado = false } = Astro.props;
+// A forma do livro à direita: a da tag (como está), ou a espelhada das outras listas (nunca no destaque).
+const formaDoLivro = comLivro ? "tag" : destaque || !livroAoLado ? undefined : "espelhado";
 const livro = formaDoLivro ? (await montarLivros()).find((l) => l.id === post.livro) : undefined;
 const Titulo = nivel;
 const comMiniatura = temIlustracao(post.slug);
@@ -82,7 +77,6 @@ const ALTURA = 150;
   class:list={["item", "completo", "folha", "ficha-lista", { "com-miniatura": comMiniatura, destaque, "com-livro": !!livro }]}
   data-livro={post.livro}
   data-livro-gira={livro && formaDoLivro === "espelhado" ? "" : undefined}
-  data-foto-gira={livro && formaDoLivro === "foto" ? "" : undefined}
   data-revelar
   style={`--cor:${post.cor}`}
 >
@@ -102,7 +96,7 @@ const ALTURA = 150;
       </div>
     ))}
     <div class="texto">
-      {destaque && <MaisRecente carimbo={carimbo ? post.publicado : undefined} />}
+      {destaque && <MaisRecente carimbo={post.publicado} />}
       <MetaItem post={post} />
       <Titulo class="titulo">
         <a href={post.url} set:html={tituloEmPartes(post.tituloCompleto)} />
@@ -119,16 +113,10 @@ const ALTURA = 150;
         </p>
       )}
     </div>
-    {livro && formaDoLivro !== "foto" && (
+    {livro && (
       <div class:list={["livro-item", { "livro-espelhado": formaDoLivro === "espelhado" }]} aria-hidden="true">
         {/* Na lista, sem as folhas por baixo da capa (só servem ao livro que abre): menos faces para desenhar. */}
         <LivroEmPe livro={livro} altura={124} transicao="ao-clicar" folhas={formaDoLivro === "espelhado" ? 0 : 3} />
-        <span class="nome-do-livro">{livro.nome}</span>
-      </div>
-    )}
-    {livro && formaDoLivro === "foto" && (
-      <div class="livro-item livro-foto" aria-hidden="true">
-        <span class="foto-moldura"><FotoDoLivro livro={livro} atual={post} prefixo={`lista-${post.slug}`} largura={142} /></span>
         <span class="nome-do-livro">{livro.nome}</span>
       </div>
     )}
@@ -437,8 +425,7 @@ const ALTURA = 150;
      * artigos, e, rolando com a CPU 4× mais lenta, eles levavam quadros de 67 a 83ms. A caixa guarda o
      * tamanho (o livro de 124px e o nome), para a página não pular.
      */
-    .livro-espelhado,
-    .livro-foto {
+    .livro-espelhado {
       content-visibility: auto;
       contain-intrinsic-size: auto 132px auto 172px;
       padding-block: 8px 4px;
@@ -446,20 +433,6 @@ const ALTURA = 150;
 
     .livro-espelhado :global(.livro-3d) {
       --giro: -38deg;
-    }
-
-    .com-livro.com-miniatura:has(.livro-foto) .miolo-ficha {
-      grid-template-columns: clamp(150px, 14vw, 200px) minmax(0, 1fr) 142px;
-    }
-
-    /* A foto do livro deitado (H7, forma "foto"): 142px, a largura da ficha "Do livro" na lateral do post. */
-    .livro-foto {
-      align-self: center;
-    }
-
-    .foto-moldura {
-      display: block;
-      width: 142px;
     }
   }
 

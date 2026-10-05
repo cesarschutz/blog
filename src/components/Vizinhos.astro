@@ -15,11 +15,9 @@
  *
  * Rodada 4, segunda parte (E8: "quero o B, mas com a fita do C"): a ficha de catálogo ganha a fita crepe do
  * papel colado, atravessando a borda de cima, no meio (a mesma da ficha "Do livro", ficha-do-livro.css); a
- * ficha em branco também. A ficha fica reta, como a "Do livro". É o `forma="ficha-fita"`, o padrão.
- *
- * As outras formas ficam na amostra D6 (nas amostras do redesenho, fora do git): `forma="ficha"`, a ficha sem a fita; `"folha"`,
- * a folha lisa de antes (a ilustração na altura toda, sem tira); e `"papel"`, o papel colado na folha com um
- * pedaço de fita, um nada torto.
+ * ficha em branco também. A ficha fica reta, como a "Do livro". O `data-forma="ficha-fita"` fica fixo: os
+ * estilos (aqui e em ficha-do-livro.css) o procuram. As outras formas da amostra D6 (a ficha sem a fita, a
+ * folha lisa de antes e o papel colado um nada torto) voltam do git, se preciso.
  *
  * Ganchos estáveis (não renomear): `.vizinhos`, `a.vizinho.anterior[rel=prev]` e
  * `a.vizinho.proximo[rel=next]` (os atalhos ← e →, a troca de página e a capa viva os usam),
@@ -32,22 +30,15 @@ import { chamadaDe } from "../lib/ficha";
 import { tituloComQuebras } from "../lib/formato";
 import { temIlustracao } from "../lib/ilustracoes";
 import { getResumos, type Resumo } from "../lib/posts";
-// A fita do papel colado (forma "papel", da amostra D6) é a da ficha "Do livro".
+// A fita é a da ficha "Do livro".
 import "../styles/ficha-do-livro.css";
 
 interface Props {
   anterior?: Resumo;
   proximo?: Resumo;
-  /** "ficha" (o protótipo), "folha" (como era) ou "papel" (colado com fita); as duas últimas, da amostra D6. */
-  forma?: "ficha-fita" | "ficha" | "folha" | "papel";
-  /** O nome do bloco para o leitor de tela (a amostra tem três, cada um com o seu). */
-  rotulo?: string;
 }
 
-const { anterior, proximo, forma = "ficha-fita", rotulo = "Outros artigos" } = Astro.props;
-// A ficha de catálogo (com ou sem a fita) e as formas coladas com fita.
-const comTira = forma === "ficha" || forma === "ficha-fita";
-const comFita = forma === "papel" || forma === "ficha-fita";
+const { anterior, proximo } = Astro.props;
 // Sempre em ordem cronológica global, sem olhar o livro (D52, B03): os rótulos não falam mais de série.
 const rotulos = { anterior: "Artigo anterior", proximo: "Próximo artigo" };
 // O tombo que o próximo artigo vai ganhar ("nº 029"): o número de artigos mais um.
@@ -64,17 +55,17 @@ const lados = await Promise.all(
 
 {
   (anterior || proximo) && (
-    <nav class="vizinhos" data-forma={forma} aria-label={rotulo}>
+    <nav class="vizinhos" data-forma="ficha-fita" aria-label="Outros artigos">
       {lados.map(({ lado, rel, v, vazio, tomboVazio, ficha }) =>
         v ? (
           <a href={v.url} rel={rel} class:list={["vizinho", lado]} style={`--cor:${v.cor}`}>
-            {comTira && ficha && (
+            {ficha && (
               <span class="tira-ficha" aria-hidden="true">
                 <span>{ficha.chamada}</span>
                 <span>{ficha.tombo}</span>
               </span>
             )}
-            {comFita && <span class="fita" aria-hidden="true" />}
+            <span class="fita" aria-hidden="true" />
             {temIlustracao(v.slug) && (
               <span class="vizinho-figura painel" aria-hidden="true">
                 <Ilustracao slug={v.slug} recorte="quadrado" cor={v.cor} tamanho="cartao" decorativa />
@@ -101,13 +92,11 @@ const lados = await Promise.all(
           </a>
         ) : (
           <p class:list={["vizinho-vazio", lado]}>
-            {comTira && (
-              <span class="tira-ficha" aria-hidden="true">
-                <span>Ficha em branco</span>
-                <span>{tomboVazio}</span>
-              </span>
-            )}
-            {comFita && <span class="fita" aria-hidden="true" />}
+            <span class="tira-ficha" aria-hidden="true">
+              <span>Ficha em branco</span>
+              <span>{tomboVazio}</span>
+            </span>
+            <span class="fita" aria-hidden="true" />
             <em>{vazio}</em>
           </p>
         ),
@@ -137,7 +126,7 @@ const lados = await Promise.all(
     }
   }
 
-  /* ---------- o que as três formas têm em comum ---------- */
+  /* ---------- a base (a folha de antes), que a ficha de catálogo, abaixo, refaz ---------- */
 
   .vizinho {
     position: relative;
@@ -315,7 +304,7 @@ const lados = await Promise.all(
   }
 
   /*
-   * ---------- B e D, a ficha de catálogo (D, com a fita, é o protótipo) ----------
+   * ---------- a ficha de catálogo, com a fita (a D do protótipo) ----------
    * A ficha dos cards: os cantos de 6px, a tira em mono sobre o fio na cor do livro, a ilustração colada
    * com a margem de papel, sem borda desenhada e com a sombra curta do papel encostado (a família do papel
    * da rodada 4, H5), na folha do artigo e, no celular, direto no papel da página.
@@ -333,20 +322,12 @@ const lados = await Promise.all(
 
   /*
    * Rodada 4 (H5, a família do papel): a ficha sem a borda desenhada (transparente, para nada mudar de
-   * tamanho), com a sombra curta do papel colado, como os cards; no escuro, o anel de 1px a 7%.
+   * tamanho), com a sombra curta do papel (`--sombra-folha`, que no escuro ganha o anel de 1px a 7%), como
+   * os cards.
    */
   [data-forma^="ficha"] :is(.vizinho, .vizinho-vazio) {
     border-color: transparent;
-    box-shadow:
-      0 1px 1px color-mix(in oklab, var(--sombra-quente) 16%, transparent),
-      0 2px 4px -1px color-mix(in oklab, var(--sombra-quente) 22%, transparent);
-  }
-
-  :global(:root[data-theme="dark"]) [data-forma^="ficha"] :is(.vizinho, .vizinho-vazio) {
-    box-shadow:
-      0 0 0 1px color-mix(in oklab, var(--ink) 7%, transparent),
-      0 1px 1px color-mix(in oklab, var(--sombra-quente) 50%, transparent),
-      0 2px 5px -1px color-mix(in oklab, var(--sombra-quente) 60%, transparent);
+    box-shadow: var(--sombra-folha);
   }
 
   :global(:root[data-theme="dark"]) [data-forma^="ficha"] .vizinho {
@@ -437,45 +418,11 @@ const lados = await Promise.all(
       0 var(--pauta-y) / 100% calc(100% - var(--pauta-y) - 10px) no-repeat;
   }
 
-  /*
-   * ---------- C, o papel colado (só na amostra D6) ----------
-   * Um pedaço de papel colado na folha com uma tira de fita crepe no alto, cada um um nada torto para um
-   * lado, com a sombra curta de quem está colado. A fita é a da ficha "Do livro" (ficha-do-livro.css).
-   */
-  [data-forma="papel"] {
-    gap: 26px 22px;
-    padding-top: 10px;
-  }
-
-  /* D, a ficha com a fita (o protótipo): a fita passa 11px acima da ficha; um embaixo do outro, as fichas
-     se afastam para ela caber. */
+  /* A ficha com a fita (o protótipo): a fita passa 11px acima da ficha; um embaixo do outro, as fichas
+     se afastam para ela caber. A fita é a da ficha "Do livro" (ficha-do-livro.css). */
   [data-forma="ficha-fita"] {
     row-gap: 28px;
     padding-top: 10px;
-  }
-
-  [data-forma="papel"] .vizinho,
-  [data-forma="papel"] .vizinho-vazio {
-    border-radius: 1px;
-    box-shadow: 0 1px 1px color-mix(in oklab, var(--sombra-quente) 14%, transparent), 0 8px 14px -10px color-mix(in oklab, var(--sombra-quente) 45%, transparent);
-  }
-
-  [data-forma="papel"] .anterior {
-    rotate: -0.8deg;
-  }
-
-  [data-forma="papel"] .proximo {
-    rotate: 0.6deg;
-  }
-
-  [data-forma="papel"] .vizinho-figura {
-    margin: 10px 0 10px 10px;
-    border-radius: 0;
-  }
-
-  [data-forma="papel"] .vizinho-vazio {
-    border: 1px solid var(--rule);
-    background: var(--paper-hi);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -500,7 +447,7 @@ const lados = await Promise.all(
     }
 
     /* Com a fita, um embaixo do outro: espaço para a fita de baixo não encostar na ficha de cima. */
-    :is([data-forma="ficha-fita"], [data-forma="papel"]).vizinhos {
+    [data-forma="ficha-fita"].vizinhos {
       row-gap: 28px;
     }
 

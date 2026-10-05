@@ -8,14 +8,11 @@
  * some pela ponta (0,2s; traco.css). Nos botões, a seta avança 3px no hover e, no clique, sai pela frente e volta
  * por trás (0,32s) enquanto a página nova chega. Só CSS, fora a classe do clique.
  *
- * Rodada 4 (P16-2, vindo da linha 16; E6, a escolha do Cesar na amostra D4), três formas (`variante`):
- * - "papeis" (o padrão, a do protótipo desde a E6): um papel por botão. Os números em quadradinhos de
- *   36px, cada um colado com a sua fita e girado um nada; "Anteriores" e "Mais artigos" em papéis mais
- *   largos. No hover, o papel endireita e sobe 2px, e a sombra cresce (só a opacidade dela muda).
- * - "papel" (amostra D4, A): um papel só, centrado, colado na página com fita nos dois cantos de cima
- *   (no 16 eram alfinetes, na cortiça), com tudo dentro e o disco azul na página atual.
- * Nas duas, em tela estreita, os números ficam numa linha e os botões na de baixo.
- * - "solta" (amostra D4, antes): a do 18, sem papel.
+ * Rodada 4 (P16-2, vindo da linha 16; E6, a escolha do Cesar na amostra D4): um papel por botão. Os
+ * números em quadradinhos de 36px, cada um colado com a sua fita e girado um nada; "Anteriores" e "Mais
+ * artigos" em papéis mais largos. No hover, o papel endireita e sobe 2px, e a sombra cresce (só a
+ * opacidade dela muda). Em tela estreita, os números ficam numa linha e os botões na de baixo. As outras
+ * formas da amostra D4 (um papel só com tudo dentro, e a linha solta do 18) voltam do git, se preciso.
  */
 import { ICONES } from "../lib/icones";
 import { circuloDeCaneta } from "../lib/traco";
@@ -27,41 +24,31 @@ interface Props {
   ultima: number;
   anterior?: string;
   proxima?: string;
-  variante?: "papel" | "papeis" | "solta";
 }
 
-const { atual, ultima, anterior, proxima, variante = "papeis" } = Astro.props;
+const { atual, ultima, anterior, proxima } = Astro.props;
 const endereco = (n: number) => url(n === 1 ? "/" : `/${n}/`);
-const papeis = variante === "papeis";
-// O giro de cada papel (forma "papeis"): fixo por posição, para não mudar a cada visita.
+// O giro de cada papel: fixo por posição, para não mudar a cada visita.
 const GIROS = [-1.4, 0.9, -0.5, 1.2, -0.9];
 const giro = (i: number) => `--giro:${GIROS[i % GIROS.length]}deg`;
 ---
 
 {
   ultima > 1 && (
-    <nav class:list={["paginacao", `paginacao-${variante}`, { "papel-colado": variante === "papel" }]} aria-label="Paginação">
-      {variante === "papel" && (
-        <>
-          <span class="fita-adesiva canto-esq" aria-hidden="true" />
-          <span class="fita-adesiva canto-dir" aria-hidden="true" />
-        </>
-      )}
-      {anterior ? (
-        <a class:list={["botao anterior", { "papel-colado papel-botao": papeis }]} href={anterior} rel="prev" data-seta style={papeis ? giro(3) : undefined}>
-          {papeis && <span class="fita-adesiva" aria-hidden="true" />}
+    <nav class="paginacao paginacao-papeis" aria-label="Paginação">
+      {anterior && (
+        <a class="botao anterior papel-colado papel-botao" href={anterior} rel="prev" data-seta style={giro(3)}>
+          <span class="fita-adesiva" aria-hidden="true" />
           <span class="seta">
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
           </span>
           Anteriores
         </a>
-      ) : (
-        variante === "solta" && <span />
       )}
       <ol class="numeros">
         {Array.from({ length: ultima }, (_, i) => i + 1).map((n) => (
-          <li class:list={{ "papel-colado papel-numero": papeis }} style={papeis ? giro(n - 1) : undefined}>
-            {papeis && <span class="fita-adesiva" aria-hidden="true" />}
+          <li class="papel-colado papel-numero" style={giro(n - 1)}>
+            <span class="fita-adesiva" aria-hidden="true" />
             <a href={endereco(n)} aria-current={n === atual ? "page" : undefined}>
               <span class="sr">Página </span>
               {n}
@@ -74,16 +61,14 @@ const giro = (i: number) => `--giro:${GIROS[i % GIROS.length]}deg`;
           </li>
         ))}
       </ol>
-      {proxima ? (
-        <a class:list={["botao proxima", { "papel-colado papel-botao": papeis }]} href={proxima} rel="next" data-seta style={papeis ? giro(4) : undefined}>
-          {papeis && <span class="fita-adesiva" aria-hidden="true" />}
+      {proxima && (
+        <a class="botao proxima papel-colado papel-botao" href={proxima} rel="next" data-seta style={giro(4)}>
+          <span class="fita-adesiva" aria-hidden="true" />
           Mais artigos
           <span class="seta">
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.seta} />
           </span>
         </a>
-      ) : (
-        variante === "solta" && <span />
       )}
     </nav>
   )
@@ -106,53 +91,7 @@ const giro = (i: number) => `--giro:${GIROS[i % GIROS.length]}deg`;
     font-family: var(--font-ui);
   }
 
-  /* ---------- antes (o 18): a linha solta, os botões nas pontas ---------- */
-  .paginacao-solta {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    gap: 12px;
-    margin-top: 28px;
-  }
-
-  .paginacao-solta .botao {
-    justify-self: start;
-  }
-
-  .paginacao-solta .proxima {
-    justify-self: end;
-  }
-
-  /* ---------- A: um papel com tudo ---------- */
-  .paginacao-papel {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 12px 18px;
-    width: fit-content;
-    max-width: calc(100% - 12px);
-    margin: clamp(34px, 3.6vw, 48px) auto 4px;
-    padding: 20px 24px 16px;
-    rotate: 0.5deg;
-  }
-
-  /* As duas fitas, uma em cada canto de cima, menores que a da etiqueta e giradas uma para cada lado. */
-  .paginacao-papel > .fita-adesiva {
-    --fita-largura: 52px;
-    --fita-x: -17px;
-    --fita-y: -7px;
-  }
-
-  .paginacao-papel > .fita-adesiva.canto-esq {
-    --fita-giro: -32deg;
-  }
-
-  .paginacao-papel > .fita-adesiva.canto-dir {
-    --fita-giro: 36deg;
-  }
-
-  /* ---------- B: um papel por botão ---------- */
+  /* ---------- um papel por botão ---------- */
   .paginacao-papeis {
     display: flex;
     flex-wrap: wrap;
@@ -234,7 +173,7 @@ const giro = (i: number) => `--giro:${GIROS[i % GIROS.length]}deg`;
     rotate: 0deg;
   }
 
-  /* ---------- as peças, nas três formas ---------- */
+  /* ---------- as peças ---------- */
 
   /* A seta numa janela: sai por um lado e volta pelo outro sem aparecer fora dela. A margem negativa
      devolve o espaço da folga, que só existe para a ponta arredondada não ser cortada. */
@@ -376,49 +315,31 @@ const giro = (i: number) => `--giro:${GIROS[i % GIROS.length]}deg`;
   }
 
   /*
-   * Em tela estreita, os números ficam numa linha (centrados) e os botões na de baixo: no papel, um em
-   * cada ponta; com um botão só, no meio.
+   * Em tela estreita, os números ficam numa linha (centrados) e os botões na de baixo, um em cada ponta;
+   * com um botão só, no meio.
    */
   @media (max-width: 560px) {
-    .paginacao-papel,
     .paginacao-papeis {
       justify-content: space-between;
     }
 
-    .paginacao-papel .numeros,
     .paginacao-papeis .numeros {
       order: -1;
       flex-basis: 100%;
       justify-content: center;
     }
 
-    .paginacao-papel:not(:has(.anterior)),
     .paginacao-papeis:not(:has(.anterior)) {
       justify-content: center;
-    }
-
-    .paginacao-papel {
-      padding: 18px 18px 14px;
     }
   }
 
   /* Nos celulares mais estreitos (320), os dois botões não cabem lado a lado: um embaixo do outro, na
-     largura do papel. */
+     largura toda. */
   @media (max-width: 360px) {
-    .paginacao-papel .botao,
     .paginacao-papeis .botao {
       flex: 1 1 100%;
       justify-content: center;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .paginacao-solta {
-      grid-template-columns: 1fr 1fr;
-    }
-
-    .paginacao-solta .numeros {
-      display: none;
     }
   }
 </style>

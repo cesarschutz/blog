@@ -19,9 +19,8 @@
  *
  * Linha 20 (Noturno): a **cartolina** (T14, do 08). Atrás da foto, um papel grosso da cor do livro, 12px
  * maior que ela de cada lado (8px no celular), com a fibra do papel dos livros, o fio de luz e de sombra da
- * espessura e a sombra de papel sobre a folha; as cantoneiras prendem a foto nela, como num álbum. A luz do
- * mouse passa por ela: `.cartolina-luz` é uma mancha quente recortada na cartolina, que o luz.ts move junto
- * com a mancha da mesa (`data-luz-local`). O título continua na folha branca, embaixo.
+ * espessura e a sombra de papel sobre a folha; as cantoneiras prendem a foto nela, como num álbum. O título
+ * continua na folha branca, embaixo.
  *
  * Rodada 4 (S2 da direção do papel): a folha vira papel (canto de 2px, sem borda, sombra curta, grão) e
  * ganha no alto a tira da ficha do artigo ("Vol. 01 · ficha 2" e "nº 018") sobre o fio da cor do livro. A
@@ -69,7 +68,6 @@ const { chamada, tombo } = await chamadaDe(post);
   {
     temIlustracao(post.slug) && (
       <div class="foto-colada" style={`--cor:${post.cor}`}>
-        <span class="cartolina-luz" aria-hidden="true" data-luz-local><i></i></span>
         <figure class="ilustracao-topo painel" data-pagefind-ignore data-desenhar-topo style={`--cor:${post.cor}`}>
           <div class="largo">
             <Ilustracao slug={post.slug} recorte="largo" cor={post.cor} anotacoes />
@@ -123,7 +121,7 @@ const { chamada, tombo } = await chamadaDe(post);
   /*
    * Rodada 4, S2 (H5: "tudo que ainda é card vira papel"): a folha de rosto do artigo. Papel liso, com o
    * canto de 2px, sem a borda desenhada (fica transparente, para nenhuma largura mudar), a sombra curta do
-   * papel colado e o grão do site; no escuro, o anel de 1px a 7% e a sombra escura. No alto, a tira da
+   * papel (`--sombra-folha`, que no escuro ganha o anel de 1px a 7%) e o grão do site. No alto, a tira da
    * ficha do artigo, como nos cards: a página do artigo é a ficha dele aberta. Sem fita, sem pauta, reta.
    */
   .topo-folha {
@@ -138,17 +136,11 @@ const { chamada, tombo } = await chamadaDe(post);
       linear-gradient(color-mix(in oklab, var(--paper-hi) 60%, transparent), color-mix(in oklab, var(--paper-hi) 60%, transparent)),
       var(--grao) 0 0 / 180px 180px,
       var(--paper-hi);
-    box-shadow:
-      0 1px 1px color-mix(in oklab, var(--sombra-quente) 16%, transparent),
-      0 2px 4px -1px color-mix(in oklab, var(--sombra-quente) 22%, transparent);
+    box-shadow: var(--sombra-folha);
   }
 
   :global(:root[data-theme="dark"]) .topo-folha {
     --fio-ficha: color-mix(in oklab, var(--cor, var(--ink-2)) 72%, var(--ink));
-    box-shadow:
-      0 0 0 1px color-mix(in oklab, var(--ink) 7%, transparent),
-      0 1px 1px color-mix(in oklab, var(--sombra-quente) 50%, transparent),
-      0 2px 5px -1px color-mix(in oklab, var(--sombra-quente) 60%, transparent);
   }
 
   /* A tira da ficha: a dos cards (Cartao.astro), em mono, sobre o fio de 2px na cor do livro. */
@@ -230,63 +222,6 @@ const { chamada, tombo } = await chamadaDe(post);
       inset 0 -1px 0 color-mix(in oklab, black 30%, transparent),
       0 1px 1px rgb(0 0 0 / 0.5),
       0 18px 28px -14px rgb(0 0 0 / 0.75);
-  }
-
-  /*
-   * A luz do mouse na cartolina: a mancha quente, recortada no papel (por baixo da foto), que o luz.ts põe
-   * onde está a mancha da mesa. No claro, ela clareia o papel colorido (soft-light, um brilho de cartolina
-   * fosca); no escuro, acende (screen). Só com mouse e sem movimento reduzido.
-   */
-  .cartolina-luz {
-    position: absolute;
-    z-index: -1;
-    inset: calc(-1 * var(--cartolina));
-    overflow: hidden;
-    border-radius: 3px;
-    rotate: -0.14deg;
-    pointer-events: none;
-  }
-
-  .cartolina-luz > i {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 560px;
-    height: 560px;
-    margin: -280px 0 0 -280px;
-    border-radius: 50%;
-    background: radial-gradient(
-      circle closest-side,
-      color-mix(in oklab, var(--luz-quente) 50%, transparent),
-      color-mix(in oklab, var(--luz-quente) 30%, transparent) 30%,
-      color-mix(in oklab, var(--luz-quente) 11%, transparent) 60%,
-      transparent
-    );
-    mix-blend-mode: soft-light;
-    opacity: 0;
-    transition: opacity 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
-  }
-
-  :global(:root[data-theme="dark"]) .cartolina-luz > i {
-    background: radial-gradient(
-      circle closest-side,
-      color-mix(in oklab, var(--luz-mouse) 30%, transparent),
-      color-mix(in oklab, var(--luz-mouse) 17%, transparent) 30%,
-      color-mix(in oklab, var(--luz-mouse) 6%, transparent) 60%,
-      transparent
-    );
-    mix-blend-mode: screen;
-  }
-
-  .cartolina-luz.ligada > i {
-    opacity: 1;
-    transition-duration: 0.45s;
-  }
-
-  @media (prefers-reduced-motion: reduce), not ((hover: hover) and (pointer: fine)) {
-    .cartolina-luz {
-      display: none;
-    }
   }
 
   .ilustracao-topo {

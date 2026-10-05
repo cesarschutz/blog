@@ -1,7 +1,8 @@
 /*
  * Base global. Cores só por tokens (src/styles/tokens.ts), que o layout injeta como variáveis.
- * Valores de referência dos protótipos aprovados (docs/referencias/): o de home e artigo e, para
- * folhas, painéis, azul-tinta e a fonte da interface, a variação A de prototipo-mais-vida.html (D26).
+ * Valores de referência dos protótipos da Fase 0, hoje em docs/historico/: o de home e artigo
+ * (prototipos/) e, para folhas, painéis, azul-tinta e a fonte da interface, a variação A de
+ * referencias/prototipo-mais-vida.html (D26). O visual de hoje é o "Papel e luz" do DESIGN.md (D61).
  */
 
 :root {
@@ -38,10 +39,6 @@
   --sombra-folha-alta:
     0 2px 4px color-mix(in oklab, var(--sombra-quente) 5%, transparent),
     0 18px 36px -18px color-mix(in oklab, var(--sombra-quente) 35%, transparent);
-  /* Sombra de objeto erguido do papel (livros, botão de voltar ao topo); mais funda no escuro. */
-  --ergue:
-    0 1px 0 color-mix(in oklab, var(--sombra-quente) 5%, transparent),
-    0 18px 34px -18px color-mix(in oklab, var(--sombra-quente) 45%, transparent);
   /* O post-it (C05, D52): colado em cima, com a borda de baixo levantada; a sombra fica só embaixo. */
   --sombra-post-it:
     0 1px 1px color-mix(in oklab, var(--sombra-quente) 8%, transparent),
@@ -58,7 +55,6 @@
       0 1px 1px color-mix(in oklab, var(--sombra-quente) 50%, transparent),
       0 2px 5px -1px color-mix(in oklab, var(--sombra-quente) 60%, transparent);
     --sombra-folha-alta: 0 18px 36px -16px color-mix(in oklab, var(--sombra-quente) 90%, transparent);
-    --ergue: 0 18px 34px -16px color-mix(in oklab, var(--sombra-quente) 75%, transparent);
     --sombra-post-it:
       0 1px 1px color-mix(in oklab, var(--sombra-quente) 40%, transparent),
       0 16px 12px -12px color-mix(in oklab, var(--sombra-quente) 80%, transparent);
@@ -71,7 +67,6 @@
     0 1px 1px color-mix(in oklab, var(--sombra-quente) 50%, transparent),
     0 2px 5px -1px color-mix(in oklab, var(--sombra-quente) 60%, transparent);
   --sombra-folha-alta: 0 18px 36px -16px color-mix(in oklab, var(--sombra-quente) 90%, transparent);
-  --ergue: 0 18px 34px -16px color-mix(in oklab, var(--sombra-quente) 75%, transparent);
   --sombra-post-it:
     0 1px 1px color-mix(in oklab, var(--sombra-quente) 40%, transparent),
     0 16px 12px -12px color-mix(in oklab, var(--sombra-quente) 80%, transparent);
@@ -345,7 +340,7 @@ kbd {
   list-style: none;
 }
 
-/* Título das seções da home ("Em destaque", "Artigos recentes", "Tags"). */
+/* Título das seções da home ("A coleção" e "Artigos recentes"). */
 .titulo-secao {
   margin: 0 0 16px;
   font-size: clamp(24px, 2.6vw, 28px);
@@ -590,11 +585,11 @@ a:hover > .titulo-sub,
  *   da nova chegam do fundo e pousam (as animações ficam no script); a raiz não anima;
  * - artigo anterior e próximo (tipo "lado"): o próximo é pousado por cima do atual, o anterior aparece
  *   quando o de cima é tirado (também no script);
- * - os livros voam de um lugar ao outro quando o mesmo livro está nas duas páginas (a pilha e a grade
- *   viram o livro do topo; o do topo vira o do post e o contrário), com o nome de transição dado pelo
- *   script do <head> (Base.astro) ou fixo no HTML;
- * - sem o script da troca (a troca de livro pela pilha, um diálogo aberto), vale a folha de antes: a
- *   antiga sai subindo 6px e sumindo (0,2s) e a nova chega subindo 18px (0,5s).
+ * - os livros voam de um lugar ao outro quando o mesmo livro está nas duas páginas (a coleção da home e
+ *   a grade de Livros viram o livro do topo; o do topo vira o do post e o contrário), com o nome de
+ *   transição dado pelo script do <head> (Base.astro) ou fixo no HTML;
+ * - sem o script da troca (um diálogo aberto), vale a folha de antes: a antiga sai subindo 6px e
+ *   sumindo (0,2s) e a nova chega subindo 18px (0,5s).
  * Sem suporte do navegador (ou com movimento reduzido), a página só abre.
  */
 @view-transition {
@@ -682,7 +677,8 @@ a:hover > .titulo-sub,
   animation-timing-function: cubic-bezier(0.3, 0.75, 0.2, 1);
 }
 
-/* O livro deitado vira o livro em pé: as duas imagens ocupam a caixa inteira, sem esticar. */
+/* O livro de uma página vira o da outra, de outro tamanho: as duas imagens ocupam a caixa inteira, sem
+   esticar. */
 ::view-transition-old(.livro),
 ::view-transition-new(.livro) {
   height: 100%;
@@ -948,14 +944,15 @@ a:hover > .titulo-sub,
 
 /*
  * Na impressão (D54), só o texto: sem o cabeçalho fixo (que saía por cima da primeira página), os
- * botões de compartilhar, o anterior e o próximo e o voltar ao topo. Os <details> abrem (artigo.ts).
+ * botões de compartilhar, o anterior e o próximo e a aba de voltar ao topo (AbaTopo). Os <details>
+ * abrem (artigo.ts).
  */
 @media print {
   .carregando,
   .topo-fixo,
   .rodape-artigo .compartilhar,
   .rodape-artigo .vizinhos,
-  .voltar-topo {
+  .aba-topo {
     display: none !important;
   }
 }
@@ -1078,4 +1075,51 @@ a:hover > .titulo-sub,
 .fita-adesiva.canto-dir {
   --fita-giro: 38deg;
   right: var(--fita-x, -16px);
+}
+
+/*
+ * A fita crepe das fichas coladas (rodada 3, área 5; G28 e P1): um pedaço de fita atravessando a borda de
+ * cima, centrado e um nada torto (78 × 22, −2,4°), com as pontas picotadas de quem rasgou com a mão.
+ * Translúcida (o papel aparece por baixo), com o fio de luz em cima, a sombra fina embaixo e a sombra da
+ * borda; no escuro, o mesmo papel crepe na meia-luz, bem mais transparente: um véu claro e morno a 21%.
+ * A mesma nas três fichas: a "Do livro" do post (`.ficha-colada > .fita`, ficha-do-livro.css), o anterior
+ * e o próximo (Vizinhos) e o painel do livro (`.fita-catalogo`, catalogo.css); cada arquivo acerta o
+ * z-index e as medidas da sua.
+ */
+.fita-catalogo,
+.ficha-colada > .fita,
+.vizinhos[data-forma="ficha-fita"] .fita {
+  --cor-fita: color-mix(in oklab, color-mix(in oklab, var(--post-it) 62%, var(--etiqueta-papel)) 78%, transparent);
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  width: 78px;
+  height: 22px;
+  translate: -50% 0;
+  rotate: -2.4deg;
+  filter: drop-shadow(0 0.6px 0.6px color-mix(in oklab, var(--etiqueta-sombra) 18%, transparent));
+  pointer-events: none;
+}
+
+.fita-catalogo::before,
+.ficha-colada > .fita::before,
+.vizinhos[data-forma="ficha-fita"] .fita::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to bottom, color-mix(in oklab, var(--etiqueta-luz) 35%, transparent) 0 1px, transparent 1px calc(100% - 1px), color-mix(in oklab, var(--etiqueta-sombra) 6%, transparent) calc(100% - 1px)),
+    var(--cor-fita);
+  /* As pontas rasgadas: um zigue-zague miúdo e irregular nos dois lados. */
+  clip-path: polygon(
+    2px 0, 98% 0, 100% 14%, 97.5% 28%, 99.5% 43%, 97% 58%, 99.6% 72%, 97.8% 86%, 99% 100%,
+    1.5% 100%, 0 87%, 2.4% 73%, 0.4% 58%, 2.8% 44%, 0.6% 30%, 2.2% 15%
+  );
+}
+
+:root[data-theme="dark"] .fita-catalogo,
+:root[data-theme="dark"] .ficha-colada > .fita,
+:root[data-theme="dark"] .vizinhos[data-forma="ficha-fita"] .fita {
+  --cor-fita: color-mix(in oklab, color-mix(in oklab, var(--etiqueta) 55%, var(--etiqueta-papel)) 21%, transparent);
+  filter: drop-shadow(0 0.6px 0.4px color-mix(in oklab, var(--etiqueta-sombra) 30%, transparent));
 }

@@ -20,11 +20,12 @@
 import cssDoSistema from "./estilos/sistema.css?inline";
 import type { App, AppId, ItemDeMenu, Janela, Menu, OpcoesDeJanela, Sistema } from "./contexto";
 import { cssDasCores } from "./cores";
-import { carregarDados, url } from "./dados";
+import { carregarDados } from "./dados";
 import { Dock } from "./dock";
 import { iconeDoApp, pasta } from "./icones";
 import { Janelas } from "./janelas";
 import { BarraDeMenus } from "./menus";
+import { url } from "../lib/url";
 
 const raizDoc = document.documentElement;
 const reduzido = matchMedia("(prefers-reduced-motion: reduce)");

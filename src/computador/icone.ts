@@ -95,7 +95,7 @@ if (botao) {
   /** Coisas do conteúdo que o ícone não pode cobrir (além do texto): controles e imagens. */
   const CONTROLE =
     "a[href], button, input, select, textarea, summary, label, [role='button'], [role='link'], [role='tab'], [role='slider'], [tabindex]:not([tabindex='-1'])";
-  const IMAGEM = "img, picture, video, canvas, figure, .painel, .lousa, .ilustracao";
+  const IMAGEM = "img, picture, video, canvas, figure, .painel, .ilustracao";
 
   /** Há um caractere de texto (não espaço) exatamente neste ponto? */
   const textoEm = (x: number, y: number) => {

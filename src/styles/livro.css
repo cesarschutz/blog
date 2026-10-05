@@ -4,12 +4,11 @@
  *
  * Os livros (D30, D32), pela regra de docs/capas/CAPAS.md: as categorias são livros de uma coleção no
  * estilo "edição de estudo" e as séries, revistas técnicas. Aqui ficam a capa, a lombada em pé
- * (estante, face do livro 3D e página do livro), o livro 3D e o traço dos ícones e desenhos. A
- * lombada deitada fica no painel lateral (PainelHome.astro). Separado de estante.css para a página
- * do livro não carregar a estante e a gaveta.
+ * (estante, face do livro 3D e página do livro), o livro 3D e o traço dos ícones e desenhos. Separado
+ * de estante.css para quem só mostra livros 3D não carregar a estante de lombadas.
  *
  * As medidas estão em unidades da referência:
- * - lombada: calc(N * var(--u)), com --u em px por unidade (a estante e a gaveta definem);
+ * - lombada: calc(N * var(--u)), com --u em px por unidade (a estante e o LivroEmPe definem);
  * - capa: calc(N * var(--k)), com --k = 100cqw / 480 (a capa é um contêiner de 480 de largura).
  *
  * As cores vêm do livro (src/livros/cores.js), em --livro-cor, --livro-tinta, --livro-destaque,
@@ -33,7 +32,7 @@
  * ícone na cor do livro, e a cor do livro embaixo, com o texto e o desenho na tinta dela; a revista
  * (série) é sempre papel claro, com a faixa e os destaques no laranja.
  */
-:is(.lombada-visual, .capa, .deitado, .livro-3d) {
+:is(.lombada-visual, .capa, .livro-3d) {
   --cima: var(--livro-papel);
   --cima-tinta: var(--livro-destaque);
   --baixo: var(--livro-cor);
@@ -46,11 +45,11 @@
 
 /*
  * Texto pequeno nas lombadas (D35): onde a cor do livro não passa de 4,5:1 com texto pequeno, as
- * lombadas (em pé e deitadas) usam a variante de src/livros/livros.json: a cor da Carreira fica por
+ * lombadas usam a variante de src/livros/livros.json: a cor da Carreira fica por
  * trás do título e do número, e o destaque da série vira texto pequeno sobre o papel. As capas e os
  * títulos grandes continuam na cor principal (exceção decidida pelo Cesar).
  */
-:is(.lombada-visual, .deitado) {
+.lombada-visual {
   --baixo: var(--livro-cor-texto);
   --revista-destaque-texto: var(--livro-destaque-texto);
 }
@@ -217,7 +216,7 @@
   font-variation-settings: "opsz" 24;
 }
 
-/* O desenho ocupa a parte clara (y 300 a 720). Chega inline ou, na gaveta, quando o livro abre. */
+/* O desenho ocupa a parte clara (y 300 a 720), inline (Capa.astro). */
 .capa-desenho {
   --capa-papel: var(--baixo);
   top: calc(300 * var(--k));
@@ -470,12 +469,12 @@
   /*
    * A lombada arredondada (D57, pranchas 07 e 08): a luz corre pela curva, com as beiradas fugindo
    * dela e um brilho largo e suave um pouco antes do meio; um fio de luz no alto e o pé um nada mais
-   * escuro. Deitada (a pilha), a luz vem de cima: --luz-lombada vira a direção.
+   * escuro.
    */
   background:
     var(--grao) 0 0 / 180px 180px,
     linear-gradient(
-      var(--luz-lombada, 90deg),
+      90deg,
       rgb(0 0 0 / 0.34) 0%,
       rgb(0 0 0 / 0.16) 5%,
       rgb(0 0 0 / 0.05) 14%,
@@ -590,7 +589,7 @@
  * esquerda. Parado, o livro fica a --giro (38°, GIRO em lib/livro-3d.ts) da frente. Tudo com
  * `backface-visibility: hidden`, e nenhuma peça usa `filter`, que achataria o 3D.
  *
- * A capa dura (D57, prancha 01 de docs/prototipos/livros-realistas), em unidades da referência (--u):
+ * A capa dura (D57, prancha 01 de docs/historico/livros-realistas), em unidades da referência (--u):
  * capas de papelão de 8 (--papelao), seixa de 9 (--seixa: o miolo é menor que as capas no alto, no pé
  * e na frente), a lombada arredondada (a arte no meio, 0,1 da espessura para fora, e duas facetas de
  * cada lado até as capas, Livro3D.astro), o alto (a borda das capas, o miolo creme com as folhas, a
@@ -602,8 +601,8 @@
   justify-self: center;
   width: var(--cw);
   height: var(--bh);
-  /* A perspectiva acompanha o tamanho do livro (a da gaveta: 1700px para 360px de altura), para o
-     livro pequeno da grade e o grande do visor ficarem com a mesma cara do da gaveta (D46). */
+  /* A perspectiva acompanha o tamanho do livro (1700px para 360px de altura, a medida da antiga gaveta,
+     D46), para o livro pequeno da grade e o grande do visor ficarem com a mesma cara. */
   perspective: calc(var(--bh, 360px) * 4.7);
 }
 
@@ -1069,8 +1068,8 @@
 
 /*
  * ---------- livro ampliável (D33) ----------
- * O livro aberto da gaveta e o do topo da página do livro abrem grandes (LivroAmpliado): o livro
- * inteiro responde ao clique, e a lupa no canto de baixo serve ao teclado e mostra que dá para ampliar.
+ * O livro do topo da página do livro abre grande (LivroAmpliado): o livro inteiro responde ao clique,
+ * e a lupa no canto de baixo serve ao teclado e mostra que dá para ampliar.
  */
 [data-ampliar-livro] .livro-3d-caixa {
   cursor: zoom-in;

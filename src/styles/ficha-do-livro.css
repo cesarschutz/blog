@@ -7,11 +7,12 @@
  * componente acerta os atrasos da sua ficha: Sumario, a da lateral; RodapeArtigo, a do fim do artigo).
  * As duas cores vêm do livro (pinturaDoLivro, src/lib/ficha-do-livro.ts) e não mudam com o tema (D39).
  *
- * O livro da foto gira e brilha pelo comportamento único dos livros do site (luz.ts e luz.css, de outro
- * construtor): aqui não há hover próprio de livro.
+ * A foto do livro sobe e gira pelo comportamento único dos livros do site (livro-vivo.css e
+ * livro-vivo.ts): aqui não há hover próprio de livro.
  *
- * Ganchos (não renomear): `.ficha-colada` (na `.do-livro` e na `.livro-do-artigo`), `.fita`. O
- * `::before` da ficha é a pintura; o `::after` fica livre para as linhas (o carimbo da linha 19).
+ * Ganchos (não renomear): `.ficha-colada` (na `.do-livro` e na `.livro-do-artigo`), `.fita` (a fita
+ * crepe, base.css). O `::before` da ficha é a pintura; o `::after` fica livre para as linhas (o carimbo
+ * da linha 19).
  * Só clip-path (a pintura) e color (no instante da passagem); com movimento reduzido, a cor vem de uma
  * vez.
  */
@@ -43,75 +44,20 @@
 }
 
 /*
- * A fita: um pedaço de fita crepe atravessando a borda de cima, um nada torto, com as pontas picotadas
- * de quem rasgou com a mão. Translúcida (o papel aparece por baixo), com a sombra fina da borda.
+ * A fita crepe (a das fichas coladas, base.css) por cima da ficha: na "Do livro" e, um nada mais curta,
+ * no anterior e no próximo (Vizinhos, E8: "quero o B, mas com a fita do C"), a do próximo torta para o
+ * outro lado.
  */
 .ficha-colada > .fita,
-.vizinhos:is([data-forma="papel"], [data-forma="ficha-fita"]) .fita {
-  --cor-fita: color-mix(in oklab, color-mix(in oklab, var(--post-it) 62%, var(--etiqueta-papel)) 78%, transparent);
-  position: absolute;
+.vizinhos[data-forma="ficha-fita"] .fita {
   z-index: 3;
-  top: -11px;
-  left: 50%;
-  width: 78px;
-  height: 22px;
-  translate: -50% 0;
-  rotate: -2.4deg;
-  filter: drop-shadow(0 0.6px 0.6px color-mix(in oklab, var(--etiqueta-sombra) 18%, transparent));
-  pointer-events: none;
 }
 
-.ficha-colada > .fita::before,
-.vizinhos:is([data-forma="papel"], [data-forma="ficha-fita"]) .fita::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(to bottom, color-mix(in oklab, var(--etiqueta-luz) 35%, transparent) 0 1px, transparent 1px calc(100% - 1px), color-mix(in oklab, var(--etiqueta-sombra) 6%, transparent) calc(100% - 1px)),
-    var(--cor-fita);
-  /* As pontas rasgadas: um zigue-zague miúdo e irregular nos dois lados. */
-  clip-path: polygon(
-    2px 0, 98% 0, 100% 14%, 97.5% 28%, 99.5% 43%, 97% 58%, 99.6% 72%, 97.8% 86%, 99% 100%,
-    1.5% 100%, 0 87%, 2.4% 73%, 0.4% 58%, 2.8% 44%, 0.6% 30%, 2.2% 15%
-  );
-}
-
-/* No escuro, a fita é o mesmo papel crepe na meia-luz: bem mais transparente, um véu claro e morno. */
-:root[data-theme="dark"] :is(.ficha-colada > .fita, .vizinhos:is([data-forma="papel"], [data-forma="ficha-fita"]) .fita) {
-  --cor-fita: color-mix(in oklab, color-mix(in oklab, var(--etiqueta) 55%, var(--etiqueta-papel)) 21%, transparent);
-  filter: drop-shadow(0 0.6px 0.4px color-mix(in oklab, var(--etiqueta-sombra) 30%, transparent));
-}
-
-/*
- * Rodada 4, amostra D6: o papel colado com duas fitas nos cantos de cima (a ficha "Do livro" na forma
- * "papel", LivroDoArtigo.astro), e a fita do anterior e do próximo (Vizinhos.astro): no papel colado da
- * amostra e na ficha com fita do protótipo (E8, "o B com a fita do C").
- */
-.ficha-colada > .fita.canto-esquerdo,
-.ficha-colada > .fita.canto-direito {
-  top: -6px;
-  width: 64px;
-  height: 20px;
-}
-
-.ficha-colada > .fita.canto-esquerdo {
-  left: -14px;
-  translate: 0 0;
-  rotate: -34deg;
-}
-
-.ficha-colada > .fita.canto-direito {
-  right: -14px;
-  left: auto;
-  translate: 0 0;
-  rotate: 31deg;
-}
-
-.vizinhos:is([data-forma="papel"], [data-forma="ficha-fita"]) .fita {
+.vizinhos[data-forma="ficha-fita"] .fita {
   width: 70px;
 }
 
-.vizinhos:is([data-forma="papel"], [data-forma="ficha-fita"]) .proximo > .fita {
+.vizinhos[data-forma="ficha-fita"] .proximo > .fita {
   rotate: 2.2deg;
 }
 

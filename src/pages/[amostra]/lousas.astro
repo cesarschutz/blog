@@ -3,9 +3,9 @@
  * Folha de conferência das lousas (skill lousa): cada desenho de src/lousas/ em quadros-chave, lado
  * a lado e parados, no instante de cada marca dos atributos de tempo (data-traco, data-aparece…),
  * mais o 0 e o fim. Os quadros saem do servidor, por quadroDaLousa (o mesmo quadro parado do post),
- * sem o script da lousa. Cada quadro diz o estado vigente do LousaTempo (ou a marca do LousaLoop)
- * que usa o desenho, lido do texto cru dos posts .mdx, e usa a cor da categoria desse post. Só no
- * `npm run dev` (/amostra/lousas/). ?lousa=<slug>/<nome> mostra uma só; ?tema=escuro troca o tema;
+ * sem o script da lousa. Cada quadro diz o passo (ou o estado) vigente da Lousa que usa o desenho, lido
+ * do texto cru dos posts .mdx, e usa a cor da categoria desse post. Só no `npm run dev`
+ * (/amostra/lousas/). ?lousa=<slug>/<nome> mostra uma só; ?tema=escuro troca o tema;
  * ?quadros=todos mostra todas as marcas quando o desenho passa de 12.
  */
 import Base from "../../layouts/Base.astro";
@@ -30,25 +30,19 @@ interface Uso {
   titulo: string;
   endereco: string;
   cor?: string;
-  componente: "LousaTempo" | "LousaLoop";
   rotulo: string;
-  /** LousaTempo: o texto a partir de cada instante (de 0 a 1). */
+  /** Os passos (ou os estados da comparação): o texto a partir de cada instante (de 0 a 1). */
   estados: { de: number; texto: string }[];
-  /** LousaLoop: os eventos da barra de tempo (de 0 a 1). */
-  marcas: { em: number; rotulo: string }[];
-  /** LousaLoop: o instante do quadro parado (de 0 a 1). */
-  parado?: number;
 }
 
-// Os usos, pelo texto cru do JSX: <LousaTempo … /> e <LousaLoop … />, com as props em aspas e os
-// objetos no formato { de: 0.2, texto: "…" } e { em: 0.47, rotulo: "…" }, como a skill lousa ensina.
+// Os usos, pelo texto cru do JSX: <Lousa … />, com as props em aspas e os passos (ou estados) no formato
+// { de: 0.2, texto: "…" }, como a skill lousa ensina.
 const texto = String.raw`"((?:[^"\\]|\\.)*)"`;
 const usos = new Map<string, Uso[]>();
 for (const [arquivo, fonte] of Object.entries(fontesDosPosts)) {
   const post = arquivo.split("/").pop()!.replace(/\.mdx$/, "");
   const resumo = resumos.get(post);
-  for (const [, nomeDoComponente, props] of fonte.matchAll(/<(LousaTempo|LousaLoop|Lousa)\b([\s\S]*?)\/>/g)) {
-    const componente = nomeDoComponente === "Lousa" ? "LousaTempo" : nomeDoComponente;
+  for (const [, props] of fonte.matchAll(/<Lousa\b([\s\S]*?)\/>/g)) {
     const desenho = props.match(/\bdesenho="([^"]+)"/)?.[1];
     if (!desenho) continue;
     const uso: Uso = {
@@ -56,15 +50,10 @@ for (const [arquivo, fonte] of Object.entries(fontesDosPosts)) {
       titulo: resumo?.titulo ?? post,
       endereco: resumo?.url ?? urlPost(post),
       cor: resumo?.cor,
-      componente: componente as Uso["componente"],
       rotulo: props.match(new RegExp(`\\brotulo=${texto}`))?.[1] ?? desenho,
       estados: [...props.matchAll(new RegExp(String.raw`\{\s*de:\s*([\d.]+)\s*,\s*texto:\s*${texto}\s*\}`, "g"))].map(
         ([, de, t]) => ({ de: Number(de), texto: t }),
       ),
-      marcas: [...props.matchAll(new RegExp(String.raw`\{\s*em:\s*([\d.]+)\s*,\s*rotulo:\s*${texto}\s*\}`, "g"))].map(
-        ([, em, r]) => ({ em: Number(em), rotulo: r }),
-      ),
-      parado: componente === "LousaLoop" ? Number(props.match(/\bparado=\{([\d.]+)\}/)?.[1] ?? 1) : undefined,
     };
     usos.set(desenho, [...(usos.get(desenho) ?? []), uso]);
   }
@@ -73,17 +62,16 @@ for (const [arquivo, fonte] of Object.entries(fontesDosPosts)) {
 const numero = (n: number) => n.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 3 });
 const arredondar = (n: number) => Math.round(n * 1000) / 1000;
 
-/** Os quadros: cada início e fim citado nos atributos, mais o 0, o fim e o quadro parado do loop. */
-function instantesDe(fonte: string, fim: number, parado?: number) {
+/** Os quadros: cada início e fim citado nos atributos, mais o 0 e o fim. */
+function instantesDe(fonte: string, fim: number) {
   const todos = new Set([0, arredondar(fim)]);
   for (const [, , valor] of fonte.matchAll(new RegExp(`\\sdata-(${ATRIBUTOS.join("|")})="([^"]*)"`, "g"))) {
     const [a, b] = numeros(valor);
     for (const n of [a, b]) if (Number.isFinite(n)) todos.add(arredondar(n));
   }
-  if (parado !== undefined) todos.add(arredondar(parado));
   const lista = [...todos].sort((x, y) => x - y);
-  // Mais de 12: a intervalos iguais na lista, sempre com o 0, o fim e o parado.
-  const fixos = new Set([0, arredondar(fim), ...(parado !== undefined ? [arredondar(parado)] : [])]);
+  // Mais de 12: a intervalos iguais na lista, sempre com o 0 e o fim.
+  const fixos = new Set([0, arredondar(fim)]);
   const mostrados = new Set(fixos);
   const resto = lista.filter((n) => !fixos.has(n));
   const vagas = Math.max(0, MAXIMO - fixos.size);
@@ -99,24 +87,12 @@ const lousas = Object.entries(desenhos)
     const uso = usosDela[0];
     const rotulo = uso?.rotulo ?? nome;
     const { fim, figura } = quadroDaLousa(nome, rotulo);
-    const parado = uso?.parado !== undefined ? uso.parado * fim : undefined;
-    const quadros = instantesDe(fonte, fim, parado).map(({ t, mostrado }) => {
+    const quadros = instantesDe(fonte, fim).map(({ t, mostrado }) => {
       const fracao = fim ? t / fim : 1;
-      let estado = "";
-      if (uso?.componente === "LousaTempo")
-        estado = [...uso.estados].reverse().find((e) => fracao + 1e-9 >= e.de)?.texto ?? "";
-      else if (uso?.componente === "LousaLoop")
-        estado = [...uso.marcas].reverse().find((m) => fracao + 1e-9 >= m.em)?.rotulo ?? "início";
-      return {
-        t,
-        fracao,
-        mostrado,
-        estado,
-        parado: parado !== undefined && arredondar(parado) === t,
-        svg: quadroDaLousa(nome, rotulo, t).svg,
-      };
+      const estado = uso ? ([...uso.estados].reverse().find((e) => fracao + 1e-9 >= e.de)?.texto ?? "") : "";
+      return { t, fracao, mostrado, estado, svg: quadroDaLousa(nome, rotulo, t).svg };
     });
-    // Desenho bem mais largo que alto (a linha do tempo, o loop): dois por linha, para o texto miúdo ser lido.
+    // Desenho bem mais largo que alto (a linha do tempo): dois por linha, para o texto miúdo ser lido.
     const [, , largura, altura] = numeros(fonte.match(/viewBox="([^"]+)"/)?.[1] ?? "0 0 560 430");
     const larga = largura / altura > 2;
     return { nome, fim, figura, usos: usosDela, cor: uso?.cor, quadros, larga, ocultos: quadros.filter((q) => !q.mostrado).length };
@@ -148,8 +124,7 @@ const lousas = Object.entries(desenhos)
               l.usos.map((u, i) => (
                 <>
                   {i > 0 && "; "}
-                  {u.componente} em <a href={u.endereco}>{u.titulo}</a>
-                  {u.componente === "LousaLoop" && u.parado !== undefined && ` (quadro parado em ${numero(u.parado)})`}
+                  Lousa em <a href={u.endereco}>{u.titulo}</a>
                 </>
               ))
             ) : (
@@ -169,7 +144,6 @@ const lousas = Object.entries(desenhos)
                     <span class="instante">
                       t = {numero(q.t)}
                       {l.fim !== 1 && <span class="fracao"> · {Math.round(q.fracao * 100)}%</span>}
-                      {q.parado && <span class="fracao"> · quadro parado</span>}
                     </span>
                     {q.estado && <span class="estado">{q.estado}</span>}
                   </figcaption>

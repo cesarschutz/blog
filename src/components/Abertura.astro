@@ -122,7 +122,7 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
       else fim();
     };
     // O toque (ou o clique) que pula só pula: o clique que o navegador gera em seguida cairia no que está
-    // embaixo da cena, que some na hora (abria o livro da gaveta, navegava), e é engolido (D54).
+    // embaixo da cena, que some na hora (abria um livro, navegava), e é engolido (D54).
     cena.addEventListener("pointerdown", () => {
       const engolir = (e: Event) => {
         e.preventDefault();
@@ -157,7 +157,7 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
       // Sem a cena (pulada antes de ela montar, ou sem o GSAP), a estante que o CSS da abertura escondia
       // aparece de uma vez: a trava das transições sai junto, e os livros apareciam esmaecendo (D54).
       if (!tl) {
-        const pecas = [...document.querySelectorAll<HTMLElement>("[data-estante] :is(.prateleira-livros > *, .tomba, .lugar-luz, .tabua, .nicho > *, .luzes-fileira)")];
+        const pecas = [...document.querySelectorAll<HTMLElement>("[data-estante] :is(.prateleira-livros > *, .tomba, .lugar-luz, .tabua, .luzes-fileira)")];
         pecas.forEach((p) => (p.style.transition = "none"));
         requestAnimationFrame(() => requestAnimationFrame(() => pecas.forEach((p) => p.style.removeProperty("transition"))));
       }
@@ -341,10 +341,9 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
    * Os tempos da abertura da home (rodada 4, A1 e E3, E12), em segundos a partir do primeiro risco:
    *
    *  1. 0 a 0,28        o fio da aresta da lâmina de vidro se risca da esquerda para a direita (E3: o chão é a
-   *                     lâmina; com `chao="nicho"`, o fio do chão do nicho); com várias prateleiras (D84), uma
-   *                     linha por prateleira, e cada uma a mais empurra o resto 0,12s;
-   *  2. 0,26 a 0,66     a lâmina aparece, crescendo do fio (com o nicho, ele se abre), e os abajures
-   *                     (apagados) aparecem;
+   *                     lâmina); com várias prateleiras (D84), uma linha por prateleira, e cada uma a mais
+   *                     empurra o resto 0,12s;
+   *  2. 0,26 a 0,66     a lâmina aparece, crescendo do fio, e os abajures (apagados) aparecem;
    *  3. 0,62 a ~1,80    os livros chegam um a um pela direita, com "Volume 01"… "Série";
    *  4. ~1,82 a ~2,26   os livros param, e os dois cadernos ("cs" do cabeçalho e o grande) abrem e fecham
    *                     (E12); a fileira desce para o lugar dela e a página aparece em volta (o papel sai);
@@ -388,10 +387,6 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     const tabuas = [...prat.querySelectorAll<HTMLElement>(".tabua")].filter((t) => getComputedStyle(t).display !== "none");
     const tabua = tabuas[0];
     if (!tabua) return { tl: null };
-    const comNicho = prat.matches("[data-chao^='nicho']");
-    const nicho = comNicho ? prat.querySelector<HTMLElement>(".nicho") : null;
-    const parte = (nome: string) => nicho?.querySelector<HTMLElement>(`.nicho-${nome}`) ?? null;
-    const [parede, teto, chao, friso] = ["parede", "teto", "chao", "friso"].map(parte);
     const luzes = [...prat.querySelectorAll<HTMLElement>(".luzes-fileira, .lugar-luz")];
     // A partir daqui, as luzes, a onda e o brilho da fileira são da abertura (estante-moderna.ts a deixa).
     prat.setAttribute("data-conduzida", "");
@@ -400,23 +395,19 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     const r = prat.getBoundingClientRect();
     const s = Math.min(celular ? 1.05 : 1.4, (W * 0.84) / r.width, (H * 0.5) / r.height);
     gsap.set(prat, { x: W / 2 - (r.left + r.width / 2), y: H * 0.47 - (r.top + r.height / 2), scale: s, transformOrigin: "50% 50%" });
-    // O fio corre na quina de cima da frente do chão: a aresta do vidro (ou o friso do nicho), de ponta a ponta.
+    // O fio corre na quina de cima da frente do chão: a aresta do vidro, de ponta a ponta.
     const kc = parseFloat(getComputedStyle(prat).getPropertyValue("--kc")) || 1;
     const frente = (parseFloat(getComputedStyle(prat).getPropertyValue("--friso-alto")) || 6) * kc;
-    const rt = tabua.getBoundingClientRect();
-    const rn = (nicho ?? tabua).getBoundingClientRect();
     // Uma linha por prateleira (a aresta de cada lâmina), de cima para baixo.
-    const linhas = friso
-      ? [{ x: rn.left, y: friso.getBoundingClientRect().top + 0.5, w: rn.width }]
-      : tabuas.map((t) => {
-          const b = t.getBoundingClientRect();
-          return { x: b.left, y: b.bottom - frente * s + 0.5, w: b.width };
-        });
+    const linhas = tabuas.map((t) => {
+      const b = t.getBoundingClientRect();
+      return { x: b.left, y: b.bottom - frente * s + 0.5, w: b.width };
+    });
     // Cada prateleira a mais tem a sua linha: o resto da abertura espera a caneta (0,12s por linha).
     const mais = 0.12 * Math.max(0, linhas.length - 1);
     const T = { fio: A1.fio + mais, chao: A1.chao + mais, livros: A1.livros + mais };
     const pintar = montarFios(gsap, cena, linhas);
-    const pe = Math.max(rn.bottom, ...tabuas.map((t) => t.getBoundingClientRect().bottom));
+    const pe = Math.max(...tabuas.map((t) => t.getBoundingClientRect().bottom));
     gsap.set(conta, { top: Math.min(pe + 30, H - 40), opacity: 0 });
     const p = { v: 0 };
     pintar(0);
@@ -440,7 +431,7 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     };
     cena.dataset.pronto = "";
 
-    const pecasDaCena = [prat, ...lugares, ...livros, ...tabuas, ...luzes, ...([parede, teto, chao, friso].filter(Boolean) as HTMLElement[])];
+    const pecasDaCena = [prat, ...lugares, ...livros, ...tabuas, ...luzes];
     let conduziu = false;
     let soltarAviso = () => {};
     avisoDaHome = new Promise<void>((r) => (soltarAviso = r));
@@ -457,24 +448,18 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
       .to(".abertura-caneta", { y: "-=10", rotation: 16, opacity: 0, duration: 0.22, ease: "power2.in" }, T.fio)
       .to(".abertura-fio", { opacity: 0, duration: 0.2 }, T.chao + 0.06);
     // 2. o chão aparece: a lâmina cresce do fio (para cima, o tampo; o fio vira a aresta) e a sombra dela
-    //    vem junto; com o nicho, ele se abre (o friso nasce do fio, a parede escurece, a sombra do teto cresce)
-    if (comNicho) {
-      if (friso) tl.fromTo(friso, { opacity: 0, scaleY: 0.2 }, { opacity: 1, scaleY: 1, duration: 0.3, ease: "power2.out" }, T.chao);
-      if (chao) tl.fromTo(chao, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, T.chao + 0.02);
-      if (parede) tl.fromTo(parede, { opacity: 0 }, { opacity: 1, duration: 0.42, ease: "power1.inOut" }, T.chao + 0.02);
-      if (teto) tl.fromTo(teto, { opacity: 0, scaleY: 0 }, { opacity: 1, scaleY: 1, duration: 0.4, ease: "power2.out" }, T.chao + 0.04);
-    }
+    //    vem junto
     const origem = `50% ${(tabua.offsetHeight - frente).toFixed(1)}px`;
     tl.fromTo(tabuas, { opacity: 0 }, { opacity: 1, duration: 0.24, ease: "power1.out" }, T.chao)
       .fromTo(tabuas, { scaleY: 0.12 }, { scaleY: 1, duration: 0.4, ease: "power2.out", transformOrigin: origem }, T.chao);
     if (luzes.length) tl.fromTo(luzes, { opacity: 0 }, { opacity: 1, duration: 0.28, ease: "power1.out" }, T.chao + 0.14);
-    // 3. os livros chegam um a um, entrando pela direita (no nicho, pela parede da direita: o recorte dele os
-    //    esconde antes) e deslizando até o lugar; o vizinho sente o baque; o inclinado assenta.
+    // 3. os livros chegam um a um, entrando pela direita e deslizando até o lugar; o vizinho sente o baque;
+    //    o inclinado assenta.
     const passo = celular ? 0.08 : A1.passo, dur = celular ? 0.48 : A1.dur;
     tl.to(conta, { opacity: 1, duration: 0.2 }, T.livros + 0.05);
     livros.forEach((b, i) => {
       const rb = b.getBoundingClientRect();
-      const fora = comNicho ? (rn.right - rb.left) / s + 6 : (W - rb.left) / s + 24;
+      const fora = (W - rb.left) / s + 24;
       const t = T.livros + i * passo;
       // A série é livro também (H2, rodada 4): o rótulo dela é "Série", como o da fileira.
       const rotulo = lugares[i].classList.contains("de-serie") ? "Série" : `Volume ${String(i + 1).padStart(2, "0")}`;
@@ -681,14 +666,9 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     pointer-events: none;
   }
 
-  /* Rodada 4 (A1): as peças do nicho, os livros e os abajures esperam escondidos; o script os mostra. */
-  :global(:root[data-abertura="estante"] [data-estante] :is(.prateleira-livros > :not(.livro-colecao), .tomba, .lugar-luz, .tabua, .nicho > *, .luzes-fileira)) {
+  /* Rodada 4 (A1): o chão, os livros e os abajures esperam escondidos; o script os mostra. */
+  :global(:root[data-abertura="estante"] [data-estante] :is(.prateleira-livros > :not(.livro-colecao), .tomba, .lugar-luz, .tabua, .luzes-fileira)) {
     opacity: 0;
-  }
-
-  /* Os livros entram pela parede da direita do nicho: fora dele, o recorte os esconde. */
-  :global(:root[data-abertura="estante"] .colecao-home[data-chao^="nicho"] .fileira) {
-    clip-path: inset(-400px calc(50% - var(--nicho-largura) / 2));
   }
 
   /*
@@ -777,8 +757,8 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
   }
 
   /*
-   * Na home, o fio é um risco de caneta legível (--ink-2), na aresta da lâmina de vidro (rodada 4, E3; no nicho,
-   * no alto do friso): quando a caneta levanta, a lâmina cresce dele e ele se apaga.
+   * Na home, o fio é um risco de caneta legível (--ink-2), na aresta da lâmina de vidro (rodada 4, E3): quando a
+   * caneta levanta, a lâmina cresce dele e ele se apaga.
    */
   [data-modo="estante"] .fio-tinta {
     stroke: var(--ink-2);

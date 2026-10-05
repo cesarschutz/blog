@@ -13,7 +13,7 @@
  * Sem atributo, a parte já está no quadro desde o início ("o professor montou antes da aula").
  */
 export const ATRIBUTOS = ["traco", "escrita", "revela", "aparece", "some", "esmaece", "desloca"] as const;
-export type Atributo = (typeof ATRIBUTOS)[number];
+type Atributo = (typeof ATRIBUTOS)[number];
 export type Marcas = Partial<Record<Atributo, number[]>>;
 
 export const numeros = (valor: string) => valor.trim().split(/\s+/).map(Number);

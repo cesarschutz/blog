@@ -13,7 +13,7 @@
 import { montarLivros } from "./estante";
 import { getResumos, type Resumo } from "./posts";
 
-export interface Chamada {
+interface Chamada {
   /** "Vol. 05 · ficha 2" ou "Coleção Java · ed. 7". */
   chamada: string;
   /** "nº 028". */

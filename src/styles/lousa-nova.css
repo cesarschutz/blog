@@ -328,31 +328,9 @@
   }
 }
 
-.lousa-nova .dica {
-  margin-top: 10px;
-  font-family: var(--font-ui);
-  font-size: 13.5px;
-  color: var(--ink-2);
-}
-
-.lousa-nova .dica-toque {
-  display: none;
-}
-
-@media (hover: none) {
-  .lousa-nova .dica-mouse {
-    display: none;
-  }
-
-  .lousa-nova .dica-toque {
-    display: inline;
-  }
-}
-
 @media print {
   .lousa-nova .controles,
-  .lousa-nova .dica-rolar,
-  .lousa-nova .dica {
+  .lousa-nova .dica-rolar {
     display: none !important;
   }
 }

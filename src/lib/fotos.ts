@@ -25,7 +25,7 @@ export interface Etiqueta {
   sombra: { contorno: Ponto[]; desvio: number };
 }
 
-export interface FotoDeitada {
+interface FotoDeitada {
   src: string;
   largura: number;
   altura: number;

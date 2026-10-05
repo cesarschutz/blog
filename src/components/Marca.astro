@@ -2,8 +2,8 @@
 /**
  * A marca do blog (D33, D47): o livro "cs" (a capa do Volume 01, com o "c" acima e o "s" abaixo, sem
  * a fita), o nome e "blog" em itálico. Em linha no cabeçalho e no rodapé. Na abertura da home, onde ela
- * é o h1 (variante "grande", D47), o livro fica grande, da altura de duas linhas, com "Cesar" e
- * "Schutz" um embaixo do outro ao lado dele e o "blog" depois do sobrenome. O ícone do navegador é o
+ * é o h1 (variante "gigante", que leva também as regras da grande da D47, `.marca-grande`), o livro fica
+ * grande, da altura do nome, e o "blog" vem depois do sobrenome. O ícone do navegador é o
  * mesmo livro sobre um quadrado de papel. O traçado do livro e do "blog" vem de src/lib/marca.ts, e os
  * ícones de public/, todos gerados por scripts/marca.mjs.
  *
@@ -26,7 +26,7 @@ import { url } from "../lib/url";
 
 interface Props {
   /** "gigante" (protótipo 14, G1): a grande, com o nome numa linha só, na largura da página. */
-  variante?: "linha" | "grande" | "gigante";
+  variante?: "linha" | "gigante";
   /** Sem link: na abertura da home, que já é a página inicial. */
   semLink?: boolean;
   /** O traço da caneta embaixo do "blog" no hover (só o cabeçalho, C04). */

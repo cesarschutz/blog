@@ -1,7 +1,7 @@
 /**
- * A chegada das fileiras com abajures (linha 18; rodada 4, a versão final): a fileira da home e a do topo
- * da página do livro (Colecao.astro) e o filtro por livro (Estante.astro), no nicho. Sem biblioteca: Web
- * Animations API, só opacidade e transform.
+ * A chegada das fileiras com abajures (linha 18; rodada 4, a versão final): as prateleiras da home
+ * (ColecaoHome.astro), a fileira do topo da página do livro (Colecao.astro) e a estante de lombadas
+ * (Estante.astro: o filtro por livro e a 404). Sem biblioteca: Web Animations API, só opacidade e transform.
  *
  * Quando a fileira pousa (a troca de página avisa com `cs:chegou`; sem nenhuma, na carga) e está à vista,
  * nesta ordem, **uma coisa de cada vez** (rodada 4, A1: "primeiro subir e descer os livros e depois o brilho
@@ -36,7 +36,7 @@ const raiz = document.documentElement;
  * curva de cada uma), a onda de molas (quando começa, o passo e quanto dura cada mola) e o brilho (o passo e
  * quanto dura a faixa em cada livro). O brilho começa 20ms depois da última mola acabar.
  */
-export const SEQ = {
+const SEQ = {
   luzPasso: 60,
   luzDuracao: 720,
   feixeAtras: 30,
@@ -135,8 +135,8 @@ function ondaDeMolas(colecao: HTMLElement, atraso: number) {
     { translate: "0 0" },
   ];
   lugares.forEach((lugar, i) => {
-    // O livro na gaveta, o que voa, o que está sob o mouse e a coleção em movimento ficam de fora.
-    if (lugar.matches(".retirado, :hover") || lugar.closest("[data-livro-parado]") || colecao.dataset.gaveta === "movendo") return;
+    // O livro que está sob o mouse fica de fora.
+    if (lugar.matches(":hover")) return;
     const vivo = lugar.querySelector<HTMLElement>(".livro-vivo");
     const chao = lugar.querySelector<HTMLElement>(".livro-3d .chao");
     const opcoes: KeyframeAnimationOptions = { duration: SEQ.molaDuracao, delay: atraso + i * SEQ.molaPasso };

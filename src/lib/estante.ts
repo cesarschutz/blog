@@ -45,7 +45,6 @@ export interface Livro {
     emblema: string;
   };
   emPe: { altura: number; largura: number };
-  deitada: { comprimento: number; espessura: number; deslocamento: number };
   posts: Resumo[];
   /** "7 artigos · o último em 2026", "5 artigos · de 2025 a 2026", "7 edições" (série) ou "Ainda sem artigos". */
   contagem: string;
@@ -88,7 +87,6 @@ export function montarLivros(): Promise<Livro[]> {
           cores: c.cores,
           contracapa: c.contracapa,
           emPe: c.emPe,
-          deitada: c.deitada,
           posts,
           contagem: contagem(posts, false),
         };
@@ -116,7 +114,6 @@ export function montarLivros(): Promise<Livro[]> {
               emblema: s.emblema,
             },
             emPe: s.emPe,
-            deitada: s.deitada,
             posts,
             contagem: contagem(posts, true),
           }),
@@ -134,9 +131,8 @@ export const coresDoLivroCss = (l: Livro) =>
 
 /**
  * Largura natural da estante, em unidades da referência (as medidas de estante.css): 16 de respiro de
- * cada lado, 6 entre os livros e o aparador (12 de largura, 43 de margem à esquerda para o livro
- * inclinado encostar no alto dele e 25 à direita). Em px, vezes o teto de --u (0,42). A estante de
- * filtro (D33) pode não ter o aparador.
+ * cada lado, 6 entre os livros e o vão do aparador (12 de largura, 43 de margem à esquerda e 25 à
+ * direita). Em px, vezes o teto de --u (0,42). A estante de filtro (D33) pode não ter o aparador.
  */
 export function larguraDaEstante(livros: Livro[], comAparador = true): number {
   const itens = livros.length + (comAparador ? 1 : 0);

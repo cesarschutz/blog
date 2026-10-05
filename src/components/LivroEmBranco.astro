@@ -1,9 +1,10 @@
 ---
 /**
  * O livro aberto com as páginas em branco e uma folha virando (D57, prancha 06), pequeno e discreto:
- * no livro ainda sem artigos (a página do livro e a gaveta da home), na cor daquele livro, e na busca
- * sem resultado, no livro da marca. Uma imagem parada (`public/livros/fotos/<slug>-aberto.webp`, de
- * scripts/livros/fotos.mjs); decorativa, o texto fica ao lado. Sem JS.
+ * no livro ainda sem artigos (a página do livro), na cor daquele livro, e na busca sem resultado, no
+ * livro da marca. Uma imagem parada (`public/livros/fotos/<slug>-aberto.webp`, de scripts/livros/fotos.mjs);
+ * decorativa, o texto fica ao lado. Carrega só perto da tela (na busca, a imagem só vem quando a busca não
+ * acha nada). Sem JS.
  */
 import type { Livro } from "../lib/estante";
 import { fotoAberta } from "../lib/fotos";
@@ -13,14 +14,9 @@ interface Props {
   livro: Livro | "busca";
   /** Largura na tela, em px. */
   largura?: number;
-  /**
-   * Carregar só perto da tela (o padrão; na busca, a imagem só vem quando a busca não acha nada). A
-   * gaveta passa false: o livro dela sai de um <template> já na hora de aparecer.
-   */
-  preguicoso?: boolean;
 }
 
-const { livro, largura = 160, preguicoso = true } = Astro.props;
+const { livro, largura = 160 } = Astro.props;
 const foto = fotoAberta(livro);
 ---
 
@@ -34,7 +30,7 @@ const foto = fotoAberta(livro);
       style={`--largura:${largura}px`}
       alt=""
       aria-hidden="true"
-      loading={preguicoso ? "lazy" : "eager"}
+      loading="lazy"
       decoding="async"
     />
   )

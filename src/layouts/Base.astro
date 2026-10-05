@@ -63,8 +63,6 @@ interface Props {
   chegada?: { passo?: number; propria?: boolean };
   /** Artigo com sumário: a seção atual pode ocupar o lugar da marca no cabeçalho (C2, D49). */
   sumario?: boolean;
-  /** A cortina da troca de página (protótipo 14, G10): o rótulo pequeno e o nome grande do destino. */
-  cortina?: { rotulo?: string; nome?: string };
 }
 
 const NOME = "Cesar Schutz";
@@ -82,11 +80,11 @@ const {
   abertura = false,
   sumario = false,
   chegada,
-  cortina,
 } = Astro.props;
 const ROTULOS = { artigos: "Artigos", categorias: "Livros", series: "Séries", tags: "Tags", capas: "Capas" } as const;
-const rotuloDaCortina = cortina?.rotulo ?? (atual ? ROTULOS[atual] : tipo === "article" ? "Artigo" : "Blog");
-const nomeDaCortina = cortina?.nome ?? titulo ?? NOME;
+// A cortina da troca de página (protótipo 14, G10): o rótulo pequeno e o nome grande do destino.
+const rotuloDaCortina = atual ? ROTULOS[atual] : tipo === "article" ? "Artigo" : "Blog";
+const nomeDaCortina = titulo ?? NOME;
 // Rodada 4 (E2): a maior palavra do nome, para a cortina encolher o nome no celular em vez de partir a palavra.
 // A largura da maior palavra, em "letras médias" da Besley 800: as largas (m, w, as maiúsculas, # e _) pesam mais.
 // Contando só as letras, "Fundamentos", "#Linguagem" e "CLOSE_WAIT" passavam da cortina no celular e partiam (D84).
@@ -219,11 +217,12 @@ const preCarregar = {
       } catch (e) {}
     </script>
     <script is:inline>
-      // Transição do livro (D29, D31): um livro da pilha do painel ou da grade de categorias e séries
-      // voa até o livro aberto no topo da página dele. Só o livro que leva à página nova (ou que veio
-      // da anterior) ganha o nome de transição (data-vt), para os outros não voarem junto; o livro
-      // do topo já tem o nome no HTML. O link é o próprio elemento ou o <a> em volta dele. (O desenho
-      // do artigo não voa mais da lista para o topo: ele se desenha quando a folha pousa, D51.)
+      // Transição do livro (D29, D31): um livro com `data-vt` (a coleção da home, a fileira do topo, a grade
+      // de Livros e de Séries, as listas) voa até o livro aberto no topo da página dele. Só o livro que leva
+      // à página nova (ou que veio da anterior) ganha o nome de transição (data-vt), para os outros não
+      // voarem junto; o livro do topo já tem o nome no HTML. O link é o próprio elemento ou o <a> em volta
+      // dele. (O desenho do artigo não voa mais da lista para o topo: ele se desenha quando a folha pousa,
+      // D51.)
       (function () {
         function livro(endereco) {
           var caminho = new URL(endereco).pathname;

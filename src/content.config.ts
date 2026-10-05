@@ -34,7 +34,7 @@ const posts = defineCollection({
       /**
        * O código-fonte do artigo (D52, C03): a pasta dele no repositório de exemplos
        * (https://github.com/cesarschutz/blog-exemplos/tree/main/<pasta>). Aparece no topo do artigo e
-       * como sinal nas listas, nos cards, na gaveta, no anterior / próximo e na busca.
+       * como sinal nas listas, nos cards, no anterior / próximo e na busca.
        */
       codigo: z.url({ protocol: /^https$/, message: "codigo: o endereço do código, com https://" }).optional(),
       /**

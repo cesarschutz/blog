@@ -19,9 +19,8 @@
  *   parado se for o mesmo.
  * - `data-chegada-passo` no <main> muda o intervalo entre as folhas (a tag: desfile direto, 60 ms);
  *   `data-chegada="propria"` deixa a chegada para o script da página (Categorias: desfile e pilha).
- * - Fica de fora: movimento reduzido, navegador sem View Transitions entre documentos, a troca de livro
- *   pela pilha (`data-troca-propria`, PainelHome) e a navegação com um diálogo aberto (busca, livro
- *   ampliado): elas usam a troca de página de antes (base.css).
+ * - Fica de fora: movimento reduzido, navegador sem View Transitions entre documentos e a navegação com
+ *   um diálogo aberto (busca, livro ampliado): elas usam a troca de página de antes (base.css).
  *
  * - Lentidão (D52, B14): se a página nova não vem em 0,2s, a caneta azul escreve o fio do cabeçalho até ela
  *   chegar; se a espera passou de 0,7s desde o clique, ou o aparelho não deu conta de uma troca anterior
@@ -29,7 +28,7 @@
  *   Se a última troca demorou para montar a página nova (mais de 0,3s entre a resposta e a primeira
  *   pintura), a próxima mostra a caneta já no clique e é a curta.
  *
- * Outros scripts usam `window.csTroca` (unidades, chegar, jogar) e os eventos `cs:pousou` (a folha do desenho
+ * Outros scripts usam `window.csTroca` (unidades e chegar: a abertura e Categorias) e os eventos `cs:pousou` (a folha do desenho
  * do artigo pousou), `cs:chegou` (a chegada acabou) e `cs:cortina-saindo` (rodada 3: a cortina começou a
  * sair, aos 0,62s da troca; `detail` = { volta, curta, duracao }). `data-vai-chegar` no <html>, posto já
  * no <head>, avisa os módulos que a página vai chegar por uma troca, antes do `pagereveal`.
@@ -256,7 +255,6 @@
     limparNomes();
     try { sessionStorage.removeItem(CHAVE); } catch (err) {}
     if (!e.viewTransition || reduzido.matches) return;
-    naoEsticarALombada(e);
     // No celular, a folha do menu (fechando, ou fechada) sai da imagem do cabeçalho: ela ia junto com ele
     // e ficava congelada por cima da troca (D54). Volta no pageshow, se a página voltar do bfcache.
     raiz.setAttribute("data-troca-sem-menu", "");
@@ -273,7 +271,6 @@
       for (var k = 0; k < nomeados.length; k++) if (!nomeados[k].closest("dialog[open]")) nomear(nomeados[k], "none");
       return;
     }
-    if (raiz.hasAttribute("data-troca-propria")) return;
     var destino = e.activation && e.activation.entry && e.activation.entry.url;
     if (!destino) return;
     var para = new URL(destino).pathname;
@@ -327,7 +324,7 @@
     // Rodada 4 (H3): da home, o livro clicado na fileira (ou o nome dele) abre a página do livro sem a
     // cortina: o livro é a transição. A troca é a das folhas, com o par do livro (o da fileira e o grande do
     // painel, Base.astro dá o nome aos dois): ele voa, crescendo e girando até a pose de lá ("mesmo"), e o
-    // resto da página antiga cai enquanto a nova monta. Colecao.astro marca `data-abre-livro` com o destino.
+    // resto da página antiga cai enquanto a nova monta. ColecaoHome.astro marca `data-abre-livro` com o destino.
     var abreLivro = raiz.dataset.abreLivro === para;
     raiz.removeAttribute("data-abre-livro");
     if (abreLivro) dados.abreLivro = true;
@@ -358,40 +355,6 @@
     });
     guardar(dados);
   });
-  /**
-   * A lombada deitada da pilha (PainelHome) não vira, pela View Transition, o livro em pé do topo da
-   * página dela (D52, revisão 15). O script do <head> dá o nome dela quando ela leva à página nova; sem o
-   * voo da pilha (no celular e no tablet, com o topo fora da tela), a imagem fina dela era esticada até a
-   * largura do livro e cruzava a capa como uma faixa. Com formas tão diferentes, não há morph: ela sai
-   * com a pilha, e o livro chega com a folha da página nova (que também tira o nome dele, abaixo, para
-   * ele não aparecer por cima da página antiga). Com o voo, a pilha já tira o nome da lombada.
-   */
-  var SEM_PAR = "cs-troca-sem-par";
-  function naoEsticarALombada(e) {
-    var destino = e.activation && e.activation.entry && e.activation.entry.url;
-    if (!destino) return;
-    var para = new URL(destino).pathname;
-    var deitados = document.querySelectorAll(".deitado[data-vt]");
-    for (var i = 0; i < deitados.length; i++) {
-      var link = deitados[i].closest("a[href]");
-      var nome = deitados[i].style.viewTransitionName;
-      if (!link || new URL(link.href).pathname !== para || !nome || nome === "none") continue;
-      deitados[i].style.viewTransitionName = "none";
-      try { sessionStorage.setItem(SEM_PAR, JSON.stringify({ n: nome, para: para, t: Date.now() })); } catch (err) {}
-    }
-  }
-  /** Na página nova: o livro que teria o par com a lombada chega com a folha, sem nome (e o recebe de volta no fim). */
-  function livroSemPar(vt) {
-    var d;
-    try {
-      d = JSON.parse(sessionStorage.getItem(SEM_PAR) || "null");
-      sessionStorage.removeItem(SEM_PAR);
-    } catch (err) { return; }
-    if (!d || d.para !== location.pathname || Date.now() - d.t > 6000) return;
-    var els = document.querySelectorAll(".livro-em-pe");
-    for (var i = 0; i < els.length; i++) if (els[i].style.viewTransitionName === d.n) nomear(els[i], "none");
-    vt.finished.finally(limparNomes);
-  }
   function guardar(dados) {
     try { sessionStorage.setItem(CHAVE, JSON.stringify(dados)); } catch (err) {}
   }
@@ -627,7 +590,6 @@
     limparNomes();
     var d = lerDados();
     var vt = e.viewTransition;
-    if (vt && !restaurada) livroSemPar(vt);
     var lenta = montagemAnterior() > MONTAGEM_LENTA;
     if (restaurada) {
       restaurada = false;
@@ -674,7 +636,7 @@
     if (d.tipo === "livro") {
       // Linha 18: a fileira de cima é a mesma; as luzes dela não acendem de novo (estante-moderna.ts).
       raiz.dataset.chegouPorLivro = "";
-      trocarDeLivro(vt, curta);
+      trocarDeLivro(vt);
       return;
     }
 
@@ -771,7 +733,7 @@
     return jogar(fichas, { t0: JOGA_T0, anims: anims });
   }
   /**
-   * Joga as fichas dadas (o gesto acima; a amostra D3 o usa sem a troca). `opcoes.t0` em ms; as animações
+   * Joga as fichas dadas (o gesto acima). `opcoes.t0` em ms; as animações
    * vão para `opcoes.anims`, se houver. Devolve quando a última assenta (ms, contando de agora + t0).
    */
   function jogar(fichas, opcoes) {
@@ -904,13 +866,9 @@
    * um pouco depois. Os nomes vêm do script do <head> (Base.astro) e do HTML; aqui só as classes. Depois do
    * pouso, os artigos do livro novo chegam girando (G5).
    */
-  function trocarDeLivro(vt, curta) {
+  function trocarDeLivro(vt) {
     livrosNomeados().forEach(function (l) { nomear(l.el, l.n, l.el.hasAttribute("data-vt") ? "livro vai" : "livro vem"); });
-    var anims = [];
-    var fim = 900;
-    emCurso.push.apply(emCurso, anims);
-    vt.ready.then(function () { anims.forEach(function (a) { a.currentTime = 0; }); }, function () {});
-    var pousou = vt.ready.then(function () { return new Promise(function (r) { setTimeout(r, fim); }); }, function () {});
+    var pousou = vt.ready.then(function () { return new Promise(function (r) { setTimeout(r, 900); }); }, function () {});
     Promise.all([vt.finished.catch(function () {}), pousou]).then(avisarChegada);
   }
 
@@ -979,5 +937,5 @@
     }, function () {});
   }
 
-  window.csTroca = { unidades: unidades, chegar: chegar, jogar: jogar };
+  window.csTroca = { unidades: unidades, chegar: chegar };
 })();

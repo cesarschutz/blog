@@ -23,7 +23,7 @@ export interface DadosDoPost {
 }
 
 /** O slug de um endereço de post ("/posts/<slug>/", com ou sem a base). */
-export function slugDoEndereco(endereco: string): string | undefined {
+function slugDoEndereco(endereco: string): string | undefined {
   const caminho = new URL(endereco, location.href).pathname;
   const achado = caminho.match(/\/posts\/([^/]+)\/?$/);
   return achado ? decodeURIComponent(achado[1]) : undefined;

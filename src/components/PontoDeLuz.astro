@@ -4,8 +4,7 @@
  * Linha 18 (estante moderna): a luz de quadro de galeria. Uma plaquinha de latão presa na parede, um
  * braço curto em pescoço de cisne que vem para a frente e a cúpula pequena na ponta, com a boca acesa; o
  * cone de luz desce dela sobre o livro e lava a parede atrás dele. Em repouso, o cone é fraco; com o mouse
- * ou o foco no elemento com `data-luz` em volta, ele acende (a boca 60ms antes). Com `data-luz-acesa` num
- * ancestral, fica aceso. O estilo está em luz.css.
+ * ou o foco no elemento com `data-luz` em volta, ele acende (a boca 60ms antes). O estilo está em luz.css.
  *
  * Três camadas acendem com a curva da lâmpada incandescente (estante-moderna.ts, lampada.ts): a brasa
  * (`.ponto-luz-brasa`), a boca branca (`.ponto-luz-lampada`) e o feixe (`.ponto-luz-feixe`, que envolve o
@@ -17,8 +16,8 @@
  * `--ponto-luz-pe` (quanto falta até o chão); o tamanho da peça é `--lq` (px por unidade, 1px na home).
  * Decorativo (aria-hidden).
  *
- * Rodada 4 (a versão final): nas fileiras do nicho (Colecao, Estante; nicho.css), o abajur fica no teto, mais
- * longe dos livros, e o cone tem o ângulo de `--cone-angulo` (44° na home), com a poça de luz no chão
+ * Rodada 4 (a versão final): nas fileiras (ColecaoHome, Colecao, Estante; nicho.css e vidro.css), o abajur fica
+ * no alto, mais longe dos livros, e o cone tem o ângulo de `--cone-angulo` (44° na home), com a poça de luz no chão
  * (`.ponto-luz-feixe::after`, que acende com o feixe). As forças vêm de `--cone-repouso`, `--cone-aceso`,
  * `--poca-repouso` e `--poca-acesa`, e o lugar aceso (hover, foco, lugar vazio) é `--luz-acesa: 1`.
  */

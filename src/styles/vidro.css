@@ -3,12 +3,13 @@
  * limpa do 17), com a **luz embaixo do livro** da V4 (a estante do 18): no hover, no foco, no toque e no livro
  * escolhido, além do cone do abajur, acende a luz no tampo, embaixo do livro. No vidro, essa luz é a poça no
  * tampo, a aresta da frente que se acende (a luz corre por dentro do vidro) e o clarão que atravessa a lâmina
- * e pousa na página; o lugar vazio (o livro na gaveta ou aberto embaixo) e a lombada escolhida no filtro ficam
- * acesos. Sem laca e sem madeira: o vidro é tinta e folha translúcidas.
+ * e pousa na página; o lugar vazio (o livro aberto embaixo, na página dele) e a lombada escolhida no filtro
+ * ficam acesos. Sem laca e sem madeira: o vidro é tinta e folha translúcidas.
  *
- * Vale onde o chão é `data-chao="vidro"` (o padrão de Colecao, FileiraTopo e Estante): a fileira da home, a do
- * topo da página do livro (encolhendo ao rolar) e o filtro de lombadas (Todos os artigos e a tag). O desenho
- * partiu do da V2 do construtor E (nas amostras do redesenho, fora do git).
+ * Vale onde o chão é `data-chao="vidro"` (ColecaoHome, Colecao e Estante o põem na raiz; é o único chão do
+ * site): a coleção da home, a fileira do topo da página do livro (encolhendo ao rolar), o filtro de lombadas
+ * (Todos os artigos e a tag) e a estante do 404. O desenho partiu do da V2 do construtor E (nas amostras do
+ * redesenho, fora do git).
  *
  * As peças: a `.tabua` (o chão, embaixo dos livros) pinta a aresta da frente (`--k-friso` de alto, embaixo);
  * o `::before` dela é o tampo visto de cima (onde os livros pisam); o `::after`, a sombra difusa na página; o
@@ -56,12 +57,12 @@
   --luz-baixo-repouso: 0.2;
 }
 
-/* ---------- a lâmina na fileira (Colecao: a home e o topo da página do livro) ---------- */
+/* ---------- a lâmina na fileira (ColecaoHome e Colecao: a home e o topo da página do livro) ---------- */
 
 /*
- * As medidas (as variáveis de Colecao.astro): o tampo à vista de 16px na home (o olho está um pouco acima dos
- * livros), a aresta de 6px, 1,5% mais larga que a fileira de cada lado, e 18px embaixo para o reflexo. A poça
- * fica logo atrás do pé dos livros, 5px acima da aresta.
+ * As medidas (as variáveis de ColecaoHome.astro e Colecao.astro): o tampo à vista de 16px na home (o olho
+ * está um pouco acima dos livros), a aresta de 6px, 1,5% mais larga que a fileira de cada lado, e 18px
+ * embaixo para o reflexo. A poça fica logo atrás do pé dos livros, 5px acima da aresta.
  */
 .colecao.colecao[data-chao="vidro"] {
   --chao-recuo: 6px;
@@ -140,14 +141,6 @@
   -webkit-box-reflect: below calc(26px * var(--kc)) linear-gradient(transparent calc(100% - 40px * var(--kc)), var(--vidro-reflexo));
 }
 
-/* O rótulo do volume no alto, sobre o papel (sem a parede do nicho atrás). */
-.colecao.colecao[data-chao="vidro"] .vol {
-  color: var(--ink-2);
-  text-shadow:
-    0 0 6px var(--paper),
-    0 0 2px var(--paper);
-}
-
 /* ---------- a lâmina no filtro de lombadas (Estante) ---------- */
 
 /* O tampo curto (8px), a aresta de 4px, 8px mais larga de cada lado; os abajures voltam para cima das
@@ -169,10 +162,6 @@
 
 .estante.estante-moderna[data-chao="vidro"] .tabua.chao-estante::before {
   height: calc(var(--k-chao-alto) + 2px);
-}
-
-.estante.estante-moderna[data-chao="vidro"] .tabua.chao-estante::after {
-  content: "";
 }
 
 .estante.estante-moderna[data-chao="vidro"] .luzes-estante {

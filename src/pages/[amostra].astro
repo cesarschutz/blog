@@ -1,10 +1,12 @@
 ---
 /**
  * Página de conferência dos tokens, das fontes e dos avisos. Existe só no `npm run dev`
- * (/amostra/): no build, getStaticPaths não devolve nenhuma rota.
+ * (/amostra/): no build, getStaticPaths não devolve nenhuma rota. Os avisos saem do Markdown pelo
+ * mesmo plugin dos posts (src/plugins/rehype-avisos.mjs), com a marcação que o post recebe.
  */
+import { createMarkdownProcessor } from "@astrojs/markdown-remark";
 import Base from "../layouts/Base.astro";
-import Aviso from "../components/Aviso.astro";
+import { rehypeAvisos } from "../plugins/rehype-avisos.mjs";
 import { claro, escuro, TOKENS } from "../styles/tokens";
 import { CATEGORIAS } from "../data/taxonomia";
 import { SERIES } from "../data/series";
@@ -14,12 +16,28 @@ import { url } from "../lib/url";
 export function getStaticPaths() {
   return import.meta.env.DEV ? [{ params: { amostra: "amostra" } }] : [];
 }
+
+const AVISOS = `> [!NOTA]
+> Os exemplos usam PostgreSQL 17, mas a ideia vale para qualquer banco com restrição única.
+
+> [!DICA]
+> Gere a chave no cliente, uma vez por intenção de pagamento.
+
+> [!IMPORTANTE]
+> A restrição única no banco é o que garante a unicidade.
+
+> [!ATENCAO]
+> Um lock na aplicação não resolve quando a API roda em mais de uma instância.
+
+> [!CUIDADO]
+> Consultar antes de gravar abre uma janela para duas cobranças.`;
+const avisos = (await (await createMarkdownProcessor({ rehypePlugins: [rehypeAvisos] })).render(AVISOS)).code;
 ---
 
 <Base titulo="Amostra de tokens e fontes">
   <div class="wrap amostra">
     <h1>Amostra de tokens e fontes</h1>
-    <p class="aviso-dev">Página só de desenvolvimento. Troque o tema no rodapé para conferir os dois.</p>
+    <p class="aviso-dev">Página só de desenvolvimento. Troque o tema na lâmpada do cabeçalho para conferir os dois.</p>
 
     <h2>Cores</h2>
     <ul class="cores">
@@ -78,13 +96,7 @@ record Cobranca(String chave, long valorEmCentavos) {"{}"}</code></pre>
     </div>
 
     <h2>Avisos</h2>
-    <div class="prose">
-      <Aviso tipo="nota">Os exemplos usam PostgreSQL 17, mas a ideia vale para qualquer banco com restrição única.</Aviso>
-      <Aviso tipo="dica">Gere a chave no cliente, uma vez por intenção de pagamento.</Aviso>
-      <Aviso tipo="importante">A restrição única no banco é o que garante a unicidade.</Aviso>
-      <Aviso tipo="atencao">Um lock na aplicação não resolve quando a API roda em mais de uma instância.</Aviso>
-      <Aviso tipo="cuidado">Consultar antes de gravar abre uma janela para duas cobranças.</Aviso>
-    </div>
+    <div class="prose" set:html={avisos} />
   </div>
 </Base>
 

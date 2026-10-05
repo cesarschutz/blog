@@ -35,7 +35,7 @@ const primeiro = livros[0];
       {
         livros.map((l) => (
           <li style={coresDoLivroCss(l)}>
-            <Capa livro={l} desenho="inline" />
+            <Capa livro={l} />
           </li>
         ))
       }
@@ -45,7 +45,7 @@ const primeiro = livros[0];
       <div class="lombada-visual face-lombada-plana">
         <MioloLombada livro={primeiro} />
       </div>
-      <div class="capa-plana"><Capa livro={primeiro} desenho="inline" /></div>
+      <div class="capa-plana"><Capa livro={primeiro} /></div>
     </div>
   </div>
 </Base>

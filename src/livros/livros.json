@@ -32,11 +32,6 @@
         "altura": 660,
         "largura": 150
       },
-      "lombadaDeitada": {
-        "comprimento": 200,
-        "espessura": 38,
-        "deslocamento": 0
-      },
       "contracapa": {
         "abrange": [
           "decisões e trade-offs (overhead e overkill, overengineering)",
@@ -90,11 +85,6 @@
       "lombadaEmPe": {
         "altura": 604,
         "largura": 128
-      },
-      "lombadaDeitada": {
-        "comprimento": 188,
-        "espessura": 30,
-        "deslocamento": -6
       },
       "contracapa": {
         "abrange": [
@@ -152,11 +142,6 @@
         "altura": 628,
         "largura": 146
       },
-      "lombadaDeitada": {
-        "comprimento": 206,
-        "espessura": 38,
-        "deslocamento": 10
-      },
       "contracapa": {
         "abrange": [
           "Java e a JVM (GC, JIT, memória, JFR, thread dump)",
@@ -209,11 +194,6 @@
       "lombadaEmPe": {
         "altura": 598,
         "largura": 130
-      },
-      "lombadaDeitada": {
-        "comprimento": 184,
-        "espessura": 28,
-        "deslocamento": 18
       },
       "contracapa": {
         "abrange": [
@@ -271,11 +251,6 @@
         "altura": 612,
         "largura": 124
       },
-      "lombadaDeitada": {
-        "comprimento": 182,
-        "espessura": 28,
-        "deslocamento": 6
-      },
       "contracapa": {
         "abrange": [
           "frameworks (React, Vue, Svelte) e meta-frameworks (Next, Nuxt, Astro)",
@@ -331,11 +306,6 @@
         "altura": 646,
         "largura": 132
       },
-      "lombadaDeitada": {
-        "comprimento": 194,
-        "espessura": 30,
-        "deslocamento": -4
-      },
       "contracapa": {
         "abrange": [
           "sistema operacional (processos, threads, sinais, PID 1, memória virtual)",
@@ -386,11 +356,6 @@
       "lombadaEmPe": {
         "altura": 584,
         "largura": 120
-      },
-      "lombadaDeitada": {
-        "comprimento": 176,
-        "espessura": 27,
-        "deslocamento": 14
       },
       "contracapa": {
         "abrange": [
@@ -447,11 +412,6 @@
         "altura": 624,
         "largura": 142
       },
-      "lombadaDeitada": {
-        "comprimento": 198,
-        "espessura": 33,
-        "deslocamento": 12
-      },
       "contracapa": {
         "abrange": [
           "mensageria (SQS, SNS, Kafka, RabbitMQ)",
@@ -506,11 +466,6 @@
         "altura": 652,
         "largura": 136
       },
-      "lombadaDeitada": {
-        "comprimento": 196,
-        "espessura": 31,
-        "deslocamento": -8
-      },
       "contracapa": {
         "abrange": [
           "ledger e partidas dobradas",
@@ -563,11 +518,6 @@
       "lombadaEmPe": {
         "altura": 642,
         "largura": 138
-      },
-      "lombadaDeitada": {
-        "comprimento": 192,
-        "espessura": 31,
-        "deslocamento": 2
       },
       "contracapa": {
         "abrange": [
@@ -623,11 +573,6 @@
         "altura": 670,
         "largura": 144
       },
-      "lombadaDeitada": {
-        "comprimento": 204,
-        "espessura": 35,
-        "deslocamento": 4
-      },
       "contracapa": {
         "abrange": [
           "idempotência e retry",
@@ -681,11 +626,6 @@
       "lombadaEmPe": {
         "altura": 616,
         "largura": 126
-      },
-      "lombadaDeitada": {
-        "comprimento": 180,
-        "espessura": 29,
-        "deslocamento": -2
       },
       "contracapa": {
         "abrange": [
@@ -741,11 +681,6 @@
         "altura": 590,
         "largura": 122
       },
-      "lombadaDeitada": {
-        "comprimento": 178,
-        "espessura": 27,
-        "deslocamento": 16
-      },
       "contracapa": {
         "abrange": [
           "TDD e BDD",
@@ -800,10 +735,6 @@
       "lombadaEmPe": {
         "altura": 700,
         "largura": 80
-      },
-      "lombadaDeitada": {
-        "comprimento": 206,
-        "espessura": 30
       }
     }
   ]

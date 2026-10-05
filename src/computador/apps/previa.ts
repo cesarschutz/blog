@@ -15,7 +15,8 @@
  */
 import cssDaPrevia from "../estilos/previa.css?inline";
 import type { App, Janela, Menu, Sistema } from "../contexto";
-import { desenhoDoPost, escapar, fotoDoLivro, indexar, url, type DadosM, type LivroM, type PostM } from "../dados";
+import { desenhoDoPost, escapar, fotoDoLivro, indexar, type DadosM, type LivroM, type PostM } from "../dados";
+import { url } from "../../lib/url";
 import { glifo } from "../icones";
 
 type Bloco =

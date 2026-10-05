@@ -1,13 +1,14 @@
 /*
  * A capa viva (D58): como a fumaça da caneca da série Java (C04,
  * D52), cada ilustração pode ter um detalhe que se mexe uma vez quando o mouse passa pelo topo do
- * artigo, pelo card ou pelo item da lista. Discreto: um detalhe só, ~1s, só transform, opacity ou
- * stroke-dashoffset. Com movimento reduzido, nada se mexe.
+ * artigo, pelo card ou pelo item da lista, e pelo anterior e próximo do fim do artigo (rodada 3, T10;
+ * esse também com o foco do teclado e com o dedo). Discreto: um detalhe só, ~1s, só transform, opacity
+ * ou stroke-dashoffset. Com movimento reduzido, nada se mexe.
  *
  * Dois tipos (pedido do Cesar, rodada 1 de ajustes):
  * - evento: acontece e volta sozinho, com o mouse ainda em cima (balança, pulsa, pisca, sobe, treme,
  *   escreve, enche); vai até o fim mesmo que o mouse saia no meio (a classe .mexendo, posta por
- *   src/scripts/capa-viva.ts);
+ *   src/scripts/capa-viva.ts nos cards e no topo, e por src/scripts/artigo.ts no anterior e no próximo);
  * - estado: muda e fica enquanto o mouse está em cima (gira, desliza); ao tirar o mouse, volta ao lugar
  *   animado, um pouco mais rápido que a ida, nunca pulando.
  *
@@ -66,56 +67,68 @@
     transition: translate 0.6s cubic-bezier(0.3, 0, 0.25, 1);
   }
 
-  :is(.cartao, .item.completo, [data-desenhar-topo]):hover .ilustracao .mexe-gira:not([data-relogio]) {
+  :is(.cartao, .item.completo, [data-desenhar-topo]):hover .ilustracao .mexe-gira:not([data-relogio]),
+  .vizinho:is(:hover, :focus-visible) .ilustracao .mexe-gira:not([data-relogio]) {
     rotate: 120deg;
     transition: rotate 1.3s cubic-bezier(0.3, 0, 0.2, 1);
   }
 
-  :is(.cartao, .item.completo, [data-desenhar-topo]):hover .ilustracao [data-relogio] > [data-ponteiro] {
+  :is(.cartao, .item.completo, [data-desenhar-topo]):hover .ilustracao [data-relogio] > [data-ponteiro],
+  .vizinho:is(:hover, :focus-visible) .ilustracao [data-relogio] > [data-ponteiro] {
     transition: rotate 1.3s cubic-bezier(0.3, 0, 0.2, 1);
   }
 
-  :is(.cartao, .item.completo, [data-desenhar-topo]):hover .ilustracao [data-ponteiro="minutos"] {
+  :is(.cartao, .item.completo, [data-desenhar-topo]):hover .ilustracao [data-ponteiro="minutos"],
+  .vizinho:is(:hover, :focus-visible) .ilustracao [data-ponteiro="minutos"] {
     rotate: 30deg;
   }
 
-  :is(.cartao, .item.completo, [data-desenhar-topo]):hover .ilustracao [data-ponteiro="horas"] {
+  :is(.cartao, .item.completo, [data-desenhar-topo]):hover .ilustracao [data-ponteiro="horas"],
+  .vizinho:is(:hover, :focus-visible) .ilustracao [data-ponteiro="horas"] {
     rotate: 2.5deg;
   }
 
-  :is(.cartao, .item.completo, [data-desenhar-topo]):hover .ilustracao .mexe-desliza {
+  :is(.cartao, .item.completo, [data-desenhar-topo]):hover .ilustracao .mexe-desliza,
+  .vizinho:is(:hover, :focus-visible) .ilustracao .mexe-desliza {
     translate: 22px 0;
     transition: translate 1s cubic-bezier(0.45, 0, 0.25, 1);
   }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-balanca {
+  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-balanca,
+  .vizinho:is(:hover, :focus-visible, .mexendo) .ilustracao .mexe-balanca {
     animation: mexe-balanca 1.3s cubic-bezier(0.36, 0, 0.3, 1) both;
   }
 
-  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-pulsa {
+  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-pulsa,
+  .vizinho:is(:hover, :focus-visible, .mexendo) .ilustracao .mexe-pulsa {
     animation: mexe-pulsa 0.9s ease-in-out both;
   }
 
-  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-pisca {
+  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-pisca,
+  .vizinho:is(:hover, :focus-visible, .mexendo) .ilustracao .mexe-pisca {
     animation: mexe-pisca 1s steps(1, end) both;
   }
 
-  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-sobe {
+  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-sobe,
+  .vizinho:is(:hover, :focus-visible, .mexendo) .ilustracao .mexe-sobe {
     animation: mexe-sobe 1.2s cubic-bezier(0.33, 0, 0.2, 1) both;
   }
 
-  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-treme {
+  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-treme,
+  .vizinho:is(:hover, :focus-visible, .mexendo) .ilustracao .mexe-treme {
     animation: mexe-treme 0.6s linear both;
   }
 
-  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-escreve {
+  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-escreve,
+  .vizinho:is(:hover, :focus-visible, .mexendo) .ilustracao .mexe-escreve {
     stroke-dasharray: 1 2;
     animation: mexe-escreve 1.1s cubic-bezier(0.33, 0, 0.2, 1) both;
   }
 
-  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-enche {
+  :is(.cartao, .item.completo, [data-desenhar-topo]):is(:hover, .mexendo) .ilustracao .mexe-enche,
+  .vizinho:is(:hover, :focus-visible, .mexendo) .ilustracao .mexe-enche {
     animation: mexe-enche 1.2s cubic-bezier(0.33, 0, 0.2, 1) both;
   }
 }

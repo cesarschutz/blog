@@ -39,12 +39,8 @@ interface Props {
   etiqueta?: boolean;
   /** Rodada 4 (P17-1): o traço de caneta embaixo do título (só na primeira página da home). */
   tracoNoTitulo?: boolean;
-  /** O seletor Lista / Cards como a tira de papel (o padrão) ou a pílula de antes (amostra D4). */
-  seletorDePapel?: boolean;
-  /** O id do título (a amostra D4 põe duas listas na mesma página). */
-  idTitulo?: string;
   /** Rodada 4 (H7): na Lista, em tela grande, o livro do artigo à direita (ItemLista; a home passa). */
-  livroAoLado?: "espelhado" | "foto";
+  livroAoLado?: boolean;
 }
 
 const {
@@ -56,30 +52,28 @@ const {
   destaque = false,
   etiqueta = false,
   tracoNoTitulo = false,
-  seletorDePapel = true,
-  idTitulo = "recentes-titulo",
-  livroAoLado,
+  livroAoLado = false,
 } = Astro.props;
 const Titulo = nivel;
 // Os títulos dos artigos ficam um nível abaixo do título da seção (h1 nas páginas 2 em diante).
 const nivelDoItem = nivel === "h1" ? "h2" : "h3";
 ---
 
-<section class:list={["recentes", { "com-etiqueta": etiqueta }]} aria-labelledby={idTitulo}>
+<section class:list={["recentes", { "com-etiqueta": etiqueta }]} aria-labelledby="recentes-titulo">
   <div class="topo-recentes">
     <div class:list={{ "etiqueta-recentes papel-colado": etiqueta }}>
       {etiqueta && <span class="fita-adesiva canto-esq" aria-hidden="true" />}
-      <Titulo id={idTitulo} class="titulo-secao">{tracoNoTitulo ? <TracoTitulo texto={titulo} /> : titulo}</Titulo>
+      <Titulo id="recentes-titulo" class="titulo-secao">{tracoNoTitulo ? <TracoTitulo texto={titulo} /> : titulo}</Titulo>
       {subtitulo && <p class="subtitulo-secao">{subtitulo}</p>}
     </div>
-    <SeletorModo papel={seletorDePapel} />
+    <SeletorModo />
   </div>
   <ol class="lista-modo lista-artigos">
-    {posts.map((p, i) => <ItemLista post={p} nivel={nivelDoItem} destaque={destaque && i === 0} carimbo={destaque && i === 0} livroAoLado={livroAoLado} />)}
+    {posts.map((p, i) => <ItemLista post={p} nivel={nivelDoItem} destaque={destaque && i === 0} livroAoLado={livroAoLado} />)}
   </ol>
   <template data-cartoes>
     <ul class="cartoes-modo">
-      {posts.map((p, i) => <Cartao post={p} nivel={nivelDoItem} destaque={destaque && i === 0} carimbo={destaque && i === 0} />)}
+      {posts.map((p, i) => <Cartao post={p} nivel={nivelDoItem} destaque={destaque && i === 0} />)}
     </ul>
   </template>
   <script is:inline>

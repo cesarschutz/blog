@@ -1,7 +1,7 @@
 ---
 /**
- * O livro ampliado (D33, D49): clicar no livro aberto (na gaveta da home e no topo das páginas de
- * categoria e de série) abre o mesmo livro 3D, grande, sobre a página escurecida
+ * O livro ampliado (D33, D49): clicar no livro aberto (no topo das páginas de categoria e de série)
+ * abre o mesmo livro 3D, grande, sobre a página escurecida
  * (o visor, visor.css), com o nome e o volume embaixo e, fora da página dele, o link "Ver o livro". O
  * livro cresce a partir do livro de onde saiu (o de origem some enquanto isso) e, ao fechar, volta
  * para ele (D47).
@@ -21,7 +21,7 @@
  *
  * Quem abre: um elemento com `data-ampliar-livro` (com `data-largura`, `data-nome`, `data-dados`,
  * `data-href` e `data-paginas`, e as cores do livro no style) em volta de um `.livro-3d-caixa`, e o
- * botão de lupa `[data-ampliar]` que vai junto (ver Gaveta e LivroEmPe). O livro é uma cópia; as
+ * botão de lupa `[data-ampliar]` que vai junto (ver LivroEmPe). O livro é uma cópia; as
  * medidas são refeitas para o tamanho da tela (src/lib/livro-3d.ts). As páginas vêm de
  * /livros/<slug>.json (src/pages/livros/[slug].json.ts), buscadas ao abrir (e antes, ao passar o
  * mouse na lupa). O livro é desenho (aria-hidden): a legenda diz a página da vez, e o livro inteiro
@@ -677,7 +677,7 @@ import "../styles/paginas.css";
       nova.removeAttribute("style");
       nova.classList.add("livro-que-abre");
       livro = nova.querySelector<HTMLElement>(".livro-3d");
-      // O giro da origem (o GSAP da gaveta o deixa no style) não vem junto.
+      // O giro da origem, se estiver no style, não vem junto.
       livro?.style.removeProperty("transform");
       livro?.style.setProperty("--giro", `${GIRO}deg`);
       // Rodada 3 (área A): a cópia chega sem o estado do livro vivo da origem (o hover, o brilho, a onda) e,
@@ -686,10 +686,6 @@ import "../styles/paginas.css";
       for (const el of nova.querySelectorAll<HTMLElement>(".livro-vivo, .lv-brilho i")) el.removeAttribute("style");
       nova.querySelector(".livro-vivo")?.removeAttribute("data-lv-solto");
       palco.dataset.lvRepouso = "";
-      // O livro da gaveta não tem a sombra no chão (D57): a cópia também não, senão ela sumia de uma vez
-      // quando o livro volta para a gaveta.
-      const chaoDaOrigem = caixa.querySelector(".chao");
-      if (chaoDaOrigem && getComputedStyle(chaoDaOrigem).display === "none") nova.querySelector(".chao")?.remove();
       palco.replaceChildren(nova);
       copia = nova;
       caixaDeOrigem = caixa;
@@ -849,8 +845,7 @@ import "../styles/paginas.css";
      * Segue o link da página:
      * - um artigo abre na hora, com a troca de página do site (o livro sai junto com a página, e o de
      *   origem não voa por baixo do visor);
-     * - um livro (o próximo da coleção): este se fecha e volta ao lugar dele; se o outro estiver na
-     *   pilha ao lado (PainelHome), a troca é a da pilha (guarda este, puxa o outro e o leva ao topo);
+     * - um livro (o próximo da coleção): este se fecha e volta ao lugar dele, e a página do outro abre;
      * - o próprio livro ("Ver o livro inteiro" na página dele): só fecha.
      */
     let seguindo = false;
@@ -863,14 +858,8 @@ import "../styles/paginas.css";
       const caminho = new URL(a.href).pathname;
       if (caminho === location.pathname) return void fechar();
       seguindo = true;
-      if (!/\/posts\//.test(caminho)) {
-        await fechar();
-        const naPilha = [...document.querySelectorAll<HTMLAnchorElement>(".pilha a.deitado")].find((d) => d.pathname === caminho);
-        if (naPilha) {
-          seguindo = false;
-          return void naPilha.click();
-        }
-      } else if (origem) {
+      if (!/\/posts\//.test(caminho)) await fechar();
+      else if (origem) {
         nomeDaOrigem = { el: origem, nome: origem.style.viewTransitionName };
         origem.style.viewTransitionName = "none";
       }
@@ -939,7 +928,7 @@ import "../styles/paginas.css";
       });
     }
 
-    // Quem abre: o livro (clique) ou a lupa (clique e teclado), também na gaveta da home (D43).
+    // Quem abre: o livro (clique) ou a lupa (clique e teclado).
     document.addEventListener("click", (e) => {
       const alvo = e.target as HTMLElement;
       const raiz = alvo.closest<HTMLElement>("[data-ampliar-livro]");

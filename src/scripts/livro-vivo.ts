@@ -25,8 +25,8 @@ const reduzido = matchMedia("(prefers-reduced-motion: reduce)");
 
 /** Quem dispara o livro vivo: o cartão em volta dele ou o próprio livro. */
 const CARTAO = "[data-livro-gira], .livro-colecao";
-const LIVRO = ".livro-em-pe, .livro-na-gaveta, .palco-ampliado[data-lv-repouso] .livro-3d-caixa";
-const FOTO = ".do-livro, .livro-do-artigo, [data-foto-gira]";
+const LIVRO = ".livro-em-pe, .palco-ampliado[data-lv-repouso] .livro-3d-caixa";
+const FOTO = ".do-livro, .livro-do-artigo";
 
 /** O quanto o livro acompanha o mouse, em graus: no eixo vertical (y) e no horizontal (x). */
 const SEGUE = { livro: { y: 6, x: 4 }, foto: { y: 7, x: 5 } } as const;
@@ -155,7 +155,7 @@ function soltar(v: Vivo) {
   pedirQuadro();
 }
 
-/** Na hora, sem voltar devagar: antes de alguém medir ou copiar o livro (o ampliado, a gaveta). */
+/** Na hora, sem voltar devagar: antes de alguém medir ou copiar o livro (o ampliado, o voo da home). */
 function soltarJa(v: Vivo) {
   soltando.delete(v);
   if (atual === v) atual = null;
@@ -260,9 +260,9 @@ document.addEventListener(
   "pointerdown",
   (e) => {
     if (!(e.target instanceof Element)) return;
-    // Antes de o livro abrir grande (ou ir para a gaveta), ele volta ao lugar na hora: quem mede e copia o
-    // livro o encontra parado (o hover some com data-livro-parado, sem transição).
-    const medido = e.target.closest("[data-ampliar-livro], [data-ampliar], .livro-na-gaveta");
+    // Antes de o livro abrir grande, ele volta ao lugar na hora: quem mede e copia o livro o encontra parado
+    // (o hover some com data-livro-parado, sem transição).
+    const medido = e.target.closest("[data-ampliar-livro], [data-ampliar]");
     if (medido) {
       for (const caixa of medido.querySelectorAll<HTMLElement>(".livro-3d-caixa")) {
         const vivo = caixa.querySelector<HTMLElement>(".livro-vivo");
@@ -363,10 +363,7 @@ export function ondaNaFileira(fileira: HTMLElement, tempo: TempoDaOnda = {}) {
   if (reduzido.matches || fileira.dataset.lvOndou) return 0;
   fileira.dataset.lvOndou = "";
   const { atraso = 0, passo = ONDA.passo, duracao = ONDA.duracao } = tempo;
-  // O livro que foi para a gaveta não brilha (só o contorno dele está na fileira).
-  const livros = [...fileira.querySelectorAll<HTMLElement>(".livro-3d-caixa, .lombada")].filter(
-    (el) => el.getClientRects().length > 0 && !el.closest(".retirado"),
-  );
+  const livros = [...fileira.querySelectorAll<HTMLElement>(".livro-3d-caixa, .lombada")].filter((el) => el.getClientRects().length > 0);
   livros.forEach((el, i) => {
     if (el.matches(".livro-3d-caixa")) ondaNoLivro(el, atraso + i * passo, duracao);
     else ondaNaLombada(el, atraso + i * passo, duracao);
@@ -394,7 +391,7 @@ function ligarOndas() {
   if (reduzido.matches) return;
   // Linha 18: a fileira com `data-onda-propria` (a da prateleira moderna) chama a onda quando as luzes de
   // quadro acabam de acender (estante-moderna.ts), e não aqui.
-  const fileiras = [...document.querySelectorAll<HTMLElement>(".colecao .prateleira-livros, .estante .prateleira-livros, [data-lv-fileira]")].filter(
+  const fileiras = [...document.querySelectorAll<HTMLElement>(".colecao .prateleira-livros, .estante .prateleira-livros")].filter(
     (f) => !f.closest("[data-onda-propria]"),
   );
   if (!fileiras.length) return;
@@ -416,11 +413,11 @@ function ligarOndas() {
 ligarOndas();
 
 /**
- * Para as outras peças (a linha 18 refaz a onda; a gaveta e quem mede o livro o soltam antes): a onda numa
- * fileira (uma vez por fileira, `data-lv-ondou`) e o livro parado na hora.
+ * Para as outras peças: o livro parado na hora, antes de alguém medir ou copiar o livro (a coleção da home,
+ * ColecaoHome.astro, antes do voo até a página do livro). A onda numa fileira, a linha 18 importa direto
+ * (`ondaNaFileira`, estante-moderna.ts).
  */
 (window as unknown as { csLivroVivo?: object }).csLivroVivo = {
-  onda: ondaNaFileira,
   soltar(caixa: HTMLElement) {
     const v = atual?.caixa === caixa ? atual : [...soltando].find((s) => s.caixa === caixa);
     if (v) soltarJa(v);

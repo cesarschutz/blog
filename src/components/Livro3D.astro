@@ -1,7 +1,7 @@
 ---
 /**
  * O livro 3D inteiro (D30, D40; capa dura desde a D57, prancha 01 de
- * docs/prototipos/livros-realistas): construído como um livro de capa dura de verdade, com as mesmas
+ * docs/historico/livros-realistas): construído como um livro de capa dura de verdade, com as mesmas
  * artes de capa e lombada. O livro gira em volta do centro: com `rotateY(90deg)` mostra a lombada de
  * frente; parado, fica a 38° da frente (`--giro`, GIRO em src/lib/livro-3d.ts), com a lombada bem à
  * vista (D46). A vista (`.livro-3d-vista`) é de um pouco acima, para o alto do livro aparecer; ela fica
@@ -16,7 +16,7 @@
  *   dois lados, duas facetas que dobram até as capas (FACETAS, abaixo), com a luz correndo pela curva;
  * - no alto, a borda da lombada, o oco, o cabeceado listrado e o alto do miolo em creme, com as linhas
  *   das folhas; o vinco da dobradiça na capa, a 22 da lombada; o grão; a sombra de contato no chão
- *   (`.chao`, que a gaveta da home esconde).
+ *   (`.chao`).
  *
  * As medidas vêm de src/lib/livro-3d.ts: --cw (largura da capa), --bh (altura), --sw (espessura, a
  * largura da lombada na mesma escala) e --u (px por unidade da referência). As cores, do elemento pai
@@ -35,12 +35,11 @@ import "../styles/livro-vivo.css";
 
 interface Props {
   livro: Livro;
-  desenho: "inline" | "adiado";
   /** Camadas de página por baixo da capa (D40). */
   folhas?: number;
 }
 
-const { livro, desenho, folhas = 0 } = Astro.props;
+const { livro, folhas = 0 } = Astro.props;
 
 /*
  * O contorno da lombada visto de cima, de trás (a contracapa, z = -1/2) para a frente (a capa, z = +1/2),
@@ -154,7 +153,7 @@ const recorteMiolo = `polygon(${noMiolo.join(", ")}, 100% 100%, 100% 0)`;
         <div class="f miolo-topo" style={`--recorte-miolo:${recorteMiolo}`}></div>
         {FACETAS.map((f) => <div class={`f faceta ${f.classe}`} style={f.estilo} />)}
         <div class:list={["f", "face-lombada", "lombada-visual", { "de-serie": livro.serie }]} aria-hidden="true">
-          <MioloLombada livro={livro} iconeDaEstante={desenho === "adiado"} />
+          <MioloLombada livro={livro} />
           <span class="lv-brilho lv-brilho-lombada"><i class="lv-spec"></i><i class="lv-faixa"></i><i class="lv-fresnel"></i><i class="lv-onda"></i></span>
         </div>
         <div class="f cabeca-lombada" set:html={cabecaSvg} />
@@ -171,7 +170,7 @@ const recorteMiolo = `polygon(${noMiolo.join(", ")}, 100% 100%, 100% 0)`;
             </p>
           </div>
           <div class="capa-frente">
-            <Capa livro={livro} desenho={desenho} />
+            <Capa livro={livro} />
             <span class="luz-capa"></span>
             <span class="lv-brilho lv-brilho-capa"><i class="lv-spec"></i><i class="lv-fresnel"></i><i class="lv-varre"></i><i class="lv-onda"></i></span>
           </div>

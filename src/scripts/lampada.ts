@@ -12,7 +12,7 @@
  * compositor sem JavaScript por quadro: camadas de cor fixa que se cruzam, nunca cor animada.
  */
 
-export const LAMPADA = {
+const LAMPADA = {
   /** Ligar: o atraso do contato e a constante térmica (95% em ~250ms). */
   atraso: 25,
   tauLiga: 75,
@@ -23,7 +23,7 @@ export const LAMPADA = {
 } as const;
 
 /** A temperatura do filamento (0 a 1), t em ms desde o clique. */
-export function temperatura(t: number, liga: boolean): number {
+function temperatura(t: number, liga: boolean): number {
   if (!liga) return Math.exp(-t / LAMPADA.tauDesliga);
   if (t < LAMPADA.atraso) return 0;
   return 1 - Math.exp(-(t - LAMPADA.atraso) / LAMPADA.tauLiga);
@@ -47,7 +47,7 @@ export function sala(t: number, liga: boolean): number {
   return Math.min(1, Math.pow(T, liga ? 2.2 : 1.7) * tremor(t, liga));
 }
 
-export type Camada = "brasa" | "ambar" | "branco" | "cone" | "nucleo" | "nucleoBrasa" | "cupula";
+type Camada = "brasa" | "ambar" | "branco" | "cone" | "nucleo" | "nucleoBrasa" | "cupula";
 
 /** A opacidade de cada camada da lâmpada no instante t. */
 export function camada(nome: Camada, t: number, liga: boolean): number {
@@ -99,7 +99,7 @@ export function meioDaSala(liga: boolean): number {
  * (linha 18: o papel #F0EDE6 vira 26,26,25; o escuro é 27,29,31). Nesse ponto a troca entre as duas não
  * passa pelo cinza: o fundo é o mesmo, e só o texto troca.
  */
-export const PISO = 0.11;
+const PISO = 0.11;
 
 /** A página clara apaga até o piso; a escura aparece depois, quando a clara já está no escuro. */
 const APAGA = { troca: 270, fim: 560 };

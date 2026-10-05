@@ -8,9 +8,8 @@
  * A lista leva `data-fichas-caem` (as fichas caem de cima, fichas-caem.ts) e `data-fora-da-troca`; com
  * `jogadas`, também `data-jogadas` (chegando pela cortina, as de cima vêm jogadas do alto à direita,
  * troca.js). Cada ficha leva `data-letra` (a inicial, sem acento) e `data-n`. Uma linha que não enche fica
- * no meio (P16-7). Saiu da página de Tags na rodada 4 para a amostra D3 (nas amostras do redesenho, fora do git) usar a mesma:
- * `ancora` muda o prefixo das âncoras de letra (únicas na página), `alfinetes` põe o alfinete da cortiça
- * do 16 (pintado pela amostra) e `limite` mostra só as primeiras.
+ * no meio (P16-7). A primeira ficha de cada letra tem a âncora `letra-B` (e a área toda, `letra-todas`), para
+ * onde as gavetas do fichário levam sem JS (Fichario.astro).
  */
 import IconeTag from "./IconeTag.astro";
 import { ICONES } from "../lib/icones";
@@ -20,47 +19,32 @@ import { tituloComQuebras } from "../lib/formato";
 
 interface Props {
   tags: Grupo[];
-  /** Prefixo das âncoras de letra (`letra-B`); a amostra usa um por forma. */
-  ancora?: string;
   /** Chegando pela cortina, as de cima vêm jogadas do alto (troca.js). */
   jogadas?: boolean;
-  /** O alfinete da cortiça (amostra D3, forma C), na cor do livro em que a tag mais aparece. */
-  alfinetes?: boolean;
-  /** Só as primeiras N (as chegadas da amostra). */
-  limite?: number;
-  /** Sem a orelha da letra. */
-  semSeparador?: boolean;
-  /** De A a Z (o fichário) ou das mais usadas às menos usadas (a cortiça do 16). */
-  ordem?: "letra" | "uso";
-  class?: string;
 }
 
-const { tags, ancora = "letra-", jogadas = false, alfinetes = false, limite, semSeparador = false, ordem = "letra", class: classe } = Astro.props;
+const { tags, jogadas = false } = Astro.props;
 const colecao = await montarLivros();
 const recentes = (posts: Resumo[]) => [...posts].sort((a, b) => b.publicado.getTime() - a.publicado.getTime()).slice(0, 3);
 // Os livros da tag, na ordem da estante, com quantos artigos da tag cada um tem.
 const livrosDa = (posts: Resumo[]) =>
   colecao.map((l) => ({ livro: l, n: posts.filter((p) => p.livro === l.id).length })).filter((x) => x.n > 0);
-// O livro em que a tag mais aparece: a cor do alfinete dela (a cortiça do 16).
-const livroDaTag = (posts: Resumo[]) => [...livrosDa(posts)].sort((a, b) => b.n - a.n)[0]?.livro;
 const palavra = (n: number) => (n === 1 ? "artigo" : "artigos");
 const inicial = (nome: string) => nome.normalize("NFD").replace(/\p{M}/gu, "").charAt(0).toUpperCase();
-const fichas = (ordem === "uso" ? [...tags] : [...tags].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"))).slice(0, limite ?? tags.length);
+const fichas = [...tags].sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
 ---
 
-<div class:list={["area-fichas", classe]} id={`${ancora}todas`}>
+<div class="area-fichas" id="letra-todas">
   <ul class="fichas-tags" data-fichas-caem data-fora-da-troca data-jogadas={jogadas ? "" : undefined}>
     {
       fichas.map((t, i) => {
         const n = t.posts.length;
         const livros = livrosDa(t.posts);
         const L = inicial(t.nome);
-        const primeira = ordem === "letra" && (i === 0 || inicial(fichas[i - 1].nome) !== L);
-        const principal = alfinetes ? livroDaTag(t.posts) : undefined;
+        const primeira = i === 0 || inicial(fichas[i - 1].nome) !== L;
         return (
-          <li class="ficha-tag" data-letra={L} data-n={n} id={primeira ? `${ancora}${L}` : undefined} style={principal ? `--cor:${principal.cores.cor}` : undefined}>
-            {alfinetes && <span class="alfinete" aria-hidden="true" />}
-            {primeira && !semSeparador && (
+          <li class="ficha-tag" data-letra={L} data-n={n} id={primeira ? `letra-${L}` : undefined}>
+            {primeira && (
               <span class="separador-letra" aria-hidden="true">
                 {L}
               </span>
@@ -273,7 +257,9 @@ const fichas = (ordem === "uso" ? [...tags] : [...tags].sort((a, b) => a.nome.lo
   }
 
   .mini-lombada {
+    position: relative;
     display: block;
+    overflow: hidden;
     width: 6px;
     height: calc(var(--h) * 0.03px);
     border-top: calc((var(--h) - 400) * 0.03px) solid var(--livro-papel);

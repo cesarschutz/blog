@@ -5,8 +5,8 @@
  * como quem anotou no caderno qual é o último. Vai no primeiro cartão (ou no primeiro item da lista)
  * da primeira página; o leitor de tela lê o texto, e o traço é decorativo.
  *
- * Rodada 4 (E9, a sugestão S1 aprovada): com `carimbo` (a data do post), o carimbo "Novo" da ficha de
- * empréstimo (o do 19) fica na mesma linha do rótulo, à direita: "Novo" e o dia, na tinta azul de
+ * Rodada 4 (E9, a sugestão S1 aprovada): o carimbo "Novo" da ficha de empréstimo (o do 19), com a data do
+ * post (`carimbo`), fica na mesma linha do rótulo, à direita: "Novo" e o dia, na tinta azul de
  * almofada (a da caneta), com o aro duplo, girado −8°. Ele ocupa lugar na linha (não flutua por cima de
  * nada): no card e na lista, fica embaixo da tira da ficha ("nº 028") e acima do chip, sem encostar em
  * texto nenhum. Como mora dentro da ficha, sobe junto com ela no hover, no foco e no toque.
@@ -14,44 +14,32 @@
  * A batida: quando o carimbo está inteiro na tela, 0,4s depois (e depois de a ficha pousar, se ainda estiver
  * chegando), ele cai de 1,25 a 1 em 0,18s e assenta (0,34s ao todo), uma vez em cada forma (cards e lista). Na home com a abertura, espera ela acabar; chegando
  * pela cortina, espera a cortina sair. Só `transform` e `opacity`. Sem JS ou com movimento reduzido, ele
- * já está batido. Só na home, só no post mais recente (Recentes passa `carimbo` só ao destaque).
+ * já está batido. Só na home, só no post mais recente (o destaque do Recentes, no Cartao e no ItemLista).
  */
 import { diaEMes } from "../lib/formato";
 import { tracoDeCaneta } from "../lib/traco";
 
 interface Props {
-  /** A data do post: com ela, o carimbo "Novo" ao lado do rótulo (E9). */
-  carimbo?: Date;
+  /** A data do post, no carimbo "Novo" ao lado do rótulo (E9). */
+  carimbo: Date;
 }
 
 const { carimbo } = Astro.props;
 ---
 
-{
-  carimbo ? (
-    <div class="linha-mais-recente">
-      <p class="mais-recente">
-        <span class="texto"
-          >Mais recente<svg viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"
-            ><path d={tracoDeCaneta("Mais recente", 7)} /></svg
-          ></span
-        >
-      </p>
-      <span class="carimbo" aria-hidden="true" data-carimbo-destaque>
-        <span class="carimbo-palavra">Novo</span>
-        <span class="carimbo-data">{diaEMes(carimbo)}</span>
-      </span>
-    </div>
-  ) : (
-    <p class="mais-recente">
-      <span class="texto"
-        >Mais recente<svg viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"
-          ><path d={tracoDeCaneta("Mais recente", 7)} /></svg
-        ></span
-      >
-    </p>
-  )
-}
+<div class="linha-mais-recente">
+  <p class="mais-recente">
+    <span class="texto"
+      >Mais recente<svg viewBox="0 0 100 8" preserveAspectRatio="none" aria-hidden="true" focusable="false"
+        ><path d={tracoDeCaneta("Mais recente", 7)} /></svg
+      ></span
+    >
+  </p>
+  <span class="carimbo" aria-hidden="true" data-carimbo-destaque>
+    <span class="carimbo-palavra">Novo</span>
+    <span class="carimbo-data">{diaEMes(carimbo)}</span>
+  </span>
+</div>
 
 <script>
   // O carimbo bate quando entra inteiro na tela, 0,4s depois (e com a ficha já pousada), uma vez. Os cards que
@@ -128,13 +116,6 @@ const { carimbo } = Astro.props;
       addEventListener("cs:chegou", liberar, { once: true });
       setTimeout(liberar, 2500);
     } else liberar();
-
-    // A amostra de sugestões tem "Bater de novo": bate outra vez os que estão na tela.
-    addEventListener("cs:carimbo-de-novo", () => {
-      document.querySelectorAll<HTMLElement>("[data-carimbo-destaque]").forEach((c, i) => {
-        if (c.getClientRects().length) window.setTimeout(() => bater(c), i * 160);
-      });
-    });
   }
 </script>
 

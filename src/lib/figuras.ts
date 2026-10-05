@@ -18,7 +18,7 @@ const marcas = import.meta.glob<string>("../marcas/*.svg", { query: "?raw", impo
 const oficiais = import.meta.glob<string>("../marcas/oficiais/*.svg", { query: "?url", import: "default", eager: true });
 
 type Uso = "redesenho" | "oficial" | "nao";
-export interface RegraDeMarca {
+interface RegraDeMarca {
   marca: string;
   dono: string;
   texto: Uso;
@@ -28,12 +28,12 @@ export interface RegraDeMarca {
   conferido: string;
   certeza: string;
 }
-export type DesenhoDaMarca = { tipo: "redesenho"; miolo: string } | { tipo: "oficial"; url: string };
+type DesenhoDaMarca = { tipo: "redesenho"; miolo: string } | { tipo: "oficial"; url: string };
 
 const raizDe = (fonte: string) => fonte.match(/<svg\b[^>]*>/)?.[0] ?? "";
 
 /** O conteúdo de um SVG, sem a raiz e sem comentários. */
-export function miolo(fonte: string): string {
+function miolo(fonte: string): string {
   const raiz = raizDe(fonte);
   return fonte
     .slice(fonte.indexOf(raiz) + raiz.length, fonte.lastIndexOf("</svg>"))
@@ -42,7 +42,7 @@ export function miolo(fonte: string): string {
 }
 
 /** A regra de marca registrada (src/marcas/regras.json), ou undefined se a marca não foi conferida. */
-export function regraDaMarca(nome: string): RegraDeMarca | undefined {
+function regraDaMarca(nome: string): RegraDeMarca | undefined {
   const regra = (regras as Record<string, unknown>)[nome];
   return regra && typeof regra === "object" ? (regra as RegraDeMarca) : undefined;
 }
@@ -77,8 +77,6 @@ export function marca(nome: string, onde: "texto" | "diagrama"): DesenhoDaMarca 
   if (!fonte) throw new Error(`Falta o logo src/marcas/${nome}.svg.`);
   return { tipo: "redesenho", miolo: miolo(fonte) };
 }
-
-export const marcasDisponiveis = () => Object.keys(marcas).map((c) => c.replace(/^\.\.\/marcas\/|\.svg$/g, ""));
 
 /** Troca cada marcador <g data-marca="x" …/> (ou <g data-marca="x" …></g>) pelo desenho do logo. */
 export function comMarcas(fonte: string): string {

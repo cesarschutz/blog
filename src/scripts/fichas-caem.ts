@@ -14,9 +14,9 @@
  * devolve sozinho em 3s se ele não vier; com ele, a lista ganha `data-caem`, e cada ficha que cai ganha
  * `data-caiu`. Com movimento reduzido, nada se esconde nem se mexe.
  *
- * Exportado para as linhas que reaproveitam a queda (as gavetas por letra da 19, os alfinetes da 16):
- * `soltarFichas(fichas)` faz cair, agora, as fichas dadas, na ordem da tela; `quandoAVista()` avisa quando
- * a página está à vista (o fichário de Tags espera por ele para puxar as gavetas).
+ * Exportado para o fichário de Tags (as gavetas por letra da 19, fichario.ts): `soltarFichas(fichas)` faz
+ * cair, agora, as fichas dadas, na ordem da tela; `quandoAVista()` avisa quando a página está à vista (o
+ * fichário espera por ele para puxar as gavetas).
  *
  * Rodada 4 (A3): numa lista com `data-jogadas`, as fichas acima da dobra chegam pela cortina jogadas do
  * alto à direita (troca.js, `jogarFichas`), como no blog de hoje; a troca as marca com `data-caiu` (e
@@ -65,8 +65,6 @@ function naOrdem(fichas: HTMLElement[]) {
 function cair(el: HTMLElement, atraso: number, lado: number) {
   cancelarQueda(el);
   el.dataset.caiu = "";
-  // O instante em que a ficha toca a mesa (72% da queda): a cortiça do 16 (amostra D3) prega o alfinete nele.
-  el.style.setProperty("--pousa", `${Math.round(atraso + DURACAO * 0.72)}ms`);
   if (reduzido.matches || !el.animate) return;
   const giro = lado * GIRO;
   // A queda desacelera como papel no ar (não como pedra), passa 2px do lugar e assenta.

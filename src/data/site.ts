@@ -31,7 +31,11 @@ export const AUTOR = {
   linkedin: "https://www.linkedin.com/in/cesar-schutz-10341a21/",
 };
 
-/** Frases do rodapé e da abertura, as mesmas do blog atual (D33). */
+/**
+ * Os textos do blog (D33, D37). O site usa `descricao` e `tituloDaImagem`. A frase da abertura
+ * (`apresentacao`, que saiu da home na D84) e a do rodapé (`rodape`, que saiu na D61) ficam só porque os
+ * modelos do redesenho em http://127.0.0.1:4400 (redesenho/, fora do git) ainda as leem daqui.
+ */
 export const TEXTOS = {
   apresentacao:
     "Publico aqui o que ando estudando — lançamento do Java, código, arquitetura, IA, o que me despertar interesse. Quando o estudo rende algo que vale guardar, vira artigo.",

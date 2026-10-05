@@ -1,14 +1,14 @@
 /*
  * Rodada 3 do redesenho (área A, "Livros vivos"; T4, T6, T9, T11, T14): um comportamento só para todo
- * livro 3D do site (a home, Livros, Séries, o topo e o painel da página do livro, o filtro, a gaveta, a
- * ficha da busca, o livro ampliado em repouso). O script é livro-vivo.ts (carregado por Luz.astro, em
- * toda página); a marcação é a de Livro3D.astro.
+ * livro 3D do site (a coleção da home, Livros, Séries, As capas, o topo da página do livro, a ficha da
+ * busca, o livro ampliado em repouso). O script é livro-vivo.ts (carregado por Luz.astro, em toda
+ * página); a marcação é a de Livro3D.astro.
  *
  * - **O giro do hover com mola** (T11, T14): o livro vai de 38° para 20°, sobe uns 6px e dá um nada de
  *   inclinação no plano, com a mola do 04 (passa do alvo e volta: as "duas viradinhas"). A saída é sem
  *   mola (0,4s, power2.out). Mexe só no `.livro-vivo` (transform), um envoltório entre a vista e o
  *   `.livro-3d`: o `rotateY` do livro continua livre para o GSAP, as trocas de página e a largura da
- *   coleção. Quem dispara: o próprio livro (`.livro-em-pe`, `.livro-na-gaveta`) ou o cartão em volta dele
+ *   coleção. Quem dispara: o próprio livro (`.livro-em-pe`) ou o cartão em volta dele
  *   (`[data-livro-gira]`, `.livro-colecao`), com o mouse, o foco do teclado ou o toque (`data-lv-toque`).
  *   Um livro (ou um ancestral) com `data-livro-parado` não se mexe. Quem gira o livro a outro ângulo de
  *   repouso escolhe o quanto ele vira com `--livro-vira` (padrão −18°).
@@ -55,27 +55,27 @@
  */
 @media (prefers-reduced-motion: no-preference) {
   @media (hover: hover) {
-    :is([data-livro-gira], .livro-colecao, .livro-em-pe, .livro-na-gaveta):hover .livro-vivo:not([data-livro-parado] .livro-vivo),
+    :is([data-livro-gira], .livro-colecao, .livro-em-pe):hover .livro-vivo:not([data-livro-parado] .livro-vivo),
     .palco-ampliado[data-lv-repouso] .livro-3d-caixa:hover .livro-vivo {
       transform: translate3d(0, calc(-1 * var(--lv-sobe)), 0) rotateZ(-2deg) rotateY(var(--livro-vira, -18deg));
       transition: transform 0.55s var(--lv-mola);
     }
 
-    :is([data-livro-gira], .livro-colecao, .livro-em-pe, .livro-na-gaveta):hover .livro-vivo:not([data-livro-parado] .livro-vivo) .chao,
+    :is([data-livro-gira], .livro-colecao, .livro-em-pe):hover .livro-vivo:not([data-livro-parado] .livro-vivo) .chao,
     .palco-ampliado[data-lv-repouso] .livro-3d-caixa:hover .chao {
       translate: 0 var(--lv-sobe);
       transition: translate 0.55s var(--lv-mola);
     }
   }
 
-  :is([data-livro-gira], .livro-colecao, .livro-em-pe, .livro-na-gaveta):is(:focus-visible, :has(:focus-visible)) .livro-vivo:not([data-livro-parado] .livro-vivo),
+  :is([data-livro-gira], .livro-colecao, .livro-em-pe):is(:focus-visible, :has(:focus-visible)) .livro-vivo:not([data-livro-parado] .livro-vivo),
   [data-lv-toque] .livro-vivo:not([data-livro-parado] .livro-vivo),
   .livro-3d-caixa[data-lv-pose] .livro-vivo {
     transform: translate3d(0, calc(-1 * var(--lv-sobe)), 0) rotateZ(-2deg) rotateY(var(--livro-vira, -18deg));
     transition: transform 0.55s var(--lv-mola);
   }
 
-  :is([data-livro-gira], .livro-colecao, .livro-em-pe, .livro-na-gaveta):is(:focus-visible, :has(:focus-visible)) .livro-vivo:not([data-livro-parado] .livro-vivo) .chao,
+  :is([data-livro-gira], .livro-colecao, .livro-em-pe):is(:focus-visible, :has(:focus-visible)) .livro-vivo:not([data-livro-parado] .livro-vivo) .chao,
   [data-lv-toque] .livro-vivo:not([data-livro-parado] .livro-vivo) .chao,
   .livro-3d-caixa[data-lv-pose] .chao {
     translate: 0 var(--lv-sobe);
@@ -87,7 +87,7 @@
   }
 }
 
-/* Solto na hora (livro-vivo.ts): antes de alguém medir ou copiar o livro (o ampliado, a gaveta). */
+/* Solto na hora (livro-vivo.ts): antes de alguém medir ou copiar o livro (o livro ampliado). */
 .livro-vivo[data-lv-solto],
 .livro-vivo[data-lv-solto] .chao {
   transition: none !important;
@@ -138,8 +138,8 @@
   translate: -50% -58%;
 }
 
-/* A gaveta não tem chão (D57), e o livro ampliado tem o dele (LivroAmpliado). */
-:is(.livro-na-gaveta, .palco-ampliado) .livro-3d-caixa::after {
+/* O livro ampliado tem o chão dele (LivroAmpliado). */
+.palco-ampliado .livro-3d-caixa::after {
   display: none;
 }
 
@@ -244,19 +244,19 @@
 }
 
 /* O mouse inclina a foto na mesa: uma perspectiva só para ela, no lugar onde ela está. */
-:is(.do-livro, .livro-do-artigo, [data-foto-gira]) :has(> .foto-do-livro) {
+:is(.do-livro, .livro-do-artigo) :has(> .foto-do-livro) {
   perspective: 760px;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   @media (hover: hover) {
-    :is(.do-livro, .livro-do-artigo, [data-foto-gira]):hover .foto-do-livro {
+    :is(.do-livro, .livro-do-artigo):hover .foto-do-livro {
       transform: translateY(-6px) rotate(-2deg);
       transition: transform 0.55s var(--lv-mola);
     }
   }
 
-  :is(.do-livro, .livro-do-artigo, [data-foto-gira]):is(:focus-visible, :has(:focus-visible)) .foto-do-livro,
+  :is(.do-livro, .livro-do-artigo):is(:focus-visible, :has(:focus-visible)) .foto-do-livro,
   [data-lv-toque] .foto-do-livro {
     transform: translateY(-6px) rotate(-2deg);
     transition: transform 0.55s var(--lv-mola);

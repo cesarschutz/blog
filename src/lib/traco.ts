@@ -114,7 +114,7 @@ export function circuloDeCaneta(texto: string, rx = 18.5, ry = 17.5) {
 
 /* ---------------------------------------------------------------------------------------------------
  * A caneta preta (C04 da D52): os desenhos de quem fez a página. A azul marca (o estado, a navegação e
- * as marcações do texto); a preta desenha (os ícones de data, tempo e código, a lupa, o sol e a lua, os
+ * as marcações do texto); a preta desenha (os ícones de data, tempo e código, a lupa, o virar, os
  * contornos dos botões do cabeçalho e a assinatura da home). Tudo sai daqui, gerado no build, sempre
  * igual para o mesmo nome (a semente é o texto), sem filtro. O tremor acompanha o tamanho: nos ícones
  * de 14 a 22px, até 0,3 unidade na caixa de 24 (mais que isso lê como borrão); na assinatura, mais.
@@ -126,11 +126,6 @@ type Ponto = [number, number];
 function tremer(p: Ponto[], texto: string, amp = 0.3): Ponto[] {
   const r = sorteio(sementeDe(texto));
   return p.map(([x, y]) => [x + (r() - 0.5) * amp, y + (r() - 0.5) * amp]);
-}
-
-/** Vários trechos numa linha só, com um canto entre eles (a ponta da lua, por exemplo). */
-function trechos(...grupos: Ponto[][]) {
-  return grupos.map((g, i) => (i === 0 ? curva(g) : curva(g).replace(/^M[^C]+/, ""))).join("");
 }
 
 /**
@@ -241,50 +236,6 @@ export function codigoDeCaneta() {
     quebrada(tremer([[15.7, 6.5], [21.3, 11.8], [16.2, 17.4]], "maior", 0.25), "maior", 0.45),
     quebrada(tremer([[14.1, 3.7], [9.9, 20.3]], "barra", 0.2), "barra", 0.7),
   ];
-}
-
-/**
- * A lua do botão de tema: da ponta de cima, a mordida por dentro até a ponta de baixo e, dali, a borda
- * de fora num arco só, que volta à ponta de cima e passa um nada dela, cruzando o começo. As duas
- * pontas ficam vivas. Corre no sentido do relógio e começa no alto à esquerda, como o miolo do sol:
- * assim o MorphSVG enche a lua até virar o sol sem torcer o desenho no meio.
- */
-export function luaDeCaneta() {
-  const [ox, oy] = [12, 12];
-  const [bx, by] = [17.2, 6.8];
-  const cima: Ponto = [9.3, 3.9];
-  const baixo: Ponto = [20.1, 14.7];
-  const R = Math.hypot(cima[0] - ox, cima[1] - oy);
-  const Rb = Math.hypot(cima[0] - bx, cima[1] - by);
-  const b0 = Math.atan2(cima[1] - by, cima[0] - bx) + 2 * Math.PI;
-  const b1 = Math.atan2(baixo[1] - by, baixo[0] - bx);
-  const dentro: Ponto[] = [];
-  for (let i = 0; i <= 8; i++) {
-    const a = b0 + ((b1 - b0) * i) / 8;
-    dentro.push([bx + Math.cos(a) * Rb, by + Math.sin(a) * Rb]);
-  }
-  const a0 = Math.atan2(baixo[1] - oy, baixo[0] - ox);
-  const a1 = Math.atan2(cima[1] - oy, cima[0] - ox) + 2 * Math.PI + 0.14;
-  const fora: Ponto[] = [];
-  for (let i = 0; i <= 12; i++) {
-    const a = a0 + ((a1 - a0) * i) / 12;
-    const k = 1 + (i / 12) * 0.05;
-    fora.push([ox + Math.cos(a) * R * k, oy + Math.sin(a) * R * k]);
-  }
-  return trechos(tremer(dentro, "mordida", 0.2), tremer(fora, "lua", 0.25));
-}
-
-/** O sol: o miolo numa volta que passa do começo e oito raios, cada um de dentro para fora. */
-export function solDeCaneta() {
-  const r = sorteio(sementeDe("raios do sol"));
-  const raios: string[] = [];
-  for (let i = 0; i < 8; i++) {
-    const a = -Math.PI / 2 + (i * Math.PI) / 4 + (r() - 0.5) * 0.16;
-    const r0 = 6.7 + (r() - 0.5) * 0.6;
-    const r1 = 9.4 + (r() - 0.5) * 1.4;
-    raios.push(quebrada([[12 + Math.cos(a) * r0, 12 + Math.sin(a) * r0], [12 + Math.cos(a) * r1, 12 + Math.sin(a) * r1]], `raio ${i}`, 0.25));
-  }
-  return { miolo: volta("sol", 12, 12, 4.3, 4.1, { inicio: -Math.PI * 0.6, voltas: 1.12, tremor: 0.08, abre: 0.1, n: 12 }), raios };
 }
 
 /**

@@ -32,25 +32,13 @@
  * `.rodape-chao`; as variáveis `--nome` (o tamanho), `--nome-visivel` (a caixa do nome, do alto das
  * maiúsculas ao feltro) e `--nome-sob-ficha` (o que o chão cobre do nome: zero, o feltro corta na linha).
  * O troca.js procura `body > .rodape`. A cordinha é `[data-cordinha]` e também `[data-voltar-topo]`, que
- * a tecla T dos atalhos aperta (Atalhos.astro).
- *
- * A amostra D5 (nas amostras do redesenho, fora do git) usa o mesmo componente com `superficie` ("feltro", "nicho", "tinta"
- * ou "pedra") e `amostra` (um `<div>` em vez do `<footer>`; a cordinha sobe até o alto da amostra).
+ * a tecla T dos atalhos aperta (Atalhos.astro). As outras superfícies da amostra D5 (o nicho, o tampo de
+ * tinta e o balcão de pedra) voltam do git, se preciso.
  */
 import { AUTOR } from "../data/site";
 import { ICONES, MARCAS } from "../lib/icones";
 import { url } from "../lib/url";
 import "../styles/traco.css";
-
-interface Props {
-  /** A superfície sob a ficha. O protótipo usa o feltro; as outras são da amostra D5. */
-  superficie?: "feltro" | "nicho" | "tinta" | "pedra";
-  /** Numa página de amostra: sem o papel de rodapé da página, e a cordinha sobe até o alto da amostra. */
-  amostra?: boolean;
-}
-
-const { superficie = "feltro", amostra = false } = Astro.props;
-const Tag = amostra ? "div" : "footer";
 
 const MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
 const hoje = new Date();
@@ -66,23 +54,14 @@ const navegar = [
 const letras = (nome: string) => [...nome].map((c, k) => ({ c, k }));
 ---
 
-<Tag class="rodape" data-rodape data-superficie={superficie} data-chao={superficie === "nicho" ? "nicho" : undefined} data-amostra={amostra ? "" : undefined}>
+<footer class="rodape" data-rodape>
   <div class="rodape-parede" aria-hidden="true">
     <p class="nome-rodape" data-nome-rodape><span class="nome-linha">Cesar</span> <span class="nome-linha">Schutz</span></p>
   </div>
   <div class="rodape-chao">
     <span class="tampo-bainha" aria-hidden="true"></span>
-    {
-      superficie === "nicho" && (
-        <span class="nicho" aria-hidden="true">
-          <span class="nicho-parede" />
-          <span class="nicho-teto" />
-          <span class="nicho-friso" />
-        </span>
-      )
-    }
     {/* R2: a cordinha, pendurada da borda de cima do tampo, à direita. */}
-    <button type="button" class="cordinha" data-cordinha data-voltar-topo={amostra ? undefined : ""} aria-label="Puxe para subir: volta ao topo da página" title="Voltar ao topo">
+    <button type="button" class="cordinha" data-cordinha data-voltar-topo aria-label="Puxe para subir: volta ao topo da página" title="Voltar ao topo">
       <span class="cordinha-roseta" aria-hidden="true"></span>
       <span class="cordinha-corpo" aria-hidden="true">
         <span class="cordinha-fio"></span>
@@ -128,7 +107,7 @@ const letras = (nome: string) => [...nome].map((c, k) => ({ c, k }));
               </li>
             </ul>
           </div>
-          <nav class="fe-coluna fe-navegar" aria-label={amostra ? undefined : "Na biblioteca"}>
+          <nav class="fe-coluna fe-navegar" aria-label="Na biblioteca">
             <p class="fe-rotulo">Na biblioteca</p>
             <ul>
               {
@@ -155,11 +134,11 @@ const letras = (nome: string) => [...nome].map((c, k) => ({ c, k }));
       </div>
     </div>
   </div>
-</Tag>
+</footer>
 
 <script>
   /*
-   * Um script para todos os rodapés da página (o da página e os da amostra D5): o carimbo com a data de
+   * O script do rodapé: o carimbo com a data de
    * hoje, que bate 0,6s depois de a ficha entrar na tela (uma vez); a respiração do nome, só com ele à
    * vista; o giro das letras de "Na biblioteca" no toque; e a cordinha.
    */
@@ -272,7 +251,7 @@ const letras = (nome: string) => [...nome].map((c, k) => ({ c, k }));
         pingente.animate([{ transform: descido(de) }, { transform: "none" }], tempo),
       ];
     };
-    /** Sobe a página (ou, na amostra, até o alto dela), com o foco no título, para o teclado recomeçar dali. */
+    /** Sobe a página, com o foco no título, para o teclado recomeçar dali. */
     const subir = () => {
       const comportamento: ScrollBehavior = reduzido.matches ? "auto" : "smooth";
       // Durante a subida, a aba "topo" não entra (AbaTopo.astro): o leitor já pediu para subir (D84).
@@ -281,13 +260,8 @@ const letras = (nome: string) => [...nome].map((c, k) => ({ c, k }));
       const acabou = () => delete raiz.dataset.subindoTopo;
       addEventListener("scrollend", acabou, { once: true });
       setTimeout(acabou, 2500);
-      const naAmostra = rodape.hasAttribute("data-amostra") ? rodape.closest<HTMLElement>("[data-amostra-alvo]") : null;
-      if (naAmostra) {
-        naAmostra.scrollIntoView({ behavior: comportamento, block: "start" });
-      } else {
-        scrollTo({ top: 0, behavior: comportamento });
-      }
-      const alvo = naAmostra?.querySelector<HTMLElement>("h2, h3") ?? document.querySelector<HTMLElement>("main h1") ?? document.querySelector<HTMLElement>("main");
+      scrollTo({ top: 0, behavior: comportamento });
+      const alvo = document.querySelector<HTMLElement>("main h1") ?? document.querySelector<HTMLElement>("main");
       if (alvo) {
         if (!alvo.hasAttribute("tabindex")) alvo.setAttribute("tabindex", "-1");
         alvo.focus({ preventScroll: true });
@@ -395,7 +369,7 @@ const letras = (nome: string) => [...nome].map((c, k) => ({ c, k }));
     /* A cordinha: o fio, o pingente e onde ela fica (a faixa da direita). */
     --fio: clamp(60px, 8vw, 116px);
     --cordinha-direita: clamp(20px, 3vw, 44px);
-    /* As cores da cordinha sobre o feltro (cada superfície da amostra ajusta as suas). */
+    /* As cores da cordinha sobre o feltro. */
     --cordinha-algodao: color-mix(in oklab, var(--marca-letra) 88%, var(--latao));
     --cordinha-trama: color-mix(in oklab, var(--marca-letra) 62%, var(--latao-escuro));
     --sombra-no-tampo: color-mix(in oklab, var(--sombra-quente) 62%, transparent);
@@ -759,15 +733,6 @@ const letras = (nome: string) => [...nome].map((c, k) => ({ c, k }));
     color: var(--acento);
   }
 
-  .sr {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-
   .rola {
     display: inline-flex;
     height: 1.25em;
@@ -1092,137 +1057,6 @@ const letras = (nome: string) => [...nome].map((c, k) => ({ c, k }));
     .cordinha {
       display: none;
     }
-  }
-
-  /*
-   * ---------- as outras superfícies (só na amostra D5) ----------
-   * B, o nicho: a página desce um degrau (o rebaixo de V1, como os livros da home): a parede com 9% de tinta,
-   * a sombra do teto de 48px e das laterais de 28px, e o friso de cima com o fio de luz. C, o tampo de tinta:
-   * a faixa lisa na cor da cortina. D, o balcão de pedra: o cinza quente com a aresta de 12px à vista e o
-   * veio discreto. A ficha, o nome e a cordinha são os mesmos.
-   */
-  /*
-   * B, o nicho: as peças do nicho dos livros (nicho.css, do construtor A: `.nicho`, `.nicho-parede`,
-   * `.nicho-teto`, `.nicho-friso` e as cores `--nicho-*`), com a geometria do rodapé: sem chão, a sombra do
-   * teto de 48px e o friso no alto, onde a página desce o degrau e corta o nome. A amostra importa o
-   * nicho.css.
-   */
-  .rodape[data-superficie="nicho"] {
-    --cordinha-algodao: color-mix(in oklab, var(--ink) 66%, var(--paper));
-    --cordinha-trama: color-mix(in oklab, var(--ink) 82%, var(--paper));
-    --sombra-no-tampo: color-mix(in oklab, var(--sombra-quente) 40%, transparent);
-    --k-chao-alto: 0px;
-    --k-friso: 10px;
-    --k-sombra-teto: 48px;
-  }
-
-  .rodape[data-superficie="nicho"] .rodape-chao {
-    padding-top: calc(48px + var(--k-friso));
-    background: var(--nicho-parede, color-mix(in oklab, var(--paper), var(--ink) 9%));
-  }
-
-  .rodape[data-superficie="nicho"] .nicho {
-    inset: 0;
-    border-radius: 0;
-  }
-
-  /* A parede vai até o pé; a sombra do teto começa logo abaixo do friso, que fica no alto. */
-  .rodape[data-superficie="nicho"] .nicho-parede {
-    bottom: 0;
-  }
-
-  .rodape[data-superficie="nicho"] .nicho-teto {
-    top: var(--k-friso);
-  }
-
-  .rodape[data-superficie="nicho"] .nicho-friso {
-    top: 0;
-    bottom: auto;
-  }
-
-  .rodape[data-superficie="nicho"] .tampo-bainha,
-  .rodape[data-superficie="nicho"] .rodape-chao::after,
-  .rodape[data-superficie="tinta"] .rodape-chao::after,
-  .rodape[data-superficie="pedra"] .tampo-bainha,
-  .rodape[data-superficie="pedra"] .rodape-chao::after {
-    display: none;
-  }
-
-  .rodape[data-superficie="tinta"] .rodape-chao {
-    --tampo: var(--cortina);
-    background:
-      linear-gradient(to bottom, color-mix(in oklab, var(--sombra-quente) 58%, transparent) 0 2px, color-mix(in oklab, var(--sombra-quente) 20%, transparent) 2px, transparent 22px),
-      var(--tampo);
-  }
-
-  :global(:root[data-theme="dark"]) .rodape[data-superficie="tinta"] .rodape-chao {
-    --tampo: color-mix(in oklab, var(--cortina-tinta) 62%, black);
-  }
-
-  .rodape[data-superficie="tinta"] .tampo-bainha {
-    background: color-mix(in oklab, var(--cortina-tinta) 18%, transparent);
-  }
-
-  :global(:root[data-theme="dark"]) .rodape[data-superficie="tinta"] .tampo-bainha {
-    background: color-mix(in oklab, var(--ink) 12%, transparent);
-  }
-
-  .rodape[data-superficie="pedra"] {
-    --cordinha-algodao: color-mix(in oklab, var(--ink) 70%, var(--paper));
-    --cordinha-trama: color-mix(in oklab, var(--ink) 84%, var(--paper));
-    --sombra-no-tampo: color-mix(in oklab, var(--sombra-quente) 45%, transparent);
-  }
-
-  /*
-   * A pedra: o cinza quente, as nuvens largas e soltas (não repetidas) de pedra polida, o grão fino (o mesmo
-   * ruído do feltro, neutro e mais fraco) e dois veios finos que atravessam a faixa, cada um com o halo
-   * esfumado em volta. No alto, a aresta de 12px: o fio de luz, a face e a quina na sombra.
-   */
-  .rodape[data-superficie="pedra"] .rodape-chao {
-    --pedra: color-mix(in oklab, var(--paper), var(--ink) 14%);
-    --aresta: color-mix(in oklab, var(--pedra), var(--paper-hi) 34%);
-    --grao-claro: color-mix(in oklab, var(--paper-hi) 9%, transparent);
-    --grao-escuro: color-mix(in oklab, var(--ink) 5%, transparent);
-    --nuvem-clara: color-mix(in oklab, var(--paper-hi) 16%, transparent);
-    --nuvem-escura: color-mix(in oklab, var(--ink) 5%, transparent);
-    --veio: color-mix(in oklab, var(--ink) 13%, transparent);
-    --veio-halo: color-mix(in oklab, var(--paper-hi) 14%, transparent);
-    background:
-      linear-gradient(
-        to bottom,
-        color-mix(in oklab, var(--paper-hi) 80%, transparent) 0 1px,
-        var(--aresta) 1px 11px,
-        color-mix(in oklab, var(--sombra-quente) 26%, transparent) 11px 12px,
-        color-mix(in oklab, var(--sombra-quente) 12%, transparent) 12px,
-        transparent 34px
-      ),
-      linear-gradient(164deg, transparent 0 36%, var(--veio-halo) 37.2%, var(--veio) 37.9% 38.1%, var(--veio-halo) 38.8%, transparent 40%),
-      linear-gradient(171deg, transparent 0 69%, var(--veio-halo) 69.6%, var(--veio) 70% 70.12%, transparent 71%),
-      linear-gradient(156deg, transparent 0 57%, var(--veio-halo) 57.8%, transparent 59.4%),
-      repeating-linear-gradient(31deg, var(--grao-claro) 0 0.6px, transparent 0.6px 2.3px),
-      repeating-linear-gradient(-59deg, var(--grao-escuro) 0 0.6px, transparent 0.6px 2.9px),
-      repeating-linear-gradient(121deg, var(--grao-escuro) 0 0.6px, transparent 0.6px 1.9px),
-      radial-gradient(ellipse 34% 120% at 12% 60%, var(--nuvem-clara), transparent),
-      radial-gradient(ellipse 28% 90% at 47% 20%, var(--nuvem-escura), transparent),
-      radial-gradient(ellipse 30% 110% at 83% 70%, var(--nuvem-clara), transparent),
-      var(--pedra);
-  }
-
-  :global(:root[data-theme="dark"]) .rodape[data-superficie="pedra"] .rodape-chao {
-    --pedra: color-mix(in oklab, var(--paper-hi), var(--ink) 16%);
-    --aresta: color-mix(in oklab, var(--pedra), var(--ink) 16%);
-    --grao-claro: color-mix(in oklab, var(--ink) 5%, transparent);
-    --grao-escuro: color-mix(in oklab, black 12%, transparent);
-    --nuvem-clara: color-mix(in oklab, var(--ink) 6%, transparent);
-    --nuvem-escura: color-mix(in oklab, black 14%, transparent);
-    --veio: color-mix(in oklab, var(--ink) 16%, transparent);
-    --veio-halo: color-mix(in oklab, var(--ink) 4%, transparent);
-  }
-
-  /* No escuro, a cordinha do nicho e da pedra volta ao algodão cru, claro sobre o tampo escuro. */
-  :global(:root[data-theme="dark"]) .rodape:is([data-superficie="nicho"], [data-superficie="pedra"]) {
-    --cordinha-algodao: color-mix(in oklab, var(--marca-letra) 88%, var(--latao));
-    --cordinha-trama: color-mix(in oklab, var(--marca-letra) 62%, var(--latao-escuro));
   }
 
   /* No escuro, a etiqueta "Puxe para subir" (a folha escura) ganha o fio da borda, para não sumir no tampo. */

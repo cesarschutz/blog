@@ -2,11 +2,15 @@
 /**
  * Estante (briefing §5.1, D30): um livro por categoria, na ordem dos volumes da coleção, o aparador e
  * os livros de série, sobre a prateleira (docs/capas/CAPAS.md). Cada lombada é um link para a página
- * do livro (funciona sem JS).
+ * do livro (funciona sem JS). Dois modos:
  *
- * - "estante" (a home): com JS, a lombada abre o livro na gaveta (Gaveta.astro), com o gesto de tirar
- *   o livro pela cabeça (D49, src/scripts/estante-gesto.ts); o último livro da coleção fica inclinado,
- *   apoiado no alto do aparador.
+ * - "estante" (a 404 e o cartão de compartilhamento, /og/<slug>.png): a estante inteira, com o vão do
+ *   aparador entre as categorias e as séries.
+ * - "filtro" (o arquivo e as tags, D33): menor, só com os livros que têm artigos na página; com JS, cada
+ *   lombada filtra a lista (ListaFiltrada.astro). O número da lombada é o que a página tem daquele
+ *   livro. Embaixo da tábua, o pé (D52): a legenda do mouse e, no mesmo lugar, o que a página puser no
+ *   slot (o rótulo do filtro e o livro escolhido); a legenda, quando aparece, cobre o rótulo.
+ *
  * Com mouse, a estante responde a ele (D40, D49, src/scripts/estante-viva.ts): o livro tocado tomba um
  * nada para a frente e mostra mais da cabeça (o alto do livro, .cabeca), com a legenda embaixo.
  *
@@ -16,28 +20,21 @@
  *
  * Rodada 3 (área 10): na estante de filtro, o chão é a sombra quente (os tokens --sombra-quente e
  * --halo-quente, como os livros 3D), sem a tábua cinza nem o aparador; a série fica depois de um vão.
- * O chão continua numa peça só (`.tabua.chao-estante`), para as linhas que trocam a prateleira.
+ * O chão continua numa peça só (`.tabua.chao-estante`).
  *
  * Linha 18 (estante moderna): uma luz de quadro de latão em cima de cada livro (`.luzes-estante`, uma
  * camada com os mesmos lugares da fileira), que acende ao chegar (estante-moderna.ts) e fica mais forte no
- * livro sob o mouse e no escolhido (nicho.css). Sem o aparador cinza: no lugar dele, só o vão; por isso,
- * nenhum livro fica inclinado.
+ * livro sob o mouse e no escolhido (nicho.css). Sem o aparador cinza: no lugar dele, só o vão.
  *
- * Rodada 4 (a versão final): a prateleira de madeira saiu. O chão é trocável pela prop `chao` (`data-chao` na
- * raiz), como na Colecao: o padrão é a lâmina de vidro curta (E3, vidro.css), com a luz embaixo da lombada sob
- * o mouse, com o foco e escolhida; "nicho" põe o nicho curto (nicho.css), que mora dentro da `.tabua`, preso
- * pelo pé e subindo até o alto da fileira. No filtro, a lombada escolhida (a que "saiu") deixa o abajur dela
- * e a luz embaixo acesos (P18-3).
- *
- * - "filtro" (o arquivo e as tags, D33): menor, sem o livro inclinado, só com os livros que têm
- *   artigos na página; com JS, cada lombada filtra a lista (ListaFiltrada.astro). O número da lombada
- *   é o que a página tem daquele livro. Embaixo da tábua, o pé (D52): a legenda do mouse e, no mesmo
- *   lugar, o que a página puser no slot (o rótulo do filtro e o livro escolhido); a legenda, quando
- *   aparece, cobre o rótulo.
+ * Rodada 4 (a versão final): a prateleira de madeira saiu. O chão é a lâmina de vidro curta (E3, vidro.css;
+ * `data-chao="vidro"` na raiz, como na Colecao), com a luz embaixo da lombada sob o mouse, com o foco e
+ * escolhida. No filtro, a lombada escolhida (a que "saiu") deixa o abajur dela e a luz embaixo acesos
+ * (P18-3).
  */
 import MioloLombada from "./MioloLombada.astro";
 import PontoDeLuz from "./PontoDeLuz.astro";
 import { coresDoLivroCss, larguraDaEstante, type Livro } from "../lib/estante";
+import "../styles/livro.css";
 import "../styles/estante.css";
 import "../styles/nicho.css";
 import "../styles/vidro.css";
@@ -45,11 +42,9 @@ import "../styles/vidro.css";
 interface Props {
   livros: Livro[];
   modo?: "estante" | "filtro";
-  /** O chão (rodada 4): "vidro" (o padrão, E3), "nicho", "nenhum" ou outra forma da amostra dos livros. */
-  chao?: string;
 }
 
-const { livros, modo = "estante", chao = "vidro" } = Astro.props;
+const { livros, modo = "estante" } = Astro.props;
 const filtro = modo === "filtro";
 const categorias = livros.filter((l) => !l.serie);
 const series = livros.filter((l) => l.serie);
@@ -78,7 +73,7 @@ const conta = (l: Livro) => {
   class:list={["estante", "estante-moderna", { "estante-filtro": filtro }]}
   data-estante={filtro ? undefined : ""}
   data-estante-filtro={filtro ? "" : undefined}
-  data-chao={chao}
+  data-chao="vidro"
   data-luzes-ao-chegar
   data-onda-propria
   style={`--natural:${natural}`}
@@ -90,7 +85,7 @@ const conta = (l: Livro) => {
     aria-labelledby={filtro ? "rotulo-filtro" : undefined}
   >
     {
-      categorias.map((l, i) => (
+      categorias.map((l) => (
         <Lombada
           class:list={["lombada", "lombada-visual"]}
           href={filtro ? undefined : l.href}
@@ -135,17 +130,10 @@ const conta = (l: Livro) => {
       ))
     }
   </div>
-  {/* O chão das lombadas (`.chao-estante`): a altura do chão e do friso do nicho (rodada 4), que mora aqui
-      dentro, preso pelo pé. As formas da amostra pintam outro chão aqui. */}
+  {/* O chão das lombadas (`.chao-estante`): a altura do chão e do friso, onde o vidro pousa (rodada 4). */}
   <div class="tabua chao-estante" aria-hidden="true" style={`--alto-max:${altoMax}`}>
-    <span class="nicho">
-      <span class="nicho-parede"></span>
-      <span class="nicho-teto"></span>
-      <span class="nicho-chao"></span>
-      <span class="nicho-friso"></span>
-    </span>
     {/* Os abajures, um por livro, nos mesmos lugares da fileira (o vão do aparador também), numa camada presa
-        ao chão: por cima do nicho e por baixo dos livros. */}
+        ao chão, por baixo dos livros. */}
     <div class="luzes-estante">
       {categorias.map((l) => <span class="lugar-luz" style={`--w:${l.emPe.largura}`}><PontoDeLuz /></span>)}
       {comAparador && <span class="lugar-aparador" />}

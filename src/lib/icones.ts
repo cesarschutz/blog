@@ -2,10 +2,10 @@
  * Ícones de traço (viewBox 0 0 24 24), desenhados no protótipo. Quem usa aplica
  * `fill:none; stroke:currentColor` (ou a cor do aviso) com traço de 1.8.
  *
- * Os da caneta preta (C04 da D52: o calendário, o relógio, o código-fonte, a lupa, a lua e o sol)
- * não são desenhados aqui: saem de src/lib/traco.ts, à mão, com a mesma semente em toda visita.
+ * Os da caneta preta (C04 da D52: o calendário, o relógio, o código-fonte, a lupa e o virar) não são
+ * desenhados aqui: saem de src/lib/traco.ts, à mão, com a mesma semente em toda visita.
  */
-import { calendarioDeCaneta, codigoDeCaneta, luaDeCaneta, lupaDeCaneta, relogioDeCaneta, solDeCaneta, virarDeCaneta } from "./traco";
+import { calendarioDeCaneta, codigoDeCaneta, lupaDeCaneta, relogioDeCaneta, virarDeCaneta } from "./traco";
 
 const caminhos = (lista: string[]) => lista.map((d) => `<path d="${d}"/>`).join("");
 
@@ -16,15 +16,11 @@ export const ICONES = {
   atencao: '<path d="M12 3.5 2.8 19.5h18.4z"/><path d="M12 10v4.5M12 17.1v.01"/>',
   cuidado:
     '<path d="M12 21c-3.9 0-6.6-2.7-6.6-6.2 0-3.3 2.2-5.1 3.6-7.4.3 1.6 1.1 2.8 2.3 3.4.1-3.1 1.8-5.9 4.6-7.8-.4 2.8.9 4.6 2.1 6.3 1.1 1.5 1.9 3 1.9 5.1 0 3.9-3.5 6.6-7.9 6.6z"/>',
-  subir: '<path d="M12 19V5M6 11l6-6 6 6"/>',
   link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
   compartilhar: '<path d="M12 3v12M7 8l5-5 5 5"/><path d="M5 13v6h14v-6"/>',
-  // Interface (D26, protótipo "mais vida"): busca, tema, a seta do "Ler artigo", o relógio do tempo
-  // de leitura nas listas e o RSS do painel da home.
+  // Interface (D26, protótipo "mais vida"): busca, a seta do "Ler artigo", o relógio do tempo de leitura
+  // nas listas e o RSS.
   busca: caminhos(lupaDeCaneta()),
-  // A lua e o sol do botão de tema, à caneta (C04; SeletorTema.astro usa os caminhos soltos).
-  lua: caminhos([luaDeCaneta()]),
-  sol: caminhos([solDeCaneta().miolo, ...solDeCaneta().raios]),
   seta: '<path d="M5 12h14M13 6l6 6-6 6"/>',
   // Os dois arcos separados, do de dentro para o de fora: o sinal se escreve no hover (traco.css, D49).
   rss: '<path class="arco-rss" pathLength="1" d="M5 11a8 8 0 0 1 8 8"/><path class="arco-rss" pathLength="1" d="M5 5a14 14 0 0 1 14 14"/><circle cx="6" cy="18" r="1.4"/>',

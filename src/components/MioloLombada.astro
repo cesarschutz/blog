@@ -11,27 +11,15 @@ import { iconeDoLivro } from "../lib/livros-svg";
 
 interface Props {
   livro: Livro;
-  /**
-   * Na gaveta, o ícone (ou o emblema) não vem no molde: o script copia o da lombada da estante ao
-   * abrir o livro, para a home não levar mais uma cópia de cada um.
-   */
-  iconeDaEstante?: boolean;
 }
 
-const { livro, iconeDaEstante = false } = Astro.props;
+const { livro } = Astro.props;
 const total = livro.posts.length;
 const figura = livro.revista?.emblema ?? livro.slug;
 const classe = livro.revista ? "emblema-lombada" : "icone-lombada";
 ---
 
-{
-  figura &&
-    (iconeDaEstante ? (
-      <span class={classe} aria-hidden="true" data-icone-de={livro.id} />
-    ) : (
-      <span class={classe} aria-hidden="true" set:html={iconeDoLivro(figura, true)} />
-    ))
-}
+{figura && <span class={classe} aria-hidden="true" set:html={iconeDoLivro(figura, true)} />}
 {
   livro.revista ? (
     <span class="titulo-lombada" aria-hidden="true">

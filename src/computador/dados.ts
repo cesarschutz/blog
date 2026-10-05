@@ -2,6 +2,7 @@
  * Os dados do computador (/mac/dados.json, gerado no build em src/pages/mac/) e as peças comuns aos apps:
  * os tipos, a busca (uma vez), o texto cru de cada post e o desenho do post num painel tingido.
  */
+import { url } from "../lib/url";
 
 export interface LivroM {
   id: string;
@@ -57,9 +58,6 @@ export interface DadosM {
   posts: PostM[];
   tags: TagM[];
 }
-
-export const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
-export const url = (caminho: string) => `${BASE}${caminho}`;
 
 let dados: Promise<DadosM> | undefined;
 

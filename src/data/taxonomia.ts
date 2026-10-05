@@ -57,16 +57,12 @@ export interface Categoria {
   frase: string;
   /** O subtítulo completo ("quatro temas: uma frase curta"), usado nas páginas. */
   descricao: string;
-  temas: string[];
   /** Cor principal: chip, barra de leitura, palco dos desenhos e o livro. */
   cor: string;
   cores: CoresDoLivro;
-  instrumento: string;
   contracapa?: Contracapa;
   /** Lombada na estante, em unidades da referência (CAPAS.md). */
   emPe: { altura: number; largura: number };
-  /** Lombada deitada na lateral, em px no tamanho real. */
-  deitada: { comprimento: number; espessura: number; deslocamento: number };
 }
 
 export const CATEGORIAS: Categoria[] = dados.livros.map((l) => ({
@@ -78,13 +74,10 @@ export const CATEGORIAS: Categoria[] = dados.livros.map((l) => ({
   entrelinhaNaCapa: l.entrelinhaDoTitulo,
   frase: l.frase,
   descricao: l.subtituloCompleto,
-  temas: l.temas,
   cor: l.cor,
   cores: { ...coresDoLivro(l.cor), papel: PAPEL, tintaPapel: TINTA_PAPEL, corTexto: (l as { corTexto?: string }).corTexto },
-  instrumento: l.instrumento,
   contracapa: (l as { contracapa?: Contracapa }).contracapa,
   emPe: l.lombadaEmPe,
-  deitada: l.lombadaDeitada,
 }));
 
 /**

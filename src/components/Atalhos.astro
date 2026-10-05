@@ -162,7 +162,7 @@ const TITULO: TituloAMao = "Atalhos do teclado";
     }
 
     const USA_TECLADO =
-      "input, textarea, select, button, summary, [contenteditable]:not([contenteditable='false']), [role='slider'], [role='tab'], [role='menu'], pre, .lousa, [tabindex]:not([tabindex='-1'])";
+      "input, textarea, select, button, summary, [contenteditable]:not([contenteditable='false']), [role='slider'], [role='tab'], [role='menu'], pre, [tabindex]:not([tabindex='-1'])";
 
     /** O teclado é de outra coisa: um campo, um controle, um diálogo aberto, o sumário do celular. */
     function ocupado(e: KeyboardEvent) {

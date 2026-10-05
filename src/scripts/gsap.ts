@@ -36,10 +36,7 @@ export function carregarGsap(): Promise<GSAP> {
   return nucleo;
 }
 
-/**
- * O GSAP com Draggable e InertiaPlugin (o livro ampliado, que gira com embalo, e o livro puxado pela
- * cabeça na estante da home, D49).
- */
+/** O GSAP com Draggable e InertiaPlugin (o livro ampliado, que folheia com embalo, D49). */
 export function carregarArrastar() {
   arrastar ??= guardada(
     Promise.all([carregarGsap(), import("gsap/Draggable"), import("gsap/InertiaPlugin")]).then(([gsap, { Draggable }, { InertiaPlugin }]) => {
@@ -51,20 +48,7 @@ export function carregarArrastar() {
   return arrastar;
 }
 
-/** O GSAP com Flip (a busca que nasce do campo, D44). */
-let flip: Promise<{ gsap: GSAP; Flip: typeof import("gsap/Flip").Flip }> | undefined;
-export function carregarFlip() {
-  flip ??= guardada(
-    Promise.all([carregarGsap(), import("gsap/Flip")]).then(([gsap, { Flip }]) => {
-      gsap.registerPlugin(Flip);
-      return { gsap, Flip };
-    }),
-    () => (flip = undefined),
-  );
-  return flip;
-}
-
-/** O GSAP com DrawSVG (o desenho do destaque que se desenha, D41). */
+/** O GSAP com DrawSVG (os desenhos que se desenham, D41: o desenho vivo e o fio da abertura). */
 let traco: Promise<GSAP> | undefined;
 export function carregarTraco() {
   traco ??= guardada(
@@ -75,19 +59,6 @@ export function carregarTraco() {
     () => (traco = undefined),
   );
   return traco;
-}
-
-/** O GSAP com MorphSVG e DrawSVG (o sol e a lua do botão de tema, D49). */
-let morfo: Promise<GSAP> | undefined;
-export function carregarMorfo() {
-  morfo ??= guardada(
-    Promise.all([carregarGsap(), import("gsap/MorphSVGPlugin"), import("gsap/DrawSVGPlugin")]).then(([gsap, { MorphSVGPlugin }, { DrawSVGPlugin }]) => {
-      gsap.registerPlugin(MorphSVGPlugin, DrawSVGPlugin);
-      return gsap;
-    }),
-    () => (morfo = undefined),
-  );
-  return morfo;
 }
 
 /**

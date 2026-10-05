@@ -6,10 +6,8 @@
  * artigo e, ao lado, os dados datilografados, o nome e o link nas linhas azuis da pauta. Colada com fita e
  * pintada com a cor do livro no hover (ficha-do-livro.css). A ficha inteira é o link.
  *
- * Rodada 4: o protótipo a mantém como está (`forma="ficha"`). Saiu de RodapeArtigo para a amostra D6
- * (nas amostras do redesenho, fora do git) mostrar as outras duas formas com o componente de verdade: `forma="lisa"`, a folha
- * lisa (sem fita, sem pauta e sem a linha vermelha) e `forma="papel"`, o papel colado com duas fitas nos
- * cantos de cima, um nada torto.
+ * Rodada 4: o protótipo a mantém como está. As outras duas formas da amostra D6 (a folha lisa, sem fita,
+ * sem pauta e sem a linha vermelha, e o papel colado com duas fitas, um nada torto) voltam do git, se preciso.
  *
  * Ganchos (não renomear): `.livro-do-artigo.ficha-colada`, `.fita`, `.cabeca-ficha`, `.corpo-ficha`,
  * `.foto`, `.sobre-livro`, `.dados-livro`, `.nome-livro`, `.ver-livro`.
@@ -26,13 +24,9 @@ import type { TituloAMao } from "../lib/mao";
 interface Props {
   livro: Livro;
   post: Resumo;
-  /** "ficha" (o protótipo, como hoje), "lisa" ou "papel" (as duas da amostra D6). */
-  forma?: "ficha" | "lisa" | "papel";
-  /** O prefixo dos ids da foto (a amostra tem três fichas na mesma página). */
-  prefixo?: string;
 }
 
-const { livro, post, forma = "ficha", prefixo = "ficha-rodape" } = Astro.props;
+const { livro, post } = Astro.props;
 // O título da ficha, à mão (C05, D52): só os da lista de src/data/mao.ts (o subconjunto da Caveat).
 const DO_LIVRO: TituloAMao = livro.serie ? "Da série" : "Do livro";
 // Datilografado: "Volume 02 ·" e "6 artigos" nunca se partem por dentro (a linha quebra no ponto, no celular).
@@ -40,20 +34,12 @@ const dadosNaFicha = dadosDoLivro(livro).split(" · ").map((parte) => parte.repl
 const posicao = posicaoNoLivro(livro, post.url);
 ---
 
-<a class:list={["livro-do-artigo", "ficha-colada", `forma-${forma}`]} href={livro.href} style={pinturaDoLivro(livro)} {...dadosDaFicha(livro, post)}>
-  {forma === "ficha" && <span class="fita" aria-hidden="true" />}
-  {
-    forma === "papel" && (
-      <>
-        <span class="fita canto-esquerdo" aria-hidden="true" />
-        <span class="fita canto-direito" aria-hidden="true" />
-      </>
-    )
-  }
+<a class="livro-do-artigo ficha-colada" href={livro.href} style={pinturaDoLivro(livro)} {...dadosDaFicha(livro, post)}>
+  <span class="fita" aria-hidden="true" />
   <span class="cabeca-ficha"><span>{DO_LIVRO}</span></span>
   <span class="corpo-ficha">
     <span class="foto">
-      <FotoDoLivro livro={livro} atual={post} prefixo={prefixo} largura={150} />
+      <FotoDoLivro livro={livro} atual={post} prefixo="ficha-rodape" largura={150} />
     </span>
     <span class="sobre-livro">
       <span class="dados-livro">{dadosNaFicha}{posicao && <span class="sr">, {posicao}</span>}</span>
@@ -216,44 +202,6 @@ const posicao = posicaoNoLivro(livro, post.url);
 
   .livro-do-artigo:is(:hover, :focus-visible) .ver-livro svg {
     translate: 3px 0;
-  }
-
-  /*
-   * ---------- A, a folha lisa (só na amostra D6) ----------
-   * O mesmo conteúdo num cartão liso, como o anterior e o próximo de antes: sem fita, sem pauta e sem a
-   * linha vermelha; o "Do livro" no rótulo da interface, como "Artigo anterior".
-   */
-  .forma-lisa .cabeca-ficha {
-    padding: 14px 20px 0;
-    border-bottom: 0;
-    color: var(--ink-2);
-    font-family: var(--font-ui);
-    font-weight: 400;
-    font-size: 13.5px;
-  }
-
-  .forma-lisa .corpo-ficha {
-    padding-top: 8px;
-    background: none;
-  }
-
-  /*
-   * ---------- C, o papel colado (só na amostra D6) ----------
-   * Um papel liso (sem pauta), um nada torto, colado na folha com duas fitas nos cantos de cima.
-   */
-  .forma-papel {
-    border-radius: 1px;
-    box-shadow: 0 1px 1px color-mix(in oklab, var(--sombra-quente) 14%, transparent), 0 8px 14px -10px color-mix(in oklab, var(--sombra-quente) 45%, transparent);
-    rotate: -0.7deg;
-  }
-
-  .forma-papel .cabeca-ficha {
-    border-bottom: 0;
-  }
-
-  .forma-papel .corpo-ficha {
-    padding-top: 10px;
-    background: none;
   }
 
   /* Celular estreito: o livro um pouco menor, para o nome ter onde quebrar. */

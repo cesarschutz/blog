@@ -22,11 +22,6 @@ export const TOKENS = [
   "aviso-atencao",
   "aviso-cuidado",
   "quadro",
-  "tabua",
-  "tabua-borda",
-  "aparador",
-  "aparador-luz",
-  "aparador-fundo",
   "lousa",
   "lousa-borda",
   "lousa-caneta",
@@ -51,15 +46,15 @@ export const TOKENS = [
   "cortina",
   "cortina-tinta",
   // Rodada 3 (área A, livros vivos e luz): a luz quente do brilho nos livros, a sombra quente e o halo
-  // embaixo deles, a luz do mouse, as três temperaturas da lâmpada do lustre e o ponto de luz dos livros.
+  // embaixo deles e as três temperaturas da lâmpada do lustre. A luz do mouse (`luz-mouse`) saiu com a
+  // mancha que seguia o mouse (04/10/2026), e o ponto de luz (`ponto-luz`) nunca foi lido: as luzes são
+  // de latão (abaixo).
   "luz-quente",
   "sombra-quente",
   "halo-quente",
-  "luz-mouse",
   "lampada-brasa",
   "lampada-ambar",
   "lampada-branca",
-  "ponto-luz",
   // Rodada 4 (a versão final, direção §0): sem madeira em página nenhuma. Os tokens da prateleira de
   // madeira do 18 (--madeira, --madeira-topo, --madeira-borda, --madeira-luz) saíram; fica o latão das
   // luzes (o corpo, o brilho e a sombra), o mesmo do 18.
@@ -91,12 +86,9 @@ export const claro: Paleta = {
   "aviso-atencao": "#9A6B12",
   "aviso-cuidado": "#A3432A", // também a linha removida no diff
   quadro: "#FFFFFF", // moldura dos diagramas antigos, que têm fundo branco embutido (briefing §8.1)
-  tabua: "#B5BAB4", // prateleira da estante e da pilha (docs/capas/CAPAS.md)
-  "tabua-borda": "#9BA19B",
-  aparador: "#7A8280", // o aparador que separa categorias e séries: gradiente de três tons (CAPAS.md)
-  "aparador-luz": "#9AA19F",
-  "aparador-fundo": "#6F7775",
-  // Lousa (briefing §7): o contrário da página. No tema claro, vidro escuro com caneta clara.
+  // A lousa escura de antes (briefing §7): o contrário da página. No tema claro, vidro escuro com caneta
+  // clara. O quadro saiu do site (D84); as cores ficam para o `npm run contraste` e o fundo escuro da
+  // /amostra/livros/.
   lousa: "#15191C",
   "lousa-borda": "#2C3438",
   "lousa-caneta": "#F4F6F5",
@@ -136,16 +128,14 @@ export const claro: Paleta = {
   cortina: "#1B2A5E", // o azul-tinta escuro (protótipo 14)
   "cortina-tinta": "#F1F0EB", // o papel
   // Rodada 3 (área A): a luz do brilho é quente nos dois temas (255 236 200); a sombra dos livros é
-  // marrom-âmbar, nunca cinza (60 38 8); o halo quente embaixo deles (255 170 70); a luz do mouse, âmbar
-  // claro em multiply (255 214 150); a lâmpada: brasa, âmbar e branco quente; o ponto de luz, latão.
+  // marrom-âmbar, nunca cinza (60 38 8); o halo quente embaixo deles (255 170 70); a lâmpada: brasa,
+  // âmbar e branco quente.
   "luz-quente": "#FFECC8",
   "sombra-quente": "#3C2608",
   "halo-quente": "#FFAA46",
-  "luz-mouse": "#FFD696",
   "lampada-brasa": "#FF5C14",
   "lampada-ambar": "#FFA846",
   "lampada-branca": "#FFE8BE",
-  "ponto-luz": "#B08D57",
   // O latão escovado dos abajures e da cordinha (o do 18).
   latao: "#B08D57",
   "latao-luz": "#E9D2A2",
@@ -172,11 +162,6 @@ export const escuro: Paleta = {
   "aviso-atencao": "#E0B560",
   "aviso-cuidado": "#E7957C",
   quadro: "#FFFFFF",
-  tabua: "#3B4547",
-  "tabua-borda": "#2A3234",
-  aparador: "#4E5759",
-  "aparador-luz": "#687173",
-  "aparador-fundo": "#434B4D",
   // No tema escuro, quadro branco suavizado (nunca branco puro) com caneta escura.
   lousa: "#CFD5D1",
   "lousa-borda": "#8F989D",
@@ -207,15 +192,13 @@ export const escuro: Paleta = {
   cortina: "#F1F0EB", // o papel do claro, com o texto azul (protótipo 14)
   "cortina-tinta": "#1B2A5E",
   // Rodada 3 (área A): no escuro, a luz do brilho um nada mais âmbar; o núcleo da sombra, preto (o que se
-  // vê é o halo quente embaixo); a luz do mouse, âmbar em screen (255 190 110); o ponto de luz, aceso.
+  // vê é o halo quente embaixo).
   "luz-quente": "#FFE3B4",
   "sombra-quente": "#000000",
   "halo-quente": "#FFAA46",
-  "luz-mouse": "#FFBE6E",
   "lampada-brasa": "#FF5C14",
   "lampada-ambar": "#FFA846",
   "lampada-branca": "#FFE8BE",
-  "ponto-luz": "#FFC978",
   // O latão aceso (o do 18).
   latao: "#E0B46A",
   "latao-luz": "#FBE6BA",
@@ -270,28 +253,14 @@ export const MARCA_TEXTO = { claro: { cor: "#FFE27A", alfa: 1 }, escuro: { cor: 
 export const LINK_TINTA = { claro: 16, escuro: 18 };
 
 /**
- * O que a lousa tem de diferente em cada tema, além das cores: quanto da mistura entra no destaque,
- * quanto de caneta o destaque leva no traço e no texto para passar de 3:1 e 4,5:1 em todas as
- * categorias (no quadro branco, Observabilidade pede 20% e 45%; `npm run contraste` confere), a
- * opacidade da hachura, a espessura da borda (vidro fino, alumínio grosso) e o reflexo.
+ * O que a lousa escura de antes tinha de diferente em cada tema, além das cores: quanto da mistura entra
+ * no destaque e quanto de caneta o destaque leva no traço e no texto para passar de 3:1 e 4,5:1 em todas
+ * as categorias (no quadro branco, Observabilidade pede 20% e 45%). O quadro saiu do site (D84); fica só
+ * para o `npm run contraste` (scripts/contraste.mjs), que ainda confere a lousa.
  */
 export const LOUSA = {
-  claro: {
-    mistura: 55,
-    canetaNoTraco: 0,
-    canetaNoTexto: 0,
-    hachura: 0.22,
-    borda: "1px",
-    reflexo: "linear-gradient(118deg, rgb(255 255 255 / 0.07) 0%, rgb(255 255 255 / 0.015) 26%, transparent 27%)",
-  },
-  escuro: {
-    mistura: 35,
-    canetaNoTraco: 20,
-    canetaNoTexto: 45,
-    hachura: 0.3,
-    borda: "3px",
-    reflexo: "linear-gradient(118deg, rgb(255 255 255 / 0.28) 0%, transparent 30%)",
-  },
+  claro: { mistura: 55, canetaNoTraco: 0, canetaNoTexto: 0 },
+  escuro: { mistura: 35, canetaNoTraco: 20, canetaNoTexto: 45 },
 };
 
 /**
@@ -355,9 +324,6 @@ const rgba = (hex: string, alfa: number) =>
  */
 export function cssDosTokens(): string {
   const variaveis = (paleta: Paleta) => TOKENS.map((t) => `--${t}:${paleta[t]};`).join("");
-  const lousa = (l: (typeof LOUSA)["claro"]) =>
-    `--lousa-mistura-pct:${l.mistura}%;--lousa-caneta-traco:${l.canetaNoTraco}%;--lousa-caneta-texto:${l.canetaNoTexto}%;` +
-    `--lousa-hachura:${l.hachura};--lousa-borda-largura:${l.borda};--lousa-reflexo:${l.reflexo};`;
   const proporcoes = (t: "claro" | "escuro") =>
     `--painel-mistura:${PAINEL[t]}%;--chip-tinta:${CHIP[t].tinta}%;--chip-branco:${CHIP[t].branco}%;` +
     `--marca-texto:${rgba(MARCA_TEXTO[t].cor, MARCA_TEXTO[t].alfa)};` +
@@ -365,16 +331,11 @@ export function cssDosTokens(): string {
     `--desenho-painel:${DESENHO[t].painel}%;--desenho-lavado:${DESENHO[t].lavado}%;` +
     `--desenho-cor-fora:${DESENHO[t].corFora}%;--desenho-hachura:${DESENHO[t].hachura};`;
   const diagrama = Object.entries(DIAGRAMA).map(([nome, cor]) => `--diag-${nome}:${cor};`).join("");
-  const temaEscuro = `${variaveis(escuro)}${lousa(LOUSA.escuro)}${proporcoes("escuro")}--branco-no-escuro:${BRANCO_NO_ESCURO}%;color-scheme:dark;`;
-  // Na impressão (D54): sempre o tema claro (o escuro saía cinza-claro no papel, que não leva o fundo), e
-  // a lousa no quadro branco, com a caneta escura (a do vidro escuro, clara, sumia no papel).
-  const lousaNoPapel =
-    `--lousa:${escuro.lousa};--lousa-borda:${escuro["lousa-borda"]};--lousa-caneta:${escuro["lousa-caneta"]};` +
-    `--lousa-mistura:${escuro["lousa-mistura"]};${lousa(LOUSA.escuro)}`;
+  const temaEscuro = `${variaveis(escuro)}${proporcoes("escuro")}--branco-no-escuro:${BRANCO_NO_ESCURO}%;color-scheme:dark;`;
+  // Na impressão (D54): sempre o tema claro (o escuro saía cinza-claro no papel, que não leva o fundo).
   return (
-    `:root{${variaveis(claro)}${lousa(LOUSA.claro)}${proporcoes("claro")}${diagrama}--branco-no-escuro:0%;color-scheme:light;}` +
+    `:root{${variaveis(claro)}${proporcoes("claro")}${diagrama}--branco-no-escuro:0%;color-scheme:light;}` +
     `@media screen and (prefers-color-scheme:dark){:root:not([data-theme="light"]){${temaEscuro}}}` +
-    `@media screen{:root[data-theme="dark"]{${temaEscuro}}}` +
-    `@media print{.lousa{${lousaNoPapel}}}`
+    `@media screen{:root[data-theme="dark"]{${temaEscuro}}}`
   );
 }

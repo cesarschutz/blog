@@ -21,8 +21,7 @@
  * como a etiqueta de "Artigos recentes" (os dois do papel do 16, `.papel-colado` e `.fita-adesiva` em
  * base.css), girada um nada para o outro lado. O azul continua sendo a tinta que escorre de um botão
  * para o outro, mas agora só por `clip-path`: o recorte (as bordas `--tinta-l` e `--tinta-r`, registradas
- * com @property para a transição) mostra só o lugar do botão ativo. `papel={false}` é o seletor de antes
- * (a pílula do 18), para a amostra D4.
+ * com @property para a transição) mostra só o lugar do botão ativo.
  *
  * A caixa da tinta (D72): parada, ela fica só em volta do botão ativo (`--caixa-l` e `--caixa-r`); na troca,
  * cresce na hora para cobrir os dois botões e só encolhe quando a tinta chegou. Ela salta, e quem anima a
@@ -31,17 +30,10 @@
  * pelo fundo do texto.
  */
 import { ICONES } from "../lib/icones";
-
-interface Props {
-  /** A tira de papel com fita (o padrão da rodada 4); sem ela, a pílula de antes (amostra D4). */
-  papel?: boolean;
-}
-
-const { papel = true } = Astro.props;
 ---
 
-<div class:list={["modo", { "modo-papel papel-colado": papel }]} role="group" aria-label="Modo de exibição" data-modo>
-  {papel && <span class="fita-adesiva canto-dir" aria-hidden="true"></span>}
+<div class="modo modo-papel papel-colado" role="group" aria-label="Modo de exibição" data-modo>
+  <span class="fita-adesiva canto-dir" aria-hidden="true"></span>
   <span class="tinta" aria-hidden="true"></span>
   <button type="button" data-valor="list"
     ><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" set:html={ICONES.lista} />Lista</button

@@ -8,7 +8,7 @@
  */
 import arquivo from "../assets/caveat-titulos.woff?url";
 
-export { TITULOS_A_MAO, type TituloAMao } from "../data/mao";
+export type { TituloAMao } from "../data/mao";
 
 export const arquivoDaMao = arquivo;
 

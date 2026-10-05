@@ -18,14 +18,10 @@
  * Rodada 3 (área 10, F14-1): sem o aparador cinza; a série fica na mesma fileira, depois de um vão de 24px. O
  * hover de todo livro 3D é o do livro vivo (Livro3D: mola, seguir o mouse, brilho e a onda de luz da fileira).
  *
- * Rodada 4 (a versão final): o chão é trocável. A prop `chao` vira `data-chao` na raiz, e cada forma é só CSS:
- * - **"vidro", o padrão (E3, a decisão do Cesar):** a lâmina de vidro fumê, com a luz embaixo do livro: no
- *   hover, no foco, no toque e no lugar vazio, além do cone do abajur, acendem a poça no tampo, a aresta da
- *   frente e o clarão que atravessa o vidro (vidro.css).
- * - **"nicho":** o rebaixo da página (nicho.css), com a parede do fundo, a sombra do teto, o chão e o friso.
- * - **"nenhum":** sem chão.
- * Em todas, os abajures de latão (PontoDeLuz) ficam acima dos livros (teto de 46px), com o cone e a poça onde
- * ele pousa; o cone sobe no hover do livro; abaixo de 700px, um abajur a cada dois livros. A fileira fica presa
+ * Rodada 4 (a versão final): o chão é a lâmina de vidro fumê (E3, a decisão do Cesar; `data-chao="vidro"` na
+ * raiz, vidro.css), com a luz embaixo do livro: no hover, no foco, no toque e no lugar vazio, além do cone do
+ * abajur, acendem a poça no tampo, a aresta da frente e o clarão que atravessa o vidro. Os abajures de latão
+ * (PontoDeLuz) ficam acima dos livros (teto de 46px), com o cone e a poça onde ele pousa; o cone sobe no hover do livro; abaixo de 700px, um abajur a cada dois livros. A fileira fica presa
  * sob o cabeçalho e encolhe com a rolagem (FileiraTopo). O livro da página não está nela: o vão dele fica
  * tracejado e aceso (P18-3), porque ele está grande embaixo; clicar em outro troca de livro (troca.js).
  *
@@ -42,11 +38,9 @@ interface Props {
   livros: Livro[];
   /** O livro da página: o lugar dele fica vazio. */
   atual?: string;
-  /** O chão da fileira (rodada 4): "vidro" (a lâmina, o padrão, E3), "nicho" ou "nenhum" (sem chão). */
-  chao?: string;
 }
 
-const { livros, atual, chao = "vidro" } = Astro.props;
+const { livros, atual } = Astro.props;
 const ALTURA = 132;
 const GIRO_MIN = 34;
 const VAO_MIN = 4;
@@ -125,16 +119,9 @@ const css =
   `@media (max-width:699px){${luzesPar}@media (hover:hover){${luzesParHover}}}`;
 ---
 
-<div class:list={["colecao", id]} data-colecao="topo" data-chao={chao} data-luzes-ao-chegar data-onda-propria>
+<div class:list={["colecao", id]} data-colecao="topo" data-chao="vidro" data-luzes-ao-chegar data-onda-propria>
   <style is:inline set:html={css}></style>
   <div class="fileira">
-    {/* O nicho (rodada 4, V1): as peças, de trás para a frente; nicho.css as desenha sob [data-chao^="nicho"]. */}
-    <span class="nicho" aria-hidden="true">
-      <span class="nicho-parede"></span>
-      <span class="nicho-teto"></span>
-      <span class="nicho-chao"></span>
-      <span class="nicho-friso"></span>
-    </span>
     <div class="prateleira-livros">
       {
         livros.map((l, i) => {
@@ -156,7 +143,7 @@ const css =
         })
       }
     </div>
-    {/* O chão da fileira: guarda a altura do chão e do friso embaixo dos livros (o desenho é do nicho). */}
+    {/* O chão da fileira: guarda a altura do chão e do friso embaixo dos livros (o desenho é do vidro). */}
     <div class="tabua chao-fileira" aria-hidden="true"></div>
     {/* Os abajures em cima dos livros, um por livro (no par, abaixo de 700px, um a cada dois). Os lugares têm
         a mesma conta dos livros. */}
@@ -216,7 +203,7 @@ const css =
 
 <style>
   /*
-   * A fileira fica no centro, com os livros em pé no chão do nicho; cada lugar tem a largura que o livro
+   * A fileira fica no centro, com os livros em pé no chão de vidro; cada lugar tem a largura que o livro
    * ocupa no giro da vez, e o livro (mais largo que o lugar quando gira) fica centrado nele, passando para os
    * lados.
    */
@@ -230,24 +217,22 @@ const css =
   }
 
   /*
-   * As medidas do chão e dos abajures (rodada 4), em px de desenho; tudo encolhe com a coleção (--kc). Estas
-   * são as variáveis que a amostra dos livros troca para pintar as outras formas:
+   * As medidas do chão e dos abajures (rodada 4), em px de desenho; tudo encolhe com a coleção (--kc):
    *
-   *   --teto            do alto do nicho (ou da fileira) ao alto dos livros (46px)
+   *   --teto            do alto da fileira ao alto dos livros (46px)
    *   --abajur-altura   de onde o abajur sai da parede (a plaquinha) ao alto dos livros (70px)
    *   --abajur-escala   o tamanho da peça de latão (1 = a do 18)
    *   --cone-angulo     a abertura do cone (44°)
    *   --chao-recuo      da base da caixa do livro ao fundo do tampo
-   *   --chao-alto       o tampo à vista (14px no nicho, 16px no vidro)
-   *   --friso-alto      a frente: o friso do nicho (10px) ou a aresta do vidro (6px)
+   *   --chao-alto       o tampo à vista (16px no vidro)
+   *   --friso-alto      a frente: a aresta do vidro (6px)
    *   --abaixo          o espaço embaixo do chão (o reflexo do vidro, 18px)
    *   --poca-largura    a poça, em larguras do lugar do livro (1,3)
    *   --poca-alto       a altura da poça (10px)
-   *   --nicho-largura   a largura do nicho (100% é a da fileira)
    *   --cone-repouso, --cone-aceso, --poca-repouso, --poca-acesa (nicho.css, por tema)
    *
    * E as contas prontas, em px: --k-teto, --k-chao (chão e friso juntos, a altura da `.tabua`), --k-chao-alto,
-   * --k-friso, --k-abaixo, --k-sombra-teto, --k-poca-alto, --boca (do alto da fileira à boca da cúpula) e
+   * --k-friso, --k-abaixo, --k-poca-alto, --boca (do alto da fileira à boca da cúpula) e
    * --lq-luz.
    */
   .colecao {
@@ -265,13 +250,12 @@ const css =
     --k-friso: calc(var(--friso-alto) * var(--kc));
     --k-chao: calc((var(--chao-recuo) + var(--chao-alto) + var(--friso-alto)) * var(--kc));
     --k-abaixo: calc(var(--abaixo, 0px) * var(--kc));
-    --k-sombra-teto: calc(var(--k-teto) * 0.57);
     --k-poca-alto: calc(var(--poca-alto) * var(--kc));
     --lq-luz: calc(var(--abajur-escala) * var(--kc) * 1px);
     --boca: calc(var(--k-teto) - var(--abajur-altura) * var(--kc) + 18 * var(--lq-luz));
   }
 
-  /* No topo da página do livro, o nicho raso do 20: teto de 46px, chão e friso de 12px, os abajures menores. */
+  /* No topo da página do livro: teto de 46px, os abajures menores (o chão e o friso, vidro.css). */
   .colecao-topo {
     --cabeca: 6px;
     --teto: 46px;
@@ -284,30 +268,14 @@ const css =
     --poca-alto: 7px;
   }
 
-  /* A fileira tem a largura dos livros; o nicho, a dele (centrado nela). Ela contém a margem de baixo do chão
-     (o espaço do reflexo, `--k-abaixo`), para a camada dos abajures medir a partir do pé dela. */
+  /* A fileira tem a largura dos livros. Ela contém a margem de baixo do chão (o espaço do reflexo,
+     `--k-abaixo`), para a camada dos abajures medir a partir do pé dela. */
   .fileira {
     display: flow-root;
     position: relative;
     width: fit-content;
     max-width: 100%;
     margin-inline: auto;
-  }
-
-  .colecao[data-chao^="nicho"] .nicho {
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    width: var(--nicho-largura);
-    translate: -50% 0;
-  }
-
-  /* No topo, o nicho é a chapa inteira (FileiraTopo): a fileira e 18px de cada lado. */
-  .colecao-topo[data-chao^="nicho"] .nicho {
-    left: -18px;
-    width: calc(100% + 36px);
-    translate: none;
-    border-radius: 6px;
   }
 
   .prateleira-livros {
@@ -321,7 +289,7 @@ const css =
   }
 
   /*
-   * Os abajures: uma camada no nicho, entre a parede (embaixo) e os livros (em cima), com os mesmos lugares da
+   * Os abajures: uma camada por baixo dos livros, com os mesmos lugares da
    * fileira (a mesma largura, o mesmo vão, o mesmo vão antes da série). O cone desce da boca da cúpula até o
    * meio do chão, onde fica a poça.
    */
@@ -333,15 +301,6 @@ const css =
     justify-content: center;
     gap: var(--vao);
     pointer-events: none;
-  }
-
-  /* No nicho, a luz não passa das paredes: os cones das pontas são cortados nas laterais dele. */
-  .colecao[data-chao^="nicho"] .luzes-fileira {
-    clip-path: inset(0 calc(50% - var(--nicho-largura) / 2) round 3px);
-  }
-
-  .colecao-topo[data-chao^="nicho"] .luzes-fileira {
-    clip-path: inset(0 -18px round 6px);
   }
 
   .lugar-luz {
@@ -383,7 +342,7 @@ const css =
   }
 
   /*
-   * A sombra quente de cada livro (livro-vivo.css, o chão plano da caixa) cai no chão do nicho: da largura que
+   * A sombra quente de cada livro (livro-vivo.css, o chão plano da caixa) cai no chão: da largura que
    * o livro ocupa no giro da vez (de lombada, estreita), baixa, entre os pés dele.
    */
   .livro-colecao :global(.livro-3d-caixa::after) {
@@ -427,8 +386,7 @@ const css =
 
   /*
    * O chão da fileira (`.tabua.chao-fileira`): só guarda a altura do chão e do friso embaixo dos livros (o
-   * desenho é do nicho, nicho.css). Continua aqui para as formas que pintam outro chão (a amostra dos livros)
-   * e para a abertura, que risca o fio no alto do friso.
+   * desenho é do vidro, vidro.css).
    */
   .tabua {
     position: relative;
@@ -442,7 +400,7 @@ const css =
     margin-left: max(0px, calc(24px * var(--kc) - var(--vao)));
   }
 
-  /* O vão do livro que está aberto (na gaveta, ou embaixo, no topo): o contorno tracejado no lugar dele. */
+  /* O vão do livro da página (aberto embaixo): o contorno tracejado no lugar dele. */
   .vao {
     height: calc(var(--bh0, 132px) * var(--kc));
   }

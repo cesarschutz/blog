@@ -304,19 +304,10 @@ const enderecos = [
     padding: 14px 18px;
     border-radius: 2px;
     background: var(--paper-hi);
-    box-shadow:
-      0 1px 1px color-mix(in oklab, var(--sombra-quente) 16%, transparent),
-      0 2px 4px -1px color-mix(in oklab, var(--sombra-quente) 22%, transparent);
+    box-shadow: var(--sombra-folha);
     color: var(--ink);
     text-decoration: none;
     transition: background-color 0.15s;
-  }
-
-  :global(:root[data-theme="dark"]) .sugestao {
-    box-shadow:
-      0 0 0 1px color-mix(in oklab, var(--ink) 7%, transparent),
-      0 1px 1px color-mix(in oklab, var(--sombra-quente) 50%, transparent),
-      0 2px 5px -1px color-mix(in oklab, var(--sombra-quente) 60%, transparent);
   }
 
   .sugestao:hover {

@@ -11,21 +11,15 @@
  * - O comportamento é o do 19 (src/scripts/fichario.ts): a gaveta puxada sai 18px para perto do leitor,
  *   com a borda de cima à vista e a sombra embaixo (0,4s); "Todas" puxa as gavetas com tag em cascata.
  *
- * `material="madeira"` só existe para a amostra D3 (nas amostras do redesenho, fora do git), que pinta a madeira do 19 por cima
- * (o protótipo não usa madeira). Sem JS, cada gaveta é um link para a primeira ficha da letra.
+ * Sem JS, cada gaveta é um link para a primeira ficha da letra (`#letra-B`, as âncoras das FichasTags; a
+ * gaveta "Todas" leva a `#letra-todas`).
  */
 interface Props {
   /** As tags: o nome e o número de artigos. */
   tags: { nome: string; n: number }[];
-  /** Só na amostra (D3): "madeira" troca o aço pela madeira do 19, pintada pela página da amostra. */
-  material?: "aco" | "madeira";
-  /** O id do título (único na página; a amostra tem mais de um fichário). */
-  id?: string;
-  /** Para onde as gavetas levam sem JS: o prefixo das âncoras das fichas (`letra-B`). */
-  ancora?: string;
 }
 
-const { tags, material = "aco", id = "fichario-titulo", ancora = "letra-" } = Astro.props;
+const { tags } = Astro.props;
 const LETRAS = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"];
 const inicial = (nome: string) => nome.normalize("NFD").replace(/\p{M}/gu, "").charAt(0).toUpperCase();
 const porLetra = new Map<string, number>();
@@ -35,8 +29,8 @@ const fichas = tags.length;
 const gavetas = porLetra.size;
 ---
 
-<section class="fichario" aria-labelledby={id} data-fichario data-unidade data-material={material}>
-  <h2 id={id} class="sr">Fichário das tags, uma gaveta por letra</h2>
+<section class="fichario" aria-labelledby="fichario-titulo" data-fichario data-unidade>
+  <h2 id="fichario-titulo" class="sr">Fichário das tags, uma gaveta por letra</h2>
   <div class="armario">
     <p class="placa-armario" data-dica-fichario data-padrao={`${fichas} fichas em ${gavetas} gavetas`}>{fichas} fichas em {gavetas} gavetas</p>
     <nav class="gavetas" aria-label="Gavetas do fichário, por letra">
@@ -44,7 +38,7 @@ const gavetas = porLetra.size;
         LETRAS.map((L) => {
           const n = porLetra.get(L) ?? 0;
           return n > 0 ? (
-            <a class="gaveta-letra" href={`#${ancora}${L}`} data-gaveta-letra={L} aria-label={`Gaveta ${L}: ${assuntos(n)}`} title={assuntos(n)}>
+            <a class="gaveta-letra" href={`#letra-${L}`} data-gaveta-letra={L} aria-label={`Gaveta ${L}: ${assuntos(n)}`} title={assuntos(n)}>
               <span class="frente-gaveta">
                 <span class="porta-etiqueta">
                   <span>{L}</span>
@@ -64,7 +58,7 @@ const gavetas = porLetra.size;
           );
         })
       }
-      <a class="gaveta-letra gaveta-todas" href={`#${ancora}todas`} data-gaveta-letra="todas" aria-label={`Todas as gavetas: ${assuntos(fichas)}`} aria-current="true">
+      <a class="gaveta-letra gaveta-todas" href="#letra-todas" data-gaveta-letra="todas" aria-label={`Todas as gavetas: ${assuntos(fichas)}`} aria-current="true">
         <span class="frente-gaveta">
           <span class="porta-etiqueta">
             <span>Todas</span>

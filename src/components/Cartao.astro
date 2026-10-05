@@ -39,13 +39,11 @@ interface Props {
   post: Resumo;
   /** Nível do título: um abaixo do título da seção (h2 quando a página tem só o h1 em cima). */
   nivel?: "h2" | "h3";
-  /** O mais recente, na primeira página da home (D52). */
+  /** O mais recente, na primeira página da home (D52), com o carimbo "Novo" (E9, MaisRecente). */
   destaque?: boolean;
-  /** Rodada 4 (E9): o carimbo "Novo" ao lado de "Mais recente" (só no destaque da home; MaisRecente). */
-  carimbo?: boolean;
 }
 
-const { post, nivel = "h3", destaque = false, carimbo = false } = Astro.props;
+const { post, nivel = "h3", destaque = false } = Astro.props;
 const Titulo = nivel;
 const { chamada, tombo } = await chamadaDe(post);
 const tags = post.tags.slice(0, destaque ? 4 : 3);
@@ -67,7 +65,7 @@ const tags = post.tags.slice(0, destaque ? 4 : 3);
       ))
   }
   <div class="corpo-cartao">
-    {destaque && <MaisRecente carimbo={carimbo ? post.publicado : undefined} />}
+    {destaque && <MaisRecente carimbo={post.publicado} />}
     <MetaItem post={post} />
     <Titulo class="titulo-cartao"><a href={post.url} set:html={tituloEmPartes(post.tituloCompleto)} /></Titulo>
     <p class="descricao" set:html={mdEmLinha(post.descricao)} />

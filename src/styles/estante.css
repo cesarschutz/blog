@@ -1,11 +1,10 @@
 /*
- * Estante da home (briefing §5.1), portada do protótipo aprovado. As medidas das lombadas são
- * múltiplos de --u: 1px quando a estante cabe inteira e menos quando falta largura, para todos os
- * livros caberem sem rolagem. Na face do livro 3D, o script da gaveta define --u. A lombada e a
- * capa estão em livro.css.
+ * A estante de lombadas (briefing §5.1, D30; Estante.astro): o filtro de Todos os artigos e das tags, a
+ * estante do 404 e a da imagem de compartilhamento. As medidas das lombadas são múltiplos de --u: 1px
+ * quando a estante cabe inteira e menos quando falta largura, para todos os livros caberem sem rolagem.
+ * A arte da lombada está em livro.css (o Estante.astro o importa antes deste arquivo); o chão de vidro em
+ * vidro.css; os abajures e as medidas da estante com eles, em nicho.css.
  */
-
-@import "./livro.css";
 
 /* ---------- estante ---------- */
 
@@ -24,9 +23,9 @@
 /*
  * A perspectiva do leitor (D49, D57): o olho a 3333 de distância e um pouco acima do alto dos livros
  * mais altos (190), para a cabeça de cada livro aparecer, como na prancha 07; o livro que tomba para a
- * frente mostra mais dela (estante-gesto.ts). A prateleira é um espaço 3D só (preserve-3d): os lados
- * dos livros (.lado) se escondem atrás dos vizinhos de verdade. Fica por cima da tábua, para a sombra
- * de contato de cada livro cair nela.
+ * frente no hover mostra mais dela. A prateleira é um espaço 3D só (preserve-3d): os lados dos livros
+ * (.lado) se escondem atrás dos vizinhos de verdade. Fica por cima do chão (`.tabua`), para a sombra de
+ * contato de cada livro cair nele.
  */
 .prateleira-livros {
   --u: min(0.42px, 100cqw / var(--natural));
@@ -155,17 +154,21 @@
   transform-origin: 0 50%;
 }
 
-/* A sombra de contato do livro na tábua, na frente do pé dele. */
+/* O pé de cada lombada no chão: um fio escuro curto, a sombra de contato (rodada 4). */
 .lombada::before {
   content: "";
   position: absolute;
-  top: 100%;
-  right: calc(-3 * var(--u));
-  left: calc(-3 * var(--u));
-  height: calc(9 * var(--u));
+  top: calc(100% - 1px);
+  right: 0;
+  left: 0;
+  height: 4px;
   border-radius: 0 0 50% 50%;
-  background: linear-gradient(rgb(0 0 0 / 0.3), rgb(0 0 0 / 0.08) 55%, rgb(0 0 0 / 0));
+  background: linear-gradient(color-mix(in oklab, var(--sombra-quente) 45%, transparent), transparent);
   pointer-events: none;
+}
+
+:root[data-theme="dark"] .lombada::before {
+  background: linear-gradient(color-mix(in oklab, var(--sombra-quente) 70%, transparent), transparent);
 }
 
 /*
@@ -176,25 +179,6 @@
   transition:
     opacity 0.25s,
     --apagado 0.25s;
-}
-
-/*
- * O livro na mão (D49): na frente dos vizinhos e sem transição nenhuma, para sumir e voltar no mesmo
- * instante em que o livro 3D da gaveta toma o lugar dele (e o contrário). O link não é arrastado pelo
- * navegador: quem arrasta é o GSAP (Gaveta.astro).
- */
-.prateleira-livros.viva .lombada.segurando {
-  z-index: 5;
-  transition: none;
-}
-
-.prateleira-livros.arrasta .lombada {
-  -webkit-user-drag: none;
-  user-select: none;
-}
-
-.prateleira-livros.arrasta .lombada.segurando {
-  cursor: grabbing;
 }
 
 .legenda-estante {
@@ -219,39 +203,6 @@
   }
 }
 
-/*
- * O último livro da coleção fica inclinado 6°, girando pelo canto de baixo do lado direito, com o
- * topo apoiado no alto do aparador.
- */
-.lombada.inclinada {
-  transform: rotate(6deg) rotateX(0deg);
-  transform-origin: 100% 100%;
-}
-
-@media (hover: hover) {
-  .lombada.inclinada:hover {
-    transform: rotate(6deg) rotateX(-5deg);
-  }
-}
-
-/*
- * Livro que foi para a gaveta (D43): saiu da estante, e o lugar dele fica vazio (o espaço continua, os
- * vizinhos não se mexem). Continua clicável e focável: clicar no lugar vazio guarda o livro.
- */
-.lombada.retirado {
-  opacity: 0;
-}
-
-@media (hover: hover) {
-  .lombada.retirado:hover {
-    transform: rotate(0deg) rotateX(0deg);
-  }
-
-  .lombada.inclinada.retirado:hover {
-    transform: rotate(6deg) rotateX(0deg);
-  }
-}
-
 /* Foco só para quem navega pelo teclado (D39): um anel discreto, sem o contorno azul de seleção. */
 .lombada:focus-visible {
   outline: 1.5px solid color-mix(in oklab, var(--acento), transparent 35%);
@@ -266,83 +217,27 @@
   .lombada:hover {
     transform: none;
   }
-
-  .lombada.inclinada:hover {
-    transform: rotate(6deg);
-  }
 }
 
 /*
- * O aparador separa as categorias das séries: uma haste de metal de 12 × 470, redonda (a luz corre por
- * ela, com um fio de brilho), com a ponta arredondada, sobre uma base redonda de 48 × 9 (D57).
+ * O vão antes das séries (D57; desde a rodada 3, sem a haste de metal): a peça fica vazia, com as medidas
+ * dela, e a camada dos abajures repete o vão (`.lugar-aparador`, nicho.css).
  */
 .aparador {
-  position: relative;
   flex: none;
   align-self: flex-end;
   width: calc(12 * var(--u));
   height: calc(470 * var(--u));
   margin: 0 calc(25 * var(--u)) 0 calc(43 * var(--u));
-  border-radius: 999px 999px 0 0;
-  background: linear-gradient(
-    90deg,
-    var(--aparador-fundo),
-    var(--aparador) 18%,
-    color-mix(in oklab, var(--aparador-luz), white 38%) 34%,
-    var(--aparador-luz) 46%,
-    var(--aparador) 72%,
-    color-mix(in oklab, var(--aparador-fundo), black 18%)
-  );
-}
-
-.aparador::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: calc(-18 * var(--u));
-  width: calc(48 * var(--u));
-  height: max(3px, calc(9 * var(--u)));
-  border-radius: 50% 50% 42% 42% / 70% 70% 30% 30%;
-  background:
-    radial-gradient(ellipse 60% 55% at 42% 20%, color-mix(in oklab, var(--aparador-luz), white 30%), rgb(0 0 0 / 0) 70%),
-    linear-gradient(var(--aparador-luz), var(--aparador) 55%, var(--aparador-fundo));
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.28);
 }
 
 /*
- * A prateleira (D57, prancha 07): uma tábua com espessura. Em cima, a face de cima: um pouco dela na
- * frente dos livros (6) e, atrás deles, o fundo dela subindo (::before, que aparece nas pontas e entre
- * os livros). Na frente, a borda da tábua, mais clara, com um fio de luz, e embaixo a borda de 6; a
- * sombra dela cai na folha.
+ * O chão (`.tabua.chao-estante`), embaixo das lombadas: a altura vem de nicho.css e o desenho, a lâmina
+ * de vidro, de vidro.css. Aqui, o --u das lombadas (a camada dos abajures mora nele) e o lugar onde ela
+ * e o desenho do vidro se ancoram.
  */
 .tabua {
   position: relative;
-  height: max(6px, calc(20 * var(--u)));
-  border-bottom: max(2px, calc(6 * var(--u))) solid var(--tabua-borda);
-  border-radius: 1px 1px 2px 2px;
-  background: linear-gradient(
-    color-mix(in oklab, var(--tabua), black 11%) 0 calc(6 * var(--u)),
-    color-mix(in oklab, var(--tabua), white 22%) calc(6 * var(--u)),
-    var(--tabua) calc(9 * var(--u)),
-    color-mix(in oklab, var(--tabua), black 5%)
-  );
-  box-shadow: 0 calc(10 * var(--u)) calc(16 * var(--u)) calc(-8 * var(--u)) rgb(0 0 0 / 0.28);
-}
-
-.tabua::before {
-  content: "";
-  position: absolute;
-  right: 0;
-  bottom: 100%;
-  left: 0;
-  height: calc(70 * var(--u));
-  border-radius: 2px 2px 0 0;
-  background: linear-gradient(
-    0deg,
-    color-mix(in oklab, var(--tabua), black 11%),
-    color-mix(in oklab, var(--tabua), black 19%) 70%,
-    color-mix(in oklab, var(--tabua), black 26%)
-  );
 }
 
 .prateleira-livros + .tabua {
@@ -351,8 +246,8 @@
 
 /*
  * ---------- estante de filtro (arquivo e tags, D33) ----------
- * Menor (teto de 0,3px por unidade, que a página muda em --teto-filtro), sem o livro inclinado. Com
- * um livro escolhido, os outros apagam e ele sai um pouco da prateleira.
+ * Menor (teto de 0,3px por unidade, que a página muda em --teto-filtro, ListaFiltrada). Com um livro
+ * escolhido, os outros apagam e ele sai um pouco da prateleira.
  */
 .estante-filtro {
   --teto: var(--teto-filtro, 0.3px);
@@ -362,20 +257,6 @@
 .estante-filtro .prateleira-livros,
 .estante-filtro .prateleira-livros + .tabua {
   --u: min(var(--teto), 100cqw / var(--natural));
-}
-
-/*
- * O chão da estante de filtro: na rodada 4, o nicho curto (nicho.css), com os abajures; a sombra quente embaixo
- * da fileira e o contato de cada lombada saíram daqui.
- */
-
-/* No lugar do aparador cinza, só o vão antes da série (a peça fica, vazia, com a mesma largura). */
-.estante-filtro .aparador {
-  background: none;
-}
-
-.estante-filtro .aparador::after {
-  content: none;
 }
 
 /*
@@ -418,7 +299,7 @@
 /*
  * Os não escolhidos apagam (D39): um véu do papel da folha a 60% por cima da lombada, da cabeça e dos
  * lados, o que dá a cara da opacidade de 0,4 de antes. Com opacidade ou filtro, a lombada viraria um
- * plano só (o 3D se achata e a cabeça e os lados somem) e a tábua de trás apareceria através dela (D57).
+ * plano só (o 3D se achata e a cabeça e os lados somem) e o chão de trás apareceria através dela (D57).
  */
 @property --apagado {
   syntax: "<color>";
@@ -470,5 +351,3 @@
     transform: none;
   }
 }
-
-/* A gaveta (o livro que sai da estante e o sumário) está em gaveta.css (Gaveta.astro). */

@@ -1,8 +1,7 @@
 /**
- * As páginas de dentro de cada livro (D49, protótipo D2), servidas à parte, como o desenho da capa
- * ([slug].svg.ts): o livro ampliado (LivroAmpliado.astro) só busca quando o leitor abre o livro, e
- * monta a guarda, o sumário, uma página por artigo, o fim do volume e o próximo livro da coleção, e o verso
- * (a contracapa, D78).
+ * As páginas de dentro de cada livro (D49, protótipo D2), servidas à parte: o livro ampliado
+ * (LivroAmpliado.astro) só busca quando o leitor abre o livro, e monta a guarda, o sumário, uma página por
+ * artigo, o fim do volume e o próximo livro da coleção, e o verso (a contracapa, D78).
  * Categoria: /livros/<slug>.json; série: /livros/serie-<chave>.json.
  */
 import type { APIRoute, GetStaticPaths } from "astro";

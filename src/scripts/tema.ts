@@ -7,7 +7,7 @@
  */
 import { amostrar, camada, duracaoDaSala, meioDaSala, quadrosDaSala, sala } from "./lampada";
 
-export type Escolha = "light" | "dark" | "";
+type Escolha = "light" | "dark" | "";
 
 const CHAVE = "cs-theme";
 const QUANDO = "cs-prefs-quando";
@@ -71,7 +71,7 @@ addEventListener("preferencias:relidas", () => {
 let desfazer: (() => void) | null = null;
 
 /** As peças da lâmpada no desenho do lustre (SeletorTema): o filamento, a brasa e a cúpula acesa. */
-export interface PecasDoLustre {
+interface PecasDoLustre {
   nucleo?: Element | null;
   nucleoBrasa?: Element | null;
   cupula?: Element | null;

@@ -218,20 +218,6 @@
   }
 }
 
-/* ---------- convivência das peças fixas ---------- */
-
-/* Com o menu do celular aberto (a folha que cobre a tela), a pasta do Finder (O11) sai da frente. */
-:root[data-menu-aberto] .finder-dock {
-  visibility: hidden;
-}
-
-/* A ficha "Do livro" da lateral do artigo termina acima da pasta do Finder, no canto de baixo. */
-@media (min-width: 1300px) {
-  .artigo-grade.com-lateral aside.lateral {
-    max-height: calc(100vh - var(--altura-topo) - 112px);
-  }
-}
-
 /* ---------- as entradas ao rolar (rodada 3, área 7, T13; revelar.ts) ---------- */
 
 /* O card ou o item de lista abaixo da dobra espera aqui até 15% dele entrar na tela (só com JS: o script

@@ -1,6 +1,6 @@
 /**
  * Os cinco avisos do briefing (§5.3): nome exibido e marcadores aceitos no Markdown, em português
- * e em inglês (`> [!DICA]` ou `> [!TIP]`). Usados por Aviso.astro e por src/plugins/rehype-avisos.mjs.
+ * e em inglês (`> [!DICA]` ou `> [!TIP]`). Usados por src/plugins/rehype-avisos.mjs.
  */
 export type TipoAviso = "nota" | "dica" | "importante" | "atencao" | "cuidado";
 

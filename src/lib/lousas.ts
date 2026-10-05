@@ -1,11 +1,12 @@
 /**
- * Desenhos das lousas (briefing §7, D11): src/lousas/<slug>/<nome>.svg, usados pelos componentes
- * Lousa (D58) e, nos posts antigos, LousaTempo e LousaLoop. Aqui o SVG ganha rótulo acessível e o
- * quadro parado (estilos do instante escolhido), que é o que aparece sem JS, com movimento reduzido
- * e no RSS; com JS, src/scripts/lousa.ts assume a partir dele.
+ * Desenhos das lousas (briefing §7, D11): src/lousas/<slug>/<nome>.svg, usados pelo componente Lousa
+ * (D58) e pela folha de conferência (/amostra/lousas/). Aqui o SVG ganha rótulo acessível e o quadro
+ * parado (estilos do instante escolhido), que é o que aparece sem JS, com movimento reduzido e no RSS;
+ * com JS, src/scripts/lousa.ts assume a partir dele.
  *
- * A lousa no estilo das figuras (D59) tem o grupo <g class="tinta"> em vez de <g class="traco">: usa as
- * classes e os tons das figuras (figura.css) e pode ter logos (data-marca), como elas.
+ * A lousa no estilo das figuras (D59) tem o grupo <g class="tinta"> em vez de <g class="traco"> (o
+ * quadro antigo, que nenhum desenho usa mais): usa as classes e os tons das figuras (figura.css) e pode
+ * ter logos (data-marca), como elas.
  */
 import { ATRIBUTOS, estado, fimDa, numeros, type Marcas } from "./lousa-tempo";
 import { comMarcas } from "./figuras";
@@ -24,7 +25,7 @@ function marcasDe(atributos: string): Marcas {
 }
 
 /** A lousa está no estilo das figuras (D59)? */
-export const noEstiloDasFiguras = (fonte: string) => /<g\s+class="tinta"/.test(fonte);
+const noEstiloDasFiguras = (fonte: string) => /<g\s+class="tinta"/.test(fonte);
 
 /**
  * O SVG da lousa no instante t (por padrão, o fim), com role="img" e o rótulo. No estilo das figuras,

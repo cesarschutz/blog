@@ -22,12 +22,9 @@ import "../styles/catalogo.css";
 
 interface Props {
   livros: Livro[];
-  /** Nível do nome, para a página manter a hierarquia de títulos. */
-  nivel?: "h2" | "h3";
 }
 
-const { livros, nivel = "h2" } = Astro.props;
-const Nome = nivel;
+const { livros } = Astro.props;
 const dois = (n?: number) => String(n ?? 1).padStart(2, "0");
 const rotuloDoVolume = (l: Livro) => (l.serie ? `Série ${dois(l.revista?.numero)}` : `Volume ${dois(l.volume)}`);
 // A tira: quantos artigos (na série também, nunca "edições") e quando, como a contagem dos livros.
@@ -65,7 +62,7 @@ const tira = (l: Livro) => {
             <LivroEmPe livro={l} altura={270} transicao="ao-clicar" />
           </span>
           <span class="texto">
-            <Nome class="nome">{l.nome}</Nome>
+            <h2 class="nome">{l.nome}</h2>
             <span class="descricao">{l.descricao}</span>
             <span class="sr">
               {rotuloDoVolume(l)}, {l.posts.length > 0 ? `${tira(l).quantos}, ${tira(l).quando}` : tira(l).quando}

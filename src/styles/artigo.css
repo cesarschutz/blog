@@ -49,8 +49,8 @@
 /*
  * Rodada 4, S3 (H5: "tudo que ainda é card vira papel"): a folha do texto é a página do livro. Papel liso,
  * com o canto de 2px, a borda transparente (a largura do texto não muda um pixel: 948px a 1440), a sombra
- * curta do papel colado e o grão do site; no escuro, o anel de 1px a 7% e a sombra escura. Nenhuma pauta,
- * margem vermelha ou fita. No celular (abaixo de 641px), o texto continua direto no papel da página.
+ * curta do papel (`--sombra-folha`, que no escuro ganha o anel de 1px a 7%) e o grão do site. Nenhuma
+ * pauta, margem vermelha ou fita. No celular (abaixo de 641px), o texto continua direto no papel da página.
  */
 @media (min-width: 640.02px) {
   .artigo-folha.folha {
@@ -63,24 +63,15 @@
       linear-gradient(color-mix(in oklab, var(--paper-hi) 60%, transparent), color-mix(in oklab, var(--paper-hi) 60%, transparent)),
       var(--grao) 0 0 / 180px 180px,
       var(--paper-hi);
-    box-shadow:
-      0 1px 1px color-mix(in oklab, var(--sombra-quente) 16%, transparent),
-      0 2px 4px -1px color-mix(in oklab, var(--sombra-quente) 22%, transparent);
-  }
-
-  :root[data-theme="dark"] .artigo-folha.folha {
-    box-shadow:
-      0 0 0 1px color-mix(in oklab, var(--ink) 7%, transparent),
-      0 1px 1px color-mix(in oklab, var(--sombra-quente) 50%, transparent),
-      0 2px 5px -1px color-mix(in oklab, var(--sombra-quente) 60%, transparent);
+    box-shadow: var(--sombra-folha);
   }
 }
 
 /*
- * O texto ocupa a folha, com a margem pequena dela, na mesma largura do código, das tabelas, das lousas
- * e da apresentação (D46; antes, 720px no meio, com os blocos largos saindo da coluna, D39).
+ * O texto ocupa a folha, com a margem pequena dela, na mesma largura do código, das tabelas, das imagens
+ * soltas e da apresentação (D46; antes, 720px no meio, com os blocos largos saindo da coluna, D39).
  */
-.prose > :is(.expressive-code, .tabela, .lousa-tempo, .lousa-loop, .apresentacao, p:has(> img:only-child)) {
+.prose > :is(.expressive-code, .tabela, .apresentacao, p:has(> img:only-child)) {
   width: 100%;
   max-width: none;
   margin-inline: 0;
@@ -118,9 +109,11 @@
     grid-column: 1 / -1;
   }
 
+  /* A lateral (fixa, Sumario.astro) termina acima do ícone do computador, no canto de baixo à esquerda. */
   .artigo-grade.com-lateral > .artigo-principal > aside.lateral {
     grid-column: 1;
     grid-row: 2;
+    max-height: calc(100vh - var(--altura-topo) - 112px);
   }
 
   .artigo-grade.com-lateral > .artigo-principal > .artigo-folha {
@@ -305,60 +298,4 @@
   min-height: 36px;
   padding: 5px 14px;
   font-size: 14px;
-}
-
-/*
- * ---------- a capa viva no anterior e no próximo (rodada 3, T10) ----------
- * A ilustração do cartão (RodapeArtigo) mexe o detalhe dela como nos cards e no topo (D58,
- * capa-viva.css, que usa as mesmas animações): com o mouse, com o foco do teclado ou com o dedo. O
- * detalhe do tipo evento vai até o fim mesmo que o mouse saia no meio (a classe .mexendo, de artigo.ts).
- * Com movimento reduzido, nada se mexe.
- */
-@media (prefers-reduced-motion: no-preference) {
-  .vizinho .ilustracao .mexe-gira {
-    transition: rotate 0.75s cubic-bezier(0.3, 0, 0.25, 1);
-  }
-
-  .vizinho .ilustracao .mexe-desliza {
-    transition: translate 0.6s cubic-bezier(0.3, 0, 0.25, 1);
-  }
-
-  .vizinho:is(:hover, :focus-visible) .ilustracao .mexe-gira {
-    rotate: 120deg;
-    transition: rotate 1.3s cubic-bezier(0.3, 0, 0.2, 1);
-  }
-
-  .vizinho:is(:hover, :focus-visible) .ilustracao .mexe-desliza {
-    translate: 22px 0;
-    transition: translate 1s cubic-bezier(0.45, 0, 0.25, 1);
-  }
-
-  .vizinho:is(:hover, :focus-visible, .mexendo) .ilustracao .mexe-balanca {
-    animation: mexe-balanca 1.3s cubic-bezier(0.36, 0, 0.3, 1) both;
-  }
-
-  .vizinho:is(:hover, :focus-visible, .mexendo) .ilustracao .mexe-pulsa {
-    animation: mexe-pulsa 0.9s ease-in-out both;
-  }
-
-  .vizinho:is(:hover, :focus-visible, .mexendo) .ilustracao .mexe-pisca {
-    animation: mexe-pisca 1s steps(1, end) both;
-  }
-
-  .vizinho:is(:hover, :focus-visible, .mexendo) .ilustracao .mexe-sobe {
-    animation: mexe-sobe 1.2s cubic-bezier(0.33, 0, 0.2, 1) both;
-  }
-
-  .vizinho:is(:hover, :focus-visible, .mexendo) .ilustracao .mexe-treme {
-    animation: mexe-treme 0.6s linear both;
-  }
-
-  .vizinho:is(:hover, :focus-visible, .mexendo) .ilustracao .mexe-escreve {
-    stroke-dasharray: 1 2;
-    animation: mexe-escreve 1.1s cubic-bezier(0.33, 0, 0.2, 1) both;
-  }
-
-  .vizinho:is(:hover, :focus-visible, .mexendo) .ilustracao .mexe-enche {
-    animation: mexe-enche 1.2s cubic-bezier(0.33, 0, 0.2, 1) both;
-  }
 }

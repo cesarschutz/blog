@@ -51,8 +51,8 @@ interface Doca {
   antes: number;
 }
 
-function parado(doca: Doca) {
-  return reduzido.matches || !!raiz.dataset.abertura || !!doca.prat.closest("[data-livro-parado]");
+function parado() {
+  return reduzido.matches || !!raiz.dataset.abertura;
 }
 
 /** O livro clicado está indo para a página dele: a doca para onde está (o voo parte do tamanho que se vê). */
@@ -111,7 +111,7 @@ function quadro(doca: Doca, agora: number) {
     doca.antes = 0;
     return;
   }
-  if (parado(doca)) {
+  if (parado()) {
     soltarJa(doca);
     return;
   }
@@ -181,7 +181,7 @@ function ligar(colecao: HTMLElement) {
   const doca: Doca = { prat, lugares, mouse: null, pedido: 0, antes: 0 };
 
   const seguir = (e: PointerEvent) => {
-    if (e.pointerType !== "mouse" || !comMouse.matches || parado(doca) || indo()) return;
+    if (e.pointerType !== "mouse" || !comMouse.matches || parado() || indo()) return;
     doca.mouse = { x: e.clientX, y: e.clientY };
     pedir(doca);
   };

@@ -35,8 +35,6 @@ export interface Serie {
   emblema: string;
   /** Lombada na estante, em unidades da referência (CAPAS.md). */
   emPe: { altura: number; largura: number };
-  /** Lombada deitada na lateral, em px no tamanho real. */
-  deitada: { comprimento: number; espessura: number; deslocamento: number };
 }
 
 /** O que só existe aqui (chave e página); o resto vem do livros.json, pelo título. */
@@ -61,7 +59,6 @@ export const SERIES: Serie[] = CADASTRO.map((s) => {
     guia: l.guia,
     emblema: l.emblema,
     emPe: l.lombadaEmPe,
-    deitada: { deslocamento: 0, ...l.lombadaDeitada },
   };
 });
 
