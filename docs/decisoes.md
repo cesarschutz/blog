@@ -89,6 +89,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D79 | A parte 2 do post dos mods (`claude-code-csr-cockpit`) só atualizada para o cockpit 0.16.0, sem post novo: seis abas, as telas novas como print e os fatos em dia | decidido e publicado |
 | D81 | Post de DNS (`dns-tipos-de-registro`): detalhado, no livro DevOps, com as tags novas DNS e Redes, exemplos em `example.com` e a apresentação no estilo do blog | decidido e publicado |
 | D82 | Post do You should know (`claude-code-you-should-know`): o mod embutido do Claude Code, detalhado, no livro IA, com 19 marcações da caneta e a apresentação no estilo do blog | decidido e publicado |
+| D83 | A parte 2 do post dos mods em dia com o cockpit 1.0.0 refeito (cliques, grafo, workflows, total geral): as telas novas, uma tela de workflow e a apresentação regerada | decidido e publicado |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -3541,4 +3542,24 @@ nada muda.
   as do post de DNS, se o Cesar preferir.
 - **Regra de aprendizado (D68):** o OK direto da proposta de caneta ("pode aprovar direto") vale só para
   este post ou vira regra para os próximos? Aguardando a resposta do Cesar.
+
+## D83 · A parte 2 do post dos mods em dia com o cockpit 1.0.0 refeito (04/10/2026)
+
+- **Data:** 04/10/2026 · **Status:** decidido e publicado (o Cesar: "publica o que precisa, blog e
+  repo").
+- **Pedido do Cesar:** uma rodada de melhorias no csr-cockpit (os botões que pediam dois cliques no app
+  Desktop, os gráficos que piscavam, o grafo que não usava a largura do painel, os arquivos que os
+  subagentes leem e escrevem pelo Bash na Árvore, o detalhe do agente igual ao do turno, desenhos
+  novos para o cérebro e os robôs, os agentes de workflow com o nome e agrupados por fase, cartões mais
+  limpos e o total geral da sessão na aba Contexto, em dólar e em reais), tudo num commit só e na
+  release `v1.0.0` refeita; "deixe por último arrumar o README e o post, após fazer todos os ajustes,
+  para pegar as telas".
+- **No post da parte 2:** as nove telas trocadas pelas da versão nova; uma tela nova, os agentes de um
+  workflow agrupados por fase; o texto das abas Agentes (o grafo radial ou em árvore, os cartões só com
+  o essencial, os workflows), do detalhe do agente e do turno, da Árvore (o Bash), do Contexto (o
+  total geral) e da linha de resumo (o cérebro e o robô); um limite novo (no Desktop, o painel
+  redesenha na hora do clique e no máximo a cada 2,5 s); os testes passaram de 35 para 52. Formato e
+  estrutura continuam os da D79 (sem conversa da D63: é a mesma atualização da D80).
+- **Na apresentação:** os recortes e as marcas da caneta refeitos para as telas novas, o slide do
+  Contexto com o total geral e as contagens de testes; regerada pelo `npm run apresentacao -- … --pdf`.
 

@@ -26,6 +26,7 @@ import abaDiffs from "../../evidencias/claude-code-csr-cockpit/aba-diffs.png";
 import abaContexto from "../../evidencias/claude-code-csr-cockpit/aba-contexto.png";
 import abaArvore from "../../evidencias/claude-code-csr-cockpit/aba-arvore.png";
 import abaInventario from "../../evidencias/claude-code-csr-cockpit/aba-inventario.png";
+import agentesWorkflow from "../../evidencias/claude-code-csr-cockpit/agentes-workflow.png";
 
 Um mod do Claude Code é um plugin com código que roda dentro do programa: reage aos eventos da sessão, guarda estado e desenha na interface. Na prática, ele se instala a partir de um marketplace, não se atualiza sozinho, pode ser testado sem abrir uma sessão e tem limites que só aparecem no uso.
 
@@ -67,24 +68,34 @@ As telas a seguir saem do próprio mod, rodando uma sessão de exemplo numa loja
 A imagem do começo do post é a aba Agentes. Nela:
 
 1. **As contagens:** quantos subagentes estão rodando, quantos terminaram e quantos falharam.
-2. **Quem chamou quem:** um grafo com a conversa principal no centro e os agentes em volta. Quando um agente cria outro, o novo fica num anel de fora, perto de quem o criou; quando dois conversam pelo SendMessage, a mensagem aparece como uma curva com seta e a contagem (`✉ 2`). A cor do agente é o estado (azul rodando, verde concluído, vermelho com falha), e a borda diz de onde vem a definição dele: tracejada para os globais, que ficam em `~/.claude/agents` e valem em todo projeto, cheia para os do projeto.
+2. **Quem chamou quem:** um grafo com a conversa principal, desenhada como um cérebro, e cada agente, como um robozinho. Com poucos agentes, todos criados pela conversa principal, eles ficam num anel em volta do cérebro; quando um agente cria outro, como aqui, o grafo vira uma árvore, com um nível por coluna. Quando dois conversam pelo SendMessage, a mensagem aparece como uma curva com seta e a contagem (`✉ 2`). A cor do agente é o estado (azul rodando, verde concluído, vermelho com falha), e a borda diz de onde vem a definição dele: tracejada para os globais, que ficam em `~/.claude/agents` e valem em todo projeto, cheia para os do projeto. Os agentes de um workflow, que não passam pela ferramenta Agent, aparecem com o nome que o script lhes deu e a fase em que rodam.
 3. **A linha do tempo:** uma barra por agente na mesma régua, que mostra quem rodou em paralelo e quem demorou.
-4. **Os cartões:** a tarefa, o tipo, o modelo, o contexto do próprio agente, o custo atribuído a ele, as chamadas e a ferramenta que ele usa agora.
+4. **Os cartões:** só o essencial, a tarefa, o tipo, o tempo, o modelo, o contexto do próprio agente, o custo atribuído a ele, as chamadas e, enquanto ele roda, a ferramenta que usa agora. O resultado fica no detalhe.
 5. **Ver detalhes**, que abre o detalhe do agente. Clicar num agente do grafo ou no nome dele na linha do tempo faz o mesmo.
 
-O detalhe mostra o pedido que o agente recebeu, as chamadas e a resposta. Na sessão das imagens, o agente Plan ficou com US\$ 0,18:
+O detalhe de um agente segue o jeito do detalhe de um turno. Na sessão das imagens, o agente Plan ficou com US\$ 0,18:
 
 <Evidencia
   imagem={detalheDoAgente}
-  alt="O detalhe do agente Plan no csr-cockpit: concluído em 41 segundos, com 3 chamadas, contexto de 25 mil tokens e custo atribuído de 18 centavos de dólar. Embaixo, o pedido que ele recebeu, as três chamadas de ferramenta, todas concluídas, e a resposta final, um plano em três passos."
+  alt="O detalhe do agente Plan no csr-cockpit: concluído em 41 segundos, com 5 chamadas, contexto de 25 mil tokens e custo atribuído de 18 centavos de dólar. Embaixo, as ferramentas que ele chamou, em barras (Read e Bash duas vezes, Grep uma), os dois comandos Bash dele, o pedido que recebeu, as cinco chamadas, todas concluídas, e a resposta, um plano em três passos."
   fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit#o-detalhe-de-um-agente"
   legenda="O detalhe de um agente, com o custo que o cockpit atribuiu a ele (tela do README do csr-cockpit)"
 />
 
 1. **Voltar** e **Reler mensagens:** as mensagens do agente são lidas da transcrição dele ao abrir o detalhe e de novo no botão.
-2. **O pedido** que o agente recebeu, inteiro.
-3. **As chamadas** de ferramenta, na ordem, com o estado e a duração.
-4. **A resposta final**, quando ele termina.
+2. **As ferramentas** que o agente chamou, em barras, com quantas vezes cada uma.
+3. **Os comandos Bash** dele, cada um abrindo o próprio detalhe.
+4. **O pedido** que o agente recebeu, inteiro.
+5. **A resposta**, quando ele termina. Entre o pedido e a resposta ficam as últimas chamadas, com o estado e a duração.
+
+Os agentes de um workflow, a orquestração de vários agentes que o Claude Code roda por um script, não passam pela ferramenta Agent, e o Claude Code não entrega ao mod o nome nem o pedido deles. O cockpit lê isso dos arquivos da execução, ao lado da transcrição da sessão, e agrupa os agentes por fase, como o painel de tarefas do próprio Claude Code:
+
+<Evidencia
+  imagem={agentesWorkflow}
+  alt="A aba Agentes do csr-cockpit com um workflow rodando. No grafo, as fases Pesquisa e Crítica do workflow pesquisa-de-frete aparecem como nós entre a conversa principal e os agentes delas, ao lado dos agentes da sessão. Embaixo, o cartão do workflow, com 3 agentes, 2 rodando e 76,4 mil tokens: a fase Pesquisa com 1 de 2 agentes concluídos, pesquisa:correios e pesquisa:transportadoras, e a fase Crítica com o agente critica:frete, cada um com o modelo Sonnet 5.5 e o tempo."
+  fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit#os-agentes-de-um-workflow"
+  legenda="Os agentes de um workflow, agrupados por fase no grafo e no cartão do workflow (tela do README do csr-cockpit)"
+/>
 
 ### Diffs
 
@@ -107,16 +118,17 @@ A aba Contexto responde quanto do contexto sobra e quanto a sessão já custou:
 
 <Evidencia
   imagem={abaContexto}
-  alt="A aba Contexto do csr-cockpit: um anel com 71% do contexto usado, 141,2 mil de 200 mil tokens e mais 8,3 mil no último turno; o custo da sessão, de 2 dólares e 21 centavos, e do último turno, de 37 centavos; o limite de uso de 5 horas em 38%, renovando em 2 horas e 9 minutos, e o de 7 dias em 21%; o contexto repartido por categoria; e o botão Contagem exata."
+  alt="A aba Contexto do csr-cockpit: um anel com 71% do contexto usado, 141,2 mil de 200 mil tokens e mais 8,3 mil no último turno; o custo da sessão, de 2 dólares e 21 centavos, e do último turno, de 37 centavos; o limite de uso de 5 horas em 38%, renovando em 2 horas e 8 minutos, e o de 7 dias em 21%; o total geral da sessão, com 99,4 mil tokens, 30,9 mil da conversa e 68,5 mil dos subagentes, e 2 dólares e 21 centavos, ou 11 reais e 54 centavos; o contexto repartido por categoria; e o botão Contagem exata."
   fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit#3-contexto"
-  legenda="A aba Contexto, com o uso do contexto, o custo e o limite de uso (tela do README do csr-cockpit)"
+  legenda="A aba Contexto, com o uso do contexto, o custo, o limite de uso e o total geral (tela do README do csr-cockpit)"
 />
 
 1. **O uso do contexto:** o percentual, os tokens sobre o tamanho da janela e quanto o último turno somou.
 2. **O custo** da sessão e do último turno.
 3. **O limite de uso** do plano, cada janela com o percentual e quando renova.
-4. **O contexto repartido por categoria** (as mensagens, o prompt de sistema, as ferramentas, a memória, o espaço livre): uma estimativa local, atualizada a cada turno.
-5. **Contagem exata**, que troca a estimativa pela contagem de verdade, com requisições a mais.
+4. **O total geral** da sessão, a conversa e todos os subagentes juntos, desde o começo: os tokens de todas as respostas do modelo e o custo, em dólar e em reais (a cotação é uma opção do plugin, porque o cockpit não busca nada na internet). Uma compactação da conversa não zera essa soma.
+5. **O contexto repartido por categoria** (as mensagens, o prompt de sistema, as ferramentas, a memória, o espaço livre): uma estimativa local, atualizada a cada turno.
+6. **Contagem exata**, que troca a estimativa pela contagem de verdade, com requisições a mais.
 
 ### Turnos
 
@@ -124,7 +136,7 @@ Na aba Turnos, cada pedido aparece com o que custou e o que desencadeou. O custo
 
 <Evidencia
   imagem={abaTurnos}
-  alt="A aba Turnos do csr-cockpit com cinco turnos de uma sessão que custou 2 dólares e 21 centavos. No alto, um gráfico com a duração de cada turno, o quarto em vermelho por ter tido uma falha, e as ferramentas mais chamadas na sessão. Embaixo, o turno 5 em andamento, num cartão, com o comando npm test rodando há 3 segundos, e o turno 4, que levou 52 segundos, custou 1 dólar e 23 centavos, usou 14 ferramentas, fez 2 edições e rodou 4 comandos Bash, um deles com falha."
+  alt="A aba Turnos do csr-cockpit com cinco turnos de uma sessão que custou 2 dólares e 21 centavos. No alto, um gráfico com a duração de cada turno, o quarto em vermelho por ter tido uma falha, e as ferramentas mais chamadas na sessão. Embaixo, o turno 5 em andamento, num cartão, com o comando npm test rodando há 3 segundos, e o turno 4, que levou 52 segundos, custou 1 dólar e 23 centavos, usou 16 ferramentas, fez 2 edições e rodou 6 comandos Bash, um deles com falha."
   fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit#4-turnos"
   legenda="A aba Turnos, com a duração, o custo, as ferramentas e os comandos de cada pedido (tela do README do csr-cockpit)"
 />
@@ -137,12 +149,12 @@ Na aba Turnos, cada pedido aparece com o que custou e o que desencadeou. O custo
 
 <Evidencia
   imagem={detalheDoTurno}
-  alt="O detalhe do turno 4 no csr-cockpit: 52 segundos, mais 28,1 mil tokens de contexto, 1 dólar e 23 centavos, 2 edições e 1 falha. Embaixo, as ferramentas chamadas no turno em barras, os quatro comandos Bash, um deles com exit 1, o pedido inteiro e a resposta."
+  alt="O detalhe do turno 4 no csr-cockpit: 52 segundos, mais 28,1 mil tokens de contexto, 1 dólar e 23 centavos, 2 edições e 1 falha. Embaixo, as ferramentas chamadas no turno em barras, os seis comandos Bash, um deles com exit 1, o pedido inteiro, os quatro subagentes do turno, com o grafo de quem chamou quem e um cartão por agente com o pedido e a resposta, e a resposta do turno."
   fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit#o-detalhe-de-um-turno"
-  legenda="O detalhe de um turno, com as ferramentas, os comandos, o pedido e a resposta (tela do README do csr-cockpit)"
+  legenda="O detalhe de um turno, com as ferramentas, os comandos, o pedido, os subagentes e a resposta (tela do README do csr-cockpit)"
 />
 
-No detalhe do turno, (1) as ferramentas chamadas em barras, (2) todos os comandos Bash, cada um abrindo o próprio detalhe (o comando inteiro e o fim da saída), (3) o pedido e (4) a resposta.
+No detalhe do turno, (1) as ferramentas chamadas em barras, (2) todos os comandos Bash, cada um abrindo o próprio detalhe (o comando inteiro e o fim da saída), (3) o pedido, (4) os subagentes que o turno criou, com o pedido e a resposta de cada um, e (5) a resposta.
 
 ### Árvore
 
@@ -155,9 +167,9 @@ A aba Árvore mostra onde o Claude está mexendo agora:
   legenda="A aba Árvore, com o arquivo que está sendo escrito aceso (tela do README do csr-cockpit)"
 />
 
-1. **O que a aba mostra:** os arquivos que a sessão leu ou editou, do loop principal e dos subagentes, e os que o git vê alterados, com o ramo no alto.
+1. **O que a aba mostra:** os arquivos que a sessão leu ou editou, do loop principal e de todos os subagentes, e os que o git vê alterados, com o ramo no alto.
 2. **Os botões:** ler o git de novo, mostrar o projeto inteiro em vez de só o que foi tocado, expandir e recolher todas as pastas.
-3. **Agora mesmo:** enquanto uma leitura ou uma escrita roda, o arquivo aparece aqui, com quem está mexendo nele. Uma escrita esperando permissão fica acesa até a resposta.
+3. **Agora mesmo:** enquanto uma leitura ou uma escrita roda, o arquivo aparece aqui, com quem está mexendo nele. Vale também para um comando Bash: o cockpit lê o próprio texto do comando (`cat` e `grep` leem; `sed -i`, `tee` e o redirecionamento `>` escrevem). Uma escrita esperando permissão fica acesa até a resposta.
 4. **Na árvore**, o mesmo arquivo acende com o selo `editando…` ou `lendo…`, e fica destacado por 8 segundos depois. À direita, a letra do git e as linhas somadas.
 
 ### Inventário
@@ -181,7 +193,7 @@ Clicar no nome de um agente, de um comando Bash ou de um turno abre o detalhe: o
 
 <Evidencia
   imagem={linhaDeResumo}
-  alt="A linha de resumo do csr-cockpit no aplicativo de desktop, em duas fileiras de pílulas: a marca CSR, a bolinha da conversa principal trabalhando, 2 agentes em paralelo, o repositório proj no ramo main com 3 arquivos alterados, o contexto em 71% com 141,2 mil tokens e mais 8,3 mil do último turno, o custo de 2 dólares e 21 centavos com mais 37 centavos do último turno, o limite de 5 horas em 38%, o de 7 dias em 21%, o modelo Opus 5.5 com esforço high e o cache em 99%."
+  alt="A linha de resumo do csr-cockpit no aplicativo de desktop, em duas fileiras de pílulas: a marca CSR, o cérebro da conversa principal trabalhando, o robô dos 2 agentes em paralelo, o repositório proj no ramo main com 3 arquivos alterados, o contexto em 71% com 141,2 mil tokens e mais 8,3 mil do último turno, o custo de 2 dólares e 21 centavos com mais 37 centavos do último turno, o limite de 5 horas em 38%, o de 7 dias em 21%, o modelo Opus 5.5 com esforço high e o cache em 99%."
   fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit#a-linha-de-resumo"
   legenda="A linha de resumo no aplicativo de desktop: o que está vivo vem primeiro, depois o repositório e as medidas (tela do README do csr-cockpit)"
 />
@@ -192,7 +204,7 @@ Clicar no nome de um agente, de um comando Bash ou de um turno abre o detalhe: o
 A regra do cockpit é **só observar**. Um mod liga funções aos eventos do Claude Code (uma chamada de ferramenta, o início de um turno), e a documentação chama cada uma de hook. Nenhum hook do cockpit bloqueia ou altera uma chamada de ferramenta ou uma resposta do modelo: o evento passa adiante como chegou, e o resultado volta como veio.
 :::
 
-Ele não faz chamada de rede. Na máquina, roda só comandos de leitura do git, para as abas Árvore e Diffs, e lê o conteúdo antigo de um arquivo antes de uma escrita (para o diff mostrar o que mudou de verdade) e as pastas de plugins, skills e agentes que o Inventário lista. Grava dois arquivos, só ali: um registro de erros, quando algo falha, e um de diagnóstico de cliques, quando é ligado. O resto fica no estado da sessão e some com ela.
+Ele não faz chamada de rede. Na máquina, roda só comandos de leitura do git, para as abas Árvore e Diffs, e lê o conteúdo antigo de um arquivo antes de uma escrita (para o diff mostrar o que mudou de verdade), as pastas de plugins, skills e agentes que o Inventário lista e, quando há um workflow rodando, os arquivos da execução dele, na pasta da sessão. Grava dois arquivos, só ali: um registro de erros, quando algo falha, e um de diagnóstico de cliques, quando é ligado. O resto fica no estado da sessão e some com ela.
 
 O mod não chama o modelo, então não gasta token por conta própria. A exceção é o botão ":circulo[Contagem exata]", da aba Contexto: quando ele é apertado, o Claude Code faz requisições a mais para trocar a estimativa local pela contagem de verdade.
 
@@ -287,8 +299,8 @@ Um mod se testa em três camadas, da mais barata para a mais cara.
 
 **`claude plugin validate`.** Num mod, além de conferir o manifesto, ele lista os eventos que o mod escuta e as chamadas que ele faz à API dos mods, sem executar nada. Serve também para :grifo[auditar o mod de outra pessoa antes de instalar]. No cockpit, a lista não tem chamada de rede; os processos são só os comandos de leitura do git, e as gravações, só os dois arquivos de registro.
 
-:::carimbo{texto="rodado em 04/10/2026: 35 de 35"}
-**`claude plugin test`.** [Roda os testes](https://code.claude.com/docs/en/plugins/mods/test#write-a-test) do mod contra um Claude Code de mentira, sem login e sem rede: o teste dispara os eventos, monta o painel, aperta os botões e confere o que foi desenhado. O cockpit tem [35 testes](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit/tests): um deles confere a regra de só observar, e outro desenha cada aba de uma sessão longa e bagunçada.
+:::carimbo{texto="rodado em 04/10/2026: 52 de 52"}
+**`claude plugin test`.** [Roda os testes](https://code.claude.com/docs/en/plugins/mods/test#write-a-test) do mod contra um Claude Code de mentira, sem login e sem rede: o teste dispara os eventos, monta o painel, aperta os botões e confere o que foi desenhado. O cockpit tem [52 testes](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-cockpit/tests): um deles confere a regra de só observar, e outro desenha cada aba de uma sessão longa e bagunçada.
 :::
 
 **Uma sessão de verdade.** O Claude Code aberto num projeto de exemplo, com o mod carregado por `claude --plugin-dir`. Carregada assim, a pasta fica vigiada: o Claude Code [recarrega o mod](https://code.claude.com/docs/en/plugins/mods/create#how-the-example-mod-works) a cada arquivo salvo. É a única das três camadas que mostra o painel desenhado no terminal.
@@ -306,6 +318,7 @@ Os outros limites:
 - **Não há custo por comando Bash.** O cockpit mostra custo por agente e por turno. Um comando Bash aparece com o status e a duração.
 - **O raciocínio interno de um agente não aparece.** O Claude Code não o expõe. O detalhe mostra só o texto que o agente escreveu.
 - **O código de saída do Bash não vem como campo.** Em caso de falha, o cockpit tira o código do texto de erro. Em caso de sucesso, a linha mostra só a marca de concluído e a duração.
+- **No aplicativo de desktop, o painel não acompanha cada chamada.** O aplicativo recusa o clique feito num desenho que já foi trocado, então o cockpit redesenha o painel na hora depois de um clique e, fora isso, no máximo a cada 2,5 segundos; o tempo de quem roda há mais de um minuto aparece em minutos.
 - **A API de mods ainda pode mudar** [de uma versão para outra](https://code.claude.com/docs/en/plugins/mods/create#get-the-types-for-your-build).
 - **No aplicativo de desktop, depende da versão que ele traz.** O aplicativo usa a própria cópia do Claude Code, que o `claude --version` do terminal não mostra. Em 02/10/2026, a versão 2.16120.0 para macOS trazia o Claude Code 2.1.284, anterior aos mods oficiais, e nela o `/cockpit` respondia que não era um comando. Em 04/10/2026, a versão 2.19675.0 já roda o cockpit, com o painel ao lado da conversa e as pílulas acima do prompt.
 

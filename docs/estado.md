@@ -292,6 +292,10 @@ CNAME, MX, TXT e o domínio no GitHub Pages", no livro DevOps, detalhado, com as
 figuras em passos, 26 marcações da caneta e a apresentação no estilo do blog. Pendente fora do post: o
 contraste do resumo "Neste artigo" no celular (Lighthouse 97).
 
+**O post do csr-cockpit em dia com a 1.0.0 refeita (D83, 04/10/2026):** as telas novas do cockpit
+(cliques, grafo centralizado, workflows por fase, total geral do Contexto), uma tela de workflow, os 52
+testes e a apresentação regerada.
+
 **O claude-code-kit na 1.0 (D80, 04/10/2026):** o kit recomeçou o histórico na versão 1.0, com o
 csr-cockpit 1.0.0 e a release `v1.0.0`; o post da parte 2 e a apresentação citam a 1.0.0.
 
