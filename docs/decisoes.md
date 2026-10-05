@@ -3620,7 +3620,7 @@ nada muda.
   levantou 78 achados (alguns repetidos entre os grupos, como o menu do celular sem JS e a busca); 75 se
   confirmaram, e 74 foram corrigidos e conferidos no navegador (o que sobrou está abaixo). A revisão da home
   nova levantou mais 13, corrigidos menos dois que dependem do Cesar. A lista, arquivo por arquivo, está em
-  `docs/ajustes-d84/controle.md`. Os três derrubados: "Série · 7 edições" no livro ampliado (proposital: a
+  `docs/historico/ajustes-d84/controle.md`. Os três derrubados: "Série · 7 edições" no livro ampliado (proposital: a
   série é uma revista), a tarefa longa só com a CPU a 4× e a fonte maior do navegador (o site é em px de
   propósito).
 - **Ficaram para o Cesar decidir** (perguntas do `docs/estado.md`): o ícone do computador cobre a lombada do
@@ -3672,3 +3672,12 @@ nada muda.
     frontend (D76), a análise de 28/09 do Claude Code (o `CLAUDE-CODE.md` da raiz, hoje
     `claude-code-2026-09-28.md`), o prompt do modelo 06, os protótipos das "Folhas claras" e das lousas
     (`referencias/`), o estudo dos livros realistas (D57) e o roteiro das fases do briefing.
+  - **A conferência e a publicação (05/10/2026):** depois do conferente, mais sete acertos pequenos (a frase
+    da D67 no briefing, um passo do painel já feito, uma regra de sombra das fichas que tinha ficado sem
+    efeito, o cone dos abajures sem transição com movimento reduzido, o Flip e o MorphSVG fora do
+    `optimizeDeps`, a `parado()` da doca e o seletor `.lousa` que sobrou no `Atalhos.astro` e no
+    `icone.ts`). Numa cópia limpa, passaram o `check`, o `build`, os `links`, o `contraste`, os
+    validadores, a `escrita`, o `npm run frontend` e o `conferir` (seis posts e a home); as 114 fotos
+    ficaram iguais às de antes, menos o ruído conhecido de `/capas/`. Publicado em três commits (`8ae63fb`,
+    `bc0cff6` e `a1f3d9a`), com o deploy e o site no ar conferidos. O controle da rodada foi para
+    `docs/historico/ajustes-d84/`.

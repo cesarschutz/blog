@@ -21,6 +21,8 @@ decisões valem pelo `docs/decisoes.md`, e o andamento atual está no `docs/esta
 - `revisao-frontend-2026-10-03.md`: o relatório da revisão técnica do frontend (D76, PR #3). Os testes
   que ele cita como `scripts/frontend-*.mjs` estão hoje em `scripts/frontend/` (D84).
 - `estado-ate-2026-10-04.md`: o `docs/estado.md` antes da faxina da D84, com um parágrafo por rodada.
+- `ajustes-d84/`: a rodada de 04 e 05/10/2026 (D84): a home em prateleiras, a revisão geral das telas e
+  a faxina, com o checklist e os achados arquivo por arquivo.
 - `prototipos/`: protótipos superados. O da home e do artigo da Fase 0 (o layout mudou a partir da
   D26), os de movimento da D40 e da D41, o caderno marcado (virou a caneta da D48) e as ideias
   revistas na D49.

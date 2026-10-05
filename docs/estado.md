@@ -19,9 +19,9 @@ das rodadas fechadas e o diário que este painel tinha até 04/10/2026 (`estado-
   no estilo do blog sai pela skill `apresentacao` (D74, D77). Os sete posts com uma peça que acontece em
   ordem usam a figura em passos (D67, em prova), no estilo marca-texto; nenhum usa mais a `Lousa` nem a
   `Animacao`.
-- **Rodada em andamento: D84** (a home, a revisão geral das telas e a faxina do código e dos
-  documentos), com o controle em `docs/ajustes-d84/controle.md`; ao fechar, ele vai para
-  `docs/historico/ajustes-d84/`.
+- **Última rodada: D84** (a home, a revisão geral das telas e a faxina do código e dos documentos),
+  publicada em 05/10/2026; o controle está em `docs/historico/ajustes-d84/controle.md`. Nenhuma rodada em
+  andamento: o próximo trabalho é post novo (skill `post`) e a revisão do Cesar no ar (pergunta 000).
 
 ## Como ver
 
@@ -164,7 +164,8 @@ Escolhas feitas para não parar; todas voltam atrás com pouco trabalho. Os núm
   `../blog-livros-realistas` e duas no `/private/tmp`). A pasta principal está na branch
   `post-claude-code-mod` (já na `main`, 120 commits atrás): volta para a `main`? A `lucid-khayyam-cc18a1`
   (outra branch, já na `main`) só sai depois de conferir se tem trabalho sem commit e da pergunta 16. A
-  `exemplos-arquivo` não está na `main` e fica.
+  `exemplos-arquivo` não está na `main` e fica. A branch `claude/blog-review-home-improvements-ca8691`
+  (a da D84, já na `main`) foi enviada ao GitHub sem querer no fim da rodada: pode sair de lá também.
 
 ## Riscos a acompanhar
 

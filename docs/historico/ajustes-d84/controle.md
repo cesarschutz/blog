@@ -60,18 +60,18 @@ Legenda: `[x]` feito e conferido, `[~]` em andamento, `[ ]` falta, `[-]` não se
 
 - [x] 4.1 Inventário: arquivos sem uso, CSS e funções mortas, scripts de uma vez só, cópias, documentos
       superados ou repetidos
-- [ ] 4.2 Apagar, juntar e refatorar sem mudar o comportamento
-- [ ] 4.3 Regras e documentos (`CLAUDE.md`, `.claude/`, `DESIGN.md`, `docs/`) enxutos e sem contradição,
+- [x] 4.2 Apagar, juntar e refatorar sem mudar o comportamento
+- [x] 4.3 Regras e documentos (`CLAUDE.md`, `.claude/`, `DESIGN.md`, `docs/`) enxutos e sem contradição,
       sem perder regra
-- [ ] 4.4 Testes de novo: `check`, `build`, `links`, `frontend-*`, `conferir` e as fotos de antes e
+- [x] 4.4 Testes de novo: `check`, `build`, `links`, `frontend-*`, `conferir` e as fotos de antes e
       depois comparadas
-- [ ] 4.5 Publicar de novo
+- [x] 4.5 Publicar de novo
 
 ## 5. Entrega final
 
-- [ ] 5.1 Este controle revisto item a item
-- [ ] 5.2 As perguntas que ficaram para o Cesar, curtas, no fim
-- [ ] 5.3 Worktrees e branches que podem ser apagadas (sem apagar)
+- [x] 5.1 Este controle revisto item a item
+- [x] 5.2 As perguntas que ficaram para o Cesar, curtas, no fim
+- [x] 5.3 Worktrees e branches que podem ser apagadas (sem apagar)
 
 ## Achados e correções
 
@@ -150,7 +150,41 @@ corrigidos) e dois agentes na home nova, no dev (13 achados). Corrigido e confer
 - Depois da publicação: o DNS e o You should know, do mesmo dia, ganharam a hora (o You should know saiu
   depois), para a ordem e os tombos baterem com a publicação.
 
+### A faxina (item 4)
+
+- Inventário de 137 candidatos, cada um conferido por um segundo agente, aplicado em seis pacotes
+  (componentes, estilos, scripts do site, ferramentas, documentos e `.claude/`), com um conferente no fim
+  comparando a cópia de antes e a de depois (HTML, CSS calculado, hover, sem JS, impressão e fotos). O que
+  saiu e o porquê estão na D84 (`docs/decisoes.md`, "A faxina do código e dos documentos").
+- Três commits na `main` (`8ae63fb` as ferramentas, `bc0cff6` o código e os estilos, `a1f3d9a` os
+  documentos): 267 arquivos, 3.162 linhas a mais e 7.567 a menos.
+- Acertos depois do conferente: a frase da D67 no briefing, o passo 6 do painel que já estava feito, uma
+  regra de sombra das fichas no escuro que tinha ficado sem efeito (`catalogo.css`), o cone dos abajures
+  sem transição com movimento reduzido (`nicho.css`), o Flip e o MorphSVG fora do `optimizeDeps`, a
+  `parado()` da doca sem o argumento que ninguém passava e o seletor `.lousa` que tinha sobrado no
+  `Atalhos.astro` e no `icone.ts`.
+- Conferido numa cópia limpa de `a1f3d9a`: `check` (0 erros), `build`, `links` (109 páginas, 6.681 links,
+  24 redirecionamentos), `contraste`, `validar.mjs` (74 desenhos) e `marcas` (6), `escrita`, `npm run
+  frontend` (os cinco testes), `conferir` em seis posts e na home (10 combinações e movimento reduzido), a
+  doca (1,14× no livro sob o mouse e o clique que leva ao livro) e a abertura quadro a quadro em 1440 e
+  390px. As 114 fotos (19 páginas, 390, 1024 e 1440px, claro e escuro) iguais às de antes da faxina, menos
+  `/capas/` em 1440px no escuro, que é o ruído conhecido (na foto de antes os painéis ainda não tinham
+  aparecido ao rolar).
+- Publicado em `a1f3d9a` (deploy ok em 57s); o CSS dos blocos de código manteve o nome (`ec.jwfjl.css`),
+  então o cache do deploy não deixou post apontando para arquivo velho. O site no ar fotografado e
+  comparado com o build. A rota `/livros/<slug>.svg` responde 404, como esperado (era só da gaveta, fora
+  da lista de URLs que não podem quebrar).
+
 ## Perguntas para o Cesar
 
-(no fim da rodada, também no `docs/estado.md`)
+Ficam no `docs/estado.md` (a 000 é desta rodada; a 20, a 21 e a 22 saíram da faxina). Em resumo:
+
+- O ícone do computador sobre o primeiro livro da prateleira de baixo, de 900 a 1280px: fica, afunda ou
+  a estante abre espaço?
+- Os saltos de tamanho nas viradas de forma (599/600 e 899/900px) e o do nome em 700/701px ficam?
+- As três de acessibilidade que mexem no Expressive Code e nos plugins (build sem cache): faço?
+- O `CLAUDE.md` com umas 300 linhas: enxugar mais ou mudar a meta de 150?
+- O prompt do modelo 06 já está no dev-note? As worktrees e branches da lista podem sair?
+- A branch `claude/blog-review-home-improvements-ca8691` foi enviada ao GitHub sem querer (igual à
+  `main`): pode apagar lá (o apagar ficou para você).
 
