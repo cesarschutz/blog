@@ -49,16 +49,16 @@ Legenda: `[x]` feito e conferido, `[~]` em andamento, `[ ]` falta, `[-]` não se
 
 ## 3. Publicar (primeira vez)
 
-- [ ] 3.1 `check`, `build`, `links`, `contraste`, `validar.mjs`, testes `frontend-*`, `conferir` em
+- [x] 3.1 `check`, `build`, `links`, `contraste`, `validar.mjs`, testes `frontend-*`, `conferir` em
       alguns posts
-- [ ] 3.2 Registro: `docs/decisoes.md` (D84), `docs/estado.md`, `docs/briefing.md` e `DESIGN.md` no que
+- [x] 3.2 Registro: `docs/decisoes.md` (D84), `docs/estado.md`, `docs/briefing.md` e `DESIGN.md` no que
       mudou
-- [ ] 3.3 Commits, `git fetch`, junção cuidadosa com a `origin/main` (outras sessões), push na `main`
-- [ ] 3.4 Deploy conferido e o site no ar olhado
+- [x] 3.3 Commits, `git fetch`, junção cuidadosa com a `origin/main` (outras sessões), push na `main`
+- [x] 3.4 Deploy conferido e o site no ar olhado
 
 ## 4. Faxina do código-fonte e dos documentos
 
-- [ ] 4.1 Inventário: arquivos sem uso, CSS e funções mortas, scripts de uma vez só, cópias, documentos
+- [x] 4.1 Inventário: arquivos sem uso, CSS e funções mortas, scripts de uma vez só, cópias, documentos
       superados ou repetidos
 - [ ] 4.2 Apagar, juntar e refatorar sem mudar o comportamento
 - [ ] 4.3 Regras e documentos (`CLAUDE.md`, `.claude/`, `DESIGN.md`, `docs/`) enxutos e sem contradição,
@@ -138,6 +138,17 @@ corrigidos) e dois agentes na home nova, no dev (13 achados). Corrigido e confer
   Tab que pula a abertura (`Abertura`); o foco por cima dos vizinhos, as prateleiras alinhadas, o teto do
   tamanho nas formas de 5 e 4 e o respiro sob "A coleção" (`ColecaoHome`, `[...page].astro`); o voo a partir
   da pose da doca (`doca.ts`); o hit test do ícone adiado enquanto a estante acende (`icone.ts`).
+
+### A publicação (item 3)
+
+- `check` (0 erros), `build`, `links` (109 páginas, 6.681 links, 24 redirecionamentos), `contraste`, os
+  validadores (75 desenhos e 6 logos), os cinco testes `frontend-*` e o `conferir` (DNS, CronJob, Java 25,
+  SNS, You should know e a home, nas 10 combinações e com movimento reduzido): tudo passou.
+- A `main` andou no meio (dois posts de outra sessão, D82 e D83): a decisão virou D84 e a `main` foi juntada
+  na branch, com o conflito do registro resolvido (as três entradas). Publicado em `eafe71c` (deploy ok), e o
+  site no ar conferido em foto.
+- Depois da publicação: o DNS e o You should know, do mesmo dia, ganharam a hora (o You should know saiu
+  depois), para a ordem e os tombos baterem com a publicação.
 
 ## Perguntas para o Cesar
 
