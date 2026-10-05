@@ -125,7 +125,8 @@ Detalhes de cada tipo:
 ## O que nunca marcar
 
 - **Títulos** (o build recusa), legendas e tabelas de referência inteiras.
-- Aviso (`> [!NOTA]`), nota lateral, frase em destaque ou lousa: eles já chamam atenção.
+- Aviso (`> [!NOTA]`), nota lateral, frase em destaque, lousa ou figura em passos (com a lista dos
+  passos): eles já chamam atenção.
 - Frases de efeito, transições ("Vamos ver…") e o que já está em negrito só por ênfase.
 - A mesma ideia duas vezes (no texto e no resumo do fim).
 - Trecho longo: a caneta marca **o pedaço**, nunca o parágrafo inteiro (fora o colchete e as marcas

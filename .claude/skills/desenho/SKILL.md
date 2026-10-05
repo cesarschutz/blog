@@ -1,17 +1,18 @@
 ---
 name: desenho
-description: Cria ou altera a ilustração SVG de um post (a capa) no estilo de docs/estilo-desenho.md, seguindo as regras técnicas (classes e variáveis CSS, sem id nem defs, recortes com área segura, alt), com o detalhe da capa viva (classes mexe-*, D58), e validando antes de aceitar. Use ao desenhar ou corrigir a ilustração de um post. Figuras, animações, logos e print do corpo do post ficam na skill figura; lousas, na skill lousa.
+description: Cria ou altera a ilustração SVG de um post (a capa) no estilo de docs/estilo-desenho.md, seguindo as regras técnicas (classes e variáveis CSS, sem id nem defs, recortes com área segura, alt), com o detalhe da capa viva (classes mexe-*, D58), e validando antes de aceitar. Use ao desenhar ou corrigir a ilustração de um post. Figuras, figuras em passos, logos e print do corpo do post ficam na skill figura; a frase em destaque e as lousas em prova, na skill lousa.
 ---
 
 # Desenho (ilustração do post)
 
-Formato, definições globais e scripts desde a Fase 5 (D11); os 27 posts têm ilustração. Referência:
+Formato, definições globais e scripts desde a Fase 5 (D11); todo post tem ilustração. Referência:
 `src/ilustracoes/cobranca-duplicada-no-retry.svg`.
 
 **Antes de desenhar, leia `docs/estilo-desenho.md`**, porque o estilo pode ter mudado.
 
 Esta skill é da capa. Os desenhos do corpo do post têm as suas: figuras (diagramas e gráficos
-coloridos), animação com play, logos das ferramentas e print, na skill `figura`; lousas, na `lousa`.
+coloridos), figuras em passos, logos das ferramentas e print, na skill `figura`; a frase em destaque (e
+as lousas, em prova), na `lousa`.
 
 ## O que desenhar
 
@@ -160,7 +161,7 @@ Depois de desenhar, rode o `centrar.mjs`: ele mede o conteúdo e reescreve `data
 D33, os recortes são **justos**: o desenho ocupa até 86% da largura e 82% da altura do médio e 90% do
 quadrado, para aparecer grande no destaque, nos cards e na miniatura (com folga maior, ele ficava
 pequeno no painel). Sem o `centrar.mjs`, o desenho fica fora do centro e pequeno nos recortes.
-A série Java não se desenha: `node scripts/desenho/java.mjs` gera as oito a partir de `src/data/java.ts`;
+A série Java não se desenha: `node scripts/desenho/java.mjs` gera as da série a partir de `src/data/java.ts`;
 depois, rode o `centrar.mjs` nelas (o guia e a próxima LTS têm outro desenho).
 
 O render gera `.render/desenhos/<slug>.png` com todos os recortes nos tamanhos reais e a imagem de

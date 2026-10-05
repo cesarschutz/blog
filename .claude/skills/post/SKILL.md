@@ -6,7 +6,7 @@ description: Processo único de todo post do blog, com o mesmo checklist nos doi
 # Post
 
 Todo post passa por aqui, do zero ou adaptado. **Tudo o que um post novo recebe, um post adaptado
-também recebe**: plano, desenho, animação onde há fluxo, conferência no navegador e qualidade.
+também recebe**: plano, desenho, figura em passos onde há fluxo, conferência no navegador e qualidade.
 
 > **Lembrete (D63):** no primeiro post feito com os formatos novos (o TL;DR do detalhado, o infográfico
 > do resumo e os links ao longo do texto), ao entregar, peça ao Cesar para olhar como ficou e dizer o
@@ -99,14 +99,14 @@ antes de qualquer plano:
   um post que já existiu no blog: o slug antigo, ou um redirecionamento (passo 3).
 - **Inventário visual** (regras dos desenhos no passo 5):
   - Para **cada imagem existente**, diga se ela vai ser **redesenhada no estilo** (vira SVG da casa:
-    figura, lousa ou animação), virar **print como evidência** (`Evidencia`, só se prova algo do texto
+    figura ou figura em passos), virar **print como evidência** (`Evidencia`, só se prova algo do texto
     e dá para garantir que está certo) ou **sair** por ser só decorativa; diga por quê.
   - A **capa** (sempre existe): o que ela vai mostrar e o **detalhe da capa viva** (o que se mexe no
     hover e com qual classe `mexe-*`).
   - Cada recurso escolhido pela tabela [Qual recurso para qual conteúdo](#qual-recurso-para-qual-conteúdo),
     com o trecho do texto que ele explica e o que o texto vai dizer para apresentá-lo: **figura**
     (diagrama ou gráfico colorido, parado ou com detalhe que se mexe; os tons de cada ator),
-    **lousa** (de passos ou de comparação), **animação com play**, **frase em destaque** (rara),
+    **figura em passos** (de sequência ou de comparação, D67), **frase em destaque** (rara),
     **print** (o que prova e de onde; tela com login, peça ao Cesar).
   - Os **ícones das ferramentas**: quais, onde no texto (primeira menção e mais adiante) e em quais
     desenhos, e se algum logo precisa ser desenhado (os que existem estão em `src/marcas/`).
@@ -161,8 +161,8 @@ vai explicado no relatório).
     `codigo: https://github.com/cesarschutz/blog-exemplos/tree/main/jackson-filtros-mascarando-cartao`.
     Pergunte ao Cesar se o código do post vai para lá; se for, abra o link e confira que a pasta existe
     e é a do artigo antes de preencher. Com o campo, o topo do artigo mostra "Código deste artigo no
-    GitHub" e o artigo ganha o sinal de código-fonte nas listas, nos cards, na gaveta, no anterior /
-    próximo, no livro ampliado e na busca. Não repita o link no texto (a não ser que ele explique uma
+    GitHub" e o artigo ganha o sinal de código-fonte nas listas, nos cards, no anterior / próximo, no
+    livro ampliado e na busca. Não repita o link no texto (a não ser que ele explique uma
     parte específica do código). Sem código publicado, o campo fica de fora;
   - `formato` (D63): `detalhado` ou `resumo`, o que foi combinado no passo 2;
   - `tldr` (D63), no detalhado: de 3 a 5 pontos (o esquema aceita de 2 a 6), cada um uma conclusão que
@@ -177,48 +177,23 @@ vai explicado no relatório).
 - **Espaço opcional para a apresentação:** não se escreve no post. Quando o Cesar trouxer o `.pptx`
   (skill `apresentacao`), os slides vão para `public/posts/<slug>/deck/` e a entrada para
   `src/data/decks.json`, e a seção entra sozinha antes de `## Fontes`.
-- `$` em texto com escape (`US\$ 10`). Post com lousa, figura, animação, ícone de ferramenta ou print
-  é `.mdx`.
+- `$` em texto com escape (`US\$ 10`). Post com figura, figura em passos, frase em destaque, ícone de
+  ferramenta ou print é `.mdx`.
 - Recursos de Markdown (código, avisos, notas laterais, tabelas, KaTeX): veja
   [Recursos de Markdown](#recursos-de-markdown) e `/amostra/markdown/` no dev.
 
 ### 5. Desenhos
 
-Siga a skill `desenho` (a capa e a capa viva), a skill `figura` (figuras coloridas, animação com
-play, logos das ferramentas e print) e a skill `lousa` (lousas de passos e de comparação), no estilo
-do `DESIGN.md` e do `docs/estilo-desenho.md`.
+Siga a skill `desenho` (a capa e a capa viva) e a skill `figura` (figuras coloridas, figura em passos,
+logos das ferramentas e print), no estilo do `DESIGN.md` e do `docs/estilo-desenho.md`. O que vale para
+todo desenho (o texto que apresenta o desenho, o texto alternativo, nada de gerador de traço, o
+validador, a revisão da D59 antes de mostrar ao Cesar e a regra de marca dos logos) está em
+`.claude/rules/desenho.md`, que carrega ao abrir um desenho; as regras do corpo do post (tons, ícones das
+ferramentas, print) e o checklist da revisão, na skill `figura`. Do post, aqui:
 
-**Regras dos desenhos (D58):**
-- **Todo desenho conversa com o texto.** O texto apresenta o desenho e diz o que olhar nele (o que é
-  cada cor, a ordem dos números, o que o play mostra). Nada de imagem solta que o leitor não entende.
-- **Nem todo post tem todos os tipos.** Entra o que o assunto pede e o que fica bom: um post pode ter
-  só a capa e um gráfico; outro, uma lousa e uma animação.
-- **Ícones das ferramentas sempre que couberem**, no texto e dentro dos desenhos (a xícara do Java na
-  caixa do app), espalhados pelo post e não só no começo, sem poluir. No texto, o ícone leva à página
-  mais específica (a do Java 21, não a do Java).
-- **Print** só quando prova algo do texto e dá para garantir que está certo. Tela que pede login
-  (console da AWS, painéis internos): peça ao Cesar, ele tira o print. Sempre com o `Evidencia`.
 - **Post resumo (D63):** o infográfico é o desenho principal, logo depois da introdução: uma figura
   grande que mostra o assunto inteiro de uma vez (a ideia dos guias do ByteByteGo, no nosso estilo),
   pela seção "Infográfico do post resumo" da skill `figura`. O texto passa por ele, quadro a quadro.
-
-Técnica:
-- **SVG desenhado à mão**, em coordenadas, com classes e variáveis CSS: sem cor fixa, sem `id` nem
-  `defs` próprios, sem `<image>`. O **tremor** é o filtro SVG global (`feTurbulence` +
-  `feDisplacementMap`, definido uma vez no layout) aplicado só no grupo dos traços. Hachura a 45°,
-  linha fantasma para o que não acontece. Na **capa**, a cor do livro como única cor, no painel da
-  categoria; nas **figuras**, um tom por ator (`tom-*`), o mesmo em todas as figuras do post.
-  **Não use Rough.js** nem gerador de traço (D35).
-- **Texto alternativo descritivo** em todo desenho: o que ele mostra e o que isso explica, não
-  "ilustração do post". Na lousa, o `rotulo=`; no print, o `alt` diz o que a imagem prova.
-- Antes de aceitar: `node scripts/desenho/validar.mjs <slug>` (capa, lousas, figuras e animações;
-  `validar.mjs marcas` para os logos), `centrar.mjs` e o render claro e escuro da capa (`render.mjs`,
-  com o dev no ar).
-- **Revisão de todo desenho terminado, antes de mostrar ao Cesar (D59):** `node
-  scripts/desenho/revisar.mjs <slug> --base <dev>` até sair limpo (ou com cada aviso explicado), e as
-  fotos dele olhadas uma a uma pelo checklist da skill `figura` ("Validar, revisar e conferir"), que
-  traz também a tabela dos bugs que já aconteceram. Vale para capa, figura, animação, lousa, logo e
-  print, e de novo depois de cada ajuste.
 - **Tag nova:** o ícone dela, pela seção "Tags" do `docs/capas/CAPAS.md` (o desenho em
   `scripts/desenho/tags.mjs`, gravado em `src/livros/tags/<slug>.svg` e conferido em `/amostra/tags/`
   ao lado dos outros, nos dois temas). Sem ele, o build quebra.
@@ -227,25 +202,19 @@ Técnica:
 
 Quem manda no movimento (D58): a **capa** só mexe um detalhe no hover (`mexe-*`, skill `desenho`); a
 **figura** fica parada ou tem detalhes que se mexem sozinhos sem mudar a imagem (skill `figura`); na
-**lousa**, o leitor comanda o tempo (skill `lousa`); a **animação com play** muda a imagem e o leitor
-só dá play e pausa (skill `figura`). Nenhum desenho é comandado pela rolagem da página (D46).
+**figura em passos**, o leitor monta a figura passo a passo e nada anda sozinho (skill `figura`, D67).
+Nenhum desenho é comandado pela rolagem da página (D46).
 
-- **Em prova (D67):** a figura em passos (skill `figura`) pode substituir a lousa e a animação com play,
-  na página `/animacoes-test-2/`. Até o Cesar decidir, siga as regras abaixo.
 - **Só onde há fluxo** (sequência, passo a passo, antes e depois, o sistema funcionando). Post sem
   fluxo fica com a capa viva e, se ajudar, figuras paradas.
-- **Sequência em que a ordem importa, ou comparação no tempo:** a `Lousa` (passos ou comparação). A
-  frase em destaque (`FraseDestaque`) é rara.
-- **O que a lousa não cobre** (uma fila enchendo, um gráfico se formando, um algoritmo rodando): a
-  `Animacao`, com o SVG do quadro final e o `.ts` que monta a timeline GSAP (skill `figura`), de 6 a
-  12 s por volta. Consulte as skills `gsap-core`, `gsap-timeline` e `gsap-performance`. O componente já
-  carrega o GSAP sob demanda, abre tocando na tela (nunca com movimento reduzido) e mostra o quadro
-  final sem JS; anime só `transform`, `opacity` e `stroke-dashoffset`, fora do grupo que treme.
-- **Pouco texto trocando** nas lousas e nas animações: o que foi escrito não some; se mudou, risca e
-  escreve o novo embaixo. Mais desenho que texto, num ritmo que dá para ler. Pouca animação também
-  vale (às vezes só o ponto principal se mexe).
-- **`LousaLoop` e `LousaTempo` não entram em post novo** (D58). Ao revisar um post antigo (modo
-  Adaptar), a `LousaTempo` vira `Lousa` e a `LousaLoop` vira lousa de passos ou animação com play.
+- **Sequência em que a ordem importa, comparação no tempo ou o sistema funcionando:** a figura em passos
+  (`FiguraPassos`, com `estilo="marca-texto"` e `fim="segmentos"`, skill `figura`), como em todos os
+  posts com passos desde 02/10/2026. A frase em destaque (`FraseDestaque`, skill `lousa`) é rara.
+- **Em prova (D67):** a `Lousa` (o leitor comanda o tempo, skill `lousa`) e a `Animacao` (a imagem muda
+  com play e pausa, skill `figura`) continuam no código, mas só nas páginas de prova (`/animacoes-test/`);
+  post novo não usa, até o Cesar fechar a D67.
+- **Pouco por passo:** o que entrou não some, nada é riscado nem trocado; mais desenho que texto, num
+  ritmo que dá para ler (as regras numeradas estão na skill `figura`, "Figura em passos").
 - **Vídeo de verdade** (MP4/WebM) só se o Cesar pedir: comprimido, com `poster`, `preload="none"` e
   carregado sob demanda.
 
@@ -263,7 +232,9 @@ MCP `chrome-devtools`:
 - **Console sem erros** nem avisos novos.
 - **Animações funcionando:** a capa viva no topo, no card e na lista (tirar o mouse no meio não pode
   pular); os detalhes das figuras andando só na tela, na ordem do fluxo, e o destaque da legenda; em
-  cada lousa, o play inteiro (5 s no fim), o arrasto e os passos (mouse e clique); a animação abrindo
+  cada figura em passos, "Passo a passo", Próximo, Anterior, o clique num passo da lista, os traços de
+  fim e a figura inteira no último passo (no celular, o quadro rola até o que entrou). Numa lousa ou
+  animação das páginas em prova: o play inteiro (5 s no fim), o arrasto e os passos; a animação abrindo
   sozinha, o anel, recomeçar e o clique que pausa. Com `prefers-reduced-motion: reduce`, nada se mexe
   sozinho e tudo aparece no quadro final.
 - **Trace de performance** da página do post, com CPU 4× no celular. Olhe o **custo do filtro de
@@ -306,7 +277,7 @@ relatório. Nada de marcação antes disso.
 - A pergunta da regra de aprendizado (D68) para cada pedido ou reclamação do Cesar nesta rodada: vira
   regra para os próximos posts?
 
-Nunca commite nem publique sem pedido explícito do Cesar. Push na `main` publica o site.
+Commit e publicação, só com o pedido do Cesar (`CLAUDE.md`).
 
 ## Escrita: título, descrição, TL;DR, abertura e voz (D71)
 
@@ -321,7 +292,7 @@ sabe o assunto?
 ### Título
 
 O título aparece sozinho na busca, no RSS, no link compartilhado e na aba do navegador, e a parte de
-antes do " — " aparece sozinha em algumas listas do site (o "Último artigo" da home, por exemplo).
+antes do " — " aparece sozinha em algumas listas do site (as fichas da página de Tags, por exemplo).
 
 - **O assunto vem antes do travessão e fecha sozinho.** Ele dá nome à coisa de que o post trata, com o
   termo que o leitor procuraria: a tecnologia ou o produto e o tema ("Mods do Claude Code", "Bloqueio
@@ -392,7 +363,7 @@ Aparece no card, na busca do site e como o resumo que a busca do Google costuma 
   na versão 2.1.287", ou o carimbo da caneta. O que não foi conferido é dito do mesmo jeito: "No
   aplicativo de desktop, o painel ainda não foi conferido".
 - O projeto do Cesar é citado pelo nome ("o repositório claude-code-kit"), não pela posse.
-- Vale para os títulos de seção, as legendas, os `alt`, os passos das lousas e as notas da caneta.
+- Vale para os títulos de seção, as legendas, os `alt`, os passos das figuras em passos e as notas da caneta.
 
 | Não | Sim |
 |---|---|
@@ -472,13 +443,13 @@ posts. Uma linha por pedido, dizendo o que viraria regra e onde ela ficaria (est
 - **Não:** vale só para aquele post, e a mesma pergunta não volta.
 - Se ele corrigir a mesma coisa duas vezes, vira regra de qualquer jeito (CLAUDE.md).
 
-## Migração dos posts do blog atual (D15)
+## Posts migrados do blog atual (D15)
 
-- Mantenha slug, datas, categoria ou série, tags e o conteúdo **como estão**. Citações e parágrafos
-  "Cuidado:" não viram avisos.
-- Nunca mude um título de seção migrado, nem quando o post virar MDX: as âncoras dependem deles (D7).
-- A base é o commit `0184562` do blog atual (`../blog-atual`, **somente leitura**: use
-  `git --no-optional-locks`).
+A migração terminou (os 26 posts antigos, nas Fases 1 a 7, a partir do commit `0184562` do blog atual;
+a `docs/virada.md` usa esse commit para achar o que saiu depois). Na revisão de um deles, slug, datas e
+títulos de seção não mudam, nem quando o post vira MDX (as âncoras dependem deles, D7); categoria ou
+série, tags e conteúdo só mudam com o OK do Cesar (modo Adaptar); citações e parágrafos "Cuidado:" não
+viram avisos. O blog antigo, se houver um clone, é somente leitura (`CLAUDE.md`).
 
 ## Qual recurso para qual conteúdo
 
@@ -493,9 +464,9 @@ trechos fica só no texto. Nem todo post tem todos os recursos, e todo desenho �
 | o assunto inteiro numa imagem (post resumo) | o infográfico (`Figura`), logo depois da introdução | skill `figura` |
 | quem fala com quem, a arquitetura, os papéis | figura colorida (`Figura`), um tom por ator, selos se há ordem, detalhes que se mexem se ajudarem | skill `figura` |
 | um número, uma curva, o que o leitor veria no painel | gráfico (`Figura`), com eixos, unidade, o limite e a anotação | skill `figura` |
-| uma sequência em que a ordem importa | lousa de passos (`Lousa` com `passos`), com a lista numerada embaixo | skill `lousa` |
-| antes e depois, ou "com e sem", ao longo do tempo | lousa de comparação (`Lousa` com `estados`), duas linhas | skill `lousa` |
-| o sistema funcionando, algo que enche, esvazia ou se forma no tempo | animação com play (`Animacao`) | skill `figura` |
+| uma sequência em que a ordem importa | figura em passos (`FiguraPassos`), com a lista numerada embaixo; a lousa de passos (`Lousa`) fica em prova (D67) | skill `figura` |
+| antes e depois, ou "com e sem", ao longo do tempo | figura em passos de comparação (duas metades ou duas raias, D67); a lousa de comparação fica em prova | skill `figura` |
+| o sistema funcionando, algo que enche, esvazia ou se forma no tempo | figura em passos (um objeto que passa por etapas) ou figura com detalhes que se mexem; a animação com play (`Animacao`) fica em prova (D67) | skill `figura` |
 | a ferramenta de que o post fala | o ícone no texto (`Ferramenta`) e dentro dos desenhos (`data-marca`) | skill `figura` |
 | a prova de um número ou de um comportamento (documentação oficial, erro, painel) | print (`Evidencia`); com login, o Cesar tira | skill `figura` |
 | uma frase que resume o post e merece ser lida duas vezes (rara) | `FraseDestaque` | skill `lousa` |
@@ -505,8 +476,8 @@ trechos fica só no texto. Nem todo post tem todos os recursos, e todo desenho �
 | detalhe que a maioria pula | `<details>` com `<summary>` | Recursos de Markdown |
 | o que um arquiteto marcaria lendo | caneta (34 tipos, marca-texto no máximo 3) | skill `caneta`, só no fim |
 
-Não use dois recursos para a mesma ideia (a lousa e a frase dizendo a mesma coisa, a figura e a
-animação mostrando o mesmo quadro, ou a caneta marcando um aviso).
+Não use dois recursos para a mesma ideia (a figura em passos e a frase dizendo a mesma coisa, a figura
+parada e a em passos mostrando o mesmo quadro, ou a caneta marcando um aviso).
 
 ## Recursos de Markdown
 

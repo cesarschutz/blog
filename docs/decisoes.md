@@ -26,7 +26,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D13 | Sem pré-visualização publicada por enquanto | mudou na D34 (publicado) |
 | D14 | "Apresentação" sempre sem número | em vigor |
 | D15 | Migração com o conteúdo como está | em vigor |
-| D16 | Abertura da home com os textos do protótipo | em vigor |
+| D16 | Abertura da home com os textos do protótipo | substituída: a apresentação mudou na D33 e saiu da home na D84; a linha sobre IA fica no fim de cada artigo |
 | D17 | Ilustrações da série Java geradas por script | em vigor |
 | D18 | Git só local | mudou na D34 (repositório no GitHub) |
 | D19 | Bloqueio de edição no blog atual | em vigor |
@@ -40,10 +40,10 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D27 | Lista e cards no formato do blog atual, e a home paginada | em vigor; a 1ª página com 11 artigos desde a D52 (C02) |
 | D28 | Painel lateral da home com séries e categorias em pilhas de livros | o painel saiu da home na D44; a pilha lateral ficou nas páginas de livro (D46) |
 | D29 | Página de categoria com o livro em pé e a transição do livro | em vigor |
-| D30 | Livros no padrão da coleção (docs/capas): capas, estante, lateral e categorias novas | em vigor |
+| D30 | Livros no padrão da coleção (docs/capas): capas, estante, lateral e categorias novas | em vigor; a lateral saiu na D61, e a coleção passou a 13 livros na D78 |
 | D31 | Cabeçalho fixo, menu com Categorias e Séries, e as páginas de livros | em vigor |
 | D32 | Categorias em "edição de estudo", séries em revista técnica, e /series/java/ | em vigor |
-| D33 | Marca, cabeçalho e rodapé do blog atual, post-it das frases, livros invertidos no escuro e ilustrações maiores | em vigor, menos o post-it das frases (saiu na D39) |
+| D33 | Marca, cabeçalho e rodapé do blog atual, post-it das frases, livros invertidos no escuro e ilustrações maiores | em vigor, menos o post-it das frases e os livros invertidos no escuro (os dois mudaram na D39: os livros não mudam com o tema) |
 | D34 | Publicação em blog.cesarschutz.com.br, num repositório próprio | em vigor |
 | D35 | Processo único de posts, ferramentas do projeto e portabilidade | em vigor |
 | D36 | Sumário sem números | em vigor |
@@ -52,32 +52,32 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D39 | Acabamento de design: livros de cor fixa, lombada única, tema direto, sem som | em vigor |
 | D40 | Livros em movimento, com GSAP | em vigor; a ideia 3 foi substituída pela D43 |
 | D41 | Caderno marcado, o desenho do destaque e a marca que abre | o caderno marcado foi substituído pela D48; ficaram o desenho do destaque e a marca que abre |
-| D42 | Tema em círculo e Lista / Cards com esmaecer | em vigor |
-| D43 | A gaveta volta ao sumário, e o livro sai da estante | em vigor |
-| D44 | Ajustes da home: títulos em duas partes, busca que nasce do campo e mais | em vigor |
+| D42 | Tema em círculo e Lista / Cards com esmaecer | Lista / Cards em vigor; o tema em círculo deu lugar ao lustre na D61 (rodada 3, T7) |
+| D43 | A gaveta volta ao sumário, e o livro sai da estante | a gaveta saiu da home na D61 (rodada 4, H3, em `docs/redesenho/rodada-4/controle.md`) e o código dela, na D84 |
+| D44 | Ajustes da home: títulos em duas partes, busca que nasce do campo e mais | em vigor; a busca que nasce do campo foi refeita na D61 (rodada 3, G11, sem o Flip) |
 | D45 | A caneta que escreve o progresso da leitura | em vigor |
-| D46 | Livros de lado, pilha que troca de livro, menu do celular e o artigo mais largo | em vigor |
+| D46 | Livros de lado, pilha que troca de livro, menu do celular e o artigo mais largo | em vigor, menos a pilha (saiu na D61: a fileira do alto da página do livro faz esse papel) |
 | D47 | Marca em degrau, estante que só sobe, abertura do site e o movimento das páginas | em vigor |
 | D48 | A caneta do caderno: marcações estáticas, azuis e com 20 tipos | em vigor (tipos e limites mudaram na D56) |
-| D49 | As ideias de movimento revistas: sumário, estante, livros, cabeçalho, listas e artigo | em vigor |
+| D49 | As ideias de movimento revistas: sumário, estante, livros, cabeçalho, listas e artigo | em vigor; a estante em repouso saiu na D61 (rodada 4, H11) e a pilha com peso, com a pilha |
 | D50 | Ajustes de 27/09/2026: o traço da leitura, a troca de livro, o livro ampliado, o cabeçalho, o tema, a marca d'água e os atalhos | em vigor |
-| D51 | As animações revistas: abertura, troca de tela e as trocas especiais | em vigor |
+| D51 | As animações revistas: abertura, troca de tela e as trocas especiais | em vigor; a abertura da home e a troca de página (a cortina) refeitas na D61, e a abertura de novo na D84 |
 | D52 | Ajustes de 27/09/2026: acabamento das animações, a leitura, as listas, as tags e o destaque | em vigor |
 | D53 | Faxina: docs só com documentos, dados dos livros em src/livros | em vigor |
 | D54 | Caça aos bugs de 29/09/2026: 40 correções de interação, teclado, impressão, listas e RSS | em vigor |
 | D55 | Redesenho: 10 modelos de visual novo, em protótipo, para o Cesar escolher | concluída: a versão final (rodada 4) foi publicada na D61; os protótipos ficam só nesta máquina |
 | D56 | Caneta com 34 tipos e mais marcações por post | em vigor |
-| D57 | Livros realistas: capa dura em todos os livros, estante e pilha com volume, livro deitado no "Do livro", livro aberto nos vazios e a série como livro | em vigor |
-| D58 | Recursos visuais novos: capa viva, figuras coloridas, a lousa nova, a animação com play, os ícones das ferramentas, o print e a caneta da leitura na cor do livro | decidido |
-| D59 | A lousa no estilo das figuras, com uma canetinha colorida; o destaque da legenda que apaga tudo menos a cor e a referência; a revisão de todo desenho antes de entregar (`revisar.mjs`) | decidido |
+| D57 | Livros realistas: capa dura em todos os livros, estante e pilha com volume, livro deitado no "Do livro", livro aberto nos vazios e a série como livro | em vigor; a pilha saiu na D61 |
+| D58 | Recursos visuais novos: capa viva, figuras coloridas, a lousa nova, a animação com play, os ícones das ferramentas, o print e a caneta da leitura na cor do livro | decidido; a lousa e a animação com play sem post desde 04/10/2026 (D67) |
+| D59 | A lousa no estilo das figuras, com uma canetinha colorida; o destaque da legenda que apaga tudo menos a cor e a referência; a revisão de todo desenho antes de entregar (`revisar.mjs`) | decidido; a lousa sem post desde 04/10/2026 (D67) |
 | D60 | O escuro dos desenhos do corpo: painel um pouco acima da folha, caixas com cor, tinta menos branca | em vigor (os valores voltaram aos dela na D62) |
-| D61 | O redesenho no ar: papel, tinta, latão e luz (a versão final do redesenho) | em vigor; as cores dos temas voltaram às de antes na D62 |
+| D61 | O redesenho no ar: papel, tinta, latão e luz (a versão final do redesenho) | em vigor; as cores dos temas voltaram às de antes na D62, a mancha que seguia o mouse saiu em 04/10/2026 (D67) e a home mudou na D84 |
 | D62 | As cores dos temas de antes do redesenho, as séries fora das páginas dos livros (e o contrário) e a fileira que encolhe ao rolar consertada | em vigor |
 | D63 | Post detalhado (com TL;DR recolhível) ou resumo (com infográfico), combinado com o Cesar antes de escrever, e links ao longo do texto | em vigor; o Cesar revê no próximo post |
 | D64 | Marcas: todo logo só como a regra de marca do dono permite, conferida e registrada; ícones genéricos no lugar dos proibidos | decidido |
-| D65 | Os controles em prova nos posts: as opções marca-texto, caderno e post-it, cada uma numa lousa de passos, numa de comparação e numa animação | em prova |
+| D65 | Os controles em prova nos posts: as opções marca-texto, caderno e post-it, cada uma numa lousa de passos, numa de comparação e numa animação | em prova, sem post desde 04/10/2026 (D67): só em `/prototipos/controles/` e `/animacoes-test/` |
 | D66 | O post dos mods ("Quanto custou cada agente?"): publicado direto, com as telas do cockpit em print parado, as tags Claude Code e Plugins e o print largo que rola de lado no celular | decidido e publicado; o Cesar revê no ar |
-| D67 | Figura em passos: um formato só no lugar da lousa de passos, da lousa de comparação e da animação com play (abre inteira, cada passo soma, nada some, o leitor manda) | em prova em `/animacoes-test-2/` |
+| D67 | Figura em passos: um formato só no lugar da lousa de passos, da lousa de comparação e da animação com play (abre inteira, cada passo soma, nada some, o leitor manda) | em prova em `/animacoes-test-2/`; o estilo marca-texto escolhido (`/animacoes-test-3/`) e já nos sete posts com peça em ordem |
 | D68 | Pedido do Cesar num post termina na pergunta "vira regra para os próximos posts?" | decidido |
 | D69 | O botão da busca do cabeçalho: o nome vem do texto "Buscar", sem `aria-label`, e a tecla desenhada fica fora do nome | decidido e publicado |
 | D70 | Tabelas no celular: piso de 11em na coluna de texto, respiro menor nas células, a tabela do `<details>` de borda a borda e o aviso "Arraste para o lado" | decidido e publicado; falta conferir no iPhone |
@@ -85,12 +85,16 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D72 | A tinta do seletor Lista / Cards: a caixa azul fica só em volta do botão ativo e salta na troca, para o Lighthouse não tomar o azul pelo fundo do botão solto | decidido e publicado |
 | D73 | O nome dos livros da home, dos vizinhos do livro, das tags da nuvem e do livro de Séries vem de um texto `.sr`, sem `aria-label`; na home, o `content-visibility` no livro, e não no link | decidido e publicado |
 | D74 | A apresentação de um post (PPT) no estilo do blog, com os desenhos, os prints e a caneta do próprio post e as notas do apresentador (skill `apresentacao`, `scripts/slides/`) | decidido e publicado |
+| D75 | Post de Parquet e snapshots (`parquet-snapshot-banco-de-dados`): formato resumo, no livro Dados, com infográfico e capa viva | publicado |
+| D76 | Revisão técnica do frontend (PR #3): animações que não se atropelam, movimento reduzido na hora, a capa viva uma vez por página, medidas dos SVGs e cabeçalhos de linha nas tabelas, com os testes do frontend | decidido e publicado; os testes estão em `scripts/frontend/` desde a D84 |
 | D77 | As apresentações no estilo do blog também entram no post (seção "Apresentação"), pelo `npm run apresentacao -- … --pdf`; as três primeiras: as duas partes dos mods e Parquet | decidido e publicado |
+| D78 | A coleção de 13 livros: a sugestão 5 mais Frontend, Carreira sai, volumes em ordem alfabética, a tag Pagamentos vira Cobrança, desenhos ("O mesmo problema, um século antes"), cores, frases e textos novos, a contracapa e a página As capas | decidido e publicado; a coleção da home mudou de forma na D84; a cor da marca "cs" espera o Cesar |
 | D79 | A parte 2 do post dos mods (`claude-code-csr-cockpit`) só atualizada para o cockpit 0.16.0, sem post novo: seis abas, as telas novas como print e os fatos em dia | decidido e publicado |
+| D80 | O claude-code-kit na versão 1.0: o kit recomeçou o histórico com o csr-cockpit 1.0.0 e a release `v1.0.0`, e o post da parte 2 e a apresentação citam a 1.0.0 | decidido e publicado |
 | D81 | Post de DNS (`dns-tipos-de-registro`): detalhado, no livro DevOps, com as tags novas DNS e Redes, exemplos em `example.com` e a apresentação no estilo do blog | decidido e publicado |
 | D82 | Post do You should know (`claude-code-you-should-know`): o mod embutido do Claude Code, detalhado, no livro IA, com 19 marcações da caneta e a apresentação no estilo do blog | decidido e publicado |
 | D83 | A parte 2 do post dos mods em dia com o cockpit 1.0.0 refeito (cliques, grafo, workflows, total geral): as telas novas, uma tela de workflow e a apresentação regerada | decidido e publicado |
-| D84 | A home da coleção em prateleiras de capas (7, 5 ou 4 livros por prateleira, sem lombada nem rolagem lateral), sem a linha de números, o nome menor com o "blog" carimbado sobre o Z, o nome do rodapé numa linha no celular, a revisão geral das telas e a faxina do código | decidido pelo Claude a pedido do Cesar; ele revê no ar |
+| D84 | A home da coleção em prateleiras de capas (7, 5 ou 4 livros por prateleira, sem lombada nem rolagem lateral), sem a linha de números, o nome menor com o "blog" carimbado sobre o Z, o nome do rodapé numa linha no celular, a revisão geral das telas e a faxina do código e dos documentos | decidido pelo Claude a pedido do Cesar; ele revê no ar |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -434,7 +438,7 @@ nada muda.
 
 ## D26 · Variação "A. Folhas claras": folhas, azul-tinta, IBM Plex Sans e desenhos com palco
 - **Data:** 24/09/2026 · **Status:** aprovada (pedido do Cesar, a partir de
-  `docs/referencias/prototipo-mais-vida.html`); aplicada, aguardando a revisão visual dele.
+  `docs/referencias/prototipo-mais-vida.html`, hoje em `docs/historico/referencias/`); aplicada, aguardando a revisão visual dele.
 - **Decisão:** muda só a camada visual (briefing §4, reescrito; §5.1, §5.3 e §6 ajustados onde a
   contradiziam). Estrutura, conteúdo, rotas e comportamento ficam como estavam, com as exceções abaixo.
   - **Tokens:** fundo, superfície, borda, texto e azul-tinta novos; `--acento` e `--sobre-acento`
@@ -1942,7 +1946,8 @@ nada muda.
 - **Mudado:** `src/livros/`, `src/lib/livros-svg.ts`, `src/lib/tags-svg.ts`, `src/lib/estante.ts`,
   `src/data/taxonomia.ts`, `src/data/series.ts`, `src/pages/[amostra].astro`,
   `src/pages/[amostra]/tags.astro`, `scripts/contraste.mjs`, `scripts/desenho/tags.mjs`, `CLAUDE.md`,
-  `CLAUDE-CODE.md` (novo: a configuração do Claude Code no projeto), `docs/capas/CAPAS.md`, skills e
+  `CLAUDE-CODE.md` (novo: a configuração do Claude Code no projeto; desde a D84, em
+  `docs/historico/claude-code-2026-09-28.md`), `docs/capas/CAPAS.md`, skills e
   regras.
 - **Depois, no mesmo dia, as sugestões do `CLAUDE-CODE.md`** (pedido do Cesar: "aplicar as melhorias
   que você sugeriu"):
@@ -1967,7 +1972,7 @@ nada muda.
   [...] arrume se achar"; publicar: "Pública"). Um commit por grupo do controle.
 - **Decisão:** corrigir os 40 bugs confirmados pela varredura (cinco agentes: artigos, acessibilidade
   e SEO, listas, home e navegação), cada um reproduzido antes e conferido depois no navegador. A
-  lista, os arquivos e o que ficou para o Cesar decidir estão em `docs/ajustes-d54/controle.md`.
+  lista, os arquivos e o que ficou para o Cesar decidir estão em `docs/historico/ajustes-d54/controle.md`.
 - **O que muda no jeito de fazer:**
   - Âncoras e foco sob o cabeçalho fixo: sai o `scroll-padding-top` do `html` (ele fazia o navegador
     rolar a página ~450px quando o foco ia para o próprio cabeçalho); entra `--folga-ancora` (base.css)
@@ -2092,7 +2097,7 @@ nada muda.
   branch `livros-realistas`, pasta irmã `../blog-livros-realistas`). D55 (redesenho) e D56 (caneta)
   são de outras sessões.
 - **Pedido do Cesar:** os livros o mais realistas possível, com as mesmas cores, desenhos e textos. Dez
-  pranchas de estudo em `docs/prototipos/livros-realistas/` (galeria, maquetes e `DIRECAO.md`); ele
+  pranchas de estudo em `docs/historico/livros-realistas/` (galeria, maquetes e `DIRECAO.md`); ele
   escolheu as que valem e onde cada uma entra.
 - **Decidido:**
   - **Capa dura realista (prancha 01) em todo livro em pé:** grade de Categorias, topo da página do livro,
@@ -2379,7 +2384,10 @@ nada muda.
   - as figuras e as lousas da D60 fotografadas nos dois temas.
 - **Fica para depois:** reescrever o `DESIGN.md` inteiro para o visual novo e o `briefing.md` §4 a §7
   no mesmo passo. Hoje a seção da D61 vence as antigas, e no resto do `DESIGN.md` só os valores
-  mudaram.
+  mudaram. (Na faxina da D84, o briefing §4 a §7 e as partes do `DESIGN.md` que contradiziam a D61
+  foram acertados; a reescrita inteira do `DESIGN.md` continua nos próximos passos.)
+- **Depois:** a mancha quente que seguia o mouse (T5) saiu em 04/10/2026, a pedido do Cesar (registrado
+  na D67, "A luz que acompanhava o mouse saiu"); a home mudou de forma na D84.
 - **Alternativas descartadas:**
   - levar também as amostras e os protótipos, porque não são o site (e são 272 MB);
   - manter a `21-final` como cópia separada, porque seriam dois blogs para manter.
@@ -3199,7 +3207,7 @@ nada muda.
   `scripts/slides/`.
 
 
-## D75 — Post sobre Parquet e snapshots (03/10/2026)
+## D75 · Post sobre Parquet e snapshots (03/10/2026)
 
 - **Pedido do Cesar:** transformar a explicação de Parquet e snapshots em post do blog, ler as
   instruções do projeto, revisar antes de publicar e publicar na `main`. A autorização vale para
@@ -3254,7 +3262,7 @@ nada muda.
   (colunas de texto) convive com os cabeçalhos de linha: ela marca só a linha do cabeçalho.
 - **Conferido no merge:** `check` (0 erros), `build`, `links`, `contraste`, os cinco testes do PR e
   fotos da tabela de comparação, da frase e de um SVG, antes e depois. O relatório da revisão está em
-  `docs/revisao-frontend-2026-10-03.md`.
+  `docs/historico/revisao-frontend-2026-10-03.md` (os testes, hoje, em `scripts/frontend/`, D84).
 - **Alternativas:** manter o `--ink-3` na frase (o efeito fica mais marcado, mas falha no celular).
 
 ## D77 · A apresentação no estilo do blog também vai para o post
@@ -3362,7 +3370,7 @@ nada muda.
   - A doca na fileira da home (04/10/2026, pedido do Cesar: "um efeito tipo o dock do Mac, quando passar
     o mouse no livro ele aumentar de tamanho"): o livro sob o mouse cresce até 1,5×, os vizinhos menos, e
     a fileira abre espaço sem passar de onde vai o texto (`src/scripts/doca.ts`; o detalhe em
-    `docs/movimento.md`, "Estante e gaveta"). Só com mouse; sem movimento reduzido, nada cresce. O
+    `docs/movimento.md`, "Estante, doca e livros"). Só com mouse; sem movimento reduzido, nada cresce. O
     tamanho, o alcance e a velocidade são constantes no topo do script.
   - Os abajures da fileira da home ficam sempre acesos (04/10/2026, pedido do Cesar: "quero que todos sempre
     estejam ligados"), e não só no hover: `--luz-acesa: 1` em todos os lugares de luz da home
@@ -3622,3 +3630,45 @@ nada muda.
   mesmo nome e a célula de canto vazia das tabelas de comparação (mexem no Expressive Code e nos plugins de
   Markdown, que pedem o build sem cache).
 
+- **A faxina do código e dos documentos (05/10/2026):** com a home e a revisão publicadas, o que tinha
+  ficado sem uso saiu e o que estava espalhado foi juntado, com um critério só: nada muda no
+  comportamento nem na aparência do site, e nenhuma regra se perde (a conferência, com os testes e as
+  fotos de antes e depois, está no controle da rodada). Cada candidato foi conferido por um segundo agente.
+  - **Código que saiu:** a gaveta da home (`Gaveta.astro`, `gaveta-fileira.ts`, `gaveta.css`) e o
+    `estante-gesto.ts` (o repouso em 3D da D54 ficou na constante `REPOUSO` do `estante-viva.ts`); a
+    pilha lateral (`ComPainel.astro`, `PainelHome.astro` e os ramos dela no `troca.js`), sem uso desde a
+    D61; a `LousaTempo`, a `LousaLoop` e o `loop.svg` da cobrança, com o CSS do quadro escuro (o
+    `lousa.css` ficou só com os controles e a frase em destaque; as cores `lousa*` e o `LOUSA` continuam
+    nos tokens, para o `npm run contraste` e a `/amostra/livros/`); a rota `livros/[slug].svg` (o desenho
+    adiado que a gaveta buscava); o `Aviso.astro` (a `/amostra/` mostra os avisos pelo plugin); o
+    `src/lib/lista.ts`; o `carregarFlip` e o `carregarMorfo`, a lua e o sol de caneta e os ícones lua,
+    sol e subir; o resto da mancha do mouse no `luz.ts` e na `TopoArtigo`; os tokens da tábua, do
+    aparador, `luz-mouse` e `ponto-luz`; o campo `lombadaDeitada` dos livros; props que ninguém passava
+    e os ganchos `jogar` do `window.csTroca` e `onda` do `window.csLivroVivo`.
+  - **Uma escolha registrada:** o `livroAoLado` (`ItemLista` e `Recentes`) virou booleano: fica a forma
+    "espelhado" da rodada 4 (H7), e a forma "foto" saiu. `TEXTOS.apresentacao` e `TEXTOS.rodape` ficam
+    em `src/data/site.ts` só para os modelos do redesenho (porta 4400).
+  - **Duas diferenças que a conferência achou, ambas acertos de coisa que tinha ficado para trás:** (1) a
+    capa viva do anterior e do próximo passou a usar as regras de `capa-viva.css`, e o relógio da capa de
+    Parquet, ali, agora avança os ponteiros como no card e no topo, em vez de girar o mostrador inteiro
+    120° (o giro que o Cesar reprovou na D75; aparece no fim do post de DNS e no do csr-cockpit);
+    (2) sem JavaScript e com o sistema no escuro, as folhas, as fichas e o anterior e o próximo ganham a
+    sombra do escuro (`--sombra-folha`, com o anel de 1px a 7%), como as outras folhas já tinham; antes,
+    levavam a do claro (até 23 de 255 de diferença, só na borda). Com JS, nada muda.
+  - **As ferramentas:** os testes da D76 (`scripts/frontend-*.mjs`) foram para `scripts/frontend/`
+    (`plugins`, `regressao`, `interacoes`, `tema` e `paginas`), e o servidor deles virou
+    `scripts/servir.mjs`, que o `og.mjs` também usa; `npm run frontend:rapido` roda os dois primeiros sem
+    build, e `npm run frontend`, todos (depois do `npm run build`). O `scripts/chrome.mjs`
+    (`opcoesDoChrome`) é o único jeito de abrir o Chrome nos scripts: `CHROME_PATH`, o apelido
+    `CHROME_EXECUTABLE_PATH` (o que a D78 citava para as fotos dos livros), o Chromium da nuvem, se houver,
+    e o Chrome instalado. O `engines` do `package.json` passou a `node >=22.12`, como o `CLAUDE.md` e o
+    `npm run setup`.
+  - **Os documentos:** o `docs/estado.md` voltou a ser um painel curto (o diário de antes está em
+    `docs/historico/estado-ate-2026-10-04.md`); o briefing (§4, §5, §7, §8.3, §9 e §10), o `DESIGN.md`,
+    o `docs/movimento.md` (o detalhe das peças que saíram está em
+    `docs/historico/movimento-ate-2026-10-04.md`), o `estilo-desenho.md`, o `CAPAS.md`, o `virada.md` e
+    o índice acima deixaram de descrever a home, a estante, a gaveta e a pilha de antes. Foram para
+    `docs/historico/` (com uma linha no README de lá): o controle da D54, o relatório da revisão do
+    frontend (D76), a análise de 28/09 do Claude Code (o `CLAUDE-CODE.md` da raiz, hoje
+    `claude-code-2026-09-28.md`), o prompt do modelo 06, os protótipos das "Folhas claras" e das lousas
+    (`referencias/`), o estudo dos livros realistas (D57) e o roteiro das fases do briefing.

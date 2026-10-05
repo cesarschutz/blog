@@ -1,22 +1,26 @@
 ---
 name: lousa
-description: Monta os diagramas na lousa com o componente Lousa (D58), nos dois usos, passos (a caneta monta uma sequência, com a lista numerada embaixo) e comparação (duas linhas no mesmo tempo), e a frase em destaque, em posts .mdx. A LousaTempo e a LousaLoop ficam só nos posts antigos. Use quando o post tiver uma sequência em que a ordem importa, ou antes e depois (com e sem) ao longo do tempo.
+description: A frase em destaque (FraseDestaque) dos posts .mdx e a lousa (componente Lousa, D58), nos dois usos, passos (a caneta monta uma sequência, com a lista numerada embaixo) e comparação (duas linhas no mesmo tempo). A Lousa está em prova (D67) e só aparece nas páginas de teste; nenhum post a usa, e sequência ou comparação num post novo é figura em passos (skill figura). Use ao pôr uma frase em destaque num post ou ao mexer nas lousas de src/lousas/ (a /animacoes-test/ e a /amostra/lousas/).
 ---
 
 # Lousa
 
-**Em prova (D67):** a figura em passos (skill `figura`, "Figura em passos") pode substituir a lousa de
-passos, a de comparação e a animação com play. Até o Cesar decidir, a lousa segue as regras abaixo.
+**Em prova (D67):** desde 02/10/2026, a pedido do Cesar, as lousas dos posts viraram figuras em passos
+(skill `figura`, "Figura em passos"), e nenhum post usa mais a `Lousa`; ela continua no código, só na
+`/animacoes-test/` e na `/amostra/lousas/`, até o Cesar fechar a D67 (se aprovada, a `Lousa` sai e a
+frase em destaque, usada em dois posts, passa para a skill `figura` ou `post`). As regras abaixo valem
+para mexer nessas lousas; a frase em destaque vale para todo post.
 
 Componente `src/components/Lousa.astro` (D58), com o desenho **no estilo das figuras** (D59: o painel
 do livro, o traço da casa, os tons, os selos e os logos de `figura.css`) e uma **canetinha colorida**
 que desenha na cor do que faz. Estilo em `lousa-nova.css` (mais `figura.css` e `desenho.css`); motor em
 `src/scripts/lousa.ts` e `src/lib/lousa-tempo.ts`. O estilo (cores, traço, caneta) está em
 `docs/estilo-desenho.md`; os tempos, em `docs/movimento.md`. **Modelo:**
-`src/lousas/jackson-filtros-mascarando-cartao/passos.svg` (passos); as comparações dos posts
-`criptografia-em-repouso-e-em-transito` (`tls.svg`) e `cronjob-vs-endpoint-sqs`.
+`src/lousas/jackson-filtros-mascarando-cartao/passos.svg` (passos); as comparações
+`src/lousas/criptografia-em-repouso-e-em-transito/tls.svg` e
+`src/lousas/cronjob-vs-endpoint-sqs/deploy-no-meio-do-lote.svg` (os posts já não as usam).
 
-## Quando usar
+## Quando usar (nas páginas em prova)
 
 - **Passos:** uma sequência em que a ordem importa (o pedido passa pelo hash e cai numa partição; o
   rebalance do grupo).
@@ -67,7 +71,7 @@ import FraseDestaque from "../../components/FraseDestaque.astro";
 | `passos` | a sequência (`{ de, texto }`, `de` de 0 a 1, em ordem): vira a lista numerada embaixo; o texto aceita `código` e `**negrito**` |
 | `estados` | a comparação (`{ de, texto }`): só vão para o leitor de tela (o `aria-valuetext` do controle) |
 | `duracao` | uma volta do play, em segundos (padrão 7) |
-| `controles` | **em prova (D65):** `"marca-texto"`, `"caderno"` ou `"post-it"` troca os controles de baixo por uma das três opções do protótipo (`/prototipos/controles/`), com o desenho e os controles num cartão só. Até o Cesar escolher, cada post fica com a opção que recebeu na prova (lista na D65) e post novo fica sem `controles` |
+| `controles` | **em prova (D65):** `"marca-texto"`, `"caderno"` ou `"post-it"` troca os controles de baixo por uma das três opções do protótipo (`/prototipos/controles/`), com o desenho e os controles num cartão só. Só aparece na `/animacoes-test/` e na `/prototipos/controles/`; nenhum post usa. Se a D67 for aprovada, a D65 perde o objeto |
 
 Use `passos` **ou** `estados`, nunca os dois. `de` é o instante em que o passo (ou o estado) começa;
 o fim de um passo é o `de` do seguinte. No controle, cada `de` vira uma marca (numerada, nos passos).
@@ -164,9 +168,9 @@ Sem atributo, a parte já está no quadro desde o início ("o professor montou o
 ## O que não fazer
 
 - Lousa comandada pela rolagem da página (saiu na D46 e não volta).
-- `LousaLoop` ou `LousaTempo` em post novo (a D58 tirou dos posts novos); desenho novo no estilo
-  antigo do quadro (`<g class="traco">`, `destaque`, `secundario`, `fino`): a D59 trocou pelo das
-  figuras.
+- Lousa num post novo (D67: o formato é a figura em passos, skill `figura`).
+- Desenho novo no estilo antigo do quadro (`<g class="traco">`, `destaque`, `secundario`, `fino`): a
+  D59 trocou pelo das figuras.
 - Frase ou texto de estado ao lado do controle ou embaixo da lousa (ela mudaria de tamanho); a única
   linha embaixo é a de rolar, só até 700px.
 - Fonte menor que a das classes das figuras para caber mais coisa (no celular vira ilegível).
@@ -194,24 +198,6 @@ que a linha da lista diz; o desenho contando o que o texto conta; os tons iguais
 post. Corrija e rode de novo até sair limpo; só então mostre. Um instante avulso:
 `node scripts/foto.mjs <url> <saida.png> --seletor ".lousa-nova" --altura 1500 --arrastar 0.4`.
 
-## Legado: `LousaTempo` e `LousaLoop` (só nos posts antigos)
-
-Os posts publicados antes da D58 usam estes dois até serem revistos pela skill `post` (modo Adaptar),
-quando a `LousaTempo` vira `Lousa` (passos ou comparação) e a `LousaLoop` vira lousa de passos ou
-animação com play. Não use em post novo.
-
-```mdx
-<LousaTempo desenho="<slug>/tempo" rotulo="…" estados={[{ de: 0, texto: "Antes do pedido" }, { de: 0.5, texto: "…" }]} />
-
-<LousaLoop desenho="<slug>/loop" rotulo="…" duracao={5.2} legenda="…"
-  marcas={[{ em: 0.47, rotulo: "a resposta se perde" }]} parado={0.9} />
-```
-
-- `LousaTempo`: controle deslizante com play (~7 s, para 1,5 s no resultado e recomeça), arrastar e a
-  roda do mouse; o texto do estado atual fica na mesma célula da grade para todos os estados (a altura
-  não muda) e num `aria-live`.
-- `LousaLoop`: anda sozinha quando aparece na tela, com barra de tempo, Recomeçar e Pausar, e uma pausa
-  no fim; `parado` é o instante do quadro parado (sem JS e com movimento reduzido).
-- Os desenhos deles ficam no estilo antigo do quadro (`<g class="traco">`, `fino`, `guia`,
-  `destaque`, `fantasma`, `tracejado`, `hachura`, `cheio`, `secundario`, `codigo`, em `lousa.css`),
-  com os mesmos atributos de tempo. Ao revisar o post, a lousa é redesenhada no estilo das figuras.
+O `revisar.mjs` abre a página do post (`/posts/<slug>/`): com as lousas só nas páginas em prova, ele não
+as acha, e a conferência fica com o `validar.mjs`, a `/amostra/lousas/` (os quadros-chave parados) e as
+fotos do `foto.mjs` na `/animacoes-test/`.

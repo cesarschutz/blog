@@ -15,19 +15,22 @@ leia `docs/redesenho/README.md`, a skill `.claude/skills/redesenho/SKILL.md` e o
 
 - **Nunca edite `src/`, `public/`, `scripts/` nem a configuração do blog.** A base só lê essas pastas
   (importa componentes, dados e plugins). Se precisar mudar algo lá, pare e explique ao orquestrador.
-- `../blog-atual` é somente leitura. Não edite, não instale, não builde e não rode git que escreva lá.
-- Node 24 em tudo: `fnm exec --using=24 <comando>`. O caminho tem espaço: use aspas.
+- `../blog-atual` (o clone do blog antigo, se houver) é somente leitura. Não edite, não instale, não
+  builde e não rode git que escreva lá.
+- Node 24 em tudo: `fnm exec --using=24 <comando>`. Caminhos entre aspas.
 - Não instale pacote. As dependências do blog já estão no `node_modules` da raiz, e o Node as acha
   subindo a partir de `redesenho/`. Pacote novo é com o orquestrador.
 - Não faça commit, push, stash, reset nem troca de branch.
-- O dev do blog (porta 4321) não é seu: não pare nem reinicie. O servidor dos protótipos roda na 4400.
+- O dev do blog (porta 4322; a 4321 é de outra ferramenta do Cesar) não é seu: não pare nem reinicie.
+  O servidor dos protótipos roda na 4400.
 - Lixo de depuração vai para `.astro/depuracao/redesenho/`.
 
 ## Critério de pronto
 
 - Os livros (capa, lombada, livro 3D) e as ilustrações dos posts saem **idênticos** aos do blog, nos
-  dois temas. Confira lado a lado com o dev do blog na 4321, por captura.
-- Todas as rotas do `00-base` respondem sem erro no console, inclusive os posts `.mdx` com lousa.
+  dois temas. Confira lado a lado com o dev do blog na 4322, por captura.
+- Todas as rotas do `00-base` respondem sem erro no console, inclusive os posts `.mdx` (figuras e
+  figuras em passos).
 - `npm run conferir` roda no `00-base` e gera o relatório.
 - `docs/redesenho/base.md` explica a API para quem vai construir um modelo.
 

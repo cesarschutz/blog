@@ -15,7 +15,7 @@ web
 
 - **Principal: desenvolvedores que pesquisam um tema.** Pessoas que falam português e chegam de uma
   busca querendo entender um assunto específico (Java, arquitetura, IA, dados, segurança, DevOps, SRE,
-  carreira).
+  pagamentos; os 13 livros da coleção, D78).
 - **O próprio Cesar, como caderno.** O blog é o registro do que ele estuda: "quando o estudo rende
   algo que vale guardar, vira artigo". Ele também é quem consulta os artigos antigos depois.
 
@@ -38,8 +38,9 @@ O que o blog faz e outro blog técnico em pt-BR não pode copiar sem mudar o jei
 - **Rigor com fontes:** nenhuma afirmação técnica sem fonte primária aberta e conferida; `## Fontes`
   no fim de todo post; frase de autor só com a fonte primária aberta.
 - **Código e SQL testados antes de publicar**, não só "que compila".
-- **Explicação visual:** ilustração própria em cada post, lousas (passos e comparação), figuras coloridas e animações com play (D58) e, quando existe, a
-  apresentação em slides com o PDF.
+- **Explicação visual:** ilustração própria em cada post (a capa viva), figuras coloridas e a figura
+  em passos para o que acontece em ordem (D58, D67) e, quando existe, a apresentação em slides com o
+  PDF.
 - **Série Java por LTS:** um guia por versão LTS, com as versões intermediárias absorvidas, como
   referência de consulta.
 - **Organização em livros:** cada categoria é um volume de uma coleção numerada e cada série é uma
@@ -51,9 +52,10 @@ O que o blog faz e outro blog técnico em pt-BR não pode copiar sem mudar o jei
 
 - Leitura longa de artigo técnico, no computador e no celular, em tema claro ou escuro.
 - O leitor chega pela busca externa ou pelo RSS e navega pela estante (categorias como livros), pelas
-  tags, pelas séries e pela busca interna (⌘K, Ctrl+K, `/`, link `/?q=termo`).
+  tags, pelas séries e pela busca interna (⌘K, Ctrl+K, link `/?q=termo`).
 - Posts novos e adaptados seguem a skill `post`; o Cesar traz textos para adaptar em `entrada/` e
-  apresentações do NotebookLM em `.pptx`.
+  apresentações do NotebookLM em `.pptx`, ou pede a apresentação no estilo do blog (D74, skill
+  `apresentacao`).
 - Publicação: todo push na `main` publica o site (GitHub Pages).
 
 ## Capabilities and Constraints
@@ -61,7 +63,8 @@ O que o blog faz e outro blog técnico em pt-BR não pode copiar sem mudar o jei
 - Site estático em Astro, sem backend. JavaScript só onde há interação; artigo sem esses componentes
   funciona sem JS.
 - URLs existentes não podem quebrar (lista no `CLAUDE.md` e na D7 de `docs/decisoes.md`).
-- Posts de 1.500 a 2.500 palavras (teto de ~3.000); assunto maior vira série.
+- Posts detalhados de 1.500 a 2.500 palavras (teto de ~3.000) ou resumos de 700 a 1.200 (D63); assunto
+  maior vira post em partes (D71).
 - Frontmatter, categorias, tags e séries seguem `docs/briefing.md` §8.2 e `docs/capas/CAPAS.md`.
 - Estatísticas (GoatCounter) e comentários (Giscus) estão prontos e **desligados**
   (`src/data/site.ts`); ligar é decisão do Cesar.
@@ -80,8 +83,9 @@ O que o blog faz e outro blog técnico em pt-BR não pode copiar sem mudar o jei
 
 ## Evidence on Hand
 
-- 26 posts publicados em `src/content/posts/`, com as ilustrações em `src/ilustracoes/`, as lousas em
-  `src/lousas/` e as apresentações em `public/posts/<slug>/deck/` (`src/data/decks.json`).
+- Os posts publicados em `src/content/posts/` (33 em 05/10/2026), com as ilustrações em
+  `src/ilustracoes/`, as figuras em `src/figuras/` e as apresentações em `public/posts/<slug>/deck/`
+  (`src/data/decks.json`).
 - **Não existem e não podem ser inventados:** depoimentos, números de audiência, métricas de leitura
   e benchmarks próprios sem medição.
 

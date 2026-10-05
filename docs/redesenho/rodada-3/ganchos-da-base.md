@@ -1,5 +1,10 @@
 # Ganchos da base (r3-base) para as cinco linhas
 
+> Histórico da rodada 3 (a base dos protótipos). No blog, alguns destes ganchos não existem mais (na
+> faxina da D84: `.livro-na-gaveta`, `[data-lv-fileira]`, `window.csLivroVivo.onda`, `[data-foto-gira]`,
+> `<LivroEmPe parado />` e `[data-luz-acesa]`; ficam o `data-livro-parado`, o `data-lv-ondou`, o
+> `window.csLivroVivo.soltar` e a variável `--luz-acesa`): o que vale é o comentário de cada componente.
+
 O que os construtores da fase 2 deixaram estável na `r3-base` para as linhas 16 a 20 mudarem a cara sem
 reescrever a base. Cada linha parte de uma cópia da `r3-base` e usa estes ganchos. Se precisar mudar um
 deles, mude na sua cópia e diga no relatório.

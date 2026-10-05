@@ -1,25 +1,27 @@
 ---
 name: figura
-description: Desenha as figuras do corpo do post (D58) - diagramas e gráficos coloridos (componente Figura), com detalhes que se mexem; a animação com play (Animacao, com o SVG do quadro final e o .ts que monta a timeline GSAP); os logos das ferramentas (src/marcas, Ferramenta no texto, data-marca nas figuras); e o print como evidência (Evidencia). Use ao criar, corrigir ou conferir qualquer desenho do corpo de um post que não seja a capa (skill desenho) nem uma lousa (skill lousa).
+description: Desenha as figuras do corpo do post (D58) - diagramas e gráficos coloridos (componente Figura), com detalhes que se mexem; a figura em passos (FiguraPassos, D67), o formato de toda sequência, comparação no tempo ou sistema funcionando, que o leitor monta passo a passo; os logos das ferramentas (src/marcas, Ferramenta no texto, data-marca nas figuras); o print como evidência (Evidencia); e a animação com play (Animacao), em prova nas páginas de teste. Use ao criar, corrigir ou conferir qualquer desenho do corpo de um post que não seja a capa (skill desenho) nem uma lousa (skill lousa).
 ---
 
-# Figura (diagramas, gráficos, animação com play, logos e print)
+# Figura (diagramas, gráficos, figura em passos, logos, print e animação com play)
 
 **Antes de desenhar, leia `docs/estilo-desenho.md`** (a seção das figuras) e o `DESIGN.md`. Os
 tempos estão em `docs/movimento.md`. Classes em `src/styles/figura.css` (mais as da capa, de
 `desenho.css`); leitura dos arquivos em `src/lib/figuras.ts`. Exemplos nos posts
-`jackson-filtros-mascarando-cartao.mdx` (figura, animação com play, print e ícones),
-`cronjob-vs-endpoint-sqs.mdx` (figuras com legenda) e `criptografia-em-repouso-e-em-transito.mdx`.
+`jackson-filtros-mascarando-cartao.mdx` (figura, figura em passos, print e ícones),
+`cronjob-vs-endpoint-sqs.mdx` (figuras com legenda e figura em passos), `dns-tipos-de-registro.mdx`
+(o modelo mais novo de figura em passos) e `criptografia-em-repouso-e-em-transito.mdx`.
 
 ## Regras de todo desenho do corpo
 
 - **Todo desenho conversa com o texto.** O texto apresenta o desenho e diz o que olhar nele (o que é
   cada cor, a ordem dos números, o que o ponto que corre mostra). Nada de imagem solta.
 - **Nem todo post tem todos os tipos.** Entra o que o assunto pede e o que fica bom: um post pode ter
-  só a capa e um gráfico; outro, uma lousa e uma animação.
+  só a capa e um gráfico; outro, duas figuras paradas e uma figura em passos.
 - **Quem manda no movimento:** a figura fica parada, ou com detalhes que se mexem sozinhos **sem mudar
-  a imagem**; a animação com play **muda a imagem** (o sistema funcionando), e o leitor só dá play e
-  pausa; a lousa (skill `lousa`) é comandada pelo leitor.
+  a imagem**; na figura em passos, o leitor monta a figura passo a passo e nada anda sozinho. Nas
+  páginas em prova (D67), a animação com play **muda a imagem** (o leitor só dá play e pausa) e a lousa
+  (skill `lousa`) é comandada pelo leitor.
 - **Ícones das ferramentas** sempre que couberem, no texto e dentro dos desenhos, espalhados pelo post
   e não só no começo, sem poluir.
 - **Print** só quando prova algo do texto e dá para garantir que está certo.
@@ -30,7 +32,7 @@ Post com qualquer um deles é `.mdx`. Imports logo depois do frontmatter:
 
 ```mdx
 import Figura from "../../components/Figura.astro";
-import Animacao from "../../components/Animacao.astro";
+import FiguraPassos from "../../components/FiguraPassos.astro";
 import Ferramenta from "../../components/Ferramenta.astro";
 import Evidencia from "../../components/Evidencia.astro";
 import documentacao from "../../evidencias/<slug>/documentacao.png";
@@ -39,7 +41,7 @@ import documentacao from "../../evidencias/<slug>/documentacao.png";
 ```mdx
 <Figura figura="<slug>/caminho" legenda="Cada cor é um papel: o app (azul), a escrita com sufixo (verde)…" />
 
-<Animacao animacao="<slug>/chuva" legenda="Sem sufixo, quase todas as escritas caem na P3…" />
+<FiguraPassos figura="<slug>/chuva-em-passos" estilo="marca-texto" fim="segmentos" passos={["…", "…"]} legenda="…" />
 
 Numa Black Friday, a tabela do <Ferramenta nome="dynamodb" href="https://aws.amazon.com/dynamodb/">Amazon DynamoDB</Ferramenta>…
 
@@ -162,7 +164,8 @@ explica o que ele está vendo.
 Use como régua de qualidade antes de entregar uma figura ou animação:
 
 - **Animação `src/animacoes/jackson-filtros-mascarando-cartao/dois-caminhos`** ("essa animação ficou
-  TOP"): o mesmo objeto (o cartão) vai por dois caminhos; no caminho errado, o que chega ao log fica
+  TOP"; no post, desde a D67, é a figura em passos `dois-caminhos-em-passos`, e a animação segue na
+  `/animacoes-test/`): o mesmo objeto (o cartão) vai por dois caminhos; no caminho errado, o que chega ao log fica
   vermelho e é riscado; no certo, o cartão atravessa o filtro, a peça vermelha (o CVV) cai e a fita
   verde (a máscara) entra. A cor de cada peça diz o que ela é, o movimento mostra a regra acontecendo,
   e a frase embaixo resume o que se viu.
@@ -170,11 +173,14 @@ Use como régua de qualidade antes de entregar uma figura ou animação:
   `sem-resposta-para-perder`** ("muito legal"): diagramas de sequência com os pacotes andando pelas
   setas na ordem em que as coisas acontecem.
 
-## Figura em passos (`FiguraPassos`, em prova, D67)
+## Figura em passos (`FiguraPassos`, D67, em prova)
 
-**Em prova:** só na página `/animacoes-test-2/`, até o Cesar decidir. Se ele aprovar, substitui a lousa
-de passos, a lousa de comparação e a animação com play, e vira a `Figura` com `passos`. Até lá, post
-novo segue as seções de hoje. O porquê está em `docs/figura-em-passos/`: a pesquisa (aprendizagem
+**O formato de hoje:** desde 02/10/2026, a pedido do Cesar, todas as peças de passos dos posts são
+figuras em passos (12 peças em 7 posts; a última lousa, a da instalação do csr-cockpit, saiu em
+04/10/2026), e post novo com sequência, comparação no tempo ou o sistema funcionando usa este formato.
+A D67 continua **em prova** no registro: quando o Cesar fechar, ele vira a `Figura` com `passos`, as
+props `estilo` e `fim` saem (o que hoje se escolhe nelas vira o padrão), e a `Lousa`, a `Animacao` e as
+páginas de prova saem do ar. O porquê está em `docs/figura-em-passos/`: a pesquisa (aprendizagem
 multimídia, informação que some, small multiples) e a auditoria das 10 peças animadas de 02/10/2026,
 com o que cada uma tinha de difícil.
 
@@ -188,8 +194,22 @@ com o que cada uma tinha de difícil.
 ```mdx
 import FiguraPassos from "../../components/FiguraPassos.astro";
 
-<FiguraPassos figura="<slug>/<nome>" passos={["O app pede a cobrança, com a chave.", "…"]} legenda="…" />
+<FiguraPassos
+  figura="<slug>/<nome>"
+  estilo="marca-texto"
+  fim="segmentos"
+  passos={["O app pede a cobrança, com a chave.", "…"]}
+  legenda="…"
+/>
 ```
+
+| Prop | O que é |
+|---|---|
+| `figura` | `"<slug>/<nome>"`, o arquivo `src/figuras/<slug>/<nome>.svg` |
+| `passos` | um texto por passo, na ordem dos selos do desenho (aceita `código` e `**negrito**`); o número tem de bater com o maior `data-passo` do desenho, senão o build quebra |
+| `legenda` | uma linha embaixo, dizendo como ler a figura (o que é cada cor) |
+| `estilo` | o desenho dos controles: sempre `"marca-texto"` (a escolha do Cesar, 04/10/2026: os traços de progresso são riscos de marca-texto, o passo da vez fica grifado na lista e o Próximo vem sublinhado). `lapis` e `fita` só na `/animacoes-test-3/` |
+| `fim` | o aviso de que o passo terminou de entrar: sempre `"segmentos"` (um traço por passo embaixo da figura, como os stories; 02/10/2026). `botao`, `anel`, `selo` e `grifo` só na `/animacoes-test-2/` |
 
 Arquivo em `src/figuras/<slug>/<nome>.svg`, com as regras das figuras (acima) e mais estas:
 
@@ -230,19 +250,24 @@ Arquivo em `src/figuras/<slug>/<nome>.svg`, com as regras das figuras (acima) e 
 - **Um objeto que passa por etapas** (um JSON montado campo a campo): o objeto na base, e cada passo
   soma a seta, o resultado e o selo.
 
-**Aviso de que o passo terminou (em prova):** cinco ideias pela prop `fim=` do `FiguraPassos`, que são
-`botao`, `anel`, `selo`, `grifo` e `segmentos`, no fim da `/animacoes-test-2/`. O motor marca a entrada
-(`data-entrando`, `--duracao-passo`) e o fim (`.passo-terminou`). A escolhida vira o padrão, sem prop.
+**Aviso de que o passo terminou:** o motor (`src/scripts/figura-passos.ts`) marca a entrada do passo
+(`data-entrando`, com a duração em `--duracao-passo`) e o fim (`.passo-terminou`); o `fim=` decide como
+isso aparece (acima, na tabela).
 
 Conferir: `node scripts/desenho/validar.mjs <slug>` (aceita `data-passo` e `trajeto` e confere o
 trajeto) e as fotos de cada passo, a figura inteira primeiro, em 1280 e 390, no claro e no escuro. O
 componente quebra o build se o número de passos do desenho não bater com o da lista.
 
-## Animação com play (`Animacao`)
+## Animação com play (`Animacao`, em prova, D67)
+
+**Em prova:** nenhum post usa (desde 02/10/2026 as três dos posts viraram figuras em passos); as peças
+de `src/animacoes/` só aparecem na `/animacoes-test/`, até o Cesar fechar a D67. Post novo usa a figura
+em passos. As regras abaixo valem para mexer nessas peças.
 
 Para o que as lousas não cobrem: o sistema funcionando, uma fila enchendo e esvaziando, um algoritmo
 rodando, um gráfico se preenchendo ao longo do tempo, um contador que sobe. Pouca animação também vale:
-às vezes só o ponto principal se mexe.
+às vezes só o ponto principal se mexe. Consulte as skills `gsap-core`, `gsap-timeline` e
+`gsap-performance`.
 
 Dois arquivos em `src/animacoes/<slug>/`:
 
@@ -272,10 +297,10 @@ export default function montar(gsap: GSAP, svg: SVGSVGElement) {
   retângulo `papel` (`data-parte="tampa-…"`) e encolha a tampa da esquerda para a direita
   (`scaleX` de 1 a 0, `transformOrigin: "100% 50%"`). Se mudou, um `risco` (`pathLength="1"`, de
   `strokeDashoffset` 1 a 0) corta o texto velho, e o novo é escrito embaixo. Mais desenho que texto.
-- **Em prova (D65):** `controles="marca-texto" | "caderno" | "post-it"` troca os botões e a frase de
-  baixo por uma das três opções do protótipo (`/prototipos/controles/`), num cartão só com o desenho.
-  Até o Cesar escolher, cada post fica com a opção que recebeu na prova (lista na D65); post novo fica
-  sem `controles`.
+- **Controles em prova (D65):** `controles="marca-texto" | "caderno" | "post-it"` troca os botões e a
+  frase de baixo por uma das três opções do protótipo (`/prototipos/controles/`), num cartão só com o
+  desenho. Só aparece na `/animacoes-test/` e na `/prototipos/controles/`; nenhum post usa. Se a D67
+  for aprovada, a D65 perde o objeto (a figura em passos tem um controle só) e este item sai.
 - O componente cuida do resto: abre tocando quando aparece na tela (nunca com movimento reduzido),
   pausa fora dela, o anel em volta do botão mostra a volta e pulsa nos 5 s do fim, o botão de recomeçar
   e o clique na imagem dão play ou pausa. O GSAP vem sob demanda (`src/scripts/gsap.ts`). No RSS, a
@@ -354,8 +379,9 @@ painel.
 
 ## Validar, revisar e conferir (obrigatório antes de mostrar ao Cesar)
 
-Todo desenho terminado (figura, animação, lousa, capa, logo, print) passa por esta revisão **antes**
-de ir para o Cesar. Desenho entregue com bug que a revisão pegaria é falha do processo.
+Todo desenho terminado (figura, figura em passos, capa, logo, print; nas páginas em prova, animação e
+lousa) passa por esta revisão **antes** de ir para o Cesar. Desenho entregue com bug que a revisão
+pegaria é falha do processo.
 
 ```sh
 fnm exec --using=24 node scripts/desenho/validar.mjs <slug>    # capa, lousas, figuras e animações do post
@@ -376,15 +402,17 @@ legenda com o mouse, a lousa em cada passo e no play, a animação em quatro ins
 **Olhe todas as fotos** e confira o que o script não vê:
 
 1. O desenho conta o que o texto conta, e o texto apresenta o desenho e diz o que olhar nele.
-2. Cada ator com a mesma cor em todas as figuras, animações e lousas do post; vermelho só para erro.
+2. Cada ator com a mesma cor em todas as figuras do post (paradas e em passos); vermelho só para erro.
 3. Com o mouse em cada cor: só aquele ator fica aceso; o resto apaga, e a referência (`.referencia`,
    eixos) fica inteira acesa, sem metade apagada (o logo apagado e o ícone ao lado aceso é bug).
 4. Nada cruza texto; seta não passa por cima de rótulo; nada encosta na borda do painel.
 5. No escuro, tudo legível (tons, lavados, logos); em 390px, a figura rola de lado e a letra se lê.
-6. Animação: uma volta inteira dá para ler; nada some do que foi escrito; o quadro final bate com o
-   arquivo; com movimento reduzido, não abre tocando.
-7. Lousa: cada passo mostra só o que a linha da lista diz; a canetinha na cor do que desenha; nas
-   comparações, as duas linhas no mesmo instante.
+6. Figura em passos: a figura inteira se explica sozinha; cada passo só soma e mostra só o que a linha
+   da lista diz; os selos batem com a lista; em 390px, o quadro rola até o que entrou.
+7. Nas páginas em prova: a animação (uma volta inteira dá para ler; nada some do que foi escrito; o
+   quadro final bate com o arquivo; com movimento reduzido, não abre tocando) e a lousa (cada passo
+   mostra só o que a linha da lista diz; a canetinha na cor do que desenha; nas comparações, as duas
+   linhas no mesmo instante).
 8. Detalhes que se mexem na ordem do que acontece; a figura com detalhes ou animação passa pelo trace
    de performance com CPU 4× (skill `post`, passo 7).
 

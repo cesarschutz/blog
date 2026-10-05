@@ -7,14 +7,13 @@ conteúdo real, para o Cesar ver e escolher. Pedido e plano aprovados em 29/09/2
 publicada. A pasta `redesenho/` saiu do git e fica só nesta máquina, com os servidores no ar. O que
 segue abaixo é a história das rodadas, para consulta.
 
-- **Branch:** `redesenho`. Sem commit nem push até o Cesar pedir.
-- **Pasta:** `redesenho/`, um projeto Astro próprio que lê os posts, os livros e as ilustrações de
-  `src/` sem alterar nada lá.
+- **Pasta:** `redesenho/`, fora do git e só nesta máquina: um projeto Astro próprio que lê os posts, os
+  livros e as ilustrações de `src/` sem alterar nada lá.
 - **Servidor:** <http://127.0.0.1:4400>, com um modelo por endereço (`/01-grade/`, `/02-noturno/`…).
   A raiz lista os modelos prontos.
 
-Enquanto o Cesar não escolher, o site no ar segue o `DESIGN.md` e o `docs/briefing.md`. O modelo
-escolhido vira uma decisão nova, e só então o site muda.
+Uma rodada nova de protótipos segue a skill `redesenho`; o modelo escolhido vira uma decisão nova, e só
+então o site muda.
 
 ## Rodada 2 (desde 30/09/2026)
 
@@ -26,7 +25,7 @@ A rodada 2 tem **5 protótipos novos (11 a 15), todos partindo do blog atual**, 
 isolada em `redesenho/novos/`, com a sua porta (4411 a 4415). Eles misturam o que ele pediu e trazem
 o "extra do 06" (abrir um computador ou um terminal para ver os livros como arquivos). Os pedidos
 numerados, os obrigatórios, o que ele não quer e o status estão em `rodada-2/controle.md`. O prompt
-do 06 para o projeto dev-note dele fica em `prompt-06-terminal-dev-note.md`.
+do 06 para o projeto dev-note dele fica em `docs/historico/prompt-06-terminal-dev-note.md`.
 
 ## Rodada 4: a versão final (01 e 02/10/2026, publicada na D61)
 
@@ -66,18 +65,14 @@ diferentes.
   área. Depois, as cinco linhas saem dela (portas 4416 a 4420).
 - **Controle, fases e como retomar:** `rodada-3/controle.md`.
 
-## Onde estamos (30/09/2026)
+## Rodada 1: os 10 modelos (30/09/2026)
 
 **Os 10 modelos estão prontos** e conferidos, cada um no seu endereço (ver a tabela). A página
 <http://127.0.0.1:4400/> lista todos. Para subir o servidor:
 `fnm exec --using=24 npm --prefix redesenho run dev`.
 
-**Próximo passo:** o Cesar olha os modelos e escolhe um, ou pede uma mistura ("a abertura do X com a
-tag do Y"). O que ele disser de cada modelo vai para a seção "Retorno do Cesar" da direção dele. O
-escolhido vira uma decisão nova, e o redesenho do site de verdade começa a partir dele.
-
-**Nada commitado.** As fontes do Fontshare (`redesenho/src/fontes/**`) ficam fora do git, pela
-licença.
+O que o Cesar disse de cada modelo está na seção "Retorno do Cesar" da direção dele. As fontes do
+Fontshare (`redesenho/src/fontes/**`) ficam fora do git, pela licença.
 
 **Aprendizados** (valem para qualquer modelo novo ou ajuste):
 

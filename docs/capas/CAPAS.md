@@ -7,8 +7,10 @@ As imagens em `referencia/` são o alvo visual:
 - `capas.png`: as oito capas da coleção de antes da D78. Valem as medidas, a tipografia e o traço; os
   títulos, as cores e os desenhos de hoje são os de `src/livros/` (os 13 livros, abaixo).
 - `lombada-e-capa.png`: a lombada colada à capa, para a animação de girar.
-- `estante.png`: as lombadas em pé, com a série depois do aparador.
-- `lateral.png`: as lombadas deitadas na lateral do site (Séries e Categorias), em tamanho real e ampliadas.
+- `estante.png`: as lombadas em pé, com a série depois do aparador. Vale pelas medidas das lombadas: o
+  aparador e a prateleira cinza saíram na D61 (seção "Estante").
+- `lateral.png`: as lombadas deitadas da lateral (Séries e Categorias), que saiu do site na D61. Fica
+  só como registro.
 - `serie.png`: a capa e a lombada da série Atualizações do Java.
 
 **No site (D39):** as categorias usam os papéis de cor invertidos em relação às referências, sempre,
@@ -79,21 +81,21 @@ No site, declare `container-type: inline-size` na capa e escreva cada medida com
 
 ## Lombada de categoria em pé (estante)
 
-A ordem, de cima para baixo, é: ícone, título e número. O ícone e o número giram como o texto, então a lombada deitada é a mesma lombada rotacionada.
+A ordem, de cima para baixo, é: ícone, título e número. O ícone e o número giram como o texto (a lombada deitada da antiga pilha lateral era a mesma lombada, rotacionada).
 
 - **Medidas:** alturas e larguras em `livros.json`. A largura é cerca de um quarto da altura.
 - **Duas partes:** em cima, a cor do livro. Embaixo, o papel, com 400px de altura medidos da base em todos os livros, para que a divisão forme uma linha contínua na estante. Na animação de girar, quando a lombada assume a altura da capa, o bloco de cor passa a ter 300 de 720, alinhado com a capa.
-- **Forma e volume:** cantos de 3px em cima e 1px embaixo, grão e, desde a D57, a luz da lombada arredondada: um gradiente horizontal que escurece bem as beiradas e leva um brilho largo um pouco antes do meio (`rgba(0,0,0,.34) 0%, .16 5%, .05 14%`, branco `.04 28%, .13 43%, .09 56%`, preto `.02 70%, .12 87%, .32 100%`), um fio de luz no alto (4) e o pé um nada mais escuro (14). Na estante, a sombra é a de contato na tábua; os lados e a cabeça dão o volume (seção "Estante").
+- **Forma e volume:** cantos de 3px em cima e 1px embaixo, grão e, desde a D57, a luz da lombada arredondada: um gradiente horizontal que escurece bem as beiradas e leva um brilho largo um pouco antes do meio (`rgba(0,0,0,.34) 0%, .16 5%, .05 14%`, branco `.04 28%, .13 43%, .09 56%`, preto `.02 70%, .12 87%, .32 100%`), um fio de luz no alto (4) e o pé um nada mais escuro (14). Na estante, a sombra é a de contato no chão; os lados e a cabeça dão o volume (seção "Estante").
 - **Ícone:** o SVG de `icones/` girado 90° no sentido horário (`transform: rotate(90deg)`), centralizado no bloco de cor, com cerca de 22px de margem lateral e 32px acima e abaixo. O traço usa a `tinta`, e `--lombada-cor` recebe a cor do livro.
 - **Título:** 26px abaixo da divisão, em `writing-mode: vertical-rl`, Bitter 800 30/33px, letter-spacing −0.01em, no `destaque`. Cada linha do título vira uma coluna.
 - **Número:** 26px acima da base, em `vertical-rl`, Bitter 700 28px, no `destaque`.
 
 ## Livro 3D: capa dura (D57)
 
-O livro em pé (grade de Categorias e de Séries, topo da página do livro, livro ampliado e gaveta da home) é
-um livro de capa dura de verdade, com as mesmas artes de capa e de lombada (`Livro3D.astro`, a parte
-"livro 3D inteiro" de `src/styles/livro.css`; referência: a prancha 01 de
-`docs/prototipos/livros-realistas/`). Medidas em unidades da referência (capa de 480 × 720):
+O livro em pé (a coleção da home, a grade de Livros e de Séries, a fileira e o painel da página do
+livro, a busca e o livro ampliado) é um livro de capa dura de verdade, com as mesmas artes de capa e de
+lombada (`Livro3D.astro`, a parte "livro 3D inteiro" de `src/styles/livro.css`; referência: a prancha
+01 de `docs/historico/livros-realistas/`). Medidas em unidades da referência (capa de 480 × 720):
 
 - **Capas de papelão de 8** (`--papelao`): a capa é uma placa, com a arte por fora e o verso por dentro, e a
   borda de cima forrada na cor impressa no alto dela (o papel; na série, a faixa laranja). A contracapa é
@@ -113,10 +115,10 @@ um livro de capa dura de verdade, com as mesmas artes de capa e de lombada (`Liv
   alto, escuro na frente e no pé). Tudo em camadas pretas e brancas translúcidas, por cima do grão.
 - **A vista e a sombra:** o olho um pouco acima do livro (a vista gira 15° em X, fora do giro do livro),
   para o alto aparecer. No chão, a sombra de contato, justa, e a projetada, larga e fraca, para a direita
-  (a luz vem do alto à esquerda). A gaveta da home não tem a sombra no chão.
-- **Os movimentos continuam:** girar no mouse (38° → 24°), a capa que abre no livro ampliado (com o verso e
-  as folhas), o voo da estante para a gaveta e da pilha para o topo, e as trocas de página. Só o `rotateY`
-  do livro se mexe; nada de `filter` nas peças (achataria o 3D).
+  (a luz vem do alto à esquerda).
+- **Os movimentos continuam:** o giro com mola no hover (o livro vivo, D61), a capa que abre no livro
+  ampliado (com o verso e as folhas), o voo do livro entre as páginas e as trocas de página. Só o
+  `rotateY` do livro se mexe; nada de `filter` nas peças (achataria o 3D).
 - **A contracapa (D78):** no livro ampliado (categorias), o botão "Virar o livro" da legenda gira o livro até
   167° (o verso quase de frente e a lombada à direita). O verso é impresso na cor do livro, como a capa, com a
   tinta dela e a mesma tipografia: no alto, "EDIÇÃO DE ESTUDO" e "VOLUME 0N" (como "VOLUME 0N" e "CESAR
@@ -134,34 +136,30 @@ um livro de capa dura de verdade, com as mesmas artes de capa e de lombada (`Liv
 
 ## Estante
 
-- **Livros e prateleira:** livros em pé com 6px entre eles, sobre uma prateleira de 20px em `#b5bab4` (14 até a D57, que deu a ela a face de cima e a borda da frente) com borda inferior de 6px em `#9ba19b`.
-- **Livro inclinado:** o último livro da coleção fica inclinado 6°, girando pelo canto de baixo do lado direito, com o topo apoiado no alto do aparador.
-- **Aparador:** uma barra de 12 × 470px (gradiente `#6f7775`, `#9aa19f`, `#7a8280`) com base de 48 × 9px. Ele separa as categorias das séries, que vêm depois dele.
+A estante de lombadas fica no filtro por livro (Todos os artigos e a tag) e na 404 (`Estante.astro`). A
+coleção da home, desde a D84, é de capas, em prateleiras (`ColecaoHome.astro`; o `DESIGN.md`, "A
+coleção da home").
+
+- **Livros e chão:** livros em pé com 6px entre eles, sobre a **lâmina de vidro** (D61, rodada 4, E3;
+  `vidro.css`): o tampo visto de cima, a aresta da frente com o fio de luz, a sombra difusa na página e a
+  luz embaixo do livro (a poça no tampo, a aresta acesa e o clarão na página) no hover, no foco e na
+  lombada escolhida. Sem madeira e sem a prateleira cinza (`#b5bab4`) de antes.
+- **Séries:** depois das categorias, um vão (o aparador cinza, a barra de metal que separava as duas, e
+  o último livro da coleção inclinado 6° sobre ele saíram na D61, rodada 3, F14-1). A série vem depois
+  do vão. A camada dos abajures repete o vão (`.lugar-aparador`).
 - **Com volume (D57, prancha 07):** o olho fica um pouco acima dos livros (190 acima do mais alto), e cada
   lombada é um livro em 3D: a cabeça (as bordas das capas, o miolo e o cabeceado) e o começo dos dois
   lados (60, escuros), que deixam os vãos entre os livros no fundo escuro; a prateleira é um espaço 3D só,
-  e os vizinhos se tapam de verdade. A lombada tem a luz correndo pela curva. A tábua tem espessura (a face
-  de cima, um pouco na frente dos livros e subindo atrás deles, a borda da frente com um fio de luz, a de
-  baixo e a sombra na folha), e cada livro faz a sombra de contato nela. O aparador é uma haste de metal
-  redonda, com a ponta arredondada, sobre uma base redonda.
+  e os vizinhos se tapam de verdade. A lombada tem a luz correndo pela curva, e cada livro faz a sombra de
+  contato no chão.
 - **Livro escolhido no filtro:** os outros apagam com um véu do papel da folha a 62% (`--apagado`), e não
-  com opacidade e filtro, que achatariam o 3D e deixariam a tábua aparecer através deles.
+  com opacidade e filtro, que achatariam o 3D e deixariam o chão aparecer através deles.
 
-## Lombada deitada (lateral)
+## Lombada deitada (saiu na D61)
 
-Desde a D39, é **a mesma lombada em pé** (`MioloLombada` dentro de `.lombada-visual`), com as mesmas
-proporções, ícone, tipografia e contagem, girada 90° para a esquerda: o ícone fica na ponta
-esquerda e o título e o número correm na horizontal. A escala da pilha faz o livro mais longo caber
-na largura da lateral (teto de 0,42px por unidade, o da estante). Só na pilha, a lombada fica 12%
-mais grossa que isso, com o texto na mesma proporção, para o título chegar a uns 11 ou 12px (D40);
-o comprimento e a divisão do papel não mudam. O volume 1 fica embaixo, cada livro
-deslocado pelo `deslocamento` de `livros.json` (em unidades da lombada em pé), com uma prateleira
-embaixo na cor da estante. **Com volume (D57, prancha 08):** a luz da curva vem de cima; em cima de
-cada livro, a capa vista de um pouco acima (uma faixa fina, inclinada, que foge para trás, nas cores
-impressas), que o livro de cima tapa onde ele é mais longo; embaixo, a sombra que ele faz no de baixo; a
-prateleira com espessura, como a da estante. Os campos `comprimento` e `espessura` de `lombadaDeitada`
-não são mais usados. O livro aberto no topo da página não fica na pilha (D46): ao trocar de livro, ele
-volta para o alto dela.
+A pilha lateral das páginas de livro e de série usava a lombada em pé girada 90° (D39, D46, D57). Ela
+saiu na D61 (a fileira do alto da página do livro faz esse papel), e os campos dela (`lombadaDeitada` em
+`livros.json`, `deitada` nos tipos) saíram na D84. Livro novo não precisa dela.
 
 ## Séries: livro com capa de revista (D57)
 
@@ -185,8 +183,6 @@ papel e a cor divididos na capa: cada post é uma edição. De uma série para o
 - **Base:** papel, fina (80px de largura na estante), com a faixa de 14px no destaque no topo.
 - **Conteúdo:** o emblema girado 90°, o título na vertical em Bitter 800 26px, com o complemento em Newsreader itálico no destaque, e o número no pé em Bitter 800 26px, no destaque.
 
-**Lombada deitada:** a lombada em pé girada, como nas categorias (D39).
-
 ## Livros novos
 
 **Quando mexer na coleção (D78):** a coleção não muda à toa. Ao planejar cada post, o Claude confere
@@ -206,7 +202,8 @@ entra na sua posição, e os que vêm depois dele mudam de número.
   - **Ícone da lombada:** a mesma geometria reduzida, sem a hachura e sem o fantasma, que tem de ler como silhueta (de duas a quatro partes grandes, nada de grade densa).
   - **Textos:** a frase segue o molde do subtítulo, e o volume é a posição do título na ordem alfabética. Como os 13, o livro ganha a contracapa (D78): o que ele abrange e o texto do desenho (o que é, de quando e a ligação com o assunto, só com o que for verdade), curto e completo, com um link sobre a máquina e a cor com o motivo, em `src/livros/livros.json` (`contracapa`; a proposta de cada um fica em `docs/prototipos/colecoes/final/dados.json`).
   - **O conjunto e o motivo de cada objeto:** `docs/prototipos/colecoes/final/direcao-de-arte.md` (seção 1, "As regras do mundo"), com as trocas da `critica.md`.
-  - **A ferramenta:** `scripts/desenho/livros.mjs` (o desenho em geometria limpa num módulo `scripts/desenho/livros/<slug>.mjs`; ela passa a caneta, faz a hachura e grava o desenho e o ícone; manual em `docs/prototipos/colecoes/manual-desenho.md`). O corpo do título sai de `scripts/livros/titulo-da-capa.mjs`, e a cor passa por `scripts/livros/conferir-cores.mjs` antes de entrar.
+  - **A ferramenta:** `scripts/desenho/livros.mjs`. O desenho é um módulo `scripts/desenho/livros/<slug>.mjs`, em geometria limpa (linhas, arcos, curvas, retângulos, na ordem de pintura; o exemplo é o `_rascunho.mjs`, e a lista das formas e das opções da caneta está no cabeçalho do script); a ferramenta passa a caneta (o tremor com semente do slug, igual a cada vez), faz a hachura e grava `src/livros/desenhos/<slug>.svg` e `src/livros/icones/<slug>.svg`. O corpo do título sai de `scripts/livros/titulo-da-capa.mjs`, e a cor passa por `scripts/livros/conferir-cores.mjs` antes de entrar.
+  - **Conferir:** `node scripts/desenho/livros.mjs <slug> --ver --cor '#hex'` grava os dois SVGs e a foto `.render/livros/<slug>.png` (a parte de baixo da capa sobre a cor do livro e sobre o papel, e o ícone): olhe a proporção, a perspectiva, se o objeto se reconhece, o peso dos traços igual ao dos outros, a hachura do lado certo e nada cortado. Depois, a capa inteira com a lombada, ao lado das outras, em `/amostra/colecoes/livro/<slug>/` (só no dev; o livro precisa estar em `docs/prototipos/colecoes/colecoes.json`) ou `/amostra/livros/`, com `node scripts/foto.mjs <url> <saida.png>`. Se o novo parece mais pobre, mais grosso ou mais genérico que os vizinhos, refaça. O `docs/prototipos/colecoes/manual-desenho.md` é o manual da rodada das coleções: a ferramenta e a conferência valem, mas o alvo dele (os oito desenhos de antes da D78) não vale mais.
 - **Série:** um livro de capa dura com a capa de revista. Defina a cor de destaque, o título (palavra principal e complemento em itálico), o emblema no mesmo traço, o número de capa, a lista de edições e, se houver material especial, a tarja.
 
 ## Tags (D52)

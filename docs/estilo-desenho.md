@@ -1,11 +1,10 @@
 # Estilo das ilustrações, das figuras e das lousas
 
 Este arquivo guarda **só o estilo**. O Cesar pode trocá-lo sem mexer nas regras técnicas (skill
-`desenho`) nem na regra do que desenhar. Os valores marcados como "de partida" vêm dos protótipos
-aprovados e podem ser afinados na Fase 5:
-
-- `docs/referencias/prototipo-estilo-desenho.html`, aba "A + C";
-- `docs/referencias/prototipo-lousas.html`, aba "Invertida, canetinha".
+`desenho`) nem na regra do que desenhar. Os valores marcados como "de partida" vêm do protótipo
+aprovado, `docs/referencias/prototipo-estilo-desenho.html` (aba "A + C"), e foram afinados depois (as
+decisões citadas em cada um). O protótipo das lousas da Fase 0 (aba "Invertida, canetinha", o quadro
+escuro) foi superado e está em `docs/historico/referencias/prototipo-lousas.html`.
 
 Onde protótipo e briefing divergirem, vale o briefing.
 
@@ -50,13 +49,10 @@ tracejado; o conjunto em `docs/prototipos/colecoes/final/direcao-de-arte.md`).
 | Anotações | Literata itálica: 25 na linha principal (`--ink`) e 20 no complemento (`--ink-2`). Linha de chamada curva em `--ink-2`, com traço 1,8 |
 | Carimbo | Contorno na cor de destaque e texto em Besley 800 |
 
-Na D30, Observabilidade virou o livro SRE (`#c4a050`; `#b59353` desde a D78); a observação abaixo
-vale para ele.
-
-A conferir na Fase 5: o destaque de Observabilidade (`#C39A3E`) dá 2,24:1 sobre o papel claro. Isso
-basta para uma mancha de cor, mas não para traço fino nem texto. O protótipo de desenho testou
-`#9C7A26`, mas a tabela do briefing manda `#C39A3E`, e ela vale até decisão contrária. No escuro, os
-destaques com 42% de branco passam em todas as categorias (5,1 a 9,8:1).
+**Cor clara de livro:** o dourado do SRE (`#b59353`; era o livro Observabilidade até a D30) fica só
+como mancha; o traço e o texto usam o destaque escurecido (`#7f5d1a`), que sai de `src/livros/cores.js`,
+como o de DevOps e o de Integração e Eventos (tabela do `docs/capas/CAPAS.md`). O `npm run contraste`
+confere. No escuro, os destaques com 42% de branco passam em todas as categorias.
 
 ## Capa viva (D58)
 
@@ -102,10 +98,12 @@ destaques com 42% de branco passam em todas as categorias (5,1 a 9,8:1).
   (`fluxo`), um tracejado andando (`formiga`), um pulso, um piscar, um giro, um balanço, um vai e
   vem. Em quantas setas fizer sentido, não só uma. Um gráfico também pode ter (um ponto pulsando no
   pico, um cursor correndo na série). Só andam com a figura na tela; com movimento reduzido, param.
-- **Logos das ferramentas:** desenhados à mão no traço da casa, a forma que todo mundo conhece,
-  simplificada, com os tons (AWS: "aws" e o sorriso em âmbar; Kubernetes: o heptágono azul com o leme;
-  Java: a xícara). Sem tremor e sem copiar o arquivo oficial. Dentro das figuras, no lugar que
-  identifica a peça (a xícara na caixa do app, o logo da AWS na caixa da nuvem).
+- **Logos das ferramentas** (D64): só como a regra de marca do dono permite, conferida na política
+  oficial e registrada em `src/marcas/regras.json` (sem registro, o build quebra). O redesenho à mão no
+  traço da casa, com os tons e sem tremor, só onde a política deixa (hoje, o Kubernetes: o heptágono
+  azul com o leme); onde ela pede o arquivo oficial, ele sem alteração; onde não permite, só o nome em
+  texto e, no desenho, um ícone genérico da casa (banco, fila, tópico, aplicação, servidor). Dentro das
+  figuras, no lugar que identifica a peça. Regras na skill `figura`.
 - **Animação com play:** o mesmo desenho, e o quadro final é o desenho parado. O que se move fica
   fora do grupo que treme. O que foi escrito não some: se mudou, um traço firme risca e o novo vem
   embaixo. Mais desenho que texto.
@@ -141,8 +139,10 @@ livro.
 Desde 30/09/2026, a `Lousa` usa **o mesmo estilo das figuras** (a seção acima): o painel do livro, o
 traço da casa com tremor, as caixas com o fundo lavado no tom e a sombra de hachura, os seis tons com o
 mesmo significado das figuras do post, os selos numerados e os logos. O que muda é o tempo: a lousa se
-desenha diante do leitor, e quem desenha é uma **canetinha colorida**. O quadro escuro com o canetão
-ficou só nas lousas antigas (abaixo), porque brigava com as figuras coloridas no mesmo post.
+desenha diante do leitor, e quem desenha é uma **canetinha colorida**. O quadro escuro com o canetão,
+que brigava com as figuras coloridas no mesmo post, saiu do site na D84 (abaixo). Nenhum post usa a
+`Lousa` desde 04/10/2026: o que acontece em ordem está nas figuras em passos (D67, em prova), que têm o
+estilo das figuras (acima) e as regras na skill `figura`.
 
 - **A canetinha:** ponta de feltro, cone de plástico claro, corpo fino levemente tingido e a tampa no
   fundo, com contorno de tinta, como os desenhos. A ponta, o anel e a tampa ficam **na cor do que ela
@@ -171,36 +171,22 @@ ficou só nas lousas antigas (abaixo), porque brigava com as figuras coloridas n
 - **Frase em destaque** (recurso raro): uma citação cujas palavras acendem com a rolagem.
 - Com `prefers-reduced-motion`: desenho completo, sem caneta e com todos os passos visíveis.
 
-## O quadro antigo: "Invertida, canetinha" (só `LousaTempo` e `LousaLoop`, nos posts antigos)
+## O quadro antigo: "Invertida, canetinha" (saiu na D84)
 
-Vale só até o post ser revisto pela skill `post`, quando a lousa é redesenhada no estilo acima. A
-lousa antiga é sempre o **contrário da página**:
+Era a lousa da `LousaTempo` e da `LousaLoop`, sempre o **contrário da página**. Nenhum post a usava
+desde 04/10/2026, e os componentes saíram na D84. O protótipo e os valores do desenho (o reflexo, o
+tremor mais leve, as espessuras, a hachura, os rótulos) estão em `docs/historico/referencias/`. Ficam
+aqui só as cores, porque continuam nos tokens (`lousa*` e `LOUSA`, em `src/styles/tokens.ts`) para o
+`npm run contraste` e o fundo escuro da `/amostra/livros/`:
 
 | | Página clara: lousa de vidro escura | Página escura: quadro branco suavizado |
 |---|---|---|
-| Fundo | `#15191C`, com reflexo diagonal sutil | `#CFD5D1` (nunca branco puro, para não ofuscar) |
-| Borda | 1px `#2C3438` | 3px `#8F989D` (alumínio) |
+| Fundo | `#15191C` | `#CFD5D1` (nunca branco puro, para não ofuscar) |
+| Borda | `#2C3438` | `#8F989D` (alumínio) |
 | Caneta | clara, `#F4F6F5` | escura, `#16212B` |
 | Destaque | `color-mix(in oklab, cor, #9ff5dc 55%)` | `color-mix(in oklab, cor, #0b6f58 35%)` |
 
-- Traço de canetão nas duas (sem giz), com leve tremor; o marcador simples desenha, na cor do traço
-  (a de destaque, nos destaques). Os rótulos usam a mesma Literata itálica do blog. O resto (a mão,
-  uma caneta por lugar, pouco texto trocando) é igual ao da lousa nova.
-
-### Valores de partida (protótipo "Invertida, canetinha")
-
-| Elemento | Valor |
-|---|---|
-| Reflexo no vidro | `linear-gradient(118deg, rgba(255,255,255,.07) 0%, rgba(255,255,255,.015) 26%, transparent 27%)`: corte seco, como vidro |
-| Reflexo no quadro | `linear-gradient(118deg, rgba(255,255,255,.28) 0%, transparent 30%)`: suave |
-| Tremor | Mais leve que o da ilustração: `baseFrequency` 0.02, `numOctaves` 2, `scale` 2, só nos traços |
-| Espessura | 2,7 em caixas e setas e 1,5 nas divisórias de tabela (viewBox de referência 560×430) |
-| Hachura | A mesma de 7×7 a 45°, com a tinta a 22% (vidro) ou 30% (quadro) e traço 1,2 |
-| Rótulos | Literata itálica 17. Secundários em 13,5, com a tinta atenuada. Código em mono 12, sem itálico |
-| Caneta | Marcador simples girado −52° (mão direita), com sombra leve como no protótipo. Some quando nada está sendo traçado. Balança até 4° no traço e 6° na escrita, com a ponta subindo e descendo 22% da altura do texto a cada letra (D58) |
-
-Contraste dos destaques (conferido por `npm run contraste`, 24/09/2026):
-- Na lousa de vidro, todos passam sem ajuste (traço e texto de 6,2 a 10,3:1).
-- No quadro branco, o destaque puro de Observabilidade daria 2,34:1. Por isso o destaque leva um
-  pouco da caneta: 20% no traço (todos passam de 3:1; o pior é 3,22:1) e 45% no texto (todos passam
-  de 4,5:1; o pior é 4,82:1). Os valores ficam em `LOUSA` (`src/styles/tokens.ts`).
+Contraste dos destaques (conferido por `npm run contraste`, 24/09/2026): na lousa de vidro, todos passam
+sem ajuste (traço e texto de 6,2 a 10,3:1); no quadro branco, o destaque puro do dourado (o livro SRE,
+então Observabilidade) daria 2,34:1, e por isso o destaque leva um pouco da caneta: 20% no traço (todos
+passam de 3:1) e 45% no texto (todos passam de 4,5:1). Os valores ficam em `LOUSA`.

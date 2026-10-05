@@ -1,5 +1,12 @@
 # Configuração do Claude Code neste projeto
 
+> **Histórico (faxina da D84, 05/10/2026):** era o `CLAUDE-CODE.md` da raiz. A configuração de hoje
+> está no `CLAUDE.md`, em `.claude/` e na skill `post`. Das sugestões do fim, as que ainda esperam o
+> Cesar viraram perguntas do `docs/estado.md` (a ordem da revisão em lote, o carimbo das fontes e o
+> tamanho do `CLAUDE.md`, cujo mapa das pastas foi para `docs/mapa.md` na D84); a do estilo dos diagramas foi respondida pela D58 e pela D63, a da lousa
+> `tempo` perdeu o objeto (a `LousaTempo` saiu na D84), o `Aviso.astro` saiu na D84 e o
+> `stroke-dashoffset` entrou no `DESIGN.md` (seção Movimento).
+
 Análise de 28/09/2026, atualizada depois das melhorias aplicadas no mesmo dia (D53), em três partes:
 
 1. [Como o Claude Code está configurado](#camadas): camadas, hooks, regras, skills, agentes, MCPs,

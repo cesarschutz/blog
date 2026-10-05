@@ -4,13 +4,14 @@ Dez propostas de livros realistas para o blog: as mesmas capas, cores, desenhos 
 forma, material, luz e sombra de objeto de verdade. Cada proposta é uma prancha SVG, e a galeria
 (`index.html`) mostra as dez, cada uma com o seu texto.
 
-Fica na branch `livros-realistas`, numa pasta separada do repositório (git worktree), para não
-misturar com a `main`. Sem commit e sem push: só entra no site com o OK do Cesar.
+Aprovado e levado ao site em 30/09/2026 (D57). Desde a faxina da D84 (05/10/2026), a pasta fica em
+`docs/historico/livros-realistas/`, só como estudo: o que vale são o `docs/capas/CAPAS.md` e o código
+(`Livro3D.astro`, `livro.css` e as fotos de `scripts/livros/`).
 
 ## Como ver
 
 ```bash
-cd docs/prototipos/livros-realistas
+cd docs/historico/livros-realistas
 fnm exec --using=24 node ferramentas/servidor.mjs 4341
 ```
 

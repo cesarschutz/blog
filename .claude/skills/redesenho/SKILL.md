@@ -119,8 +119,8 @@ Aprendizados:
 
 ## Servidor
 
-Veja os comandos em `docs/redesenho/base.md`. A porta 4400 é dos protótipos; o dev do blog (4321 ou
-4322) não se toca.
+Veja os comandos em `docs/redesenho/base.md`. A porta 4400 é dos protótipos; o dev do blog (4322; a 4321
+é de outra ferramenta do Cesar) não se toca.
 
 ## Navegador
 

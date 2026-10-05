@@ -40,12 +40,8 @@ Para criar, adaptar, reescrever ou revisar um post, siga a skill `post` (e o `DE
   - `formato` (`detalhado` ou `resumo`) e, no detalhado, `tldr` (de 3 a 5 pontos, **cada um entre
     aspas**);
   - `draft`.
-- **Categoria** = um dos livros da coleção (`src/livros/livros.json`), o do que o post ensina.
-  **A coleção ainda serve? (D78)** Em todo post, pense se os livros continuam bons com ele: o normal é
-  não mudar, mas se o post não cabe bem em nenhum livro, ou se a coleção ficaria melhor com um livro
-  novo, dividido ou renomeado, avise o Cesar e sugira (skill `post`, passo 2). Livro novo segue a seção
-  "Livros novos" de `docs/capas/CAPAS.md` (cor, desenho, ícone, volume em ordem alfabética), só com o OK
-  dele.
-- `$` em texto precisa de escape (`US\$ 10`).
+- **Categoria** = um dos livros da coleção (`src/livros/livros.json`), o do que o post ensina. **A
+  coleção ainda serve? (D78)**: confira em todo post (`CLAUDE.md`, "Livros, séries e tags"; o como na
+  skill `post`, passo 2).
+- `$` em texto precisa de escape (`US\$ 10`). Sem isso, dois `$` na mesma frase viram fórmula.
 - Post da série Java: siga a skill `serie-java`.
-- Nunca commite nem publique sem pedido do Cesar.

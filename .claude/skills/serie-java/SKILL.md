@@ -10,8 +10,8 @@ Portada do `CLAUDE.md` do blog atual. Dados em `src/data/java.ts`, página em `/
 
 ## Estrutura da série
 
-- No frontmatter: `series: java`, **sem** `category`. Na estante, é o livro de couro (`#3A2A22`,
-  letras douradas `#D8B66C`, fita `#9E3B26`), cadastrado em `src/data/series.ts`.
+- No frontmatter: `series: java`, **sem** `category`. Na estante, é a revista técnica da coleção (D32;
+  o visual no fim desta skill), com os dados em `src/livros/livros.json`, lidos por `src/data/series.ts`.
 - Um post por LTS: `java-8`, `java-11`, `java-17`, `java-21` e `java-25`. Além deles:
   - `java-29`, "Rumo à próxima LTS", atualizado a cada release intermediária;
   - `guia-atualizacoes-java`.
@@ -42,8 +42,6 @@ Portada do `CLAUDE.md` do blog atual. Dados em `src/data/java.ts`, página em `/
   - `JAVA_LTS`: versão, lançamento, o que cobre e `upcoming`;
   - `ABSORBED`: versão intermediária → LTS que a absorveu.
 - `/posts/java-NN/` redireciona para `/posts/java-<LTS>/#java-NN`, gerado a partir de `ABSORBED`.
-- Hoje falta `27: 29` em `ABSORBED`, embora o `java-29` já cubra o Java 27. Incluir na migração,
-  por coerência (a URL `/posts/java-27/` nunca existiu).
 
 ## Procedimentos
 

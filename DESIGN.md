@@ -23,11 +23,8 @@ colors:
   aviso-atencao: "#9A6B12"
   aviso-cuidado: "#A3432A"
   quadro: "#FFFFFF"
-  tabua: "#B5BAB4"
-  tabua-borda: "#9BA19B"
-  aparador: "#7A8280"
-  aparador-luz: "#9AA19F"
-  aparador-fundo: "#6F7775"
+  # a lousa escura de antes (saiu do site na D84): as cores ficam só para o npm run contraste e o fundo
+  # escuro da /amostra/livros/
   lousa: "#15191C"
   lousa-borda: "#2C3438"
   lousa-caneta: "#F4F6F5"
@@ -44,18 +41,16 @@ colors:
   painel-desenho: "#FFFFFE"
   tinta-desenho: "#1A2124"
   tinta-desenho-2: "#50595A"
-  # Papel e luz (tokens.ts, D61): a cortina da troca de página, a luz quente dos livros e do mouse, a
-  # lâmpada, o latão dos abajures e da cordinha, e a fita que cola os papéis
+  # Papel e luz (tokens.ts, D61): a cortina da troca de página, a luz quente dos livros, a lâmpada, o
+  # latão dos abajures e da cordinha, e a fita que cola os papéis
   cortina: "#1B2A5E"
   cortina-tinta: "#F1F0EB"
   luz-quente: "#FFECC8"
   sombra-quente: "#3C2608"
   halo-quente: "#FFAA46"
-  luz-mouse: "#FFD696"
   lampada-brasa: "#FF5C14"
   lampada-ambar: "#FFA846"
   lampada-branca: "#FFE8BE"
-  ponto-luz: "#B08D57"
   latao: "#B08D57"
   latao-luz: "#E9D2A2"
   latao-escuro: "#6E532E"
@@ -91,11 +86,9 @@ colors:
   luz-quente-escuro: "#FFE3B4"
   sombra-quente-escuro: "#000000"
   halo-quente-escuro: "#FFAA46"
-  luz-mouse-escuro: "#FFBE6E"
   lampada-brasa-escuro: "#FF5C14"
   lampada-ambar-escuro: "#FFA846"
   lampada-branca-escuro: "#FFE8BE"
-  ponto-luz-escuro: "#FFC978"
   # o latão no escuro (latao #E0B46A, latao-luz #FBE6BA, latao-escuro #8E6A35) fica fora das chaves: com o
   # sufixo -escuro, o nome colidiria com o latao-escuro do claro
   fita-escuro: "#D9CFAF"
@@ -321,19 +314,6 @@ components:
     backgroundColor: "{colors.lousa-borda-escuro}"
   lousa-mistura-escuro:
     backgroundColor: "{colors.lousa-mistura-escuro}"
-  prateleira:
-    backgroundColor: "{colors.tabua}"
-    height: 14px
-  prateleira-borda:
-    backgroundColor: "{colors.tabua-borda}"
-    height: 6px
-  aparador:
-    backgroundColor: "{colors.aparador}"
-    width: 12px
-  aparador-luz:
-    backgroundColor: "{colors.aparador-luz}"
-  aparador-fundo:
-    backgroundColor: "{colors.aparador-fundo}"
   marca:
     backgroundColor: "{colors.marca}"
     textColor: "{colors.marca-letra}"
@@ -412,7 +392,7 @@ components:
 # Blog de Cesar Schutz: sistema visual
 
 Este arquivo é a **fonte de verdade do visual** do blog. Toda página e todo post seguem o que está
-aqui. As decisões vêm de `docs/briefing.md` §4, §6 e §7 e das decisões D26, D30, D32, D33, D35, D58 e D61 de
+aqui. As decisões vêm de `docs/briefing.md` §4, §6 e §7 e das decisões D26, D30, D32, D33, D35, D58, D61 e D84 de
 `docs/decisoes.md`, e os detalhes de medida estão em `docs/capas/CAPAS.md` (livros) e
 `docs/estilo-desenho.md` (desenhos e lousas). O código lê as cores de `src/styles/tokens.ts` e de
 `src/livros/cores.js`. Os valores do bloco YAML acima espelham esses arquivos: **quem muda um valor
@@ -461,8 +441,8 @@ de página e os ganchos das peças).
   - a luz do livro escolhido acende também embaixo dele, na prateleira, e a do livro tirado no filtro
     fica acesa;
   - na home, os livros ficam em prateleiras de lâmina de vidro, limpas, sem estante de madeira (D84);
-  - a mancha quente que segue o mouse é fraca (21% no claro, 7,5% no escuro), e o hover não pinta o
-    livro de amarelo;
+  - o hover não pinta o livro de amarelo (rodada 4, H4); a mancha quente que seguia o mouse saiu em
+    04/10/2026 (D67, a pedido do Cesar): a luz fica nos abajures, no brilho das lombadas e no lustre;
   - a troca de tema acende e apaga a lâmpada do cabeçalho.
 - **Home:** o caderno "cs" e "Cesar Schutz" grande, com o "blog" carimbado, inclinado, sobre o canto do
   Z (D84), e logo abaixo a coleção. O traço à caneta fica embaixo de "A coleção" e de "Artigos
@@ -518,10 +498,10 @@ explica alguma coisa. **Não pode parecer feito por IA**: nada de fonte genéric
 decorativo, sombra genérica em tudo, animação de entrada em cada seção, rótulo em caixa alta na
 interface ou emoji.
 
-O site sempre abre no tema do sistema; o botão do cabeçalho alterna direto entre claro e escuro
-(lua ou sol), e a escolha vale até fechar o site (D39). Nos dois temas, as cores vêm dos tokens, e
-**nenhuma medida depende do tema** (bordas, alturas, espaços): trocar o tema só muda as cores, sem
-mexer na página. O site não tem som.
+O site sempre abre no claro e em cards; o lustre do cabeçalho alterna direto entre claro e escuro
+(D39; o tema é a luz, D61), e a escolha do tema e de Lista/Cards vale por 3 dias (D52, C01). Nos dois
+temas, as cores vêm dos tokens, e **nenhuma medida depende do tema** (bordas, alturas, espaços):
+trocar o tema só muda as cores, sem mexer na página. O site não tem som.
 
 ## Colors
 
@@ -539,9 +519,9 @@ mexer na página. O site não tem som.
   foco. A navegação do cabeçalho e do rodapé, as pílulas e os botões secundários ficam na tinta e só
   ganham o azul ao passar o mouse. Não serve de decoração.
 - **Caneta preta (D52, C04):** não é token novo, é a tinta de sempre (`on-surface`; no escuro, a
-  tinta clara). É o traço de quem fez a página — ícones (calendário, relógio, `</>`, lupa, lua, sol),
+  tinta clara). É o traço de quem fez a página — ícones (calendário, relógio, `</>`, lupa),
   o rascunho do mouse (hover do menu, o círculo dos perfis, da paginação e dos botões redondos, o
-  colchete da lista), os contornos a lápis do botão de tema e da busca, e a assinatura. O azul-tinta e
+  colchete da lista), os contornos a lápis da busca e do menu, e a assinatura. O azul-tinta e
   a caneta azul (`--caneta`) continuam só no estado: a seção e a página atuais e as marcações do texto
   (D48). A caneta da leitura usa a cor do livro (D58). Nada no rodapé, que segue com o traço leve azul
   da D49.
@@ -549,9 +529,10 @@ mexer na página. O site não tem som.
   a linha removida): fio fino na cor do aviso e fundo só levemente tingido (briefing §5.3), nunca a
   caixa pintada da cor inteira.
 - **Lousa** (D59): no estilo das figuras (o painel do livro, o traço da casa, os tons, os selos e os
-  logos), desenhada por uma canetinha colorida na cor do que faz. O quadro antigo (vidro escuro no
-  claro, #15191C, e quadro branco suavizado no escuro, #CFD5D1) ficou só na `LousaTempo` e na
-  `LousaLoop` dos posts antigos.
+  logos), desenhada por uma canetinha colorida na cor do que faz. Nenhum post a usa desde 04/10/2026
+  (os posts usam a figura em passos, D67, em prova). O quadro escuro de antes (vidro escuro no claro,
+  #15191C, e quadro branco suavizado no escuro, #CFD5D1) saiu do site na D84, com a `LousaTempo` e a
+  `LousaLoop`; as cores ficam nos tokens só para o `npm run contraste` e a `/amostra/livros/`.
 - **Tons das figuras** (D58, `--diag-*`: azul, verde, âmbar, vermelho, roxo e petróleo; no escuro,
   com 42% de branco): só nas figuras do corpo do post (diagramas, gráficos, animações e logos). Cada
   ator tem um tom, o mesmo em todas as figuras do post; o vermelho é só para erro, limite e recusa. O
@@ -610,14 +591,15 @@ fixo. No tema escuro, o destaque dos desenhos leva 42% de branco. **Os livros n�
 livro embaixo, e a série (revista) é sempre papel claro. **Cor só por token**:
 nenhum hex solto em componente ou SVG.
 
-**Lousa, mistura:** `lousa-mistura` não é cor de texto, só entra na mistura do destaque da lousa
-(55% no vidro, 35% no quadro, com a caneta por cima; `LOUSA` em `tokens.ts`).
+**Lousa, mistura:** `lousa-mistura` não é cor de texto, só entrava na mistura do destaque do quadro
+escuro de antes (55% no vidro, 35% no quadro, com a caneta por cima; `LOUSA` em `tokens.ts`, que o
+`npm run contraste` ainda confere).
 
 **Contraste da série: exceção decidida (D35).** O laranja da série sobre o papel (#c24d1c) dá 4,11:1.
 Ele continua **na capa e nos títulos grandes** (acima de 3:1, o mínimo do WCAG para texto grande), e
 o linter avisa sobre `revista-java` por isso: é um aviso esperado. **Texto pequeno nessa cor sempre
 usa a variante escura** `serie-java-texto` (#b8481a, 4,52:1 sobre o papel). Hoje isso vale para as
-lombadas, em pé e deitadas (`destaqueTexto` em `src/livros/livros.json`, papel
+lombadas (`destaqueTexto` em `src/livros/livros.json`, papel
 `--livro-destaque-texto`), e o `npm run contraste` falha se alguma lombada ficar abaixo de 4,5:1. A
 Carreira tinha a mesma exceção (`corTexto`, papel `--livro-cor-texto`) até sair, na D78; nos 13
 livros, a tinta passa de 4,5:1 sobre a cor (o menor é o de Pagamentos, 4,60:1) e o destaque, sobre o
@@ -642,8 +624,8 @@ papel. Livro novo com cor abaixo de 4,5:1 ganha a variante `corTexto` do mesmo j
   no meio. Código em linha (texto, tabelas, sumário) quebra depois dos pontos (`<wbr>`), nunca no
   meio do nome; nas tabelas, o que não couber faz a tabela rolar (no celular, a coluna de texto tem um
   piso: Components, Tabelas).
-- **Livros:** Bitter (600, 700 e 800) e Newsreader itálico, só nas capas, nas lombadas e nos
-  títulos da lateral. A caixa alta com espaçamento largo ("VOLUME 01", "CESAR SCHUTZ",
+- **Livros:** Bitter (600, 700 e 800) e Newsreader itálico, só nas capas e nas lombadas (e na
+  contracapa, D78; os títulos da lateral saíram com ela, na D61). A caixa alta com espaçamento largo ("VOLUME 01", "CESAR SCHUTZ",
   "BLOG.CESARSCHUTZ.COM.BR") existe só aqui, como tipografia de livro.
 - **Anotações dos desenhos e rótulos das lousas:** Literata itálica. **Nunca letra de mão.**
 - **Notas da caneta do caderno** (D48): **Caveat 600**, a única letra de mão do blog, só nas notas
@@ -678,11 +660,11 @@ página, recarga, `#título`, histórico) começa **sem nenhum visto**, e quem s
 não a marca. Medir a posição durante a troca de página é sempre pelo layout (`offsetTop`), nunca pelo
 `getBoundingClientRect` (D52, B04). Abaixo de 1300px, o
 cabeçalho mostra "N de M · seção" no lugar da marca e abre o sumário numa folha que desce dele, com
-o mesmo trilho, na cor do livro (D58). Toda página tem o **voltar ao topo** depois de uma tela de rolagem
-(`VoltarTopo.astro`, no `Base.astro`). A home tem 12 lugares por página; na primeira, o destaque ocupa
-dois (D52, C02). A estante tem 6px entre os livros.
+o mesmo trilho, na cor do livro (D58). Toda página tem o **voltar ao topo** (D49; desde a D61, a
+cordinha do rodapé e, em página longa, a aba "topo", `AbaTopo.astro`). A home tem 12 lugares por
+página; na primeira, o destaque ocupa dois (D52, C02). A estante de lombadas tem 6px entre os livros.
 Nada pode rolar para o lado em 390px nem em 320px. O sumário nunca rola para o lado. Toda área que
-rola por dentro (sumário, código, tabelas, gaveta, busca, painel) usa a **barra fina** do site, na
+rola por dentro (sumário, código, tabelas, busca) usa a **barra fina** do site, na
 tinta do tema com 24% (40% ao passar o mouse), por `scrollbar-width`, `scrollbar-color` e
 `::-webkit-scrollbar` (`base.css`, D39).
 
@@ -695,8 +677,9 @@ escura. A sombra alta (`--sombra-folha-alta`) fica só para o que levanta de ver
 hover das fichas.
 
 Os livros têm volume próprio (a construção de capa dura, a luz da lombada arredondada, o grão e a
-sombra de contato; na estante e na pilha, a cabeça, os lados e a tábua com espessura; pelo
-`CAPAS.md`, D57). Painéis, caixas e desenhos dentro de uma folha **não** levam sombra.
+sombra de contato; na estante de lombadas, a cabeça e os lados; pelo `CAPAS.md`, D57). O chão das
+fileiras é a lâmina de vidro (D61, `vidro.css`). Painéis, caixas e desenhos dentro de uma folha **não**
+levam sombra.
 
 ## Shapes
 
@@ -741,7 +724,8 @@ têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm can
   Rótulo, número, versão e sim/não não têm piso. No papel, nada disso vale: a tabela encolhe para caber
   na folha. Célula é para frase curta: parágrafo dentro de célula continua alto em qualquer largura.
 - **Caneta preta da interface** (D52, C04): a caneta preta desenha, a azul marca. Os ícones de
-  calendário, relógio, código-fonte, lupa, lua e sol saem de `src/lib/traco.ts`, na tinta a 78%, traço
+  calendário, relógio, código-fonte e lupa saem de `src/lib/traco.ts` (a lua e o sol saíram com o
+  lustre do tema, D61), na tinta a 78%, traço
   1,7, **parados** (aparecem dezenas de vezes por tela: identidade no desenho, sem movimento); GitHub
   e LinkedIn são as marcas oficiais, preenchidas e em preto (as regras das duas proíbem redesenhar o
   logotipo). O campo de busca tem 210 × 40 fixos, com o contorno traçado à mão a lápis (tinta a 42%)
@@ -761,8 +745,9 @@ têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm can
   o diagrama do visor e o da página nítidos ao mesmo tempo (D52, revisão 11); nunca some de uma vez (o
   livro ampliado, que não muda com o tema, mantém a volta própria).
 - **Topo das listas** (D52, B07: "Todos os artigos" e a página de uma tag): título e descrição no
-  alto à esquerda; no pé, na linha da tábua, os índices ("por assunto" e "por ano"); a estante de
-  filtro à direita, com a tábua alinhada aos índices. O pé da estante de filtro leva o rótulo
+  alto à esquerda; no pé, na linha do chão da estante, os índices ("por assunto" e "por ano"); a
+  estante de filtro à direita, com o chão (a lâmina de vidro, D61) alinhado aos índices. O pé da
+  estante de filtro leva o rótulo
   ("Filtrar por livro" ou "Só \<livro\>") e "Limpar filtro", no mesmo lugar da legenda do mouse.
 - **Ícone de tag** (D52, B11): um objeto de ofício desenhado à mão, no traço dos ícones das lombadas
   (nunca logotipo), caixa fixa de 120; 68px no cartão de `/tags/` (com uma estante em miniatura dos
@@ -775,7 +760,7 @@ têm 1px de raio do lado da lombada e 3px do lado aberto, e as revistas têm can
   no GitHub", borda `rule`, fundo da folha, texto e ícones em azul-tinta, 36px de altura, a seta
   externa que anda 2px no hover); nas listas e nos cards, o ícone `</>` (15px, traço 1,8, tinta 2) com
   "código-fonte" na letra da linha de meta, e, abaixo de 340px de linha, só o ícone (com
-  "código-fonte no GitHub" para o leitor de tela); na gaveta e em anterior/próximo, só o ícone. O sinal
+  "código-fonte no GitHub" para o leitor de tela); em anterior/próximo, só o ícone. O sinal
   `</>` é desenhado à mão em `traco.ts` (`codigoDeCaneta`, D52, C04), com as pontas vivas e as retas
   levemente embarrigadas.
 - **Caneta do caderno** (D48; guia em `docs/marcacoes.md`, catálogo em
@@ -817,21 +802,22 @@ frase e desenho; medidas em `docs/capas/CAPAS.md`):
   temas.** No pé, a assinatura **BLOG.CESARSCHUTZ.COM.BR**.
 - **Lombada:** ícone no papel de cima, título na vertical e número de artigos na cor do livro, com a
   divisão à mesma altura em todos, formando uma linha contínua na estante. **É uma lombada só em
-  todo lugar** (D39): a pilha lateral usa a mesma, girada 90° e **mais fina** (a espessura a 62% da
-  escala do comprimento, D46), com o título e o número em corpo próprio, de uns 10px.
+  todo lugar** (D39): a mesma na estante de lombadas e na lombada do livro 3D. A pilha lateral, que
+  a usava deitada (D46), saiu na D61.
 - **Livro escolhido:** os não escolhidos do filtro aparecem **apagados** (um véu do papel da folha a
   62%, `--apagado`, com a cara da opacidade de 0,4 de antes; opacidade e filtro achatariam o 3D, D57),
-  nunca com contorno azul. A exceção é o livro que foi para a gaveta da home (D43): ele sai da
-  estante, e o lugar dele fica **vazio**. O foco do teclado é um anel fino e discreto.
-- **Livro 3D em todo lugar** (gaveta, grade de categorias e séries, topo da página do livro e livro
-  ampliado; na ficha "Do livro" do artigo, a foto do livro deitado, D57): **de lado, a 38° da
-  frente**, com a lombada bem à vista (`GIRO` em `lib/livro-3d.ts`, D46; era 18° fora da gaveta). A perspectiva acompanha a altura do livro
-  (4,7 vezes, a da gaveta), para o pequeno e o grande terem a mesma cara. **Capa dura de verdade**
+  nunca com contorno azul. Na fileira do alto da página do livro, o lugar do livro aberto fica
+  **vazio**, tracejado e aceso (D61), porque ele está grande embaixo. O foco do teclado é um anel fino
+  e discreto.
+- **Livro 3D em todo lugar** (grade de categorias e séries, fileira e painel da página do livro,
+  busca e livro ampliado; na ficha "Do livro" do artigo, a foto do livro deitado, D57; na coleção da
+  home, de capa, D84): **de lado, a 38° da frente**, com a lombada bem à vista (`GIRO` em
+  `lib/livro-3d.ts`, D46: era o da antiga gaveta da home, D43). A perspectiva acompanha a altura do
+  livro (4,7 vezes), para o pequeno e o grande terem a mesma cara. **Capa dura de verdade**
   (D57, prancha 01; medidas em `docs/capas/CAPAS.md`, "Livro 3D: capa dura"): capas de papelão com a
   borda forrada na cor impressa, seixa, lombada arredondada (a arte no meio e facetas até as capas, com
   a luz correndo pela curva), o alto do livro à vista (a vista de um pouco acima, fora do giro), com o
-  miolo creme e o cabeceado, o vinco da dobradiça, o grão e a sombra de contato no chão (a gaveta da
-  home não tem a sombra). O miolo (a página de dentro, as camadas e, no livro ampliado, as folhas) fica
+  miolo creme e o cabeceado, o vinco da dobradiça, o grão e a sombra de contato no chão. O miolo (a página de dentro, as camadas e, no livro ampliado, as folhas) fica
   1px para dentro da lombada (`--recuo-miolo`, D52, B08).
 - O número nas lombadas é o total de artigos, contado pelos posts (some quando é zero). O
   "VOLUME 0N" é a posição na coleção.
@@ -872,8 +858,8 @@ Cada post tem uma ilustração, e os diagramas seguem o mesmo traço:
 **Técnica (D11, D35):** SVG **desenhado à mão**, em coordenadas, com classes e variáveis CSS (sem
 `id`, sem `defs` próprios e sem cor fixa). O tremor é o filtro SVG global `feTurbulence`
 (`fractalNoise`, `baseFrequency` 0.018, `numOctaves` 2, `seed` 7) seguido de `feDisplacementMap`
-(`scale` 4), aplicado só no grupo dos traços, para os textos ficarem nítidos. A lousa nova (D59) usa
-o mesmo tremor das figuras; nas lousas antigas, ele é mais leve (`baseFrequency` 0.02, `scale` 2).
+(`scale` 4), aplicado só no grupo dos traços, para os textos ficarem nítidos. A lousa (D59) usa o
+mesmo tremor das figuras (o tremor mais leve do quadro escuro saiu com ele, na D84).
 **Todo desenho terminado passa pela revisão** (D59, `node scripts/desenho/revisar.mjs <slug>` e as
 fotos dele, pelo checklist da skill `figura`) antes de ir para o Cesar. O Rough.js não é usado. Regras técnicas, recortes e
 validação: skills `desenho` (capa), `figura` e `lousa`, e `node scripts/desenho/validar.mjs`.
@@ -929,21 +915,31 @@ caso de dúvida, vale este arquivo.
     nunca pulando). Só CSS;
   - **detalhes das figuras:** leves, sem mudar a imagem, na ordem do que acontece, fora do grupo que
     treme. CSS, ligado por um observador só enquanto a figura está na tela;
-  - **lousa:** o leitor comanda o tempo (play, arrasto, rolagem horizontal sobre ela, controle).
+  - **figura em passos** (D67, em prova; nos posts desde 04/10/2026): abre inteira, e o leitor a monta
+    passo a passo (Próximo, Anterior, um passo da lista, "Ver tudo"); cada passo soma, nada some e nada
+    anda sozinho. Regras na skill `figura`;
+  - **lousa** (nenhum post a usa desde 04/10/2026): o leitor comanda o tempo (play, arrasto, rolagem
+    horizontal sobre ela, controle).
     Aparece completa e parada; o play vai do início ao fim, para 5s e recomeça. A caneta aparece
     sempre que algo está sendo desenhado, com mão, uma por lugar. Nunca muda de tamanho;
-  - **animação com play:** a imagem muda; GSAP em SVG, carregado só quando ela vai tocar. Abre tocando
+  - **animação com play** (nenhum post a usa desde 04/10/2026): a imagem muda; GSAP em SVG, carregado
+    só quando ela vai tocar. Abre tocando
     quando aparece na tela; o anel em volta do botão mostra a volta e pulsa nos 5s de espera do fim;
     recomeçar; clique na imagem pausa. De 6 a 12s por volta.
   - com movimento reduzido: nada se mexe sozinho (a capa e as figuras ficam paradas, a animação não
     abre tocando), a lousa e a animação começam no quadro final e a caneta da lousa não aparece; o
     play continua com o leitor.
-- **Sai a animação curta em loop** (`LousaLoop`) dos posts novos (D58); ela e a `LousaTempo` ficam só
-  nos posts antigos, até serem revistos.
+- **A animação curta em loop** (`LousaLoop`) saiu dos posts novos na D58, e ela e a `LousaTempo`
+  saíram do site na D84 (nenhum post as usava desde 04/10/2026).
 - **Frase em destaque** (palavras que acendem com a rolagem): recurso raro dos posts, usado só de
   vez em quando.
-- **Na home, só coisas discretas:** um livro que tomba um nada para a frente ao passar o mouse, a
-  gaveta com o livro tirado da estante (clicar nele o amplia; "Ver o livro" leva à página dele, D43).
+- **Na home, só coisas discretas:** a doca (o livro sob o mouse cresce 1,14×, e os vizinhos da
+  prateleira menos, D78 e D84), o hover com mola do livro vivo e, na chegada, as luzes que acendem uma a
+  uma, a onda de molas e o brilho (D61). Nada se mexe sozinho com a página parada. O clique num livro
+  voa até a página dele (a gaveta da D43 saiu na D61).
+- O que se anima: `transform` e `opacity`; nos traços que se desenham, `stroke-dashoffset`; nos
+  recortes (o menu do celular, a busca, a tinta de Lista/Cards, a cortina), `clip-path`. Nunca `filter`
+  no livro 3D (a regra de interface, `.claude/rules/interface.md`, diz o mesmo).
 - Toda animação respeita `prefers-reduced-motion`: tudo aparece no estado final, sem prender a
   tela.
 - Vídeo (MP4/WebM) só quando o Cesar pedir: comprimido, com poster e carregado sob demanda.
@@ -953,39 +949,44 @@ caso de dúvida, vale este arquivo.
 
 | Peça | Onde | Ferramenta | Decisões |
 | --- | --- | --- | --- |
-| **Abertura do site** | `Abertura.astro` | GSAP | D51; D52 (B12, revisões 12 e 14) |
-| **Troca de página por folhas** | `src/scripts/troca.js` (no `<head>`) | View Transitions entre documentos e Web Animations API | D51; D52 (A02, A03, B10, B14, revisões 2, 3, 8 e 9) |
+| **Abertura do site** | `Abertura.astro`, `estante-moderna.ts` | GSAP e Web Animations API | D51; D52 (B12, revisões 12 e 14); D61 (rodada 4: A1, E3, E12); D84 |
+| **A assinatura e o carimbo do "blog"** | `src/lib/traco.ts` (`assinaturaDeCaneta`), `Marca.astro`, `Abertura.astro` | Web Animations API (`clip-path`, a escrita) e CSS | D52 (B13, C04); D61 (E12); D84 |
+| **Marca "cs"** e o aceno | `Marca.astro`, `Abertura.astro` (a classe `acena`) | CSS | D41, D47; D52 (A01, B13, C04); D61 (E12) |
+| **Troca de página: a cortina e as folhas** | `src/scripts/troca.js` (no `<head>`), `suave.css`, `base.css` | View Transitions entre documentos e Web Animations API | D51; D52 (A02, A03, B10, B14, revisões 2, 3, 8 e 9); D61 (rodada 3, T2; rodada 4, A3) |
 | **Carregando, quando a página demora** | `speculationrules` no `Base.astro`; `troca.js`, `base.css` | Regras de especulação, CSS e View Transition | D52 (B14, revisões 7 e 13) |
-| **A estante de verdade** | `Estante.astro`, `estante-gesto.ts` | CSS e GSAP | D49 |
-| **O toque na cabeça** | `estante-gesto.ts`, `estante-viva.ts` | GSAP | D49 (no lugar da D47) |
-| **Estante em repouso** | `estante-viva.ts` | GSAP | D40, D49 |
-| **Tirar da estante** e **Guardar** | `Gaveta.astro`, `estante-gesto.ts` | GSAP | D43, D49 |
-| **Puxar pela cabeça** | `Gaveta.astro` | GSAP (Draggable, InertiaPlugin) | D49 |
-| **Gaveta** | `Gaveta.astro` | GSAP | D47 |
-| **A pilha com peso** | `PainelHome.astro` | GSAP (Draggable) e View Transition | D46, D49; D52 (B01, B09, revisões 1 e 15) |
-| **Livro que gira** | `data-livro-gira` (`livro.css`) | CSS | D46 |
+| **A chegada das fileiras** (os abajures, a onda de molas e o brilho) | `estante-moderna.ts`, `livro-vivo.ts`, `PontoDeLuz.astro` | Web Animations API | D61 (linha 18; rodada 4, A1) |
+| **O livro vivo** (mola, seguir o mouse) | `livro-vivo.ts`, `livro-vivo.css`, `Livro3D.astro` | CSS e um `requestAnimationFrame` | D61 (rodada 3, T9; rodada 4, H4) |
+| **A doca da coleção da home** | `doca.ts`, `ColecaoHome.astro` | um `requestAnimationFrame` | D78; D84 |
+| **O brilho nas lombadas** | `luz.ts`, `luz.css`, `Luz.astro` | CSS | D61 (rodada 3, T4) |
+| **A estante de verdade** e **o toque na cabeça** (o filtro e a 404) | `Estante.astro`, `estante-viva.ts` | CSS e GSAP | D49 (no lugar da D47); D54 (o repouso em 3D) |
+| **A fileira do topo que encolhe** | `FileiraTopo.astro`, `Colecao.astro` | CSS ligado à rolagem | D61 (rodada 3, área 4, G7); D62 |
+| **Livro que gira** | `data-livro-gira` (`livro.css`, `livro-vivo.css`) | CSS | D46; D61 |
 | **O livro que abre** | `LivroAmpliado.astro` | GSAP (Draggable, InertiaPlugin) | D49; D52 (revisão 6) |
-| **Livro ampliado** (crescer e voltar) | `LivroAmpliado.astro` | GSAP | D47 |
+| **Livro ampliado** (crescer, voltar e virar) | `LivroAmpliado.astro` | GSAP | D47; D78 (a contracapa) |
 | **O desenho do destaque da home** | `desenho-vivo.ts` | GSAP (DrawSVG) | D41; D52 (C02) |
-| **A assinatura** | `src/lib/traco.ts` (`assinaturaDeCaneta`), `Marca.astro`, `Abertura.astro` | CSS (a abertura só dispara a escrita) | D52 (B13, C04) |
-| **Marca "cs"** e o aceno | `Marca.astro`, `desenho-vivo.ts` (`cs:desenhou`) | CSS | D41, D47; D52 (A01, B13, C04) |
-| **Cabeçalho no celular** | `Cabecalho.astro` | CSS (`clip-path`) | D46 |
-| **Troca de tema** | `tema.ts`, `SeletorTema.astro` | View Transition do documento e GSAP (MorphSVG, DrawSVG) | D42, D44, D49; D52 (C04) |
+| **Cabeçalho no celular** | `Cabecalho.astro` | CSS (`clip-path`) | D46; D84 (a página parada com o menu aberto) |
+| **Troca de tema: a lâmpada** | `tema.ts`, `lampada.ts`, `SeletorTema.astro`, `Luz.astro` | View Transition do documento e Web Animations API | D39, D52 (C01); D61 (rodada 3, T7, no lugar do círculo da D42) |
 | **A caneta que navega** | `traco.css`, `src/lib/traco.ts`, `Cabecalho.astro` | View Transition (`traco-do-menu`) e CSS | D49; D52 (C04) |
 | **Caneta da leitura** | `BarraLeitura.astro` | Rolagem (sem animação própria) e CSS | D45; D58 (cor do livro) |
-| **A busca nasce do campo** | `Busca.astro` | GSAP (Flip) e `@starting-style` | D44, D49; D52 (B06) |
+| **A busca nasce do campo** | `Busca.astro` | Web Animations API (`clip-path`) e CSS | D44, D49; D52 (B06); D61 (rodada 3, G11) |
 | **Filtro por livro** | `ListaFiltrada.astro`, `contador.ts` | GSAP e CSS (o contador) | D47, D49 |
 | **Troca Lista / Cards** | `SeletorModo.astro` | Web Animations API e CSS (a tinta) | D42, D49; D61 e D72 (a tinta) |
+| **As listas que aparecem ao rolar** | `revelar.ts` | Web Animations API e um observador de tela | D61 (rodada 3, T13) |
+| **A tira que embaralha** | `embaralha.ts` | um `requestAnimationFrame` | D61 (linha 18, P6) |
+| **As fichas que caem e o fichário de Tags** | `fichas-caem.ts`, `fichario.ts`, `troca.js` | Web Animations API | D61 (rodada 3, área 6; rodada 4, P19-2 e A3) |
 | **A caneta que marca** | `traco.css` | CSS | D49; D52 (C04) |
 | **O ícone de tag inclina** | `IconeTag.astro`, `PilulaTag.astro` | CSS | D52 (B11) |
 | **A caneca** | classe `fumaca` (`desenho.css`) | CSS | D52 (C04) |
 | **Capa viva** | classes `mexe-*` (`capa-viva.css`), `capa-viva.ts` | CSS | D58 |
 | **Detalhes das figuras** | `Figura.astro`, `figura.css` | CSS e um observador de tela | D58 |
-| **A lousa** | `Lousa.astro`, `lousa-nova.css`, `src/scripts/lousa.ts` | JS próprio (quadro a quadro) e CSS | D58 |
-| **A animação com play** | `Animacao.astro`, `src/animacoes/<slug>/<nome>.ts` | GSAP (timeline) | D58 |
+| **Figura em passos** (em prova) | `FiguraPassos.astro`, `figura-passos.ts`, `figura-passos.css` | Web Animations API e CSS | D67 |
+| **A lousa** (sem post desde 04/10/2026) | `Lousa.astro`, `lousa-nova.css`, `src/scripts/lousa.ts` | JS próprio (quadro a quadro) e CSS | D58 |
+| **A animação com play** (sem post desde 04/10/2026) | `Animacao.astro`, `src/animacoes/<slug>/<nome>.ts` | GSAP (timeline) | D58 |
 | **A ficha dos atalhos** | `Atalhos.astro` | CSS | D52 (B06) |
 | **Os minutos que faltam** | `Sumario.astro`, `contador.ts` | CSS | D49 |
-| **O artigo de perto** | `copiado.ts`, `RodapeArtigo.astro`, `VoltarTopo.astro` | CSS e Web Animations API | D49 |
+| **O artigo de perto** | `copiado.ts`, `RodapeArtigo.astro`, `Vizinhos.astro` | CSS e Web Animations API | D49 |
+| **O rodapé: a cordinha, o carimbo e o nome que respira; a aba "topo"** | `Rodape.astro`, `AbaTopo.astro` | Web Animations API e CSS | D61 (rodada 3, área 3; rodada 4, R1 e R2) |
+| **O computador** | `src/computador/` | View Transition do documento e Web Animations API | D61 (rodada 3, C1 a C10) |
 | **A 404** | `src/pages/404.astro` | CSS | D49 |
 
 ## Do's and Don'ts

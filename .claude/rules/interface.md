@@ -15,38 +15,40 @@ Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
 
 ## Regras
 
-- Cores só por tokens CSS (`var(--ink)`, `var(--cat)`…), de `src/styles/tokens.ts`. Nada de hex solto
-  em componente ou SVG.
+As que valem para tudo (cores só por tokens, `prefers-reduced-motion`, JS só onde há interação, nada com
+cara de IA) estão no `CLAUDE.md`. Aqui, o que é de interface:
+
+- Os tokens de cor saem de `src/styles/tokens.ts` (fonte única, gera as variáveis CSS dos dois temas).
 - Ícone novo de interface: função em `src/lib/traco.ts`, na caneta preta, nunca SVG solto (D52, C04).
   A caneta preta desenha; a azul marca (estado: seção e página atuais, marcações da D48). A caneta da
   leitura (barra do topo e sumário) usa a cor do livro: a página do post põe a cor no `--caneta` desses
   blocos (D58). Logo de ferramenta não é ícone de interface: fica em `src/marcas/` (skill `figura`).
-- Toda animação respeita `prefers-reduced-motion`: com ele ligado, tudo aparece no estado final, sem
-  prender a tela. Anime `transform` e `opacity` (e `stroke-dashoffset` nos traços desenhados), nunca
-  `filter` no livro 3D (`DESIGN.md`, Movimento).
-- Não pode parecer feito por IA: nada de fonte genérica, gradiente decorativo, sombra genérica em
-  tudo, animação de entrada em cada seção, rótulo em caixa alta ou emoji.
-- **JavaScript só onde há interação.** A lista do que tem JS hoje:
-  - estante, gaveta, busca, lousas, apresentação, lista/cards, menu de tema, filtro por livro, livro
-    ampliado, o nome de transição do livro do painel e o menu do celular (D29, D33, D46);
+- Anime `transform` e `opacity` (e `stroke-dashoffset` nos traços desenhados), nunca `filter` no livro
+  3D (`DESIGN.md`, Movimento).
+- **A lista do que tem JS hoje:**
+  - estante, busca, apresentação, lista/cards, menu de tema, filtro por livro, livro ampliado, o nome de
+    transição do livro que voa até a página dele (`data-vt`, script do `Base.astro`) e o menu do
+    celular (D29, D33, D46);
   - o desenho do destaque da home (D41) e o lugar das notas da caneta (D48);
   - o gesto de copiar, os contadores que rolam e a rasura e a sugestão da 404 (D49);
-  - os atalhos de teclado do artigo e o livro da pilha que voa até o topo (D50);
+  - os atalhos de teclado do artigo (D50);
   - a troca de página por folhas (`troca.js` no `<head>`), a abertura em toda página, o desfile de
     Categorias e o desenho do topo do artigo (D51);
   - a ficha dos atalhos, o hover do livro ampliado (o `:hover` nativo se perde na pilha 3D), a
     preferência de tema e de modo válida por 3 dias (o script anti-piscada do `<head>`), o aceno dos
     dois cadernos no fim da abertura da home, a caneta que escreve o fio do cabeçalho quando a página
     demora, a assinatura da home e a fumaça da caneca no hover (D52);
-  - a `Lousa` (play, arrasto, rolagem horizontal, passos, a caneta), a `Animacao` (a timeline GSAP de
-    cada animação, carregada sob demanda), a `Figura` (só um observador que liga os detalhes que se
-    mexem enquanto ela está na tela; o movimento é CSS) e a capa viva (`capa-viva.ts`: o evento vai
-    até o fim mesmo que o mouse saia) (D58);
+  - a `Figura` (só um observador que liga os detalhes que se mexem enquanto ela está na tela; o
+    movimento é CSS) e a capa viva (`capa-viva.ts`: o evento vai até o fim mesmo que o mouse saia)
+    (D58); a `FiguraPassos` (Passo a passo, Próximo, Anterior, o clique num passo e o aviso de fim,
+    `figura-passos.ts`, D67); nas páginas em prova, a `Lousa` (play, arrasto, rolagem horizontal,
+    passos, a caneta) e a `Animacao` (a timeline GSAP de cada animação, carregada sob demanda);
   - o aviso "Arraste para o lado" das tabelas (`artigo.ts`: um observador mede se a tabela passa da
     moldura e põe o aviso; quem rola a tabela e quem mostra o aviso, até 700px, é o CSS) (D70);
   - do visual "papel e luz" (D61):
-    - a luz: a lâmpada da troca de tema, a luz do mouse, os abajures e a onda e o brilho dos livros
-      (`lampada.ts`, `luz.ts`, `livro-vivo.ts`, `estante-moderna.ts`);
+    - a luz: a lâmpada da troca de tema, os abajures, a onda e o brilho dos livros e o livro 3D que
+      acompanha o mouse (`lampada.ts`, `luz.ts`, `livro-vivo.ts`, `estante-moderna.ts`; a mancha que
+      seguia o mouse saiu em 04/10/2026);
     - as páginas: a cortina e as chegadas da troca de página (`troca.js`), as fichas que caem e o
       fichário de Tags (`fichas-caem.ts`, `fichario.ts`) e a entrada ao rolar (`revelar.ts`,
       `embaralha.ts`);
@@ -73,27 +75,29 @@ Impeccable) e, para uma animação que já existe, `docs/movimento.md`.
 
 - A regra visual é `docs/capas/CAPAS.md`; os dados e as cores, `src/livros/livros.json` e
   `src/livros/cores.js`; desenhos, ícones e emblemas em `src/livros/` entram inline por
-  `src/lib/livros-svg.ts`. O desenho grande da capa e o emblema da revista só carregam quando o livro
-  abre na gaveta (`/livros/<slug>.svg`).
-- Os componentes são `Capa`, `MioloLombada` (a lombada, em pé e, girada, deitada no `PainelHome`),
-  `Estante` (também no modo "filtro" do arquivo e das tags), `Gaveta`, `Livro3D`, `LivroEmPe`,
-  `TopoLivro` e `GradeLivros`, e, da D61, `ColecaoHome` (a coleção da home em prateleiras de capas, D84),
-  `Colecao` (a fileira do alto da página do livro, dentro da `FileiraTopo`), `PontoDeLuz` e `Luz`
-  (abajures e luz): altere esses, sem criar outros em paralelo. As peças paradas da D57 são imagens: `FotoDoLivro` (o livro deitado da ficha "Do livro", com as etiquetas em SVG por cima)
-  e `LivroEmBranco` (o livro aberto do livro sem artigos e da busca sem resultado), de
-  `node scripts/livros/fotos.mjs` (`src/lib/fotos.ts`). `LivroAmpliado` copia o
-  livro 3D para o visor e monta nele as páginas de dentro, de `/livros/<slug>.json` (D49).
+  `src/lib/livros-svg.ts` (a marca d'água usa o mesmo desenho como máscara, de
+  `/livros/marca/<slug>.svg`).
+- Os componentes são `Capa`, `MioloLombada` (a lombada em pé, na estante e na face do livro 3D),
+  `Estante` (o modo "filtro" do arquivo e das tags, a 404 e a imagem de compartilhamento), `Livro3D`,
+  `LivroEmPe`, `TopoLivro` e `GradeLivros`, e, da D61, `ColecaoHome` (a coleção da home em prateleiras de
+  capas, D84), `Colecao` (a fileira do alto da página do livro, dentro da `FileiraTopo`), `PontoDeLuz` e
+  `Luz` (abajures e luz): altere esses, sem criar outros em paralelo. As peças paradas da D57 são
+  imagens: `FotoDoLivro` (o livro deitado da ficha "Do livro", com as etiquetas em SVG por cima) e
+  `LivroEmBranco` (o livro aberto do livro sem artigos e da busca sem resultado), de
+  `node scripts/livros/fotos.mjs` (`src/lib/fotos.ts`). `LivroAmpliado` copia o livro 3D para o visor
+  e monta nele as páginas de dentro, de `/livros/<slug>.json` (D49).
 - As peças usam os **papéis de cor** de `livro.css` (`--cima`, `--baixo`, `--revista-*`), nunca as
   cores cruas `--livro-*`. Os livros **não mudam com o tema** (D39).
 - **O livro 3D é de capa dura** (D57, `CAPAS.md`, "Livro 3D: capa dura"): placas de papelão
   (`--papelao`), seixa (`--seixa`), lombada em facetas (a arte no meio, `FACETAS` em `Livro3D.astro`),
   o alto com o cabeceado (SVG deitado) e a sombra no chão (`.chao`). A vista de um pouco acima fica em
   `.livro-3d-vista` (rotateX), **fora** do giro: quem anima (GSAP, trocas de página, livro ampliado) mexe
-  só no `rotateY` do `.livro-3d`; o livro ampliado, ao abrir, só endireita a vista por `--aberto`. Para pôr o livro sobre uma lombada (o voo da gaveta e da pilha), meça
-  a `.face-lombada` na tela com o livro a 90°, nunca calcule pela caixa.
-- **Estante e pilha com volume** (D57): a prateleira é um espaço 3D só (`preserve-3d`), com o olho um
+  só no `rotateY` do `.livro-3d`; o livro ampliado, ao abrir, só endireita a vista por `--aberto`. Para
+  pôr o livro sobre uma lombada, meça a `.face-lombada` na tela com o livro a 90°, nunca calcule pela
+  caixa.
+- **Estante com volume** (D57): a prateleira é um espaço 3D só (`preserve-3d`), com o olho um
   pouco acima dos livros; cada lombada tem a cabeça e os lados (`.lado`) em 3D. Opacidade ou `filter`
-  numa lombada achatam esse 3D (a cabeça e os lados somem) e deixam a tábua aparecer através dela: para
+  numa lombada achatam esse 3D (a cabeça e os lados somem) e deixam o chão aparecer através dela: para
   apagar um livro, use o véu `--apagado` (estante.css). Não use `--veu` como nome local: é o token do
   visor.
 - O número das lombadas, da capa da revista e da página do livro é o total de artigos, contado pelos

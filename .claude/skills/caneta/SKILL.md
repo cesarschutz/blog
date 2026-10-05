@@ -1,6 +1,6 @@
 ---
 name: caneta
-description: A passada de caneta num post (D48): marca o texto à caneta azul, estática, com os 34 tipos do guia docs/marcacoes.md, depois de propor a lista (trecho, tipo e motivo) e ter o OK do Cesar. É a última etapa da skill post, depois que texto, desenhos e animações estão prontos e aprovados. Use também quando o Cesar pedir sozinho para marcar ou remarcar um post ("passa a caneta no post X", "refaz as marcações do X").
+description: A passada de caneta num post (D48) - marca o texto à caneta azul, estática, com os 34 tipos do guia docs/marcacoes.md, depois de propor a lista (trecho, tipo e motivo) e ter o OK do Cesar. É a última etapa da skill post, depois que texto, desenhos e animações estão prontos e aprovados. Use também quando o Cesar pedir sozinho para marcar ou remarcar um post ("passa a caneta no post X", "refaz as marcações do X").
 ---
 
 # Caneta
@@ -20,7 +20,7 @@ vale para este post. Se o guia e esta skill divergirem, vale o guia (e corrija a
 ### 2. Ler o post inteiro
 
 Leia o arquivo do post em `src/content/posts/` do começo ao fim, com os blocos de código, as listas,
-os avisos e as lousas. Tire as marcações que já existirem só depois do OK (passo 4); na proposta,
+os avisos e as figuras. Tire as marcações que já existirem só depois do OK (passo 4); na proposta,
 diga o que sai.
 
 ### 3. Propor a lista e esperar o OK

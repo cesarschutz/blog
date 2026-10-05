@@ -150,7 +150,7 @@ Cada protótipo faz de um jeito: terminal, `.md`, vim, pasta do Mac ou PDF.
 | 13 | pronto (30/09) | http://127.0.0.1:4413/ |
 | 14 | pronto (01/10) | http://127.0.0.1:4414/ |
 | 15 | pronto (01/10) | http://127.0.0.1:4415/ |
-| prompt do 06 | pronto | `docs/redesenho/prompt-06-terminal-dev-note.md` |
+| prompt do 06 | pronto | `docs/historico/prompt-06-terminal-dev-note.md` |
 
 ## Pronto quer dizer (cada protótipo)
 

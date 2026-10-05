@@ -32,9 +32,9 @@ Não precisa combinar antes: fazer e entregar. Perguntar só se não estiver cla
   Número, data, versão e comando são copiados do post, nunca de memória.
 - **Notas do apresentador em todos os slides:** de duas a cinco frases, tiradas do texto do post, para quem
   apresenta.
-- **Desenhos:** os do próprio post, como estão no site: a capa, as figuras (paradas, em passos e o quadro
-  final das animações), as lousas, os prints de `src/evidencias/<slug>/` e a ficha "Do livro". Nada de
-  desenho novo nem de imagem de fora. O texto alternativo de cada imagem vem do post.
+- **Desenhos:** os do próprio post, como estão no site: a capa, as figuras (paradas e em passos), os
+  prints de `src/evidencias/<slug>/` e a ficha "Do livro". Nada de desenho novo nem de imagem de fora. O
+  texto alternativo de cada imagem vem do post.
 - **A caneta:** as marcações do próprio post, nos mesmos trechos e com os mesmos tipos (marca-texto, grifo,
   ondulado, círculo, duplo, caixa, colchete, chave, moldura, visto, carimbo, nota com seta e post-it), sem
   passar dos limites do guia `docs/marcacoes.md` (marca-texto no máximo três vezes). Uma nota à mão pode
@@ -117,7 +117,8 @@ Depois que o post está pronto, o Cesar gera a apresentação no NotebookLM e tr
 
 - **Confira texto e código em cada slide.** O NotebookLM já errou antes: `SIT` no lugar de `SET`,
   `stareId` no lugar de `storeId`, "reteamento", "malúsculas". Se houver erro, peça ao Cesar para
-  gerar de novo. Não publique com erro, porque isso desmente a promessa de revisão da página Sobre.
+  gerar de novo. Não publique com erro, porque isso desmente o aviso do rodapé do artigo (revisado
+  pelo autor, com o código testado).
 - **Um deck por artigo.** Se vierem dois, escolha o de linguagem visual mais próxima do blog. Não
   misture slides de decks diferentes.
 - **Os slides não substituem o texto.** Imagem não tem SEO nem leitor de tela, então o artigo
