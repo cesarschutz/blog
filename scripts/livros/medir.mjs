@@ -3,7 +3,7 @@
  * base, o início e o estilo de cada linha de texto das capas (/amostra/livros/, na referência de
  * 480 × 720), as caixas da capa da série, os desenhos como o site serve e, de /livros/<id>.json, o
  * ícone de cada lombada e os artigos de cada livro. Copiado de
- * docs/prototipos/livros-realistas/ferramentas/medir.mjs.
+ * docs/historico/livros-realistas/ferramentas/medir.mjs.
  */
 import { readFileSync } from "node:fs";
 

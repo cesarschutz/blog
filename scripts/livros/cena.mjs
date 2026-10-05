@@ -1,5 +1,5 @@
 /**
- * Copiado de docs/prototipos/livros-realistas/ferramentas/cena.mjs (D57), só com o que as fotos usam,
+ * Copiado de docs/historico/livros-realistas/ferramentas/cena.mjs (D57), só com o que as fotos usam,
  * para o site não depender da pasta de protótipos. A cena das pranchas, sem dependências: vetores,
  * câmera com perspectiva, a arte plana da base mapeada em superfícies 3D (planas ou curvas), sombras e
  * texturas, e o montador do SVG.

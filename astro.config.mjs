@@ -81,7 +81,7 @@ export default defineConfig({
     server: { watch: { ignored: ["**/bench/**"] } },
     // O GSAP e os plugins entram por import dinâmico; sem esta lista, o Vite os descobre no meio da sessão,
     // refaz o cache e a página já aberta leva 504 "Outdated Optimize Dep" (a abertura não toca, D61).
-    optimizeDeps: { include: ["gsap", "gsap/CustomEase", "gsap/Draggable", "gsap/DrawSVGPlugin", "gsap/Flip", "gsap/InertiaPlugin", "gsap/MorphSVGPlugin"] },
+    optimizeDeps: { include: ["gsap", "gsap/CustomEase", "gsap/Draggable", "gsap/DrawSVGPlugin", "gsap/InertiaPlugin"] },
   },
   redirects: redirecionamentos,
   integrations: [

@@ -1,7 +1,7 @@
 /**
  * O livro aberto, com as páginas em branco e uma folha virando (D57, prancha 06), para os vazios: o
  * livro ainda sem artigos e a busca sem resultado. Copiado de
- * docs/prototipos/livros-realistas/pranchas/p06-folheando.mjs, só com o modo em branco (sem o sumário,
+ * docs/historico/livros-realistas/pranchas/p06-folheando.mjs, só com o modo em branco (sem o sumário,
  * a abertura do artigo e a epígrafe, que pediam medir o texto no Chrome).
  *
  * O livro aberto e deitado na mesa, visto de frente e de cima (44°), com teleobjetiva e girado 2°.

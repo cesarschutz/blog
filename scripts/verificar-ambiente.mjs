@@ -21,7 +21,7 @@ const [maior, menor] = process.versions.node.split('.').map(Number);
 if (maior < 22 || (maior === 22 && menor < 12)) {
   faltas.push(`Node ${process.versions.node} é antigo: o Astro 7 exige o 22.12 ou mais novo, e o projeto usa o 24 (.node-version). Instale pelo https://nodejs.org ou pelo fnm/nvm.`);
 } else if (maior < 24) {
-  avisos.push(`Node ${process.versions.node} funciona, mas o projeto é testado no 24 (.node-version).`);
+  avisos.push(`Node ${process.versions.node} serve para o site, mas o projeto é testado no 24 (.node-version); abaixo do 22.18, os scripts que leem arquivos .ts (contraste, marca) não rodam.`);
 }
 
 // 2. Dependências
@@ -68,7 +68,9 @@ const candidatos = {
   linux: ['/usr/bin/google-chrome', '/usr/bin/google-chrome-stable', '/opt/google/chrome/chrome'],
 }[platform()] ?? [];
 const noPath = () => ['google-chrome', 'google-chrome-stable'].some((c) => spawnSync(c, ['--version'], { stdio: 'ignore' }).status === 0);
-if (!candidatos.some((c) => existsSync(c)) && !(process.env.CHROME_PATH && existsSync(process.env.CHROME_PATH)) && !(platform() === 'linux' && noPath())) {
+// CHROME_PATH (ou o apelido CHROME_EXECUTABLE_PATH) aponta outro navegador; é a mesma regra de scripts/chrome.mjs.
+const doAmbiente = [process.env.CHROME_PATH, process.env.CHROME_EXECUTABLE_PATH].some((c) => c && existsSync(c));
+if (!candidatos.some((c) => existsSync(c)) && !doAmbiente && !(platform() === 'linux' && noPath())) {
   faltas.push('Google Chrome não foi encontrado. Instale em https://www.google.com/chrome/ (ou aponte CHROME_PATH para ele).');
 }
 

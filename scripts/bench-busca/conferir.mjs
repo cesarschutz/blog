@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 /**
- * Confere a busca (Pagefind, D2) contra o gabarito: 'real' com os 26 posts, 'escala' com 500.
+ * Confere a busca (Pagefind, D2) contra o gabarito: 'real' com os posts reais (26 na medição da D2), 'escala' com 500.
  * Cada consulta entra por /?q=, espera o resultado e compara as URLs com o esperado.
  * Uso: node scripts/bench-busca/conferir.mjs   (depois de construir.mjs)
  */
 import { chromium } from "playwright-core";
+import { opcoesDoChrome } from "../chrome.mjs";
 import { existsSync, readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -29,7 +30,7 @@ function avaliar(urls, espera) {
   return falhas;
 }
 
-const navegador = await chromium.launch({ channel: "chrome", headless: true });
+const navegador = await chromium.launch(opcoesDoChrome);
 let porta = 4800;
 let totalFalhas = 0;
 for (const [grupo, total] of [

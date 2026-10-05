@@ -1,3 +1,11 @@
+/**
+ * O servidor estático do dist/ que os scripts usam (D84): o og.mjs (as imagens de compartilhamento, no
+ * postbuild) e os testes de scripts/frontend/. Escuta em 127.0.0.1 numa porta livre, devolve
+ * index.html para pasta, recusa caminho fora da pasta e serve gzip como a hospedagem. O servidor de
+ * scripts/bench-busca/servidor.mjs é outro, de propósito: simula latência e banda.
+ *
+ *   const s = await servir("dist");   // s.url, e `await s.close()` no fim
+ */
 import { createServer } from "node:http";
 import { readFileSync, statSync, existsSync } from "node:fs";
 import { resolve, extname } from "node:path";

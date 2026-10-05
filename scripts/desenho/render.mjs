@@ -11,6 +11,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright-core";
 import sharp from "sharp";
+import { opcoesDoChrome } from "../chrome.mjs";
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const endereco = process.env.ENDERECO ?? "http://127.0.0.1:4322";
@@ -30,7 +31,7 @@ try {
   process.exit(1);
 }
 
-const navegador = await chromium.launch({ channel: "chrome", headless: true });
+const navegador = await chromium.launch(opcoesDoChrome);
 const pagina = await navegador.newPage({ viewport: { width: 1200, height: 900 }, deviceScaleFactor: 1 });
 for (const slug of slugs) {
   const fotos = [];

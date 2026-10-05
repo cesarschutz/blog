@@ -1,5 +1,5 @@
 /**
- * Corpus da medição da busca (D2): os 26 posts reais mais posts sintéticos até o total pedido,
+ * Corpus da medição da busca (D2): os posts reais (26 na medição da D2) mais posts sintéticos até o total pedido,
  * com semente fixa. Os sintéticos embaralham parágrafos reais e trocam uma parte das palavras por
  * vocabulário novo (pseudo-palavras), para o vocabulário crescer como num blog de verdade. O tamanho
  * segue a meta nova (1,5 a 3 mil palavras), com alguns posts longos. Frases-marcadoras conferem o

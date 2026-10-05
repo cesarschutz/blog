@@ -10,9 +10,10 @@
  *
  * A barra separa as linhas do título. Saída: JSON com corpo, entrelinha e as linhas da frase.
  */
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { opcoesDoChrome } from "../chrome.mjs";
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 // As fontes entram como data URI: a página em branco do Chrome não carrega file://.
@@ -21,8 +22,7 @@ const fonte = (pacote, arquivo) =>
 
 export async function medirTitulos(itens) {
   const { chromium } = await import(pathToFileURL(join(raiz, "node_modules", "playwright-core", "index.mjs")).href);
-  const caminhos = [process.env.CHROME_PATH, "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"].filter((c) => c && existsSync(c));
-  const navegador = await chromium.launch(caminhos.length ? { executablePath: caminhos[0] } : { channel: "chrome" });
+  const navegador = await chromium.launch(opcoesDoChrome);
   const pagina = await navegador.newPage();
   await pagina.setContent(`<!doctype html><meta charset="utf-8"><style>
     @font-face{font-family:B;font-weight:100 900;src:url(${fonte("bitter", "bitter-latin-wght-normal.woff2")}) format("woff2");unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
@@ -59,8 +59,9 @@ export async function medirTitulos(itens) {
     return itens.map(({ linhas, frase }) => {
       const maior = Math.max(...linhas.map(largura));
       const exato = (404 / maior) * 100;
-      // Calibrado com os oito livros de hoje (73, 50, 82 e 104, as entrelinhas 70 e 48): a medida do
-      // Chrome dá ~2% a mais que a das referências, e a entrelinha de duas linhas é 0,96 do corpo.
+      // Calibrado com os oito livros da primeira coleção, antes da D78 (73, 50, 82 e 104, as entrelinhas
+      // 70 e 48): a medida do Chrome dá ~2% a mais que a das referências, e a entrelinha de duas linhas
+      // é 0,96 do corpo.
       const corpo = Math.min(108, Math.round(exato * 0.98));
       const entrelinha = linhas.length > 1 ? Math.round(corpo * 0.96) : corpo;
       return { linhas, corpo, entrelinha, exato: Math.round(exato * 100) / 100, frase, linhasDaFrase: linhasDaFrase(frase) };

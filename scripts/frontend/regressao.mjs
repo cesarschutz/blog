@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { chromium } from "playwright-core";
-import { opcoesDoChrome } from "./chrome.mjs";
+import { opcoesDoChrome } from "../chrome.mjs";
 import ts from "typescript";
 
 const pasta = ".astro/frontend-audit";
@@ -85,7 +85,8 @@ async function conferir(fonte, nome) {
 }
 
 try {
-  // A comparação usa a main local, sem rede. Baseline só é registrada, não imposta à versão corrigida.
+  // A comparação usa a main local, sem rede: a versão de origin/main é o piso das leituras de layout
+  // (a asserção no fim); sem origin/main no clone, só valem as asserções absolutas.
   let anterior;
   try {
     anterior = execFileSync(

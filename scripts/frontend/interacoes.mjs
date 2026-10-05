@@ -2,8 +2,8 @@
 /** Estados reais do build: cliques concorrentes, busca, menu e movimento reduzido durante a queda. */
 import assert from "node:assert/strict";
 import { chromium } from "playwright-core";
-import { opcoesDoChrome } from "./chrome.mjs";
-import { servir } from "./frontend-servidor.mjs";
+import { opcoesDoChrome } from "../chrome.mjs";
+import { servir } from "../servir.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 const pasta = ".astro/frontend-audit";
 mkdirSync(pasta, { recursive: true });

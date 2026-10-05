@@ -23,14 +23,14 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm run contraste
-      - run: node scripts/frontend-plugins.mjs
-      - run: node scripts/frontend-regressao.mjs
+      - run: node scripts/frontend/plugins.mjs
+      - run: node scripts/frontend/regressao.mjs
       - run: npm run build
       - run: npm run links
-      - run: node scripts/frontend-interacoes.mjs
-      - run: node scripts/frontend-tema.mjs
+      - run: node scripts/frontend/interacoes.mjs
+      - run: node scripts/frontend/tema.mjs
       - name: Matriz de páginas e telas
-        run: node scripts/frontend-paginas.mjs
+        run: node scripts/frontend/paginas.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:

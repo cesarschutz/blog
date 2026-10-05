@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": ">=24"
+    "node": ">=22.12"
   },
   "scripts": {
     "predev": "node scripts/copiar-katex.mjs",
@@ -20,7 +20,9 @@
     "apresentacao": "node scripts/apresentacao.mjs",
     "setup": "node scripts/verificar-ambiente.mjs",
     "conferir": "node scripts/conferir.mjs",
-    "escrita": "node scripts/escrita.mjs"
+    "escrita": "node scripts/escrita.mjs",
+    "frontend:rapido": "node scripts/frontend/plugins.mjs && node scripts/frontend/regressao.mjs",
+    "frontend": "npm run frontend:rapido && node scripts/frontend/interacoes.mjs && node scripts/frontend/tema.mjs && node scripts/frontend/paginas.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.1",

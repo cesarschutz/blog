@@ -3,8 +3,8 @@
 import assert from 'node:assert/strict';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { chromium } from 'playwright-core';
-import { opcoesDoChrome } from './chrome.mjs';
-import { servir } from './frontend-servidor.mjs';
+import { opcoesDoChrome } from '../chrome.mjs';
+import { servir } from '../servir.mjs';
 const pasta = '.astro/frontend-audit';
 mkdirSync(pasta, { recursive: true });
 const s = await servir('dist');

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Desenhos dos livros novos (CAPAS.md, "Livros novos"): o instrumento de ofício da capa e o ícone da
- * lombada, no traço dos oito livros da coleção. Cada livro é um módulo em scripts/desenho/livros/
+ * lombada, no traço dos livros da coleção. Cada livro é um módulo em scripts/desenho/livros/
  * (`<slug>.mjs`), escrito em geometria limpa (linhas, arcos, curvas, retângulos), na ordem de pintura;
  * este script passa a caneta (tremor suave, com semente tirada do slug, igual a cada vez), gera a
  * hachura e grava:
@@ -39,6 +39,7 @@
 import { mkdirSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { opcoesDoChrome } from "../chrome.mjs";
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const pastaLivros = join(raiz, "scripts", "desenho", "livros");
@@ -407,8 +408,7 @@ async function tintaDe(cor) {
 async function fotografar(slug, capa, icone, cor) {
   const { chromium } = await import(pathToFileURL(join(raiz, "node_modules", "playwright-core", "index.mjs")).href);
   const { tinta, destaque } = await tintaDe(cor);
-  const caminhos = [process.env.CHROME_PATH, "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"].filter((c) => c && existsSync(c));
-  const navegador = await chromium.launch(caminhos.length ? { executablePath: caminhos[0] } : { channel: "chrome" });
+  const navegador = await chromium.launch(opcoesDoChrome);
   const pagina = await navegador.newPage({ viewport: { width: 1500, height: 900 }, deviceScaleFactor: 1 });
   const semRaiz = (svg) => svg.replace(/ width="\d+" height="\d+"/, "");
   await pagina.setContent(`<!doctype html><meta charset="utf-8"><style>

@@ -19,6 +19,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { chromium } from "playwright-core";
 import sharp from "sharp";
+import { opcoesDoChrome } from "./chrome.mjs";
 import { claro } from "../src/styles/tokens.ts";
 
 const RAIZ = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -27,7 +28,7 @@ const ITALICO = join(RAIZ, "node_modules/@fontsource-variable/newsreader/files/n
 
 // ---------- 1. o contorno das letras: "cs" em Besley 800 e "blog" em Newsreader itálico ----------
 const pasta = mkdtempSync(join(tmpdir(), "marca-"));
-const navegador = await chromium.launch({ channel: "chrome" });
+const navegador = await chromium.launch(opcoesDoChrome);
 
 /** Imprime o texto num PDF com a fonte dada e devolve o contorno de cada letra e a caixa do conjunto. */
 async function contorno(nome, fonte, estilo, texto) {

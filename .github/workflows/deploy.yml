@@ -1,6 +1,6 @@
-# Deploy no GitHub Pages (preparado na Fase 7; só roda quando o projeto estiver num repositório do
-# GitHub, na virada: docs/virada.md). O `npm run build` gera as imagens de compartilhamento com o
-# Chrome que já vem no runner Ubuntu (D10) e o índice do Pagefind (D2), no postbuild.
+# Publica o site no GitHub Pages a cada push na main (D34). O `npm run build` gera as imagens de
+# compartilhamento com o Chrome que já vem no runner Ubuntu (D10) e o índice do Pagefind (D2), no
+# postbuild.
 name: Deploy no GitHub Pages
 
 on:

@@ -15,6 +15,7 @@
  * resultados/2026-09-24.json. Os resultados novos vão para resultados/<data>-pagefind.json.
  */
 import { chromium } from "playwright-core";
+import { opcoesDoChrome } from "../chrome.mjs";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -117,7 +118,7 @@ async function semAbrir(navegador, base) {
   return bytes;
 }
 
-const navegador = await chromium.launch({ channel: "chrome", headless: true });
+const navegador = await chromium.launch(opcoesDoChrome);
 const construcao = existsSync(join(bench, "construcao.json")) ? JSON.parse(readFileSync(join(bench, "construcao.json"), "utf8")) : [];
 const resultados = {
   data: new Date().toISOString(),

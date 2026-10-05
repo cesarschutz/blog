@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /** Regressões de semântica das tabelas e proporção das imagens públicas no build. */
 import assert from "node:assert/strict";
-import { rehypeTabela } from "../src/plugins/rehype-tabela.mjs";
-import { rehypeImagens } from "../src/plugins/rehype-imagens.mjs";
+import { rehypeTabela } from "../../src/plugins/rehype-tabela.mjs";
+import { rehypeImagens } from "../../src/plugins/rehype-imagens.mjs";
 const el = (tagName, children = []) => ({
   type: "element",
   tagName,

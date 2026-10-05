@@ -16,6 +16,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright-core";
+import { opcoesDoChrome } from "../chrome.mjs";
 
 const RAIZ = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const [slug, ...resto] = process.argv.slice(2);
@@ -38,7 +39,7 @@ const ESCONDER = ".computador, .aba-topo, [class*=aba-topo] { display: none !imp
 // do alto da figura (a do TTL, no post do DNS, 04/10/2026).
 const SEM_TOPO = ".topo-fixo, .barra-leitura { visibility: hidden !important; }";
 const dados = { slug, base: BASE, quando: new Date().toISOString(), tira: null, fotos: [] };
-const navegador = await chromium.launch({ channel: "chrome", headless: true });
+const navegador = await chromium.launch(opcoesDoChrome);
 
 async function abrir(tema, escala, caminho, estilo = "") {
   const ctx = await navegador.newContext({

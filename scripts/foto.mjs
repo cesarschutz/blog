@@ -20,6 +20,7 @@
  * Se o dev recarregar no meio (arquivo salvo), tenta de novo, até 3 vezes. CHROME_PATH troca o navegador.
  */
 import { chromium } from "playwright-core";
+import { opcoesDoChrome } from "./chrome.mjs";
 
 const [url, saida, ...resto] = process.argv.slice(2);
 if (!url || !saida) {
@@ -38,10 +39,7 @@ const tema = opcao("--tema", "claro") === "escuro" ? "dark" : "light";
 const seletor = opcao("--seletor");
 const indice = Number(opcao("--indice", 0));
 
-// CHROME_PATH aponta outro navegador (o Chromium da sessão na nuvem, por exemplo); sem ele, o Chrome instalado.
-const navegador = await chromium.launch(
-  process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH, headless: true } : { channel: "chrome", headless: true },
-);
+const navegador = await chromium.launch(opcoesDoChrome);
 try {
   const contexto = await navegador.newContext({
     viewport: { width: largura, height: altura },

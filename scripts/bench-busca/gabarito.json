@@ -1,5 +1,5 @@
 {
-  "_sobre": "Respostas esperadas da busca (D2), escritas antes de medir. 'real' roda com os 26 posts; 'escala', com 500 (reais + sintéticos com frases-marcadoras).",
+  "_sobre": "Respostas esperadas da busca (D2), escritas antes de medir. 'real' roda com os posts reais (26 na medição da D2); 'escala', com 500 (reais + sintéticos com frases-marcadoras).",
   "real": [
     { "consulta": "idempotencia", "criterio": "ignora acentos", "espera": { "noTopo3": ["/posts/cobranca-duplicada-no-retry/"] } },
     { "consulta": "configuracao", "criterio": "ignora acentos", "espera": { "minimo": 5 } },

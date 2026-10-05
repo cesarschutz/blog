@@ -1,5 +1,5 @@
 /**
- * A base das fotos dos livros (D57), copiada de docs/prototipos/livros-realistas/base/base.mjs: a capa,
+ * A base das fotos dos livros (D57), copiada de docs/historico/livros-realistas/base/base.mjs: a capa,
  * a lombada e a capa da série, planas e iguais ao site (D39: categoria com o papel em cima e a cor do
  * livro embaixo; série sempre em papel claro). Os dados vêm de src/livros/livros.json e das medidas que
  * medir.mjs tira do dev (a linha de base e o início de cada texto das capas, os desenhos como o site

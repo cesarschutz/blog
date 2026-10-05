@@ -30,6 +30,7 @@ import { mkdirSync, rmSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright-core";
+import { opcoesDoChrome } from "../chrome.mjs";
 
 const raiz = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const args = process.argv.slice(2);
@@ -291,7 +292,7 @@ function conferirTexto() {
 
 // ---------- o roteiro ----------
 
-const navegador = await chromium.launch({ channel: "chrome", headless: true });
+const navegador = await chromium.launch(opcoesDoChrome);
 const SEM_CABECALHO = ".cabecalho, .barra-leitura { visibility: hidden !important; }";
 
 async function abrir(largura, tema) {

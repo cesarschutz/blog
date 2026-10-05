@@ -1,6 +1,6 @@
 /**
  * O livro deitado na mesa, com a fita marcadora de cetim (D57, prancha 04 "Edição de estudo"), para a
- * ficha "Do livro" do artigo. Copiado de docs/prototipos/livros-realistas/pranchas/p04-edicao-de-estudo.mjs
+ * ficha "Do livro" do artigo. Copiado de docs/historico/livros-realistas/pranchas/p04-edicao-de-estudo.mjs
  * e girado para o outro lado (o mesmo ângulo, espelhado: a cabeça vai para a esquerda e a lombada vira
  * para o observador; a câmera é refeita, a imagem não é espelhada, e o texto da capa continua legível).
  *

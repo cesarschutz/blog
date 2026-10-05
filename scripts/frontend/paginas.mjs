@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /** Verifica o build de produção e guarda capturas, console e medições de laboratório. */
 import { chromium } from "playwright-core";
-import { opcoesDoChrome } from "./chrome.mjs";
-import { servir } from "./frontend-servidor.mjs";
+import { opcoesDoChrome } from "../chrome.mjs";
+import { servir } from "../servir.mjs";
 import { mkdirSync, writeFileSync, readdirSync, readFileSync } from "node:fs";
 import assert from "node:assert/strict";
 const pasta = ".astro/frontend-audit";

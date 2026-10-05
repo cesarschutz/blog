@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * As fotos dos livros (D57): as imagens paradas que saem das pranchas 04 e 06 em
- * docs/prototipos/livros-realistas/, feitas com as capas de verdade do site.
+ * docs/historico/livros-realistas/, feitas com as capas de verdade do site.
  *
  * - public/livros/fotos/<id>-deitado.webp: cada livro (e a série) deitado na mesa, com a fita, para a
  *   ficha "Do livro" do artigo (Sumario.astro e RodapeArtigo.astro). Sem as etiquetas: os oito lugares
