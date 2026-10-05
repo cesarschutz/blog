@@ -55,7 +55,7 @@ const modificado = post.data.updated ?? post.data.published;
 // A caneta da leitura na cor do livro (D58): a barra do topo e o sumário (o fio, o ponto, os vistos, o
 // sublinhado da seção e o título do post-it). As marcações da caneta no texto (D48) continuam azuis. No claro, o
 // destaque do livro (a cor escurecida até ter contraste sobre o papel, cores.js); no escuro, a cor do livro
-// clareada. A cor crua no claro dava 2,2:1 no título do post-it no DevOps, um azul claro (D82). A troca sai só
+// clareada. A cor crua no claro dava 2,2:1 no título do post-it no DevOps, um azul claro (D84). A troca sai só
 // de `--branco-no-escuro` (0% no claro): a mistura de dentro vai do destaque (0%) à cor (100%).
 const tintaNoClaro = livroDoPost?.cores.destaque ?? resumo.cor;
 const canetaDoLivro = `.barra-leitura,aside.lateral,#folha-sumario,details.recolhivel{--caneta:color-mix(in oklab, color-mix(in oklab, ${tintaNoClaro}, ${resumo.cor} min(100%, calc(var(--branco-no-escuro) * ${(100 / BRANCO_NO_ESCURO).toFixed(4)}))), #fff var(--branco-no-escuro));}`;

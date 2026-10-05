@@ -135,7 +135,7 @@ function montar(figura: HTMLElement) {
     figura.classList.toggle("no-fim", noFim);
     tudo!.hidden = noFim;
     // Uma tecla pode voltar ao primeiro passo, esconder "Ver tudo" ou esconder "Passo a passo" (a seta para a
-    // direita nele começa os passos, D82): o foco precisa continuar útil.
+    // direita nele começa os passos, D84): o foco precisa continuar útil.
     if ((focoAntes === anterior && anterior!.disabled) || (focoAntes === tudo && noFim) || focoAntes === comecar) proximo!.focus({ preventScroll: true });
     trazerParaAVista(alvo, mexer);
   }

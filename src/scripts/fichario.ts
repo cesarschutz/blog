@@ -131,8 +131,11 @@ export function fichario(movel: HTMLElement, lista: HTMLElement) {
     if (dica) dica.textContent = letra === "todas" ? dicaInicial : `${novas.length} ${novas.length === 1 ? "ficha" : "fichas"} na gaveta ${letra}`;
     // Se das fichas à vista quase nada aparece na tela, a página desce até o começo delas ficar no meio (com
     // movimento reduzido, de uma vez).
+    // Sem passar do alto do móvel: a gaveta puxada não some sob o cabeçalho fixo (D84).
     const topo = lista.getBoundingClientRect().top;
-    if (innerHeight - topo < 200) scrollBy({ top: topo - innerHeight * 0.5, behavior: reduzido.matches ? "instant" : "smooth" });
+    const cabecalho = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--altura-topo")) || 60;
+    const ateOMovel = movel.getBoundingClientRect().top - cabecalho - 8;
+    if (innerHeight - topo < 200) scrollBy({ top: Math.max(0, Math.min(topo - innerHeight * 0.5, ateOMovel)), behavior: reduzido.matches ? "instant" : "smooth" });
     if (reduzido.matches) return;
     requestAnimationFrame(() => { if (minha === vez && !reduzido.matches) cairAoVer(novas); });
   }

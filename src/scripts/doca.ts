@@ -10,7 +10,7 @@
  * (as pontas saem no máximo SOBRA px). O maior fica por cima dos vizinhos (`z-index` da `.tomba`, e não do
  * lugar: o lugar que abre a prateleira leva a lâmina dela, que passaria por cima dos outros livros).
  *
- * Com as prateleiras (D82), a doca vale na prateleira em que o mouse está: os lugares são agrupados pela altura
+ * Com as prateleiras (D84), a doca vale na prateleira em que o mouse está: os lugares são agrupados pela altura
  * deles na tela, a cada quadro (a forma muda com a largura). Os livros ficaram grandes, e o aumento caiu de
  * 1,5× para 1,14×; ele cresce para dentro do teto do lugar (onde fica o abajur) e nunca passa dele.
  *

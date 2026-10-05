@@ -89,7 +89,7 @@ const { chamada, tombo } = await chamadaDe(post);
     {livro && <MarcaDagua livro={livro} />}
     <nav class="trilha" aria-label="Trilha" data-pagefind-ignore>
       <a href={raiz.href}>{raiz.nome}</a>
-      {/* A seta presa ao livro: num livro de nome longo em 320px, o chip descia e a seta sobrava sozinha (D82). */}
+      {/* A seta presa ao livro: num livro de nome longo em 320px, o chip descia e a seta sobrava sozinha (D84). */}
       <span class="trilha-livro"><span aria-hidden="true">›</span><Chip cor={post.cor} nome={post.rotulo} href={post.urlRotulo} /></span>
     </nav>
     <h1 data-pagefind-meta="title" tabindex="-1" set:html={tituloEmPartes(post.tituloCompleto)} />

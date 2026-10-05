@@ -36,7 +36,7 @@ const tira = (l: Livro) => {
   if (n === 0) return { quantos: "", quando: "Ainda sem artigos" };
   const anos = l.posts.map((p) => p.publicado.getUTCFullYear());
   const [min, max] = [Math.min(...anos), Math.max(...anos)];
-  // Só os anos (D82): com "o último em", a tira não cabia numa linha no card e cortava o número de artigos.
+  // Só os anos (D84): com "o último em", a tira não cabia numa linha no card e cortava o número de artigos.
   const quando = min !== max ? `${min} a ${max}` : String(max);
   return { quantos: `${n} ${n === 1 ? "artigo" : "artigos"}`, quando };
 };

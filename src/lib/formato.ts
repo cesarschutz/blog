@@ -33,7 +33,7 @@ export function mdEmLinhaComLinks(texto: string): string {
 
 /**
  * Título em HTML com pontos de quebra (`<wbr>`) depois do ponto de um identificador
- * ("AopUtils.getTargetClass()") e entre as palavras de um nome em camelCase ("Message|Attributes", D82):
+ * ("AopUtils.getTargetClass()") e entre as palavras de um nome em camelCase ("Message|Attributes", D84):
  * na coluna estreita, quebra ali e não no meio da palavra. O travessão fica preso à palavra seguinte
  * (D39), para nunca sobrar sozinho numa linha.
  */

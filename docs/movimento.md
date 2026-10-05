@@ -72,7 +72,7 @@ Regras comuns dos livros em movimento (D40: GSAP sob demanda, só transformaçõ
 o foco do teclado igual ao mouse, Esc fecha, movimento reduzido): `DESIGN.md`, Movimento.
 
 - **A doca da coleção da home** (D78, 04/10/2026, `doca.ts`; pedido do Cesar: "tipo o dock do Mac"; por
-  prateleira desde a D82): só com mouse e sem movimento reduzido. O livro sob o mouse cresce até
+  prateleira desde a D84): só com mouse e sem movimento reduzido. O livro sob o mouse cresce até
   **1,14×** (era 1,5× quando os livros eram pequenos), de pé, pela base (a `.tomba`), e os vizinhos da
   mesma prateleira crescem menos, por um sino de cosseno de **2,2 lugares** para cada lado, medido do
   mouse ao meio de cada lugar. A prateleira abre espaço como a doca: cada livro anda para o lado com a

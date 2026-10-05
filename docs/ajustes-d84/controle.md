@@ -1,4 +1,4 @@
-# Rodada D82: a home dos livros, a revisão geral e a faxina do código
+# Rodada D84: a home dos livros, a revisão geral e a faxina do código
 
 Pedido do Cesar em 04/10/2026 (branch `claude/blog-review-home-improvements-ca8691`, a partir da `main`
 em `16c0491`; dev na porta 4380). Ordem: a home primeiro (o foco), depois a revisão das telas, publicar,
@@ -17,7 +17,7 @@ Legenda: `[x]` feito e conferido, `[~]` em andamento, `[ ]` falta, `[-]` não se
 
 - [x] 1.1 Pesquisa: como mostrar muitos livros na tela larga e no celular (estantes, lojas, carrosséis,
       o protótipo de 9 livros), e por que a página de um livro fica melhor
-- [x] 1.2 A forma escolhida, com o motivo, registrada como D82 (`docs/decisoes.md`, briefing, `DESIGN.md`,
+- [x] 1.2 A forma escolhida, com o motivo, registrada como D84 (`docs/decisoes.md`, briefing, `DESIGN.md`,
       `docs/movimento.md`, `.claude/rules/interface.md`, `CLAUDE.md`)
 - [x] 1.3 A coleção valorizada: livros grandes, como eram com 9 (e como na página de um livro)
 - [x] 1.4 Tela pequena: resolvida sem o giro até a lombada que o Cesar não gostou
@@ -51,7 +51,7 @@ Legenda: `[x]` feito e conferido, `[~]` em andamento, `[ ]` falta, `[-]` não se
 
 - [ ] 3.1 `check`, `build`, `links`, `contraste`, `validar.mjs`, testes `frontend-*`, `conferir` em
       alguns posts
-- [ ] 3.2 Registro: `docs/decisoes.md` (D82), `docs/estado.md`, `docs/briefing.md` e `DESIGN.md` no que
+- [ ] 3.2 Registro: `docs/decisoes.md` (D84), `docs/estado.md`, `docs/briefing.md` e `DESIGN.md` no que
       mudou
 - [ ] 3.3 Commits, `git fetch`, junção cuidadosa com a `origin/main` (outras sessões), push na `main`
 - [ ] 3.4 Deploy conferido e o site no ar olhado
@@ -79,7 +79,7 @@ Legenda: `[x]` feito e conferido, `[~]` em andamento, `[ ]` falta, `[-]` não se
 
 - Medido: com 14 livros numa fileira, cada livro ficava com ~116px de altura na tela larga e ~20px de
   lombada no celular; com 9, eram 214px. Pesquisa (NN/g, Baymard), mapa do código e 17 maquetes por CSS
-  injetado; a forma escolhida e as descartadas estão na D82.
+  injetado; a forma escolhida e as descartadas estão na D84.
 - `ColecaoHome.astro` (novo): prateleiras de capas; 7 por prateleira a partir de 900px, 5 de 600 a 899px,
   4 abaixo de 600px (a estante sangra a margem). Um abajur e o livro por lugar, a lâmina de vidro no
   primeiro lugar de cada prateleira, quebras por forma geradas no servidor. Sem nomes embaixo (14

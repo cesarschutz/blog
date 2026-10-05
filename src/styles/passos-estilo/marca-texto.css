@@ -344,7 +344,7 @@
   background-size: 100% 30%;
 }
 
-/* Sem o fundo, o código fica sem o respiro dele também: sobrava um vão antes da pontuação ("version 1 ;", D82). */
+/* Sem o fundo, o código fica sem o respiro dele também: sobrava um vão antes da pontuação ("version 1 ;", D84). */
 .figura-passos[data-estilo="marca-texto"] .passos-texto code {
   padding-inline: 0;
   background-color: transparent;

@@ -349,7 +349,7 @@ const ITENS = [
     outline-offset: -2px;
   }
 
-  /* No foco, o conteúdo sai de baixo do anel (ele passava por cima do "1" de "12 de 12", D82). */
+  /* No foco, o conteúdo sai de baixo do anel (ele passava por cima do "1" de "12 de 12", D84). */
   .secao-atual:focus-visible .vaga {
     padding-inline: 6px;
   }
@@ -790,7 +790,7 @@ const ITENS = [
     }
 
     /* Com a folha aberta, a página de baixo não rola: o gesto sobre a folha rolava o artigo escondido, e ao
-       fechar o leitor estava em outro ponto (D82). O `scrollbar-gutter` da raiz evita o salto. */
+       fechar o leitor estava em outro ponto (D84). O `scrollbar-gutter` da raiz evita o salto. */
     :global(:root[data-menu-aberto]) {
       overflow: hidden;
     }

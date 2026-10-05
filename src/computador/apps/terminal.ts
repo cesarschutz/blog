@@ -211,7 +211,7 @@ class Disco {
       }
     }
     const leia = leiaMe(d);
-    // O mesmo nome do Código (editor.ts, LEIA_ME): "cat Leia-me.md" dava erro no Terminal (D82).
+    // O mesmo nome do Código (editor.ts, LEIA_ME): "cat Leia-me.md" dava erro no Terminal (D84).
     arquivo("Leia-me.md", this.blog, () => Promise.resolve(leia), new Date(2026, 8, 30, 21, 7, 42));
     arquivo(".zshrc", this.casa, () => Promise.resolve(ZSHRC), new Date(2026, 8, 30, 21, 12, 5));
     arquivo(".zsh_history", this.casa, () => Promise.resolve(historico.map((l) => `${l}\n`).join("")), agora);
@@ -1877,7 +1877,7 @@ const COMANDOS_DO_SHELL: Record<string, Comando> = {
 
   history(ses, _d, args) {
     // Sem argumento, os últimos 16, como o zsh; "-N", os últimos N; "N", do N em diante. (Antes, com menos de 15
-    // comandos, o padrão caía no ramo do "-N" e sumiam os primeiros, D82.)
+    // comandos, o padrão caía no ramo do "-N" e sumiam os primeiros, D84.)
     const arg = args[0] && /^-?\d+$/.test(args[0]) ? Number(args[0]) : null;
     const inicio = arg === null ? Math.max(1, historico.length - 15) : arg < 0 ? Math.max(1, historico.length + arg + 1) : Math.max(1, arg);
     const linhas: string[] = [];

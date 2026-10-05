@@ -268,7 +268,7 @@ src/assets/              caveat-titulos.woff: a Caveat 600 só com as letras dos
 src/layouts/Base.astro   head, anti-piscada, cabeçalho, rodapé e busca
 src/components/          peças das páginas (estante, gaveta, sumário, avisos, busca…) e dos posts (Lousa,
                          Figura, Animacao, Ferramenta, Evidencia; LousaTempo e LousaLoop só nos antigos);
-                         da D61: ColecaoHome (a coleção da home em prateleiras, D82), Colecao e
+                         da D61: ColecaoHome (a coleção da home em prateleiras, D84), Colecao e
                          FileiraTopo (a fileira do alto da página do livro),
                          PontoDeLuz e Luz (abajures e luz), Fichario, NuvemTags e FichasTags (Tags),
                          Vizinhos e LivroDoArtigo (o fim do post), AbaTopo (voltar ao topo) e TracoTitulo

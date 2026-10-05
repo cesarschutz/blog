@@ -88,7 +88,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D77 | As apresentações no estilo do blog também entram no post (seção "Apresentação"), pelo `npm run apresentacao -- … --pdf`; as três primeiras: as duas partes dos mods e Parquet | decidido e publicado |
 | D79 | A parte 2 do post dos mods (`claude-code-csr-cockpit`) só atualizada para o cockpit 0.16.0, sem post novo: seis abas, as telas novas como print e os fatos em dia | decidido e publicado |
 | D81 | Post de DNS (`dns-tipos-de-registro`): detalhado, no livro DevOps, com as tags novas DNS e Redes, exemplos em `example.com` e a apresentação no estilo do blog | decidido e publicado |
-| D82 | A home da coleção em prateleiras de capas (7, 5 ou 4 livros por prateleira, sem lombada nem rolagem lateral), sem a linha de números, o nome menor com o "blog" carimbado sobre o Z, o nome do rodapé numa linha no celular, a revisão geral das telas e a faxina do código | decidido pelo Claude a pedido do Cesar; ele revê no ar |
+| D84 | A home da coleção em prateleiras de capas (7, 5 ou 4 livros por prateleira, sem lombada nem rolagem lateral), sem a linha de números, o nome menor com o "blog" carimbado sobre o Z, o nome do rodapé numa linha no celular, a revisão geral das telas e a faxina do código | decidido pelo Claude a pedido do Cesar; ele revê no ar |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -3477,7 +3477,7 @@ nada muda.
   `build`, `links` e `contraste` sem falhas; detector do Impeccable sem achados; Lighthouse 100 no
   desktop e 97 no celular, pelo contraste do resumo "Neste artigo" (componente do site, não do post).
 
-## D82 · A home da coleção em prateleiras, a revisão geral e a faxina do código (04/10/2026)
+## D84 · A home da coleção em prateleiras, a revisão geral e a faxina do código (04/10/2026)
 
 - **Pedido do Cesar:** a home "não está valorizando os livros; estão mais bonitos na tela de um livro
   selecionado, como eles ficam lá em cima; quando era menos livro era muito mais bonito, quero tipo

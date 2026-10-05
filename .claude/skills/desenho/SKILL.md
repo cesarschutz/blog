@@ -87,7 +87,7 @@ Classes (definidas em `src/styles/desenho.css`; nenhuma outra passa no validador
 | `fantasma` | o que não acontece, alternativas e estados anteriores |
 | `carimbo` | contorno na cor da categoria |
 | `rotulo`, `valor`, `numero`, `codigo`, `carimbo-texto` | textos do desenho (poucos: até 60 caracteres) |
-| `sobre-cor` (junto da classe do texto) | texto escrito em cima de uma forma `.cor` (o número da caneca, a etiqueta): tinta no claro, papel no escuro; sem ela, a tinta quase branca some na cor clareada do escuro (D82) |
+| `sobre-cor` (junto da classe do texto) | texto escrito em cima de uma forma `.cor` (o número da caneca, a etiqueta): tinta no claro, papel no escuro; sem ela, a tinta quase branca some na cor clareada do escuro (D84) |
 | `anotacao` | grupo das anotações, que só aparece no recorte largo |
 | `nota`, `nota-pequena`, `chamada` | texto e linha de chamada das anotações |
 | `mexe-*` | o detalhe da capa viva (abaixo), num `<g>` |

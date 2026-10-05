@@ -58,7 +58,7 @@ let cache: Post[] | undefined;
 
 /**
  * Posts publicados, do mais novo para o mais antigo. Rascunhos só aparecem no dev.
- * Empate de data: o slug em ordem alfabética inversa (D82), para a lista ser exatamente o inverso da ordem de
+ * Empate de data: o slug em ordem alfabética inversa (D84), para a lista ser exatamente o inverso da ordem de
  * chegada que numera as fichas e os tombos (ficha.ts, slug em ordem alfabética). Antes, os dois desempates
  * iam no mesmo sentido: num dia com dois posts, a lista, o arquivo e os vizinhos saíam trocados.
  */

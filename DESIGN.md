@@ -460,14 +460,14 @@ de página e os ganchos das peças).
     alto da página do livro;
   - a luz do livro escolhido acende também embaixo dele, na prateleira, e a do livro tirado no filtro
     fica acesa;
-  - na home, os livros ficam em prateleiras de lâmina de vidro, limpas, sem estante de madeira (D82);
+  - na home, os livros ficam em prateleiras de lâmina de vidro, limpas, sem estante de madeira (D84);
   - a mancha quente que segue o mouse é fraca (21% no claro, 7,5% no escuro), e o hover não pinta o
     livro de amarelo;
   - a troca de tema acende e apaga a lâmpada do cabeçalho.
 - **Home:** o caderno "cs" e "Cesar Schutz" grande, com o "blog" carimbado, inclinado, sobre o canto do
-  Z (D82), e logo abaixo a coleção. O traço à caneta fica embaixo de "A coleção" e de "Artigos
+  Z (D84), e logo abaixo a coleção. O traço à caneta fica embaixo de "A coleção" e de "Artigos
   recentes". O clique num livro voa até a página dele; a gaveta saiu da home.
-- **A coleção da home (D82):** prateleiras de capas, sempre de capa (giro de 26°) e grandes: 7 livros
+- **A coleção da home (D84):** prateleiras de capas, sempre de capa (giro de 26°) e grandes: 7 livros
   por prateleira a partir de 900px (até 214px de altura), 5 de 600 a 899px e 4 abaixo de 600px (a estante
   na largura da tela). As prateleiras curtas no fim, centradas; a série é a última. Nunca lombada nem
   rolagem lateral na home, e sem nomes embaixo dos livros. Com o mouse, o livro sob ele cresce 1,14× e os

@@ -396,7 +396,7 @@ const temIndices = Astro.slots.has("default") || indiceDosAnos.length > 0;
   /*
    * A linha de base da pílula de tag é a do texto dela, e não o pé do ícone (o primeiro item do flex, um SVG,
    * que não tem linha de base): sem isto, o rótulo "Por assunto" e o "Todas as tags" ficavam ~6px abaixo do
-   * texto das pílulas (D82). O ícone continua no meio.
+   * texto das pílulas (D84). O ícone continua no meio.
    */
   .indices :global(.pilula-tag) {
     align-items: baseline;
@@ -725,7 +725,7 @@ const temIndices = Astro.slots.has("default") || indiceDosAnos.length > 0;
     }
 
     /* A largura do pé é a do texto dele, e não a da estante (com um ou dois livros, ela tem de 25 a 70px e o
-       rótulo quebrava palavra por palavra, D82), até a largura da folha. */
+       rótulo quebrava palavra por palavra, D84), até a largura da folha. */
     .lado-estante :global(.pe-estante) {
       position: static;
       width: max-content;

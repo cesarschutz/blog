@@ -80,7 +80,7 @@ const livros = (await montarLivros()).filter((l) => !l.serie);
     ficha.setAttribute("aria-hidden", "true");
     ficha.innerHTML = `<span class="vol"></span><span class="mascara"><b></b></span>`;
     document.body.append(ficha);
-    // Na tela baixa, a 46% da altura ela caía em cima da descrição e do link "A máquina de cada capa" (D82):
+    // Na tela baixa, a 46% da altura ela caía em cima da descrição e do link "A máquina de cada capa" (D84):
     // nunca acima do pé do cabeçalho da página.
     if (!cel) {
       const pe = document.querySelector(".cabecalho-pagina")?.getBoundingClientRect().bottom ?? 0;

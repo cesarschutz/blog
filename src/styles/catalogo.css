@@ -72,7 +72,7 @@
 
 /*
  * Quando a tira não cabe numa linha (a ficha estreita, o celular), ela quebra em vez de cortar com reticências
- * (D82): a parte da direita desce para a linha de baixo, encostada à direita, e a da esquerda (o volume e o
+ * (D84): a parte da direita desce para a linha de baixo, encostada à direita, e a da esquerda (o volume e o
  * número de artigos, a informação) fica inteira.
  */
 .tira-catalogo {

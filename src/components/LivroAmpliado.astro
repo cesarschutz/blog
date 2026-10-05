@@ -332,8 +332,13 @@ import "../styles/paginas.css";
       const { curto, extra } = descrever();
       const vistaDoCelular = celular.matches && aberto() ? (lado === "dir" ? " · direita" : " · esquerda") : "";
       onde.innerHTML = `${curto}${vistaDoCelular}${extra ? `<span class="sr">: ${esc(extra)}</span>` : ""}`;
+      // O botão que se desliga com o foco nele (a última página, a primeira) passa o foco para o outro: no <body>,
+      // as setas deixavam de virar as páginas (D84).
+      const focado = document.activeElement;
       btAnterior.disabled = s === 0 && !(celular.matches && aberto());
       btProxima.disabled = s === ultimo && !(celular.matches && lado === "esq");
+      if (focado === btProxima && btProxima.disabled && !btAnterior.disabled) btAnterior.focus();
+      else if (focado === btAnterior && btAnterior.disabled && !btProxima.disabled) btProxima.focus();
       btProxima.textContent = s === 0 ? "Abrir o livro" : "Virar a página";
       btAnterior.textContent = s === 1 && !(celular.matches && lado === "dir") ? "Fechar o livro" : "Voltar a página";
       // A contracapa (D78): só com o livro fechado; virado, "Voltar a página" não tem para onde ir.

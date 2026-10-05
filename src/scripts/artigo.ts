@@ -726,7 +726,7 @@ if (corpoDoArtigo?.querySelector(".expressive-code .copy")) {
 
 // A tabela que não cabe rola dentro da moldura (prosa.css). O aviso "Arraste para o lado" existe só
 // enquanto ela passa mesmo da caixa: mais que o respiro da última célula (10px), ou seja, quando alguma
-// letra fica de fora. Aqui só se mede; quem mostra o aviso é o CSS, em qualquer largura (D82).
+// letra fica de fora. Aqui só se mede; quem mostra o aviso é o CSS, em qualquer largura (D84).
 const SOBRA_DA_TABELA = 12;
 const tabelas = [...document.querySelectorAll<HTMLElement>(".prose .tabela")];
 if (tabelas.length && "ResizeObserver" in window) {

@@ -37,7 +37,7 @@ export async function GET(contexto: APIContext) {
       .replace(/<svg\b[^>]*aria-hidden="true"[^>]*>[\s\S]*?<\/svg>/g, "")
       // As âncoras do próprio post (sumário, "veja a seção…") apontam para o post no site (D54).
       .replace(/href="#/g, `href="${endereco}#`);
-    // Os endereços do site, absolutos (o leitor de RSS fica noutro domínio); no srcset, cada um da lista (D82).
+    // Os endereços do site, absolutos (o leitor de RSS fica noutro domínio); no srcset, cada um da lista (D84).
     const site = new URL(contexto.site!).origin;
     return `${corpo}${notas.length ? `<hr>${notas.join("")}` : ""}`
       .replace(/(href|src)="\/(?!\/)/g, `$1="${site}/`)

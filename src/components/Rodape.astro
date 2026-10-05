@@ -26,7 +26,7 @@
  *
  * O nome respira o peso, de 800 a 680 e de volta em 7s, nunca abaixo de 650 (N10), só enquanto está à
  * vista e nunca com movimento reduzido. Abaixo de 900px, as colunas da direita da ficha descem; o nome fica
- * numa linha só, como na tela larga (D82), quase de borda a borda.
+ * numa linha só, como na tela larga (D84), quase de borda a borda.
  *
  * Ganchos (não renomear): o nome em `.rodape-parede` (`.nome-rodape`, `data-nome-rodape`), o chão em
  * `.rodape-chao`; as variáveis `--nome` (o tamanho), `--nome-visivel` (a caixa do nome, do alto das
@@ -1030,7 +1030,7 @@ const letras = (nome: string) => [...nome].map((c, k) => ({ c, k }));
   }
 
   /* Sobre o feltro escuro, o azul-tinta quase não se via (1,2:1 no claro): o anel é da cor do papel, com o azul
-     por fora (D82). */
+     por fora (D84). */
   .cordinha:focus-visible .cordinha-pingente {
     outline: 2px solid var(--paper-hi);
     outline-offset: 3px;
@@ -1237,7 +1237,7 @@ const letras = (nome: string) => [...nome].map((c, k) => ({ c, k }));
 
   @media (max-width: 899.98px) {
     /*
-     * O nome continua numa linha só, cortado pelo tampo como na tela larga (D82, pedido do Cesar: em duas
+     * O nome continua numa linha só, cortado pelo tampo como na tela larga (D84, pedido do Cesar: em duas
      * linhas, "Cesar" sobre "Schutz", ele não parecia o mesmo do resto). No celular ele vai quase de borda a
      * borda (8px de cada lado), para ganhar o tamanho que dá.
      */

@@ -454,7 +454,7 @@
 }
 
 /* Até 1439px, sem o entalhe: os menus do Código e da Pré-Visualização passavam por baixo dele ("Janela" e
-   "Ajuda" ilegíveis, D82). */
+   "Ajuda" ilegíveis, D84). */
 @media (max-width: 1439px) {
   .mac-entalhe {
     display: none;

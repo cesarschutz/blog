@@ -186,7 +186,7 @@ no mesmo ponto de vista e com um único fantasma tracejado, que é a máquina no
 A tag Pagamentos virou **Cobrança**, porque Pagamentos virou livro (`/tags/Pagamentos/` redireciona
 para `/tags/Cobrança/`). Ao planejar um post, o Claude confere se a coleção ainda serve e avisa o
 Cesar quando valer criar, dividir ou renomear um livro (skill `post`). **A coleção da home é uma
-estante de prateleiras de capas** (D82, 04/10/2026; antes, a opção 1 da D78, "os livros estão muito de
+estante de prateleiras de capas** (D84, 04/10/2026; antes, a opção 1 da D78, "os livros estão muito de
 lado", numa fileira só): os livros ficam sempre de capa (giro de 26°) e grandes, e quem muda com a
 largura é o número de livros por prateleira: 7 a partir de 900px (7 + 7, até 214px de altura), 5 de 600
 a 899px (5 + 5 + 4) e 4 abaixo de 600px (4 + 4 + 3 + 3, na largura da tela). Nunca lombada nem rolagem
@@ -248,10 +248,10 @@ com o livro e o que o tracejado mostra), com o link sobre ela. A cor do livro n�
 ## 5. Páginas
 
 ### 5.1 Home
-Referência: aba "Home" do protótipo. **Hoje (D61, D82):** no alto, o nome gigante (o caderno "cs", "Cesar
+Referência: aba "Home" do protótipo. **Hoje (D61, D84):** no alto, o nome gigante (o caderno "cs", "Cesar
 Schutz" numa linha, a assinatura embaixo e o "blog" carimbado, inclinado, sobre o canto do Z); logo
 abaixo, "A coleção" em prateleiras de capas; depois, "Artigos recentes". A frase de apresentação, os
-números (Artigos, Livros, Tags) e o último artigo saíram (D82). O que vem abaixo, até a "Estante", é a
+números (Artigos, Livros, Tags) e o último artigo saíram (D84). O que vem abaixo, até a "Estante", é a
 história da home antes do redesenho e vale só onde o `DESIGN.md` (seção "Papel e luz") não diz outra coisa.
 - **Cabeçalho** (D31): **fixo no alto** enquanto a página rola, com o fundo da página levemente
   translúcido e um **fio embaixo sempre à vista** (D44), que ganha uma sombra suave depois de rolar. A marca à esquerda (D33); à direita

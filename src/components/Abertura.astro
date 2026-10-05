@@ -7,11 +7,11 @@
  * dentro do site, vale a troca de página (troca.js).
  *
  * - Na home (rodada 4, A1, E3 e E12: a sequência do 18, melhorada, com o nome do 20): uma folha de papel cobre
- *   a página; a caneta risca o fio da aresta de cada lâmina de vidro (uma por prateleira, D82); as lâminas
+ *   a página; a caneta risca o fio da aresta de cada lâmina de vidro (uma por prateleira, D84); as lâminas
  *   aparecem; os livros chegam um a um pela direita, com a contagem embaixo ("Volume 01"… "Série"); quando eles
  *   param, os dois cadernos acenam; a estante desce para o lugar, a página aparece em volta e o nome gigante
  *   entra da direita para a esquerda (uma frente desfocada); a assinatura se escreve quando os cadernos fecham,
- *   e o "blog" carimba depois dela (D82); e as luzes acendem uma a uma, seguidas só da onda de molas e, depois
+ *   e o "blog" carimba depois dela (D84); e as luzes acendem uma a uma, seguidas só da onda de molas e, depois
  *   dela, só do brilho (~4,9s, `A1` abaixo). A estante é a de verdade, levantada por cima do papel. Durante a
  *   abertura, ela não responde ao mouse (B12, D52).
  * - Nas outras páginas, o caderno "cs" carrega (a caneta escreve o fio, contando até 100), abre e fecha
@@ -201,7 +201,7 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
   }
 
   /**
-   * O fio em várias linhas (D82: uma por prateleira da home), riscadas uma depois da outra pela mesma caneta,
+   * O fio em várias linhas (D84: uma por prateleira da home), riscadas uma depois da outra pela mesma caneta,
    * que levanta no fim de uma e desce no começo da outra (um caminho só, com um trecho por linha).
    */
   function montarFios(gsap: GSAP, cena: HTMLElement, linhas: { x: number; y: number; w: number }[]) {
@@ -243,7 +243,7 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
   function aceno() {
     const assinatura = document.querySelector<SVGElement>(".marca-grande .assinatura");
     assinatura?.classList.add("a-escrever");
-    // O "blog" carimbado sobre o Z (D82) espera a assinatura acabar e carimba: desce grande e girado, passa um
+    // O "blog" carimbado sobre o Z (D84) espera a assinatura acabar e carimba: desce grande e girado, passa um
     // nada do tamanho e assenta, como o carimbo que bate no papel.
     const carimbo = document.querySelector<SVGElement>(".marca-gigante .marca-blog");
     carimbo?.classList.add("a-carimbar");
@@ -319,7 +319,7 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
    * Os tempos da abertura da home (rodada 4, A1 e E3, E12), em segundos a partir do primeiro risco:
    *
    *  1. 0 a 0,28        o fio da aresta da lâmina de vidro se risca da esquerda para a direita (E3: o chão é a
-   *                     lâmina; com `chao="nicho"`, o fio do chão do nicho); com várias prateleiras (D82), uma
+   *                     lâmina; com `chao="nicho"`, o fio do chão do nicho); com várias prateleiras (D84), uma
    *                     linha por prateleira, e cada uma a mais empurra o resto 0,12s;
    *  2. 0,26 a 0,66     a lâmina aparece, crescendo do fio (com o nicho, ele se abre), e os abajures
    *                     (apagados) aparecem;
@@ -331,7 +331,7 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
    *  6. ~2,46           a abertura acaba: o quadro mais pesado (o CSS da abertura sai, a página acorda) fica
    *                     num momento parado (os cadernos abertos, nada correndo);
    *  7. ~2,62 a ~3,32   a assinatura embaixo de "Schutz", quando os cadernos começam a fechar (E12), e o
-   *                     carimbo do "blog" logo depois dela (D82);
+   *                     carimbo do "blog" logo depois dela (D84);
    *  8. ~2,62           as luzes acendem uma a uma; depois, só a onda de molas e, depois dela, só o brilho
    *                     (estante-moderna.ts, `sequencia`): acaba em ~4,9s.
    *
@@ -359,7 +359,7 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     const conta = cena.querySelector<HTMLElement>(".abertura-conta")!;
     const celular = matchMedia("(max-width: 640px)").matches;
     const W = innerWidth, H = innerHeight;
-    // Na home (D82), cada livro é um lugar com o abajur, a lâmina (no primeiro de cada prateleira) e o livro: quem
+    // Na home (D84), cada livro é um lugar com o abajur, a lâmina (no primeiro de cada prateleira) e o livro: quem
     // entra deslizando é o livro (`.tomba`), e as lâminas e os abajures aparecem antes, parados.
     const lugares = [...prat.querySelectorAll<HTMLElement>(".prateleira-livros > .livro-colecao")];
     const livros = lugares.map((l) => l.querySelector<HTMLElement>(":scope > .tomba") ?? l);
@@ -692,7 +692,7 @@ const CANETA = `<path class="corpo" d="M8.2 13.2 17.4 4a1.4 1.4 0 0 1 2 0l.6.6a1
     clip-path: inset(-60% 100% -60% -4%);
   }
 
-  /* E o carimbo do "blog" (D82), até a assinatura acabar. */
+  /* E o carimbo do "blog" (D84), até a assinatura acabar. */
   :global(:root[data-vai-chegar] .marca-gigante .marca-blog) {
     opacity: 0;
   }

@@ -442,7 +442,7 @@ function tratarEsc(e?: KeyboardEvent) {
   if (barra.estaAberto) return barra.fechar();
   const frente = janelas.daFrente;
   // O Terminal suspenso com o foco vem antes do app da janela da frente: o Esc dele recolhia antes um cartão do
-  // Código escondido atrás do Terminal (D82).
+  // Código escondido atrás do Terminal (D84).
   const terminal = prontos.get("terminal") as (App & { suspensoAberto?(): boolean; recolher?(): void }) | undefined;
   const noSuspenso = !!raiz.querySelector(".mac-suspenso")?.contains(document.activeElement);
   if (terminal?.suspensoAberto?.() && noSuspenso) return terminal.recolher?.();

@@ -95,7 +95,7 @@ const ordenadas = [...JAVA_LTS].sort((a, b) => a.version - b.version);
 for (const [i, lts] of ordenadas.entries()) {
   const anterior = ordenadas[i - 1]?.version;
   const futura = Boolean(lts.upcoming);
-  // Na caneca cheia, o texto fica em cima da cor (`sobre-cor`, desenho.css: o papel no escuro, D82); na próxima
+  // Na caneca cheia, o texto fica em cima da cor (`sobre-cor`, desenho.css: o papel no escuro, D84); na próxima
   // LTS, em linha tracejada, sobre o papel.
   const sobreCor = futura ? "" : " sobre-cor";
   const c = caneca(590, 330, {

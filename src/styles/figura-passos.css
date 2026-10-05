@@ -137,7 +137,7 @@
 }
 
 /* Dentro da barra: a margem do parágrafo da prosa (`.prose p`, mais forte que a classe sozinha) o deixava 8px
-   acima dos botões (D82). */
+   acima dos botões (D84). */
 .passos-barra .passos-contador {
   margin: 0;
   min-width: 7.5em;

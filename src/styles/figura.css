@@ -67,7 +67,7 @@
 }
 
 /* Em tela estreita, a figura não encolhe até a letra sumir: fica larga e rola de lado dentro do quadro,
-   como os blocos de código (a página não rola). O corte é pela largura da própria figura, e não da tela (D82):
+   como os blocos de código (a página não rola). O corte é pela largura da própria figura, e não da tela (D84):
    pela tela (700px), entre 701 e ~870px ela já ficava mais estreita que 720px e a letra menor que no celular. */
 .figura {
   container: figura / inline-size;

@@ -508,7 +508,7 @@ const recentes = (await getResumos()).slice(0, 6);
   /* ---------- nascer do campo e voltar para ele (G11) ---------- */
 
   const botoes = [...document.querySelectorAll<HTMLElement>("[data-busca-abrir]")];
-  // Quem abriu a busca (o botão clicado, como o "Buscar" da 404): ela nasce dele e o foco volta para ele (D82).
+  // Quem abriu a busca (o botão clicado, como o "Buscar" da 404): ela nasce dele e o foco volta para ele (D84).
   // Pelo atalho, o primeiro botão à vista (o campo do cabeçalho).
   let origem: HTMLElement | null = null;
   const aVista = (b: HTMLElement | null) => !!b && b.isConnected && b.getBoundingClientRect().width > 0;
@@ -823,7 +823,7 @@ const recentes = (await getResumos()).slice(0, 6);
     font-weight: 700;
     line-height: 1.25;
     letter-spacing: -0.02em;
-    /* Em 320 e 360px, "Buscar nos artigos…" não cabe: sai com reticências, e não cortado no meio (D82). */
+    /* Em 320 e 360px, "Buscar nos artigos…" não cabe: sai com reticências, e não cortado no meio (D84). */
     text-overflow: ellipsis;
     outline: none;
   }
