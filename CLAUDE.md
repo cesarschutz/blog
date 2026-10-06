@@ -140,7 +140,7 @@ Aprovada em 23/09/2026. Detalhes em `docs/decisoes.md`.
 
 - Astro 7, site estático, com TypeScript 6 estrito (o `astro check` ainda não aceita o TS 7)
 - Posts em Markdown (`.md`). `.mdx` só quando o post usa componente (figura, figura em passos, frase em
-  destaque, ícone de ferramenta, print)
+  destaque, ícone de ferramenta, print, tela de aplicativo)
 - Expressive Code para código (título, linhas destacadas, diff, Copiar). KaTeX só em post com fórmula
 - CSS próprio com tokens, sem Tailwind e sem framework de UI. Visual "papel e luz" (D61): tudo é
   papel (`.folha`, fichas de catálogo e papéis colados com fita), latão e luz sobre os livros, painéis
@@ -240,8 +240,9 @@ toda tarefa:
   descrição, TL;DR, abertura e voz, D71), o post em partes e a revisão em lote
   (`.claude/revisao-posts.md`)
 - `desenho`: a capa de cada post (o que desenhar, capa viva, regras técnicas, recortes, validação)
-- `figura`: figuras coloridas, figura em passos (D67), logos das ferramentas e print como evidência
-  (D58); a animação com play, em prova
+- `figura`: figuras coloridas, figura em passos (D67), logos das ferramentas, print como evidência
+  (D58) e tela de aplicativo como print, claro e escuro pelo tema do site (D86); a animação com play,
+  em prova
 - `lousa`: a frase em destaque e a `Lousa` das páginas em prova (D67)
 - `caneta`: a passada de caneta num post (a última etapa da skill `post`, ou sozinha: "passa a caneta
   no post X"), pelo guia `docs/marcacoes.md`

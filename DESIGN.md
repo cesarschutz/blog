@@ -853,7 +853,10 @@ Cada post tem uma ilustração, e os diagramas seguem o mesmo traço:
   (`src/marcas/`, no texto com `Ferramenta`, só como a regra de marca do dono permite, D64) e o print
   como evidência (`Evidencia`: borda, a linha com o que é e de onde, e o clique abre a origem; o print
   largo, de letra miúda, rola de lado no celular em vez de encolher, com `larga`, e pode começar pela
-  parte que importa, com `foco`, D66). Nem todo post tem todos.
+  parte que importa, com `foco`, D66). A tela de um aplicativo é sempre print, nunca desenho (`Tela`,
+  D86): a imagem do próprio projeto, numa versão clara e numa escura, a que aparece seguindo o tema do
+  site, com a moldura do print e o clique levando à seção da documentação que a explica; na coluna
+  estreita, rola de lado como o print largo. Nem todo post tem todos.
 
 **Técnica (D11, D35):** SVG **desenhado à mão**, em coordenadas, com classes e variáveis CSS (sem
 `id`, sem `defs` próprios e sem cor fixa). O tremor é o filtro SVG global `feTurbulence`

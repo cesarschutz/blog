@@ -74,7 +74,7 @@ src/styles/              base (folha, painel, papel colado, barra de rolagem, tr
 src/assets/              caveat-titulos.woff: a Caveat 600 só com as letras dos títulos à mão (C05)
 src/layouts/Base.astro   head, anti-piscada, cabeçalho, rodapé, busca e o nome de transição dos livros
 src/components/          peças das páginas (estante, sumário, busca, fichas, cabeçalho, rodapé…) e dos
-                         posts (Figura, FiguraPassos, FraseDestaque, Ferramenta, Evidencia, Tldr; a
+                         posts (Figura, FiguraPassos, FraseDestaque, Ferramenta, Evidencia, Tela, Tldr; a
                          Lousa e a Animacao só nas páginas em prova, D67); da D61: ColecaoHome (a
                          coleção da home em prateleiras, D84), Colecao e FileiraTopo (a fileira do alto
                          da página do livro), PontoDeLuz e Luz (abajures e luz), Fichario, NuvemTags e
@@ -117,7 +117,8 @@ src/animacoes/<slug>/    as animações com play em prova (só /animacoes-test/,
                          (<nome>.svg) e o movimento (<nome>.ts, GSAP)
 src/marcas/              logos das ferramentas (viewBox 100×100) e ícones genéricos, reaproveitados em
                          todo post; regras.json, a regra de marca de cada um (D64)
-src/evidencias/<slug>/   prints que provam algo do texto (PNG)
+src/evidencias/<slug>/   prints que provam algo do texto (PNG) e as telas de aplicativo, claro e
+                         escuro (<nome>-claro.svg e <nome>-escuro.svg, componente Tela, D86)
 public/posts/<slug>/     diagramas antigos e slides das apresentações (deck/)
 public/livros/fotos/     as fotos dos livros (D57): o deitado de cada livro e o aberto em branco
 

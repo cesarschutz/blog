@@ -100,14 +100,17 @@ antes de qualquer plano:
 - **Inventário visual** (regras dos desenhos no passo 5):
   - Para **cada imagem existente**, diga se ela vai ser **redesenhada no estilo** (vira SVG da casa:
     figura ou figura em passos), virar **print como evidência** (`Evidencia`, só se prova algo do texto
-    e dá para garantir que está certo) ou **sair** por ser só decorativa; diga por quê.
+    e dá para garantir que está certo), virar **tela de aplicativo** (`Tela`, D86: a tela de um app entra
+    como print do projeto, clara e escura, nunca como desenho) ou **sair** por ser só decorativa; diga
+    por quê.
   - A **capa** (sempre existe): o que ela vai mostrar e o **detalhe da capa viva** (o que se mexe no
     hover e com qual classe `mexe-*`).
   - Cada recurso escolhido pela tabela [Qual recurso para qual conteúdo](#qual-recurso-para-qual-conteúdo),
     com o trecho do texto que ele explica e o que o texto vai dizer para apresentá-lo: **figura**
     (diagrama ou gráfico colorido, parado ou com detalhe que se mexe; os tons de cada ator),
     **figura em passos** (de sequência ou de comparação, D67), **frase em destaque** (rara),
-    **print** (o que prova e de onde; tela com login, peça ao Cesar).
+    **print** (o que prova e de onde; tela com login, peça ao Cesar), **tela de aplicativo** (`Tela`:
+    as duas versões, clara e escura, e a seção da documentação do projeto que a explica).
   - Os **ícones das ferramentas**: quais, onde no texto (primeira menção e mais adiante) e em quais
     desenhos, e se algum logo precisa ser desenhado (os que existem estão em `src/marcas/`).
   - Nem todo post tem todos os tipos: proponha só o que o assunto pede.
@@ -469,6 +472,7 @@ trechos fica só no texto. Nem todo post tem todos os recursos, e todo desenho �
 | o sistema funcionando, algo que enche, esvazia ou se forma no tempo | figura em passos (um objeto que passa por etapas) ou figura com detalhes que se mexem; a animação com play (`Animacao`) fica em prova (D67) | skill `figura` |
 | a ferramenta de que o post fala | o ícone no texto (`Ferramenta`) e dentro dos desenhos (`data-marca`) | skill `figura` |
 | a prova de um número ou de um comportamento (documentação oficial, erro, painel) | print (`Evidencia`); com login, o Cesar tira | skill `figura` |
+| a tela de um aplicativo (um painel, uma aba, uma linha de status) | tela-print (`Tela`, D86): a imagem do próprio projeto, clara e escura pelo tema do site, nunca desenhada | skill `figura` |
 | uma frase que resume o post e merece ser lida duas vezes (rara) | `FraseDestaque` | skill `lousa` |
 | alerta, dica ou ressalva fora do fluxo do texto | aviso (`> [!DICA]`, `NOTA`, `IMPORTANTE`, `ATENCAO`, `CUIDADO`) | Recursos de Markdown |
 | um comentário curto ao lado do parágrafo | nota lateral (`texto[^chave]`) | Recursos de Markdown |

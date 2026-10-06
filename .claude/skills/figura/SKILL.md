@@ -1,16 +1,17 @@
 ---
 name: figura
-description: Desenha as figuras do corpo do post (D58) - diagramas e gráficos coloridos (componente Figura), com detalhes que se mexem; a figura em passos (FiguraPassos, D67), o formato de toda sequência, comparação no tempo ou sistema funcionando, que o leitor monta passo a passo; os logos das ferramentas (src/marcas, Ferramenta no texto, data-marca nas figuras); o print como evidência (Evidencia); e a animação com play (Animacao), em prova nas páginas de teste. Use ao criar, corrigir ou conferir qualquer desenho do corpo de um post que não seja a capa (skill desenho) nem uma lousa (skill lousa).
+description: Desenha as figuras do corpo do post (D58) - diagramas e gráficos coloridos (componente Figura), com detalhes que se mexem; a figura em passos (FiguraPassos, D67), o formato de toda sequência, comparação no tempo ou sistema funcionando, que o leitor monta passo a passo; os logos das ferramentas (src/marcas, Ferramenta no texto, data-marca nas figuras); o print como evidência (Evidencia) e a tela de aplicativo como print, claro e escuro pelo tema do site (Tela, D86); e a animação com play (Animacao), em prova nas páginas de teste. Use ao criar, corrigir ou conferir qualquer desenho do corpo de um post que não seja a capa (skill desenho) nem uma lousa (skill lousa).
 ---
 
-# Figura (diagramas, gráficos, figura em passos, logos, print e animação com play)
+# Figura (diagramas, gráficos, figura em passos, logos, print, tela de aplicativo e animação com play)
 
 **Antes de desenhar, leia `docs/estilo-desenho.md`** (a seção das figuras) e o `DESIGN.md`. Os
 tempos estão em `docs/movimento.md`. Classes em `src/styles/figura.css` (mais as da capa, de
 `desenho.css`); leitura dos arquivos em `src/lib/figuras.ts`. Exemplos nos posts
 `jackson-filtros-mascarando-cartao.mdx` (figura, figura em passos, print e ícones),
 `cronjob-vs-endpoint-sqs.mdx` (figuras com legenda e figura em passos), `dns-tipos-de-registro.mdx`
-(o modelo mais novo de figura em passos) e `criptografia-em-repouso-e-em-transito.mdx`.
+(o modelo mais novo de figura em passos), `criptografia-em-repouso-e-em-transito.mdx` e
+`claude-code-csr-lens.mdx` (as telas de aplicativo, D86).
 
 ## Regras de todo desenho do corpo
 
@@ -25,6 +26,10 @@ tempos estão em `docs/movimento.md`. Classes em `src/styles/figura.css` (mais a
 - **Ícones das ferramentas** sempre que couberem, no texto e dentro dos desenhos, espalhados pelo post
   e não só no começo, sem poluir.
 - **Print** só quando prova algo do texto e dá para garantir que está certo.
+- **Tela de aplicativo é print, nunca desenho (D86):** a tela de um app (um painel, uma aba, uma linha
+  de status) entra como print do próprio projeto, numa versão clara e numa escura, pelo componente
+  `Tela`, e a que aparece segue o tema do site. O desenho da casa fica para os diagramas (quem fala com
+  quem, a sequência, a comparação).
 
 ## Componentes no post
 
@@ -36,6 +41,9 @@ import FiguraPassos from "../../components/FiguraPassos.astro";
 import Ferramenta from "../../components/Ferramenta.astro";
 import Evidencia from "../../components/Evidencia.astro";
 import documentacao from "../../evidencias/<slug>/documentacao.png";
+import Tela from "../../components/Tela.astro";
+import visaoClaro from "../../evidencias/<slug>/visao-geral-claro.svg";
+import visaoEscuro from "../../evidencias/<slug>/visao-geral-escuro.svg";
 ```
 
 ```mdx
@@ -46,6 +54,8 @@ import documentacao from "../../evidencias/<slug>/documentacao.png";
 Numa Black Friday, a tabela do <Ferramenta nome="dynamodb" href="https://aws.amazon.com/dynamodb/">Amazon DynamoDB</Ferramenta>…
 
 <Evidencia imagem={documentacao} alt="…" fonte="https://docs.aws.amazon.com/…" legenda="Documentação do DynamoDB, boas práticas para a chave de partição" />
+
+<Tela claro={visaoClaro} escuro={visaoEscuro} alt="…" fonte="https://github.com/…/README#1-visão-geral" legenda="A Visão geral, no quarto turno da sessão de exemplo" />
 ```
 
 `legenda` é uma linha embaixo, dizendo como ler a figura (numa figura colorida, o que é cada cor).
@@ -371,11 +381,38 @@ painel.
 - **O que importa está à direita** (o painel ao lado da conversa): junto com `larga`, a prop `foco`,
   a fração da largura, contada da direita, que tem de caber na tela do celular (`foco={0.535}`). O
   print começa por essa parte, do tamanho em que ela cabe, e o resto fica rolando para a esquerda.
-- **Tela desenhada pelo próprio Cesar** (D66): os desenhos em SVG que ele fez de uma tela, com os
-  textos e os números de uma sessão real (os do `claude-code-kit`), entram como **print parado**: o
-  quadro final do SVG fotografado em PNG (`scripts/foto.mjs` numa página de apoio com o fundo do
-  cartão, esperando a animação terminar), a `legenda` dizendo que é desenho de uma sessão real e a
-  `fonte` apontando para a página onde o desenho mora. O SVG animado, de cor fixa, não entra no post.
+- **Tela de aplicativo** (D86): nunca pelo `Evidencia` com uma foto só, nem desenhada no estilo do
+  blog; é o componente `Tela`, abaixo. (A regra da D66, o desenho da tela como print parado em PNG, não
+  vale mais.)
+
+## Tela de aplicativo (`Tela`, D86)
+
+A tela de um aplicativo (um painel, uma aba, um detalhe, a linha de status) entra no post como
+**print do próprio projeto**, nas duas versões, clara e escura, e a que aparece segue o tema do site
+(o botão claro/escuro, não o do sistema). **Nunca como desenho da casa**: a tela desenhada é uma
+segunda versão do app, que envelhece e diverge; o desenho fica para os diagramas. Regra do Cesar de
+06/10/2026, nas partes 2 e 3 do post dos mods (`claude-code-csr-lens.mdx` e
+`claude-code-csr-lens-agentes.mdx`).
+
+- **As imagens:** `src/evidencias/<slug>/<nome>-claro.svg` e `<nome>-escuro.svg` (SVG ou PNG), as
+  mesmas que o projeto usa na documentação dele (as do CSR Lens vêm de `docs/arte/telas/` do
+  `claude-code-kit`, sem as bolinhas numeradas do README). Nunca invente nem monte a tela; se o projeto
+  não tem a versão escura, peça ao Cesar.
+- **No post:** `<Tela claro={…} escuro={…} alt="…" fonte="…" legenda="…" />`. O `alt` descreve o que a
+  tela mostra, com os nomes e os números que estão nela (não "print da aba"); a `fonte` é a seção da
+  documentação do projeto que explica a tela (o clique na imagem e o link da legenda levam a ela); a
+  `legenda` diz o que é, curto. Opcionais: `largura` (largura máxima, para uma tela estreita) e
+  `celular` (a largura na coluna estreita; o padrão é 720px, como o print largo; a linha de resumo, uma
+  faixa de 36px de altura, fica com a largura natural para a letra se ler).
+- **O texto apresenta a tela e diz o que olhar nela**, com os números do cenário ("a tela abaixo é a
+  sessão de exemplo no quarto turno: 52% do contexto, US$ 2,74…"), e aponta a seção da documentação
+  que a aprofunda ("em detalhe no README"), sem passar de dois links por parágrafo. Nada de tela solta.
+- **O componente cuida do resto:** a moldura do print (`Evidencia`), as duas imagens no HTML com
+  `loading="lazy"` (a do outro tema fica escondida até o tema mudar), a rolagem de lado na coluna
+  estreita (menos de 764px, como as figuras desde a D84), com o aviso "Arraste para o lado", e, no RSS,
+  só a versão clara com a legenda e o link.
+- **Conferir:** `npm run conferir -- <slug> --capturas` e as capturas de 1280 (claro e escuro) e 390: a
+  tela clara no tema claro, a escura no escuro, e nada estourando a largura no celular.
 
 ## Validar, revisar e conferir (obrigatório antes de mostrar ao Cesar)
 

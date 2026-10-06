@@ -76,7 +76,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D63 | Post detalhado (com TL;DR recolhível) ou resumo (com infográfico), combinado com o Cesar antes de escrever, e links ao longo do texto | em vigor; o Cesar revê no próximo post |
 | D64 | Marcas: todo logo só como a regra de marca do dono permite, conferida e registrada; ícones genéricos no lugar dos proibidos | decidido |
 | D65 | Os controles em prova nos posts: as opções marca-texto, caderno e post-it, cada uma numa lousa de passos, numa de comparação e numa animação | em prova, sem post desde 04/10/2026 (D67): só em `/prototipos/controles/` e `/animacoes-test/` |
-| D66 | O post dos mods ("Quanto custou cada agente?"): publicado direto, com as telas do cockpit em print parado, as tags Claude Code e Plugins e o print largo que rola de lado no celular | decidido e publicado; o Cesar revê no ar |
+| D66 | O post dos mods ("Quanto custou cada agente?"): publicado direto, com as telas do cockpit em print parado, as tags Claude Code e Plugins e o print largo que rola de lado no celular | decidido e publicado; o Cesar revê no ar; o print parado de tela desenhada deu lugar à tela-print da D86 |
 | D67 | Figura em passos: um formato só no lugar da lousa de passos, da lousa de comparação e da animação com play (abre inteira, cada passo soma, nada some, o leitor manda) | em prova em `/animacoes-test-2/`; o estilo marca-texto escolhido (`/animacoes-test-3/`) e já nos sete posts com peça em ordem |
 | D68 | Pedido do Cesar num post termina na pergunta "vira regra para os próximos posts?" | decidido |
 | D69 | O botão da busca do cabeçalho: o nome vem do texto "Buscar", sem `aria-label`, e a tecla desenhada fica fora do nome | decidido e publicado |
@@ -95,7 +95,8 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D82 | Post do You should know (`claude-code-you-should-know`): o mod embutido do Claude Code, detalhado, no livro IA, com 19 marcações da caneta e a apresentação no estilo do blog | decidido e publicado |
 | D83 | A parte 2 do post dos mods em dia com o cockpit 1.0.0 refeito (cliques, grafo, workflows, total geral): as telas novas, uma tela de workflow e a apresentação regerada | decidido e publicado |
 | D84 | A home da coleção em prateleiras de capas (7, 5 ou 4 livros por prateleira, sem lombada nem rolagem lateral), sem a linha de números, o nome menor com o "blog" carimbado sobre o Z, o nome do rodapé numa linha no celular, a revisão geral das telas e a faxina do código e dos documentos | decidido pelo Claude a pedido do Cesar; ele revê no ar |
-| D85 | O post dos mods em três partes, para o CSR Lens (o csr-cockpit renomeado): a parte 2 nova, para quem está começando, e a parte 3 sobre os subagentes; as telas do painel desenhadas no lugar dos prints | plano aprovado pelo Cesar; ele revisa e publica |
+| D85 | O post dos mods em três partes, para o CSR Lens (o csr-cockpit renomeado): a parte 2 nova, para quem está começando, e a parte 3 sobre os subagentes; as telas do painel desenhadas no lugar dos prints | plano aprovado pelo Cesar; ele revisa e publica; as telas desenhadas deram lugar aos prints do README na D86 |
+| D86 | Telas de aplicativo em post são prints do projeto, claro e escuro pelo tema do site (componente `Tela`); desenhos só para diagramas | decidido pelo Cesar; ele revê e publica |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -3716,3 +3717,55 @@ nada muda.
   as partes 2 e 3 ganham uma; a parte 2 ficou com ~3.100 palavras (como a anterior), um pouco acima do
   teto de ~3.000.
 
+
+## D86 · Telas de aplicativo em post são prints do projeto, claro e escuro pelo tema do site (06/10/2026)
+
+- **Data:** 06/10/2026 · **Status:** decidido pelo Cesar; ele revê e publica.
+- **Pedido do Cesar:** nas partes 2 e 3 do post dos mods (D85), as telas do CSR Lens desenhadas no estilo
+  do blog saem e entram as telas do README do repositório, claro e escuro; mais telas (todas as abas e os
+  detalhes); e o README do CSR Lens bem visível, com um link por seção.
+- **Decisão:** **tela de aplicativo em post é print do próprio projeto**, nas duas versões, clara e escura,
+  e a que aparece segue o tema do site (o botão claro/escuro), pelo componente `Tela`
+  (`src/components/Tela.astro`): a moldura do print (`Evidencia`), a legenda dizendo o que é e o clique
+  levando à seção da documentação do projeto que explica a tela. **Desenho da casa só para diagramas**
+  (quem fala com quem, a sequência, a comparação). A regra da D66, o desenho de uma tela como print parado
+  em PNG, não vale mais.
+- **Motivo:** a tela desenhada é uma segunda versão do app, que envelhece e pode divergir do que o leitor
+  vê; o print do projeto (no CSR Lens, as telas que o próprio mod desenha para o README, com uma sessão
+  encenada) é a verdade, e o claro e escuro acompanha o site. O detalhe de cada tela fica no README, e o
+  post fica no essencial, com "em detalhe no README" em cada seção e um aviso `> [!DICA]` no começo.
+- **Escolhas feitas para não parar** (voltam atrás com pouco trabalho):
+  - **A rolagem de lado no celular** segue a regra do print largo (D66) do jeito da D84: pela largura da
+    própria figura (menos de 764px), a imagem fica com 720px e rola dentro da moldura, com o aviso
+    "Arraste para o lado". Sem isso, uma tela de 890px vira 358px no celular e a letra some. A linha de
+    resumo, uma faixa de 1173×36, fica com a largura natural (`celular={1173}`): com 720px a letra teria
+    8px.
+  - **A figura `caminho-recorta` saiu:** era uma tela desenhada (dois painéis do app), não um diagrama;
+    a comparação que ela fazia (o mesmo agente pelo turno e pela aba Agentes) está nas telas do agente
+    inteiro e do detalhe do turno 2, que vieram do README.
+  - **A Visão geral entrou na seção dela** ("A Visão geral"), onde a lista explica os seis blocos, e não em
+    "O que o painel mostra", que ficou só com a tabela das abas e a origem das telas.
+  - **O detalhe de um turno aparece nas duas partes** (na 2, pela aba Turnos; na 3, pelo caminho que
+    recorta as rodadas), cada parte com a cópia em `src/evidencias/<slug>/`.
+  - **No RSS**, sem o CSS do site, a `Tela` sai só com a versão clara, a legenda e o link.
+  - **Sem `updated`** no frontmatter: o conteúdo é o mesmo, mudou o visual das telas; o Cesar decide.
+- **Caneta:** nenhuma marcação apontava para as figuras que saíram; as 27 da parte 2 e as 23 da parte 3
+  ficaram como estavam, sem marcas novas (a proposta de marca nova precisa do OK dele).
+- **Tamanho:** a parte 2 foi de ~3.050 para ~3.400 palavras (fora as tabelas) e a parte 3 de ~2.800 para
+  ~3.300, com as frases que apresentam as 15 telas e o aviso do README; as duas acima do teto de ~3.000
+  do formato detalhado. Se ele quiser enxugar, o que sai primeiro são as listas de limites, que repetem o
+  README.
+- **Conferido:** `escrita` ("Escrita ok", com os dois avisos de descrição de 165–167 caracteres que já
+  existiam), `check` (0 erros), `validar.mjs` (79 de 79), `contraste` (0 falhas), o detector do Impeccable
+  nos três arquivos (zero achados), `conferir --capturas` nas duas partes ("Tudo ok" nas 10 combinações e
+  no movimento reduzido) e as fotos das telas em 1280 claro e escuro e em 390 (a clara no tema claro, a
+  escura no escuro, a rolagem de lado no celular). `build` (sem erro; os avisos "has no <html> element" do Pagefind são das páginas de redirecionamento,
+  de sempre) e `links` (111 páginas, 6.808 links internos e 25 redirecionamentos; nenhum quebrado). No
+  `dist/rss.xml`, cada tela sai só com a versão clara.
+- **Mudado:** `src/components/Tela.astro` (a rolagem de lado, `celular`, o RSS), os dois posts, os SVGs
+  das telas em `src/evidencias/claude-code-csr-lens/` (8 telas, 16 arquivos) e
+  `src/evidencias/claude-code-csr-lens-agentes/` (7 telas, 14 arquivos), as figuras que saíram
+  (`painel-visao-geral`, `linha-de-resumo`, `aba-contexto` e `arvore-ou-diffs` da parte 2;
+  `quem-chamou-quem` e `caminho-recorta` da parte 3), a skill `figura` (a seção "Tela de aplicativo"), a
+  skill `post` (a tabela de recursos e o inventário visual), o `DESIGN.md`, o `CLAUDE.md`, `docs/mapa.md`,
+  `docs/estado.md`, `.claude/revisao-posts.md` e este registro.

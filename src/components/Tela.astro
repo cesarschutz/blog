@@ -1,0 +1,137 @@
+---
+/**
+ * A tela de um aplicativo como print, nos dois temas (D86): a mesma imagem do README do projeto,
+ * numa versão clara e numa escura, e a que aparece segue o tema do site (o botão claro/escuro), não
+ * o do sistema. Com a moldura do print (`Evidencia`), a legenda dizendo o que é e o clique levando à
+ * seção do README que explica a tela em detalhe. Tela de aplicativo em post é sempre um print assim,
+ * nunca um desenho (D86): o desenho fica para os diagramas.
+ *
+ *   import visaoClaro from "../../evidencias/<slug>/visao-geral-claro.svg";
+ *   import visaoEscuro from "../../evidencias/<slug>/visao-geral-escuro.svg";
+ *   <Tela claro={visaoClaro} escuro={visaoEscuro} alt="…" fonte="https://github.com/…#1-visão-geral" legenda="A Visão geral" />
+ *
+ * As duas imagens vão no HTML, com `loading="lazy"`: a do outro tema fica com `display: none` e o
+ * navegador não a busca até o tema mudar.
+ *
+ * Toda tela de aplicativo é larga e de letra miúda, então ela segue a regra do print largo (D66) do
+ * jeito da D84: quando a coluna fica estreita (menos de 764px), a imagem fica com 720px (`celular`
+ * troca a medida: a linha de resumo, uma faixa de 36px de altura, fica com a largura natural) e rola de
+ * lado dentro da moldura, com o aviso "Arraste para o lado", em vez de encolher até a letra sumir.
+ * No RSS, sem o CSS do site, sai só a versão clara, com a legenda e o link.
+ */
+import type { ImageMetadata } from "astro";
+
+interface Props {
+  claro: ImageMetadata;
+  escuro: ImageMetadata;
+  /** O que a tela mostra, em uma frase (texto alternativo). */
+  alt: string;
+  /** A seção do README que explica a tela. */
+  fonte: string;
+  /** O que é, curto. */
+  legenda: string;
+  /** Largura máxima, em px, para telas estreitas. */
+  largura?: number;
+  /** A largura da imagem na coluna estreita, em px (padrão 720, como o print largo). */
+  celular?: number;
+}
+
+const { claro, escuro, alt, fonte, legenda, largura, celular = 720 } = Astro.props;
+const site = new URL(fonte).hostname.replace(/^www\./, "");
+const estilo = [largura ? `--largura-tela: ${largura}px` : "", celular !== 720 ? `--largura-celular: ${celular}px` : ""].filter(Boolean).join("; ") || undefined;
+const rss = Astro.locals.rss;
+---
+
+{
+  rss ? (
+    <p>
+      <img src={claro.src} width={claro.width} height={claro.height} alt={alt} />
+      <br />
+      <em>{legenda}</em> · <a href={fonte}>{site}</a>
+    </p>
+  ) : (
+    <figure class="tela" style={estilo}>
+      <a class="tela-imagem" href={fonte} target="_blank" rel="noopener">
+        <img class="tela-clara" src={claro.src} width={claro.width} height={claro.height} alt={alt} loading="lazy" decoding="async" />
+        <img class="tela-escura" src={escuro.src} width={escuro.width} height={escuro.height} alt={alt} loading="lazy" decoding="async" />
+      </a>
+      <p class="dica-rolar" aria-hidden="true">Arraste para o lado para ver a tela inteira.</p>
+      <figcaption>
+        {legenda} · <a href={fonte} target="_blank" rel="noopener">{site}</a>
+      </figcaption>
+    </figure>
+  )
+}
+
+<style>
+  .tela {
+    margin: 1.8em auto;
+    max-width: var(--largura-tela, 100%);
+    container: tela / inline-size;
+  }
+
+  .tela-imagem {
+    display: block;
+    overflow: hidden;
+    border: 1px solid var(--rule);
+    border-radius: var(--raio-painel);
+    box-shadow: 0 1px 0 var(--rule);
+  }
+
+  .tela-imagem img {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .tela-escura {
+    display: none !important;
+  }
+
+  :global(:root[data-theme="dark"]) .tela-clara {
+    display: none !important;
+  }
+
+  :global(:root[data-theme="dark"]) .tela-escura {
+    display: block !important;
+  }
+
+  figcaption {
+    margin-top: 8px;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+
+  figcaption a {
+    color: inherit;
+  }
+
+  .dica-rolar {
+    display: none;
+  }
+
+  /* Na coluna estreita, a tela não encolhe até a letra sumir: fica larga e rola de lado dentro da
+     moldura, como as figuras e o print largo (D66, D84). O corte é pela largura da própria figura. */
+  @container tela (max-width: 764px) {
+    .tela-imagem {
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+    }
+
+    .tela-imagem img {
+      width: var(--largura-celular, 720px);
+      max-width: none;
+    }
+
+    .dica-rolar {
+      display: block;
+      margin: 8px 0 0;
+      font-family: var(--font-ui);
+      font-size: 13px;
+      color: var(--ink-2);
+    }
+  }
+</style>

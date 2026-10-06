@@ -24,8 +24,11 @@ das rodadas fechadas e o diário que este painel tinha até 04/10/2026 (`estado-
   andamento: o próximo trabalho é post novo (skill `post`) e a revisão do Cesar no ar (pergunta 000).
 - **Em 06/10/2026 (D85, ainda não publicado):** o post dos mods virou três partes para o CSR Lens (o
   csr-cockpit renomeado): a parte 1 ajustada, a parte 2 nova (`claude-code-csr-lens`, com o
-  redirecionamento da URL antiga) e a parte 3 nova (`claude-code-csr-lens-agentes`); os prints saíram e as
-  telas do painel são desenhos. O Cesar revisa e publica.
+  redirecionamento da URL antiga) e a parte 3 nova (`claude-code-csr-lens-agentes`); os prints do cockpit
+  saíram. **Na D86 (06/10/2026)**, as telas do painel passaram a ser os prints do README do CSR Lens,
+  claro e escuro pelo tema do site (componente `Tela`, 8 telas na parte 2 e 7 na parte 3); os desenhos
+  ficaram só para os diagramas, e cada seção aponta a parte do README que a detalha. O Cesar revisa e
+  publica.
 
 ## Como ver
 
@@ -66,6 +69,7 @@ O índice completo, com o que vale hoje de cada decisão, está no alto do `docs
 | D78 | a coleção de 13 livros, a contracapa e As capas |
 | D79–D83 | posts: a parte 2 dos mods em dia com o cockpit (D79, D80 e, de outra sessão, D83), DNS (D81) e You should know (D82, de outra sessão) |
 | D84 | a home em prateleiras de capas, o nome com o "blog" carimbado, o rodapé numa linha no celular, a revisão geral das telas e a faxina do código e dos documentos |
+| D85–D86 | o post dos mods em três partes, para o CSR Lens; as telas de aplicativo em post são prints do projeto, claro e escuro pelo tema do site (componente `Tela`), e os desenhos ficam para os diagramas |
 
 ## Próximos passos
 

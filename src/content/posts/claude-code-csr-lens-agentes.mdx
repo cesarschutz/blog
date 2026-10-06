@@ -16,13 +16,31 @@ draft: false
 
 import Figura from "../../components/Figura.astro";
 import FiguraPassos from "../../components/FiguraPassos.astro";
+import Tela from "../../components/Tela.astro";
+import agentesClaro from "../../evidencias/claude-code-csr-lens-agentes/agentes-claro.svg";
+import agentesEscuro from "../../evidencias/claude-code-csr-lens-agentes/agentes-escuro.svg";
+import fichaAgenteClaro from "../../evidencias/claude-code-csr-lens-agentes/ficha-agente-claro.svg";
+import fichaAgenteEscuro from "../../evidencias/claude-code-csr-lens-agentes/ficha-agente-escuro.svg";
+import agenteRodadasClaro from "../../evidencias/claude-code-csr-lens-agentes/agente-rodadas-claro.svg";
+import agenteRodadasEscuro from "../../evidencias/claude-code-csr-lens-agentes/agente-rodadas-escuro.svg";
+import rodadaClaro from "../../evidencias/claude-code-csr-lens-agentes/rodada-claro.svg";
+import rodadaEscuro from "../../evidencias/claude-code-csr-lens-agentes/rodada-escuro.svg";
+import fichaTurnoClaro from "../../evidencias/claude-code-csr-lens-agentes/ficha-turno-claro.svg";
+import fichaTurnoEscuro from "../../evidencias/claude-code-csr-lens-agentes/ficha-turno-escuro.svg";
+import agenteParandoClaro from "../../evidencias/claude-code-csr-lens-agentes/agente-parando-claro.svg";
+import agenteParandoEscuro from "../../evidencias/claude-code-csr-lens-agentes/agente-parando-escuro.svg";
+import agentesWorkflowClaro from "../../evidencias/claude-code-csr-lens-agentes/agentes-workflow-claro.svg";
+import agentesWorkflowEscuro from "../../evidencias/claude-code-csr-lens-agentes/agentes-workflow-escuro.svg";
 
 Uma sessão do Claude Code pode ter vários **subagentes** trabalhando ao mesmo tempo: ajudantes que o Claude Code cria para uma parte da tarefa, cada um com o próprio contexto e o próprio gasto. A conversa principal :grifo[mostra só o resumo que volta] de cada um. Quem chamou quem, o que eles conversaram entre si, quantas vezes cada um rodou e quanto cada um custou ficam fora da tela, e é isso que falta para entender uma sessão com agentes.
 
-Este post mostra como o **CSR Lens**, um mod do Claude Code com um painel ao lado da conversa, desenha essa parte da sessão: de onde vêm os agentes, o grafo de quem chamou quem, a linha do tempo, o detalhe de um agente, as rodadas, o caminho que recorta o que se vê, o custo repartido, o botão Parar agente e os agentes de um workflow. No fim, como se testa um mod e os limites da API de mods. É para quem já usa agentes ou quer começar; os exemplos vêm de uma sessão encenada, com números inventados e o desenho do mod.
+Este post mostra como o **CSR Lens**, um mod do Claude Code com um painel ao lado da conversa, desenha essa parte da sessão: de onde vêm os agentes, o grafo de quem chamou quem, a linha do tempo, o detalhe de um agente, as rodadas, o caminho que recorta o que se vê, o custo repartido, o botão Parar agente e os agentes de um workflow. No fim, como se testa um mod e os limites da API de mods. É para quem já usa agentes ou quer começar; as telas são as do README do CSR Lens, que o próprio mod desenha a partir de uma sessão encenada no claude-code-kit (4 turnos, 10 agentes, números de exemplo), e a clara ou a escura acompanha o tema deste site.
 
 > [!NOTA] Parte 3 de 3
 > A [parte 1](/posts/claude-code-do-claude-md-ao-mod/) explica o que é um mod: um plugin do Claude Code cujo código roda dentro do programa, reage aos eventos da sessão e desenha na interface. A [parte 2](/posts/claude-code-csr-lens/) mostra o CSR Lens para quem está começando: os dois comandos para instalar, o `/lens` que abre o painel, a Visão geral, a linha de resumo acima do prompt e as abas Contexto, Turnos, Diffs, Árvore e Inventário. Esta parte é só sobre a aba Agentes e o que ela ensina sobre os subagentes.
+
+> [!DICA] O README explica cada tela
+> O [README do CSR Lens](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens), no repositório [claude-code-kit](https://github.com/cesarschutz/claude-code-kit), explica cada aba e cada tela em detalhe, com as mesmas telas deste post numeradas item a item. Este post fica no essencial; "em detalhe no README", em cada seção, e o clique numa tela levam à parte que a aprofunda.
 
 ## Subagentes e de onde eles vêm
 
@@ -37,22 +55,27 @@ A **definição** de um agente (o papel, o modelo, as ferramentas) é um arquivo
 | De plugin | a pasta `agents/` do plugin | onde o plugin está habilitado | azul |
 | Embutido | dentro do Claude Code (Explore, Plan, general-purpose) | sempre | cinza |
 
-A origem é a cor da borda do robô e do tipo em todo o painel. Na Visão geral e no fim da aba Agentes ficam os **agentes disponíveis**: um cartão por agente instalado, global, do projeto ou de plugin, desde o começo da sessão, mesmo os que ninguém chamou. O que ninguém chamou :ondulado[fica apagado], de borda tracejada; o chamado acende, com quantas vezes e há quanto tempo, e o clique abre a execução mais recente. É o jeito de ver, numa olhada, que agentes você tem e quais o Claude usou de fato.
+A origem é a cor da borda do robô e do tipo em todo o painel. Na Visão geral e no fim da aba Agentes ficam os **agentes disponíveis**: um cartão por agente instalado, global, do projeto ou de plugin, desde o começo da sessão, mesmo os que ninguém chamou. O que ninguém chamou :ondulado[fica apagado], de borda tracejada; o chamado acende, com quantas vezes e há quanto tempo, e o clique abre a execução mais recente. É o jeito de ver, numa olhada, que agentes você tem e quais o Claude usou de fato (na Visão geral da [parte 2](/posts/claude-code-csr-lens/#a-visão-geral), o `code-reviewer` global está apagado, e o `conferente-de-readme` do projeto e o `revisor` de plugin, acesos; a origem, em detalhe no [README](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#2-agentes)).
 
 ## Quem chamou quem: o grafo
 
-A aba Agentes abre com as contagens (quantos rodam, quantos terminaram, quantos falharam) e o grafo **Quem chamou quem**. A conversa principal é um cérebro; cada agente, um robô, com a tarefa e, menor embaixo, o tipo. O grafo tem duas formas e :ondulado[escolhe sozinho]: **radial**, com poucos agentes todos criados pela conversa principal (o cérebro no centro e os robôs em volta), e **árvore**, quando há agentes criando agentes ou muitos agentes, com um nível por coluna:
+A aba Agentes abre com as contagens (quantos rodam, quantos terminaram, quantos falharam) e o grafo **Quem chamou quem**. A conversa principal é um cérebro; cada agente, um robô, com a tarefa e, menor embaixo, o tipo. O grafo tem duas formas e :ondulado[escolhe sozinho]: **radial**, com poucos agentes todos criados pela conversa principal (o cérebro no centro e os robôs em volta), e **árvore**, quando há agentes criando agentes ou muitos agentes, com um nível por coluna.
 
-<Figura
-  figura="claude-code-csr-lens-agentes/quem-chamou-quem"
-  legenda="O cérebro é a conversa principal e cada robô, um agente. Os fios dizem quem criou quem (✓ o resultado voltou, … ainda trabalhando); as curvas roxas tracejadas são os recados, com quantos foram. A borda do robô é a origem: azul de plugin, âmbar do projeto; sem cor, embutido (um global teria a borda roxa)."
+Na tela, a aba inteira na sessão de exemplo: 1 agente rodando e 9 concluídos, o grafo em árvore (três agentes criados por `Coordenar a leitura`), a linha do tempo, com uma linha por rodada, e os cartões (em detalhe no [README](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#2-agentes)):
+
+<Tela
+  claro={agentesClaro}
+  escuro={agentesEscuro}
+  alt="A aba Agentes do CSR Lens numa sessão de exemplo: as contagens, 1 rodando e 9 ok; o grafo Quem chamou quem em árvore, com a conversa principal pensando à esquerda e dez agentes: Revisar o formato.ts (exemplos:revisor, de plugin), Coordenar a leitura (general-purpose), que criou Ler os testes, Ler os tipos e Contar os SVGs, Mapear os hooks, Contar seções do README e Procurar a Visão geral (conferente-de-readme, do projeto), Ler tudo devagar e Ler tudo devagar 2, ainda rodando; as curvas tracejadas dos recados, 2 entre a conversa principal e o revisor, 1 entre ela e o coordenador e 1 entre os dois agentes; a linha do tempo desde as 10:20, com a conversa principal no alto, que pensou 2 minutos e 14 segundos, e uma linha por rodada; e os cartões Rodando (Ler tudo devagar 2, Haiku 4.5, 38 segundos, US$ 0,30) e Concluídos (Ler tudo devagar, parado antes de terminar, 56 segundos, US$ 0,41)."
+  fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#2-agentes"
+  legenda="A aba Agentes: as contagens, o grafo, a linha do tempo e os cartões"
 />
 
 No grafo, três coisas se leem de uma vez:
 
 - **O estado é a cor do robô:** azul enquanto roda (ele balança, digita e pisca a antena), verde e sorrindo quando termina, vermelho e caído de olhos em X quando falha. Enquanto a conversa principal trabalha, o cérebro solta ondas e mostra "pensando…".
 - **A origem é a borda**, nas cores da tabela acima.
-- **Os fios e os recados.** O fio cinza vai de quem criou a quem foi criado, com um selo no meio: `↓ …` a tarefa foi e ele trabalha, `↓ ✓` o resultado voltou, `↓ ✕` falhou. Os **recados** são as mensagens que a conversa principal e os agentes trocam pela ferramenta [`SendMessage`](https://code.claude.com/docs/en/sub-agents#resume-subagents): curvas roxas tracejadas com quantos foram; ida e volta entre os mesmos dois viram uma curva só, com seta nas duas pontas. Um recado que não chegou a ninguém aparece :nota[em vermelho]{texto="recado perdido"}, com `✕1` no agente que mandou. Passando o mouse numa linha, aparece o que passou por ela.
+- **Os fios e os recados.** O fio cinza vai de quem criou a quem foi criado, com um selo no meio: `↓ …` a tarefa foi e ele trabalha, `↓ ✓` o resultado voltou, `↓ ✕` falhou. Os **recados** são as mensagens que a conversa principal e os agentes trocam pela ferramenta [`SendMessage`](https://code.claude.com/docs/en/sub-agents#resume-subagents): curvas roxas tracejadas com quantos foram (na tela, `✉ 2` entre a conversa principal e `Revisar o formato.ts`); ida e volta entre os mesmos dois viram uma curva só, com seta nas duas pontas. Um recado que não chegou a ninguém aparece :nota[em vermelho]{texto="recado perdido"}, com `✕1` no agente que mandou. Passando o mouse numa linha, aparece o que passou por ela.
 
 Os controles ajudam numa sessão cheia: **Ampliar** transforma a aba numa vista só do grafo, com até :circulo[40 agentes]; **Zoom** aumenta o desenho inteiro; **Mostrar** Todos, Rodando ou Com falha apaga os outros agentes para destacar os que importam agora. Clicar num agente abre o detalhe dele.
 
@@ -60,11 +83,19 @@ Os controles ajudam numa sessão cheia: **Ampliar** transforma a aba numa vista 
 
 Abaixo do grafo, a **linha do tempo** põe os agentes mais recentes na mesma régua, uma barra do começo ao fim de cada um, e no alto a linha da conversa principal, com um trecho para cada vez que ela pensou e o total. O título diz quando a sessão começou. É onde se vê quem rodou em paralelo, quem demorou e quanto tempo a conversa principal :grifo[passou pensando entre um agente e outro]. Com o mouse no nome, o agente acende no grafo; o clique abre o agente.
 
-Um agente que rodou mais de uma vez tem **uma linha por rodada**, cada uma no horário dela. As rodadas têm uma seção própria mais abaixo.
+Um agente que rodou mais de uma vez tem **uma linha por rodada**, cada uma no horário dela (na tela acima, `Revisar o formato.ts` e `Coordenar a leitura` têm duas). As rodadas têm uma seção própria mais abaixo.
 
 ## O detalhe de um agente
 
-Clicar num robô, num nome da linha do tempo ou em **Ver detalhes** num cartão abre o detalhe do agente. No alto, o **Voltar** e o **caminho** por onde você chegou; embaixo, **Reler mensagens**, porque o que o agente escreveu vem da transcrição dele, lida ao abrir o detalhe e de novo no botão, :ondulado[não ao vivo]. Enquanto ele roda, ao lado fica o **Parar agente**.
+Clicar num robô, num nome da linha do tempo ou em **Ver detalhes** num cartão abre o detalhe do agente. No alto, o **Voltar** e o **caminho** por onde você chegou; embaixo, **Reler mensagens**, porque o que o agente escreveu vem da transcrição dele, lida ao abrir o detalhe e de novo no botão, :ondulado[não ao vivo]. Enquanto ele roda, ao lado fica o **Parar agente**. Na tela, `Ler os testes`, um Explore criado por `Coordenar a leitura` na rodada 1 dele, como diz o caminho: 6,7 segundos, US\$ 0,08 e duas chamadas (em detalhe no [README](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#o-detalhe-de-um-agente)):
+
+<Tela
+  claro={fichaAgenteClaro}
+  escuro={fichaAgenteEscuro}
+  alt="O detalhe do agente Ler os testes no CSR Lens: o Voltar e o caminho Agentes, Coordenar a leitura, Rodada 1, Ler os testes; o botão Reler mensagens; o cabeçalho, concluído, Explore criado por Coordenar a leitura, das 10:20:49 às 10:20:56, com os quadrinhos modelo Haiku 4.5, duração 6,7 segundos, custo US$ 0,08, contexto 36,9k, 2 chamadas, entrada 36,5k, cache lido 26,3k e saída 367; as ferramentas Bash e SubagentHandback, uma vez cada; o pedido que o agente recebeu, inteiro; as duas últimas chamadas, um ls e a entrega do relatório; e a resposta, com a lista dos 12 arquivos de plugins/csr-lens/tests."
+  fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#o-detalhe-de-um-agente"
+  legenda="O detalhe de um agente: o caminho, os quadrinhos, as ferramentas, o pedido, as chamadas e a resposta"
+/>
 
 Depois vêm o cabeçalho (o nome, o estado, o tipo, quem o criou, o horário de começo e fim e os quadrinhos com o modelo, a duração, o custo, o contexto, as chamadas e os tokens de entrada, do cache e de saída), **as ferramentas** que ele chamou em barras, **o pedido** que recebeu, inteiro, **as últimas chamadas**, todas em ordem (clicar numa abre a entrada e a saída dela), e **a resposta**, formatada. Quando ele criou agentes ou trocou recados, entra também o grafo **Agentes que ele criou e com quem conversou**, com ele num anel: ficam acesos ele, quem o criou, os que ele criou e os que trocaram recado com ele; os outros nós, que só ligam a árvore até a conversa principal, ficam fracos. Embaixo vêm os cartões desses agentes, a lista dos recados que ele mandou e recebeu e, num agente instalado chamado mais de uma vez, **Outras execuções** do mesmo agente.
 
@@ -95,24 +126,49 @@ Cada tela do Lens mostra as rodadas de um jeito, e a regra é não misturar o qu
 - **Na linha do tempo**, uma barra por rodada, no horário dela.
 - **Uma rodada é do turno** em que a conversa principal (ou um agente daquele mesmo turno) :nota[a acordou]{texto="quem acorda define o turno"}. Dois agentes antigos trocando recados enquanto você faz outro pedido não entram nesse pedido: aparecem dentro do agente que acordou o outro.
 
+Nas telas, o agente da figura, `Coordenar a leitura`, aberto pela aba Agentes: o agente inteiro soma as duas rodadas (47 segundos, US\$ 0,27) e lista cada uma, com o botão Ver rodada (em detalhe no [README](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#as-rodadas-de-um-agente)):
+
+<Tela
+  claro={agenteRodadasClaro}
+  escuro={agenteRodadasEscuro}
+  alt="O detalhe do agente Coordenar a leitura no CSR Lens, com duas rodadas: o caminho Agentes, Coordenar a leitura; o cabeçalho, concluído, general-purpose, em segundo plano, das 10:20:47 às 10:22:07, 2 rodadas; os totais nos quadrinhos (Haiku 4.5, 2 rodadas, 47 segundos, US$ 0,27, contexto 55k, 7 chamadas, entrada 104,9k, cache lido 75,5k, saída 2k); e a seção Rodadas, com a rodada 1 (das 10:20:47 às 10:21:18, 31 segundos, US$ 0,19, 3 chamadas, criada pela conversa principal) e a rodada 2 (das 10:21:51 às 10:22:07, 16 segundos, US$ 0,08, 4 chamadas, acordada pela conversa principal), cada uma com o começo do pedido ou do recado, o começo da resposta e o botão Ver rodada."
+  fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#as-rodadas-de-um-agente"
+  legenda="O agente inteiro: os totais das duas rodadas e a lista delas"
+/>
+
+E a rodada 2 aberta: só os números dela (16 segundos, US\$ 0,08), o recado que a acordou, o grafo com o agente num anel e o Explore que ela criou, os três recados trocados e a resposta; `‹ Rodada 1` e **Agente inteiro** andam entre as telas:
+
+<Tela
+  claro={rodadaClaro}
+  escuro={rodadaEscuro}
+  alt="A tela da rodada 2 de 2 do agente Coordenar a leitura no CSR Lens: o caminho Agentes, Coordenar a leitura, Rodada 2; os botões Rodada 1, Agente inteiro e Reler mensagens; o cabeçalho, concluída, acordada pela conversa principal, das 10:21:51 às 10:22:07, com os quadrinhos só da rodada (Haiku 4.5, 16 segundos, US$ 0,08, contexto 55k, 4 chamadas, entrada 54,6k, cache lido 39,3k, saída 1,1k); o recado que a acordou, inteiro; o grafo dos agentes que ela criou e com quem conversou, com o coordenador num anel, o Explore Contar os SVGs e o revisor Revisar o formato.ts, e os cartões dos dois; os 3 recados da rodada, o da conversa principal, a pergunta ao revisor e a resposta dele; as 4 ferramentas e as 4 chamadas; e a resposta, com os 30 SVGs contados e os cinco pontos do revisor."
+  fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#as-rodadas-de-um-agente"
+  legenda="A tela de uma rodada: só os números, o recado, o grafo e as chamadas dela"
+/>
+
 :::exclamacao
 Dois limites vêm da API: o que o agente escreveu na transcrição só aparece na rodada mais recente, porque a transcrição não separa as rodadas; e os agentes de um workflow não ganham rodadas.
 :::
 
 ## O caminho e o Voltar
 
-O mesmo agente aberto por caminhos diferentes mostra coisas diferentes, e é o caminho, na linha logo abaixo das abas, :grifo[que diz de onde você veio]: por exemplo, `Visão geral › Turno 2 › Coordenar a leitura` ou `Agentes › Coordenar a leitura`. Cada parte é um botão que leva àquele nível; a última, na cor da aba, é onde você está. **O caminho recorta o detalhe**: entrando no agente por um turno, ele lista só as rodadas daquele turno; por outro agente, só as dele; pela aba Agentes, a Visão geral, o grafo ou a linha do tempo, todas. Uma linha diz o recorte e oferece o resto:
+O mesmo agente aberto por caminhos diferentes mostra coisas diferentes, e é o caminho, na linha logo abaixo das abas, :grifo[que diz de onde você veio]: por exemplo, `Visão geral › Turno 2 › Coordenar a leitura` ou `Agentes › Coordenar a leitura`. Cada parte é um botão que leva àquele nível; a última, na cor da aba, é onde você está. **O caminho recorta o detalhe**: entrando no agente por um turno, ele lista só as rodadas daquele turno; por outro agente, só as dele; pela aba Agentes, a Visão geral, o grafo ou a linha do tempo, todas. Uma linha diz o recorte (`Rodadas deste turno: 1 de 2 · ver todas as rodadas`) e oferece o resto.
 
-<Figura
-  figura="claude-code-csr-lens-agentes/caminho-recorta"
-  legenda="O mesmo agente aberto por dois caminhos: pelo turno 2 (azul, em cima) só a rodada daquele turno aparece, com a linha que oferece as outras; pela aba Agentes (petróleo, embaixo), todas. O Voltar sobe um nível do caminho."
+É o que se vê entre a tela do agente inteiro, acima, com as duas rodadas, e o detalhe do turno 2, abaixo: dois dos três agentes dele são a rodada 2 de agentes que já tinham rodado no turno 1, e cada cartão traz só o recado e a resposta daquela rodada, com o botão Ver rodada (em detalhe no [README](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#o-caminho-e-o-voltar)):
+
+<Tela
+  claro={fichaTurnoClaro}
+  escuro={fichaTurnoEscuro}
+  alt="O detalhe do turno 2 no CSR Lens: o Voltar e o caminho Turnos, Turno 2; os números (20 segundos, +3k de contexto, US$ 0,41, 14 ferramentas, 2 comandos Bash); o pedido inteiro; os três subagentes do turno, num grafo e em cartões: Revisar o formato.ts, rodada 2 de 2 (US$ 0,06), e Coordenar a leitura, rodada 2 de 2 (US$ 0,08), cada um com o recado que o acordou, a resposta daquela rodada e o botão Ver rodada, e Contar os SVGs (US$ 0,09), com o pedido, a resposta e o botão Ver detalhes; a resposta do turno, com o que o Claude disse depois do retorno de cada agente; as 14 ferramentas em barras; e os dois comandos Bash."
+  fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#o-detalhe-de-um-turno"
+  legenda="O detalhe do turno 2: um cartão por rodada que aconteceu nele"
 />
 
 O **Voltar** (ou a tecla :caixa[`v`]) sobe um nível: do detalhe para onde ele foi aberto. O painel rola inteiro, com as abas e o caminho junto, porque a API de mods não tem como fixar um cabeçalho fora da rolagem.
 
 ## O custo por agente e por rodada
 
-O Claude Code informa o custo da sessão inteira, [calculado a preço de tabela](https://code.claude.com/docs/en/costs#track-your-costs) a partir dos tokens, e o `/usage` mostra, nos planos pagos, que fatia do uso foi para subagentes, em percentual. Quanto custou cada agente, ou cada rodada, :ondulado[ele não diz]. O Lens reparte esse custo: ao fim de cada resposta do modelo, o que o custo da sessão subiu vai para quem fez a resposta, um agente ou a conversa principal. O custo de uma rodada é o que o agente gastou entre o começo e o fim dela:
+O Claude Code informa o custo da sessão inteira, [calculado a preço de tabela](https://code.claude.com/docs/en/costs#track-your-costs) a partir dos tokens, e o `/usage` mostra, nos planos pagos, que fatia do uso foi para subagentes, em percentual. Quanto custou cada agente, ou cada rodada, :ondulado[ele não diz]. O Lens reparte esse custo: ao fim de cada resposta do modelo, o que o custo da sessão subiu vai para quem fez a resposta, um agente ou a conversa principal. O custo de uma rodada é o que o agente gastou entre o começo e o fim dela (em detalhe no README, [O custo de cada agente](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#o-custo-de-cada-agente)):
 
 <Figura
   figura="claude-code-csr-lens-agentes/custo-repartido"
@@ -123,7 +179,7 @@ O Claude Code informa o custo da sessão inteira, [calculado a preço de tabela]
 O custo por agente não é um número oficial. Cada aumento do custo da sessão vai para um dono só, então nada é contado duas vezes, e a soma dos agentes nunca passa do total; mas, se duas respostas terminam no mesmo instante, uma fração pode cair no agente vizinho. O valor em dólar não é cobrança para quem paga assinatura: serve para comparar um agente com outro.
 :::
 
-O **contexto** de um agente, nos quadrinhos, é o tamanho do contexto dele na última resposta: ele tem uma janela própria, que :duplo[não ocupa a da conversa] principal.
+Na aba Contexto da [parte 2](/posts/claude-code-csr-lens/#contexto-e-custo-a-aba-contexto), a sessão de exemplo mostra o resultado: US\$ 1,12 da conversa e US\$ 1,62 dos dez agentes, de US\$ 2,74. O **contexto** de um agente, nos quadrinhos, é o tamanho do contexto dele na última resposta: ele tem uma janela própria, que :duplo[não ocupa a da conversa] principal.
 
 ## Parar agente
 
@@ -145,9 +201,29 @@ No detalhe de um agente que está rodando, **Parar agente** pede para ele parar.
 
 O recado pede para o agente parar já e entregar o relatório; cada ferramenta que ele tentar depois é negada, com o mesmo pedido como motivo. A única que passa é a de entregar o relatório (:caixa[`SubagentHandback`]), para ele conseguir dizer o que fez e terminar. O cabeçalho mostra `parando…`, com o tempo, o custo e as chamadas até ali, e o cartão dele passa a dizer **parado antes de terminar**. O limite: se ele estiver no meio de uma resposta longa do modelo, só para quando ela acabar. É a única vez em que um hook do Lens responde a um evento no lugar do Claude Code; fora isso, ele só observa.
 
+Na tela, um Explore logo depois do clique: o botão virou **Parando…**, o aviso diz o que acontece agora e o cabeçalho mostra `parando…`, com 41 segundos, US\$ 0,30 e 7 chamadas até ali (em detalhe no [README](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#parar-um-agente)):
+
+<Tela
+  claro={agenteParandoClaro}
+  escuro={agenteParandoEscuro}
+  alt="O detalhe do agente Ler tudo devagar 2 no CSR Lens, logo depois do clique em Parar agente: o botão virou Parando…; o aviso diz que as próximas ferramentas dele são negadas e que ele termina na resposta seguinte; o cabeçalho com o estado parando…, Explore em segundo plano desde 10:24:45, e os quadrinhos Haiku 4.5, rodando há 41 segundos, US$ 0,30, contexto 60,4k e 7 chamadas; as ferramentas Read (6) e Bash (1); o pedido que o agente recebeu; as 7 últimas chamadas, a última um Read ainda rodando; nenhuma mensagem escrita; e a resposta, dizendo que o agente ainda está trabalhando."
+  fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#parar-um-agente"
+  legenda="Parar agente: o botão virou Parando… e o cabeçalho diz parando…"
+/>
+
 ## Os agentes de um workflow
 
 Um [workflow](https://code.claude.com/docs/en/workflows) é um script que o Claude escreve para orquestrar muitos subagentes de uma vez, em fases, enquanto a sessão fica livre. Esses agentes :ondulado[não passam pela ferramenta] `Agent`, e o Claude Code não entrega ao mod o nome nem o pedido deles. O Lens lê isso dos arquivos da execução, que ficam [na pasta da sessão](https://code.claude.com/docs/en/workflows#how-a-workflow-runs), em `~/.claude/projects`, e os mostra como o painel de tarefas do próprio Claude Code: no grafo, cada fase é um nó, desenhado como uma pilha de cartões, entre a conversa principal e os agentes dela, com quantos terminaram; embaixo, o cartão do workflow (o nome, quantos agentes, quantos rodam, os tokens e o tempo) e as fases, cada uma com uma linha por agente, com o nome, o modelo, os tokens, o custo e o tempo. O nome abre o detalhe.
+
+Na tela, o workflow `pesquisa-de-plugins` rodando: as fases Pesquisa (1 de 2) e Crítica (0 de 1) como nós do grafo e, embaixo, o cartão do workflow (3 agentes, 2 rodando, 76,4k tokens) com uma linha por agente (em detalhe no [README](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#os-agentes-de-um-workflow)):
+
+<Tela
+  claro={agentesWorkflowClaro}
+  escuro={agentesWorkflowEscuro}
+  alt="A aba Agentes do CSR Lens com um workflow rodando: as contagens, 2 rodando e 1 ok; o grafo com a conversa principal pensando, os nós das fases Pesquisa (1/2, pesquisa-de-plugins) e Crítica (0/1), desenhados como pilhas de cartões, e os três agentes, pesquisa:marketplaces (concluído), pesquisa:mods e critica:catalogo (rodando); a linha do tempo com os três; e o cartão do workflow pesquisa-de-plugins, com 3 agentes, 2 rodando, 76,4k tokens e 12 segundos, e as fases: Pesquisa, com pesquisa:marketplaces (Sonnet 5.5, 76,4k tokens, 8,0 segundos) e pesquisa:mods (Sonnet 5.5, 12 segundos), e Crítica, com critica:catalogo (Sonnet 5.5, 12 segundos)."
+  fonte="https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#os-agentes-de-um-workflow"
+  legenda="Os agentes de um workflow: as fases no grafo e o cartão do workflow"
+/>
 
 ## Como se testa um mod
 
@@ -164,7 +240,7 @@ Um mod se testa em três camadas, da mais barata para a mais cara.
 ## Os limites da API
 
 :::validade{data="out/2026"}
-Os limites desta parte vêm quase todos do que a API de mods entrega, ou não entrega, ao mod. Na versão 1.0.0 do Lens, em 06/10/2026:
+Os limites desta parte vêm quase todos do que a API de mods entrega, ou não entrega, ao mod. Na versão 1.0.0 do Lens, em 06/10/2026 (a lista completa está no README, em [Limites conhecidos](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#limites-conhecidos)):
 :::
 
 - **Custo por agente, por rodada e por turno.** É uma repartição do custo da sessão, não um valor informado pelo Claude Code.
@@ -181,4 +257,4 @@ Os limites desta parte vêm quase todos do que a API de mods entrega, ou não en
 - Claude Code — [Orchestrate subagents at scale with dynamic workflows](https://code.claude.com/docs/en/workflows) (o que é um workflow, as fases e onde ficam os arquivos da execução)
 - Claude Code — [Manage costs effectively](https://code.claude.com/docs/en/costs) (o custo da sessão a preço de tabela e a fatia dos subagentes no `/usage`)
 - Claude Code — [Mods overview](https://code.claude.com/docs/en/plugins/mods/overview) (o que um mod alcança), [Create a mod](https://code.claude.com/docs/en/plugins/mods/create) (o `--plugin-dir`, a recarga e a API em evolução) e [Test a mod](https://code.claude.com/docs/en/plugins/mods/test)
-- Cesar Schutz — [claude-code-kit](https://github.com/cesarschutz/claude-code-kit) e o [README do CSR Lens](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens): [a aba Agentes](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#2-agentes), [as rodadas de um agente](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#as-rodadas-de-um-agente), [parar um agente](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#parar-um-agente) e [o custo de cada agente](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#o-custo-de-cada-agente)
+- Cesar Schutz — [claude-code-kit](https://github.com/cesarschutz/claude-code-kit) e o [README do CSR Lens](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens) (as telas deste post, numeradas e comentadas item a item): [a aba Agentes](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#2-agentes), [o detalhe de um agente](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#o-detalhe-de-um-agente), [as rodadas de um agente](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#as-rodadas-de-um-agente), [parar um agente](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#parar-um-agente), [os agentes de um workflow](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#os-agentes-de-um-workflow) e [o custo de cada agente](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens#o-custo-de-cada-agente)
