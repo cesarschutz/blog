@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720"
+  aria-label="O mesmo agente, Coordenar a leitura, aberto por dois caminhos no CSR Lens. Em cima, pelo turno 2, com a aba Visão geral em azul: o caminho diz Visão geral, Turno 2, Coordenar a leitura; o detalhe lista só a rodada daquele turno, a rodada 2, com a linha Rodadas deste turno: 1 de 2 e o link ver todas as rodadas. Embaixo, pela aba Agentes, em petróleo: o caminho diz Agentes, Coordenar a leitura, e a seção Rodadas lista as duas, a rodada 1, criada pela conversa principal, e a rodada 2, acordada por um recado. Nos dois, o botão Voltar sobe um nível do caminho.">
+  <g class="tinta">
+    <rect x="44" y="34" width="1140" height="330" rx="16" class="hachura"/>
+    <rect x="30" y="20" width="1140" height="330" rx="16" class="papel"/>
+    <rect x="30" y="20" width="1140" height="330" rx="16" class="linha"/>
+    <rect x="44" y="384" width="1140" height="330" rx="16" class="hachura"/>
+    <rect x="30" y="370" width="1140" height="330" rx="16" class="papel"/>
+    <rect x="30" y="370" width="1140" height="330" rx="16" class="linha"/>
+
+    <rect x="54" y="48" width="110" height="36" rx="8" class="papel"/>
+    <rect x="54" y="48" width="110" height="36" rx="8" class="linha"/>
+    <rect x="54" y="196" width="1092" height="120" rx="10" class="papel"/>
+    <rect x="54" y="196" width="1092" height="120" rx="10" class="linha"/>
+
+    <rect x="54" y="398" width="110" height="36" rx="8" class="papel"/>
+    <rect x="54" y="398" width="110" height="36" rx="8" class="linha"/>
+    <rect x="54" y="556" width="1092" height="60" rx="10" class="papel"/>
+    <rect x="54" y="556" width="1092" height="60" rx="10" class="linha"/>
+    <rect x="54" y="628" width="1092" height="60" rx="10" class="papel"/>
+    <rect x="54" y="628" width="1092" height="60" rx="10" class="linha"/>
+  </g>
+
+  <text x="109" y="73" text-anchor="middle" class="valor-eixo">‹ Voltar</text>
+  <text x="184" y="74" class="codigo">Visão geral › Turno 2 ›</text>
+  <g class="tom-azul">
+    <text x="540" y="74" class="codigo texto-tom">Coordenar a leitura</text>
+    <rect x="986" y="48" width="160" height="36" rx="18" class="selo"/>
+    <text x="1066" y="66" class="selo-texto">Visão geral</text>
+    <text x="340" y="172" class="codigo texto-tom">ver todas as rodadas</text>
+  </g>
+  <text x="54" y="130" class="titulo-caixa">Coordenar a leitura</text>
+  <text x="380" y="130" class="texto-caixa">concluído · 2 rodadas</text>
+  <text x="54" y="172" class="nota-pequena">Rodadas deste turno: 1 de 2 ·</text>
+  <text x="76" y="236" class="codigo">✓ Rodada 2 · 16 s · US$ 0,08 · 4 chamadas · acordada por um recado</text>
+  <text x="76" y="272" class="texto-caixa">o recado: “Nova tarefa, somente leitura: crie UM subagente Explore…”</text>
+  <text x="76" y="302" class="nota-pequena">a resposta: contei os SVGs e já tenho a resposta do revisor…</text>
+
+  <text x="109" y="423" text-anchor="middle" class="valor-eixo">‹ Voltar</text>
+  <text x="184" y="424" class="codigo">Agentes ›</text>
+  <g class="tom-petroleo">
+    <text x="330" y="424" class="codigo texto-tom">Coordenar a leitura</text>
+    <rect x="1010" y="398" width="136" height="36" rx="18" class="selo"/>
+    <text x="1078" y="416" class="selo-texto">Agentes</text>
+    <rect x="54" y="500" width="1092" height="40" rx="6" class="lavado"/>
+    <rect x="54" y="500" width="6" height="40" class="selo"/>
+    <text x="80" y="528" class="codigo texto-tom">Rodadas · 2</text>
+  </g>
+  <text x="54" y="480" class="titulo-caixa">Coordenar a leitura</text>
+  <text x="380" y="480" class="texto-caixa">concluído · 2 rodadas</text>
+  <text x="76" y="594" class="codigo">✓ Rodada 1 · 31 s · US$ 0,19 · 3 chamadas · criada pela conversa</text>
+  <text x="76" y="666" class="codigo">✓ Rodada 2 · 16 s · US$ 0,08 · 4 chamadas · acordada por um recado</text>
+</svg>

@@ -95,6 +95,7 @@ A coluna "Hoje" diz o que vale agora; o status de cada entrada é o do dia em qu
 | D82 | Post do You should know (`claude-code-you-should-know`): o mod embutido do Claude Code, detalhado, no livro IA, com 19 marcações da caneta e a apresentação no estilo do blog | decidido e publicado |
 | D83 | A parte 2 do post dos mods em dia com o cockpit 1.0.0 refeito (cliques, grafo, workflows, total geral): as telas novas, uma tela de workflow e a apresentação regerada | decidido e publicado |
 | D84 | A home da coleção em prateleiras de capas (7, 5 ou 4 livros por prateleira, sem lombada nem rolagem lateral), sem a linha de números, o nome menor com o "blog" carimbado sobre o Z, o nome do rodapé numa linha no celular, a revisão geral das telas e a faxina do código e dos documentos | decidido pelo Claude a pedido do Cesar; ele revê no ar |
+| D85 | O post dos mods em três partes, para o CSR Lens (o csr-cockpit renomeado): a parte 2 nova, para quem está começando, e a parte 3 sobre os subagentes; as telas do painel desenhadas no lugar dos prints | plano aprovado pelo Cesar; ele revisa e publica |
 
 ## D1 · Framework: continuar no Astro 7
 - **Data:** 23/09/2026 · **Status:** aprovada (OK do Cesar para a Fase 1, 23/09/2026)
@@ -3681,3 +3682,37 @@ nada muda.
     ficaram iguais às de antes, menos o ruído conhecido de `/capas/`. Publicado em três commits (`8ae63fb`,
     `bc0cff6` e `a1f3d9a`), com o deploy e o site no ar conferidos. O controle da rodada foi para
     `docs/historico/ajustes-d84/`.
+
+## D85 · O post dos mods em três partes, para o CSR Lens (06/10/2026)
+
+- **Data:** 06/10/2026 · **Status:** plano aprovado pelo Cesar ("publicar sem nova rodada de perguntas");
+  ele revisa os arquivos e publica.
+- **Contexto:** o csr-cockpit virou **CSR Lens** (`csr-lens`, comando `/lens`, versão 1.0.0 no
+  `claude-code-kit` 1.0), com a aba Visão geral, as rodadas de um agente, os recados, o caminho com o
+  Voltar e o botão Parar agente. O post da parte 2 estava no teto do detalhado e com o nome antigo nos
+  títulos de seção.
+- **Decidido:** uma sequência de **três partes**, no mesmo livro (IA) e com as mesmas tags (Claude Code,
+  Plugins), todas no formato detalhado:
+  1. a parte 1 (`claude-code-do-claude-md-ao-mod`) mantida, com "(parte 1 de 3)", `updated`, os avisos e o
+     TL;DR apontando as partes 2 e 3 e o nome do plugin trocado (os títulos de seção não mudam, D7);
+  2. a parte 2 (`claude-code-csr-lens`, "Um mod do Claude Code na prática — instalar e ler o painel"), para
+     quem usa o Claude para conversar e pouco usa agentes: instalar, a Visão geral, a linha de resumo, o
+     contexto e o custo, os turnos, Diffs e Árvore (com a tabela do README), o Inventário, "só observa" e os
+     limites básicos. Substitui `claude-code-csr-cockpit`, que saiu, com o redirecionamento
+     `/posts/claude-code-csr-cockpit/` → `/posts/claude-code-csr-lens/` (os títulos de seção dele tinham o
+     nome antigo, por isso a URL nova);
+  3. a parte 3 (`claude-code-csr-lens-agentes`, "Subagentes no Claude Code — quem chamou quem, recados e
+     rodadas"): a origem dos agentes, o grafo, a linha do tempo, o detalhe, as rodadas, o caminho, o custo
+     repartido, Parar agente, os workflows, como se testa um mod (99 testes) e os limites da API.
+- **Desenhos no lugar dos prints:** as telas do painel são figuras do blog (simplificadas, reconhecíveis
+  como o app: as abas, as barras de título com o filete, os cartões, as pílulas, o cérebro e os robôs), no
+  tema do site; os PNG de `src/evidencias/claude-code-csr-cockpit/` saíram. Capas novas da mesma família (a
+  janela do Claude Code com a lupa sobre o painel; na 2, o anel do contexto; na 3, o grafo), com a capa viva
+  em `mexe-escreve`. A figura em passos da instalação foi para a pasta do slug novo, com o nome novo.
+- **Também:** os links do post do You should know para a parte 2 passaram ao slug e ao título novos; a
+  entrada `claude-code-csr-cockpit` saiu de `src/data/decks.json` (a pasta `public/posts/claude-code-csr-cockpit/deck/`
+  ficou no disco, para o Cesar decidir); as fotos dos livros refeitas (IA com 4 artigos).
+- **Pendente para o Cesar:** a apresentação da parte 2 antiga (o deck, com o nome e as telas antigas) e se
+  as partes 2 e 3 ganham uma; a parte 2 ficou com ~3.100 palavras (como a anterior), um pouco acima do
+  teto de ~3.000.
+

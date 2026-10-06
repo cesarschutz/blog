@@ -53,6 +53,9 @@ const redirecionamentos = {
   // porque Pagamentos virou livro. Sem codificar o destino (o Astro codifica).
   "/categories/Carreira": comBase("/categories/"),
   "/tags/Pagamentos": comBase("/tags/Cobrança/"),
+  // A parte 2 do post dos mods trocou de slug com o nome novo do mod (csr-cockpit → CSR Lens, 06/10/2026):
+  // os títulos de seção dela tinham o nome antigo.
+  "/posts/claude-code-csr-cockpit": comBase("/posts/claude-code-csr-lens/"),
   ...Object.fromEntries(
     Object.entries(NOMES_ANTIGOS).map(([antigo, novo]) => [
       `/categories/${antigo}`,

@@ -1,0 +1,240 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1560"
+  aria-label="O painel do CSR Lens na aba Visão geral, desenhado de forma simplificada: a marca CSR Lens; a barra com as sete abas (Visão geral, aberta e em azul, Agentes, Turnos, Diffs, Árvore, Contexto e Inventário); seis indicadores em cartões (contexto 52%, custo da sessão US$ 2,74, limite de 5 horas 3%, 1 agente rodando, 4 turnos, diffs +119 −55); a seção Agora, com a conversa principal pensando e um agente lendo um arquivo; os agentes disponíveis, um global que ninguém chamou (borda roxa tracejada) e um do projeto chamado 2 vezes (borda âmbar); o grafo de quem chamou quem, com o cérebro da conversa principal, quatro robôs e um recado tracejado; o cartão do último turno, com as etiquetas de custo, contexto, ferramentas e agentes; e as duas últimas edições.">
+  <g class="tinta">
+    <rect x="44" y="34" width="1140" height="1500" rx="18" class="hachura"/>
+    <rect x="30" y="20" width="1140" height="1500" rx="18" class="papel"/>
+    <rect x="30" y="20" width="1140" height="1500" rx="18" class="linha"/>
+
+    <rect x="252" y="156" width="112" height="44" rx="22" class="papel"/>
+    <rect x="252" y="156" width="112" height="44" rx="22" class="linha"/>
+    <rect x="378" y="156" width="100" height="44" rx="22" class="papel"/>
+    <rect x="378" y="156" width="100" height="44" rx="22" class="linha"/>
+    <rect x="492" y="156" width="90" height="44" rx="22" class="papel"/>
+    <rect x="492" y="156" width="90" height="44" rx="22" class="linha"/>
+    <rect x="596" y="156" width="100" height="44" rx="22" class="papel"/>
+    <rect x="596" y="156" width="100" height="44" rx="22" class="linha"/>
+    <rect x="710" y="156" width="122" height="44" rx="22" class="papel"/>
+    <rect x="710" y="156" width="122" height="44" rx="22" class="linha"/>
+    <rect x="846" y="156" width="142" height="44" rx="22" class="papel"/>
+    <rect x="846" y="156" width="142" height="44" rx="22" class="linha"/>
+
+    <rect x="65" y="269" width="350" height="120" rx="12" class="hachura"/>
+    <rect x="58" y="262" width="350" height="120" rx="12" class="papel"/>
+    <rect x="58" y="262" width="350" height="120" rx="12" class="linha"/>
+    <rect x="435" y="269" width="350" height="120" rx="12" class="hachura"/>
+    <rect x="428" y="262" width="350" height="120" rx="12" class="papel"/>
+    <rect x="428" y="262" width="350" height="120" rx="12" class="linha"/>
+    <rect x="805" y="269" width="350" height="120" rx="12" class="hachura"/>
+    <rect x="798" y="262" width="350" height="120" rx="12" class="papel"/>
+    <rect x="798" y="262" width="350" height="120" rx="12" class="linha"/>
+    <rect x="65" y="409" width="350" height="120" rx="12" class="hachura"/>
+    <rect x="58" y="402" width="350" height="120" rx="12" class="papel"/>
+    <rect x="58" y="402" width="350" height="120" rx="12" class="linha"/>
+    <rect x="435" y="409" width="350" height="120" rx="12" class="hachura"/>
+    <rect x="428" y="402" width="350" height="120" rx="12" class="papel"/>
+    <rect x="428" y="402" width="350" height="120" rx="12" class="linha"/>
+    <rect x="805" y="409" width="350" height="120" rx="12" class="hachura"/>
+    <rect x="798" y="402" width="350" height="120" rx="12" class="papel"/>
+    <rect x="798" y="402" width="350" height="120" rx="12" class="linha"/>
+
+    <g class="tom-roxo">
+      <rect x="58" y="750" width="535" height="96" rx="12" class="papel"/>
+      <rect x="58" y="750" width="535" height="96" rx="12" class="linha-tom fantasma"/>
+    </g>
+    <g transform="translate(78 772) scale(0.75)">
+      <path d="M22 -6 V-18" class="linha"/>
+      <circle cx="22" cy="-22" r="4" class="linha"/>
+      <rect x="0" y="-6" width="44" height="34" rx="9" class="linha"/>
+      <circle cx="14" cy="10" r="4" class="linha"/>
+      <circle cx="30" cy="10" r="4" class="linha"/>
+      <path d="M14 20 H30" class="linha"/>
+      <rect x="10" y="30" width="24" height="10" rx="4" class="linha"/>
+    </g>
+    <g class="tom-ambar">
+      <rect x="613" y="750" width="535" height="96" rx="12" class="lavado"/>
+      <rect x="613" y="750" width="535" height="96" rx="12" class="linha-tom"/>
+    </g>
+    <g transform="translate(633 772) scale(0.75)">
+      <path d="M22 -6 V-18" class="linha"/>
+      <circle cx="22" cy="-22" r="4" class="linha"/>
+      <rect x="0" y="-6" width="44" height="34" rx="9" class="papel"/>
+      <rect x="0" y="-6" width="44" height="34" rx="9" class="linha"/>
+      <circle cx="14" cy="10" r="4" class="linha"/>
+      <circle cx="30" cy="10" r="4" class="linha"/>
+      <path d="M14 20 Q22 26 30 20" class="linha"/>
+      <rect x="10" y="30" width="24" height="10" rx="4" class="linha"/>
+    </g>
+
+    <circle cx="200" cy="1050" r="50" class="papel"/>
+    <circle cx="200" cy="1050" r="50" class="linha"/>
+    <path d="M200 1000 C 192 1020, 208 1040, 200 1060 C 192 1080, 208 1090, 200 1100" class="linha"/>
+    <path d="M170 1030 C 180 1016, 194 1020, 192 1036 M166 1060 C 178 1050, 188 1060, 178 1074 M230 1030 C 220 1016, 206 1020, 208 1036 M234 1060 C 222 1050, 212 1060, 222 1074" class="linha"/>
+
+    <path d="M250 1050 C 300 1050, 340 975, 498 975" class="linha"/>
+    <path d="M250 1050 C 300 1050, 340 1045, 498 1045" class="linha"/>
+    <path d="M250 1050 C 300 1050, 340 1125, 498 1125" class="linha"/>
+    <path d="M544 1040 C 700 1040, 760 1045, 898 1045" class="linha"/>
+    <g class="tom-roxo">
+      <path d="M232 1012 C 270 950, 400 925, 500 952" class="linha-tom fantasma"/>
+      <path d="M352 926 H374 V940 H352 Z M352 926 L363 934 L374 926" class="linha-tom"/>
+    </g>
+
+    <g transform="translate(500 960)">
+      <path d="M22 -6 V-18" class="linha"/>
+      <circle cx="22" cy="-22" r="4" class="linha"/>
+      <rect x="0" y="-6" width="44" height="34" rx="9" class="papel"/>
+      <rect x="0" y="-6" width="44" height="34" rx="9" class="linha"/>
+      <circle cx="14" cy="10" r="4" class="linha"/>
+      <circle cx="30" cy="10" r="4" class="linha"/>
+      <path d="M14 20 Q22 26 30 20" class="linha"/>
+      <rect x="10" y="30" width="24" height="10" rx="4" class="linha"/>
+    </g>
+    <g transform="translate(500 1030)">
+      <path d="M22 -6 V-18" class="linha"/>
+      <circle cx="22" cy="-22" r="4" class="linha"/>
+      <rect x="0" y="-6" width="44" height="34" rx="9" class="papel"/>
+      <rect x="0" y="-6" width="44" height="34" rx="9" class="linha"/>
+      <circle cx="14" cy="10" r="4" class="linha"/>
+      <circle cx="30" cy="10" r="4" class="linha"/>
+      <path d="M14 20 Q22 26 30 20" class="linha"/>
+      <rect x="10" y="30" width="24" height="10" rx="4" class="linha"/>
+    </g>
+    <g transform="translate(500 1110)">
+      <path d="M22 -6 V-18" class="linha"/>
+      <circle cx="22" cy="-22" r="4" class="linha"/>
+      <rect x="0" y="-6" width="44" height="34" rx="9" class="papel"/>
+      <rect x="0" y="-6" width="44" height="34" rx="9" class="linha"/>
+      <circle cx="14" cy="10" r="4" class="linha"/>
+      <circle cx="30" cy="10" r="4" class="linha"/>
+      <path d="M14 20 Q22 26 30 20" class="linha"/>
+      <rect x="10" y="30" width="24" height="10" rx="4" class="linha"/>
+    </g>
+    <g transform="translate(900 1030)">
+      <path d="M22 -6 V-18" class="linha"/>
+      <circle cx="22" cy="-22" r="4" class="linha"/>
+      <rect x="0" y="-6" width="44" height="34" rx="9" class="papel"/>
+      <rect x="0" y="-6" width="44" height="34" rx="9" class="linha"/>
+      <circle cx="14" cy="10" r="4" class="linha"/>
+      <circle cx="30" cy="10" r="4" class="linha"/>
+      <path d="M14 20 Q22 26 30 20" class="linha"/>
+      <rect x="10" y="30" width="24" height="10" rx="4" class="linha"/>
+    </g>
+
+    <rect x="65" y="1277" width="1090" height="120" rx="12" class="hachura"/>
+    <rect x="58" y="1270" width="1090" height="120" rx="12" class="papel"/>
+    <rect x="58" y="1270" width="1090" height="120" rx="12" class="linha"/>
+    <rect x="80" y="1322" width="110" height="30" rx="15" class="papel"/>
+    <rect x="80" y="1322" width="110" height="30" rx="15" class="linha"/>
+    <rect x="204" y="1322" width="190" height="30" rx="15" class="papel"/>
+    <rect x="204" y="1322" width="190" height="30" rx="15" class="linha"/>
+    <rect x="408" y="1322" width="150" height="30" rx="15" class="papel"/>
+    <rect x="408" y="1322" width="150" height="30" rx="15" class="linha"/>
+    <rect x="572" y="1322" width="180" height="30" rx="15" class="papel"/>
+    <rect x="572" y="1322" width="180" height="30" rx="15" class="linha"/>
+  </g>
+
+  <text x="58" y="56" class="nota-pequena">Lens</text>
+  <g class="tom-azul">
+    <rect x="58" y="80" width="150" height="40" rx="20" class="selo"/>
+    <text x="133" y="100" class="selo-texto">CSR Lens</text>
+    <rect x="58" y="156" width="180" height="44" rx="22" class="selo"/>
+    <text x="148" y="178" class="selo-texto">Visão geral</text>
+    <text x="58" y="236" class="codigo texto-tom">Visão geral</text>
+  </g>
+  <text x="308" y="185" text-anchor="middle" class="valor-eixo">Agentes</text>
+  <text x="428" y="185" text-anchor="middle" class="valor-eixo">Turnos</text>
+  <text x="537" y="185" text-anchor="middle" class="valor-eixo">Diffs</text>
+  <text x="646" y="185" text-anchor="middle" class="valor-eixo">Árvore</text>
+  <text x="771" y="185" text-anchor="middle" class="valor-eixo">Contexto</text>
+  <text x="917" y="185" text-anchor="middle" class="valor-eixo">Inventário</text>
+
+  <text x="80" y="298" class="nota-pequena">contexto</text>
+  <text x="80" y="340" class="titulo-caixa">52%</text>
+  <text x="80" y="368" class="nota-pequena">104,8k de 200k</text>
+  <text x="450" y="298" class="nota-pequena">custo da sessão</text>
+  <text x="450" y="340" class="titulo-caixa">US$ 2,74</text>
+  <text x="450" y="368" class="nota-pequena">+US$ 0,75 no turno</text>
+  <text x="820" y="298" class="nota-pequena">limite de 5 horas</text>
+  <text x="820" y="340" class="titulo-caixa">3%</text>
+  <text x="820" y="368" class="nota-pequena">renova em 4h02</text>
+  <text x="80" y="438" class="nota-pequena">agentes</text>
+  <text x="80" y="480" class="titulo-caixa">1 rodando</text>
+  <text x="80" y="508" class="nota-pequena">9 ok</text>
+  <text x="450" y="438" class="nota-pequena">turnos</text>
+  <text x="450" y="480" class="titulo-caixa">4</text>
+  <text x="450" y="508" class="nota-pequena">o 4º em andamento</text>
+  <text x="820" y="438" class="nota-pequena">diffs</text>
+  <text x="820" y="480" class="titulo-caixa">+119 −55</text>
+  <text x="820" y="508" class="nota-pequena">4 arquivos no git</text>
+
+  <g class="tom-azul">
+    <rect x="58" y="552" width="1090" height="44" rx="6" class="lavado"/>
+    <rect x="58" y="552" width="6" height="44" class="selo"/>
+    <text x="84" y="582" class="codigo texto-tom">Agora · 1 rodando</text>
+  </g>
+  <text x="80" y="636" class="codigo">Principal · pensando há 36s · turno 4</text>
+  <text x="80" y="668" class="texto-caixa">Ler tudo devagar 2 (Explore) · Read hooks/dados.ts</text>
+
+  <g class="tom-azul">
+    <rect x="58" y="690" width="1090" height="44" rx="6" class="lavado"/>
+    <rect x="58" y="690" width="6" height="44" class="selo"/>
+    <text x="84" y="720" class="codigo texto-tom">Agentes disponíveis · 3 instalados · 2 chamados</text>
+  </g>
+  <g class="tom-roxo">
+    <text x="136" y="790" class="codigo">code-reviewer</text>
+    <text x="136" y="824" class="nota-pequena">ainda não chamado · revisa um plano ou um diff</text>
+    <rect x="490" y="768" width="86" height="28" rx="14" class="selo"/>
+    <text x="533" y="782" class="selo-texto">global</text>
+  </g>
+  <g class="tom-ambar">
+    <text x="691" y="790" class="codigo">conferente-de-readme</text>
+    <text x="691" y="824" class="nota-pequena">chamado 2 vezes · há 3 min</text>
+    <rect x="1038" y="768" width="94" height="28" rx="14" class="selo"/>
+    <text x="1085" y="782" class="selo-texto">projeto</text>
+  </g>
+
+  <g class="tom-azul">
+    <rect x="58" y="866" width="1090" height="44" rx="6" class="lavado"/>
+    <rect x="58" y="866" width="6" height="44" class="selo"/>
+    <text x="84" y="896" class="codigo texto-tom">Quem chamou quem · 10</text>
+  </g>
+  <text x="200" y="1132" text-anchor="middle" class="codigo">Principal</text>
+  <text x="200" y="1158" text-anchor="middle" class="nota-pequena">pensando…</text>
+  <text x="380" y="996" class="codigo">↓ ✓</text>
+  <text x="380" y="1036" class="codigo">↓ ✓</text>
+  <text x="380" y="1116" class="codigo">↓ ✓</text>
+  <text x="850" y="1030" class="codigo">↓ ✓</text>
+  <g class="tom-roxo">
+    <text x="384" y="940" class="codigo texto-tom">2</text>
+  </g>
+  <text x="560" y="976" class="codigo">Revisar o formato.ts</text>
+  <text x="560" y="1002" class="nota-pequena">exemplos:revisor · plugin</text>
+  <rect x="552" y="1024" width="300" height="54" class="papel"/>
+  <text x="560" y="1046" class="codigo">Coordenar a leitura</text>
+  <text x="560" y="1072" class="nota-pequena">general-purpose</text>
+  <text x="560" y="1126" class="codigo">Mapear os hooks</text>
+  <text x="560" y="1152" class="nota-pequena">Explore</text>
+  <text x="960" y="1046" class="codigo">Ler os testes</text>
+  <text x="960" y="1072" class="nota-pequena">Explore</text>
+  <text x="58" y="1200" class="nota-pequena">↓ tarefa · ✓ voltou · tracejado: recado · clique num agente para abrir</text>
+
+  <g class="tom-azul">
+    <rect x="58" y="1220" width="1090" height="44" rx="6" class="lavado"/>
+    <rect x="58" y="1220" width="6" height="44" class="selo"/>
+    <text x="84" y="1250" class="codigo texto-tom">Último turno</text>
+  </g>
+  <text x="80" y="1304" class="codigo">Turno 4 · em andamento há 36s</text>
+  <text x="135" y="1343" text-anchor="middle" class="valor-eixo">US$ 0,75</text>
+  <text x="299" y="1343" text-anchor="middle" class="valor-eixo">+3,2k de contexto</text>
+  <text x="483" y="1343" text-anchor="middle" class="valor-eixo">7 ferramentas</text>
+  <text x="662" y="1343" text-anchor="middle" class="valor-eixo">1 agente chamado</text>
+  <text x="80" y="1378" class="texto-caixa">Pedido: roda mais um agente, igual ao anterior…</text>
+
+  <g class="tom-azul">
+    <rect x="58" y="1410" width="1090" height="44" rx="6" class="lavado"/>
+    <rect x="58" y="1410" width="6" height="44" class="selo"/>
+    <text x="84" y="1440" class="codigo texto-tom">Últimas edições · 2</text>
+  </g>
+  <text x="80" y="1486" class="codigo">M plugins/csr-lens/README.md · +1 −1 · turno 1</text>
+  <text x="80" y="1512" class="codigo">M teste-lens.md · +1 −1 · turno 1</text>
+</svg>

@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 580"
+  aria-label="Gráfico em escada do custo de uma sessão ao longo do tempo, de zero a US$ 1,28. A cada resposta do modelo que termina, o custo da sessão sobe um degrau, e o degrau vai para quem respondeu: a conversa principal (US$ 0,42 e depois US$ 0,45), o agente Coordenar na rodada 1 (US$ 0,19) e na rodada 2 (US$ 0,08) e o revisor (US$ 0,08 e US$ 0,06). No fim, a conversa principal soma US$ 0,87, o Coordenar US$ 0,27 nas duas rodadas e o revisor US$ 0,14, e a soma dos agentes nunca passa do total da sessão.">
+  <path d="M120 331.5 H1140 M120 203 H1140" class="grade"/>
+
+  <g class="tinta">
+    <path d="M120 80 V460 H1140" class="eixo"/>
+    <path d="M1126 451 L1140 460 L1126 469 M111 94 L120 80 L129 94" class="eixo"/>
+
+    <g class="tom-petroleo">
+      <rect x="160" y="352" width="120" height="108" class="lavado"/>
+      <rect x="160" y="352" width="120" height="108" class="linha-tom"/>
+      <rect x="640" y="166" width="120" height="116" class="lavado"/>
+      <rect x="640" y="166" width="120" height="116" class="linha-tom"/>
+    </g>
+    <g class="tom-roxo">
+      <rect x="320" y="303" width="120" height="49" class="lavado"/>
+      <rect x="320" y="303" width="120" height="49" class="linha-tom"/>
+      <rect x="800" y="145" width="120" height="21" class="lavado"/>
+      <rect x="800" y="145" width="120" height="21" class="linha-tom"/>
+    </g>
+    <g class="tom-azul">
+      <rect x="480" y="282" width="120" height="21" class="lavado"/>
+      <rect x="480" y="282" width="120" height="21" class="linha-tom"/>
+      <rect x="960" y="130" width="120" height="15" class="lavado"/>
+      <rect x="960" y="130" width="120" height="15" class="linha-tom"/>
+    </g>
+
+    <path d="M120 460 H160 V352 H320 V303 H480 V282 H640 V166 H800 V145 H960 V130 H1080" class="linha"/>
+  </g>
+
+  <text x="120" y="60" class="titulo-eixo">custo da sessão, informado pelo Claude Code</text>
+  <text x="630" y="528" text-anchor="middle" class="titulo-eixo">o tempo da sessão: cada degrau é uma resposta do modelo que terminou</text>
+  <text x="108" y="466" text-anchor="end" class="valor-eixo">0</text>
+  <text x="108" y="338" text-anchor="end" class="valor-eixo">US$ 0,50</text>
+  <text x="108" y="210" text-anchor="end" class="valor-eixo">US$ 1,00</text>
+  <text x="1140" y="200" text-anchor="end" class="codigo">total: US$ 1,28</text>
+
+  <g class="tom-petroleo">
+    <text x="220" y="414" text-anchor="middle" class="codigo texto-tom">+0,42</text>
+    <text x="700" y="232" text-anchor="middle" class="codigo texto-tom">+0,45</text>
+    <text x="220" y="488" text-anchor="middle" class="nota-pequena texto-tom">Principal</text>
+    <text x="700" y="488" text-anchor="middle" class="nota-pequena texto-tom">Principal</text>
+    <text x="560" y="70" class="texto-caixa texto-tom">Principal · US$ 0,87</text>
+  </g>
+  <g class="tom-roxo">
+    <text x="380" y="336" text-anchor="middle" class="codigo texto-tom">+0,19</text>
+    <text x="860" y="134" text-anchor="middle" class="codigo texto-tom">+0,08</text>
+    <text x="380" y="488" text-anchor="middle" class="nota-pequena texto-tom">Coordenar · rodada 1</text>
+    <text x="860" y="488" text-anchor="middle" class="nota-pequena texto-tom">Coordenar · rodada 2</text>
+    <text x="560" y="98" class="texto-caixa texto-tom">Coordenar · US$ 0,27 (2 rodadas)</text>
+  </g>
+  <g class="tom-azul">
+    <text x="540" y="272" text-anchor="middle" class="codigo texto-tom">+0,08</text>
+    <text x="1020" y="120" text-anchor="middle" class="codigo texto-tom">+0,06</text>
+    <text x="540" y="488" text-anchor="middle" class="nota-pequena texto-tom">Revisor</text>
+    <text x="1020" y="488" text-anchor="middle" class="nota-pequena texto-tom">Revisor</text>
+    <text x="560" y="126" class="texto-caixa texto-tom">Revisor · US$ 0,14</text>
+  </g>
+  <text x="630" y="562" text-anchor="middle" class="nota-pequena">cada aumento vai para um dono só: nada é contado duas vezes, e a soma dos agentes nunca passa do total</text>
+</svg>

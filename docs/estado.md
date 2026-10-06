@@ -14,7 +14,7 @@ das rodadas fechadas e o diário que este painel tinha até 04/10/2026 (`estado-
   nesta máquina (`redesenho/`, fora do git).
 - **A coleção tem 13 livros** (D78), com a contracapa e a página As capas; **a home é uma estante de
   prateleiras de capas** (D84), com o nome menor e o "blog" carimbado sobre o Z.
-- **Posts:** 33 publicados (10 em `.mdx`). Todo post segue a skill `post`: o formato combinado antes
+- **Posts:** 34 publicados (11 em `.mdx`). Todo post segue a skill `post`: o formato combinado antes
   (D63), as regras de escrita e o post em partes (D71) e a caneta como última etapa (D48); a apresentação
   no estilo do blog sai pela skill `apresentacao` (D74, D77). Os sete posts com uma peça que acontece em
   ordem usam a figura em passos (D67, em prova), no estilo marca-texto; nenhum usa mais a `Lousa` nem a
@@ -22,6 +22,10 @@ das rodadas fechadas e o diário que este painel tinha até 04/10/2026 (`estado-
 - **Última rodada: D84** (a home, a revisão geral das telas e a faxina do código e dos documentos),
   publicada em 05/10/2026; o controle está em `docs/historico/ajustes-d84/controle.md`. Nenhuma rodada em
   andamento: o próximo trabalho é post novo (skill `post`) e a revisão do Cesar no ar (pergunta 000).
+- **Em 06/10/2026 (D85, ainda não publicado):** o post dos mods virou três partes para o CSR Lens (o
+  csr-cockpit renomeado): a parte 1 ajustada, a parte 2 nova (`claude-code-csr-lens`, com o
+  redirecionamento da URL antiga) e a parte 3 nova (`claude-code-csr-lens-agentes`); os prints saíram e as
+  telas do painel são desenhos. O Cesar revisa e publica.
 
 ## Como ver
 

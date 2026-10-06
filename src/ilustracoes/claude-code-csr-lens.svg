@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -57 1200 917"
+  aria-label="A janela do Claude Code, com a conversa à esquerda e o painel do mod à direita, e uma lupa grande sobre o painel, que amplia o anel do contexto em 52%. Acima do prompt, a linha de resumo em pílulas."
+  data-largo="80 150 1100 468" data-medio="223 98 859 572" data-quadrado="294 27 716 716"
+  data-og="282 -57 740 883" data-segura="330 150 644 468">
+  <g class="tinta">
+    <rect x="330" y="150" width="600" height="440" rx="16" transform="translate(14 14)" class="hachura"/>
+    <rect x="330" y="150" width="600" height="440" rx="16" class="papel"/>
+    <rect x="330" y="150" width="600" height="440" rx="16" class="linha"/>
+    <path d="M330 194 H930 M560 194 V590" class="linha"/>
+    <circle cx="360" cy="172" r="8" class="linha"/>
+    <circle cx="388" cy="172" r="8" class="linha"/>
+    <circle cx="416" cy="172" r="8" class="linha"/>
+
+    <path d="M352 230 L362 238 L352 246 M378 238 H520 M378 276 H536 M378 302 H496 M378 346 H540 M378 372 H470 M378 398 H524" class="linha"/>
+    <circle cx="362" cy="276" r="5" class="linha"/>
+    <circle cx="362" cy="346" r="5" class="linha"/>
+
+    <rect x="350" y="494" width="56" height="20" rx="10" transform="translate(7 6)" class="cor"/>
+    <rect x="350" y="494" width="56" height="20" rx="10" class="papel"/>
+    <rect x="350" y="494" width="56" height="20" rx="10" class="linha"/>
+    <rect x="414" y="494" width="70" height="20" rx="10" class="papel"/>
+    <rect x="414" y="494" width="70" height="20" rx="10" class="linha"/>
+    <rect x="492" y="494" width="48" height="20" rx="10" class="papel"/>
+    <rect x="492" y="494" width="48" height="20" rx="10" class="linha"/>
+
+    <rect x="350" y="536" width="190" height="34" rx="8" class="linha"/>
+    <path d="M362 546 L370 553 L362 560" class="linha"/>
+    <rect x="382" y="544" width="8" height="18" class="papel"/>
+    <rect x="382" y="544" width="8" height="18" class="linha"/>
+
+    <rect x="576" y="210" width="52" height="24" rx="12" transform="translate(7 6)" class="cor"/>
+    <rect x="576" y="210" width="52" height="24" rx="12" class="papel"/>
+    <rect x="576" y="210" width="52" height="24" rx="12" class="linha"/>
+    <rect x="636" y="210" width="44" height="24" rx="12" class="papel"/>
+    <rect x="636" y="210" width="44" height="24" rx="12" class="linha"/>
+    <rect x="688" y="210" width="44" height="24" rx="12" class="papel"/>
+    <rect x="688" y="210" width="44" height="24" rx="12" class="linha"/>
+    <rect x="740" y="210" width="44" height="24" rx="12" class="papel"/>
+    <rect x="740" y="210" width="44" height="24" rx="12" class="linha"/>
+    <rect x="792" y="210" width="44" height="24" rx="12" class="papel"/>
+    <rect x="792" y="210" width="44" height="24" rx="12" class="linha"/>
+
+    <path d="M578 262 H690 M578 290 H660" class="linha"/>
+    <rect x="578" y="520" width="330" height="14" rx="7" class="linha"/>
+    <rect x="578" y="550" width="230" height="14" rx="7" class="linha"/>
+
+    <g transform="translate(838 478) rotate(45)">
+      <rect x="0" y="-16" width="170" height="32" rx="16" transform="translate(7 7)" class="hachura"/>
+      <rect x="0" y="-16" width="170" height="32" rx="16" class="papel"/>
+      <rect x="0" y="-16" width="170" height="32" rx="16" transform="translate(5 4)" class="cor"/>
+      <rect x="0" y="-16" width="170" height="32" rx="16" class="linha"/>
+      <path d="M40 -16 V16" class="linha"/>
+    </g>
+    <circle cx="760" cy="400" r="110" transform="translate(14 14)" class="hachura"/>
+    <circle cx="760" cy="400" r="110" class="papel"/>
+    <circle cx="760" cy="400" r="110" class="linha"/>
+    <circle cx="760" cy="400" r="96" class="linha"/>
+
+    <path d="M760 340 A60 60 0 1 1 752.5 459.5 L755.5 435.7 A36 36 0 1 0 760 364 Z" transform="translate(7 6)" class="cor"/>
+    <circle cx="760" cy="400" r="60" class="linha"/>
+    <circle cx="760" cy="400" r="36" class="linha"/>
+    <g class="mexe-escreve"><path d="M760 340 A60 60 0 1 1 752.5 459.5" pathLength="1" class="linha"/></g>
+  </g>
+  <text x="760" y="408" text-anchor="middle" class="codigo">52%</text>
+  <text x="400" y="560" class="codigo">/lens</text>
+  <g class="anotacao">
+    <path d="M286 452 C 300 470, 320 486, 344 500" class="chamada"/>
+    <text x="110" y="420" class="nota">a linha de resumo</text>
+    <text x="110" y="446" class="nota-pequena">acima do prompt</text>
+    <path d="M934 290 C 916 298, 900 312, 886 330" class="chamada"/>
+    <text x="940" y="268" class="nota">a lupa do painel</text>
+    <text x="940" y="294" class="nota-pequena">o contexto e o custo</text>
+  </g>
+</svg>

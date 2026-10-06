@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900"
+  aria-label="Diagrama de sequência em cinco passos, com você no painel, o CSR Lens e um agente que está rodando: você clica em Parar agente e o botão vira Parando; o Lens manda um recado ao agente pedindo para parar agora e entregar o relatório; o agente tenta uma ferramenta, a Read, e o Lens a nega, com o pedido como motivo; a única que passa é a SubagentHandback, pela qual ele entrega o relatório e termina; o cartão passa a dizer parado antes de terminar, porque a API de mods não encerra um agente à força, e ele para na resposta seguinte.">
+  <path d="M200 124 V870 M600 124 V870 M1000 124 V870" class="grade"/>
+
+  <g class="tinta">
+    <g class="tom-azul">
+      <rect x="92" y="37" width="230" height="88" rx="12" class="hachura"/>
+      <rect x="85" y="30" width="230" height="88" rx="12" class="lavado"/>
+      <rect x="85" y="30" width="230" height="88" rx="12" class="linha"/>
+    </g>
+    <g class="tom-petroleo">
+      <rect x="492" y="37" width="230" height="88" rx="12" class="hachura"/>
+      <rect x="485" y="30" width="230" height="88" rx="12" class="lavado"/>
+      <rect x="485" y="30" width="230" height="88" rx="12" class="linha"/>
+    </g>
+    <g class="tom-roxo">
+      <rect x="892" y="37" width="230" height="88" rx="12" class="hachura"/>
+      <rect x="885" y="30" width="230" height="88" rx="12" class="lavado"/>
+      <rect x="885" y="30" width="230" height="88" rx="12" class="linha"/>
+    </g>
+
+    <g data-passo="1">
+      <g class="tom-azul">
+        <path d="M200 190 H586 M572 181 L586 190 L572 199" class="linha-tom"/>
+      </g>
+      <g class="tom-petroleo">
+        <rect x="485" y="212" width="230" height="52" rx="8" class="lavado"/>
+        <rect x="485" y="212" width="230" height="52" rx="8" class="linha"/>
+      </g>
+    </g>
+
+    <g data-passo="2">
+      <g class="tom-petroleo">
+        <path d="M600 320 H986 M972 311 L986 320 L972 329" class="linha-tom"/>
+      </g>
+    </g>
+
+    <g data-passo="3">
+      <g class="tom-roxo">
+        <path d="M1000 420 H614 M628 411 L614 420 L628 429" class="linha-tom"/>
+      </g>
+      <g class="tom-petroleo etapa-2">
+        <path d="M600 470 H986 M972 461 L986 470 L972 479" class="linha-tom"/>
+      </g>
+      <g class="tom-roxo etapa-2">
+        <rect x="855" y="492" width="290" height="52" rx="8" class="lavado"/>
+        <rect x="855" y="492" width="290" height="52" rx="8" class="linha"/>
+      </g>
+    </g>
+
+    <g data-passo="4">
+      <g class="tom-roxo">
+        <path d="M1000 580 H614 M628 571 L614 580 L628 589" class="linha-tom"/>
+      </g>
+      <g class="tom-roxo etapa-2">
+        <rect x="855" y="630" width="290" height="52" rx="8" class="lavado"/>
+        <rect x="855" y="630" width="290" height="52" rx="8" class="linha"/>
+      </g>
+    </g>
+
+    <g data-passo="5">
+      <g class="tom-roxo">
+        <rect x="885" y="710" width="230" height="70" rx="8" class="lavado"/>
+        <rect x="885" y="710" width="230" height="70" rx="8" class="linha"/>
+      </g>
+      <g class="tom-petroleo etapa-2">
+        <rect x="85" y="810" width="1030" height="70" rx="12" class="lavado"/>
+        <rect x="85" y="810" width="1030" height="70" rx="12" class="linha"/>
+      </g>
+    </g>
+  </g>
+
+  <g class="tom-azul">
+    <text x="200" y="72" text-anchor="middle" class="titulo-caixa">Você</text>
+    <text x="200" y="102" text-anchor="middle" class="texto-caixa">no painel</text>
+  </g>
+  <g class="tom-petroleo">
+    <text x="600" y="72" text-anchor="middle" class="titulo-caixa">CSR Lens</text>
+    <text x="600" y="102" text-anchor="middle" class="texto-caixa">o mod</text>
+  </g>
+  <g class="tom-roxo">
+    <text x="1000" y="72" text-anchor="middle" class="titulo-caixa">Agente</text>
+    <text x="1000" y="102" text-anchor="middle" class="texto-caixa">rodando</text>
+  </g>
+
+  <g data-passo="1">
+    <g class="tom-azul">
+      <circle cx="42" cy="190" r="19" class="selo"/>
+      <text x="42" y="191" class="selo-texto">1</text>
+      <text x="393" y="176" text-anchor="middle" class="texto-caixa texto-tom">clique em Parar agente</text>
+      <path d="M202 190 H580" pathLength="1" class="trajeto"/>
+    </g>
+    <text x="600" y="246" text-anchor="middle" class="codigo">Parando…</text>
+  </g>
+
+  <g data-passo="2">
+    <g class="tom-petroleo">
+      <circle cx="42" cy="320" r="19" class="selo"/>
+      <text x="42" y="321" class="selo-texto">2</text>
+      <text x="793" y="306" text-anchor="middle" class="texto-caixa texto-tom">recado: pare agora e entregue o relatório</text>
+      <path d="M602 320 H980" pathLength="1" class="trajeto"/>
+    </g>
+  </g>
+
+  <g data-passo="3">
+    <g class="tom-roxo">
+      <circle cx="42" cy="420" r="19" class="selo"/>
+      <text x="42" y="421" class="selo-texto">3</text>
+      <text x="793" y="406" text-anchor="middle" class="texto-caixa texto-tom">tenta uma ferramenta (Read)</text>
+      <path d="M998 420 H620" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-petroleo etapa-2">
+      <text x="770" y="456" text-anchor="middle" class="texto-caixa texto-tom">negada</text>
+      <path d="M602 470 H980" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-vermelho etapa-2">
+      <text x="840" y="458" text-anchor="middle" class="codigo texto-tom">✕</text>
+    </g>
+    <g class="etapa-2">
+      <text x="1000" y="526" text-anchor="middle" class="codigo">o motivo: o pedido</text>
+    </g>
+  </g>
+
+  <g data-passo="4">
+    <g class="tom-roxo">
+      <circle cx="42" cy="580" r="19" class="selo"/>
+      <text x="42" y="581" class="selo-texto">4</text>
+      <text x="793" y="566" text-anchor="middle" class="texto-caixa texto-tom">SubagentHandback: o relatório</text>
+      <path d="M998 580 H620" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-verde etapa-2">
+      <text x="793" y="612" text-anchor="middle" class="codigo texto-tom">✓ a única que passa</text>
+    </g>
+    <g class="etapa-2">
+      <text x="1000" y="664" text-anchor="middle" class="codigo">relatório entregue</text>
+    </g>
+  </g>
+
+  <g data-passo="5">
+    <g class="tom-roxo">
+      <circle cx="42" cy="745" r="19" class="selo"/>
+      <text x="42" y="746" class="selo-texto">5</text>
+    </g>
+    <text x="1000" y="740" text-anchor="middle" class="codigo">parado antes</text>
+    <text x="1000" y="768" text-anchor="middle" class="nota-pequena">de terminar</text>
+    <g class="tom-petroleo etapa-2">
+      <text x="600" y="852" text-anchor="middle" class="texto-caixa texto-tom">A API de mods não encerra um agente à força: ele para na resposta seguinte.</text>
+    </g>
+  </g>
+</svg>

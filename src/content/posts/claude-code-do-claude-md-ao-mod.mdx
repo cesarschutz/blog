@@ -1,6 +1,7 @@
 ---
-title: "Mods do Claude Code — o que são e as peças que vieram antes (parte 1 de 2)"
+title: "Mods do Claude Code — o que são e as peças que vieram antes (parte 1 de 3)"
 published: 2026-10-02
+updated: 2026-10-06
 description: "Mod é um plugin com código que roda dentro do Claude Code e desenha na interface, desde 01/10/2026. Do `CLAUDE.md` aos plugins, o que cada peça anterior faz."
 tags: [Claude Code, Plugins]
 category: IA
@@ -10,7 +11,7 @@ tldr:
   - "As peças anteriores entregam texto ou ferramentas ao modelo (`CLAUDE.md`, MCP, comandos, subagentes, estilos de saída, skills), rodam um script por fora (hooks, linha de status), embalam (plugins) ou trocam cores (temas). Nenhuma põe um painel na interface."
   - "Skill, agente e plugin não são alternativas: a skill é uma instrução, o agente (o subagente) executa uma tarefa numa conversa à parte e o plugin é a pasta que entrega os dois. Mod é um tipo de plugin."
   - "Um mod roda com as permissões de quem o instala, sem isolamento. Antes de instalar, `claude plugin validate` lista o que ele escuta e o que ele chama, sem executar nada."
-  - "A [parte 2](/posts/claude-code-csr-cockpit/) mostra um mod pronto, o csr-cockpit: como instalar, o que ele mostra, como testar e os limites."
+  - "A [parte 2](/posts/claude-code-csr-lens/) mostra um mod pronto, o CSR Lens: como instalar e ler o painel, o contexto e o custo. A [parte 3](/posts/claude-code-csr-lens-agentes/) entra nos subagentes: quem chamou quem, recados e rodadas."
 draft: false
 ---
 
@@ -20,8 +21,8 @@ Em 01/10/2026, o Claude Code ganhou os **mods**: plugins com código que roda de
 
 Este post explica o que é um mod e como o Claude Code chegou até ele: as peças de extensão que vieram antes, com a data de cada uma, o que cada uma faz e o que só o mod faz. O texto parte do zero. Não pressupõe conhecer skill, agente, hook, plugin nem marketplace, e aponta a documentação oficial para quem quiser se aprofundar. Não é um tutorial de código.
 
-> [!NOTA] Parte 1 de 2
-> Esta parte explica as peças e o mod. A [parte 2](/posts/claude-code-csr-cockpit/) parte de um mod pronto, o csr-cockpit, e mostra o painel, a instalação, os testes e os limites.
+> [!NOTA] Parte 1 de 3
+> Esta parte explica as peças e o mod. A [parte 2](/posts/claude-code-csr-lens/) parte de um mod pronto, o CSR Lens, e mostra como instalar e ler o painel: o contexto, o custo, os turnos e o que mudou nos arquivos. A [parte 3](/posts/claude-code-csr-lens-agentes/) entra nos subagentes: quem chamou quem, os recados entre eles e as rodadas.
 
 ## A linha do tempo
 
@@ -46,11 +47,11 @@ O `CLAUDE.md` e o MCP são a exceção: não têm linha no changelog, porque já
 
 A tabela pode ser lida como uma escada, com a mesma pergunta em cada degrau: essa peça consegue pôr algo novo na interface? O exemplo mais claro é um painel ao lado da conversa, que mostre o que a sessão está fazendo. Para responder, uma distinção ajuda. O **modelo** é a IA, o Claude: lê texto e responde. O **Claude Code** é o programa que você abre no terminal: manda o texto ao modelo, executa as ferramentas que ele pede (ler um arquivo, rodar um comando) e desenha a tela. :grifo[Um painel só pode vir do programa.]
 
-Mais um termo, que volta nas duas partes. Tudo o que o modelo tem na frente para responder (as instruções, a conversa, os arquivos lidos) é o [contexto](https://code.claude.com/docs/en/context-window). Ele tem tamanho máximo e é medido em tokens, os pedaços de palavra em que o modelo conta o texto e pelos quais se cobra.
+Mais um termo, que volta nas três partes. Tudo o que o modelo tem na frente para responder (as instruções, a conversa, os arquivos lidos) é o [contexto](https://code.claude.com/docs/en/context-window). Ele tem tamanho máximo e é medido em tokens, os pedaços de palavra em que o modelo conta o texto e pelos quais se cobra.
 
 ## Cada peça e o que ela não alcança
 
-A ordem aqui é a de quem aprende, não a das datas: a skill vem antes do plugin, que é a embalagem das outras. Os exemplos vêm do [claude-code-kit](https://github.com/cesarschutz/claude-code-kit), o repositório público que acompanha as duas partes, com exemplos pequenos de seis delas (hook, subagente, estilo de saída, skill, plugin e tema) e um mod.
+A ordem aqui é a de quem aprende, não a das datas: a skill vem antes do plugin, que é a embalagem das outras. Os exemplos vêm do [claude-code-kit](https://github.com/cesarschutz/claude-code-kit), o repositório público que acompanha as três partes, com exemplos pequenos de seis delas (hook, subagente, estilo de saída, skill, plugin e tema) e um mod.
 
 **`CLAUDE.md`.** Um arquivo de texto, em geral na raiz do projeto, que o Claude Code entrega ao modelo no começo de toda sessão. É onde ficam as [instruções permanentes](https://code.claude.com/docs/en/memory#claude-md-files): como rodar os testes, as convenções do time, o que nunca fazer. Use para o que :ondulado[vale sempre]. Na interface ele não mexe: é texto para o modelo ler.
 
@@ -80,15 +81,15 @@ Nenhuma dessas peças põe um painel na interface. O `CLAUDE.md`, o comando, o s
 
 O mod é um plugin com uma diferença. Num plugin comum, o arquivo `hooks/hooks.json` lista os hooks: que comando do sistema rodar em cada evento. No mod, o mesmo arquivo :duplo[aponta um módulo], que é um arquivo de código.
 
-```json title="plugins/csr-cockpit/hooks/hooks.json" anotar="./register.tsx|o código do mod"
+```json title="plugins/csr-lens/hooks/hooks.json" anotar="./register.tsx|o código do mod"
 { "modules": ["./register.tsx"] }
 ```
 
 Esse módulo exporta uma função `register(on)`. Dentro dela, cada `on(...)` liga uma função a um evento do Claude Code: uma chamada de ferramenta, o início de um turno (cada pedido feito na sessão), um pedaço da interface sendo desenhado. A função recebe três coisas: `$`, a API dos mods; `e`, o evento; e `next`, que passa o evento adiante, como num :nota[middleware]{texto="quem não chama next responde no lugar"}. A documentação também chama de hook cada função dessas.
 
-Este é um hook do csr-cockpit, o mod da parte 2: quando o Claude Code cria um subagente (o evento `agent.spawn`), o hook deixa o evento seguir e anota o agente e o pedido dele. O miolo está resumido num comentário:
+Este é um hook do CSR Lens, o mod das partes 2 e 3: quando o Claude Code cria um subagente (o evento `agent.spawn`), o hook deixa o evento seguir e anota o agente e o pedido dele. O miolo está resumido num comentário:
 
-```tsx title="plugins/csr-cockpit/hooks/register.tsx" linhas="3|o evento segue adiante como chegou"
+```tsx title="plugins/csr-lens/hooks/register.tsx" linhas="3|o evento segue adiante como chegou"
 export const register: Register = on => {
   on('agent.spawn', async ($, e, next) => {
     const iniciado = await next(e)
@@ -135,7 +136,7 @@ Os nomes se parecem, e é fácil tomar uma peça pela outra. Estas são as confu
 
 ## Na parte 2, um mod pronto
 
-A [parte 2](/posts/claude-code-csr-cockpit/) pega um mod pronto, o csr-cockpit, e mostra o que esta parte só descreveu: o painel ao lado da conversa, a instalação a partir de um marketplace, os comandos, os testes e os limites.
+A [parte 2](/posts/claude-code-csr-lens/) pega um mod pronto, o CSR Lens, e mostra o que esta parte só descreveu: o painel ao lado da conversa, a instalação a partir de um marketplace, o contexto, o custo e o que mudou nos arquivos. A [parte 3](/posts/claude-code-csr-lens-agentes/) vai aos subagentes: quem chamou quem, os recados entre eles, as rodadas, como se testa um mod e os limites.
 
 :::visto
 Para ir além do básico, a página [Extend Claude Code](https://code.claude.com/docs/en/features-overview) compara as peças e diz quando usar cada uma, e a Anthropic publica [mods de exemplo](https://github.com/anthropics/claude-code-playground/tree/main/claude-code/mods).

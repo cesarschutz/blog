@@ -1,0 +1,180 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1080"
+  aria-label="Diagrama de sequência em seis passos, com a conversa principal, o agente Coordenar, um revisor de plugin e um Explore: a conversa principal cria o agente pela ferramenta Agent e começa a rodada 1; ele trabalha, com 3 chamadas em 31 segundos, entrega o relatório e termina, com US$ 0,19; um recado da conversa principal, pela SendMessage, o acorda, e começa a rodada 2, com o contexto de antes; na rodada 2 ele cria um Explore, que conta os SVGs e volta; manda um recado ao revisor e recebe a resposta; a rodada 2 termina em 16 segundos e US$ 0,08, e o agente inteiro soma as duas rodadas: 47 segundos, US$ 0,27 e 7 chamadas. Chamar o mesmo agente instalado de novo seria outra execução, com outro cartão.">
+  <path d="M185 124 V1060 M485 124 V1060 M785 124 V1060 M1045 124 V1060" class="grade"/>
+
+  <g class="tinta">
+    <g class="tom-petroleo">
+      <rect x="77" y="37" width="230" height="88" rx="12" class="hachura"/>
+      <rect x="70" y="30" width="230" height="88" rx="12" class="lavado"/>
+      <rect x="70" y="30" width="230" height="88" rx="12" class="linha"/>
+    </g>
+    <g class="tom-roxo">
+      <rect x="377" y="37" width="230" height="88" rx="12" class="hachura"/>
+      <rect x="370" y="30" width="230" height="88" rx="12" class="lavado"/>
+      <rect x="370" y="30" width="230" height="88" rx="12" class="linha"/>
+    </g>
+    <g class="tom-azul">
+      <rect x="677" y="37" width="230" height="88" rx="12" class="hachura"/>
+      <rect x="670" y="30" width="230" height="88" rx="12" class="lavado"/>
+      <rect x="670" y="30" width="230" height="88" rx="12" class="linha"/>
+    </g>
+    <g class="tom-verde">
+      <rect x="937" y="37" width="230" height="88" rx="12" class="hachura"/>
+      <rect x="930" y="30" width="230" height="88" rx="12" class="lavado"/>
+      <rect x="930" y="30" width="230" height="88" rx="12" class="linha"/>
+    </g>
+
+    <g data-passo="1">
+      <g class="tom-petroleo">
+        <path d="M185 190 H471 M457 181 L471 190 L457 199" class="linha-tom"/>
+      </g>
+      <g class="tom-roxo">
+        <rect x="350" y="212" width="270" height="52" rx="8" class="lavado"/>
+        <rect x="350" y="212" width="270" height="52" rx="8" class="linha"/>
+      </g>
+    </g>
+
+    <g data-passo="2">
+      <g class="tom-roxo">
+        <path d="M485 330 H200 M213 321 L199 330 L213 339" class="linha-tom"/>
+        <rect x="350" y="352" width="270" height="70" rx="8" class="lavado"/>
+        <rect x="350" y="352" width="270" height="70" rx="8" class="linha"/>
+      </g>
+    </g>
+
+    <g data-passo="3">
+      <g class="tom-petroleo">
+        <path d="M185 470 H471 M457 461 L471 470 L457 479" class="linha-tom"/>
+      </g>
+      <g class="tom-roxo">
+        <rect x="350" y="492" width="270" height="70" rx="8" class="lavado"/>
+        <rect x="350" y="492" width="270" height="70" rx="8" class="linha"/>
+      </g>
+    </g>
+
+    <g data-passo="4">
+      <g class="tom-roxo">
+        <path d="M485 610 H1031 M1017 601 L1031 610 L1017 619" class="linha-tom"/>
+      </g>
+      <g class="tom-verde etapa-2">
+        <path d="M1045 660 H500 M513 651 L499 660 L513 669" class="linha-tom"/>
+      </g>
+    </g>
+
+    <g data-passo="5">
+      <g class="tom-roxo">
+        <path d="M485 720 H771 M757 711 L771 720 L757 729" class="linha-tom"/>
+      </g>
+      <g class="tom-azul etapa-2">
+        <path d="M785 770 H500 M513 761 L499 770 L513 779" class="linha-tom"/>
+      </g>
+    </g>
+
+    <g data-passo="6">
+      <g class="tom-roxo">
+        <rect x="350" y="820" width="270" height="70" rx="8" class="lavado"/>
+        <rect x="350" y="820" width="270" height="70" rx="8" class="linha"/>
+      </g>
+      <g class="tom-roxo etapa-2">
+        <path d="M485 930 H200 M213 921 L199 930 L213 939" class="linha-tom"/>
+      </g>
+      <g class="tom-roxo etapa-3">
+        <rect x="70" y="976" width="1090" height="80" rx="12" class="lavado"/>
+        <rect x="70" y="976" width="1090" height="80" rx="12" class="linha"/>
+      </g>
+    </g>
+  </g>
+
+  <g class="tom-petroleo">
+    <text x="185" y="72" text-anchor="middle" class="titulo-caixa">Principal</text>
+    <text x="185" y="102" text-anchor="middle" class="texto-caixa">a conversa principal</text>
+  </g>
+  <g class="tom-roxo">
+    <text x="485" y="72" text-anchor="middle" class="titulo-caixa">Coordenar</text>
+    <text x="485" y="102" text-anchor="middle" class="texto-caixa">o agente, 2 rodadas</text>
+  </g>
+  <g class="tom-azul">
+    <text x="785" y="72" text-anchor="middle" class="titulo-caixa">Revisor</text>
+    <text x="785" y="102" text-anchor="middle" class="texto-caixa">um agente de plugin</text>
+  </g>
+  <g class="tom-verde">
+    <text x="1045" y="72" text-anchor="middle" class="titulo-caixa">Explore</text>
+    <text x="1045" y="102" text-anchor="middle" class="texto-caixa">criado na rodada 2</text>
+  </g>
+
+  <g data-passo="1">
+    <g class="tom-petroleo">
+      <circle cx="42" cy="190" r="19" class="selo"/>
+      <text x="42" y="191" class="selo-texto">1</text>
+      <text x="335" y="176" text-anchor="middle" class="texto-caixa texto-tom">Agent: o pedido</text>
+      <path d="M187 190 H465" pathLength="1" class="trajeto"/>
+    </g>
+    <text x="485" y="246" text-anchor="middle" class="codigo">rodada 1 começa</text>
+  </g>
+
+  <g data-passo="2">
+    <g class="tom-roxo">
+      <circle cx="42" cy="330" r="19" class="selo"/>
+      <text x="42" y="331" class="selo-texto">2</text>
+      <text x="335" y="316" text-anchor="middle" class="texto-caixa texto-tom">o relatório</text>
+      <path d="M483 330 H205" pathLength="1" class="trajeto"/>
+    </g>
+    <text x="500" y="300" class="nota-pequena">3 chamadas · 31 s</text>
+    <text x="485" y="382" text-anchor="middle" class="codigo">rodada 1 termina</text>
+    <text x="485" y="410" text-anchor="middle" class="nota-pequena">31 s · US$ 0,19 · 3 chamadas</text>
+  </g>
+
+  <g data-passo="3">
+    <g class="tom-petroleo">
+      <circle cx="42" cy="470" r="19" class="selo"/>
+      <text x="42" y="471" class="selo-texto">3</text>
+      <text x="335" y="456" text-anchor="middle" class="texto-caixa texto-tom">SendMessage: um recado</text>
+      <path d="M187 470 H465" pathLength="1" class="trajeto"/>
+    </g>
+    <text x="485" y="522" text-anchor="middle" class="codigo">rodada 2 começa</text>
+    <text x="485" y="550" text-anchor="middle" class="nota-pequena">com o contexto de antes</text>
+  </g>
+
+  <g data-passo="4">
+    <g class="tom-roxo">
+      <circle cx="42" cy="610" r="19" class="selo"/>
+      <text x="42" y="611" class="selo-texto">4</text>
+      <text x="765" y="596" text-anchor="middle" class="texto-caixa texto-tom">Agent: contar os SVGs</text>
+      <path d="M487 610 H1025" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-verde etapa-2">
+      <text x="765" y="646" text-anchor="middle" class="texto-caixa texto-tom">✓ 30 SVGs</text>
+      <path d="M1043 660 H505" pathLength="1" class="trajeto"/>
+    </g>
+  </g>
+
+  <g data-passo="5">
+    <g class="tom-roxo">
+      <circle cx="42" cy="720" r="19" class="selo"/>
+      <text x="42" y="721" class="selo-texto">5</text>
+      <text x="635" y="706" text-anchor="middle" class="texto-caixa texto-tom">recado: quantos pontos?</text>
+      <path d="M487 720 H765" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-azul etapa-2">
+      <text x="635" y="756" text-anchor="middle" class="texto-caixa texto-tom">cinco pontos</text>
+      <path d="M783 770 H505" pathLength="1" class="trajeto"/>
+    </g>
+  </g>
+
+  <g data-passo="6">
+    <g class="tom-roxo">
+      <circle cx="42" cy="855" r="19" class="selo"/>
+      <text x="42" y="856" class="selo-texto">6</text>
+    </g>
+    <text x="485" y="850" text-anchor="middle" class="codigo">rodada 2 termina</text>
+    <text x="485" y="878" text-anchor="middle" class="nota-pequena">16 s · US$ 0,08 · 4 chamadas</text>
+    <g class="tom-roxo etapa-2">
+      <text x="335" y="916" text-anchor="middle" class="texto-caixa texto-tom">o relatório</text>
+      <path d="M483 930 H205" pathLength="1" class="trajeto"/>
+    </g>
+    <g class="tom-roxo etapa-3">
+      <text x="615" y="1008" text-anchor="middle" class="texto-caixa texto-tom">O agente inteiro soma as 2 rodadas: 47 s · US$ 0,27 · 7 chamadas.</text>
+      <text x="615" y="1038" text-anchor="middle" class="nota-pequena">Chamar o mesmo agente instalado de novo seria outra execução, com outro cartão.</text>
+    </g>
+  </g>
+</svg>

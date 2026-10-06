@@ -1,0 +1,110 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 760"
+  aria-label="As abas Árvore e Diffs do CSR Lens lado a lado, desenhadas de forma simplificada. À esquerda, a Árvore, em âmbar: o ramo main, dois commits à frente do remoto, os botões Atualizar, Projeto inteiro e Expandir, o arquivo dados.ts sendo lido agora por um agente Explore e a árvore de pastas, com os arquivos lidos e a contagem de leituras, o dados.ts aceso com o selo lendo e, à direita de cada arquivo alterado, a letra do git e as linhas somadas. À direita, a Diffs, em verde: as fontes Sessão, Turno 1 e Git, a lista de arquivos alterados com o teste-lens.md escolhido e o diff dele, com a linha que saiu e a linha que entrou, trocando a palavra mostra por exibe.">
+  <g class="tinta">
+    <rect x="44" y="34" width="560" height="720" rx="16" class="hachura"/>
+    <rect x="30" y="20" width="560" height="720" rx="16" class="papel"/>
+    <rect x="30" y="20" width="560" height="720" rx="16" class="linha"/>
+    <rect x="624" y="34" width="560" height="720" rx="16" class="hachura"/>
+    <rect x="610" y="20" width="560" height="720" rx="16" class="papel"/>
+    <rect x="610" y="20" width="560" height="720" rx="16" class="linha"/>
+
+    <rect x="54" y="130" width="110" height="34" rx="8" class="papel"/>
+    <rect x="54" y="130" width="110" height="34" rx="8" class="linha"/>
+    <rect x="176" y="130" width="150" height="34" rx="8" class="papel"/>
+    <rect x="176" y="130" width="150" height="34" rx="8" class="linha"/>
+    <rect x="338" y="130" width="104" height="34" rx="8" class="papel"/>
+    <rect x="338" y="130" width="104" height="34" rx="8" class="linha"/>
+
+    <rect x="746" y="100" width="100" height="34" rx="17" class="papel"/>
+    <rect x="746" y="100" width="100" height="34" rx="17" class="linha"/>
+    <rect x="858" y="100" width="70" height="34" rx="17" class="papel"/>
+    <rect x="858" y="100" width="70" height="34" rx="17" class="linha"/>
+
+    <rect x="634" y="190" width="512" height="92" rx="8" class="papel"/>
+    <rect x="634" y="190" width="512" height="92" rx="8" class="linha"/>
+    <rect x="634" y="300" width="512" height="400" rx="8" class="papel"/>
+    <rect x="634" y="300" width="512" height="400" rx="8" class="linha"/>
+    <rect x="640" y="452" width="500" height="30" class="hachura"/>
+    <g class="tom-verde">
+      <rect x="640" y="240" width="500" height="34" rx="6" class="lavado"/>
+      <rect x="640" y="240" width="500" height="34" rx="6" class="linha-tom"/>
+      <rect x="640" y="486" width="500" height="30" class="lavado"/>
+      <rect x="640" y="486" width="500" height="30" class="linha-tom"/>
+    </g>
+  </g>
+
+  <g class="tom-ambar">
+    <rect x="54" y="44" width="110" height="40" rx="20" class="selo"/>
+    <text x="109" y="64" class="selo-texto">Árvore</text>
+  </g>
+  <text x="180" y="70" class="nota-pequena">Onde o Claude está mexendo agora?</text>
+  <text x="54" y="114" class="codigo">main ↑2 · +125 −56</text>
+  <text x="109" y="153" text-anchor="middle" class="valor-eixo">Atualizar</text>
+  <text x="251" y="153" text-anchor="middle" class="valor-eixo">Projeto inteiro</text>
+  <text x="390" y="153" text-anchor="middle" class="valor-eixo">Expandir</text>
+  <g class="tom-roxo">
+    <circle cx="64" cy="194" r="7" class="selo"/>
+    <text x="80" y="201" class="codigo texto-tom">lendo</text>
+  </g>
+  <text x="166" y="201" class="codigo">hooks/dados.ts · Explore</text>
+
+  <text x="54" y="250" class="codigo">▾ plugins</text>
+  <text x="566" y="250" text-anchor="end" class="valor-eixo">+26 −15</text>
+  <text x="78" y="286" class="codigo">▾ csr-lens</text>
+  <text x="566" y="286" text-anchor="end" class="valor-eixo">+26 −15</text>
+  <text x="102" y="322" class="codigo">▾ hooks</text>
+  <text x="566" y="322" text-anchor="end" class="valor-eixo">+7</text>
+  <text x="126" y="358" class="codigo">arvore.ts</text>
+  <text x="566" y="358" text-anchor="end" class="valor-eixo">lido 2×</text>
+  <text x="126" y="394" class="codigo">caminho.ts</text>
+  <text x="566" y="394" text-anchor="end" class="valor-eixo">lido 4×</text>
+  <g class="tom-roxo">
+    <text x="126" y="430" class="codigo texto-tom">dados.ts</text>
+    <rect x="466" y="410" width="100" height="30" rx="15" class="selo"/>
+    <text x="516" y="425" class="selo-texto">lendo…</text>
+  </g>
+  <text x="126" y="466" class="codigo">formato.ts</text>
+  <text x="566" y="466" text-anchor="end" class="valor-eixo">+7 M</text>
+  <text x="102" y="502" class="codigo">README.md</text>
+  <text x="566" y="502" text-anchor="end" class="valor-eixo">+19 −15 M</text>
+  <text x="54" y="538" class="codigo">▾ scripts/telas</text>
+  <text x="566" y="538" text-anchor="end" class="valor-eixo">+93 −40</text>
+  <text x="102" y="574" class="codigo">telas.py</text>
+  <text x="566" y="574" text-anchor="end" class="valor-eixo">+93 −40 M</text>
+  <text x="78" y="610" class="codigo">teste-lens.md</text>
+  <text x="566" y="610" text-anchor="end" class="valor-eixo">+6 −1 ?</text>
+  <text x="54" y="700" class="nota-pequena">acesos por 8 s · M modificado · ? novo</text>
+
+  <g class="tom-verde">
+    <rect x="634" y="44" width="90" height="40" rx="20" class="selo"/>
+    <text x="679" y="64" class="selo-texto">Diffs</text>
+    <rect x="634" y="100" width="100" height="34" rx="17" class="selo"/>
+    <text x="684" y="117" class="selo-texto">Sessão</text>
+  </g>
+  <text x="740" y="70" class="nota-pequena">O que mudou, arquivo por arquivo?</text>
+  <text x="796" y="123" text-anchor="middle" class="valor-eixo">Turno 1</text>
+  <text x="893" y="123" text-anchor="middle" class="valor-eixo">Git</text>
+  <text x="634" y="170" class="nota-pequena">Edições do Claude nos últimos 10 turnos · +7 −2</text>
+
+  <text x="656" y="226" class="codigo">M README.md</text>
+  <text x="1126" y="226" text-anchor="end" class="valor-eixo">+1 −1</text>
+  <text x="656" y="265" class="codigo">M teste-lens.md</text>
+  <text x="1126" y="265" text-anchor="end" class="valor-eixo">+6 −1</text>
+
+  <text x="656" y="336" class="codigo">teste-lens.md · M · +6 −1</text>
+  <text x="656" y="368" class="nota-pequena">Edição 2 · Edit · turno 1</text>
+  <text x="656" y="404" class="valor-eixo">1</text><text x="690" y="404" class="valor-eixo">1</text>
+  <text x="730" y="404" class="valor-eixo">O CSR Lens é um plugin do marketplace.</text>
+  <text x="656" y="438" class="valor-eixo">2</text><text x="690" y="438" class="valor-eixo">2</text>
+  <text x="730" y="438" class="valor-eixo">Ele mostra um painel ao vivo no Claude Code.</text>
+  <text x="656" y="472" class="valor-eixo">3</text>
+  <text x="730" y="472" class="valor-eixo">− A aba Árvore mostra os agentes da sessão.</text>
+  <text x="690" y="506" class="valor-eixo">3</text>
+  <text x="730" y="506" class="valor-eixo">+ A aba Árvore exibe os agentes da sessão.</text>
+  <text x="656" y="540" class="valor-eixo">4</text><text x="690" y="540" class="valor-eixo">4</text>
+  <text x="730" y="540" class="valor-eixo">A aba Diffs mostra as mudanças nos arquivos.</text>
+  <text x="656" y="574" class="valor-eixo">5</text><text x="690" y="574" class="valor-eixo">5</text>
+  <text x="730" y="574" class="valor-eixo">A Visão geral resume a sessão numa tela só.</text>
+  <text x="656" y="640" class="nota-pequena">saiu: riscada pela hachura · entrou: em verde</text>
+  <text x="656" y="668" class="nota-pequena">a palavra que mudou: mostra → exibe</text>
+</svg>

@@ -1,0 +1,232 @@
+---
+title: "Um mod do Claude Code na prática — instalar e ler o painel (parte 2 de 3)"
+published: 2026-10-06T12:00:00Z
+description: "O CSR Lens, um mod de exemplo, põe ao lado da conversa do Claude Code um painel com o contexto, o custo, os turnos e os arquivos editados. Como instalar e ler as abas."
+tags: [Claude Code, Plugins]
+category: IA
+formato: detalhado
+tldr:
+  - "O **CSR Lens** é um mod do Claude Code (um plugin com código que roda dentro do programa): um painel ao lado da conversa, com sete abas, e uma linha de resumo acima do prompt. Abre com `/lens` e só observa a sessão."
+  - "Instalar são dois comandos: `claude plugin marketplace add cesarschutz/claude-code-kit` e `claude plugin install csr-lens@cesarschutz`. Um **marketplace** é um repositório git com um arquivo `marketplace.json`."
+  - "A aba Contexto diz quanto da janela do modelo já foi, quanto a sessão custou e quanto falta do limite do plano; a Turnos, o que cada pedido fez e custou; a Diffs e a Árvore, o que mudou nos arquivos e onde o Claude está mexendo agora."
+  - "Atualização não chega sozinha: o Claude Code só vê versão nova quando o `version` do `plugin.json` sobe, e num marketplace de terceiros a atualização automática vem desligada."
+  - "Mods pedem o Claude Code 2.1.287 ou mais novo. O que é um mod está na [parte 1](/posts/claude-code-do-claude-md-ao-mod/); os subagentes, quem chamou quem, os recados e as rodadas, na [parte 3](/posts/claude-code-csr-lens-agentes/)."
+draft: false
+---
+
+import Figura from "../../components/Figura.astro";
+import FiguraPassos from "../../components/FiguraPassos.astro";
+
+Um mod do Claude Code é um plugin com código que roda dentro do programa: reage aos eventos da sessão, guarda estado e desenha na interface. O **CSR Lens** é um mod pronto, de exemplo: um painel ao lado da conversa que mostra o que a sessão está fazendo (quanto do contexto já foi, quanto custou, o que cada pedido fez, o que mudou nos arquivos e o que está instalado), mais uma linha de resumo acima do prompt. É a informação que o Claude Code :grifo[espalha por vários comandos, ou não mostra], e que ajuda a entender para onde vão o tempo e o dinheiro de uma sessão.
+
+Este post é para quem usa o Claude para conversar e pouco usa agentes: mostra como instalar o Lens em dois comandos, como abrir o painel e como ler cada parte dele, a Visão geral, a linha de resumo, o contexto e o custo, os turnos, os diffs e a árvore de arquivos e o inventário. O código está na pasta [`plugins/csr-lens`](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens) do [claude-code-kit](https://github.com/cesarschutz/claude-code-kit), um repositório público. Não é um tutorial de como programar um mod, e os subagentes ficam para a parte 3.
+
+> [!NOTA] Parte 2 de 3
+> A [parte 1](/posts/claude-code-do-claude-md-ao-mod/) explica o que é um mod e as peças do Claude Code que vieram antes dele (`CLAUDE.md`, hooks, skills, plugins). O resumo, para quem chega direto aqui: plugin é uma pasta de extensões do Claude Code, instalada de uma vez, e mod é um plugin cujo código roda dentro do programa. Os mods são oficiais desde a versão 2.1.287, de 01/10/2026. A [parte 3](/posts/claude-code-csr-lens-agentes/) entra nos subagentes: quem chamou quem, os recados e as rodadas.
+
+Alguns termos aparecem o tempo todo. O **modelo** é a IA, o Claude; o **Claude Code** é o programa do terminal (ou da aba Code do aplicativo de desktop), que conversa com ela, executa as ferramentas que ela pede e desenha a tela. **Turno** é cada pedido feito na sessão, com tudo o que ele desencadeia. **Contexto** é tudo o que o modelo tem na frente para responder (as instruções, a conversa, os arquivos lidos); tem tamanho máximo e é medido em **tokens**, os pedaços de palavra pelos quais se cobra. **Agente**, aqui, é o subagente: um ajudante que o Claude Code cria para uma parte da tarefa, :ondulado[com contexto próprio]; a parte 3 é só sobre eles.
+
+## O que o painel mostra
+
+O painel abre e fecha com :caixa[`/lens`], sempre na Visão geral, e tem sete abas, na ordem da barra: Visão geral, Agentes, Turnos, Diffs, Árvore, Contexto e Inventário. As teclas de `1` a `7` trocam de aba pela posição, `/lens contexto` (ou `/lens 6`) abre direto numa aba e `Esc` fecha. Cada aba responde a uma pergunta:
+
+| Aba | A pergunta | O que mostra |
+|---|---|---|
+| Visão geral | O que está acontecendo, numa tela só? | os indicadores, o que roda agora, os agentes instalados, o grafo, o último turno e as últimas edições |
+| Agentes | Quem está trabalhando agora, e quem chamou quem? | cada subagente, o grafo, a linha do tempo e os cartões (a parte 3) |
+| Turnos | O que aconteceu em cada pedido, na ordem? | um cartão por pedido: duração, custo, ferramentas e os agentes que ele chamou |
+| Diffs | O que mudou, arquivo por arquivo? | os arquivos alterados e o diff de cada um, da sessão, de um turno ou do git |
+| Árvore | Onde o Claude está mexendo agora? | os arquivos lidos e editados numa árvore de pastas, acesos enquanto a ferramenta roda |
+| Contexto | Quanto do contexto sobra, e quanto já custou? | o anel do contexto, o custo e os tokens, o limite de uso e o contexto por categoria |
+| Inventário | O que este Claude Code tem, e o que está ligado? | plugins, skills, comandos, agentes, hooks e MCP, ativos ou inativos |
+
+Cada aba tem uma cor, e tudo o que é dela usa essa cor: o selo da aba aberta, o caminho logo abaixo das abas e os títulos das seções, que são barras de fundo claro com um filete à esquerda. Os dados são registrados desde o início da sessão, :duplo[com o painel aberto ou fechado]. As telas deste post são desenhos do painel, simplificados, no visual do aplicativo de desktop, com os números de uma sessão de exemplo. Este é a Visão geral:
+
+<Figura
+  figura="claude-code-csr-lens/painel-visao-geral"
+  legenda="O painel na Visão geral. O azul é a cor da aba aberta: pinta o selo dela e o filete dos títulos de seção. Nas fichas dos agentes instalados, a borda diz a origem: roxo e tracejado o global que ninguém chamou, âmbar o do projeto, azul o de plugin."
+/>
+
+## Como instalar: o marketplace
+
+Um mod se instala como qualquer plugin, a partir de um marketplace. Um [marketplace](https://code.claude.com/docs/en/plugins/create-marketplace#create-a-marketplace) é um repositório com um arquivo `.claude-plugin/marketplace.json`, de três campos obrigatórios: `name`, `owner` e `plugins`. Cada entrada de `plugins` é um item instalável, com um `name` e um :caixa[`source`], que é a pasta dele dentro do repositório. Este é um pedaço do catálogo do claude-code-kit, só com os campos de que este post fala e com as descrições encurtadas:
+
+```json title=".claude-plugin/marketplace.json"
+{
+  "name": "cesarschutz",
+  "owner": { "name": "Cesar Schutz" },
+  "renames": {
+    "csr-cockpit": "csr-lens"
+  },
+  "plugins": [
+    {
+      "name": "csr-lens",
+      "source": "./plugins/csr-lens",
+      "description": "Mod: painel ao lado da conversa..."
+    },
+    {
+      "name": "explicar-erro",
+      "source": "./skills/explicar-erro",
+      "description": "Exemplo de skill: explica um erro...",
+      "skills": ["./"]
+    }
+  ]
+}
+```
+
+A primeira entrada é um plugin completo: a pasta `plugins/csr-lens` tem o seu `.claude-plugin/plugin.json`, o manifesto que descreve o plugin. A segunda é uma peça avulsa, uma skill sozinha: não há `plugin.json`, e a própria entrada [faz o papel de manifesto](https://code.claude.com/docs/en/plugins/marketplace-reference#entry-and-plugin-json). O campo [`renames`](https://code.claude.com/docs/en/plugins/marketplace-reference#top-level-fields) :nota[mapeia]{texto="o nome antigo leva ao novo"} o nome antigo de um plugin para o atual: o Lens se chamou csr-cockpit até o claude-code-kit 1.0, de 06/10/2026, e quem o instalou com esse nome é levado ao `csr-lens`.
+
+O nome do repositório e o nome do marketplace são coisas diferentes. O repositório se chama `claude-code-kit`, e o marketplace, :circulo[`cesarschutz`]. O primeiro aparece na hora de cadastrar; o segundo, na hora de instalar:
+
+```bash
+claude plugin marketplace add cesarschutz/claude-code-kit
+claude plugin install csr-lens@cesarschutz
+```
+
+Depois, numa sessão, `/lens` abre o painel. A instalação e a atualização seguem seis passos, do repositório no GitHub à sessão aberta na sua máquina: o que chega a cada lugar e em que versão. Em **Passo a passo**, a figura se monta um passo por vez.
+
+<FiguraPassos
+  figura="claude-code-csr-lens/instalacao-em-passos"
+  passos={[
+    "O repositório no GitHub guarda o catálogo e a pasta do plugin, na `version` 1.0.0.",
+    "O `marketplace add` clona o catálogo para a sua máquina, com o nome `cesarschutz`.",
+    "O `install` copia a pasta do plugin na versão do catálogo: 1.0.0.",
+    "Commits novos chegam ao repositório, mas o `version` não sobe: na máquina, nada muda.",
+    "O `version` sobe para 1.1.0, e o `update` renova o catálogo e copia a pasta nova.",
+    "A sessão aberta segue na 1.0.0 até o `/reload-plugins` carregar a 1.1.0.",
+  ]}
+  legenda="Cada cor é um lugar: o repositório (roxo), o catálogo (azul), o plugin instalado (petróleo) e a sessão aberta (âmbar)."
+  fim="segmentos"
+  estilo="marca-texto"
+/>
+
+:::exclamacao
+A regra dos dois últimos passos está na [referência de carregamento dos plugins](https://code.claude.com/docs/en/plugins/loading#versions-and-updates): o Claude Code calcula uma versão para cada plugin instalado e só vê atualização quando ela muda. Com o campo `version` no `plugin.json`, vale esse número, não importa quantos commits o repositório receba. Num marketplace de terceiros, como este, a [atualização automática](https://code.claude.com/docs/en/plugins/install#keep-plugins-updated) vem desligada: quem instalou roda `claude plugin marketplace update cesarschutz` e `claude plugin update csr-lens@cesarschutz` quando quiser a versão nova, e a sessão que já estava aberta segue com a anterior até um `/reload-plugins`.
+:::
+
+Os outros comandos de plugin (listar, ver detalhes, remover, validar) estão na [referência dos comandos](https://code.claude.com/docs/en/plugins/cli-reference).
+
+## A Visão geral
+
+É a aba em que o painel abre, e :grifo[cada bloco dela leva à aba que fala dele]. De cima para baixo:
+
+1. **Os indicadores:** o contexto, o custo da sessão e o do último turno, o limite de uso de 5 horas, os agentes (rodando, concluídos, com falha), os turnos e o tamanho dos diffs no git. Clicar num indicador abre a aba dele.
+2. **Agora:** se a conversa principal está pensando (e há quanto tempo) ou parada, cada agente rodando com o que ele faz neste momento e os arquivos sendo lidos ou escritos.
+3. **Agentes disponíveis:** os agentes instalados, mesmo os que ninguém chamou; a ficha de quem nunca foi chamado fica apagada, com a borda tracejada.
+4. **Quem chamou quem:** o grafo da conversa principal (um cérebro) e dos agentes (os robôs), explicado na parte 3.
+5. **O último turno:** o seu pedido, os números dele, os agentes que ele chamou e o começo da resposta.
+6. **As últimas edições:** cada arquivo editado na sessão com a edição mais recente; `▸ diff` abre o diff ali mesmo.
+
+Logo abaixo das abas ficam o **Voltar** e o **caminho** de onde você está (a aba e, num detalhe, cada nível pelo qual você chegou até ele); a parte 3 mostra o que ele muda. Um título de seção com `▾` fecha a seção, e `▸` abre de novo.
+
+## A linha de resumo
+
+Acima do prompt, a caixa onde se digita o pedido, o Lens desenha uma faixa que fica ali com o painel aberto ou fechado. Ela :ondulado[não é a linha de status] do rodapé, que é outra peça do Claude Code. No aplicativo de desktop, é uma fileira de pílulas, e o que está vivo vem primeiro:
+
+<Figura
+  figura="claude-code-csr-lens/linha-de-resumo"
+  legenda="As pílulas vivas vêm primeiro (o cérebro da conversa principal trabalhando e o robô dos agentes em paralelo), depois o repositório e as medidas: o contexto em azul, o custo em verde e o limite de uso que já está alto, em âmbar."
+/>
+
+Depois da marca vêm o cérebro, que pulsa enquanto a conversa principal trabalha e some quando ela para, e o robô com os agentes rodando em paralelo, com a luz da antena piscando. Depois, o repositório, o ramo do git e quantos arquivos estão sem commit (o clique abre a aba Árvore); o contexto, com o percentual, os tokens e o que o último turno somou (o clique abre a aba Contexto); o custo da sessão e o do último turno; cada limite de uso do plano e quando renova; o modelo e o esforço da última resposta; e quanto da entrada dela veio do cache, porque quanto :liga[mais cache, mais barato] o turno. A cor do contexto segue a distância até a compactação automática: verde longe, âmbar perto, vermelha quando falta pouco. No terminal, a linha vira uma fileira de selos de texto, que encurta em degraus quando não cabe.
+
+## Contexto e custo: a aba Contexto
+
+O contexto da conversa é o que mais pesa no bolso e no comportamento do modelo: :marca[tudo o que está nele é reenviado a cada resposta], e, quando ele enche, o Claude Code [compacta a conversa](https://code.claude.com/docs/en/costs#reduce-token-usage), trocando o histórico por um resumo. A aba Contexto responde quanto dele sobra e quanto a sessão já custou:
+
+<Figura
+  figura="claude-code-csr-lens/aba-contexto"
+  legenda="A aba Contexto, em azul. O anel é a janela da conversa principal, em âmbar por já passar da metade; embaixo, o custo e os tokens repartidos entre a conversa e os agentes, os limites de uso do plano (o de 5 horas em verde, folgado; o de 7 dias em âmbar) e o detalhamento do contexto por categoria."
+/>
+
+1. **O contexto da conversa:** o anel com o percentual, os tokens sobre o tamanho da janela e quanto o último pedido somou. É só a janela da conversa principal: :duplo[cada agente tem a sua] ([documentação](https://code.claude.com/docs/en/sub-agents)), que não ocupa a da conversa.
+2. **Custo e tokens**, numa linha para o total, outra para a conversa e outra para os agentes, cada valor com o ▲ do que o último pedido somou. O custo vem em dólar e em reais; a cotação é uma opção do plugin, no `/config`, porque o Lens não busca nada na internet. Os **tokens processados** são somados desde o começo da sessão: **sem cache**, o que o modelo processou pela primeira vez e escreveu; **com cache**, somando o contexto relido do cache a cada resposta.
+3. **Os limites de uso** da conta, o de 5 horas e o de 7 dias, com quando renovam.
+4. **:circulo[Contagem exata]** troca a estimativa do detalhamento pela contagem de verdade, com uma requisição por ferramenta e por arquivo de memória; por isso só acontece quando o botão é apertado.
+5. **O detalhamento** por categoria (mensagens, ferramentas, skills, prompt de sistema, memória, espaço livre): uma estimativa local, atualizada a cada turno.
+
+Sobre o custo, dois avisos. O valor em dólar é o do Claude Code, [calculado a preço de tabela](https://code.claude.com/docs/en/costs#track-your-costs) a partir dos tokens: para quem paga assinatura :ondulado[ele não é cobrança], e serve para comparar um turno com outro. E o Claude Code informa só o custo da sessão inteira, com os agentes dentro; a parte da conversa e a de cada agente é uma repartição feita pelo Lens, explicada na parte 3.
+
+## Os turnos: a aba Turnos
+
+Cada pedido seu é um turno, e a aba Turnos mostra o que o Claude fez em cada um:
+
+1. **A duração de cada turno**, numa barra: roxo concluído, vermelho com falha, azul em andamento.
+2. **As ferramentas mais chamadas** na sessão, em barras (Read, Bash, Edit e as outras).
+3. **Um cartão por pedido**, do mais recente ao mais antigo: o começo do pedido e da resposta e **os agentes que ele chamou**, uma linha por agente, com o horário, o modelo, o tempo e o custo.
+4. **Os números do turno** em etiquetas: quanto somou ao contexto, quanto custou, quantas ferramentas, edições, comandos Bash e retornos de agentes.
+
+O custo do turno também é :nota[conta do Lens]{texto="o fim menos o começo"}: quanto o custo da sessão subiu do começo ao fim do pedido. Quando um agente em segundo plano termina, o Claude Code abre um turno sozinho para tratar o retorno; a aba junta esses turnos ao pedido que os gerou.
+
+O **detalhe de um turno** traz o pedido inteiro, os subagentes que rodaram nele (um cartão por agente, com o pedido que ele recebeu e a resposta que deu, o que a conversa principal não mostra), a resposta do turno e os comandos Bash, cada um abrindo o comando inteiro, o fim da saída e o erro.
+
+## Diffs e Árvore: o que mudou e onde o Claude está mexendo
+
+As duas abas mostram arquivos, mas respondem a :duplo[perguntas diferentes]. A **Diffs** responde o que mudou, arquivo por arquivo, como a visão de alterações do VS Code; a **Árvore**, onde o Claude está mexendo agora:
+
+<Figura
+  figura="claude-code-csr-lens/arvore-ou-diffs"
+  legenda="À esquerda, a Árvore (âmbar): a árvore de pastas do projeto, com o arquivo que está sendo lido aceso com o selo roxo lendo…, os já lidos com a contagem e, à direita de cada um, a letra do git e as linhas somadas. À direita, a Diffs (verde): a fonte escolhida, a lista de arquivos alterados e o diff do arquivo escolhido, com a linha que saiu e a que entrou."
+/>
+
+Na **Diffs**, a fonte é uma de cada vez: **Sessão**, cada arquivo que o Claude mudou nos últimos 10 turnos, pelo Edit e pelo Write (da conversa principal e dos subagentes, com o nome do agente) e pelos comandos Bash da conversa principal; **Turno**, o mesmo, de um turno só; e **Git**, a árvore de trabalho contra o último commit, com o que o Claude, os comandos e você mudaram. A lista traz a letra do status do git e as linhas `+N −N`; o diff é desenhado como o do próprio Claude Code, com a palavra que mudou em destaque. Para saber o que um comando Bash mudou, o Lens tira uma foto dos arquivos com o próprio git antes e depois do comando, num índice só dele: o seu :nota[stage]{texto="o índice é só do Lens"} fica intacto.
+
+Na **Árvore**, o alto mostra o ramo e o total das alterações; os botões leem o git de novo, alternam entre o projeto todo e só o que foi tocado, e expandem ou recolhem as pastas. **Agora mesmo**: enquanto um Read, um Edit, um Write ou um comando Bash que lê ou escreve arquivos roda, o arquivo aparece ali, com quem está mexendo nele (do Bash, o Lens lê o texto do comando: `cat` e `grep` leem; `sed -i`, `tee` e o `>` escrevem). Na árvore, o arquivo acende com o selo `editando…` ou `lendo…` e fica destacado por :circulo[8 segundos]; o que só foi lido fica apagado, com quantas vezes.
+
+A tabela diz o que cada uma vê:
+
+| | Árvore | Diffs · Sessão | Diffs · Git |
+|---|---|---|---|
+| Mudanças ainda não commitadas, de antes da sessão | sim | não | sim |
+| Leituras desta sessão | sim | não | não |
+| Edit e Write da conversa principal | sim | sim | sim (misturadas) |
+| Mudanças por Bash da conversa principal | sim | sim | sim (misturadas) |
+| Edit e Write dos subagentes | sim | sim, com o nome do agente | sim (misturadas) |
+| Mudanças por Bash dos subagentes | sim | não | sim (misturadas) |
+
+:::colchete
+Por isso, numa sessão nova num projeto com mudanças sem commit, a Árvore mostra dezenas de arquivos e a Sessão, nenhum: a Sessão é só o que foi editado nesta sessão, com o antes e o depois.
+:::
+
+## O Inventário
+
+A aba Inventário lista o que este Claude Code tem e o que está ligado nesta sessão, em seções com a contagem de ativos: **plugins**, **skills**, **comandos** de barra, **agentes**, **hooks**, servidores **MCP**, **outros** (estilo de saída, arquivos de memória com os tokens, ferramentas embutidas) e o que há **para instalar** nos marketplaces que você adicionou. Um filtro procura por nome, origem ou descrição, e cada peça vem num cartão com a pílula do estado: ativo quer dizer, por exemplo, plugin habilitado, skill que o modelo vê nesta sessão ou servidor MCP conectado. :grifo[Nada disso gasta tokens]: as listas vêm da própria sessão, das configurações e dos arquivos dos plugins no disco.
+
+## Só observa
+
+:::moldura
+A regra do Lens é **só observar**. Um mod liga funções aos eventos do Claude Code (uma chamada de ferramenta, o início de um turno), e a documentação chama cada uma de hook. Os hooks do Lens repassam o que recebem e devolvem o resultado como veio: não bloqueiam, não alteram e não seguram nenhuma chamada de ferramenta nem resposta do modelo.
+:::
+
+Ele também não chama o modelo nem acrescenta nada à conversa, então não gasta tokens por conta própria. As exceções são duas, e :ondulado[só quando você aperta o botão]: **Parar agente**, no detalhe de um agente que está rodando, que manda um recado a ele e nega as ferramentas dele até ele terminar (a parte 3 explica), e **Contagem exata**, na aba Contexto.
+
+:::visto
+Ele não faz chamada de rede. Na máquina, roda só comandos de leitura do git e as fotos dos arquivos antes e depois de um comando Bash, e lê as pastas de plugins, skills e agentes que o Inventário lista. Grava dois arquivos, só na sua máquina: um registro de erros, quando algo falha, e um de diagnóstico de cliques, quando é ligado. O resto fica no estado da sessão. Para conferir o que o mod chama antes de instalar, clone o repositório e rode `claude plugin validate ./plugins/csr-lens`: a saída [lista os eventos que ele escuta e as chamadas que faz](https://code.claude.com/docs/en/plugins/mods/overview#list-what-a-mod-does-before-you-install-one), sem executar nada.
+:::
+
+## Os limites básicos
+
+:::validade{data="out/2026"}
+Estes são os limites do Lens na versão 1.0.0, em 06/10/2026, para quem está começando; os dos agentes ficam na parte 3.
+:::
+
+- **A versão do Claude Code.** Mods pedem o Claude Code 2.1.287 ou mais novo (:caixa[`claude --version`]). O aplicativo de desktop traz a própria cópia do Claude Code, que o `claude --version` do terminal não mostra: em 04/10/2026, a versão 2.19675.0 do aplicativo já rodava o mod. Se o `/lens` não aparecer depois de instalar, confira a versão.
+- **Onde ele desenha.** No terminal e na aba Code do aplicativo de desktop. Na extensão do VS Code e em `claude -p`, os hooks rodam, mas [nada é desenhado](https://code.claude.com/docs/en/plugins/mods/overview#where-mods-run).
+- **O custo é estimado.** O valor em dólar é o do Claude Code, a preço de tabela, e a parte da conversa, de cada agente e de cada turno é uma repartição do Lens.
+- **O cabeçalho rola.** As abas e o caminho rolam junto com o painel: a API de mods não tem como fixar um cabeçalho fora da rolagem.
+- **No aplicativo de desktop, o painel não acompanha cada chamada.** O aplicativo recusa o clique feito num desenho que já foi trocado, então o Lens redesenha o painel na hora depois de um clique seu e, fora isso, no máximo a cada :circulo[2,5 segundos].
+- **Tamanho.** O Lens guarda 100 agentes, 100 comandos, 60 turnos, 200 recados, 10 rodadas por agente e 10 turnos de diffs.
+- **A API de mods ainda pode mudar** [de uma versão para outra](https://code.claude.com/docs/en/plugins/mods/create#get-the-types-for-your-build) do Claude Code.
+
+## Na parte 3, os agentes
+
+A [parte 3](/posts/claude-code-csr-lens-agentes/) entra na aba Agentes, a que este post só apontou: de onde vêm os subagentes, o grafo de quem chamou quem, os recados, as rodadas, o custo repartido, o botão Parar agente, os workflows, como se testa um mod e os limites da API.
+
+## Fontes
+
+- Claude — [Claude Code mods](https://claude.com/blog/claude-code-mods) (o anúncio dos mods, em 01/10/2026)
+- Claude Code — [Mods overview](https://code.claude.com/docs/en/plugins/mods/overview) (o que é um mod, a versão mínima, onde ele desenha e como listar o que um mod faz antes de instalar) e [Create a mod](https://code.claude.com/docs/en/plugins/mods/create) (a API em evolução)
+- Claude Code — [Create a marketplace](https://code.claude.com/docs/en/plugins/create-marketplace) e [Marketplace reference](https://code.claude.com/docs/en/plugins/marketplace-reference) (a entrada que faz o papel de manifesto e o campo `renames`)
+- Claude Code — [Install and manage plugins](https://code.claude.com/docs/en/plugins/install) (o cadastro do marketplace e as atualizações), [Plugin loading reference](https://code.claude.com/docs/en/plugins/loading#versions-and-updates) (como a versão é calculada e o que acontece com a sessão aberta) e [Plugin commands reference](https://code.claude.com/docs/en/plugins/cli-reference)
+- Claude Code — [Manage costs effectively](https://code.claude.com/docs/en/costs) (como o valor em dólar é calculado e a compactação) e [Create custom subagents](https://code.claude.com/docs/en/sub-agents) (cada subagente com o próprio contexto)
+- Cesar Schutz — [claude-code-kit](https://github.com/cesarschutz/claude-code-kit) e o [README do CSR Lens](https://github.com/cesarschutz/claude-code-kit/tree/main/plugins/csr-lens) (as abas, as teclas, os limites e a privacidade)
