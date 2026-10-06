@@ -3713,9 +3713,10 @@ nada muda.
 - **Também:** os links do post do You should know para a parte 2 passaram ao slug e ao título novos; a
   entrada `claude-code-csr-cockpit` saiu de `src/data/decks.json` (a pasta `public/posts/claude-code-csr-cockpit/deck/`
   ficou no disco, para o Cesar decidir); as fotos dos livros refeitas (IA com 4 artigos).
-- **Pendente para o Cesar:** a apresentação da parte 2 antiga (o deck, com o nome e as telas antigas) e se
-  as partes 2 e 3 ganham uma; a parte 2 ficou com ~3.100 palavras (como a anterior), um pouco acima do
-  teto de ~3.000.
+- **Fechado em 06/10/2026:** o Cesar mandou apagar a apresentação da parte 2 antiga (a pasta
+  `public/posts/claude-code-csr-cockpit/deck/` saiu) e aceitou o tamanho das partes 2 e 3 (~3.400 e ~3.300
+  palavras depois da D86), acima do teto de ~3.000. Se as partes 2 e 3 ganham uma apresentação, fica
+  para quando ele pedir.
 
 
 ## D86 · Telas de aplicativo em post são prints do projeto, claro e escuro pelo tema do site (06/10/2026)
