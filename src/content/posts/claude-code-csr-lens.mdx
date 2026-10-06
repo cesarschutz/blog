@@ -1,6 +1,6 @@
 ---
 title: "Um mod do Claude Code na prática — instalar e ler o painel (parte 2 de 3)"
-published: 2026-10-06T12:00:00Z
+published: 2026-10-02T12:00:00Z
 description: "O CSR Lens, um mod de exemplo, põe ao lado da conversa do Claude Code um painel com o contexto, o custo, os turnos e os arquivos editados. Como instalar e ler as abas."
 tags: [Claude Code, Plugins]
 category: IA
@@ -74,7 +74,7 @@ Um mod se instala como qualquer plugin, a partir de um marketplace. Um [marketpl
 }
 ```
 
-A primeira entrada é um plugin completo: a pasta `plugins/csr-lens` tem o seu `.claude-plugin/plugin.json`, o manifesto que descreve o plugin. A segunda é uma peça avulsa, uma skill sozinha: não há `plugin.json`, e a própria entrada [faz o papel de manifesto](https://code.claude.com/docs/en/plugins/marketplace-reference#entry-and-plugin-json). O campo [`renames`](https://code.claude.com/docs/en/plugins/marketplace-reference#top-level-fields) :nota[mapeia]{texto="o nome antigo leva ao novo"} o nome antigo de um plugin para o atual: o Lens se chamou csr-cockpit até o claude-code-kit 1.0, de 06/10/2026, e quem o instalou com esse nome é levado ao `csr-lens`.
+A primeira entrada é um plugin completo: a pasta `plugins/csr-lens` tem o seu `.claude-plugin/plugin.json`, o manifesto que descreve o plugin. A segunda é uma peça avulsa, uma skill sozinha: não há `plugin.json`, e a própria entrada [faz o papel de manifesto](https://code.claude.com/docs/en/plugins/marketplace-reference#entry-and-plugin-json). O campo [`renames`](https://code.claude.com/docs/en/plugins/marketplace-reference#top-level-fields) :nota[mapeia]{texto="o nome antigo leva ao novo"} o nome antigo de um plugin para o atual: o Lens já se chamou csr-cockpit, e quem o instalou com esse nome é levado ao `csr-lens`.
 
 O nome do repositório e o nome do marketplace são coisas diferentes. O repositório se chama `claude-code-kit`, e o marketplace, :circulo[`cesarschutz`]. O primeiro aparece na hora de cadastrar; o segundo, na hora de instalar:
 
